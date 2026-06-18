@@ -21,6 +21,59 @@ const DEFAULT_COLLAPSE_TRIGGER = 32;
 const DEFAULT_EXPAND_TRIGGER = 8;
 const COMPACT_REVEAL_DELAY_MS = 280;
 
+interface HeaderState {
+  collapsed: boolean;
+  compactVisible: boolean;
+}
+
+function getPrefersReducedMotion() {
+  return (
+    hasBrowserWindow() &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+function getHeaderStyleVariables({
+  collapsed,
+  collapsedHeight,
+  compactVisible,
+  expandedHeight,
+  prefersReducedMotion,
+}: HeaderState & {
+  collapsedHeight: number;
+  expandedHeight: number;
+  prefersReducedMotion: boolean;
+}) {
+  const collapseRange = Math.max(expandedHeight - collapsedHeight, 1);
+
+  return {
+    "--collapsible-panel-compact-opacity": compactVisible ? "1" : "0",
+    "--collapsible-panel-compact-scrim-opacity": compactVisible ? "0.86" : "0",
+    "--collapsible-panel-cover-y": collapsed ? `${-collapseRange}px` : "0px",
+    "--collapsible-panel-image-scale":
+      prefersReducedMotion || !collapsed ? "1" : "1.04",
+    "--collapsible-panel-image-y":
+      prefersReducedMotion || !collapsed ? "0px" : "-10px",
+    "--collapsible-panel-original-card-delay":
+      collapsed || prefersReducedMotion ? "0ms" : "160ms",
+    "--collapsible-panel-original-card-opacity": collapsed ? "0" : "1",
+    "--collapsible-panel-original-card-y":
+      collapsed && !prefersReducedMotion ? "-24px" : "0px",
+    "--collapsible-panel-original-pointer-events": collapsed ? "none" : "auto",
+    "--collapsible-panel-title-y":
+      compactVisible || prefersReducedMotion ? "0px" : "-8px",
+  };
+}
+
+function applyHeaderStyleVariables(
+  element: HTMLElement,
+  variables: Record<string, string>,
+) {
+  for (const [name, value] of Object.entries(variables)) {
+    element.style.setProperty(name, value);
+  }
+}
+
 export function useCollapsiblePanelHeader<TElement extends HTMLElement>({
   collapsedHeight,
   collapseTrigger = DEFAULT_COLLAPSE_TRIGGER,
@@ -36,63 +89,22 @@ export function useCollapsiblePanelHeader<TElement extends HTMLElement>({
   const [isCompactVisible, setIsCompactVisible] = useState(false);
 
   const applyHeaderState = useCallback(
-    ({
-      collapsed,
-      compactVisible,
-    }: {
-      collapsed: boolean;
-      compactVisible: boolean;
-    }) => {
+    ({ collapsed, compactVisible }: HeaderState) => {
       const element = ref.current;
 
       if (!element) {
         return;
       }
 
-      const collapseRange = Math.max(expandedHeight - collapsedHeight, 1);
-      const prefersReducedMotion =
-        hasBrowserWindow() &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      element.style.setProperty(
-        "--collapsible-panel-cover-y",
-        collapsed ? `${-collapseRange}px` : "0px",
-      );
-      element.style.setProperty(
-        "--collapsible-panel-image-scale",
-        prefersReducedMotion || !collapsed ? "1" : "1.04",
-      );
-      element.style.setProperty(
-        "--collapsible-panel-image-y",
-        prefersReducedMotion || !collapsed ? "0px" : "-10px",
-      );
-      element.style.setProperty(
-        "--collapsible-panel-compact-opacity",
-        compactVisible ? "1" : "0",
-      );
-      element.style.setProperty(
-        "--collapsible-panel-title-y",
-        compactVisible || prefersReducedMotion ? "0px" : "-8px",
-      );
-      element.style.setProperty(
-        "--collapsible-panel-compact-scrim-opacity",
-        compactVisible ? "0.86" : "0",
-      );
-      element.style.setProperty(
-        "--collapsible-panel-original-card-opacity",
-        collapsed ? "0" : "1",
-      );
-      element.style.setProperty(
-        "--collapsible-panel-original-card-y",
-        collapsed && !prefersReducedMotion ? "-24px" : "0px",
-      );
-      element.style.setProperty(
-        "--collapsible-panel-original-card-delay",
-        collapsed || prefersReducedMotion ? "0ms" : "160ms",
-      );
-      element.style.setProperty(
-        "--collapsible-panel-original-pointer-events",
-        collapsed ? "none" : "auto",
+      applyHeaderStyleVariables(
+        element,
+        getHeaderStyleVariables({
+          collapsed,
+          collapsedHeight,
+          compactVisible,
+          expandedHeight,
+          prefersReducedMotion: getPrefersReducedMotion(),
+        }),
       );
 
       if (isCompactVisibleRef.current !== compactVisible) {
@@ -135,9 +147,7 @@ export function useCollapsiblePanelHeader<TElement extends HTMLElement>({
         isCollapsedRef.current = true;
         applyHeaderState({ collapsed: true, compactVisible: false });
 
-        const prefersReducedMotion =
-          hasBrowserWindow() &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const prefersReducedMotion = getPrefersReducedMotion();
 
         if (hasBrowserWindow() && !prefersReducedMotion) {
           compactRevealTimeoutRef.current = window.setTimeout(

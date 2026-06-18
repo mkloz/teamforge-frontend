@@ -17,6 +17,7 @@ import {
 } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { buildAppUrl } from "@/shared/lib/app-url";
 import { scrollWindowToTop } from "@/shared/lib/scroll-to-top";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { cn } from "@/shared/lib/utils";
@@ -38,7 +39,9 @@ export function GroupPlanHero({
   const cost = detail.plan ? formatCost(detail.plan) : null;
   const seats = getSeatsLabel(detail);
   const backLink = getGroupPlanDetailBackLink(detail.group.id, search);
-  const groupLink = `${window.location.origin}/groups/${detail.group.id}`;
+  const groupLink = buildAppUrl(
+    `/groups/${encodeURIComponent(detail.group.id)}`,
+  );
 
   const metadata = [
     planTime.full !== "Date TBD" ? planTime.full : "Date TBD",
@@ -119,7 +122,9 @@ function GroupPlanCompactHero({
 }) {
   const imageSrc = getHeroCoverImage(detail);
   const compactImageSrc = imageSrc ? getSizedImageUrl(imageSrc, 640) : null;
-  const groupLink = `${window.location.origin}/groups/${detail.group.id}`;
+  const groupLink = buildAppUrl(
+    `/groups/${encodeURIComponent(detail.group.id)}`,
+  );
 
   return (
     <div

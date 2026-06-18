@@ -13,6 +13,62 @@ import type { AvatarBadgeTone } from "@/shared/components/common/avatar-with-bad
 import type { IconTileTone } from "@/shared/components/ui/icon-tile";
 import type { Notification } from "@/shared/schemas";
 
+interface NotificationTypeConfig {
+  avatarBadgeTone: AvatarBadgeTone;
+  icon: LucideIcon;
+  iconTone: IconTileTone;
+}
+
+function createTypeConfig(
+  avatarBadgeTone: AvatarBadgeTone,
+  icon: LucideIcon,
+  iconTone: IconTileTone,
+): NotificationTypeConfig {
+  return {
+    avatarBadgeTone,
+    icon,
+    iconTone,
+  };
+}
+
+const GROUP_FORMED_TYPE_CONFIG = createTypeConfig("amber", Handshake, "amber");
+const PLAN_TYPE_CONFIG = createTypeConfig("teal", CalendarDays, "teal");
+const GROUP_ACTIVITY_TYPE_CONFIG = createTypeConfig("teal", UsersRound, "teal");
+const MESSAGE_TYPE_CONFIG = createTypeConfig("teal", MessageCircle, "teal");
+const RATING_TYPE_CONFIG = createTypeConfig("amber", Star, "amber");
+const FRIEND_TYPE_CONFIG = createTypeConfig("teal", UserPlus, "teal");
+const ACCOUNT_SECURITY_TYPE_CONFIG = createTypeConfig(
+  "amber",
+  ShieldCheck,
+  "amber",
+);
+const DEFAULT_TYPE_CONFIG = createTypeConfig("muted", Bell, "muted");
+
+const NOTIFICATION_TYPE_CONFIGS: Partial<
+  Record<Notification["type"], NotificationTypeConfig>
+> = {
+  FRIEND_REQUEST: FRIEND_TYPE_CONFIG,
+  FRIEND_ACCEPTED: FRIEND_TYPE_CONFIG,
+  GROUP_FORMED: GROUP_FORMED_TYPE_CONFIG,
+  GROUP_INVITE: GROUP_FORMED_TYPE_CONFIG,
+  GROUP_JOIN_REQUEST: GROUP_ACTIVITY_TYPE_CONFIG,
+  GROUP_JOIN_APPROVED: GROUP_ACTIVITY_TYPE_CONFIG,
+  GROUP_MEMBER_LEFT: GROUP_ACTIVITY_TYPE_CONFIG,
+  GROUP_DISBANDED: GROUP_ACTIVITY_TYPE_CONFIG,
+  PLAN_CREATED: PLAN_TYPE_CONFIG,
+  PLAN_CONFIRMED: PLAN_TYPE_CONFIG,
+  PLAN_UPDATED: PLAN_TYPE_CONFIG,
+  PLAN_PROPOSAL: PLAN_TYPE_CONFIG,
+  PLAN_STARTING_SOON: PLAN_TYPE_CONFIG,
+  PLAN_COMPLETED: PLAN_TYPE_CONFIG,
+  PLAN_CANCELLED: PLAN_TYPE_CONFIG,
+  NEW_MESSAGE: MESSAGE_TYPE_CONFIG,
+  MESSAGE_MENTION: MESSAGE_TYPE_CONFIG,
+  RATING_REQUEST: RATING_TYPE_CONFIG,
+  RATING_RECEIVED: RATING_TYPE_CONFIG,
+  ACCOUNT_SECURITY: ACCOUNT_SECURITY_TYPE_CONFIG,
+};
+
 export function relativeTime(date: string): string {
   const timestamp = new Date(date).getTime();
 
@@ -48,67 +104,7 @@ export function getTypeConfig(type: Notification["type"]): {
   icon: LucideIcon;
   iconTone: IconTileTone;
 } {
-  switch (type) {
-    case "GROUP_FORMED":
-    case "GROUP_INVITE":
-      return {
-        avatarBadgeTone: "amber",
-        icon: Handshake,
-        iconTone: "amber",
-      };
-    case "PLAN_CREATED":
-    case "PLAN_CONFIRMED":
-    case "PLAN_UPDATED":
-    case "PLAN_PROPOSAL":
-    case "PLAN_STARTING_SOON":
-    case "PLAN_COMPLETED":
-    case "PLAN_CANCELLED":
-      return {
-        avatarBadgeTone: "teal",
-        icon: CalendarDays,
-        iconTone: "teal",
-      };
-    case "GROUP_JOIN_REQUEST":
-    case "GROUP_JOIN_APPROVED":
-    case "GROUP_MEMBER_LEFT":
-    case "GROUP_DISBANDED":
-      return {
-        avatarBadgeTone: "teal",
-        icon: UsersRound,
-        iconTone: "teal",
-      };
-    case "NEW_MESSAGE":
-    case "MESSAGE_MENTION":
-      return {
-        avatarBadgeTone: "teal",
-        icon: MessageCircle,
-        iconTone: "teal",
-      };
-    case "RATING_REQUEST":
-    case "RATING_RECEIVED":
-      return {
-        avatarBadgeTone: "amber",
-        icon: Star,
-        iconTone: "amber",
-      };
-    case "FRIEND_REQUEST":
-    case "FRIEND_ACCEPTED":
-      return {
-        avatarBadgeTone: "teal",
-        icon: UserPlus,
-        iconTone: "teal",
-      };
-    case "ACCOUNT_SECURITY":
-      return {
-        avatarBadgeTone: "amber",
-        icon: ShieldCheck,
-        iconTone: "amber",
-      };
-    default:
-      return {
-        avatarBadgeTone: "muted",
-        icon: Bell,
-        iconTone: "muted",
-      };
-  }
+  const config = NOTIFICATION_TYPE_CONFIGS[type] ?? DEFAULT_TYPE_CONFIG;
+
+  return { ...config };
 }

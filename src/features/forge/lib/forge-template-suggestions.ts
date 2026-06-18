@@ -101,6 +101,26 @@ interface ActivityIntentSignals {
 }
 
 type WeightedTraits = Map<TemplateTrait, number>;
+type TraitWeights = readonly (readonly [TemplateTrait, number])[];
+type OceanScoreKey = keyof Pick<
+  User,
+  "oceanA" | "oceanC" | "oceanE" | "oceanN" | "oceanO"
+>;
+
+interface PersonalityTraitRule {
+  fallbackTraits: TraitWeights;
+  preferredTraits: TraitWeights;
+  preferredValue: string;
+}
+
+interface OceanTraitRule {
+  highThreshold: number;
+  highTraits: TraitWeights;
+  lowThreshold: number;
+  lowTraits: TraitWeights;
+  score: OceanScoreKey;
+}
+
 const TEMPLATE_TRAIT_VALUES: TemplateTrait[] = [
   "active",
   "calm",
@@ -114,6 +134,126 @@ const TEMPLATE_TRAIT_VALUES: TemplateTrait[] = [
   "small-group",
   "social",
   "structured",
+];
+const PERSONALITY_TYPE_TRAIT_RULES: readonly PersonalityTraitRule[] = [
+  {
+    fallbackTraits: [
+      ["small-group", 0.75],
+      ["calm", 0.65],
+      ["focused", 0.45],
+    ],
+    preferredTraits: [
+      ["social", 0.75],
+      ["outgoing", 0.65],
+    ],
+    preferredValue: "E",
+  },
+  {
+    fallbackTraits: [
+      ["practical", 0.65],
+      ["structured", 0.45],
+    ],
+    preferredTraits: [
+      ["creative", 0.65],
+      ["exploratory", 0.55],
+    ],
+    preferredValue: "N",
+  },
+  {
+    fallbackTraits: [
+      ["focused", 0.65],
+      ["practical", 0.55],
+    ],
+    preferredTraits: [
+      ["helpful", 0.65],
+      ["social", 0.55],
+    ],
+    preferredValue: "F",
+  },
+  {
+    fallbackTraits: [
+      ["exploratory", 0.75],
+      ["creative", 0.55],
+    ],
+    preferredTraits: [
+      ["structured", 0.75],
+      ["focused", 0.55],
+    ],
+    preferredValue: "J",
+  },
+];
+const OCEAN_TRAIT_RULES: readonly OceanTraitRule[] = [
+  {
+    highThreshold: 70,
+    highTraits: [
+      ["creative", 1],
+      ["exploratory", 0.9],
+    ],
+    lowThreshold: 35,
+    lowTraits: [
+      ["practical", 0.75],
+      ["structured", 0.55],
+    ],
+    score: "oceanO",
+  },
+  {
+    highThreshold: 70,
+    highTraits: [
+      ["structured", 1],
+      ["focused", 0.9],
+      ["practical", 0.65],
+    ],
+    lowThreshold: 35,
+    lowTraits: [
+      ["exploratory", 0.6],
+      ["creative", 0.45],
+    ],
+    score: "oceanC",
+  },
+  {
+    highThreshold: 65,
+    highTraits: [
+      ["social", 1],
+      ["outgoing", 0.9],
+      ["active", 0.45],
+    ],
+    lowThreshold: 40,
+    lowTraits: [
+      ["small-group", 1],
+      ["calm", 0.85],
+      ["focused", 0.5],
+    ],
+    score: "oceanE",
+  },
+  {
+    highThreshold: 70,
+    highTraits: [
+      ["helpful", 1],
+      ["social", 0.55],
+      ["calm", 0.35],
+    ],
+    lowThreshold: 35,
+    lowTraits: [
+      ["focused", 0.55],
+      ["practical", 0.45],
+    ],
+    score: "oceanA",
+  },
+  {
+    highThreshold: 65,
+    highTraits: [
+      ["calm", 0.95],
+      ["structured", 0.7],
+      ["small-group", 0.45],
+    ],
+    lowThreshold: 35,
+    lowTraits: [
+      ["active", 0.55],
+      ["outgoing", 0.45],
+      ["exploratory", 0.35],
+    ],
+    score: "oceanN",
+  },
 ];
 const TEMPLATE_COVER_PRESET_IDS = PLAN_COVER_PRESETS.map((preset) => preset.id);
 const PLAN_COVER_PRESET_ID_SET = new Set<string>(PLAN_COVER_PRESET_IDS);
@@ -191,6 +331,12 @@ function addWeightedTrait(
   weight: number,
 ) {
   traits.set(trait, Math.max(traits.get(trait) ?? 0, weight));
+}
+
+function addWeightedTraits(traits: WeightedTraits, traitWeights: TraitWeights) {
+  for (const [trait, weight] of traitWeights) {
+    addWeightedTrait(traits, trait, weight);
+  }
 }
 
 function getCategory(selectedActivity: string | null) {
@@ -413,104 +559,58 @@ function getInterestMatches(
   return Math.min(score, 7);
 }
 
-function getPersonalityTraits(user: User | undefined) {
+function getPersonalityTraits(user: User | undefined): WeightedTraits {
   const traits: WeightedTraits = new Map();
-  const type = user?.personalityType;
-
-  if (type) {
-    const [energy, information, decision, structure] = type;
-
-    if (energy === "E") {
-      addWeightedTrait(traits, "social", 0.75);
-      addWeightedTrait(traits, "outgoing", 0.65);
-    } else {
-      addWeightedTrait(traits, "small-group", 0.75);
-      addWeightedTrait(traits, "calm", 0.65);
-      addWeightedTrait(traits, "focused", 0.45);
-    }
-
-    if (information === "N") {
-      addWeightedTrait(traits, "creative", 0.65);
-      addWeightedTrait(traits, "exploratory", 0.55);
-    } else {
-      addWeightedTrait(traits, "practical", 0.65);
-      addWeightedTrait(traits, "structured", 0.45);
-    }
-
-    if (decision === "F") {
-      addWeightedTrait(traits, "helpful", 0.65);
-      addWeightedTrait(traits, "social", 0.55);
-    } else {
-      addWeightedTrait(traits, "focused", 0.65);
-      addWeightedTrait(traits, "practical", 0.55);
-    }
-
-    if (structure === "J") {
-      addWeightedTrait(traits, "structured", 0.75);
-      addWeightedTrait(traits, "focused", 0.55);
-    } else {
-      addWeightedTrait(traits, "exploratory", 0.75);
-      addWeightedTrait(traits, "creative", 0.55);
-    }
-  }
-
-  if (typeof user?.oceanO === "number") {
-    if (user.oceanO >= 70) {
-      addWeightedTrait(traits, "creative", 1);
-      addWeightedTrait(traits, "exploratory", 0.9);
-    } else if (user.oceanO <= 35) {
-      addWeightedTrait(traits, "practical", 0.75);
-      addWeightedTrait(traits, "structured", 0.55);
-    }
-  }
-
-  if (typeof user?.oceanC === "number") {
-    if (user.oceanC >= 70) {
-      addWeightedTrait(traits, "structured", 1);
-      addWeightedTrait(traits, "focused", 0.9);
-      addWeightedTrait(traits, "practical", 0.65);
-    } else if (user.oceanC <= 35) {
-      addWeightedTrait(traits, "exploratory", 0.6);
-      addWeightedTrait(traits, "creative", 0.45);
-    }
-  }
-
-  if (typeof user?.oceanE === "number") {
-    if (user.oceanE >= 65) {
-      addWeightedTrait(traits, "social", 1);
-      addWeightedTrait(traits, "outgoing", 0.9);
-      addWeightedTrait(traits, "active", 0.45);
-    } else if (user.oceanE <= 40) {
-      addWeightedTrait(traits, "small-group", 1);
-      addWeightedTrait(traits, "calm", 0.85);
-      addWeightedTrait(traits, "focused", 0.5);
-    }
-  }
-
-  if (typeof user?.oceanA === "number") {
-    if (user.oceanA >= 70) {
-      addWeightedTrait(traits, "helpful", 1);
-      addWeightedTrait(traits, "social", 0.55);
-      addWeightedTrait(traits, "calm", 0.35);
-    } else if (user.oceanA <= 35) {
-      addWeightedTrait(traits, "focused", 0.55);
-      addWeightedTrait(traits, "practical", 0.45);
-    }
-  }
-
-  if (typeof user?.oceanN === "number") {
-    if (user.oceanN >= 65) {
-      addWeightedTrait(traits, "calm", 0.95);
-      addWeightedTrait(traits, "structured", 0.7);
-      addWeightedTrait(traits, "small-group", 0.45);
-    } else if (user.oceanN <= 35) {
-      addWeightedTrait(traits, "active", 0.55);
-      addWeightedTrait(traits, "outgoing", 0.45);
-      addWeightedTrait(traits, "exploratory", 0.35);
-    }
-  }
+  applyPersonalityTypeTraits(traits, user?.personalityType);
+  applyOceanTraits(traits, user);
 
   return traits;
+}
+
+function applyPersonalityTypeTraits(
+  traits: WeightedTraits,
+  personalityType: string | null | undefined,
+): void {
+  if (!personalityType) {
+    return;
+  }
+
+  PERSONALITY_TYPE_TRAIT_RULES.forEach((rule, index) => {
+    addWeightedTraits(
+      traits,
+      personalityType[index] === rule.preferredValue
+        ? rule.preferredTraits
+        : rule.fallbackTraits,
+    );
+  });
+}
+
+function applyOceanTraits(
+  traits: WeightedTraits,
+  user: User | undefined,
+): void {
+  for (const rule of OCEAN_TRAIT_RULES) {
+    applyOceanTraitRule(traits, user?.[rule.score], rule);
+  }
+}
+
+function applyOceanTraitRule(
+  traits: WeightedTraits,
+  score: number | null | undefined,
+  rule: OceanTraitRule,
+): void {
+  if (typeof score !== "number") {
+    return;
+  }
+
+  if (score >= rule.highThreshold) {
+    addWeightedTraits(traits, rule.highTraits);
+    return;
+  }
+
+  if (score <= rule.lowThreshold) {
+    addWeightedTraits(traits, rule.lowTraits);
+  }
 }
 
 function getTraitScore(

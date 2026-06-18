@@ -14,6 +14,10 @@ import {
   ACTIVITY_CHATS_QUERY_KEY,
   ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
 } from "@/features/activity/api/activity-query-keys";
+import {
+  applyMappedMessageCacheUpdate,
+  applyMessageCacheUpdate,
+} from "@/features/activity/api/message-actions/message-cache-commit";
 import { recoverMessageMutationCaches } from "@/features/activity/api/message-actions/message-mutation-recovery";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import {
@@ -62,12 +66,17 @@ export const ActivityMessageMutationActions = {
         );
 
         if (cachedMessage) {
-          ActivityMessageCache.replace(chatId, messageId, {
-            ...cachedMessage,
-            content,
-            updatedAt: new Date().toISOString(),
+          applyMessageCacheUpdate({
+            chatId,
+            context,
+            message: {
+              ...cachedMessage,
+              content,
+              updatedAt: new Date().toISOString(),
+            },
+            syncPinned: false,
+            targetMessageId: messageId,
           });
-          ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
         }
 
         const updatedMessageResult = await ActivityApi.updateMessage(
@@ -85,14 +94,16 @@ export const ActivityMessageMutationActions = {
           });
           throw error;
         });
-        const mappedMessage = context.mapMessages(
-          [updatedMessageResult.data],
+        const mappedMessage = applyMappedMessageCacheUpdate({
+          chatId,
+          context,
+          currentUserId: currentUser.id,
           participants,
-          currentUser.id,
-        )[0];
+          rawMessage: updatedMessageResult.data,
+          syncPinned: false,
+          targetMessageId: messageId,
+        });
 
-        ActivityMessageCache.replace(chatId, messageId, mappedMessage);
-        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
         if (mappedMessage.isSaved) {
           await appQueryClient.invalidateQueries({
             queryKey: ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
@@ -202,9 +213,13 @@ export const ActivityMessageMutationActions = {
           message: baseMessage,
         });
 
-        ActivityMessageCache.replace(chatId, message.id, optimisticMessage);
-        context.syncPinnedMessage(chatId, optimisticMessage);
-        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+        applyMessageCacheUpdate({
+          chatId,
+          context,
+          message: optimisticMessage,
+          syncPinned: true,
+          targetMessageId: message.id,
+        });
 
         const updatedMessage = await (hasReaction
           ? ActivityApi.removeReaction(chatId, message.id, emoji)
@@ -217,15 +232,16 @@ export const ActivityMessageMutationActions = {
           });
           throw error;
         });
-        const mappedMessage = context.mapMessages(
-          [updatedMessage],
+        const mappedMessage = applyMappedMessageCacheUpdate({
+          chatId,
+          context,
+          currentUserId: currentUser.id,
           participants,
-          currentUser.id,
-        )[0];
+          rawMessage: updatedMessage,
+          syncPinned: true,
+          targetMessageId: message.id,
+        });
 
-        ActivityMessageCache.replace(chatId, message.id, mappedMessage);
-        context.syncPinnedMessage(chatId, mappedMessage);
-        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
         return mappedMessage;
       },
     );
@@ -263,9 +279,13 @@ export const ActivityMessageMutationActions = {
           isSaved: !isSaved,
         };
 
-        ActivityMessageCache.replace(chatId, message.id, optimisticMessage);
-        context.syncPinnedMessage(chatId, optimisticMessage);
-        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+        applyMessageCacheUpdate({
+          chatId,
+          context,
+          message: optimisticMessage,
+          syncPinned: true,
+          targetMessageId: message.id,
+        });
 
         const updatedMessage = await (isSaved
           ? ActivityApi.unsaveMessage(chatId, message.id)
@@ -279,15 +299,16 @@ export const ActivityMessageMutationActions = {
           });
           throw error;
         });
-        const mappedMessage = context.mapMessages(
-          [updatedMessage],
+        const mappedMessage = applyMappedMessageCacheUpdate({
+          chatId,
+          context,
+          currentUserId: currentUser.id,
           participants,
-          currentUser.id,
-        )[0];
+          rawMessage: updatedMessage,
+          syncPinned: true,
+          targetMessageId: message.id,
+        });
 
-        ActivityMessageCache.replace(chatId, message.id, mappedMessage);
-        context.syncPinnedMessage(chatId, mappedMessage);
-        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
         await appQueryClient.invalidateQueries({
           queryKey: ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
         });

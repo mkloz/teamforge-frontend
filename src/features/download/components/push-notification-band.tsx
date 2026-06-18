@@ -10,6 +10,14 @@ const DOWNLOAD_AUTH_RETURN_TO = "/download";
 
 type PushState = ReturnType<typeof useWebPushSubscription>;
 
+interface PushReadinessState {
+  canTurnOn: boolean;
+  iconTone: IconTileTone;
+  isActionDisabled: boolean;
+  isBusy: boolean;
+  isDenied: boolean;
+}
+
 function getPushDeniedHelp(): string {
   if (typeof navigator === "undefined") {
     return "Open your browser's site settings and allow notifications for TeamForge.";
@@ -88,10 +96,7 @@ function getPushCopy(push: PushState) {
   };
 }
 
-export function PushNotificationBand() {
-  const push = useWebPushSubscription();
-  const copy = getPushCopy(push);
-  const Icon = push.isSubscribed ? BellRing : Bell;
+function getPushReadiness(push: PushState): PushReadinessState {
   const isBusy =
     push.isTurningOn || push.isTurningOff || push.isCheckingBrowserSubscription;
   const canTurnOn =
@@ -108,6 +113,21 @@ export function PushNotificationBand() {
       ? "amber"
       : "muted";
 
+  return {
+    canTurnOn,
+    iconTone,
+    isActionDisabled,
+    isBusy,
+    isDenied,
+  };
+}
+
+export function PushNotificationBand() {
+  const push = useWebPushSubscription();
+  const copy = getPushCopy(push);
+  const readiness = getPushReadiness(push);
+  const Icon = push.isSubscribed ? BellRing : Bell;
+
   return (
     <div className="border-primary/12 border-y bg-primary/5">
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-8 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
@@ -116,7 +136,7 @@ export function PushNotificationBand() {
             icon={Icon}
             shape="circle"
             size="lg"
-            tone={iconTone}
+            tone={readiness.iconTone}
             className={push.isSubscribed ? "size-11 bg-primary/12" : "size-11"}
             iconClassName="size-5"
           />
@@ -125,66 +145,89 @@ export function PushNotificationBand() {
             <p className="mt-0.5 max-w-lg text-pretty text-slate-muted text-sm leading-relaxed">
               {copy.body}
             </p>
-            {isDenied && (
-              <p className="mt-2 flex items-start gap-1.5 text-slate-muted text-sm">
-                <ExternalLink
-                  size={13}
-                  className="mt-0.5 shrink-0 text-spark-amber"
-                  aria-hidden="true"
-                />
-                <span>{getPushDeniedHelp()}</span>
-              </p>
-            )}
+            <PushDeniedHelp isDenied={readiness.isDenied} />
           </div>
         </div>
 
         <div className="shrink-0">
-          {!push.isAuthenticated ? (
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-              className="min-h-11 lg:min-h-9"
-            >
-              <Link
-                {...buildAuthRouteNavigation(
-                  "/auth/login",
-                  DOWNLOAD_AUTH_RETURN_TO,
-                )}
-              >
-                Sign in to enable alerts
-              </Link>
-            </Button>
-          ) : push.isSubscribed ? (
-            <Button
-              variant="outline"
-              size="sm"
-              className="min-h-11 lg:min-h-9"
-              disabled={!push.isOnline || isBusy}
-              loading={push.isTurningOff}
-              onClick={() => {
-                void push.turnOff("download");
-              }}
-            >
-              <BellOff size={15} strokeWidth={2} aria-hidden="true" />
-              Turn off alerts
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              className="min-h-11 text-white lg:min-h-9"
-              disabled={!canTurnOn || isActionDisabled}
-              loading={push.isTurningOn}
-              onClick={() => {
-                void push.turnOn("download");
-              }}
-            >
-              <BellRing size={15} strokeWidth={2} aria-hidden="true" />
-              {isDenied ? "Blocked in browser" : "Turn on alerts"}
-            </Button>
-          )}
+          <PushNotificationCta push={push} readiness={readiness} />
         </div>
       </div>
     </div>
+  );
+}
+
+function PushDeniedHelp({ isDenied }: { isDenied: boolean }) {
+  if (!isDenied) {
+    return null;
+  }
+
+  return (
+    <p className="mt-2 flex items-start gap-1.5 text-slate-muted text-sm">
+      <ExternalLink
+        size={13}
+        className="mt-0.5 shrink-0 text-spark-amber"
+        aria-hidden="true"
+      />
+      <span>{getPushDeniedHelp()}</span>
+    </p>
+  );
+}
+
+function PushNotificationCta({
+  push,
+  readiness,
+}: {
+  push: PushState;
+  readiness: PushReadinessState;
+}) {
+  if (!push.isAuthenticated) {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        asChild
+        className="min-h-11 lg:min-h-9"
+      >
+        <Link
+          {...buildAuthRouteNavigation("/auth/login", DOWNLOAD_AUTH_RETURN_TO)}
+        >
+          Sign in to enable alerts
+        </Link>
+      </Button>
+    );
+  }
+
+  if (push.isSubscribed) {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        className="min-h-11 lg:min-h-9"
+        disabled={!push.isOnline || readiness.isBusy}
+        loading={push.isTurningOff}
+        onClick={() => {
+          void push.turnOff("download");
+        }}
+      >
+        <BellOff size={15} strokeWidth={2} aria-hidden="true" />
+        Turn off alerts
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      size="sm"
+      className="min-h-11 text-white lg:min-h-9"
+      disabled={!readiness.canTurnOn || readiness.isActionDisabled}
+      loading={push.isTurningOn}
+      onClick={() => {
+        void push.turnOn("download");
+      }}
+    >
+      <BellRing size={15} strokeWidth={2} aria-hidden="true" />
+      {readiness.isDenied ? "Blocked in browser" : "Turn on alerts"}
+    </Button>
   );
 }

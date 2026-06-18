@@ -1,29 +1,21 @@
 import { useNavigate } from "@tanstack/react-router";
-import { CheckCheck, RefreshCw, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { EmptyNotificationsVisual } from "@/features/notifications/assets/empty-notifications";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { resolveNotificationDestination } from "@/features/notifications/lib/notification-destination";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
-import { Button } from "@/shared/components/ui/button";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
-import { NotificationDetail } from "./notification-detail";
-import { NotificationsDrawerSkeleton } from "./notifications-drawer-skeleton";
-import { NotificationsSection } from "./notifications-section";
+import {
+  NotificationsDrawerBody,
+  NotificationsDrawerHeader,
+} from "./notifications-drawer-view";
 
 interface NotificationsDrawerProps {
   open: boolean;
@@ -161,164 +153,41 @@ export function NotificationsDrawer({
           <DrawerTitle>Notifications</DrawerTitle>
         </DrawerHeader>
 
-        {/* Header */}
-        <div
-          className={cn(
-            "flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 pt-4",
-            selectedNotification
-              ? "min-h-16 pb-2"
-              : "min-h-18 border-border border-b pb-4",
-          )}
-        >
-          <div className="min-w-0 flex-1">
-            <h2 className="font-bold text-ink text-lg leading-tight tracking-tight">
-              Notifications
-            </h2>
-            <p className="mt-1 text-slate-muted text-xs">
-              {count > 0
-                ? `${count} unread ${count === 1 ? "update" : "updates"}`
-                : "All caught up"}
-            </p>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {!selectedNotification ? (
-              <>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="subtle"
-                      size="icon"
-                      onClick={() => setMarkAllReadDialogOpen(true)}
-                      disabled={!isOnline || count === 0 || isMarkingAllRead}
-                      loading={isMarkingAllRead}
-                      aria-label="Mark all notifications as read"
-                      className="size-10 p-0"
-                    >
-                      <CheckCheck
-                        className="size-4 shrink-0"
-                        aria-hidden="true"
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">
-                    {isOnline
-                      ? "Mark all notifications as read"
-                      : "Reconnect to update read state"}
-                  </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="accentGhost"
-                      size="icon"
-                      onClick={handleRefreshNotifications}
-                      disabled={!isOnline || isRefreshing}
-                      loading={isRefreshing}
-                      aria-label="Refresh notifications"
-                      className="size-10 p-0"
-                    >
-                      <RefreshCw
-                        className="size-4 shrink-0"
-                        aria-hidden="true"
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">
-                    {isOnline
-                      ? "Refresh notifications"
-                      : "Reconnect to refresh"}
-                  </TooltipContent>
-                </Tooltip>
-              </>
-            ) : null}
-            <ActionDialog
-              cancelLabel="Not now"
-              confirmLabel={
-                isMarkingAllRead ? "Marking..." : "Mark all as read"
-              }
-              description="This clears the unread badges from every notification in the drawer."
-              details={[
-                "The notifications stay in your history.",
-                "New updates will still appear as unread.",
-              ]}
-              loading={isMarkingAllRead}
-              disabled={!isOnline || count === 0}
-              onConfirm={markAllReadAsync}
-              onOpenChange={setMarkAllReadDialogOpen}
-              open={markAllReadDialogOpen}
-              title="Mark every notification as read?"
-              tone="info"
-            />
-            <Button
-              variant="accentGhost"
-              size="icon"
-              onClick={onClose}
-              aria-label="Close notifications"
-              className="size-10 p-0"
-            >
-              <X
-                className="size-5 shrink-0"
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-            </Button>
-          </div>
-        </div>
+        <NotificationsDrawerHeader
+          count={count}
+          isMarkingAllRead={isMarkingAllRead}
+          isOnline={isOnline}
+          isRefreshing={isRefreshing}
+          markAllReadDialogOpen={markAllReadDialogOpen}
+          selectedNotification={selectedNotification}
+          onClose={onClose}
+          onMarkAllRead={markAllReadAsync}
+          onMarkAllReadDialogOpenChange={setMarkAllReadDialogOpen}
+          onRefresh={handleRefreshNotifications}
+        />
 
         {/* Scrollable list */}
         <div
           ref={scrollRef}
           className="flex-1 overflow-y-auto overscroll-contain"
         >
-          {isLoading ? (
-            <NotificationsDrawerSkeleton />
-          ) : items.length === 0 ? (
-            <div className="flex min-h-full flex-col items-center justify-center px-6 py-14 text-center sm:py-16">
-              <EmptyNotificationsVisual className="h-30 w-auto text-foreground" />
-              <div className="mt-6 max-w-68">
-                <p className="font-bold text-base text-ink leading-tight">
-                  Nothing needs your attention
-                </p>
-                <p className="mt-2 text-muted-foreground text-sm leading-relaxed">
-                  We'll keep this quiet until there's something useful to check.
-                </p>
-              </div>
-            </div>
-          ) : selectedNotification ? (
-            <NotificationDetail
-              item={selectedNotification}
-              isTogglingRead={
-                pendingNotificationId === selectedNotification.id &&
-                (pendingDetailAction === "mark-read" ||
-                  pendingDetailAction === "mark-unread")
-              }
-              isOpening={
-                pendingNotificationId === selectedNotification.id &&
-                pendingDetailAction === "open"
-              }
-              isReadActionDisabled={!isOnline}
-              onBack={() => setSelectedNotificationId(null)}
-              onToggleRead={handleToggleSelectedNotificationRead}
-              onOpen={handleOpenNotification}
-            />
-          ) : (
-            notificationGroups.map((group) => (
-              <NotificationsSection
-                key={group.key}
-                label={group.label}
-                items={group.items}
-                pendingNotificationId={
-                  pendingDetailAction ? pendingNotificationId : null
-                }
-                pendingReadToggleNotificationId={
-                  pendingReadToggleNotificationId
-                }
-                isReadActionDisabled={!isOnline}
-                onSelect={handleSelectNotification}
-                onToggleRead={handleToggleNotificationRead}
-              />
-            ))
-          )}
+          <NotificationsDrawerBody
+            isLoading={isLoading}
+            isOnline={isOnline}
+            items={items}
+            notificationGroups={notificationGroups}
+            pendingDetailAction={pendingDetailAction}
+            pendingNotificationId={pendingNotificationId}
+            pendingReadToggleNotificationId={pendingReadToggleNotificationId}
+            selectedNotification={selectedNotification}
+            onBackToList={() => setSelectedNotificationId(null)}
+            onOpenNotification={handleOpenNotification}
+            onSelectNotification={handleSelectNotification}
+            onToggleNotificationRead={handleToggleNotificationRead}
+            onToggleSelectedNotificationRead={
+              handleToggleSelectedNotificationRead
+            }
+          />
         </div>
       </DrawerContent>
     </Drawer>

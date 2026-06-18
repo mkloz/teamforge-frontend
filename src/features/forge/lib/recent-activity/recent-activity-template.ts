@@ -10,8 +10,28 @@ import {
   isManagedUploadUrl,
 } from "@/shared/validators/url.validator";
 
-function getPlanCostAmount(activity: RecentForgeActivity) {
-  const costAmount = activity.group?.plan?.costAmount;
+type RecentActivityGroup = NonNullable<RecentForgeActivity["group"]>;
+type RecentActivityPlan = NonNullable<RecentActivityGroup["plan"]>;
+type RecentActivityTemplatePlanFields = Pick<
+  ForgePlanTemplate,
+  | "coverImage"
+  | "locationType"
+  | "planCost"
+  | "planCostAmount"
+  | "planCostDetails"
+  | "planDescription"
+  | "planLocation"
+  | "planLocationLat"
+  | "planLocationLng"
+  | "planName"
+>;
+type RecentActivityTemplateGroupFields = Pick<
+  ForgePlanTemplate,
+  "avatarImage" | "fixedSize" | "groupDescription" | "groupName"
+>;
+
+function getPlanCostAmount(plan: RecentActivityPlan | null | undefined) {
+  const costAmount = plan?.costAmount;
 
   return typeof costAmount === "number" ? String(costAmount) : "";
 }
@@ -26,34 +46,67 @@ function getReusableAvatarImage(value?: string | null) {
   return typeof value === "string" && isManagedUploadUrl(value) ? value : null;
 }
 
-export function buildRecentActivityTemplate(
-  activity: RecentForgeActivity,
-): ForgePlanTemplate {
-  const plan = activity.group?.plan;
-  const group = activity.group;
+function getTemplateCategoryLabel(activity: RecentForgeActivity) {
   const categoryId = getRecentActivityCategoryId(activity);
-  const categoryLabel = getRecentActivityCategoryLabel(
-    categoryId,
-    activity.title,
-  );
 
+  return getRecentActivityCategoryLabel(categoryId, activity.title);
+}
+
+function getTemplatePlanFields(
+  plan: RecentActivityPlan | null | undefined,
+  activityTitle: string,
+): RecentActivityTemplatePlanFields {
   return {
-    selectedActivity: categoryLabel,
-    planName: plan?.title ?? normalizeRecentActivityTitle(activity.title),
+    planName: plan?.title ?? normalizeRecentActivityTitle(activityTitle),
     planDescription: plan?.description ?? "",
     planLocation: plan?.location ?? "",
     planLocationLat: plan?.locationLat ?? null,
     planLocationLng: plan?.locationLng ?? null,
     locationType: plan?.locationMode ?? "TBD",
     planCost: plan?.cost ?? "FREE",
-    planCostAmount: getPlanCostAmount(activity),
+    planCostAmount: getPlanCostAmount(plan),
     planCostDetails: plan?.costDetails ?? "",
-    forgeMode: activity.forgeMode,
+    coverImage: getReusableCoverImage(plan?.coverImage),
+  };
+}
+
+function getTemplateGroupFields(
+  group: RecentActivityGroup | null | undefined,
+): RecentActivityTemplateGroupFields {
+  return {
     fixedSize: group?.maxMembers ?? null,
-    visibility: activity.visibility,
     groupName: group?.name ?? "",
     groupDescription: group?.description ?? "",
-    coverImage: getReusableCoverImage(plan?.coverImage),
     avatarImage: getReusableAvatarImage(group?.avatar),
+  };
+}
+
+export function buildRecentActivityTemplate(
+  activity: RecentForgeActivity,
+): ForgePlanTemplate {
+  const plan = activity.group?.plan;
+  const group = activity.group;
+  const categoryLabel = getTemplateCategoryLabel(activity);
+  const planFields = getTemplatePlanFields(plan, activity.title);
+  const groupFields = getTemplateGroupFields(group);
+
+  return {
+    selectedActivity: categoryLabel,
+    planName: planFields.planName,
+    planDescription: planFields.planDescription,
+    planLocation: planFields.planLocation,
+    planLocationLat: planFields.planLocationLat,
+    planLocationLng: planFields.planLocationLng,
+    locationType: planFields.locationType,
+    planCost: planFields.planCost,
+    planCostAmount: planFields.planCostAmount,
+    planCostDetails: planFields.planCostDetails,
+    forgeMode: activity.forgeMode,
+    fixedSize: groupFields.fixedSize,
+    visibility: activity.visibility,
+    groupName: groupFields.groupName,
+    groupDescription: groupFields.groupDescription,
+    coverImage: planFields.coverImage,
+    avatarImage: groupFields.avatarImage,
   };
 }

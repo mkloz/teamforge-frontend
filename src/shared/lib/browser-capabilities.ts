@@ -1,3 +1,4 @@
+import { getAppBaseUrl } from "@/shared/lib/app-url";
 import {
   hasBrowserNavigator,
   hasBrowserWindow,
@@ -15,20 +16,16 @@ export type BrowserShareResult =
   | "dismissed"
   | "failed";
 
-export function getCurrentBrowserUrl(fallback = "https://teamforge.app") {
+export function getCurrentBrowserUrl(fallback?: string) {
   if (!hasBrowserWindow()) {
-    return fallback;
+    return getAppBaseUrl(fallback);
   }
 
   return window.location.href;
 }
 
-export function getCurrentBrowserOrigin(fallback = "https://teamforge.app") {
-  if (!hasBrowserWindow()) {
-    return fallback;
-  }
-
-  return window.location.origin;
+export function getCurrentBrowserOrigin(fallback?: string) {
+  return getAppBaseUrl(fallback);
 }
 
 export function canShareBrowserData(shareData: BrowserShareData) {

@@ -9,50 +9,21 @@ import {
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
-import type { FriendshipApi, User } from "@/shared/schemas";
+import type { User } from "@/shared/schemas";
+
+import {
+  getConnectActionCopy,
+  getConnectDisabled,
+  getConnectLabel,
+  getDisplayFriendship,
+  getMessageChatId,
+  isIncomingRequest,
+  type PublicProfileOfflineAction,
+  REMOVE_CONNECTION_OFFLINE_ACTION,
+  WITHDRAW_CONNECTION_REQUEST_OFFLINE_ACTION,
+} from "./public-profile-action-state";
 
 type PublicProfileActionUser = Pick<User, "id">;
-type FriendshipLabelState = Pick<FriendshipApi, "receiverId" | "status">;
-
-function isIncomingRequest(
-  friendship: FriendshipLabelState | null | undefined,
-  currentUserId: string | null,
-) {
-  return (
-    friendship?.status === "PENDING" && friendship.receiverId === currentUserId
-  );
-}
-
-function getConnectLabel(
-  friendship: FriendshipLabelState | null | undefined,
-  currentUserId: string | null,
-) {
-  if (friendship?.status === "ACCEPTED") {
-    return "Connected";
-  }
-
-  if (isIncomingRequest(friendship, currentUserId)) {
-    return "Accept";
-  }
-
-  if (friendship?.status === "PENDING") {
-    return "Requested";
-  }
-
-  if (friendship?.status === "BLOCKED") {
-    return "Blocked";
-  }
-
-  return "Connect";
-}
-
-function getMessageChatId(friendship: FriendshipApi | null | undefined) {
-  if (friendship?.status !== "ACCEPTED") {
-    return null;
-  }
-
-  return friendship.privateChat?.id ?? friendship.privateChatId;
-}
 
 export function usePublicProfileActions(user: PublicProfileActionUser) {
   const currentUserQuery = useCurrentUserQuery();
@@ -68,12 +39,11 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
   const friendship = friendshipQuery.data ?? null;
   const incomingRequest = isIncomingRequest(friendship, currentUserId);
   const messageChatId = getMessageChatId(friendship);
+  const connectActionCopy = getConnectActionCopy(incomingRequest);
 
   const connectMutation = useMutation({
     meta: {
-      errorToastMessage: incomingRequest
-        ? "We couldn't accept that connection right now."
-        : "We couldn't send that connection request right now.",
+      errorToastMessage: connectActionCopy.errorToastMessage,
     },
     mutationKey: ["profile", "connect", user.id],
     mutationFn: () =>
@@ -94,38 +64,30 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
     },
   });
 
-  const displayFriendship: FriendshipLabelState | null =
-    connectMutation.isPending && currentUserId
-      ? incomingRequest
-        ? { receiverId: currentUserId, status: "ACCEPTED" }
-        : { receiverId: user.id, status: "PENDING" }
-      : friendship || null;
+  const displayFriendship = getDisplayFriendship({
+    connectPending: connectMutation.isPending,
+    currentUserId,
+    friendship,
+    incomingRequest,
+    userId: user.id,
+  });
   const connectLabel = getConnectLabel(displayFriendship, currentUserId);
-  const connectDisabled =
-    !currentUserId ||
-    !isOnline ||
-    currentUserQuery.isLoading ||
-    connectMutation.isPending ||
-    isViewerProfile ||
-    friendshipQuery.isLoading ||
-    displayFriendship?.status === "ACCEPTED" ||
-    (displayFriendship?.status === "PENDING" && !incomingRequest) ||
-    displayFriendship?.status === "BLOCKED";
+  const connectDisabled = getConnectDisabled({
+    connectPending: connectMutation.isPending,
+    currentUserId,
+    currentUserLoading: currentUserQuery.isLoading,
+    displayFriendship,
+    friendshipLoading: friendshipQuery.isLoading,
+    incomingRequest,
+    isOnline,
+    isViewerProfile,
+  });
   const handleConnect = () => {
-    if (
-      guardOfflineAction({
-        id: incomingRequest
-          ? "profile-accept-friend-request-offline"
-          : "profile-send-friend-request-offline",
-        description: incomingRequest
-          ? "Reconnect before accepting connection requests."
-          : "Reconnect before sending connection requests.",
-      })
-    ) {
-      return;
-    }
-
-    connectMutation.mutate();
+    runGuardedProfileAction(
+      guardOfflineAction,
+      connectActionCopy.offlineAction,
+      () => connectMutation.mutate(),
+    );
   };
 
   const unfriendMutation = useMutation({
@@ -148,16 +110,11 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
   });
 
   const handleUnfriend = () => {
-    if (
-      guardOfflineAction({
-        id: "profile-remove-friend-offline",
-        description: "Reconnect before removing connections.",
-      })
-    ) {
-      return;
-    }
-
-    unfriendMutation.mutate();
+    runGuardedProfileAction(
+      guardOfflineAction,
+      REMOVE_CONNECTION_OFFLINE_ACTION,
+      () => unfriendMutation.mutate(),
+    );
   };
 
   const withdrawMutation = useMutation({
@@ -181,16 +138,11 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
   });
 
   const handleWithdraw = () => {
-    if (
-      guardOfflineAction({
-        id: "profile-withdraw-friend-request-offline",
-        description: "Reconnect before canceling connection requests.",
-      })
-    ) {
-      return;
-    }
-
-    withdrawMutation.mutate();
+    runGuardedProfileAction(
+      guardOfflineAction,
+      WITHDRAW_CONNECTION_REQUEST_OFFLINE_ACTION,
+      () => withdrawMutation.mutate(),
+    );
   };
 
   return {
@@ -207,4 +159,16 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
     onWithdraw: handleWithdraw,
     isViewerProfile,
   };
+}
+
+function runGuardedProfileAction(
+  guardOfflineAction: (action: PublicProfileOfflineAction) => boolean,
+  offlineAction: PublicProfileOfflineAction,
+  action: () => void,
+) {
+  if (guardOfflineAction(offlineAction)) {
+    return;
+  }
+
+  action();
 }

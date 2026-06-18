@@ -26,6 +26,14 @@ interface MessageFooterProps {
   reactionPlaceholderEmojis?: readonly string[];
 }
 
+interface MessageFooterViewState {
+  hasOnlyVisualMedia: boolean;
+  hasReactionContent: boolean;
+  isFailedOwnMessage: boolean;
+  shouldFloatMetadata: boolean;
+  visibleReactionPlaceholderEmojis: string[];
+}
+
 export const MessageFooter = memo(
   ({
     attachments,
@@ -44,88 +52,220 @@ export const MessageFooter = memo(
     onToggleReaction,
     reactionPlaceholderEmojis = [],
   }: MessageFooterProps) => {
-    const visibleReactionPlaceholderEmojis = reactionPlaceholderEmojis.filter(
-      (emoji) => !reactionGroups.some((reaction) => reaction.emoji === emoji),
-    );
-    const hasReactionContent =
-      reactionGroups.length > 0 || visibleReactionPlaceholderEmojis.length > 0;
+    const viewState = getMessageFooterViewState({
+      attachments,
+      content,
+      hasReply,
+      isOwn,
+      reactionGroups,
+      reactionPlaceholderEmojis,
+      status,
+    });
 
-    // If we show as part of media gallery (only visual content), we don't render footer here.
-    const hasOnlyVisualMedia =
-      attachments?.some(isVisualAttachment) && !content && !hasReactionContent;
-    if (hasOnlyVisualMedia) return null;
-
-    const isFailedOwnMessage = isOwn && status === "FAILED";
+    if (viewState.hasOnlyVisualMedia) return null;
 
     return (
       <div
         className={cn(
           "flex min-h-5 items-center gap-2 px-2 pb-1",
-          hasReactionContent ? "my-0.5 justify-between" : "justify-end",
-          content &&
-            !hasReply &&
-            !isFailedOwnMessage &&
-            content.length < 50 &&
-            !content.includes(" ") &&
-            !hasReactionContent &&
-            "absolute right-2 bottom-1.5",
+          viewState.hasReactionContent
+            ? "my-0.5 justify-between"
+            : "justify-end",
+          viewState.shouldFloatMetadata && "absolute right-2 bottom-1.5",
         )}
       >
-        <div className="flex min-w-0 items-center gap-0.5">
-          <MessageReactions
-            reactions={reactionGroups}
-            isOwn={isOwn}
-            onToggleReaction={onToggleReaction}
-          />
-          <ReactionPlaceholders
-            emojis={visibleReactionPlaceholderEmojis}
-            onToggleReaction={onToggleReaction}
-          />
-        </div>
+        <MessageFooterReactions
+          isOwn={isOwn}
+          onToggleReaction={onToggleReaction}
+          reactionGroups={reactionGroups}
+          visibleReactionPlaceholderEmojis={
+            viewState.visibleReactionPlaceholderEmojis
+          }
+        />
 
-        <div className="flex shrink-0 items-center gap-1 whitespace-nowrap opacity-70">
-          {isPinned && (
-            <Pin
-              aria-label="Pinned message"
-              className="size-3 rotate-45 text-primary"
-            />
-          )}
-          {isSaved && (
-            <Bookmark
-              aria-label="Saved message"
-              className="size-3 fill-primary/20 text-primary"
-            />
-          )}
-          {isFailedOwnMessage && (
-            <span className="mr-0.5 font-bold text-destructive text-nano">
-              Not sent
-            </span>
-          )}
-          {isEdited && (
-            <span className="mr-0.5 font-bold text-nano italic opacity-60">
-              Edited
-            </span>
-          )}
-          <span
-            className={cn(
-              "select-none font-bold text-nano text-slate-muted tabular-nums",
-            )}
-          >
-            {formatChatTime(createdAt)}
-          </span>
-          <MessageStatusIcon
-            status={status}
-            isOwn={isOwn}
-            isReadByOthers={isReadByOthers}
-          />
-          {isOwn && readByCount > 0 ? (
-            <ReadBySummary readers={readBy} readByCount={readByCount} />
-          ) : null}
-        </div>
+        <MessageFooterMetadata
+          createdAt={createdAt}
+          isEdited={isEdited}
+          isFailedOwnMessage={viewState.isFailedOwnMessage}
+          isOwn={isOwn}
+          isPinned={isPinned}
+          isReadByOthers={isReadByOthers}
+          isSaved={isSaved}
+          readBy={readBy}
+          readByCount={readByCount}
+          status={status}
+        />
       </div>
     );
   },
 );
+
+function getMessageFooterViewState({
+  attachments,
+  content,
+  hasReply,
+  isOwn,
+  reactionGroups,
+  reactionPlaceholderEmojis,
+  status,
+}: Pick<
+  MessageFooterProps,
+  | "attachments"
+  | "content"
+  | "hasReply"
+  | "isOwn"
+  | "reactionGroups"
+  | "reactionPlaceholderEmojis"
+  | "status"
+>): MessageFooterViewState {
+  const visibleReactionPlaceholderEmojis = (
+    reactionPlaceholderEmojis ?? []
+  ).filter(
+    (emoji) => !reactionGroups.some((reaction) => reaction.emoji === emoji),
+  );
+  const hasReactionContent =
+    reactionGroups.length > 0 || visibleReactionPlaceholderEmojis.length > 0;
+  const isFailedOwnMessage = isOwn && status === "FAILED";
+
+  return {
+    hasOnlyVisualMedia: Boolean(
+      attachments?.some(isVisualAttachment) && !content && !hasReactionContent,
+    ),
+    hasReactionContent,
+    isFailedOwnMessage,
+    shouldFloatMetadata: Boolean(
+      content &&
+        !hasReply &&
+        !isFailedOwnMessage &&
+        content.length < 50 &&
+        !content.includes(" ") &&
+        !hasReactionContent,
+    ),
+    visibleReactionPlaceholderEmojis,
+  };
+}
+
+function MessageFooterReactions({
+  isOwn,
+  onToggleReaction,
+  reactionGroups,
+  visibleReactionPlaceholderEmojis,
+}: {
+  isOwn: boolean;
+  onToggleReaction?: (emoji: string) => void;
+  reactionGroups: ReactionGroup[];
+  visibleReactionPlaceholderEmojis: string[];
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-0.5">
+      <MessageReactions
+        reactions={reactionGroups}
+        isOwn={isOwn}
+        onToggleReaction={onToggleReaction}
+      />
+      <ReactionPlaceholders
+        emojis={visibleReactionPlaceholderEmojis}
+        onToggleReaction={onToggleReaction}
+      />
+    </div>
+  );
+}
+
+function MessageFooterMetadata({
+  createdAt,
+  isEdited,
+  isFailedOwnMessage,
+  isOwn,
+  isPinned,
+  isReadByOthers,
+  isSaved,
+  readBy,
+  readByCount,
+  status,
+}: {
+  createdAt: string;
+  isEdited: boolean | undefined;
+  isFailedOwnMessage: boolean;
+  isOwn: boolean;
+  isPinned: boolean;
+  isReadByOthers: boolean;
+  isSaved: boolean;
+  readBy: NonNullable<UnifiedMessage["readBy"]>;
+  readByCount: number;
+  status: UnifiedMessage["status"];
+}) {
+  return (
+    <div className="flex shrink-0 items-center gap-1 whitespace-nowrap opacity-70">
+      <PinnedMessageIndicator isVisible={isPinned} />
+      <SavedMessageIndicator isVisible={isSaved} />
+      <FailedOwnMessageLabel isVisible={isFailedOwnMessage} />
+      <EditedMessageLabel isVisible={isEdited} />
+      <span
+        className={cn(
+          "select-none font-bold text-nano text-slate-muted tabular-nums",
+        )}
+      >
+        {formatChatTime(createdAt)}
+      </span>
+      <MessageStatusIcon
+        status={status}
+        isOwn={isOwn}
+        isReadByOthers={isReadByOthers}
+      />
+      {isOwn && readByCount > 0 ? (
+        <ReadBySummary readers={readBy} readByCount={readByCount} />
+      ) : null}
+    </div>
+  );
+}
+
+function PinnedMessageIndicator({ isVisible }: { isVisible: boolean }) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <Pin
+      aria-label="Pinned message"
+      className="size-3 rotate-45 text-primary"
+    />
+  );
+}
+
+function SavedMessageIndicator({ isVisible }: { isVisible: boolean }) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <Bookmark
+      aria-label="Saved message"
+      className="size-3 fill-primary/20 text-primary"
+    />
+  );
+}
+
+function FailedOwnMessageLabel({ isVisible }: { isVisible: boolean }) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <span className="mr-0.5 font-bold text-destructive text-nano">
+      Not sent
+    </span>
+  );
+}
+
+function EditedMessageLabel({ isVisible }: { isVisible: boolean | undefined }) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <span className="mr-0.5 font-bold text-nano italic opacity-60">Edited</span>
+  );
+}
 
 function ReadBySummary({
   readers,

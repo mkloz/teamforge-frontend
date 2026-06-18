@@ -67,6 +67,44 @@ function isCompleteImage(
   return Boolean(image?.complete && image.naturalWidth > 0);
 }
 
+function syncForwardedImageRef(
+  ref: Ref<HTMLImageElement> | undefined,
+  node: HTMLImageElement | null,
+) {
+  if (typeof ref === "function") {
+    ref(node);
+    return;
+  }
+
+  if (ref) {
+    ref.current = node;
+  }
+}
+
+function shouldShowFallback({
+  fallbackFailed,
+  isSrcProvided,
+}: {
+  fallbackFailed: boolean;
+  isSrcProvided: boolean;
+}) {
+  return fallbackFailed || !isSrcProvided;
+}
+
+function shouldShowLoader({
+  fallbackFailed,
+  isLoading,
+  isSrcProvided,
+  showLoadingState,
+}: {
+  fallbackFailed: boolean;
+  isLoading: boolean;
+  isSrcProvided: boolean;
+  showLoadingState: boolean;
+}) {
+  return showLoadingState && isLoading && isSrcProvided && !fallbackFailed;
+}
+
 export function Image({
   src,
   fallbackSrc,
@@ -96,6 +134,13 @@ export function Image({
   const [fallbackFailed, setFallbackFailed] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const actualSrc = error && fallbackSrc ? fallbackSrc : imageSrc;
+  const showFallback = shouldShowFallback({ fallbackFailed, isSrcProvided });
+  const showLoader = shouldShowLoader({
+    fallbackFailed,
+    isLoading,
+    isSrcProvided,
+    showLoadingState,
+  });
 
   useEffect(() => {
     setError(false);
@@ -137,8 +182,6 @@ export function Image({
     onError?.(event);
   };
 
-  const showFallback = fallbackFailed || !isSrcProvided;
-
   return (
     <div className={cn("relative size-full overflow-hidden", wrapperClassName)}>
       {isSrcProvided && !fallbackFailed ? (
@@ -147,11 +190,7 @@ export function Image({
           <img
             ref={(node) => {
               imageRef.current = node;
-              if (typeof ref === "function") {
-                ref(node);
-              } else if (ref) {
-                ref.current = node;
-              }
+              syncForwardedImageRef(ref, node);
 
               if (isCompleteImage(node)) {
                 rememberLoadedImage(node, actualSrc);
@@ -190,7 +229,7 @@ export function Image({
         </div>
       ) : null}
 
-      {showLoadingState && isLoading && isSrcProvided && !fallbackFailed ? (
+      {showLoader ? (
         <div
           className={cn(
             "absolute inset-0 flex items-center justify-center bg-background/20",

@@ -64,6 +64,20 @@ const MAX_GROUP_LOOKUP_PAGES = 10;
 const planGroupCache = new Map<string, string>();
 const chatGroupCache = new Map<string, string>();
 
+interface LegacyLinkContext {
+  messageIdFromSearch: string | undefined;
+  notification: Notification;
+  pathname: string;
+  planIdFromSearch: string | undefined;
+  proposalId: string | null;
+  searchParams: URLSearchParams;
+}
+
+interface ParsedNotificationLink {
+  pathname: string;
+  searchParams: URLSearchParams;
+}
+
 export type NotificationDestination =
   | { to: "/activity"; search?: ActivityRouteSearch }
   | { to: "/home"; search?: HomeRouteSearch }
@@ -106,9 +120,31 @@ function parseNotificationLink(link: string | null) {
   }
 
   try {
-    return new URL(link, "https://teamforge.local");
+    const parsedUrl = new URL(link);
+
+    return {
+      pathname: parsedUrl.pathname,
+      searchParams: parsedUrl.searchParams,
+    } satisfies ParsedNotificationLink;
   } catch {
-    return null;
+    if (!link.startsWith("/") || link.startsWith("//")) {
+      return null;
+    }
+
+    const hashIndex = link.indexOf("#");
+    const linkWithoutHash = hashIndex >= 0 ? link.slice(0, hashIndex) : link;
+    const searchIndex = linkWithoutHash.indexOf("?");
+    const pathname =
+      searchIndex >= 0
+        ? linkWithoutHash.slice(0, searchIndex)
+        : linkWithoutHash;
+    const search =
+      searchIndex >= 0 ? linkWithoutHash.slice(searchIndex + 1) : "";
+
+    return {
+      pathname: pathname || "/",
+      searchParams: new URLSearchParams(search),
+    } satisfies ParsedNotificationLink;
   }
 }
 
@@ -378,32 +414,92 @@ async function getGroupLookupPage(page: number) {
 async function resolveFromLegacyLink(
   notification: Notification,
 ): Promise<NotificationDestination | null> {
-  const link = notification.link;
+  const linkContext = parseLegacyLinkContext(notification);
 
-  if (!link) {
+  if (!linkContext) {
     return null;
   }
-
-  const parsedLink = parseNotificationLink(link);
-
-  if (!parsedLink) {
-    return null;
-  }
-
-  const pathname = normalizeNotificationPathname(parsedLink.pathname);
-  const proposalId = extractProposalId(parsedLink.searchParams);
-  const planIdFromSearch = extractPlanId(parsedLink.searchParams);
-  const messageIdFromSearch = extractMessageId(parsedLink.searchParams);
 
   const currentAppRoute = resolveFromCurrentAppRoute(
-    pathname,
-    parsedLink.searchParams,
+    linkContext.pathname,
+    linkContext.searchParams,
   );
 
   if (currentAppRoute) {
     return currentAppRoute;
   }
 
+  const legacyGroupDestination = resolveLegacyGroupDestination(linkContext);
+
+  if (legacyGroupDestination) {
+    return legacyGroupDestination;
+  }
+
+  const legacyChatDestination = await resolveLegacyChatDestination(linkContext);
+
+  if (legacyChatDestination) {
+    return legacyChatDestination;
+  }
+
+  const legacyPlanDestination = await resolveLegacyPlanDestination(linkContext);
+
+  if (legacyPlanDestination) {
+    return legacyPlanDestination;
+  }
+
+  const legacyRatingDestination = resolveLegacyRatingDestination(linkContext);
+
+  if (legacyRatingDestination) {
+    return legacyRatingDestination;
+  }
+
+  const legacyInviteDestination = resolveLegacyInviteDestination(linkContext);
+
+  if (legacyInviteDestination) {
+    return legacyInviteDestination;
+  }
+
+  const friendRequestIntent = resolveFriendRequestIntent(
+    linkContext.pathname,
+    linkContext.searchParams,
+  );
+
+  if (friendRequestIntent) {
+    return buildHomeNavigation(friendRequestIntent);
+  }
+
+  return null;
+}
+
+function parseLegacyLinkContext(
+  notification: Notification,
+): LegacyLinkContext | null {
+  if (!notification.link) {
+    return null;
+  }
+
+  const parsedLink = parseNotificationLink(notification.link);
+
+  if (!parsedLink) {
+    return null;
+  }
+
+  return {
+    messageIdFromSearch: extractMessageId(parsedLink.searchParams),
+    notification,
+    pathname: normalizeNotificationPathname(parsedLink.pathname),
+    planIdFromSearch: extractPlanId(parsedLink.searchParams),
+    proposalId: extractProposalId(parsedLink.searchParams),
+    searchParams: parsedLink.searchParams,
+  };
+}
+
+function resolveLegacyGroupDestination({
+  pathname,
+  planIdFromSearch,
+  proposalId,
+  searchParams,
+}: LegacyLinkContext) {
   const groupPlanMatch = matchLegacyGroupPlanPath(pathname);
 
   if (groupPlanMatch) {
@@ -415,18 +511,27 @@ async function resolveFromLegacyLink(
   }
 
   const groupId =
-    extractGroupId(parsedLink.searchParams) ??
+    extractGroupId(searchParams) ??
     matchLegacyGroupPath(pathname) ??
     matchLegacyExploreGroupPath(pathname);
 
-  if (groupId) {
-    return toGroupDestination(groupId, {
-      panel: "group",
-      plan: planIdFromSearch,
-      proposal: proposalId ?? undefined,
-    });
+  if (!groupId) {
+    return null;
   }
 
+  return toGroupDestination(groupId, {
+    panel: "group",
+    plan: planIdFromSearch,
+    proposal: proposalId ?? undefined,
+  });
+}
+
+async function resolveLegacyChatDestination({
+  messageIdFromSearch,
+  notification,
+  pathname,
+  searchParams,
+}: LegacyLinkContext) {
   const chatMessageMatch = matchLegacyChatMessagePath(pathname);
 
   if (chatMessageMatch) {
@@ -436,19 +541,23 @@ async function resolveFromLegacyLink(
     );
   }
 
-  const chatId =
-    extractChatId(parsedLink.searchParams) ?? matchLegacyChatPath(pathname);
+  const chatId = extractChatId(searchParams) ?? matchLegacyChatPath(pathname);
 
-  if (chatId) {
-    return toChatDestination(
-      chatId,
-      messageIdFromSearch ??
-        (notification.entityType === "MESSAGE"
-          ? (notification.entityId ?? undefined)
-          : undefined),
-    );
+  if (!chatId) {
+    return null;
   }
 
+  return toChatDestination(
+    chatId,
+    messageIdFromSearch ?? getMessageEntityId(notification),
+  );
+}
+
+async function resolveLegacyPlanDestination({
+  notification,
+  pathname,
+  proposalId,
+}: LegacyLinkContext) {
   const planProposalMatch = matchLegacyPlanProposalPath(pathname);
 
   if (planProposalMatch) {
@@ -467,62 +576,67 @@ async function resolveFromLegacyLink(
 
   const planId = matchLegacyPlanPath(pathname);
 
-  if (planId) {
-    const resolvedGroupId = await resolveGroupIdByPlanId(planId);
-
-    if (resolvedGroupId) {
-      return toGroupDestination(resolvedGroupId, {
-        panel: "group",
-        plan: planId,
-        proposal:
-          notification.type === "PLAN_PROPOSAL"
-            ? (proposalId ?? undefined)
-            : undefined,
-      });
-    }
+  if (!planId) {
+    return null;
   }
 
+  const resolvedGroupId = await resolveGroupIdByPlanId(planId);
+
+  if (!resolvedGroupId) {
+    return null;
+  }
+
+  return toGroupDestination(resolvedGroupId, {
+    panel: "group",
+    plan: planId,
+    proposal:
+      notification.type === "PLAN_PROPOSAL"
+        ? (proposalId ?? undefined)
+        : undefined,
+  });
+}
+
+function resolveLegacyRatingDestination({ pathname }: LegacyLinkContext) {
   const groupRatingId = matchLegacyGroupRatingPath(pathname);
 
-  if (groupRatingId) {
-    return toGroupDestination(groupRatingId, {
+  if (!groupRatingId) {
+    return null;
+  }
+
+  return toGroupDestination(groupRatingId, {
+    panel: "group",
+  });
+}
+
+function resolveLegacyInviteDestination({
+  notification,
+  pathname,
+  searchParams,
+}: LegacyLinkContext) {
+  const inviteIntent = resolveInviteIntent(pathname, searchParams);
+
+  if (!inviteIntent) {
+    return null;
+  }
+
+  if (notification.entityType === "GROUP" && notification.entityId) {
+    return toGroupDestination(notification.entityId, {
       panel: "group",
     });
   }
 
-  const inviteIntent = resolveInviteIntent(pathname, parsedLink.searchParams);
-
-  if (inviteIntent) {
-    if (notification.entityType === "GROUP" && notification.entityId) {
-      return toGroupDestination(notification.entityId, {
-        panel: "group",
-      });
-    }
-
-    return buildHomeNavigation(inviteIntent);
-  }
-
-  const friendRequestIntent = resolveFriendRequestIntent(
-    pathname,
-    parsedLink.searchParams,
-  );
-
-  if (friendRequestIntent) {
-    return buildHomeNavigation(friendRequestIntent);
-  }
-
-  return null;
+  return buildHomeNavigation(inviteIntent);
 }
 
-export async function resolveNotificationDestination(
+function getMessageEntityId(notification: Notification) {
+  return notification.entityType === "MESSAGE"
+    ? (notification.entityId ?? undefined)
+    : undefined;
+}
+
+async function resolveEntityDestination(
   notification: Notification,
-): Promise<NotificationDestination> {
-  const fromLink = await resolveFromLegacyLink(notification);
-
-  if (fromLink) {
-    return fromLink;
-  }
-
+): Promise<NotificationDestination | null> {
   if (notification.entityType === "GROUP" && notification.entityId) {
     return toGroupDestination(notification.entityId, {
       panel: "group",
@@ -532,16 +646,18 @@ export async function resolveNotificationDestination(
   if (notification.entityType === "PLAN" && notification.entityId) {
     const groupId = await resolveGroupIdByPlanId(notification.entityId);
 
-    if (groupId) {
-      return toGroupDestination(groupId, {
-        panel: "group",
-        plan: notification.entityId,
-        proposal:
-          notification.type === "PLAN_PROPOSAL"
-            ? extractProposalIdFromLink(notification.link)
-            : undefined,
-      });
+    if (!groupId) {
+      return null;
     }
+
+    return toGroupDestination(groupId, {
+      panel: "group",
+      plan: notification.entityId,
+      proposal:
+        notification.type === "PLAN_PROPOSAL"
+          ? extractProposalIdFromLink(notification.link)
+          : undefined,
+    });
   }
 
   if (notification.entityType === "ACTIVITY" && notification.entityId) {
@@ -570,6 +686,12 @@ export async function resolveNotificationDestination(
     return buildProfileNavigation(notification.entityId);
   }
 
+  return null;
+}
+
+function resolveTypeFallbackDestination(
+  notification: Notification,
+): NotificationDestination {
   switch (notification.type) {
     case "NEW_MESSAGE":
     case "MESSAGE_MENTION":
@@ -586,4 +708,22 @@ export async function resolveNotificationDestination(
     default:
       return buildHomeNavigation();
   }
+}
+
+export async function resolveNotificationDestination(
+  notification: Notification,
+): Promise<NotificationDestination> {
+  const fromLink = await resolveFromLegacyLink(notification);
+
+  if (fromLink) {
+    return fromLink;
+  }
+
+  const fromEntity = await resolveEntityDestination(notification);
+
+  if (fromEntity) {
+    return fromEntity;
+  }
+
+  return resolveTypeFallbackDestination(notification);
 }

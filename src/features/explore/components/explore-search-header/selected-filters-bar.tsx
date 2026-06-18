@@ -7,48 +7,19 @@ import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route
 import { Button } from "@/shared/components/ui/button";
 import { FilterTag } from "./filter-tag";
 
+type ExploreRouteState = ReturnType<typeof useExploreRouteState>;
+
+interface SelectedFilterChip {
+  key: string;
+  label: string;
+  onRemove: () => void;
+}
+
 export function SelectedFiltersBar() {
-  const {
-    selectedCategories,
-    sizeRange,
-    setSizeRange,
-    distance,
-    setDistance,
-    locationMode,
-    setLocationMode,
-    access,
-    setAccess,
-    timeWindow,
-    setTimeWindow,
-    startsAfter,
-    startsBefore,
-    setStartsAfter,
-    setStartsBefore,
-    resetFilters,
-    removeCategory,
-  } = useExploreRouteState();
+  const routeState = useExploreRouteState();
+  const selectedFilterChips = getSelectedFilterChips(routeState);
 
-  const categoryTags = selectedCategories.filter((c) => c !== "ALL");
-  const isLocationFiltered = locationMode !== DEFAULT_FILTERS.locationMode;
-  const isAccessFiltered = access !== DEFAULT_FILTERS.access;
-  const isExactStartFiltered = Boolean(startsAfter || startsBefore);
-  const isTimeFiltered =
-    !isExactStartFiltered && timeWindow !== DEFAULT_FILTERS.timeWindow;
-  const isDistanceFiltered =
-    distance !== DEFAULT_FILTERS.distance && locationMode !== "ONLINE";
-  const isSizeFiltered =
-    sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
-    sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1];
-  const filtered =
-    categoryTags.length > 0 ||
-    isLocationFiltered ||
-    isAccessFiltered ||
-    isExactStartFiltered ||
-    isTimeFiltered ||
-    isDistanceFiltered ||
-    isSizeFiltered;
-
-  if (!filtered) return null;
+  if (selectedFilterChips.length === 0) return null;
 
   return (
     <div className="scrollbar-hide flex items-center gap-1.5 overflow-x-auto py-1">
@@ -56,7 +27,7 @@ export function SelectedFiltersBar() {
         type="button"
         variant="subtle"
         size="xs"
-        onClick={resetFilters}
+        onClick={routeState.resetFilters}
         className="h-auto shrink-0 gap-1 rounded-full px-2.5 py-1 text-micro"
       >
         <X className="size-3" strokeWidth={2.5} />
@@ -66,61 +37,174 @@ export function SelectedFiltersBar() {
       <div className="h-4 w-px shrink-0 bg-border/50" />
 
       <div className="flex items-center gap-1.5 pr-1">
-        {categoryTags.map((catId) => {
-          const catInfo = CATEGORIES.find((c) => c.id === catId);
-          return (
-            <FilterTag
-              key={catId}
-              label={catInfo?.label || catId}
-              onRemove={() => removeCategory(catId)}
-            />
-          );
-        })}
-        {isLocationFiltered && (
-          <FilterTag
-            label={locationMode === "IN_PERSON" ? "Local" : "Online"}
-            onRemove={() => setLocationMode(DEFAULT_FILTERS.locationMode)}
-          />
-        )}
-        {isAccessFiltered && (
-          <FilterTag
-            label={access === "OPEN" ? "Open access" : "By request"}
-            onRemove={() => setAccess(DEFAULT_FILTERS.access)}
-          />
-        )}
-        {isDistanceFiltered && (
-          <FilterTag
-            label={`Within ${distance} km`}
-            onRemove={() => setDistance(DEFAULT_FILTERS.distance)}
-          />
-        )}
-        {isTimeFiltered && (
-          <FilterTag
-            label={getTimeWindowLabel(timeWindow)}
-            onRemove={() => setTimeWindow(DEFAULT_FILTERS.timeWindow)}
-          />
-        )}
-        {startsAfter && (
-          <FilterTag
-            label={`From ${formatDateTimeFilter(startsAfter)}`}
-            onRemove={() => setStartsAfter(DEFAULT_FILTERS.startsAfter)}
-          />
-        )}
-        {startsBefore && (
-          <FilterTag
-            label={`To ${formatDateTimeFilter(startsBefore)}`}
-            onRemove={() => setStartsBefore(DEFAULT_FILTERS.startsBefore)}
-          />
-        )}
-        {isSizeFiltered && (
-          <FilterTag
-            label={`${sizeRange[0]}–${sizeRange[1]} people`}
-            onRemove={() => setSizeRange(DEFAULT_FILTERS.sizeRange)}
-          />
-        )}
+        <SelectedFilterChipList chips={selectedFilterChips} />
       </div>
     </div>
   );
+}
+
+function SelectedFilterChipList({ chips }: { chips: SelectedFilterChip[] }) {
+  return (
+    <>
+      {chips.map((chip) => (
+        <FilterTag key={chip.key} label={chip.label} onRemove={chip.onRemove} />
+      ))}
+    </>
+  );
+}
+
+function getSelectedFilterChips(
+  routeState: ExploreRouteState,
+): SelectedFilterChip[] {
+  return [
+    ...getCategoryFilterChips(routeState),
+    ...getLocationFilterChip(routeState),
+    ...getAccessFilterChip(routeState),
+    ...getDistanceFilterChip(routeState),
+    ...getTimeFilterChip(routeState),
+    ...getExactStartFilterChips(routeState),
+    ...getSizeFilterChip(routeState),
+  ];
+}
+
+function getCategoryFilterChips({
+  removeCategory,
+  selectedCategories,
+}: ExploreRouteState): SelectedFilterChip[] {
+  return selectedCategories
+    .filter((categoryId) => categoryId !== "ALL")
+    .map((categoryId) => ({
+      key: categoryId,
+      label: getCategoryLabel(categoryId),
+      onRemove: () => removeCategory(categoryId),
+    }));
+}
+
+function getLocationFilterChip({
+  locationMode,
+  setLocationMode,
+}: ExploreRouteState): SelectedFilterChip[] {
+  if (locationMode === DEFAULT_FILTERS.locationMode) {
+    return [];
+  }
+
+  return [
+    {
+      key: "locationMode",
+      label: locationMode === "IN_PERSON" ? "Local" : "Online",
+      onRemove: () => setLocationMode(DEFAULT_FILTERS.locationMode),
+    },
+  ];
+}
+
+function getAccessFilterChip({
+  access,
+  setAccess,
+}: ExploreRouteState): SelectedFilterChip[] {
+  if (access === DEFAULT_FILTERS.access) {
+    return [];
+  }
+
+  return [
+    {
+      key: "access",
+      label: access === "OPEN" ? "Open access" : "By request",
+      onRemove: () => setAccess(DEFAULT_FILTERS.access),
+    },
+  ];
+}
+
+function getDistanceFilterChip({
+  distance,
+  locationMode,
+  setDistance,
+}: ExploreRouteState): SelectedFilterChip[] {
+  if (distance === DEFAULT_FILTERS.distance || locationMode === "ONLINE") {
+    return [];
+  }
+
+  return [
+    {
+      key: "distance",
+      label: `Within ${distance} km`,
+      onRemove: () => setDistance(DEFAULT_FILTERS.distance),
+    },
+  ];
+}
+
+function getTimeFilterChip({
+  startsAfter,
+  startsBefore,
+  setTimeWindow,
+  timeWindow,
+}: ExploreRouteState): SelectedFilterChip[] {
+  const isExactStartFiltered = Boolean(startsAfter || startsBefore);
+
+  if (isExactStartFiltered || timeWindow === DEFAULT_FILTERS.timeWindow) {
+    return [];
+  }
+
+  return [
+    {
+      key: "timeWindow",
+      label: getTimeWindowLabel(timeWindow),
+      onRemove: () => setTimeWindow(DEFAULT_FILTERS.timeWindow),
+    },
+  ];
+}
+
+function getExactStartFilterChips({
+  setStartsAfter,
+  setStartsBefore,
+  startsAfter,
+  startsBefore,
+}: ExploreRouteState): SelectedFilterChip[] {
+  const chips: SelectedFilterChip[] = [];
+
+  if (startsAfter) {
+    chips.push({
+      key: "startsAfter",
+      label: `From ${formatDateTimeFilter(startsAfter)}`,
+      onRemove: () => setStartsAfter(DEFAULT_FILTERS.startsAfter),
+    });
+  }
+
+  if (startsBefore) {
+    chips.push({
+      key: "startsBefore",
+      label: `To ${formatDateTimeFilter(startsBefore)}`,
+      onRemove: () => setStartsBefore(DEFAULT_FILTERS.startsBefore),
+    });
+  }
+
+  return chips;
+}
+
+function getSizeFilterChip({
+  setSizeRange,
+  sizeRange,
+}: ExploreRouteState): SelectedFilterChip[] {
+  const isSizeFiltered =
+    sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
+    sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1];
+
+  if (!isSizeFiltered) {
+    return [];
+  }
+
+  return [
+    {
+      key: "sizeRange",
+      label: `${sizeRange[0]}–${sizeRange[1]} people`,
+      onRemove: () => setSizeRange(DEFAULT_FILTERS.sizeRange),
+    },
+  ];
+}
+
+function getCategoryLabel(categoryId: string) {
+  const category = CATEGORIES.find((item) => item.id === categoryId);
+
+  return category?.label || categoryId;
 }
 
 function getTimeWindowLabel(timeWindow: string) {

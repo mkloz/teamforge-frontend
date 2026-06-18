@@ -1,5 +1,19 @@
 import { z } from "zod";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import {
+  dateTimeLocalToIsoString,
+  toDateTimeLocalValue,
+} from "@/shared/lib/date-time-local";
+import {
+  cleanPlanProposalText,
+  formatPlanLocationValue as formatSharedPlanLocationValue,
+  isPlanLocationMode,
+  normalizePlanLocationValue as normalizeSharedPlanLocationValue,
+  PLAN_LOCATION_MODE_LABELS,
+  type PlanLocationValue,
+  parsePlanLocationValue as parseSharedPlanLocationValue,
+  serializePlanLocationValue as serializeSharedPlanLocationValue,
+} from "@/shared/lib/plan-proposal-values";
 import type {
   CostType,
   LocationMode,
@@ -17,11 +31,8 @@ export const planProposalFieldOptions = [
   { value: "CATEGORY", label: "Category" },
 ] as const satisfies Array<{ value: PlanProposalField; label: string }>;
 
-export const locationModeLabels: Record<LocationMode, string> = {
-  IN_PERSON: "In person",
-  ONLINE: "Online",
-  TBD: "TBD",
-};
+export const locationModeLabels: Record<LocationMode, string> =
+  PLAN_LOCATION_MODE_LABELS;
 
 export const planCategoryLabels: Record<PlanCategory, string> = {
   ARTS: "Arts",
@@ -45,12 +56,7 @@ export const costTypeLabels: Record<CostType, string> = {
 
 type Plan = NonNullable<GroupPlanDetail["plan"]>;
 
-export interface PlanLocationValue {
-  location: string | null;
-  locationLat: number | null;
-  locationLng: number | null;
-  locationMode: LocationMode;
-}
+export type { PlanLocationValue } from "@/shared/lib/plan-proposal-values";
 
 export interface PlanCostValue {
   cost: CostType;
@@ -58,29 +64,18 @@ export interface PlanCostValue {
   costDetails: string | null;
 }
 
-const planLocationPayloadSchema = z.object({
-  location: z.string().nullable().optional(),
-  locationLat: z.number().nullable().optional(),
-  locationLng: z.number().nullable().optional(),
-  locationMode: z.enum(["IN_PERSON", "ONLINE", "TBD"]),
-});
-
 const planCostPayloadSchema = z.object({
   cost: z.enum(["FREE", "PAID"]),
   costAmount: z.number().nullable().optional(),
   costDetails: z.string().nullable().optional(),
 });
 
-function padDateTimePart(part: number) {
-  return String(part).padStart(2, "0");
-}
-
 function isPlanCategory(value: string): value is PlanCategory {
   return Object.keys(planCategoryLabels).some((category) => category === value);
 }
 
 export function isLocationMode(value: string): value is LocationMode {
-  return Object.keys(locationModeLabels).some((mode) => mode === value);
+  return isPlanLocationMode(value);
 }
 
 export function isCostType(value: string): value is CostType {
@@ -88,28 +83,13 @@ export function isCostType(value: string): value is CostType {
 }
 
 function cleanText(value: string | null | undefined) {
-  const trimmed = value?.trim() ?? "";
-
-  return trimmed.length > 0 ? trimmed : null;
+  return cleanPlanProposalText(value);
 }
 
-function toDateTimeLocalValue(value: string | null) {
-  if (!value) {
-    return "";
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  return `${date.getFullYear()}-${padDateTimePart(
-    date.getMonth() + 1,
-  )}-${padDateTimePart(date.getDate())}T${padDateTimePart(
-    date.getHours(),
-  )}:${padDateTimePart(date.getMinutes())}`;
-}
+const PLAN_LOCATION_OPTIONS = {
+  keyOrder: "location-first",
+  missingLocationMessage: "Add a location before sending a change.",
+} as const;
 
 export function isPlanProposalField(value: string): value is PlanProposalField {
   return planProposalFieldOptions.some((option) => option.value === value);
@@ -134,79 +114,19 @@ export function getPlanLocationValue(plan: Plan): PlanLocationValue {
 export function normalizePlanLocationValue(
   value: Partial<PlanLocationValue> & { locationMode: LocationMode },
 ): PlanLocationValue {
-  if (value.locationMode === "TBD") {
-    return {
-      location: null,
-      locationLat: null,
-      locationLng: null,
-      locationMode: "TBD",
-    };
-  }
-
-  const location = cleanText(value.location);
-
-  if (!location) {
-    throw new Error("Add a location before sending a change.");
-  }
-
-  if (value.locationMode === "ONLINE") {
-    return {
-      location,
-      locationLat: null,
-      locationLng: null,
-      locationMode: "ONLINE",
-    };
-  }
-
-  return {
-    location,
-    locationLat: value.locationLat ?? null,
-    locationLng: value.locationLng ?? null,
-    locationMode: "IN_PERSON",
-  };
+  return normalizeSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
 }
 
 export function serializePlanLocationValue(value: PlanLocationValue) {
-  return JSON.stringify(normalizePlanLocationValue(value));
+  return serializeSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
 }
 
 export function parsePlanLocationValue(value: string | null) {
-  const trimmed = value?.trim() ?? "";
-
-  if (!trimmed.startsWith("{")) {
-    return null;
-  }
-
-  try {
-    const parsed = planLocationPayloadSchema.safeParse(JSON.parse(trimmed));
-
-    if (!parsed.success) {
-      return null;
-    }
-
-    return normalizePlanLocationValue({
-      location: parsed.data.location ?? null,
-      locationLat: parsed.data.locationLat ?? null,
-      locationLng: parsed.data.locationLng ?? null,
-      locationMode: parsed.data.locationMode,
-    });
-  } catch {
-    return null;
-  }
+  return parseSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
 }
 
 export function formatPlanLocationValue(value: PlanLocationValue) {
-  if (value.locationMode === "TBD") {
-    return "Location TBD";
-  }
-
-  const location = cleanText(value.location);
-
-  if (value.locationMode === "ONLINE") {
-    return location ? `Online: ${location}` : "Online location TBD";
-  }
-
-  return location ?? "Location TBD";
+  return formatSharedPlanLocationValue(value);
 }
 
 export function getPlanCostValue(plan: Plan): PlanCostValue {
@@ -308,9 +228,7 @@ export function normalizeProposalValue(
   value: string,
 ) {
   if (field === "DATE_TIME") {
-    const date = new Date(value);
-
-    return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+    return dateTimeLocalToIsoString(value);
   }
 
   return value.trim();

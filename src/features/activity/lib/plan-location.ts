@@ -1,102 +1,38 @@
-import { z } from "zod";
+import {
+  cleanPlanProposalText,
+  formatPlanLocationValue,
+  normalizePlanLocationValue as normalizeSharedPlanLocationValue,
+  PLAN_LOCATION_MODE_LABELS,
+  type PlanLocationValue,
+  parsePlanLocationValue as parseSharedPlanLocationValue,
+  serializePlanLocationValue as serializeSharedPlanLocationValue,
+} from "@/shared/lib/plan-proposal-values";
 import type { LocationMode } from "@/shared/schemas/enums";
 
-export interface PlanLocationValue {
-  location: string | null;
-  locationLat: number | null;
-  locationLng: number | null;
-  locationMode: LocationMode;
-}
+export type { PlanLocationValue } from "@/shared/lib/plan-proposal-values";
 
-export const LOCATION_MODE_LABELS: Record<LocationMode, string> = {
-  IN_PERSON: "In person",
-  ONLINE: "Online",
-  TBD: "TBD",
-};
+export const LOCATION_MODE_LABELS: Record<LocationMode, string> =
+  PLAN_LOCATION_MODE_LABELS;
 
-function cleanLocation(value: string | null | undefined) {
-  const trimmed = value?.trim() ?? "";
-  return trimmed.length > 0 ? trimmed : null;
-}
-
-const planLocationPayloadSchema = z.object({
-  location: z.string().nullable().optional(),
-  locationLat: z.number().nullable().optional(),
-  locationLng: z.number().nullable().optional(),
-  locationMode: z.enum(["IN_PERSON", "ONLINE", "TBD"]),
-});
+const PLAN_LOCATION_OPTIONS = {
+  coordinatePairMessage: "Coordinates must be provided together.",
+  keyOrder: "mode-first",
+  missingLocationMessage: "Add a location before sending a proposal.",
+  requireCoordinatePair: true,
+} as const;
 
 export function normalizePlanLocationValue(
   value: Partial<PlanLocationValue> & { locationMode: LocationMode },
 ): PlanLocationValue {
-  if (value.locationMode === "TBD") {
-    return {
-      locationMode: "TBD",
-      location: null,
-      locationLat: null,
-      locationLng: null,
-    };
-  }
-
-  const location = cleanLocation(value.location);
-
-  if (!location) {
-    throw new Error("Add a location before sending a proposal.");
-  }
-
-  if (value.locationMode === "ONLINE") {
-    return {
-      locationMode: "ONLINE",
-      location,
-      locationLat: null,
-      locationLng: null,
-    };
-  }
-
-  const locationLat = value.locationLat ?? null;
-  const locationLng = value.locationLng ?? null;
-
-  if ((locationLat === null) !== (locationLng === null)) {
-    throw new Error("Coordinates must be provided together.");
-  }
-
-  return {
-    locationMode: "IN_PERSON",
-    location,
-    locationLat,
-    locationLng,
-  };
+  return normalizeSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
 }
 
 export function serializePlanLocationValue(value: PlanLocationValue) {
-  return JSON.stringify(normalizePlanLocationValue(value));
+  return serializeSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
 }
 
 export function parsePlanLocationValue(value: string | null) {
-  const trimmed = value?.trim() ?? "";
-
-  if (!trimmed.startsWith("{")) {
-    return null;
-  }
-
-  try {
-    const parsed = planLocationPayloadSchema.safeParse(JSON.parse(trimmed));
-
-    if (!parsed.success) {
-      return null;
-    }
-
-    const payload = parsed.data;
-
-    return normalizePlanLocationValue({
-      locationMode: payload.locationMode,
-      location: payload.location ?? null,
-      locationLat: payload.locationLat ?? null,
-      locationLng: payload.locationLng ?? null,
-    });
-  } catch {
-    return null;
-  }
+  return parseSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
 }
 
 export function getPlanLocationValue(plan: PlanLocationValue) {
@@ -104,17 +40,7 @@ export function getPlanLocationValue(plan: PlanLocationValue) {
 }
 
 export function formatPlanLocation(value: PlanLocationValue) {
-  if (value.locationMode === "TBD") {
-    return "Location TBD";
-  }
-
-  const location = cleanLocation(value.location);
-
-  if (value.locationMode === "ONLINE") {
-    return location ? `Online: ${location}` : "Online location TBD";
-  }
-
-  return location ?? "Location TBD";
+  return formatPlanLocationValue(value);
 }
 
 export function formatPlanLocationProposalValue(value: string | null) {
@@ -124,5 +50,5 @@ export function formatPlanLocationProposalValue(value: string | null) {
     return formatPlanLocation(parsed);
   }
 
-  return cleanLocation(value) ?? "Not set";
+  return cleanPlanProposalText(value) ?? "Not set";
 }

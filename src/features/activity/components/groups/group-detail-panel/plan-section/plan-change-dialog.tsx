@@ -49,6 +49,9 @@ const FIELD_ICON: Record<ProposalField, LucideIcon> = {
   LOCATION: MapPin,
 };
 
+type PlanProposalForm = ReturnType<typeof usePlanProposalForm>;
+type PlanProposalFieldOption = (typeof PLAN_PROPOSAL_FIELD_OPTIONS)[number];
+
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface PlanChangeDialogProps {
@@ -130,231 +133,347 @@ export function PlanChangeDialog({
 
         {/* ── Accordion field list ──────────────────────────────── */}
         <ul aria-label="Plan fields" className="border-border/50 border-t">
-          {PLAN_PROPOSAL_FIELD_OPTIONS.map((option, index) => {
-            const Icon = FIELD_ICON[option.value];
-            const isExpanded = form.field === option.value && form.isOpen;
-            const isLast = index === PLAN_PROPOSAL_FIELD_OPTIONS.length - 1;
-            const currentValue = getCurrentProposalValue(plan, option.value);
-
-            return (
-              <li
-                key={option.value}
-                className={[
-                  "relative transition-colors duration-150",
-                  !isLast && "border-border/50 border-b",
-                  isExpanded && "bg-forge-teal/[0.03]",
-                ].join(" ")}
-              >
-                {/* Teal left accent strip */}
-                <div
-                  aria-hidden="true"
-                  className={[
-                    "absolute top-0 bottom-0 left-0 w-[3px] rounded-r-full transition-all duration-300",
-                    isExpanded ? "bg-forge-teal opacity-100" : "opacity-0",
-                  ].join(" ")}
-                />
-
-                {/* Row trigger */}
-                <button
-                  type="button"
-                  aria-expanded={isExpanded}
-                  aria-controls={`field-body-${option.value}`}
-                  onClick={() => {
-                    if (isProposalField(option.value)) {
-                      form.handleFieldChange(option.value);
-                    }
-                  }}
-                  className="flex w-full items-center gap-3 px-5 py-3.5 text-left"
-                >
-                  {/* Icon badge */}
-                  <IconTile
-                    icon={Icon}
-                    iconClassName="size-3.75"
-                    size="sm"
-                    shape="square"
-                    tone={isExpanded ? "teal" : "none"}
-                    className={
-                      isExpanded ? "bg-forge-teal/15" : "text-slate-muted"
-                    }
-                  />
-
-                  {/* Label + preview value */}
-                  <span className="min-w-0 flex-1">
-                    <span
-                      className={[
-                        "block font-medium text-sm leading-snug transition-colors duration-150",
-                        isExpanded ? "text-forge-teal" : "text-ink",
-                      ].join(" ")}
-                    >
-                      {option.label}
-                    </span>
-                    {!isExpanded && currentValue ? (
-                      <span className="mt-0.5 block truncate text-slate-muted text-xs">
-                        {currentValue}
-                      </span>
-                    ) : null}
-                  </span>
-
-                  {/* Animated chevron */}
-                  <motion.span
-                    animate={{ rotate: isExpanded ? 180 : 0 }}
-                    transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                    aria-hidden="true"
-                    className="shrink-0"
-                  >
-                    <ChevronDown
-                      className={[
-                        "size-4 transition-colors duration-150",
-                        isExpanded ? "text-forge-teal" : "text-slate-muted/40",
-                      ].join(" ")}
-                      strokeWidth={1.75}
-                    />
-                  </motion.span>
-                </button>
-
-                {/* Expanded input body */}
-                <AnimatePresence initial={false}>
-                  {isExpanded ? (
-                    <motion.div
-                      id={`field-body-${option.value}`}
-                      role="region"
-                      aria-label={`Edit ${option.label}`}
-                      key={`body-${option.value}`}
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{
-                        height: "auto",
-                        opacity: 1,
-                        transition: {
-                          height: {
-                            duration: 0.28,
-                            ease: [0.25, 0.46, 0.45, 0.94],
-                          },
-                          opacity: { duration: 0.2, delay: 0.07 },
-                        },
-                      }}
-                      exit={{
-                        height: 0,
-                        opacity: 0,
-                        transition: {
-                          height: { duration: 0.2, ease: [0.4, 0, 1, 1] },
-                          opacity: { duration: 0.1 },
-                        },
-                      }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-5 pt-0 pb-5">
-                        {/* Current value annotation */}
-                        {currentValue ? (
-                          <p className="mb-3 flex items-baseline gap-1.5 text-slate-muted text-xs">
-                            <span className="shrink-0 font-medium">
-                              Currently:
-                            </span>
-                            <span className="min-w-0 truncate">
-                              {currentValue}
-                            </span>
-                          </p>
-                        ) : null}
-
-                        {/* Field-specific input */}
-                        {form.isDateField ? (
-                          <DateTimeInput
-                            value={form.value}
-                            onValueChange={form.setValue}
-                          />
-                        ) : form.isLocationField ? (
-                          <LocationInput
-                            locationValue={form.locationValue}
-                            onModeChange={handleLocationModeChange}
-                            onLocationSelect={(location) =>
-                              form.setLocationValue((current) => ({
-                                ...current,
-                                location: location?.address ?? "",
-                                locationLat: location?.lat ?? null,
-                                locationLng: location?.lng ?? null,
-                              }))
-                            }
-                            onLinkChange={(value) =>
-                              form.setLocationValue((current) => ({
-                                ...current,
-                                location: value,
-                                locationLat: null,
-                                locationLng: null,
-                              }))
-                            }
-                          />
-                        ) : (
-                          <Textarea
-                            value={form.value}
-                            onChange={(event) =>
-                              form.setValue(event.target.value)
-                            }
-                            rows={option.value === "DESCRIPTION" ? 4 : 2}
-                            className="resize-none"
-                          />
-                        )}
-
-                        {/* Validation error */}
-                        {form.error ? (
-                          <Notice
-                            aria-live="polite"
-                            tone="danger"
-                            size="sm"
-                            icon={<AlertCircle className="size-3.5 shrink-0" />}
-                            className="mt-3 bg-destructive/8"
-                          >
-                            {form.error}
-                          </Notice>
-                        ) : null}
-
-                        {/* Actions */}
-                        <div className="mt-4 flex items-center justify-end gap-2">
-                          {!form.isOnline ? (
-                            <p
-                              role="status"
-                              className="mr-auto min-w-0 text-slate-muted text-xs"
-                            >
-                              Reconnect before sending.
-                            </p>
-                          ) : null}
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={form.closeForm}
-                            className="text-slate-muted"
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="primary"
-                            size="sm"
-                            disabled={!form.isOnline}
-                            loading={form.isCreating}
-                            onClick={() => void form.handleSubmit()}
-                            title={
-                              form.isOnline
-                                ? undefined
-                                : "Reconnect before suggesting plan changes."
-                            }
-                          >
-                            <SendHorizontal
-                              className="size-3.5"
-                              aria-hidden="true"
-                            />
-                            Send to group
-                          </Button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ) : null}
-                </AnimatePresence>
-              </li>
-            );
-          })}
+          {PLAN_PROPOSAL_FIELD_OPTIONS.map((option, index) => (
+            <PlanFieldItem
+              key={option.value}
+              currentValue={getCurrentProposalValue(plan, option.value)}
+              form={form}
+              isLast={index === PLAN_PROPOSAL_FIELD_OPTIONS.length - 1}
+              option={option}
+              onLocationModeChange={handleLocationModeChange}
+            />
+          ))}
         </ul>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// ── Field row components ─────────────────────────────────────────────────────
+
+interface PlanFieldItemProps {
+  currentValue: string;
+  form: PlanProposalForm;
+  isLast: boolean;
+  onLocationModeChange: (mode: string) => void;
+  option: PlanProposalFieldOption;
+}
+
+function PlanFieldItem({
+  currentValue,
+  form,
+  isLast,
+  onLocationModeChange,
+  option,
+}: PlanFieldItemProps) {
+  const Icon = FIELD_ICON[option.value];
+  const isExpanded = form.field === option.value && form.isOpen;
+
+  return (
+    <li
+      className={[
+        "relative transition-colors duration-150",
+        !isLast && "border-border/50 border-b",
+        isExpanded && "bg-forge-teal/[0.03]",
+      ].join(" ")}
+    >
+      <PlanFieldAccent isExpanded={isExpanded} />
+      <PlanFieldTrigger
+        currentValue={currentValue}
+        Icon={Icon}
+        isExpanded={isExpanded}
+        onSelect={() => {
+          if (isProposalField(option.value)) {
+            form.handleFieldChange(option.value);
+          }
+        }}
+        option={option}
+      />
+      <PlanFieldBody
+        currentValue={currentValue}
+        form={form}
+        isExpanded={isExpanded}
+        onLocationModeChange={onLocationModeChange}
+        option={option}
+      />
+    </li>
+  );
+}
+
+function PlanFieldAccent({ isExpanded }: { isExpanded: boolean }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={[
+        "absolute top-0 bottom-0 left-0 w-[3px] rounded-r-full transition-all duration-300",
+        isExpanded ? "bg-forge-teal opacity-100" : "opacity-0",
+      ].join(" ")}
+    />
+  );
+}
+
+interface PlanFieldTriggerProps {
+  currentValue: string;
+  Icon: LucideIcon;
+  isExpanded: boolean;
+  onSelect: () => void;
+  option: PlanProposalFieldOption;
+}
+
+function PlanFieldTrigger({
+  currentValue,
+  Icon,
+  isExpanded,
+  onSelect,
+  option,
+}: PlanFieldTriggerProps) {
+  return (
+    <button
+      type="button"
+      aria-expanded={isExpanded}
+      aria-controls={`field-body-${option.value}`}
+      onClick={onSelect}
+      className="flex w-full items-center gap-3 px-5 py-3.5 text-left"
+    >
+      <IconTile
+        icon={Icon}
+        iconClassName="size-3.75"
+        size="sm"
+        shape="square"
+        tone={isExpanded ? "teal" : "none"}
+        className={isExpanded ? "bg-forge-teal/15" : "text-slate-muted"}
+      />
+      <PlanFieldLabel
+        currentValue={currentValue}
+        isExpanded={isExpanded}
+        label={option.label}
+      />
+      <PlanFieldChevron isExpanded={isExpanded} />
+    </button>
+  );
+}
+
+function PlanFieldLabel({
+  currentValue,
+  isExpanded,
+  label,
+}: {
+  currentValue: string;
+  isExpanded: boolean;
+  label: string;
+}) {
+  return (
+    <span className="min-w-0 flex-1">
+      <span
+        className={[
+          "block font-medium text-sm leading-snug transition-colors duration-150",
+          isExpanded ? "text-forge-teal" : "text-ink",
+        ].join(" ")}
+      >
+        {label}
+      </span>
+      {!isExpanded && currentValue ? (
+        <span className="mt-0.5 block truncate text-slate-muted text-xs">
+          {currentValue}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+function PlanFieldChevron({ isExpanded }: { isExpanded: boolean }) {
+  return (
+    <motion.span
+      animate={{ rotate: isExpanded ? 180 : 0 }}
+      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <ChevronDown
+        className={[
+          "size-4 transition-colors duration-150",
+          isExpanded ? "text-forge-teal" : "text-slate-muted/40",
+        ].join(" ")}
+        strokeWidth={1.75}
+      />
+    </motion.span>
+  );
+}
+
+interface PlanFieldBodyProps {
+  currentValue: string;
+  form: PlanProposalForm;
+  isExpanded: boolean;
+  onLocationModeChange: (mode: string) => void;
+  option: PlanProposalFieldOption;
+}
+
+function PlanFieldBody({
+  currentValue,
+  form,
+  isExpanded,
+  onLocationModeChange,
+  option,
+}: PlanFieldBodyProps) {
+  return (
+    <AnimatePresence initial={false}>
+      {isExpanded ? (
+        <motion.div
+          id={`field-body-${option.value}`}
+          role="region"
+          aria-label={`Edit ${option.label}`}
+          key={`body-${option.value}`}
+          initial={{ height: 0, opacity: 0 }}
+          animate={{
+            height: "auto",
+            opacity: 1,
+            transition: {
+              height: {
+                duration: 0.28,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              },
+              opacity: { duration: 0.2, delay: 0.07 },
+            },
+          }}
+          exit={{
+            height: 0,
+            opacity: 0,
+            transition: {
+              height: { duration: 0.2, ease: [0.4, 0, 1, 1] },
+              opacity: { duration: 0.1 },
+            },
+          }}
+          className="overflow-hidden"
+        >
+          <div className="px-5 pt-0 pb-5">
+            <CurrentValueNote currentValue={currentValue} />
+            <PlanFieldInput
+              form={form}
+              onLocationModeChange={onLocationModeChange}
+              option={option}
+            />
+            <PlanFieldError error={form.error} />
+            <PlanChangeActions form={form} />
+          </div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
+function CurrentValueNote({ currentValue }: { currentValue: string }) {
+  if (!currentValue) {
+    return null;
+  }
+
+  return (
+    <p className="mb-3 flex items-baseline gap-1.5 text-slate-muted text-xs">
+      <span className="shrink-0 font-medium">Currently:</span>
+      <span className="min-w-0 truncate">{currentValue}</span>
+    </p>
+  );
+}
+
+function PlanFieldInput({
+  form,
+  onLocationModeChange,
+  option,
+}: {
+  form: PlanProposalForm;
+  onLocationModeChange: (mode: string) => void;
+  option: PlanProposalFieldOption;
+}) {
+  if (form.isDateField) {
+    return <DateTimeInput value={form.value} onValueChange={form.setValue} />;
+  }
+
+  if (form.isLocationField) {
+    return (
+      <LocationInput
+        locationValue={form.locationValue}
+        onModeChange={onLocationModeChange}
+        onLocationSelect={(location) =>
+          form.setLocationValue((current) => ({
+            ...current,
+            location: location?.address ?? "",
+            locationLat: location?.lat ?? null,
+            locationLng: location?.lng ?? null,
+          }))
+        }
+        onLinkChange={(value) =>
+          form.setLocationValue((current) => ({
+            ...current,
+            location: value,
+            locationLat: null,
+            locationLng: null,
+          }))
+        }
+      />
+    );
+  }
+
+  return (
+    <Textarea
+      value={form.value}
+      onChange={(event) => form.setValue(event.target.value)}
+      rows={option.value === "DESCRIPTION" ? 4 : 2}
+      className="resize-none"
+    />
+  );
+}
+
+function PlanFieldError({ error }: { error: string | null }) {
+  if (!error) {
+    return null;
+  }
+
+  return (
+    <Notice
+      aria-live="polite"
+      tone="danger"
+      size="sm"
+      icon={<AlertCircle className="size-3.5 shrink-0" />}
+      className="mt-3 bg-destructive/8"
+    >
+      {error}
+    </Notice>
+  );
+}
+
+function PlanChangeActions({ form }: { form: PlanProposalForm }) {
+  return (
+    <div className="mt-4 flex items-center justify-end gap-2">
+      {!form.isOnline ? (
+        <p role="status" className="mr-auto min-w-0 text-slate-muted text-xs">
+          Reconnect before sending.
+        </p>
+      ) : null}
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={form.closeForm}
+        className="text-slate-muted"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="button"
+        variant="primary"
+        size="sm"
+        disabled={!form.isOnline}
+        loading={form.isCreating}
+        onClick={() => void form.handleSubmit()}
+        title={
+          form.isOnline
+            ? undefined
+            : "Reconnect before suggesting plan changes."
+        }
+      >
+        <SendHorizontal className="size-3.5" aria-hidden="true" />
+        Send to group
+      </Button>
+    </div>
   );
 }
 

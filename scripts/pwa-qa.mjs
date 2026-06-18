@@ -31,7 +31,9 @@ const ENV_EXAMPLE_PATH = path.join(ROOT_DIR, ".env.example");
 const PACKAGE_JSON_PATH = path.join(ROOT_DIR, "package.json");
 const PWA_PRODUCTION_ENV_SCRIPT = "scripts/pwa-production-env.mjs";
 const PWA_RELEASE_SCRIPT = "npm run pwa:env && npm run build && npm run pwa:qa";
+const LOCAL_APP_URL = "http://localhost:3000";
 const LOCAL_API_URL = "http://localhost:6969/api/v1";
+const MEDIA_BASE_URL = "https://mkloz-teamforge.s3.us-east-1.amazonaws.com";
 const PRODUCTION_API_URL = "https://api.mkloz.com/teamforge/api/v1";
 
 const REQUIRED_TELEMETRY_EVENTS = [
@@ -298,9 +300,19 @@ async function validateDeployGuards() {
     addFail("Deploy Guards", ".env.example", ".env.example is missing.");
   } else {
     const envExample = await readText(ENV_EXAMPLE_PATH);
+    const appUrl = getEnvValue(envExample, "VITE_APP_URL");
     const apiUrl = getEnvValue(envExample, "VITE_API_URL");
+    const mediaBaseUrl = getEnvValue(envExample, "VITE_MEDIA_BASE_URL");
     const googleMapsKey = getEnvValue(envExample, "VITE_GOOGLE_MAPS_API_KEY");
 
+    addCheck(
+      "Deploy Guards",
+      ".env.example app URL",
+      appUrl === LOCAL_APP_URL,
+      appUrl === LOCAL_APP_URL
+        ? `.env.example points VITE_APP_URL at ${LOCAL_APP_URL}.`
+        : `.env.example should use ${LOCAL_APP_URL}; found ${appUrl ?? "missing"}.`,
+    );
     addCheck(
       "Deploy Guards",
       ".env.example API prefix",
@@ -308,6 +320,14 @@ async function validateDeployGuards() {
       apiUrl === LOCAL_API_URL
         ? `.env.example points VITE_API_URL at ${LOCAL_API_URL}.`
         : `.env.example should use ${LOCAL_API_URL}; found ${apiUrl ?? "missing"}.`,
+    );
+    addCheck(
+      "Deploy Guards",
+      ".env.example media base URL",
+      mediaBaseUrl === MEDIA_BASE_URL,
+      mediaBaseUrl === MEDIA_BASE_URL
+        ? ".env.example points VITE_MEDIA_BASE_URL at the seed media host."
+        : `.env.example should use ${MEDIA_BASE_URL}; found ${mediaBaseUrl ?? "missing"}.`,
     );
     addCheck(
       "Deploy Guards",
@@ -364,7 +384,9 @@ async function validateDeployGuards() {
   );
 
   await validateSourceMarkers("Deploy Guards", PWA_PRODUCTION_ENV_SCRIPT, [
+    "VITE_APP_URL uses HTTPS",
     "PRODUCTION_API_URL",
+    "VITE_MEDIA_BASE_URL uses HTTPS",
     "EXPECTED_PRODUCTION_SOCKET_PATH",
     "VITE_API_URL uses HTTPS",
     "VITE_API_URL includes API prefix",

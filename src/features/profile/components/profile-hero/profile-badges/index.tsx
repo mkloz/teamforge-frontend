@@ -17,10 +17,78 @@ import type { User } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
 import { ProfileBadgeDivider } from "./profile-badge-divider";
 
+type FriendsSheetTab = "friends" | "requests" | "public_friends";
+
 interface ProfileBadgesProps {
   archetype: string;
   user: User;
-  onOpenFriends?: (tab: "friends" | "requests" | "public_friends") => void;
+  onOpenFriends?: (tab: FriendsSheetTab) => void;
+}
+
+interface SocialBadgeInput {
+  canShowPublicFriends: boolean;
+  commonFriendsCount: number;
+  friendsCount: number;
+  isSelf: boolean;
+  publicFriendsCount: number;
+  requestsCount: number;
+}
+
+interface SocialBadge {
+  accent?: string;
+  label: string;
+  tab: FriendsSheetTab;
+  value: string;
+}
+
+function getSocialBadges({
+  canShowPublicFriends,
+  commonFriendsCount,
+  friendsCount,
+  isSelf,
+  publicFriendsCount,
+  requestsCount,
+}: SocialBadgeInput): SocialBadge[] {
+  if (isSelf) {
+    const badges: SocialBadge[] = [
+      {
+        label: "Friends",
+        tab: "friends",
+        value: friendsCount.toString(),
+      },
+    ];
+
+    if (requestsCount > 0) {
+      badges.push({
+        accent: "text-spark-amber",
+        label: "Requests",
+        tab: "requests",
+        value: requestsCount.toString(),
+      });
+    }
+
+    return badges;
+  }
+
+  const badges: SocialBadge[] = [];
+
+  if (canShowPublicFriends) {
+    badges.push({
+      label: "Friends",
+      tab: "public_friends",
+      value: publicFriendsCount.toString(),
+    });
+  }
+
+  if (commonFriendsCount > 0) {
+    badges.push({
+      label: "Mutual Friends",
+      tab: "friends",
+      value: commonFriendsCount.toString(),
+    });
+  }
+
+  return badges;
 }
 
 export function ProfileBadges({
@@ -50,6 +118,14 @@ export function ProfileBadges({
   const groupMode = archetype.replace(/^The\s+/i, "");
 
   const canShowPublicFriends = !isSelf && user.showFriendsListOnProfile;
+  const socialBadges = getSocialBadges({
+    canShowPublicFriends,
+    commonFriendsCount,
+    friendsCount,
+    isSelf,
+    publicFriendsCount,
+    requestsCount,
+  });
 
   return (
     <div className="flex w-full shrink-0 flex-wrap items-center justify-start gap-x-3 gap-y-3 sm:w-auto sm:gap-4 sm:gap-y-4">
@@ -66,77 +142,58 @@ export function ProfileBadges({
       {/* Group role / archetype — opens a popover with role context */}
       <RoleBadge archetype={archetype} groupMode={groupMode} />
 
-      {isSelf ? (
-        <div className="hidden sm:contents">
-          <ProfileBadgeDivider className="hidden sm:block" />
-          <SheetTrigger asChild>
-            <button
-              type="button"
-              onClick={() => onOpenFriends?.("friends")}
-              className="group rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-            >
-              <ProfileSignal label="Friends" value={friendsCount.toString()} />
-            </button>
-          </SheetTrigger>
-
-          {requestsCount > 0 && (
-            <>
-              <ProfileBadgeDivider className="hidden sm:block" />
-              <SheetTrigger asChild>
-                <button
-                  type="button"
-                  onClick={() => onOpenFriends?.("requests")}
-                  className="group rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                >
-                  <ProfileSignal
-                    label="Requests"
-                    value={requestsCount.toString()}
-                    accent="text-spark-amber"
-                  />
-                </button>
-              </SheetTrigger>
-            </>
-          )}
-        </div>
-      ) : (
-        <div className="hidden sm:contents">
-          {canShowPublicFriends && (
-            <>
-              <ProfileBadgeDivider className="hidden sm:block" />
-              <SheetTrigger asChild>
-                <button
-                  type="button"
-                  onClick={() => onOpenFriends?.("public_friends")}
-                  className="group rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                >
-                  <ProfileSignal
-                    label="Friends"
-                    value={publicFriendsCount.toString()}
-                  />
-                </button>
-              </SheetTrigger>
-            </>
-          )}
-          {commonFriendsCount > 0 && (
-            <>
-              <ProfileBadgeDivider className="hidden sm:block" />
-              <SheetTrigger asChild>
-                <button
-                  type="button"
-                  onClick={() => onOpenFriends?.("friends")}
-                  className="group rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                >
-                  <ProfileSignal
-                    label="Mutual Friends"
-                    value={commonFriendsCount.toString()}
-                  />
-                </button>
-              </SheetTrigger>
-            </>
-          )}
-        </div>
-      )}
+      <ProfileSocialBadges
+        badges={socialBadges}
+        onOpenFriends={onOpenFriends}
+      />
     </div>
+  );
+}
+
+function ProfileSocialBadges({
+  badges,
+  onOpenFriends,
+}: {
+  badges: SocialBadge[];
+  onOpenFriends?: (tab: FriendsSheetTab) => void;
+}) {
+  return (
+    <div className="hidden sm:contents">
+      {badges.map((badge) => (
+        <ProfileSocialBadge
+          key={badge.tab}
+          badge={badge}
+          onOpenFriends={onOpenFriends}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ProfileSocialBadge({
+  badge,
+  onOpenFriends,
+}: {
+  badge: SocialBadge;
+  onOpenFriends?: (tab: FriendsSheetTab) => void;
+}) {
+  return (
+    <>
+      <ProfileBadgeDivider className="hidden sm:block" />
+      <SheetTrigger asChild>
+        <button
+          type="button"
+          onClick={() => onOpenFriends?.(badge.tab)}
+          className="group rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          <ProfileSignal
+            accent={badge.accent}
+            label={badge.label}
+            value={badge.value}
+          />
+        </button>
+      </SheetTrigger>
+    </>
   );
 }
 

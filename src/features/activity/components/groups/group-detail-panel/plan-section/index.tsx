@@ -31,6 +31,10 @@ import {
   formatTime,
   statusColors,
 } from "../lib/constants";
+import {
+  getPlanLifecycleViewState,
+  type PlanLifecycleViewState,
+} from "./plan-lifecycle-view-state";
 
 interface PlanSectionProps {
   plan: Plan;
@@ -283,19 +287,25 @@ function PlanLifecycleActions({
   pendingAction: string | null;
   plan: Plan;
 }) {
-  if (currentUserRole !== "ADMIN" || isReadOnly) {
+  const viewState = getPlanLifecycleViewState({
+    currentUserRole,
+    hasCancelPlan: Boolean(onCancelPlan),
+    hasCompletePlan: Boolean(onCompletePlan),
+    hasConfirmPlan: Boolean(onConfirmPlan),
+    hasEditPlan: Boolean(onEditPlan),
+    isOnline,
+    isReadOnly,
+    pendingAction,
+    plan,
+  });
+
+  if (!viewState.canManagePlan) {
     return null;
   }
 
-  const isDraftLike = plan.status === "DRAFT" || plan.status === "PROPOSED";
-  const isActive = plan.status === "CONFIRMED" || plan.status === "IN_PROGRESS";
-  const isTerminal = plan.status === "COMPLETED" || plan.status === "CANCELLED";
-  const hasOfflineBlock = !isOnline;
-  const isPlanActionDisabled = hasOfflineBlock || pendingAction !== null;
-
   return (
     <div className="mt-4 flex flex-wrap gap-2">
-      {hasOfflineBlock ? (
+      {viewState.hasOfflineBlock ? (
         <OfflineNotice
           withIcon={false}
           tone="neutral"
@@ -306,148 +316,212 @@ function PlanLifecycleActions({
         </OfflineNotice>
       ) : null}
 
-      {isDraftLike ? (
-        <ActionDialog
-          cancelLabel="Review first"
-          confirmLabel={
-            pendingAction === "confirm-plan" ? "Confirming..." : "Confirm plan"
-          }
-          description="This turns the draft into the plan everyone sees as ready."
-          details={[
-            plan.dateTime ? `Time: ${formatDate(plan.dateTime)}` : "Date TBD",
-            `Place: ${formatPlanLocation(plan)}`,
-          ]}
-          disabled={!plan.dateTime || isPlanActionDisabled || !onConfirmPlan}
-          loading={pendingAction === "confirm-plan"}
-          onConfirm={onConfirmPlan}
-          title="Confirm this plan?"
-          tone="info"
-          trigger={
-            <Button
-              type="button"
-              size="sm"
-              className="min-w-max grow basis-36"
-              contentClassName="gap-1.5"
-              disabled={
-                !plan.dateTime || isPlanActionDisabled || !onConfirmPlan
-              }
-              loading={pendingAction === "confirm-plan"}
-              title={
-                !isOnline
-                  ? "Reconnect before changing this plan."
-                  : !plan.dateTime
-                    ? "Set a date before confirming"
-                    : undefined
-              }
-            >
-              <CheckCircle2 className="size-3.5 shrink-0" />
-              Confirm plan
-            </Button>
-          }
+      {viewState.showConfirmAction ? (
+        <ConfirmPlanAction
+          onConfirmPlan={onConfirmPlan}
+          plan={plan}
+          viewState={viewState}
         />
       ) : null}
 
-      {isActive ? (
-        <ActionDialog
-          cancelLabel="Not yet"
-          confirmLabel={
-            pendingAction === "complete-plan" ? "Completing..." : "Complete"
-          }
-          description="Mark this plan as finished when the group has wrapped it up."
-          details={[
-            "The plan moves into completed history.",
-            "Members can still use the group for follow-up and future plans.",
-          ]}
-          disabled={isPlanActionDisabled || !onCompletePlan}
-          loading={pendingAction === "complete-plan"}
-          onConfirm={onCompletePlan}
-          title="Complete this plan?"
-          tone="success"
-          trigger={
-            <Button
-              type="button"
-              size="sm"
-              className="min-w-max grow basis-36"
-              contentClassName="gap-1.5"
-              disabled={isPlanActionDisabled || !onCompletePlan}
-              loading={pendingAction === "complete-plan"}
-              title={
-                isOnline ? undefined : "Reconnect before changing this plan."
-              }
-            >
-              <CheckCircle2 className="size-3.5 shrink-0" />
-              Complete
-            </Button>
-          }
+      {viewState.showCompleteAction ? (
+        <CompletePlanAction
+          onCompletePlan={onCompletePlan}
+          viewState={viewState}
         />
       ) : null}
 
-      {!isTerminal ? (
-        <ActionDialog
-          cancelLabel="Keep plan"
-          confirmLabel={
-            pendingAction === "cancel-plan" ? "Cancelling..." : "Cancel plan"
-          }
-          description="This closes the current plan for the group."
-          details={[
-            "Members will see the plan as cancelled.",
-            "The group chat stays open for deciding what happens next.",
-          ]}
-          disabled={isPlanActionDisabled || !onCancelPlan}
-          loading={pendingAction === "cancel-plan"}
-          onConfirm={onCancelPlan}
-          title="Cancel this plan?"
-          tone="danger"
-          trigger={
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="min-w-max grow basis-36"
-              contentClassName="gap-1.5"
-              disabled={isPlanActionDisabled || !onCancelPlan}
-              loading={pendingAction === "cancel-plan"}
-              title={
-                isOnline ? undefined : "Reconnect before changing this plan."
-              }
-            >
-              <XCircle className="size-3.5 shrink-0" />
-              Cancel
-            </Button>
-          }
+      {viewState.showCancelAction ? (
+        <CancelPlanAction onCancelPlan={onCancelPlan} viewState={viewState} />
+      ) : null}
+
+      {viewState.showCreateNextAction ? (
+        <CreateNextPlanAction
+          onCreateNextPlan={onCreateNextPlan}
+          viewState={viewState}
         />
       ) : null}
 
-      {isTerminal ? (
+      <EditPlanAction onEditPlan={onEditPlan} viewState={viewState} />
+    </div>
+  );
+}
+
+function ConfirmPlanAction({
+  onConfirmPlan,
+  plan,
+  viewState,
+}: {
+  onConfirmPlan?: () => Promise<void> | void;
+  plan: Plan;
+  viewState: PlanLifecycleViewState;
+}) {
+  const action = viewState.confirm;
+
+  return (
+    <ActionDialog
+      cancelLabel="Review first"
+      confirmLabel={action.confirmLabel}
+      description="This turns the draft into the plan everyone sees as ready."
+      details={[
+        plan.dateTime ? `Time: ${formatDate(plan.dateTime)}` : "Date TBD",
+        `Place: ${formatPlanLocation(plan)}`,
+      ]}
+      disabled={action.disabled}
+      loading={action.loading}
+      onConfirm={onConfirmPlan}
+      title="Confirm this plan?"
+      tone="info"
+      trigger={
         <Button
           type="button"
           size="sm"
           className="min-w-max grow basis-36"
           contentClassName="gap-1.5"
-          disabled={isPlanActionDisabled}
-          loading={pendingAction === "create-next-plan"}
-          onClick={onCreateNextPlan}
-          title={isOnline ? undefined : "Reconnect before changing this plan."}
+          disabled={action.disabled}
+          loading={action.loading}
+          title={action.title}
         >
-          <PlusCircle className="size-3.5 shrink-0" />
-          Plan another
+          <CheckCircle2 className="size-3.5 shrink-0" />
+          Confirm plan
         </Button>
-      ) : null}
+      }
+    />
+  );
+}
 
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        className="min-w-max grow basis-36"
-        contentClassName="gap-1.5"
-        disabled={isPlanActionDisabled || !onEditPlan}
-        onClick={onEditPlan}
-        title={isOnline ? undefined : "Reconnect before changing this plan."}
-      >
-        <Pencil className="size-3.5 shrink-0" />
-        Edit plan
-      </Button>
-    </div>
+function CompletePlanAction({
+  onCompletePlan,
+  viewState,
+}: {
+  onCompletePlan?: () => Promise<void> | void;
+  viewState: PlanLifecycleViewState;
+}) {
+  const action = viewState.complete;
+
+  return (
+    <ActionDialog
+      cancelLabel="Not yet"
+      confirmLabel={action.confirmLabel}
+      description="Mark this plan as finished when the group has wrapped it up."
+      details={[
+        "The plan moves into completed history.",
+        "Members can still use the group for follow-up and future plans.",
+      ]}
+      disabled={action.disabled}
+      loading={action.loading}
+      onConfirm={onCompletePlan}
+      title="Complete this plan?"
+      tone="success"
+      trigger={
+        <Button
+          type="button"
+          size="sm"
+          className="min-w-max grow basis-36"
+          contentClassName="gap-1.5"
+          disabled={action.disabled}
+          loading={action.loading}
+          title={action.title}
+        >
+          <CheckCircle2 className="size-3.5 shrink-0" />
+          Complete
+        </Button>
+      }
+    />
+  );
+}
+
+function CancelPlanAction({
+  onCancelPlan,
+  viewState,
+}: {
+  onCancelPlan?: () => Promise<void> | void;
+  viewState: PlanLifecycleViewState;
+}) {
+  const action = viewState.cancel;
+
+  return (
+    <ActionDialog
+      cancelLabel="Keep plan"
+      confirmLabel={action.confirmLabel}
+      description="This closes the current plan for the group."
+      details={[
+        "Members will see the plan as cancelled.",
+        "The group chat stays open for deciding what happens next.",
+      ]}
+      disabled={action.disabled}
+      loading={action.loading}
+      onConfirm={onCancelPlan}
+      title="Cancel this plan?"
+      tone="danger"
+      trigger={
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="min-w-max grow basis-36"
+          contentClassName="gap-1.5"
+          disabled={action.disabled}
+          loading={action.loading}
+          title={action.title}
+        >
+          <XCircle className="size-3.5 shrink-0" />
+          Cancel
+        </Button>
+      }
+    />
+  );
+}
+
+function CreateNextPlanAction({
+  onCreateNextPlan,
+  viewState,
+}: {
+  onCreateNextPlan?: () => Promise<void> | void;
+  viewState: PlanLifecycleViewState;
+}) {
+  const action = viewState.createNext;
+
+  return (
+    <Button
+      type="button"
+      size="sm"
+      className="min-w-max grow basis-36"
+      contentClassName="gap-1.5"
+      disabled={action.disabled}
+      loading={action.loading}
+      onClick={onCreateNextPlan}
+      title={action.title}
+    >
+      <PlusCircle className="size-3.5 shrink-0" />
+      Plan another
+    </Button>
+  );
+}
+
+function EditPlanAction({
+  onEditPlan,
+  viewState,
+}: {
+  onEditPlan?: () => void;
+  viewState: PlanLifecycleViewState;
+}) {
+  const action = viewState.edit;
+
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant="outline"
+      className="min-w-max grow basis-36"
+      contentClassName="gap-1.5"
+      disabled={action.disabled}
+      onClick={onEditPlan}
+      title={action.title}
+    >
+      <Pencil className="size-3.5 shrink-0" />
+      Edit plan
+    </Button>
   );
 }
 

@@ -23,6 +23,7 @@ import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { FactItem } from "@/shared/components/ui/fact-item";
 import type { IconTileTone } from "@/shared/components/ui/icon-tile";
+import { buildAppUrl } from "@/shared/lib/app-url";
 import { cn } from "@/shared/lib/utils";
 import type { ImageMedia } from "@/shared/schemas/media";
 import { formatPanelToken } from "./lib/constants";
@@ -80,7 +81,7 @@ export function GroupIdentitySection({
     displayName,
     isReadOnly,
   );
-  const groupLink = `${window.location.origin}/groups/${groupId}`;
+  const groupLink = buildAppUrl(`/groups/${encodeURIComponent(groupId)}`);
 
   return (
     <section className="relative flex flex-col gap-4 pt-5">

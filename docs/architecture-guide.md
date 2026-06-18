@@ -518,13 +518,17 @@ npm run build
 
 | Variable | Purpose |
 |----------|---------|
+| `VITE_APP_URL` | Public frontend base URL for canonical metadata, generated public files, and share links |
 | `VITE_API_URL` | Backend REST API base URL, including `/api/v1` |
+| `VITE_MEDIA_BASE_URL` | Public media asset base URL for seed/template imagery |
 | `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID |
 | `VITE_GOOGLE_MAPS_API_KEY` | Google Maps key for location autocomplete |
 | `VITE_GIPHY_API_KEY` | Giphy Web SDK key for chat GIF search |
 
-Local development uses `http://localhost:6969/api/v1`. Production uses the
-public browser path, for example `https://api.mkloz.com/teamforge/api/v1`.
+Local development uses `VITE_APP_URL=http://localhost:3000` and
+`VITE_API_URL=http://localhost:6969/api/v1`. Production uses public browser
+paths, for example `VITE_APP_URL=https://teamforge.app` and
+`VITE_API_URL=https://api.mkloz.com/teamforge/api/v1`.
 Realtime still uses the `/realtime` Socket.IO namespace; the client derives the
 transport path from `VITE_API_URL`, so that production API URL maps to
 `/teamforge/socket.io`.
@@ -532,7 +536,9 @@ transport path from `VITE_API_URL`, so that production API URL maps to
 ### Production PWA Release
 
 ```bash
+VITE_APP_URL=https://teamforge.app \
 VITE_API_URL=https://api.mkloz.com/teamforge/api/v1 \
+VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
 VITE_GIPHY_API_KEY=your-production-giphy-key \

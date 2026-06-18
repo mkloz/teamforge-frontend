@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://teamforge.app/sitemap.xml
+Sitemap: __TEAMFORGE_APP_URL__/sitemap.xml

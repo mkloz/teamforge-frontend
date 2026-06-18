@@ -150,31 +150,49 @@ function toNumber(value: number | string | undefined) {
 function toOutgoingGiphyAttachment(
   gif: IGif,
 ): ActivityOutgoingGifAttachment | null {
-  const rendition = gif.images.fixed_width ?? gif.images.fixed_height;
-  const videoUrl =
-    rendition?.mp4 ||
-    gif.images.downsized_small?.mp4 ||
-    gif.images.original_mp4?.mp4 ||
-    gif.images.original?.mp4;
+  const rendition = getPreferredGiphyRendition(gif);
+  const videoUrl = getGiphyVideoUrl(gif, rendition);
 
   if (!videoUrl) {
     return null;
   }
 
-  const previewUrl =
+  return {
+    height: toNumber(rendition?.height),
+    previewUrl: getGiphyPreviewUrl(gif, rendition),
+    provider: "giphy",
+    providerId: String(gif.id),
+    title: getGiphyAttachmentTitle(gif),
+    url: videoUrl,
+    width: toNumber(rendition?.width),
+  };
+}
+
+function getPreferredGiphyRendition(gif: IGif) {
+  return gif.images.fixed_width ?? gif.images.fixed_height;
+}
+
+type PreferredGiphyRendition = ReturnType<typeof getPreferredGiphyRendition>;
+
+function getGiphyVideoUrl(gif: IGif, rendition: PreferredGiphyRendition) {
+  return (
+    rendition?.mp4 ||
+    gif.images.downsized_small?.mp4 ||
+    gif.images.original_mp4?.mp4 ||
+    gif.images.original?.mp4
+  );
+}
+
+function getGiphyPreviewUrl(gif: IGif, rendition: PreferredGiphyRendition) {
+  return (
     rendition?.webp ||
     gif.images.fixed_width_still?.url ||
     gif.images.preview_gif?.url ||
     gif.images.original_still?.url ||
-    null;
+    null
+  );
+}
 
-  return {
-    height: toNumber(rendition?.height),
-    previewUrl,
-    provider: "giphy",
-    providerId: String(gif.id),
-    title: (gif.title || "GIPHY GIF").slice(0, 255),
-    url: videoUrl,
-    width: toNumber(rendition?.width),
-  };
+function getGiphyAttachmentTitle(gif: IGif) {
+  return (gif.title || "GIPHY GIF").slice(0, 255);
 }

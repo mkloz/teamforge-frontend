@@ -34,28 +34,95 @@ export interface GroupIdentityUpdateInput {
   planPayload?: UpdatePlanPayload;
 }
 
+type GroupIdentityDetailsInitialValues = Pick<
+  GroupIdentityFormValues,
+  "avatar" | "description" | "name"
+>;
+
+type GroupPlanInitialValues = Omit<
+  GroupIdentityFormValues,
+  keyof GroupIdentityDetailsInitialValues
+>;
+
+type GroupPlanCostInitialValues = Pick<
+  GroupPlanInitialValues,
+  "planCost" | "planCostAmount" | "planCostDetails"
+>;
+
+type GroupPlanLocationInitialValues = Pick<
+  GroupPlanInitialValues,
+  "planLocation" | "planLocationLat" | "planLocationLng" | "planLocationMode"
+>;
+
+type GroupPlan = Group["plan"];
+
 export function getInitialGroupIdentityValues(
   group: Group,
 ): GroupIdentityFormValues {
+  const groupValues = getInitialGroupDetailsValues(group);
+  const planValues = getInitialPlanValues(group.plan);
+
+  return {
+    avatar: groupValues.avatar,
+    coverImage: planValues.coverImage,
+    description: groupValues.description,
+    name: groupValues.name,
+    planCategory: planValues.planCategory,
+    planCost: planValues.planCost,
+    planCostAmount: planValues.planCostAmount,
+    planCostDetails: planValues.planCostDetails,
+    planDateTime: planValues.planDateTime,
+    planDescription: planValues.planDescription,
+    planLocation: planValues.planLocation,
+    planLocationLat: planValues.planLocationLat,
+    planLocationLng: planValues.planLocationLng,
+    planLocationMode: planValues.planLocationMode,
+    planTitle: planValues.planTitle,
+  };
+}
+
+function getInitialGroupDetailsValues(
+  group: Group,
+): GroupIdentityDetailsInitialValues {
   return {
     avatar: group.avatar ?? "",
-    coverImage: group.plan?.coverImage ?? null,
     description: group.description ?? "",
     name: group.name,
-    planCategory: group.plan?.category ?? "",
-    planCost: group.plan?.cost ?? "FREE",
-    planCostAmount:
-      typeof group.plan?.costAmount === "number"
-        ? String(group.plan.costAmount)
-        : "",
-    planCostDetails: group.plan?.costDetails ?? "",
-    planDateTime: toDateTimeLocalValue(group.plan?.dateTime ?? null),
-    planDescription: group.plan?.description ?? "",
-    planLocation: group.plan?.location ?? "",
-    planLocationLat: group.plan?.locationLat ?? null,
-    planLocationLng: group.plan?.locationLng ?? null,
-    planLocationMode: group.plan?.locationMode ?? "TBD",
-    planTitle: group.plan?.title ?? "",
+  };
+}
+
+function getInitialPlanValues(plan: GroupPlan): GroupPlanInitialValues {
+  return {
+    coverImage: plan?.coverImage ?? null,
+    planCategory: plan?.category ?? "",
+    ...getInitialPlanCostValues(plan),
+    planDateTime: toDateTimeLocalValue(plan?.dateTime ?? null),
+    planDescription: plan?.description ?? "",
+    ...getInitialPlanLocationValues(plan),
+    planTitle: plan?.title ?? "",
+  };
+}
+
+function getInitialPlanCostValues(plan: GroupPlan): GroupPlanCostInitialValues {
+  return {
+    planCost: plan?.cost ?? "FREE",
+    planCostAmount: formatInitialCostAmount(plan?.costAmount),
+    planCostDetails: plan?.costDetails ?? "",
+  };
+}
+
+function formatInitialCostAmount(costAmount: number | null | undefined) {
+  return typeof costAmount === "number" ? String(costAmount) : "";
+}
+
+function getInitialPlanLocationValues(
+  plan: GroupPlan,
+): GroupPlanLocationInitialValues {
+  return {
+    planLocation: plan?.location ?? "",
+    planLocationLat: plan?.locationLat ?? null,
+    planLocationLng: plan?.locationLng ?? null,
+    planLocationMode: plan?.locationMode ?? "TBD",
   };
 }
 

@@ -17,8 +17,14 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
+import {
+  type FileDropzoneVariant,
+  type FileDropzoneViewState,
+  getFileDropzoneViewState,
+  getFiles,
+} from "./file-dropzone-view-state";
 
-export type FileDropzoneVariant = "cover" | "avatar" | "compact" | "inline";
+export type { FileDropzoneVariant };
 
 export interface FileDropzoneProps {
   accept?: string;
@@ -51,44 +57,41 @@ interface FilePreviewItemProps {
   onRemove?: (index: number) => void;
 }
 
+interface DropzonePreviewLayersProps {
+  isDragging: boolean;
+  preview?: ReactNode;
+}
+
+interface DropzoneIconProps {
+  isUploading: boolean;
+  viewState: FileDropzoneViewState;
+}
+
+interface DropzoneTextProps {
+  description?: string;
+  isDragging: boolean;
+  viewState: FileDropzoneViewState;
+}
+
+interface DropzoneActionPillProps {
+  actionLabel?: string;
+  showMeta: boolean;
+  viewState: FileDropzoneViewState;
+}
+
+interface DropzoneMetaRowProps {
+  actionLabel?: string;
+  helper?: string;
+  showMeta: boolean;
+  viewState: FileDropzoneViewState;
+}
+
 function formatFileSize(size: number) {
   if (size < 1024 * 1024) {
     return `${Math.max(1, Math.round(size / 1024))} KB`;
   }
 
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function getVariantClasses(variant: FileDropzoneVariant) {
-  if (variant === "cover") {
-    return "min-h-44 rounded-xl";
-  }
-
-  if (variant === "avatar") {
-    return "min-h-20 rounded-lg sm:min-h-24";
-  }
-
-  if (variant === "inline") {
-    return "min-h-24 rounded-lg";
-  }
-
-  return "min-h-28 rounded-lg";
-}
-
-function getFiles(fileList: FileList | null, maxFiles: number) {
-  return fileList ? Array.from(fileList).slice(0, maxFiles) : [];
-}
-
-function getDropHint(variant: FileDropzoneVariant, multiple: boolean) {
-  if (variant === "avatar") {
-    return "Square image";
-  }
-
-  if (variant === "cover") {
-    return "Landscape image";
-  }
-
-  return multiple ? "Multiple files" : "Single file";
 }
 
 export function FileDropzone({
@@ -114,11 +117,20 @@ export function FileDropzone({
   const resolvedInputRef = inputRef ?? internalInputRef;
   const inputId = useId();
   const [isDragging, setIsDragging] = useState(false);
-  const fileLimit = maxFiles ?? (multiple ? 10 : 1);
-  const isInactive = disabled || isUploading;
+  const viewState = getFileDropzoneViewState({
+    disabled,
+    dropzoneClassName,
+    error,
+    isDragging,
+    isUploading,
+    maxFiles,
+    multiple,
+    title,
+    variant,
+  });
 
   const selectFiles = (fileList: FileList | null) => {
-    const files = getFiles(fileList, fileLimit);
+    const files = getFiles(fileList, viewState.fileLimit);
 
     if (files.length > 0) {
       onFiles(files);
@@ -126,7 +138,7 @@ export function FileDropzone({
   };
 
   const handleDragOver = (event: DragEvent<HTMLButtonElement>) => {
-    if (isInactive) {
+    if (viewState.isInactive) {
       return;
     }
 
@@ -135,7 +147,7 @@ export function FileDropzone({
   };
 
   const handleDrop = (event: DragEvent<HTMLButtonElement>) => {
-    if (isInactive) {
+    if (viewState.isInactive) {
       return;
     }
 
@@ -144,183 +156,44 @@ export function FileDropzone({
     selectFiles(event.dataTransfer.files);
   };
 
-  const isCover = variant === "cover";
-
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <Button
         type="button"
         variant="ghost"
-        disabled={isInactive}
+        disabled={viewState.isInactive}
         onClick={() => {
           resolvedInputRef.current?.click();
         }}
         onDragOver={handleDragOver}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
-        className={cn(
-          "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border border-border/55 border-dashed bg-card p-0 text-left transition-all duration-200 focus-visible:ring-forge-teal/35",
-          getVariantClasses(variant),
-          isDragging
-            ? "border-forge-teal/60 bg-forge-teal/5 ring-2 ring-forge-teal/15"
-            : "hover:border-forge-teal/40 hover:bg-forge-teal/3 hover:ring-1 hover:ring-forge-teal/10",
-          error && "border-destructive/45 bg-destructive/4",
-          isInactive && "cursor-not-allowed opacity-60",
-          dropzoneClassName,
-        )}
+        className={viewState.rootButtonClassName}
         contentClassName="block size-full"
       >
-        {/* Background preview image */}
-        {preview ? <div className="absolute inset-0">{preview}</div> : null}
+        <DropzonePreviewLayers preview={preview} isDragging={isDragging} />
 
-        {/* Drag-over shimmer overlay */}
-        {isDragging && (
-          <div className="pointer-events-none absolute inset-0 z-0 bg-linear-to-br from-forge-teal/8 via-transparent to-forge-teal/4" />
-        )}
-
-        <div
-          className={cn(
-            "relative z-10 flex w-full flex-col gap-2 px-5 py-4",
-            isCover &&
-              "min-h-44 justify-end bg-linear-to-t from-black/60 via-black/24 to-transparent text-white",
-          )}
-        >
+        <div className={viewState.bodyClassName}>
           <div className="flex min-w-0 items-start gap-4">
-            {/* Icon container */}
-            <IconTile
-              tone="none"
-              size="lg"
-              shape="square"
-              className={cn(
-                "transition-all duration-200",
-                isCover
-                  ? "size-9 bg-white/14 text-white group-hover:bg-white/20"
-                  : "size-9 bg-forge-teal/10 text-forge-teal group-hover:bg-forge-teal/15",
-                isDragging && !isCover && "scale-110 bg-forge-teal/18",
-              )}
-            >
-              {isUploading ? (
-                <Loader2 className="size-4 animate-spin" strokeWidth={2} />
-              ) : (
-                <Upload
-                  className={cn(
-                    "size-4 transition-transform duration-200",
-                    isDragging && "-translate-y-px",
-                  )}
-                  strokeWidth={2}
-                />
-              )}
-            </IconTile>
-
-            {/* Text area */}
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <div className="flex min-w-0 items-center gap-2">
-                <p
-                  className={cn(
-                    "min-w-0 truncate font-semibold text-sm leading-tight tracking-tight",
-                    isCover ? "text-white" : "text-ink",
-                  )}
-                >
-                  {isUploading ? "Uploading…" : title}
-                </p>
-
-                {isDragging && (
-                  <StatusPill
-                    tone="none"
-                    size="xs"
-                    textCase="upper"
-                    className={cn(
-                      "type-signature-label px-2 py-0.5 font-semibold tracking-wide",
-                      isCover
-                        ? "bg-white/20 text-white"
-                        : "bg-forge-teal text-white",
-                    )}
-                  >
-                    Drop
-                  </StatusPill>
-                )}
-              </div>
-
-              {description && (
-                <p
-                  className={cn(
-                    "line-clamp-1 text-xs leading-snug",
-                    isCover ? "text-white/78" : "text-slate-muted",
-                  )}
-                >
-                  {description}
-                </p>
-              )}
-            </div>
-
-            {!showMeta && actionLabel && (
-              <StatusPill
-                tone="none"
-                size="md"
-                className={cn(
-                  "ml-auto hidden px-4 py-1.5 font-semibold transition-all duration-200 sm:inline-flex",
-                  isCover
-                    ? "border-white/28 bg-white/12 text-white group-hover:bg-white/22"
-                    : "border-forge-teal/25 bg-forge-teal/8 text-forge-teal group-hover:border-forge-teal/40 group-hover:bg-forge-teal/14",
-                  isDragging &&
-                    !isCover &&
-                    "border-forge-teal/50 bg-forge-teal/18",
-                )}
-              >
-                {actionLabel}
-              </StatusPill>
-            )}
+            <DropzoneIcon isUploading={isUploading} viewState={viewState} />
+            <DropzoneText
+              description={description}
+              isDragging={isDragging}
+              viewState={viewState}
+            />
+            <DropzoneActionPill
+              actionLabel={actionLabel}
+              showMeta={showMeta}
+              viewState={viewState}
+            />
           </div>
 
-          {showMeta && (
-            <div className="hidden min-w-0 flex-wrap items-center gap-1.5 sm:flex">
-              <StatusPill
-                tone="none"
-                size="xs"
-                className={cn(
-                  "font-medium",
-                  isCover
-                    ? "border-white/18 bg-white/10 text-white/80"
-                    : "border-border/70 bg-muted/70 text-slate-muted",
-                )}
-              >
-                {getDropHint(variant, multiple)}
-              </StatusPill>
-
-              {helper && (
-                <StatusPill
-                  tone="none"
-                  size="xs"
-                  className={cn(
-                    "min-w-0 max-w-full truncate font-medium",
-                    isCover
-                      ? "border-white/12 bg-white/6 text-white/60"
-                      : "border-border/50 bg-muted/40 text-slate-muted/75",
-                  )}
-                >
-                  {helper}
-                </StatusPill>
-              )}
-
-              {actionLabel && (
-                <StatusPill
-                  tone="none"
-                  size="md"
-                  className={cn(
-                    "ml-auto hidden px-4 py-1.5 font-semibold transition-all duration-200 sm:inline-flex",
-                    isCover
-                      ? "border-white/28 bg-white/12 text-white group-hover:bg-white/22"
-                      : "border-forge-teal/25 bg-forge-teal/8 text-forge-teal group-hover:border-forge-teal/40 group-hover:bg-forge-teal/14",
-                    isDragging &&
-                      !isCover &&
-                      "border-forge-teal/50 bg-forge-teal/18",
-                  )}
-                >
-                  {actionLabel}
-                </StatusPill>
-              )}
-            </div>
-          )}
+          <DropzoneMetaRow
+            actionLabel={actionLabel}
+            helper={helper}
+            showMeta={showMeta}
+            viewState={viewState}
+          />
         </div>
       </Button>
 
@@ -331,7 +204,7 @@ export function FileDropzone({
         aria-label={title}
         accept={accept}
         multiple={multiple}
-        disabled={isInactive}
+        disabled={viewState.isInactive}
         tabIndex={-1}
         className="sr-only"
         onChange={(event) => {
@@ -341,6 +214,126 @@ export function FileDropzone({
       />
 
       {error && <p className="font-medium text-destructive text-xs">{error}</p>}
+    </div>
+  );
+}
+
+function DropzonePreviewLayers({
+  isDragging,
+  preview,
+}: DropzonePreviewLayersProps) {
+  return (
+    <>
+      {preview ? <div className="absolute inset-0">{preview}</div> : null}
+
+      {isDragging && (
+        <div className="pointer-events-none absolute inset-0 z-0 bg-linear-to-br from-forge-teal/8 via-transparent to-forge-teal/4" />
+      )}
+    </>
+  );
+}
+
+function DropzoneIcon({ isUploading, viewState }: DropzoneIconProps) {
+  return (
+    <IconTile
+      tone="none"
+      size="lg"
+      shape="square"
+      className={viewState.iconTileClassName}
+    >
+      {isUploading ? (
+        <Loader2 className="size-4 animate-spin" strokeWidth={2} />
+      ) : (
+        <Upload className={viewState.uploadIconClassName} strokeWidth={2} />
+      )}
+    </IconTile>
+  );
+}
+
+function DropzoneText({
+  description,
+  isDragging,
+  viewState,
+}: DropzoneTextProps) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <div className="flex min-w-0 items-center gap-2">
+        <p className={viewState.titleClassName}>{viewState.titleText}</p>
+
+        {isDragging && (
+          <StatusPill
+            tone="none"
+            size="xs"
+            textCase="upper"
+            className={viewState.dropPillClassName}
+          >
+            Drop
+          </StatusPill>
+        )}
+      </div>
+
+      {description && (
+        <p className={viewState.descriptionClassName}>{description}</p>
+      )}
+    </div>
+  );
+}
+
+function DropzoneActionPill({
+  actionLabel,
+  showMeta,
+  viewState,
+}: DropzoneActionPillProps) {
+  if (showMeta || !actionLabel) {
+    return null;
+  }
+
+  return (
+    <StatusPill tone="none" size="md" className={viewState.actionPillClassName}>
+      {actionLabel}
+    </StatusPill>
+  );
+}
+
+function DropzoneMetaRow({
+  actionLabel,
+  helper,
+  showMeta,
+  viewState,
+}: DropzoneMetaRowProps) {
+  if (!showMeta) {
+    return null;
+  }
+
+  return (
+    <div className="hidden min-w-0 flex-wrap items-center gap-1.5 sm:flex">
+      <StatusPill
+        tone="none"
+        size="xs"
+        className={viewState.dropHintPillClassName}
+      >
+        {viewState.dropHint}
+      </StatusPill>
+
+      {helper && (
+        <StatusPill
+          tone="none"
+          size="xs"
+          className={viewState.helperPillClassName}
+        >
+          {helper}
+        </StatusPill>
+      )}
+
+      {actionLabel && (
+        <StatusPill
+          tone="none"
+          size="md"
+          className={viewState.actionPillClassName}
+        >
+          {actionLabel}
+        </StatusPill>
+      )}
     </div>
   );
 }

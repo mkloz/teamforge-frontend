@@ -54,6 +54,30 @@ interface AppearanceSettingsSectionProps {
   ) => Promise<void>;
 }
 
+type ThemePreferenceValues = Pick<
+  NotificationPreferences,
+  "themeAppearance" | "themeStyle" | "themeColor"
+>;
+
+interface ThemeSelectionState extends ThemePreferenceValues {
+  selectedAppearanceOption: (typeof APPEARANCE_OPTIONS)[number];
+  selectedStyleOption: (typeof STYLE_OPTIONS)[number];
+  selectedColorOption: (typeof COLOR_OPTIONS)[number];
+  isDefaultTheme: boolean;
+}
+
+interface ThemeSavingState {
+  isSavingAppearance: boolean;
+  isSavingStyle: boolean;
+  isSavingColor: boolean;
+}
+
+const DEFAULT_THEME_PREFERENCES = {
+  themeAppearance: DEFAULT_THEME_APPEARANCE,
+  themeStyle: DEFAULT_THEME_STYLE,
+  themeColor: DEFAULT_THEME_COLOR,
+} satisfies ThemePreferenceValues;
+
 const APPEARANCE_OPTIONS = [
   {
     id: ThemeAppearance.SYSTEM,
@@ -356,21 +380,25 @@ export function AppearanceSettingsSection({
 }: AppearanceSettingsSectionProps) {
   const { appearance, themeStyle, themeColor, isDark, setThemePreferences } =
     useTheme();
-  const selectedAppearance =
-    notificationPreferences?.themeAppearance ?? appearance;
-  const selectedThemeStyle = notificationPreferences?.themeStyle ?? themeStyle;
-  const selectedThemeColor = notificationPreferences?.themeColor ?? themeColor;
-  const isDisabled =
-    !isOnline || isLoadingNotificationPreferences || !notificationPreferences;
-  const isSavingAppearance =
-    isSavingNotificationPreferences ||
-    savingNotificationPreferenceKeys.has("themeAppearance");
-  const isSavingStyle =
-    isSavingNotificationPreferences ||
-    savingNotificationPreferenceKeys.has("themeStyle");
-  const isSavingColor =
-    isSavingNotificationPreferences ||
-    savingNotificationPreferenceKeys.has("themeColor");
+  const selection = getThemeSelectionState(notificationPreferences, {
+    themeAppearance: appearance,
+    themeStyle,
+    themeColor,
+  });
+  const savingState = getThemeSavingState(
+    isSavingNotificationPreferences,
+    savingNotificationPreferenceKeys,
+  );
+  const isDisabled = getAppearanceControlsDisabled({
+    isLoadingNotificationPreferences,
+    isOnline,
+    notificationPreferences,
+  });
+  const isResetDisabled = getResetDisabledState({
+    isDefaultTheme: selection.isDefaultTheme,
+    isDisabled,
+    ...savingState,
+  });
 
   useEffect(() => {
     if (!notificationPreferences) {
@@ -384,11 +412,7 @@ export function AppearanceSettingsSection({
     });
   }, [notificationPreferences, setThemePreferences]);
 
-  function saveThemePreference(values: {
-    themeAppearance: ThemeAppearanceValue;
-    themeStyle: ThemeStyleValue;
-    themeColor: ThemeColorValue;
-  }) {
+  function saveThemePreference(values: ThemePreferenceValues) {
     if (!notificationPreferences || isDisabled) {
       return;
     }
@@ -397,55 +421,27 @@ export function AppearanceSettingsSection({
     void onChange(values);
   }
 
-  const selectedAppearanceOption =
-    APPEARANCE_OPTIONS.find((option) => option.id === selectedAppearance) ??
-    APPEARANCE_OPTIONS[0];
-  const selectedStyleOption =
-    STYLE_OPTIONS.find((option) => option.value === selectedThemeStyle) ??
-    STYLE_OPTIONS[0];
-  const selectedColorOption =
-    COLOR_OPTIONS.find((option) => option.value === selectedThemeColor) ??
-    COLOR_OPTIONS[0];
-  const isDefaultTheme =
-    selectedAppearance === DEFAULT_THEME_APPEARANCE &&
-    selectedThemeStyle === DEFAULT_THEME_STYLE &&
-    selectedThemeColor === DEFAULT_THEME_COLOR;
-  const isResetDisabled =
-    isDisabled ||
-    isSavingAppearance ||
-    isSavingStyle ||
-    isSavingColor ||
-    isDefaultTheme;
+  function saveThemePreferencePatch(values: Partial<ThemePreferenceValues>) {
+    saveThemePreference({
+      themeAppearance: selection.themeAppearance,
+      themeStyle: selection.themeStyle,
+      themeColor: selection.themeColor,
+      ...values,
+    });
+  }
 
   return (
     <section className="flex max-w-4xl flex-col gap-7">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <SectionHeading
-          title="Appearance"
-          description="Layer the mode, material style, and color pack that make TeamForge feel right for you."
-        />
-        <Button
-          type="button"
-          variant="subtle"
-          size="xs"
-          className="self-start"
-          disabled={isResetDisabled}
-          loading={
-            !isDefaultTheme &&
-            (isSavingAppearance || isSavingStyle || isSavingColor)
-          }
-          onClick={() => {
-            saveThemePreference({
-              themeAppearance: DEFAULT_THEME_APPEARANCE,
-              themeStyle: DEFAULT_THEME_STYLE,
-              themeColor: DEFAULT_THEME_COLOR,
-            });
-          }}
-        >
-          <RotateCcw size={14} strokeWidth={2} aria-hidden="true" />
-          Reset defaults
-        </Button>
-      </div>
+      <AppearanceSectionHeader
+        isResetDisabled={isResetDisabled}
+        isResetLoading={getResetLoadingState({
+          isDefaultTheme: selection.isDefaultTheme,
+          ...savingState,
+        })}
+        onReset={() => {
+          saveThemePreference(DEFAULT_THEME_PREFERENCES);
+        }}
+      />
 
       <PreferenceStatusMessage error={error} />
 
@@ -454,77 +450,248 @@ export function AppearanceSettingsSection({
       ) : null}
 
       <ThemeRecipeStrip
-        appearanceLabel={selectedAppearanceOption.label}
-        appearanceIcon={selectedAppearanceOption.icon}
-        styleLabel={selectedStyleOption.label}
-        styleIcon={selectedStyleOption.icon}
-        colorLabel={selectedColorOption.label}
-        colorSwatches={selectedColorOption.swatches[isDark ? "dark" : "light"]}
+        appearanceLabel={selection.selectedAppearanceOption.label}
+        appearanceIcon={selection.selectedAppearanceOption.icon}
+        styleLabel={selection.selectedStyleOption.label}
+        styleIcon={selection.selectedStyleOption.icon}
+        colorLabel={selection.selectedColorOption.label}
+        colorSwatches={
+          selection.selectedColorOption.swatches[isDark ? "dark" : "light"]
+        }
       />
 
       <div className="flex flex-col gap-8 border-border border-t pt-6">
-        <LayerBlock
-          index="01"
-          title="Mode"
-          description="Follow your device, or pin one mode for this account."
-        >
-          <SegmentedTabs
-            ariaLabel="Appearance mode"
-            className="mt-4 w-full max-w-96"
-            disabled={isDisabled || isSavingAppearance}
-            fill
-            options={APPEARANCE_OPTIONS}
-            size="sm"
-            value={selectedAppearance}
-            onChange={(nextAppearance) => {
-              saveThemePreference({
-                themeAppearance: nextAppearance,
-                themeStyle: selectedThemeStyle,
-                themeColor: selectedThemeColor,
-              });
-            }}
-          />
-        </LayerBlock>
+        <ModeLayer
+          selectedAppearance={selection.themeAppearance}
+          disabled={isDisabled || savingState.isSavingAppearance}
+          onSelect={(nextAppearance) => {
+            saveThemePreferencePatch({ themeAppearance: nextAppearance });
+          }}
+        />
 
-        <LayerBlock
-          index="02"
-          title="Art style"
-          description="Change the material without changing color."
-        >
-          <StyleTableGrid
-            selectedThemeStyle={selectedThemeStyle}
-            disabled={isDisabled || isSavingStyle}
-            onSelect={(nextThemeStyle) => {
-              saveThemePreference({
-                themeAppearance: selectedAppearance,
-                themeStyle: nextThemeStyle,
-                themeColor: selectedThemeColor,
-              });
-            }}
-          />
-        </LayerBlock>
+        <StyleLayer
+          selectedThemeStyle={selection.themeStyle}
+          disabled={isDisabled || savingState.isSavingStyle}
+          onSelect={(nextThemeStyle) => {
+            saveThemePreferencePatch({ themeStyle: nextThemeStyle });
+          }}
+        />
 
-        <LayerBlock
-          index="03"
-          title="Color"
-          description="Choose a familiar base or a sharper direction."
-        >
-          <ColorTableGrid
-            options={COLOR_OPTIONS}
-            isDark={isDark}
-            selectedThemeColor={selectedThemeColor}
-            disabled={isDisabled || isSavingColor}
-            onSelect={(nextThemeColor) => {
-              saveThemePreference({
-                themeAppearance: selectedAppearance,
-                themeStyle: selectedThemeStyle,
-                themeColor: nextThemeColor,
-              });
-            }}
-          />
-        </LayerBlock>
+        <ColorLayer
+          isDark={isDark}
+          selectedThemeColor={selection.themeColor}
+          disabled={isDisabled || savingState.isSavingColor}
+          onSelect={(nextThemeColor) => {
+            saveThemePreferencePatch({ themeColor: nextThemeColor });
+          }}
+        />
       </div>
     </section>
+  );
+}
+
+function getThemeSelectionState(
+  notificationPreferences: NotificationPreferences | null,
+  fallback: ThemePreferenceValues,
+): ThemeSelectionState {
+  const selectedValues = {
+    themeAppearance:
+      notificationPreferences?.themeAppearance ?? fallback.themeAppearance,
+    themeStyle: notificationPreferences?.themeStyle ?? fallback.themeStyle,
+    themeColor: notificationPreferences?.themeColor ?? fallback.themeColor,
+  };
+
+  return {
+    ...selectedValues,
+    selectedAppearanceOption:
+      APPEARANCE_OPTIONS.find(
+        (option) => option.id === selectedValues.themeAppearance,
+      ) ?? APPEARANCE_OPTIONS[0],
+    selectedStyleOption:
+      STYLE_OPTIONS.find(
+        (option) => option.value === selectedValues.themeStyle,
+      ) ?? STYLE_OPTIONS[0],
+    selectedColorOption:
+      COLOR_OPTIONS.find(
+        (option) => option.value === selectedValues.themeColor,
+      ) ?? COLOR_OPTIONS[0],
+    isDefaultTheme:
+      selectedValues.themeAppearance === DEFAULT_THEME_APPEARANCE &&
+      selectedValues.themeStyle === DEFAULT_THEME_STYLE &&
+      selectedValues.themeColor === DEFAULT_THEME_COLOR,
+  };
+}
+
+function getThemeSavingState(
+  isSavingNotificationPreferences: boolean,
+  savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>,
+): ThemeSavingState {
+  return {
+    isSavingAppearance:
+      isSavingNotificationPreferences ||
+      savingNotificationPreferenceKeys.has("themeAppearance"),
+    isSavingStyle:
+      isSavingNotificationPreferences ||
+      savingNotificationPreferenceKeys.has("themeStyle"),
+    isSavingColor:
+      isSavingNotificationPreferences ||
+      savingNotificationPreferenceKeys.has("themeColor"),
+  };
+}
+
+function getAppearanceControlsDisabled({
+  isLoadingNotificationPreferences,
+  isOnline,
+  notificationPreferences,
+}: Pick<
+  AppearanceSettingsSectionProps,
+  "isLoadingNotificationPreferences" | "isOnline" | "notificationPreferences"
+>) {
+  return (
+    !isOnline || isLoadingNotificationPreferences || !notificationPreferences
+  );
+}
+
+function getResetDisabledState({
+  isDefaultTheme,
+  isDisabled,
+  isSavingAppearance,
+  isSavingStyle,
+  isSavingColor,
+}: ThemeSavingState & { isDefaultTheme: boolean; isDisabled: boolean }) {
+  return (
+    isDisabled ||
+    isSavingAppearance ||
+    isSavingStyle ||
+    isSavingColor ||
+    isDefaultTheme
+  );
+}
+
+function getResetLoadingState({
+  isDefaultTheme,
+  isSavingAppearance,
+  isSavingStyle,
+  isSavingColor,
+}: ThemeSavingState & { isDefaultTheme: boolean }) {
+  return (
+    !isDefaultTheme && (isSavingAppearance || isSavingStyle || isSavingColor)
+  );
+}
+
+interface AppearanceSectionHeaderProps {
+  isResetDisabled: boolean;
+  isResetLoading: boolean;
+  onReset: () => void;
+}
+
+function AppearanceSectionHeader({
+  isResetDisabled,
+  isResetLoading,
+  onReset,
+}: AppearanceSectionHeaderProps) {
+  return (
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <SectionHeading
+        title="Appearance"
+        description="Layer the mode, material style, and color pack that make TeamForge feel right for you."
+      />
+      <Button
+        type="button"
+        variant="subtle"
+        size="xs"
+        className="self-start"
+        disabled={isResetDisabled}
+        loading={isResetLoading}
+        onClick={onReset}
+      >
+        <RotateCcw size={14} strokeWidth={2} aria-hidden="true" />
+        Reset defaults
+      </Button>
+    </div>
+  );
+}
+
+interface ModeLayerProps {
+  selectedAppearance: ThemeAppearanceValue;
+  disabled: boolean;
+  onSelect: (value: ThemeAppearanceValue) => void;
+}
+
+function ModeLayer({ selectedAppearance, disabled, onSelect }: ModeLayerProps) {
+  return (
+    <LayerBlock
+      index="01"
+      title="Mode"
+      description="Follow your device, or pin one mode for this account."
+    >
+      <SegmentedTabs
+        ariaLabel="Appearance mode"
+        className="mt-4 w-full max-w-96"
+        disabled={disabled}
+        fill
+        options={APPEARANCE_OPTIONS}
+        size="sm"
+        value={selectedAppearance}
+        onChange={onSelect}
+      />
+    </LayerBlock>
+  );
+}
+
+interface StyleLayerProps {
+  selectedThemeStyle: ThemeStyleValue;
+  disabled: boolean;
+  onSelect: (value: ThemeStyleValue) => void;
+}
+
+function StyleLayer({
+  selectedThemeStyle,
+  disabled,
+  onSelect,
+}: StyleLayerProps) {
+  return (
+    <LayerBlock
+      index="02"
+      title="Art style"
+      description="Change the material without changing color."
+    >
+      <StyleTableGrid
+        selectedThemeStyle={selectedThemeStyle}
+        disabled={disabled}
+        onSelect={onSelect}
+      />
+    </LayerBlock>
+  );
+}
+
+interface ColorLayerProps {
+  isDark: boolean;
+  selectedThemeColor: ThemeColorValue;
+  disabled: boolean;
+  onSelect: (value: ThemeColorValue) => void;
+}
+
+function ColorLayer({
+  isDark,
+  selectedThemeColor,
+  disabled,
+  onSelect,
+}: ColorLayerProps) {
+  return (
+    <LayerBlock
+      index="03"
+      title="Color"
+      description="Choose a familiar base or a sharper direction."
+    >
+      <ColorTableGrid
+        options={COLOR_OPTIONS}
+        isDark={isDark}
+        selectedThemeColor={selectedThemeColor}
+        disabled={disabled}
+        onSelect={onSelect}
+      />
+    </LayerBlock>
   );
 }
 
@@ -585,7 +752,7 @@ interface RecipeItemProps {
 
 function RecipeItem({ icon: Icon, eyebrow, label }: RecipeItemProps) {
   return (
-    <div className="flex min-w-0 items-center gap-3 py-3 md:px-5 md:first:pl-0">
+    <div className="flex min-w-0 items-center gap-3 py-3 md:px-5 first:md:pl-0">
       <IconTile
         icon={Icon}
         tone="neutral"
@@ -667,28 +834,25 @@ function StyleTableGrid({
   disabled,
   onSelect,
 }: StyleTableGridProps) {
+  const lastRowStartIndex = getLastGridRowStartIndex(STYLE_OPTIONS.length);
+
   return (
     <div className="mt-4 grid md:grid-cols-2 md:gap-x-0">
-      {STYLE_OPTIONS.map((option, index) => {
-        const lastRowStartIndex =
-          STYLE_OPTIONS.length - (STYLE_OPTIONS.length % 2 === 0 ? 2 : 1);
-
-        return (
-          <StyleOptionRow
-            key={option.value}
-            label={option.label}
-            description={option.description}
-            icon={option.icon}
-            selected={selectedThemeStyle === option.value}
-            isDefault={option.value === DEFAULT_THEME_STYLE}
-            disabled={disabled}
-            isFirstColumnOnDesktop={index % 2 === 0}
-            isLastInGroup={index === STYLE_OPTIONS.length - 1}
-            isLastRowOnDesktop={index >= lastRowStartIndex}
-            onClick={() => onSelect(option.value)}
-          />
-        );
-      })}
+      {STYLE_OPTIONS.map((option, index) => (
+        <StyleOptionRow
+          key={option.value}
+          label={option.label}
+          description={option.description}
+          icon={option.icon}
+          selected={selectedThemeStyle === option.value}
+          isDefault={option.value === DEFAULT_THEME_STYLE}
+          disabled={disabled}
+          isFirstColumnOnDesktop={index % 2 === 0}
+          isLastInGroup={index === STYLE_OPTIONS.length - 1}
+          isLastRowOnDesktop={index >= lastRowStartIndex}
+          onClick={() => onSelect(option.value)}
+        />
+      ))}
     </div>
   );
 }
@@ -800,16 +964,7 @@ function ColorTableGrid({
   disabled,
   onSelect,
 }: ColorTableGridProps) {
-  const groups = [
-    {
-      label: "Core",
-      options: options.filter((option) => option.tag === "Core"),
-    },
-    {
-      label: "Experimental",
-      options: options.filter((option) => option.tag === "Experimental"),
-    },
-  ] as const;
+  const groups = getColorOptionGroups(options);
 
   return (
     <div className="mt-4">
@@ -826,8 +981,9 @@ function ColorTableGrid({
           </div>
           <div className="grid md:grid-cols-2 md:gap-x-0">
             {group.options.map((option, index) => {
-              const lastRowStartIndex =
-                group.options.length - (group.options.length % 2 === 0 ? 2 : 1);
+              const lastRowStartIndex = getLastGridRowStartIndex(
+                group.options.length,
+              );
 
               return (
                 <ColorOptionRow
@@ -850,6 +1006,23 @@ function ColorTableGrid({
       ))}
     </div>
   );
+}
+
+function getColorOptionGroups(options: readonly ColorOption[]) {
+  return [
+    {
+      label: "Core",
+      options: options.filter((option) => option.tag === "Core"),
+    },
+    {
+      label: "Experimental",
+      options: options.filter((option) => option.tag === "Experimental"),
+    },
+  ] as const;
+}
+
+function getLastGridRowStartIndex(optionCount: number) {
+  return optionCount - (optionCount % 2 === 0 ? 2 : 1);
 }
 
 interface ColorOptionRowProps {

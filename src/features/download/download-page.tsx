@@ -16,6 +16,15 @@ import Share from "lucide-react/dist/esm/icons/share.js";
 import Smartphone from "lucide-react/dist/esm/icons/smartphone.js";
 import Wifi from "lucide-react/dist/esm/icons/wifi.js";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import {
+  type DesktopBrowser,
+  type DetectedPlatform,
+  type DownloadPageViewState,
+  getDownloadPageViewState,
+  type InstallState,
+  platformToDevice,
+  type SelectedDevice,
+} from "@/features/download/download-page-view-state";
 import { Footer } from "@/features/landing/components/footer";
 import { Navbar } from "@/features/landing/components/navbar";
 import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
@@ -25,6 +34,7 @@ import { IconTile } from "@/shared/components/ui/icon-tile";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
+import { buildAppUrl } from "@/shared/lib/app-url";
 import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
 import type { PageMetadata } from "@/shared/lib/document-metadata";
@@ -109,32 +119,6 @@ const DOWNLOAD_PAGE_METADATA = {
 } as const satisfies PageMetadata;
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-/**
- * Detected platform — granular, used for smart defaults and conditional logic.
- * "ios-safari"  → iPhone/iPad in Safari (can install)
- * "ios-other"   → iPhone/iPad in Chrome/Firefox/Edge (cannot install — must use Safari)
- * "android"     → Android device (can install via prompt or menu)
- * "desktop"     → Desktop/laptop browser
- * "unknown"     → Pre-hydration placeholder
- */
-type DetectedPlatform =
-  | "android"
-  | "desktop"
-  | "ios-safari"
-  | "ios-other"
-  | "unknown";
-
-/**
- * User-selectable device category in the tab bar.
- * Defaults to detected platform's category.
- */
-type SelectedDevice = "ios" | "android" | "desktop";
-
-/** Desktop browser — used for browser-specific step content. */
-type DesktopBrowser = "chrome" | "edge" | "firefox" | "safari" | "other";
-
-type InstallState = "idle" | "accepted" | "dismissed" | "prompting";
 
 // ─── Step data ───────────────────────────────────────────────────────────────
 
@@ -366,12 +350,6 @@ function detectDesktopBrowser(): DesktopBrowser {
   return "other";
 }
 
-function platformToDevice(p: DetectedPlatform): SelectedDevice {
-  if (p === "ios-safari" || p === "ios-other") return "ios";
-  if (p === "android") return "android";
-  return "desktop"; // desktop + unknown → desktop
-}
-
 function getIosBrowserName(): string {
   if (typeof navigator === "undefined") return "this browser";
   const ua = navigator.userAgent;
@@ -401,18 +379,25 @@ function useDeviceDetection() {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function getInstallFeedback(state: InstallState): string | null {
-  if (state === "accepted")
-    return "Nice. TeamForge is being added to this device.";
-  if (state === "dismissed")
-    return "No rush — you can install it from this page any time.";
-  return null;
-}
-
 function scrollToSteps() {
   document
     .getElementById("install-steps")
     ?.scrollIntoView({ behavior: "smooth" });
+}
+
+function getSelectedDeviceStepConfig(
+  selectedDevice: SelectedDevice,
+  desktopBrowser: DesktopBrowser,
+): DeviceStepConfig | null {
+  if (selectedDevice === "ios") {
+    return IOS_SAFARI_CONFIG;
+  }
+
+  if (selectedDevice === "android") {
+    return ANDROID_CONFIG;
+  }
+
+  return getDesktopConfig(desktopBrowser);
 }
 
 function useDeferredPwaSections() {
@@ -479,8 +464,14 @@ export function DownloadPage() {
     }
   }, [detected]);
 
-  const canUseNativePrompt = canPromptInstall && !isStandalone;
-  const feedback = getInstallFeedback(installState);
+  const viewState = getDownloadPageViewState({
+    canPromptInstall,
+    desktopBrowser,
+    detected,
+    installState,
+    isStandalone,
+    selectedDevice,
+  });
 
   async function handleInstallClick() {
     setInstallState("prompting");
@@ -488,13 +479,10 @@ export function DownloadPage() {
     setInstallState(result.outcome === "accepted" ? "accepted" : "dismissed");
   }
 
-  // Resolve step config for currently selected device
-  const stepConfig: DeviceStepConfig | null =
-    selectedDevice === "ios"
-      ? IOS_SAFARI_CONFIG
-      : selectedDevice === "android"
-        ? ANDROID_CONFIG
-        : getDesktopConfig(desktopBrowser);
+  const stepConfig = getSelectedDeviceStepConfig(
+    selectedDevice,
+    desktopBrowser,
+  );
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
@@ -503,7 +491,7 @@ export function DownloadPage() {
         forceSolid
         staticPublicTheme
         installAction={
-          canUseNativePrompt
+          viewState.canUseNativePrompt
             ? {
                 isLoading: installState === "prompting",
                 onInstallClick: handleInstallClick,
@@ -513,262 +501,377 @@ export function DownloadPage() {
       />
 
       <main>
-        {/* ── Hero ──────────────────────────────────────────────────── */}
-        <section
-          className="dark public-forge-theme relative h-svh min-h-0 overflow-hidden border-canvas border-b bg-hero-bg pt-16"
-          aria-label="Install TeamForge"
-        >
-          <DownloadHeroGrid />
+        <DownloadHeroSection
+          desktopBrowser={desktopBrowser}
+          detected={detected}
+          downloadQrUrl={downloadQrUrl}
+          installState={installState}
+          isStandalone={isStandalone}
+          onInstallClick={handleInstallClick}
+          onSelectedDeviceChange={setSelectedDevice}
+          selectedDevice={selectedDevice}
+          viewState={viewState}
+        />
 
-          <div className="relative z-10 mx-auto grid h-[calc(100svh-4rem)] min-h-0 max-w-6xl grid-cols-1 gap-10 overflow-hidden px-6 py-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
-            {/* Left column: copy + selector + CTA */}
-            <div className="flex min-h-0 flex-col items-center justify-center text-center lg:items-start lg:text-left">
-              <h1 className="mb-4 text-balance font-extrabold text-4xl text-white leading-none sm:text-5xl lg:text-6xl">
-                Your groups,{" "}
-                <span className="text-forge-teal">one tap away.</span>
-              </h1>
+        <InstallStepsSection
+          installState={installState}
+          onInstallClick={handleInstallClick}
+          onSelectedDeviceChange={setSelectedDevice}
+          selectedDevice={selectedDevice}
+          stepConfig={stepConfig}
+          viewState={viewState}
+        />
 
-              <p className="mb-8 max-w-md text-pretty text-base text-text-dark-secondary leading-relaxed">
-                Install TeamForge directly from your browser — no app store, no
-                waiting. Select your device below for step-by-step instructions.
-              </p>
+        <DeferredPwaSections pwaSections={pwaSections} />
 
-              {/* Device selector */}
-              <DownloadDeviceTabs
-                ariaLabel="Select your device"
-                options={DEVICE_TABS}
-                value={selectedDevice}
-                onChange={setSelectedDevice}
-              />
-
-              {/* Dynamic subtitle per device */}
-              <p className="mt-5 mb-7 min-h-12 w-full max-w-md text-pretty text-sm text-text-dark-secondary leading-relaxed">
-                {selectedDevice === "ios" &&
-                  "Uses Safari's built-in Share menu. No download required."}
-                {selectedDevice === "android" &&
-                  "Chrome installs it straight to your home screen and app drawer."}
-                {selectedDevice === "desktop" &&
-                  desktopBrowser === "firefox" &&
-                  "Firefox doesn't support web app installation. Chrome or Edge work best."}
-                {selectedDevice === "desktop" &&
-                  desktopBrowser !== "firefox" &&
-                  "Installs from your address bar as a standalone app — no browser chrome."}
-              </p>
-
-              {/* CTA */}
-              <HeroCTAButtons
-                selectedDevice={selectedDevice}
-                detected={detected}
-                isStandalone={isStandalone}
-                canUseNativePrompt={canUseNativePrompt}
-                installState={installState}
-                desktopBrowser={desktopBrowser}
-                onInstallClick={handleInstallClick}
-              />
-
-              {/* Feedback */}
-              {isStandalone ? (
-                <p className="mt-4 flex items-center gap-2 font-medium text-forge-teal text-sm">
-                  <CheckCircle2 size={15} strokeWidth={2} aria-hidden="true" />
-                  TeamForge is already installed on this device.
-                </p>
-              ) : feedback ? (
-                <p className="mt-4 font-medium text-sm text-text-dark-secondary">
-                  {feedback}
-                </p>
-              ) : null}
-            </div>
-
-            {/* Right column: device visual */}
-            <div className="hidden items-center justify-center lg:flex lg:justify-end">
-              <HeroVisual
-                selectedDevice={selectedDevice}
-                detected={detected}
-                desktopBrowser={desktopBrowser}
-              />
-            </div>
-          </div>
-
-          <QrShareDialog
-            url={downloadQrUrl}
-            title="Install TeamForge"
-            description="Scan this on your phone to open the install guide."
-            trigger={
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute right-5 bottom-7 z-20 size-11 rounded-full border-white/25 bg-white/8 text-white backdrop-blur-md hover:translate-y-0! hover:border-forge-teal hover:bg-forge-teal/20 hover:shadow-none! focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg active:translate-y-0! active:shadow-none! sm:right-8 sm:bottom-10"
-                aria-label="Show install QR code"
-              >
-                <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
-              </Button>
-            }
-          />
-        </section>
-
-        {/* ── Install Steps ──────────────────────────────────────────── */}
-        <section
-          id="install-steps"
-          className="bg-canvas"
-          aria-label="How to install"
-        >
-          <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-            {/* Section eyebrow + heading */}
-            <div className="mb-3">
-              <p className="mb-3 font-semibold text-forge-teal text-xs">
-                Step-by-step
-              </p>
-              <h2 className="font-extrabold text-3xl text-ink sm:text-4xl">
-                {selectedDevice === "ios" && "Installing on iPhone & iPad"}
-                {selectedDevice === "android" && "Installing on Android"}
-                {selectedDevice === "desktop" && "Installing on desktop"}
-              </h2>
-              {stepConfig?.subheading && (
-                <p className="mt-3 max-w-xl text-pretty text-slate-muted leading-relaxed">
-                  {stepConfig.subheading}
-                </p>
-              )}
-            </div>
-
-            {/* Inline device switch */}
-            <div className="mb-10 flex flex-wrap items-center gap-x-3 gap-y-2 text-slate-muted text-sm">
-              <span>Wrong device?</span>
-              {selectedDevice !== "ios" && (
-                <button
-                  type="button"
-                  className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                  onClick={() => {
-                    setSelectedDevice("ios");
-                  }}
-                >
-                  iPhone & iPad
-                </button>
-              )}
-              {selectedDevice !== "ios" && selectedDevice !== "android" && "·"}
-              {selectedDevice !== "android" && (
-                <button
-                  type="button"
-                  className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                  onClick={() => {
-                    setSelectedDevice("android");
-                  }}
-                >
-                  Android
-                </button>
-              )}
-              {selectedDevice !== "desktop" && "·"}
-              {selectedDevice !== "desktop" && (
-                <button
-                  type="button"
-                  className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                  onClick={() => {
-                    setSelectedDevice("desktop");
-                  }}
-                >
-                  Desktop
-                </button>
-              )}
-            </div>
-
-            {canUseNativePrompt && (
-              <NativeInstallCallout
-                installState={installState}
-                feedback={feedback}
-                onInstallClick={handleInstallClick}
-              />
-            )}
-
-            {/* Content: special notices or numbered steps */}
-            {selectedDevice === "ios" && detected === "ios-other" ? (
-              <IosNonSafariNotice />
-            ) : selectedDevice === "desktop" && desktopBrowser === "firefox" ? (
-              <FirefoxNotice />
-            ) : stepConfig ? (
-              <ol
-                className="divide-y divide-border/60"
-                aria-label="Installation steps"
-              >
-                {stepConfig.steps.map((step, i) => (
-                  <InstallStep key={step.title} step={step} index={i + 1} />
-                ))}
-              </ol>
-            ) : null}
-          </div>
-        </section>
-
-        <div ref={pwaSections.sentinelRef} aria-hidden="true" />
-
-        {pwaSections.shouldLoad && (
-          <Suspense fallback={null}>
-            {/* ── Push Notifications Band ──────────────────────────────── */}
-            <DeferredPushNotificationBand />
-
-            {/* ── PWA Diagnostics ──────────────────────────────────────── */}
-            <DeferredPwaDiagnosticsPanel />
-          </Suspense>
-        )}
-
-        {/* ── Capabilities ─────────────────────────────────────────── */}
-        <section className="bg-canvas" aria-labelledby="install-benefits-title">
-          <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-            <div className="grid gap-10 lg:grid-cols-5 lg:gap-12">
-              <div className="lg:col-span-2">
-                <p className="font-semibold text-forge-teal text-xs">
-                  Why install it
-                </p>
-                <h2
-                  id="install-benefits-title"
-                  className="mt-3 max-w-lg font-extrabold text-3xl text-ink leading-tight sm:text-4xl"
-                >
-                  Make TeamForge feel closer than another tab.
-                </h2>
-                <p className="mt-4 max-w-md text-pretty text-slate-muted leading-relaxed">
-                  Install gives the group flow a permanent place on your device,
-                  with faster returns and alerts ready when plans move.
-                </p>
-
-                <div className="mt-8 border-forge-teal/20 border-y py-5">
-                  <div className="flex items-start gap-4">
-                    <IconTile
-                      bordered
-                      icon={Download}
-                      shape="circle"
-                      size="lg"
-                      tone="teal"
-                      className="size-11 bg-forge-teal/8"
-                      iconClassName="size-5"
-                    />
-                    <div>
-                      <p className="font-bold text-ink">
-                        Browser install, app-like focus
-                      </p>
-                      <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-                        No app store. No tab hunting when a group is waiting.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <ul
-                className="grid sm:grid-cols-2 lg:col-span-3 lg:border-border/60 lg:border-l lg:pl-8"
-                aria-label="App capabilities"
-              >
-                {CAPABILITIES.map((cap, i) => (
-                  <CapabilityTile
-                    capability={cap}
-                    index={i}
-                    key={cap.title}
-                    total={CAPABILITIES.length}
-                  />
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
+        <InstallBenefitsSection />
       </main>
       <Footer />
     </div>
+  );
+}
+
+interface DownloadHeroSectionProps {
+  desktopBrowser: DesktopBrowser;
+  detected: DetectedPlatform;
+  downloadQrUrl: string;
+  installState: InstallState;
+  isStandalone: boolean;
+  onInstallClick: () => void;
+  onSelectedDeviceChange: (value: SelectedDevice) => void;
+  selectedDevice: SelectedDevice;
+  viewState: DownloadPageViewState;
+}
+
+function DownloadHeroSection({
+  desktopBrowser,
+  detected,
+  downloadQrUrl,
+  installState,
+  isStandalone,
+  onInstallClick,
+  onSelectedDeviceChange,
+  selectedDevice,
+  viewState,
+}: DownloadHeroSectionProps) {
+  return (
+    <section
+      className="dark public-forge-theme relative h-svh min-h-0 overflow-hidden border-canvas border-b bg-hero-bg pt-16"
+      aria-label="Install TeamForge"
+    >
+      <DownloadHeroGrid />
+
+      <div className="relative z-10 mx-auto grid h-[calc(100svh-4rem)] min-h-0 max-w-6xl grid-cols-1 gap-10 overflow-hidden px-6 py-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
+        <div className="flex min-h-0 flex-col items-center justify-center text-center lg:items-start lg:text-left">
+          <h1 className="mb-4 text-balance font-extrabold text-4xl text-white leading-none sm:text-5xl lg:text-6xl">
+            Your groups, <span className="text-forge-teal">one tap away.</span>
+          </h1>
+
+          <p className="mb-8 max-w-md text-pretty text-base text-text-dark-secondary leading-relaxed">
+            Install TeamForge directly from your browser — no app store, no
+            waiting. Select your device below for step-by-step instructions.
+          </p>
+
+          <DownloadDeviceTabs
+            ariaLabel="Select your device"
+            options={DEVICE_TABS}
+            value={selectedDevice}
+            onChange={onSelectedDeviceChange}
+          />
+
+          <p className="mt-5 mb-7 min-h-12 w-full max-w-md text-pretty text-sm text-text-dark-secondary leading-relaxed">
+            {viewState.heroSubtitle}
+          </p>
+
+          <HeroCTAButtons
+            selectedDevice={selectedDevice}
+            detected={detected}
+            isStandalone={isStandalone}
+            canUseNativePrompt={viewState.canUseNativePrompt}
+            installState={installState}
+            desktopBrowser={desktopBrowser}
+            onInstallClick={onInstallClick}
+          />
+
+          <HeroInstallFeedback
+            feedback={viewState.feedback}
+            isStandalone={isStandalone}
+          />
+        </div>
+
+        <div className="hidden items-center justify-center lg:flex lg:justify-end">
+          <HeroVisual
+            selectedDevice={selectedDevice}
+            detected={detected}
+            desktopBrowser={desktopBrowser}
+          />
+        </div>
+      </div>
+
+      <QrShareDialog
+        url={downloadQrUrl}
+        title="Install TeamForge"
+        description="Scan this on your phone to open the install guide."
+        trigger={
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute right-5 bottom-7 z-20 size-11 rounded-full border-white/25 bg-white/8 text-white backdrop-blur-md hover:translate-y-0! hover:border-forge-teal hover:bg-forge-teal/20 hover:shadow-none! focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg active:translate-y-0! active:shadow-none! sm:right-8 sm:bottom-10"
+            aria-label="Show install QR code"
+          >
+            <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
+          </Button>
+        }
+      />
+    </section>
+  );
+}
+
+interface HeroInstallFeedbackProps {
+  feedback: string | null;
+  isStandalone: boolean;
+}
+
+function HeroInstallFeedback({
+  feedback,
+  isStandalone,
+}: HeroInstallFeedbackProps) {
+  if (isStandalone) {
+    return (
+      <p className="mt-4 flex items-center gap-2 font-medium text-forge-teal text-sm">
+        <CheckCircle2 size={15} strokeWidth={2} aria-hidden="true" />
+        TeamForge is already installed on this device.
+      </p>
+    );
+  }
+
+  if (feedback) {
+    return (
+      <p className="mt-4 font-medium text-sm text-text-dark-secondary">
+        {feedback}
+      </p>
+    );
+  }
+
+  return null;
+}
+
+interface InstallStepsSectionProps {
+  installState: InstallState;
+  onInstallClick: () => void;
+  onSelectedDeviceChange: (value: SelectedDevice) => void;
+  selectedDevice: SelectedDevice;
+  stepConfig: DeviceStepConfig | null;
+  viewState: DownloadPageViewState;
+}
+
+function InstallStepsSection({
+  installState,
+  onInstallClick,
+  onSelectedDeviceChange,
+  selectedDevice,
+  stepConfig,
+  viewState,
+}: InstallStepsSectionProps) {
+  return (
+    <section
+      id="install-steps"
+      className="bg-canvas"
+      aria-label="How to install"
+    >
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+        <div className="mb-3">
+          <p className="mb-3 font-semibold text-forge-teal text-xs">
+            Step-by-step
+          </p>
+          <h2 className="font-extrabold text-3xl text-ink sm:text-4xl">
+            {viewState.installStepsHeading}
+          </h2>
+          {stepConfig?.subheading && (
+            <p className="mt-3 max-w-xl text-pretty text-slate-muted leading-relaxed">
+              {stepConfig.subheading}
+            </p>
+          )}
+        </div>
+
+        <InstallDeviceSwitch
+          selectedDevice={selectedDevice}
+          onSelectedDeviceChange={onSelectedDeviceChange}
+        />
+
+        {viewState.canUseNativePrompt && (
+          <NativeInstallCallout
+            installState={installState}
+            feedback={viewState.feedback}
+            onInstallClick={onInstallClick}
+          />
+        )}
+
+        <InstallStepsContent stepConfig={stepConfig} viewState={viewState} />
+      </div>
+    </section>
+  );
+}
+
+interface InstallDeviceSwitchProps {
+  onSelectedDeviceChange: (value: SelectedDevice) => void;
+  selectedDevice: SelectedDevice;
+}
+
+function InstallDeviceSwitch({
+  onSelectedDeviceChange,
+  selectedDevice,
+}: InstallDeviceSwitchProps) {
+  return (
+    <div className="mb-10 flex flex-wrap items-center gap-x-3 gap-y-2 text-slate-muted text-sm">
+      <span>Wrong device?</span>
+      {selectedDevice !== "ios" && (
+        <button
+          type="button"
+          className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          onClick={() => {
+            onSelectedDeviceChange("ios");
+          }}
+        >
+          iPhone & iPad
+        </button>
+      )}
+      {selectedDevice !== "ios" && selectedDevice !== "android" && "·"}
+      {selectedDevice !== "android" && (
+        <button
+          type="button"
+          className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          onClick={() => {
+            onSelectedDeviceChange("android");
+          }}
+        >
+          Android
+        </button>
+      )}
+      {selectedDevice !== "desktop" && "·"}
+      {selectedDevice !== "desktop" && (
+        <button
+          type="button"
+          className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          onClick={() => {
+            onSelectedDeviceChange("desktop");
+          }}
+        >
+          Desktop
+        </button>
+      )}
+    </div>
+  );
+}
+
+interface InstallStepsContentProps {
+  stepConfig: DeviceStepConfig | null;
+  viewState: DownloadPageViewState;
+}
+
+function InstallStepsContent({
+  stepConfig,
+  viewState,
+}: InstallStepsContentProps) {
+  if (viewState.showIosNonSafariNotice) {
+    return <IosNonSafariNotice />;
+  }
+
+  if (viewState.showFirefoxNotice) {
+    return <FirefoxNotice />;
+  }
+
+  if (!stepConfig) {
+    return null;
+  }
+
+  return (
+    <ol className="divide-y divide-border/60" aria-label="Installation steps">
+      {stepConfig.steps.map((step, i) => (
+        <InstallStep key={step.title} step={step} index={i + 1} />
+      ))}
+    </ol>
+  );
+}
+
+interface DeferredPwaSectionsProps {
+  pwaSections: ReturnType<typeof useDeferredPwaSections>;
+}
+
+function DeferredPwaSections({ pwaSections }: DeferredPwaSectionsProps) {
+  return (
+    <>
+      <div ref={pwaSections.sentinelRef} aria-hidden="true" />
+
+      {pwaSections.shouldLoad && (
+        <Suspense fallback={null}>
+          <DeferredPushNotificationBand />
+          <DeferredPwaDiagnosticsPanel />
+        </Suspense>
+      )}
+    </>
+  );
+}
+
+function InstallBenefitsSection() {
+  return (
+    <section className="bg-canvas" aria-labelledby="install-benefits-title">
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+        <div className="grid gap-10 lg:grid-cols-5 lg:gap-12">
+          <div className="lg:col-span-2">
+            <p className="font-semibold text-forge-teal text-xs">
+              Why install it
+            </p>
+            <h2
+              id="install-benefits-title"
+              className="mt-3 max-w-lg font-extrabold text-3xl text-ink leading-tight sm:text-4xl"
+            >
+              Make TeamForge feel closer than another tab.
+            </h2>
+            <p className="mt-4 max-w-md text-pretty text-slate-muted leading-relaxed">
+              Install gives the group flow a permanent place on your device,
+              with faster returns and alerts ready when plans move.
+            </p>
+
+            <div className="mt-8 border-forge-teal/20 border-y py-5">
+              <div className="flex items-start gap-4">
+                <IconTile
+                  bordered
+                  icon={Download}
+                  shape="circle"
+                  size="lg"
+                  tone="teal"
+                  className="size-11 bg-forge-teal/8"
+                  iconClassName="size-5"
+                />
+                <div>
+                  <p className="font-bold text-ink">
+                    Browser install, app-like focus
+                  </p>
+                  <p className="mt-1 text-slate-muted text-sm leading-relaxed">
+                    No app store. No tab hunting when a group is waiting.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ul
+            className="grid sm:grid-cols-2 lg:col-span-3 lg:border-border/60 lg:border-l lg:pl-8"
+            aria-label="App capabilities"
+          >
+            {CAPABILITIES.map((cap, i) => (
+              <CapabilityTile
+                capability={cap}
+                index={i}
+                key={cap.title}
+                total={CAPABILITIES.length}
+              />
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1234,7 +1337,7 @@ function IosNonSafariNotice() {
                 <span className="truncate font-mono text-slate-muted text-xs">
                   {typeof window !== "undefined"
                     ? window.location.href
-                    : "teamforge.app/download"}
+                    : buildAppUrl("/download")}
                 </span>
               </div>
               <Button
@@ -1343,7 +1446,7 @@ function FirefoxNotice() {
               <span className="truncate font-mono text-slate-muted text-xs">
                 {typeof window !== "undefined"
                   ? window.location.href
-                  : "teamforge.app/download"}
+                  : buildAppUrl("/download")}
               </span>
             </div>
             <Button

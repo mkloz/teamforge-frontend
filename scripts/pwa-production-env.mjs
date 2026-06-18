@@ -9,7 +9,9 @@ import process from "node:process";
  */
 
 const REQUIRED_ENV_KEYS = [
+  "VITE_APP_URL",
   "VITE_API_URL",
+  "VITE_MEDIA_BASE_URL",
   "VITE_GOOGLE_CLIENT_ID",
   "VITE_GOOGLE_MAPS_API_KEY",
   "VITE_GIPHY_API_KEY",
@@ -185,6 +187,35 @@ function validateRequiredEnv(env) {
 }
 
 /**
+ * Validates production app URL shape.
+ *
+ * @param {EnvMap} env Environment map.
+ */
+function validateAppUrl(env) {
+  const value = env.VITE_APP_URL;
+  let appUrl;
+
+  try {
+    appUrl = new URL(value);
+    addCheck("VITE_APP_URL parses", true, `${value} is a valid URL.`);
+  } catch {
+    addCheck("VITE_APP_URL parses", false, `${value ?? ""} is not a URL.`);
+    return;
+  }
+
+  addCheck(
+    "VITE_APP_URL uses HTTPS",
+    appUrl.protocol === "https:",
+    `VITE_APP_URL protocol is ${appUrl.protocol}.`,
+  );
+  addCheck(
+    "VITE_APP_URL is not local",
+    !LOCAL_HOSTS.has(appUrl.hostname),
+    `VITE_APP_URL host is ${appUrl.hostname}.`,
+  );
+}
+
+/**
  * Validates production API URL shape and derived realtime paths.
  *
  * @param {EnvMap} env Environment map.
@@ -241,6 +272,39 @@ function validateApiUrl(env) {
 }
 
 /**
+ * Validates production media base URL shape.
+ *
+ * @param {EnvMap} env Environment map.
+ */
+function validateMediaBaseUrl(env) {
+  const value = env.VITE_MEDIA_BASE_URL;
+  let mediaUrl;
+
+  try {
+    mediaUrl = new URL(value);
+    addCheck("VITE_MEDIA_BASE_URL parses", true, `${value} is a valid URL.`);
+  } catch {
+    addCheck(
+      "VITE_MEDIA_BASE_URL parses",
+      false,
+      `${value ?? ""} is not a URL.`,
+    );
+    return;
+  }
+
+  addCheck(
+    "VITE_MEDIA_BASE_URL uses HTTPS",
+    mediaUrl.protocol === "https:",
+    `VITE_MEDIA_BASE_URL protocol is ${mediaUrl.protocol}.`,
+  );
+  addCheck(
+    "VITE_MEDIA_BASE_URL is not local",
+    !LOCAL_HOSTS.has(mediaUrl.hostname),
+    `VITE_MEDIA_BASE_URL host is ${mediaUrl.hostname}.`,
+  );
+}
+
+/**
  * Prints all checks and sets the process exit code on failure.
  *
  * @param {string | null} envFile Env file path, if supplied.
@@ -274,7 +338,9 @@ async function main() {
   const env = await loadEnvironment(envFile);
 
   validateRequiredEnv(env);
+  validateAppUrl(env);
   validateApiUrl(env);
+  validateMediaBaseUrl(env);
   printSummary(envFile);
 }
 

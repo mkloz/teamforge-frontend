@@ -77,6 +77,26 @@ function normalizeReturnSearch(
   return normalized.length > 0 ? normalized : null;
 }
 
+function parseRelativeLocation(value: string) {
+  if (!value.startsWith("/") || value.startsWith("//")) {
+    return null;
+  }
+
+  const hashIndex = value.indexOf("#");
+  const valueWithoutHash = hashIndex >= 0 ? value.slice(0, hashIndex) : value;
+  const searchIndex = valueWithoutHash.indexOf("?");
+  const pathname =
+    searchIndex >= 0
+      ? valueWithoutHash.slice(0, searchIndex)
+      : valueWithoutHash;
+  const search = searchIndex >= 0 ? valueWithoutHash.slice(searchIndex) : null;
+
+  return {
+    pathname: pathname || "/",
+    search,
+  };
+}
+
 export function buildRouteLocationHref(
   location: RouteLocationLike | null | undefined,
 ) {
@@ -153,28 +173,26 @@ function buildAuthenticatedReturnNavigation(
 export function resolveAuthReturnLocation(
   value: string | null | undefined,
 ): AuthReturnLocation | null {
-  if (!value?.startsWith("/")) {
+  if (!value) {
     return null;
   }
 
-  try {
-    const url = new URL(value, "https://teamforge.local");
+  const parsedLocation = parseRelativeLocation(value);
 
-    if (!isAuthReturnTarget(url.pathname)) {
-      return null;
-    }
-
-    const search = normalizeReturnSearch(url.search);
-    const href = search ? `${url.pathname}?${search}` : url.pathname;
-
-    return {
-      pathname: url.pathname,
-      search,
-      href,
-    };
-  } catch {
+  if (!parsedLocation || !isAuthReturnTarget(parsedLocation.pathname)) {
     return null;
   }
+
+  const search = normalizeReturnSearch(parsedLocation.search);
+  const href = search
+    ? `${parsedLocation.pathname}?${search}`
+    : parsedLocation.pathname;
+
+  return {
+    pathname: parsedLocation.pathname,
+    search,
+    href,
+  };
 }
 
 export function parseAuthReturnSearch(searchString: string) {

@@ -112,17 +112,21 @@ import { apiClient } from "@/shared/api/api";
 
 Required Vite env variables:
 
+- `VITE_APP_URL` - public frontend base URL
 - `VITE_API_URL` - backend REST base URL including `/api/v1`
+- `VITE_MEDIA_BASE_URL` - public media asset base URL
 - `VITE_GOOGLE_CLIENT_ID` - Google OAuth client ID
 - `VITE_GOOGLE_MAPS_API_KEY` - address autocomplete
 - `VITE_GIPHY_API_KEY` - GIF search in chat
 
-Use `.env.local` locally and never commit it. Local API usually uses `VITE_API_URL=http://localhost:6969/api/v1`; production uses `VITE_API_URL=https://api.mkloz.com/teamforge/api/v1`.
+Use `.env.local` locally and never commit it. Local app/API usually uses `VITE_APP_URL=http://localhost:3000` and `VITE_API_URL=http://localhost:6969/api/v1`; production uses `VITE_APP_URL=https://teamforge.app` and `VITE_API_URL=https://api.mkloz.com/teamforge/api/v1`.
 
 Before a production PWA build, run the browser-env preflight with the same values Vite will bake into the bundle:
 
 ```bash
+VITE_APP_URL=https://teamforge.app \
 VITE_API_URL=https://api.mkloz.com/teamforge/api/v1 \
+VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
 VITE_GIPHY_API_KEY=your-production-giphy-key \
@@ -200,6 +204,13 @@ UI workflow: read local code and design docs, use sequential-thinking for comple
 - For small changes, run `npm run lint:changed` before handing work back.
 - Use `npm run lint:fast` for quick changed-file feedback while iterating.
 - Do not run `npm run build`, full `npm run lint`, tests, audits, or full-system commands for ordinary changes. Use them only for large refactors or changes that clearly need broad verification.
+
+---
+
+## Git and Commits
+
+- When naming commits, use Conventional Commit format: `<type>: <message>`, such as `feat: add forge group invite step`.
+- Keep commit messages lowercase, concise, and imperative. Use the most accurate type, including `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, or `test:`.
 
 ---
 

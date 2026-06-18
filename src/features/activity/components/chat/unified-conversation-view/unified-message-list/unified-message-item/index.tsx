@@ -1,18 +1,23 @@
-/* biome-ignore-all lint/a11y/noNoninteractiveTabindex: Message rows are focusable context-menu triggers. */
-// oxlint-disable jsx-a11y/no-noninteractive-tabindex -- Message rows are focusable context-menu triggers.
-import { Forward } from "lucide-react";
 import { type KeyboardEvent, type MouseEvent, memo, useState } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
-import { cn } from "@/shared/lib/utils";
 import type { User } from "@/shared/schemas";
 import { MessageContextMenu } from "./message-actions-menu";
 import { MessageContent } from "./message-content";
 import { MessageFooter } from "./message-footer";
+import {
+  ForwardedIndicator,
+  MessageBubbleShell,
+  MessageItemArticleFrame,
+  MessageItemLayout,
+} from "./message-item-render-parts";
+import {
+  getMessageItemViewState,
+  isMessageSelectionKey,
+} from "./message-item-view-state";
 import { MessageMedia } from "./message-media";
 import { ReplyReference } from "./reply-reference";
 
@@ -78,31 +83,26 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
     unpinMessage,
   } = useActivityMessageActions();
   const savedMessageIds = useSavedMessageIds();
-  const isSaved = message.isSaved || savedMessageIds.has(message.id);
-  const isReplyTarget = replyingTo?.id === message.id;
-  const isEditTarget = editingMessage?.id === message.id;
-  const isInteractionFocused =
-    isReplyTarget || isEditTarget || isContextMenuOpen;
-  const shouldShowOuterFocus = isHighlighted || isInteractionFocused;
-  const canToggleSelection = isSelectionMode && isSelectable;
-  const usesInlineFooter =
-    content.trim().length > 0 &&
-    !replyTo &&
-    content.length < 50 &&
-    !content.includes(" ") &&
-    reactionGroups.length === 0;
-  const selectedReactionEmojis = reactionGroups
-    .filter((reaction) => reaction.isActive)
-    .map((reaction) => reaction.emoji);
-  const senderLabel = isOwn ? "You" : (message.sender?.name ?? "Unknown");
-  const selectionLabel = isSelectionMode
-    ? isSelected
-      ? "Selected. "
-      : "Not selected. "
-    : "";
-  const messageAriaLabel = `${senderLabel} message at ${formatChatTime(
-    timestamp,
-  )}. ${selectionLabel}Press Shift and F10 for message actions.`;
+  const {
+    canToggleSelection,
+    isInteractionFocused,
+    isSaved,
+    messageAriaLabel,
+    selectedReactionEmojis,
+    shouldShowOuterFocus,
+    usesInlineFooter,
+  } = getMessageItemViewState({
+    editingMessageId: editingMessage?.id ?? null,
+    isContextMenuOpen,
+    isHighlighted,
+    isSelectable,
+    isSelected,
+    isSelectionMode,
+    message,
+    reactionGroups,
+    replyingToId: replyingTo?.id ?? null,
+    savedMessageIds,
+  });
   const handleMessageClick = (event: MouseEvent<HTMLElement>) => {
     if (!canToggleSelection) {
       return;
@@ -113,12 +113,19 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
     onToggleSelected?.(message);
   };
   const handleMessageKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (!canToggleSelection || (event.key !== "Enter" && event.key !== " ")) {
+    if (!canToggleSelection || !isMessageSelectionKey(event.key)) {
       return;
     }
 
     event.preventDefault();
     onToggleSelected?.(message);
+  };
+  const handleToggleReaction = (emoji: string) => {
+    void toggleReaction(message, emoji).catch((error) =>
+      showAppErrorToast(error, {
+        fallbackMessage: "We couldn't update that reaction.",
+      }),
+    );
   };
 
   return (
@@ -139,141 +146,74 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
       onOpenChange={setIsContextMenuOpen}
       isOnline={isOnline}
     >
-      {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: Message rows keep article semantics while supporting selection and context-menu keyboard workflows. */}
-      <article
-        tabIndex={0}
-        aria-roledescription="message"
-        aria-label={messageAriaLabel}
-        className={cn(
-          "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
-          canToggleSelection && "cursor-pointer",
-          shouldShowOuterFocus ? "overflow-visible" : "overflow-hidden",
-        )}
+      <MessageItemArticleFrame
+        canToggleSelection={canToggleSelection}
+        messageAriaLabel={messageAriaLabel}
         onClickCapture={handleMessageClick}
         onKeyDown={handleMessageKeyDown}
+        shouldShowOuterFocus={shouldShowOuterFocus}
       >
-        <div
-          className={cn(
-            "relative z-10 flex w-full min-w-0 items-end",
-            isOwn ? "justify-end" : "justify-start",
-          )}
+        <MessageItemLayout
+          isOwn={isOwn}
+          kind={kind}
+          senderName={message.sender?.name}
+          showSender={showSender}
         >
-          <div
-            className={cn(
-              "flex w-full min-w-0 max-w-xs flex-col sm:max-w-lg md:max-w-xl",
-              isOwn ? "ml-auto items-end" : "mr-auto items-start",
-            )}
+          <MessageBubbleShell
+            content={content}
+            isHighlighted={isHighlighted}
+            isInteractionFocused={isInteractionFocused}
+            isOwn={isOwn}
+            isSelected={isSelected}
+            usesInlineFooter={usesInlineFooter}
           >
-            {!isOwn && kind === "group" && showSender && (
-              <p className="mb-0.5 ml-1.5 font-bold text-micro text-primary opacity-90">
-                {message.sender?.name || "Unknown"}
-              </p>
-            )}
+            <ForwardedIndicator message={message} isOwn={isOwn} />
 
-            <div
-              className={cn(
-                "flex w-full min-w-0 max-w-full flex-col gap-1",
-                isOwn ? "items-end" : "items-start",
-              )}
-            >
-              <div
-                className={cn(
-                  "relative flex w-fit min-w-0 max-w-full flex-col rounded-xl px-1 py-1 shadow-xs transition duration-300",
-                  isOwn
-                    ? "rounded-br-none border border-primary/15 bg-primary/8 text-ink shadow-sm backdrop-blur-md"
-                    : "rounded-bl-none border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md",
-                  isHighlighted
-                    ? "message-search-focus"
-                    : isInteractionFocused && "message-action-focus",
-                  isSelected &&
-                    "border-primary/65 bg-primary/12 ring-1 ring-primary/35",
-                  !content && "min-w-30",
-                  usesInlineFooter && "min-w-40",
-                )}
-              >
-                <ForwardedIndicator message={message} isOwn={isOwn} />
+            <ReplyReference
+              replyTo={replyTo}
+              isOwn={isOwn}
+              onActivate={onActivateReplyTarget}
+            />
 
-                <ReplyReference
-                  replyTo={replyTo}
-                  isOwn={isOwn}
-                  onActivate={onActivateReplyTarget}
-                />
+            <MessageMedia
+              attachments={attachments}
+              isOwn={isOwn}
+              content={content}
+              createdAt={timestamp}
+              status={status}
+              isReadByOthers={isReadByOthers}
+              galleryRounding={galleryRounding}
+              reactionGroupsLength={reactionGroups.length}
+              replyTo={replyTo}
+            />
 
-                <MessageMedia
-                  attachments={attachments}
-                  isOwn={isOwn}
-                  content={content}
-                  createdAt={timestamp}
-                  status={status}
-                  isReadByOthers={isReadByOthers}
-                  galleryRounding={galleryRounding}
-                  reactionGroupsLength={reactionGroups.length}
-                  replyTo={replyTo}
-                />
+            <MessageContent
+              content={content}
+              hasReply={Boolean(replyTo)}
+              isOwn={isOwn}
+              reactionGroupsLength={reactionGroups.length}
+              searchQuery={searchQuery}
+            />
 
-                <MessageContent
-                  content={content}
-                  hasReply={Boolean(replyTo)}
-                  isOwn={isOwn}
-                  reactionGroupsLength={reactionGroups.length}
-                  searchQuery={searchQuery}
-                />
-
-                <MessageFooter
-                  attachments={attachments}
-                  content={content}
-                  reactionGroups={reactionGroups}
-                  isOwn={isOwn}
-                  createdAt={timestamp}
-                  status={status}
-                  isReadByOthers={isReadByOthers}
-                  readBy={message.readBy}
-                  readByCount={message.readByCount}
-                  isEdited={message.isEdited}
-                  isPinned={message.isPinned}
-                  isSaved={isSaved}
-                  hasReply={Boolean(replyTo)}
-                  onToggleReaction={(emoji) => {
-                    void toggleReaction(message, emoji).catch((error) =>
-                      showAppErrorToast(error, {
-                        fallbackMessage: "We couldn't update that reaction.",
-                      }),
-                    );
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
+            <MessageFooter
+              attachments={attachments}
+              content={content}
+              reactionGroups={reactionGroups}
+              isOwn={isOwn}
+              createdAt={timestamp}
+              status={status}
+              isReadByOthers={isReadByOthers}
+              readBy={message.readBy}
+              readByCount={message.readByCount}
+              isEdited={message.isEdited}
+              isPinned={message.isPinned}
+              isSaved={isSaved}
+              hasReply={Boolean(replyTo)}
+              onToggleReaction={handleToggleReaction}
+            />
+          </MessageBubbleShell>
+        </MessageItemLayout>
+      </MessageItemArticleFrame>
     </MessageContextMenu>
   );
 });
-
-function ForwardedIndicator({
-  message,
-  isOwn,
-}: {
-  message: UnifiedMessage;
-  isOwn: boolean;
-}) {
-  if (!message.forwardedFromMessageId) {
-    return null;
-  }
-
-  const sourceName = message.forwardedFromSenderName?.trim();
-
-  return (
-    <div
-      className={cn(
-        "mx-1.5 mt-1 mb-0.5 flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-0.5 font-bold text-micro",
-        isOwn ? "bg-primary/8 text-primary" : "bg-muted/55 text-slate-muted",
-      )}
-    >
-      <Forward className="size-3 shrink-0" aria-hidden="true" />
-      <span className="min-w-0 truncate">
-        Forwarded{sourceName ? ` from ${sourceName}` : ""}
-      </span>
-    </div>
-  );
-}

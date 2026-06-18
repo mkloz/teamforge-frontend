@@ -4,6 +4,10 @@ import {
   type PlanLocationValue,
   serializePlanLocationValue,
 } from "@/features/activity/lib/plan-location";
+import {
+  dateTimeLocalToIsoString,
+  toDateTimeLocalValue as toSharedDateTimeLocalValue,
+} from "@/shared/lib/date-time-local";
 import type { LocationMode } from "@/shared/schemas/enums";
 
 export const PLAN_PROPOSAL_FIELD_OPTIONS = [
@@ -20,24 +24,8 @@ export function isProposalField(value: string): value is ProposalField {
   return PLAN_PROPOSAL_FIELD_OPTIONS.some((option) => option.value === value);
 }
 
-function padDateTimePart(part: number) {
-  return String(part).padStart(2, "0");
-}
-
 export function toDateTimeLocalValue(value: string | null) {
-  if (!value) {
-    return "";
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  return `${date.getFullYear()}-${padDateTimePart(date.getMonth() + 1)}-${padDateTimePart(
-    date.getDate(),
-  )}T${padDateTimePart(date.getHours())}:${padDateTimePart(date.getMinutes())}`;
+  return toSharedDateTimeLocalValue(value);
 }
 
 export function getCurrentProposalValue(plan: Plan, field: ProposalField) {
@@ -57,9 +45,7 @@ export function getCurrentProposalValue(plan: Plan, field: ProposalField) {
 
 export function normalizeProposedValue(field: ProposalField, value: string) {
   if (field === "DATE_TIME") {
-    const date = new Date(value);
-
-    return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+    return dateTimeLocalToIsoString(value);
   }
 
   return value.trim();

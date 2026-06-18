@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, type ReactNode, Suspense } from "react";
 import { ActivityConversationStageSkeleton } from "@/features/activity/components/activity-page/activity-page-skeleton";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 
@@ -17,85 +17,177 @@ interface ActivityConversationStageProps {
   isOnline: boolean;
 }
 
-export function ActivityConversationStage({
-  activity,
-  isMobile,
-  isOnline,
-}: ActivityConversationStageProps) {
-  const isSelectionLoading =
-    activity.hasSelection && activity.isSelectedConversationLoading && isOnline;
-  const shouldShowSelectionError =
+type ConversationStageState =
+  | "empty"
+  | "loading"
+  | "missing"
+  | "selected"
+  | "selection-error";
+
+function getConversationStageState(
+  activity: ActivityWorkspace,
+  isOnline: boolean,
+): ConversationStageState {
+  if (isSelectionLoading(activity, isOnline)) {
+    return "loading";
+  }
+
+  if (shouldShowSelectionError(activity, isOnline)) {
+    return "selection-error";
+  }
+
+  if (isSelectedConversationMissing(activity)) {
+    return "missing";
+  }
+
+  return activity.selectedKind && activity.selectedId ? "selected" : "empty";
+}
+
+function isSelectionLoading(activity: ActivityWorkspace, isOnline: boolean) {
+  return (
+    activity.hasSelection && activity.isSelectedConversationLoading && isOnline
+  );
+}
+
+function shouldShowSelectionError(
+  activity: ActivityWorkspace,
+  isOnline: boolean,
+) {
+  return (
     activity.hasSelection &&
     (activity.isSelectedConversationError ||
-      (!isOnline && activity.isSelectedConversationLoading));
+      (!isOnline && activity.isSelectedConversationLoading))
+  );
+}
 
-  if (isSelectionLoading) {
-    return (
-      <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
-        <ActivityConversationStageSkeleton />
-      </div>
-    );
-  }
-
-  if (shouldShowSelectionError) {
-    return (
-      <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
-        <ActivityConversationFeedback
-          actionLabel="Try again"
-          description={
-            isOnline
-              ? "Something interrupted this chat. Retry to load the latest details."
-              : "This chat needs a fresh load before it can open. Reconnect and try again."
-          }
-          title={isOnline ? "Conversation did not load" : "You are offline"}
-          variant={isOnline ? "error" : "offline"}
-          onAction={activity.retrySelectedConversation}
-        />
-      </div>
-    );
-  }
-
-  if (
+function isSelectedConversationMissing(activity: ActivityWorkspace) {
+  return (
     activity.selectedKind &&
     activity.selectedId &&
     activity.selectedKind !== "saved" &&
     ((activity.selectedKind === "group" && !activity.selectedGroup) ||
       (activity.selectedKind === "dm" && !activity.selectedChat))
-  ) {
-    return (
-      <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
-        <ActivityConversationFeedback
-          actionLabel="Back to list"
-          description="It may have been removed, or you may no longer have access to it."
-          title="Conversation unavailable"
-          variant="missing"
-          onAction={activity.handleBack}
-        />
-      </div>
-    );
+  );
+}
+
+function ConversationStageFrame({
+  children,
+  withMinWidth = true,
+}: {
+  children: ReactNode;
+  withMinWidth?: boolean;
+}) {
+  return (
+    <div
+      className={
+        withMinWidth
+          ? "flex h-full min-h-0 min-w-0 flex-1 overflow-hidden"
+          : "flex h-full min-h-0 min-w-0 flex-1"
+      }
+    >
+      {children}
+    </div>
+  );
+}
+
+function LoadingConversationStage() {
+  return (
+    <ConversationStageFrame>
+      <ActivityConversationStageSkeleton />
+    </ConversationStageFrame>
+  );
+}
+
+function SelectionErrorStage({
+  activity,
+  isOnline,
+}: {
+  activity: ActivityWorkspace;
+  isOnline: boolean;
+}) {
+  return (
+    <ConversationStageFrame>
+      <ActivityConversationFeedback
+        actionLabel="Try again"
+        description={
+          isOnline
+            ? "Something interrupted this chat. Retry to load the latest details."
+            : "This chat needs a fresh load before it can open. Reconnect and try again."
+        }
+        title={isOnline ? "Conversation did not load" : "You are offline"}
+        variant={isOnline ? "error" : "offline"}
+        onAction={activity.retrySelectedConversation}
+      />
+    </ConversationStageFrame>
+  );
+}
+
+function MissingConversationStage({
+  activity,
+}: {
+  activity: ActivityWorkspace;
+}) {
+  return (
+    <ConversationStageFrame>
+      <ActivityConversationFeedback
+        actionLabel="Back to list"
+        description="It may have been removed, or you may no longer have access to it."
+        title="Conversation unavailable"
+        variant="missing"
+        onAction={activity.handleBack}
+      />
+    </ConversationStageFrame>
+  );
+}
+
+function SelectedConversationStage({
+  activity,
+  isMobile,
+  isOnline,
+}: ActivityConversationStageProps) {
+  return (
+    <Suspense fallback={<LoadingConversationStage />}>
+      <ActivitySelectedConversationStage
+        activity={activity}
+        isMobile={isMobile}
+        isOnline={isOnline}
+      />
+    </Suspense>
+  );
+}
+
+export function ActivityConversationStage({
+  activity,
+  isMobile,
+  isOnline,
+}: ActivityConversationStageProps) {
+  const stageState = getConversationStageState(activity, isOnline);
+
+  if (stageState === "loading") {
+    return <LoadingConversationStage />;
   }
 
-  if (activity.selectedKind && activity.selectedId) {
+  if (stageState === "selection-error") {
+    return <SelectionErrorStage activity={activity} isOnline={isOnline} />;
+  }
+
+  if (stageState === "missing") {
+    return <MissingConversationStage activity={activity} />;
+  }
+
+  if (stageState === "selected") {
     return (
-      <Suspense
-        fallback={
-          <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
-            <ActivityConversationStageSkeleton />
-          </div>
-        }
-      >
-        <ActivitySelectedConversationStage
-          activity={activity}
-          isMobile={isMobile}
-          isOnline={isOnline}
-        />
-      </Suspense>
+      <SelectedConversationStage
+        activity={activity}
+        isMobile={isMobile}
+        isOnline={isOnline}
+      />
     );
   }
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 flex-1">
+    <ConversationStageFrame withMinWidth={false}>
       <ActivityEmptyState />
-    </div>
+    </ConversationStageFrame>
   );
 }

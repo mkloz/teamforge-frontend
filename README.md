@@ -154,7 +154,9 @@ Create a `.env.local` file at the project root. **Never commit this file.**
 
 | Variable                | Required | Description                                                          |
 | ----------------------- | -------- | -------------------------------------------------------------------- |
+| `VITE_APP_URL`          | Yes      | Public frontend base URL used for canonical metadata and share links  |
 | `VITE_API_URL`          | Yes      | Backend REST API base URL, including the API prefix (`/api/v1`)      |
+| `VITE_MEDIA_BASE_URL`   | Yes      | Public media asset base URL for seed/template imagery                 |
 | `VITE_GOOGLE_CLIENT_ID` | Yes      | Google OAuth 2.0 client ID for social login                          |
 | `VITE_GOOGLE_MAPS_API_KEY` | Yes   | Google Maps API key for location autocomplete                        |
 | `VITE_GIPHY_API_KEY`    | Yes      | Giphy Web SDK key for GIF search in chat                             |
@@ -162,13 +164,17 @@ Create a `.env.local` file at the project root. **Never commit this file.**
 Local development usually uses:
 
 ```env
+VITE_APP_URL=http://localhost:3000
 VITE_API_URL=http://localhost:6969/api/v1
+VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com
 ```
 
 Production should use the public browser URL with the same API prefix:
 
 ```env
+VITE_APP_URL=https://teamforge.app
 VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1
+VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com
 ```
 
 The realtime client derives the Socket.IO transport path from `VITE_API_URL`.
@@ -179,7 +185,9 @@ Before a production PWA build, run the browser-env preflight with the same
 values that Vite will bake into the bundle:
 
 ```bash
+VITE_APP_URL=https://teamforge.app \
 VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
+VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
 VITE_GIPHY_API_KEY=your-production-giphy-key \
@@ -245,7 +253,9 @@ The color system is intentionally small: forge teal, spark amber, canvas, ink, a
 The production PWA release path is:
 
 ```bash
+VITE_APP_URL=https://teamforge.app \
 VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
+VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
 VITE_GIPHY_API_KEY=your-production-giphy-key \
@@ -269,6 +279,7 @@ CLOUDFLARE_API_TOKEN
 VITE_GIPHY_API_KEY
 VITE_GOOGLE_CLIENT_ID
 VITE_GOOGLE_MAPS_API_KEY
+VITE_MEDIA_BASE_URL
 ```
 
 Required GitHub environment variable:
@@ -282,6 +293,7 @@ Optional GitHub environment variables:
 ```text
 CLOUDFLARE_PAGES_DEPLOY_ON_PUSH=false
 CLOUDFLARE_PAGES_PRODUCTION_BRANCH=main
+VITE_APP_URL=https://teamforge.app
 VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1
 ```
 

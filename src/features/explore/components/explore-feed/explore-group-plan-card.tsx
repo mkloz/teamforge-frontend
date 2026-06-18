@@ -14,12 +14,25 @@ import { GroupPlanCard } from "@/shared/components/group-plan-card";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
+import {
+  type ExploreGroupPlanCardActionIcon,
+  type ExploreGroupPlanCardViewState,
+  getExploreGroupPlanCardViewState,
+} from "./explore-group-plan-card-view-state";
 
 interface ExploreGroupPlanCardProps {
   group: ExploreGroup;
   imagePriority?: "auto" | "high";
   variant?: "default" | "compact";
 }
+
+const actionIconByState = {
+  arrow: ArrowRight,
+  check: Check,
+  pending: CircleDashed,
+  request: Send,
+  users: UsersRound,
+} satisfies Record<ExploreGroupPlanCardActionIcon, typeof ArrowRight>;
 
 export function ExploreGroupPlanCard({
   group,
@@ -28,83 +41,78 @@ export function ExploreGroupPlanCard({
 }: ExploreGroupPlanCardProps) {
   const joinMutation = useJoinExploreGroup(group.id);
   const isCompact = variant === "compact";
-  const isFull =
-    group.maxMembers > 0 && group.activeMembersCount >= group.maxMembers;
-  const confirmedJoin = joinMutation.data?.data;
-  const joinResult =
-    confirmedJoin?.status ??
-    (joinMutation.isPending && group.access === "BY_REQUEST"
-      ? "REQUESTED"
-      : undefined);
-  const joinedGroupId = confirmedJoin?.groupId;
-  const isOfflineActionBlocked =
-    !joinMutation.isOnline && !isFull && joinResult === undefined;
-  const actionLabel = isFull
-    ? "Full"
-    : joinResult === "JOINED"
-      ? "Joined"
-      : joinResult === "REQUESTED"
-        ? "Requested"
-        : isOfflineActionBlocked
-          ? "Reconnect"
-          : joinMutation.isPending
-            ? group.access === "BY_REQUEST"
-              ? "Requesting..."
-              : "Joining..."
-            : group.access === "BY_REQUEST"
-              ? "Request to join"
-              : "Join";
-  const ActionIcon = isFull
-    ? UsersRound
-    : joinResult === "JOINED"
-      ? Check
-      : joinResult === "REQUESTED" ||
-          joinMutation.isPending ||
-          isOfflineActionBlocked
-        ? CircleDashed
-        : group.access === "BY_REQUEST"
-          ? Send
-          : ArrowRight;
+  const viewState = getExploreGroupPlanCardViewState({
+    confirmedJoin: joinMutation.data?.data,
+    group,
+    isJoinPending: joinMutation.isPending,
+    isOnline: joinMutation.isOnline,
+  });
 
   function handleJoin() {
     joinMutation.mutate();
   }
 
-  const action =
-    joinResult === "JOINED" && joinedGroupId ? (
+  return (
+    <GroupPlanCard
+      group={group}
+      variant={variant}
+      action={
+        <ExploreGroupPlanCardAction
+          isCompact={isCompact}
+          onJoin={handleJoin}
+          viewState={viewState}
+        />
+      }
+      detailsLink={<ExploreGroupDetailsLink group={group} />}
+      imagePriority={imagePriority}
+    />
+  );
+}
+
+interface ExploreGroupPlanCardActionProps {
+  isCompact: boolean;
+  onJoin: () => void;
+  viewState: ExploreGroupPlanCardViewState;
+}
+
+function ExploreGroupPlanCardAction({
+  isCompact,
+  onJoin,
+  viewState,
+}: ExploreGroupPlanCardActionProps) {
+  const ActionIcon = actionIconByState[viewState.actionIcon];
+
+  if (viewState.joinResult === "JOINED" && viewState.joinedGroupId) {
+    return (
       <Button asChild variant="primary" size={isCompact ? "sm" : "default"}>
-        <Link {...buildActivityGroupHubNavigation(joinedGroupId)}>
+        <Link {...buildActivityGroupHubNavigation(viewState.joinedGroupId)}>
           <MessageCircle className="size-4" aria-hidden="true" />
           Open group
         </Link>
       </Button>
-    ) : (
-      <Button
-        variant={isFull ? "outline" : "primary"}
-        size={isCompact ? "sm" : "default"}
-        disabled={
-          isFull ||
-          !joinMutation.isOnline ||
-          joinMutation.isPending ||
-          joinResult !== undefined
-        }
-        onClick={handleJoin}
-        title={
-          joinMutation.isOnline
-            ? undefined
-            : "Reconnect before joining or requesting to join."
-        }
-        className={cn(
-          "z-20 shrink-0 shadow-sm",
-          isFull && "pointer-events-none opacity-50",
-        )}
-      >
-        <ActionIcon className="size-4" aria-hidden="true" />
-        {actionLabel}
-      </Button>
     );
+  }
 
-  const detailsLink = (
+  return (
+    <Button
+      variant={viewState.isFull ? "outline" : "primary"}
+      size={isCompact ? "sm" : "default"}
+      disabled={viewState.isJoinActionDisabled}
+      onClick={onJoin}
+      title={viewState.joinActionTitle}
+      className={cn(
+        "z-20 shrink-0 shadow-sm",
+        viewState.isFull && "pointer-events-none opacity-50",
+      )}
+    >
+      <ActionIcon className="size-4" aria-hidden="true" />
+      {viewState.actionLabel}
+    </Button>
+  );
+}
+
+function ExploreGroupDetailsLink({ group }: { group: ExploreGroup }) {
+  return (
     <Link
       {...buildGroupPlanDetailNavigation(group.id, { source: "explore" })}
       aria-label={`View ${group.name} group details`}
@@ -112,15 +120,5 @@ export function ExploreGroupPlanCard({
     >
       <span className="sr-only">View group details</span>
     </Link>
-  );
-
-  return (
-    <GroupPlanCard
-      group={group}
-      variant={variant}
-      action={action}
-      detailsLink={detailsLink}
-      imagePriority={imagePriority}
-    />
   );
 }

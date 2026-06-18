@@ -18,6 +18,14 @@ interface GroupIndicatorsProps {
   variant?: "inline" | "row";
 }
 
+interface GroupIndicatorsViewState {
+  hasAnything: boolean;
+  hasPendingProposal: boolean;
+  hasSavedMessages: boolean;
+  pendingProposalLabel: string;
+  planStatusConfig: (typeof PLAN_STATUS_CONFIG)[Plan["status"]] | null;
+}
+
 export const GroupIndicators = memo(function GroupIndicators({
   action,
   countdown,
@@ -27,103 +35,25 @@ export const GroupIndicators = memo(function GroupIndicators({
   isReviewWaiting = false,
   variant = "row",
 }: GroupIndicatorsProps) {
-  const hasPendingProposal = pendingProposalCount > 0;
-  const planStatusConfig =
-    !countdown && planStatus ? PLAN_STATUS_CONFIG[planStatus] : null;
-  const PlanStatusIcon = planStatusConfig?.icon;
-  const hasSavedMessages = savedMessageCount > 0;
-  const hasAnything = !!(
-    countdown ||
-    planStatusConfig ||
-    hasPendingProposal ||
-    hasSavedMessages ||
-    isReviewWaiting ||
-    action
-  );
-  if (!hasAnything) return null;
+  const viewState = getGroupIndicatorsViewState({
+    action,
+    countdown,
+    isReviewWaiting,
+    pendingProposalCount,
+    planStatus,
+    savedMessageCount,
+  });
+
+  if (!viewState.hasAnything) return null;
 
   const indicators = (
-    <>
-      {countdown && (
-        <StatusPill
-          icon={Clock}
-          iconClassName={indicatorIconClassName}
-          iconStrokeWidth={2.2}
-          tone="teal"
-          size="signature"
-          surface="soft"
-          className={counterBadgeClassName}
-        >
-          {countdown}
-        </StatusPill>
-      )}
-      {PlanStatusIcon && planStatusConfig && (
-        <StatusPill
-          icon={PlanStatusIcon}
-          iconClassName={indicatorIconClassName}
-          iconStrokeWidth={2.2}
-          tone="none"
-          size="signature"
-          surface="soft"
-          className={cn(counterBadgeClassName, planStatusConfig.badgeClass)}
-          title={`Plan ${planStatusConfig.label.toLowerCase()}`}
-        >
-          <span className="sr-only">
-            Plan {planStatusConfig.label.toLowerCase()}
-          </span>
-        </StatusPill>
-      )}
-      {hasSavedMessages && (
-        <StatusPill
-          icon={Bookmark}
-          iconClassName={`${indicatorIconClassName} fill-forge-teal/15`}
-          iconStrokeWidth={2.2}
-          tone="teal"
-          size="signature"
-          surface="soft"
-          className={counterBadgeClassName}
-        >
-          {savedMessageCount}
-        </StatusPill>
-      )}
-      {hasPendingProposal && (
-        <StatusPill
-          icon={Vote}
-          iconClassName={indicatorIconClassName}
-          iconStrokeWidth={2.2}
-          tone="amber"
-          size="signature"
-          surface="soft"
-          className={counterBadgeClassName}
-          title={
-            pendingProposalCount === 1
-              ? "Plan proposal needs your vote"
-              : `${pendingProposalCount} plan proposals need your vote`
-          }
-        >
-          {pendingProposalCount}
-          <span className="sr-only">
-            {pendingProposalCount === 1
-              ? "Plan proposal needs your vote"
-              : `${pendingProposalCount} plan proposals need your vote`}
-          </span>
-        </StatusPill>
-      )}
-      {isReviewWaiting && (
-        <StatusPill
-          icon={UserStar}
-          iconClassName={indicatorIconClassName}
-          iconStrokeWidth={2.2}
-          tone="amber"
-          size="signature"
-          surface="soft"
-          className={counterBadgeClassName}
-          title="Review checkpoint"
-        >
-          <span className="sr-only">Review checkpoint</span>
-        </StatusPill>
-      )}
-    </>
+    <GroupIndicatorPills
+      countdown={countdown}
+      isReviewWaiting={isReviewWaiting}
+      pendingProposalCount={pendingProposalCount}
+      savedMessageCount={savedMessageCount}
+      viewState={viewState}
+    />
   );
 
   if (variant === "inline") {
@@ -137,3 +67,207 @@ export const GroupIndicators = memo(function GroupIndicators({
     </div>
   );
 });
+
+function getGroupIndicatorsViewState({
+  action,
+  countdown,
+  isReviewWaiting,
+  pendingProposalCount,
+  planStatus,
+  savedMessageCount,
+}: Pick<
+  GroupIndicatorsProps,
+  | "action"
+  | "countdown"
+  | "isReviewWaiting"
+  | "pendingProposalCount"
+  | "planStatus"
+  | "savedMessageCount"
+>): GroupIndicatorsViewState {
+  const hasPendingProposal = (pendingProposalCount ?? 0) > 0;
+  const hasSavedMessages = (savedMessageCount ?? 0) > 0;
+  const planStatusConfig =
+    !countdown && planStatus ? PLAN_STATUS_CONFIG[planStatus] : null;
+
+  return {
+    hasAnything: !!(
+      countdown ||
+      planStatusConfig ||
+      hasPendingProposal ||
+      hasSavedMessages ||
+      isReviewWaiting ||
+      action
+    ),
+    hasPendingProposal,
+    hasSavedMessages,
+    pendingProposalLabel: getPendingProposalLabel(pendingProposalCount ?? 0),
+    planStatusConfig,
+  };
+}
+
+function GroupIndicatorPills({
+  countdown,
+  isReviewWaiting,
+  pendingProposalCount,
+  savedMessageCount,
+  viewState,
+}: {
+  countdown: string | null | undefined;
+  isReviewWaiting: boolean;
+  pendingProposalCount: number;
+  savedMessageCount: number;
+  viewState: GroupIndicatorsViewState;
+}) {
+  return (
+    <>
+      <CountdownIndicator countdown={countdown} />
+      <PlanStatusIndicator planStatusConfig={viewState.planStatusConfig} />
+      <SavedMessagesIndicator
+        count={savedMessageCount}
+        isVisible={viewState.hasSavedMessages}
+      />
+      <PendingProposalIndicator
+        count={pendingProposalCount}
+        isVisible={viewState.hasPendingProposal}
+        label={viewState.pendingProposalLabel}
+      />
+      <ReviewWaitingIndicator isVisible={isReviewWaiting} />
+    </>
+  );
+}
+
+function CountdownIndicator({
+  countdown,
+}: {
+  countdown: string | null | undefined;
+}) {
+  if (!countdown) {
+    return null;
+  }
+
+  return (
+    <StatusPill
+      icon={Clock}
+      iconClassName={indicatorIconClassName}
+      iconStrokeWidth={2.2}
+      tone="teal"
+      size="signature"
+      surface="soft"
+      className={counterBadgeClassName}
+    >
+      {countdown}
+    </StatusPill>
+  );
+}
+
+function PlanStatusIndicator({
+  planStatusConfig,
+}: {
+  planStatusConfig: GroupIndicatorsViewState["planStatusConfig"];
+}) {
+  const PlanStatusIcon = planStatusConfig?.icon;
+
+  if (!PlanStatusIcon || !planStatusConfig) {
+    return null;
+  }
+
+  return (
+    <StatusPill
+      icon={PlanStatusIcon}
+      iconClassName={indicatorIconClassName}
+      iconStrokeWidth={2.2}
+      tone="none"
+      size="signature"
+      surface="soft"
+      className={cn(counterBadgeClassName, planStatusConfig.badgeClass)}
+      title={`Plan ${planStatusConfig.label.toLowerCase()}`}
+    >
+      <span className="sr-only">
+        Plan {planStatusConfig.label.toLowerCase()}
+      </span>
+    </StatusPill>
+  );
+}
+
+function SavedMessagesIndicator({
+  count,
+  isVisible,
+}: {
+  count: number;
+  isVisible: boolean;
+}) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <StatusPill
+      icon={Bookmark}
+      iconClassName={`${indicatorIconClassName} fill-forge-teal/15`}
+      iconStrokeWidth={2.2}
+      tone="teal"
+      size="signature"
+      surface="soft"
+      className={counterBadgeClassName}
+    >
+      {count}
+    </StatusPill>
+  );
+}
+
+function PendingProposalIndicator({
+  count,
+  isVisible,
+  label,
+}: {
+  count: number;
+  isVisible: boolean;
+  label: string;
+}) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <StatusPill
+      icon={Vote}
+      iconClassName={indicatorIconClassName}
+      iconStrokeWidth={2.2}
+      tone="amber"
+      size="signature"
+      surface="soft"
+      className={counterBadgeClassName}
+      title={label}
+    >
+      {count}
+      <span className="sr-only">{label}</span>
+    </StatusPill>
+  );
+}
+
+function ReviewWaitingIndicator({ isVisible }: { isVisible: boolean }) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <StatusPill
+      icon={UserStar}
+      iconClassName={indicatorIconClassName}
+      iconStrokeWidth={2.2}
+      tone="amber"
+      size="signature"
+      surface="soft"
+      className={counterBadgeClassName}
+      title="Review checkpoint"
+    >
+      <span className="sr-only">Review checkpoint</span>
+    </StatusPill>
+  );
+}
+
+function getPendingProposalLabel(count: number) {
+  return count === 1
+    ? "Plan proposal needs your vote"
+    : `${count} plan proposals need your vote`;
+}

@@ -2,15 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
-import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import {
+  findSelectedChatSummary,
+  getActiveTypingUsers,
+  getSelectedConversationChatId,
+  getSelectedConversationParticipants,
+  getSelectedConversationStatus,
+} from "@/features/activity/hooks/use-selected-activity-conversation-state";
 import { useActivityStore } from "@/features/activity/store/activity.store";
-import type { ChatApi } from "@/shared/schemas";
-
-function isActivityParticipant(
-  participant: ActivityParticipant | undefined,
-): participant is ActivityParticipant {
-  return participant !== undefined;
-}
 
 export function useSelectedActivityConversation() {
   const selectedId = useActivityStore((state) => state.selectedId);
@@ -30,48 +29,32 @@ export function useSelectedActivityConversation() {
     enabled: selectedKind === "dm" && !!selectedId,
   });
 
-  const chatId =
-    selectedKind === "group"
-      ? (groupQuery.data?.chatId ?? null)
-      : selectedKind === "dm"
-        ? (directQuery.data?.chatId ?? null)
-        : null;
+  const chatId = getSelectedConversationChatId({
+    directSelection: directQuery.data,
+    groupSelection: groupQuery.data,
+    selectedKind,
+  });
   const selectedChatSummary = useMemo(
-    () => chatsQuery.data?.find((chat) => chat.id === chatId) ?? null,
+    () => findSelectedChatSummary(chatsQuery.data, chatId),
     [chatId, chatsQuery.data],
   );
-  const selectedParticipants = useMemo(() => {
-    const participants =
-      selectedKind === "group"
-        ? (groupQuery.data?.group?.members
-            ?.map((member) => member.user)
-            .filter(isActivityParticipant) ?? [])
-        : selectedKind === "dm"
-          ? (directQuery.data?.chat?.participants
-              ?.map((participant) => participant.user)
-              .filter(isActivityParticipant) ?? [])
-          : [];
-
-    return applyReadCursorsToParticipants(participants, selectedChatSummary);
-  }, [
-    directQuery.data?.chat?.participants,
-    groupQuery.data?.group?.members,
-    selectedChatSummary,
-    selectedKind,
-  ]);
-
-  const isSelectedConversationLoading =
-    selectedKind === "group"
-      ? Boolean(selectedId) && groupQuery.isLoading && !groupQuery.data
-      : selectedKind === "dm"
-        ? Boolean(selectedId) && directQuery.isLoading && !directQuery.data
-        : false;
-  const isSelectedConversationError =
-    selectedKind === "group"
-      ? Boolean(selectedId) && groupQuery.isError && !groupQuery.data
-      : selectedKind === "dm"
-        ? Boolean(selectedId) && directQuery.isError && !directQuery.data
-        : false;
+  const selectedParticipants = useMemo(
+    () =>
+      getSelectedConversationParticipants({
+        directSelection: directQuery.data,
+        groupSelection: groupQuery.data,
+        selectedChatSummary,
+        selectedKind,
+      }),
+    [directQuery.data, groupQuery.data, selectedChatSummary, selectedKind],
+  );
+  const { isSelectedConversationError, isSelectedConversationLoading } =
+    getSelectedConversationStatus({
+      directQuery,
+      groupQuery,
+      selectedId,
+      selectedKind,
+    });
 
   async function retrySelectedConversation() {
     if (selectedKind === "group") {
@@ -99,30 +82,6 @@ export function useSelectedActivityConversation() {
     isSelectedConversationError,
     retrySelectedConversation,
     proposalMessages: groupQuery.data?.proposalMessages ?? [],
-    activeTypingUsers: chatId ? (typingByChatId[chatId] ?? []) : [],
+    activeTypingUsers: getActiveTypingUsers(chatId, typingByChatId),
   };
-}
-
-function applyReadCursorsToParticipants(
-  participants: ActivityParticipant[],
-  chatSummary: ChatApi | null,
-) {
-  if (!chatSummary?.participants?.length) {
-    return participants;
-  }
-
-  const lastReadMessageIdByUserId = new Map(
-    chatSummary.participants.map((participant) => [
-      participant.userId,
-      participant.lastReadMessageId,
-    ]),
-  );
-
-  return participants.map((participant) => ({
-    ...participant,
-    lastReadMessageId:
-      lastReadMessageIdByUserId.get(participant.id) ??
-      participant.lastReadMessageId ??
-      null,
-  }));
 }

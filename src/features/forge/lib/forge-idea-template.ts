@@ -25,6 +25,44 @@ interface PreferredTemplateRule {
   seedId: string;
 }
 
+interface IdeaTemplateText {
+  detail: string;
+  eventDescription: string;
+  title: string;
+}
+
+type ResolvedForgeTemplate = ForgePlanTemplate | null;
+
+type ActivityTemplateSection = Pick<ForgePlanTemplate, "selectedActivity">;
+
+type PlanTemplateSection = Pick<
+  ForgePlanTemplate,
+  | "planName"
+  | "planDescription"
+  | "planLocation"
+  | "planLocationLat"
+  | "planLocationLng"
+  | "locationType"
+  | "planCost"
+  | "planCostAmount"
+  | "planCostDetails"
+>;
+
+type GroupSettingsTemplateSection = Pick<
+  ForgePlanTemplate,
+  "forgeMode" | "fixedSize" | "visibility"
+>;
+
+type GroupCopyTemplateSection = Pick<
+  ForgePlanTemplate,
+  "groupName" | "groupDescription"
+>;
+
+type TemplateImagesSection = Pick<
+  ForgePlanTemplate,
+  "coverImage" | "avatarImage"
+>;
+
 const MAX_SELECTED_ACTIVITY_LENGTH = 80;
 const MAX_PLAN_NAME_LENGTH = 60;
 const MAX_PLAN_DESCRIPTION_LENGTH = 500;
@@ -51,20 +89,50 @@ export function buildForgeIdeaTemplateId(idea: ForgeIdeaLaunch) {
 export function buildForgeIdeaTemplate(
   idea: ForgeIdeaLaunch,
 ): ForgePlanTemplate {
-  const title = idea.title.trim() || "Interest-led small group";
-  const detail = idea.detail.trim();
-  const eventDescription = idea.eventDescription?.trim() || detail;
+  const text = getIdeaTemplateText(idea);
   const baseTemplate = resolveExistingTemplate(idea);
 
   return {
     ...baseTemplate,
+    ...buildActivityTemplateSection(text, baseTemplate),
+    ...buildPlanTemplateSection(text, baseTemplate),
+    ...buildGroupSettingsTemplateSection(baseTemplate),
+    ...buildGroupCopyTemplateSection(text, baseTemplate),
+    ...buildTemplateImagesSection(baseTemplate),
+  };
+}
+
+function getIdeaTemplateText(idea: ForgeIdeaLaunch): IdeaTemplateText {
+  const title = idea.title.trim() || "Interest-led small group";
+  const detail = idea.detail.trim();
+
+  return {
+    detail,
+    eventDescription: idea.eventDescription?.trim() || detail,
+    title,
+  };
+}
+
+function buildActivityTemplateSection(
+  text: IdeaTemplateText,
+  baseTemplate: ResolvedForgeTemplate,
+): ActivityTemplateSection {
+  return {
     selectedActivity: truncateText(
-      baseTemplate?.selectedActivity ?? title,
+      baseTemplate?.selectedActivity ?? text.title,
       MAX_SELECTED_ACTIVITY_LENGTH,
     ),
-    planName: truncateText(title, MAX_PLAN_NAME_LENGTH),
+  };
+}
+
+function buildPlanTemplateSection(
+  text: IdeaTemplateText,
+  baseTemplate: ResolvedForgeTemplate,
+): PlanTemplateSection {
+  return {
+    planName: truncateText(text.title, MAX_PLAN_NAME_LENGTH),
     planDescription: truncateText(
-      eventDescription || baseTemplate?.planDescription || detail,
+      text.eventDescription || baseTemplate?.planDescription || text.detail,
       MAX_PLAN_DESCRIPTION_LENGTH,
     ),
     planLocation: baseTemplate?.planLocation ?? "",
@@ -74,17 +142,39 @@ export function buildForgeIdeaTemplate(
     planCost: baseTemplate?.planCost ?? "FREE",
     planCostAmount: baseTemplate?.planCostAmount ?? "",
     planCostDetails: baseTemplate?.planCostDetails ?? "",
+  };
+}
+
+function buildGroupSettingsTemplateSection(
+  baseTemplate: ResolvedForgeTemplate,
+): GroupSettingsTemplateSection {
+  return {
     forgeMode: baseTemplate?.forgeMode ?? "AUTO",
     fixedSize: baseTemplate?.fixedSize ?? null,
     visibility: baseTemplate?.visibility ?? "FRIENDS_ONLY",
+  };
+}
+
+function buildGroupCopyTemplateSection(
+  text: IdeaTemplateText,
+  baseTemplate: ResolvedForgeTemplate,
+): GroupCopyTemplateSection {
+  return {
     groupName: truncateText(
-      baseTemplate?.groupName || title,
+      baseTemplate?.groupName || text.title,
       MAX_GROUP_NAME_LENGTH,
     ),
     groupDescription: truncateText(
-      eventDescription || baseTemplate?.groupDescription || detail,
+      text.eventDescription || baseTemplate?.groupDescription || text.detail,
       MAX_GROUP_DESCRIPTION_LENGTH,
     ),
+  };
+}
+
+function buildTemplateImagesSection(
+  baseTemplate: ResolvedForgeTemplate,
+): TemplateImagesSection {
+  return {
     coverImage: baseTemplate?.coverImage ?? null,
     avatarImage: baseTemplate?.avatarImage ?? null,
   };

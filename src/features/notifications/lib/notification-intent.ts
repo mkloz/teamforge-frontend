@@ -1,6 +1,19 @@
 import type { HomeRouteSearch } from "@/features/home/lib/home-route";
 import type { Notification } from "@/shared/schemas";
 
+const INVITE_ROOT_PATHS = new Set([
+  "/invites",
+  "/invitations",
+  "/invites/received",
+  "/invites/sent",
+]);
+const INVITE_VIEW_SEGMENTS = new Set(["received", "sent"]);
+
+interface InvitePathIntent {
+  inviteIdFromPath: string | undefined;
+  viewFromPath: string | undefined;
+}
+
 function decodePathSegment(value: string) {
   try {
     return decodeURIComponent(value);
@@ -114,6 +127,20 @@ export function resolveInviteIntent(
   pathname: string,
   searchParams: URLSearchParams,
 ): HomeRouteSearch | null {
+  const pathIntent = getInvitePathIntent(pathname);
+
+  if (!pathIntent) {
+    return null;
+  }
+
+  return {
+    invite: getInviteId(searchParams, pathIntent.inviteIdFromPath),
+    panel: "invitations",
+    view: getInviteView(pathname, pathIntent.viewFromPath),
+  };
+}
+
+function getInvitePathIntent(pathname: string): InvitePathIntent | null {
   const inviteViewMatch = pathname.match(
     /^\/(?:invites|invitations)\/(received|sent)(?:\/([^/?#]+))?$/,
   );
@@ -121,37 +148,41 @@ export function resolveInviteIntent(
     /^\/(?:invites|invitations)\/([^/?#]+)$/,
   );
 
-  if (
-    pathname !== "/invites" &&
-    pathname !== "/invitations" &&
-    pathname !== "/invites/received" &&
-    pathname !== "/invites/sent" &&
-    !inviteViewMatch &&
-    !inviteIdMatch
-  ) {
+  if (!INVITE_ROOT_PATHS.has(pathname) && !inviteViewMatch && !inviteIdMatch) {
     return null;
   }
 
-  const viewFromPath = inviteViewMatch?.[1];
-  const inviteIdFromPath =
-    inviteViewMatch?.[2] ??
-    (inviteIdMatch?.[1] !== "received" && inviteIdMatch?.[1] !== "sent"
-      ? inviteIdMatch?.[1]
-      : undefined);
-
   return {
-    invite:
-      searchParams.get("invite") ??
-      searchParams.get("inviteId") ??
-      searchParams.get("id") ??
-      (inviteIdFromPath ? decodePathSegment(inviteIdFromPath) : undefined) ??
-      undefined,
-    panel: "invitations",
-    view:
-      pathname === "/invites/sent" || viewFromPath === "sent"
-        ? "sent"
-        : "received",
+    inviteIdFromPath:
+      inviteViewMatch?.[2] ?? getStandaloneInviteId(inviteIdMatch?.[1]),
+    viewFromPath: inviteViewMatch?.[1],
   };
+}
+
+function getStandaloneInviteId(segment: string | undefined) {
+  return segment && !INVITE_VIEW_SEGMENTS.has(segment) ? segment : undefined;
+}
+
+function getInviteId(
+  searchParams: URLSearchParams,
+  inviteIdFromPath: string | undefined,
+) {
+  return (
+    searchParams.get("invite") ??
+    searchParams.get("inviteId") ??
+    searchParams.get("id") ??
+    (inviteIdFromPath ? decodePathSegment(inviteIdFromPath) : undefined) ??
+    undefined
+  );
+}
+
+function getInviteView(
+  pathname: string,
+  viewFromPath: string | undefined,
+): HomeRouteSearch["view"] {
+  return pathname === "/invites/sent" || viewFromPath === "sent"
+    ? "sent"
+    : "received";
 }
 
 export function resolveFriendRequestIntent(

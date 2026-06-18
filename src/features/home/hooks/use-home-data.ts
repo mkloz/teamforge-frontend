@@ -39,6 +39,20 @@ const NO_HOME_DATA: Record<HomeDataSlice, boolean> = {
   stats: false,
 };
 
+type IncludedHomeData = Record<HomeDataSlice, boolean>;
+
+interface HomeQueryState {
+  data: unknown;
+  error: unknown;
+  isError: boolean;
+  isLoading: boolean;
+}
+
+interface HomeQueryEntry {
+  enabled: boolean;
+  query: HomeQueryState;
+}
+
 function getIncludedHomeData(options?: UseHomeDataOptions) {
   if (!options?.include) {
     return ALL_HOME_DATA;
@@ -53,6 +67,29 @@ function getIncludedHomeData(options?: UseHomeDataOptions) {
 export function useHomeData(options?: UseHomeDataOptions) {
   const include = getIncludedHomeData(options);
   const queryClient = useQueryClient();
+  const queries = useHomeQueries(include);
+  const activeQueries = getActiveHomeQueries(include, queries);
+  const loadingState = getHomeLoadingState(include, queries);
+  const availabilityState = getHomeAvailabilityState(activeQueries);
+
+  return {
+    stats: queries.stats.data ?? EMPTY_HOME_STATS,
+    plans: queries.plans.data ?? EMPTY_PLANS,
+    groups: queries.groups.data ?? EMPTY_GROUPS,
+    invitations: queries.invitations.data ?? EMPTY_INVITATIONS,
+    sentInvitations: queries.sentInvitations.data ?? EMPTY_INVITATIONS,
+    recommendations: queries.recommendations.data ?? EMPTY_RECOMMENDATIONS,
+    ...loadingState,
+    ...availabilityState,
+    refetchAll: () =>
+      queryClient.refetchQueries({
+        queryKey: APP_QUERY_KEYS.home.all,
+        type: "active",
+      }),
+  };
+}
+
+function useHomeQueries(include: IncludedHomeData) {
   const statsQuery = useQuery({
     ...HomeQueryFactory.stats(),
     enabled: include.stats,
@@ -77,14 +114,69 @@ export function useHomeData(options?: UseHomeDataOptions) {
     ...HomeQueryFactory.recommendations(),
     enabled: include.recommendations,
   });
-  const activeQueries = [
-    { enabled: include.stats, query: statsQuery },
-    { enabled: include.plans, query: plansQuery },
-    { enabled: include.groups, query: groupsQuery },
-    { enabled: include.invitations, query: invitationsQuery },
-    { enabled: include.sentInvitations, query: sentInvitationsQuery },
-    { enabled: include.recommendations, query: recommendationsQuery },
-  ].filter(({ enabled }) => enabled);
+
+  return {
+    groups: groupsQuery,
+    invitations: invitationsQuery,
+    plans: plansQuery,
+    recommendations: recommendationsQuery,
+    sentInvitations: sentInvitationsQuery,
+    stats: statsQuery,
+  };
+}
+
+type HomeQueries = ReturnType<typeof useHomeQueries>;
+
+function getHomeQueryEntries(
+  include: IncludedHomeData,
+  queries: HomeQueries,
+): HomeQueryEntry[] {
+  return [
+    { enabled: include.stats, query: queries.stats },
+    { enabled: include.plans, query: queries.plans },
+    { enabled: include.groups, query: queries.groups },
+    { enabled: include.invitations, query: queries.invitations },
+    { enabled: include.sentInvitations, query: queries.sentInvitations },
+    { enabled: include.recommendations, query: queries.recommendations },
+  ];
+}
+
+function getActiveHomeQueries(
+  include: IncludedHomeData,
+  queries: HomeQueries,
+): HomeQueryEntry[] {
+  return getHomeQueryEntries(include, queries).filter(({ enabled }) => enabled);
+}
+
+function getHomeLoadingState(include: IncludedHomeData, queries: HomeQueries) {
+  const isStatsLoading = include.stats && queries.stats.isLoading;
+  const isPlansLoading = include.plans && queries.plans.isLoading;
+  const isGroupsLoading = include.groups && queries.groups.isLoading;
+  const isInvitationsLoading =
+    include.invitations && queries.invitations.isLoading;
+  const isSentInvitationsLoading =
+    include.sentInvitations && queries.sentInvitations.isLoading;
+  const isRecommendationsLoading =
+    include.recommendations && queries.recommendations.isLoading;
+
+  return {
+    isStatsLoading,
+    isPlansLoading,
+    isGroupsLoading,
+    isInvitationsLoading,
+    isSentInvitationsLoading,
+    isRecommendationsLoading,
+    isLoading:
+      isStatsLoading ||
+      isPlansLoading ||
+      isGroupsLoading ||
+      isInvitationsLoading ||
+      isSentInvitationsLoading ||
+      isRecommendationsLoading,
+  };
+}
+
+function getHomeAvailabilityState(activeQueries: HomeQueryEntry[]) {
   const hasAllIncludedData = activeQueries.every(
     ({ query }) => query.data !== undefined,
   );
@@ -99,34 +191,8 @@ export function useHomeData(options?: UseHomeDataOptions) {
   );
 
   return {
-    stats: statsQuery.data ?? EMPTY_HOME_STATS,
-    plans: plansQuery.data ?? EMPTY_PLANS,
-    groups: groupsQuery.data ?? EMPTY_GROUPS,
-    invitations: invitationsQuery.data ?? EMPTY_INVITATIONS,
-    sentInvitations: sentInvitationsQuery.data ?? EMPTY_INVITATIONS,
-    recommendations: recommendationsQuery.data ?? EMPTY_RECOMMENDATIONS,
-    isStatsLoading: include.stats && statsQuery.isLoading,
-    isPlansLoading: include.plans && plansQuery.isLoading,
-    isGroupsLoading: include.groups && groupsQuery.isLoading,
-    isInvitationsLoading: include.invitations && invitationsQuery.isLoading,
-    isSentInvitationsLoading:
-      include.sentInvitations && sentInvitationsQuery.isLoading,
-    isRecommendationsLoading:
-      include.recommendations && recommendationsQuery.isLoading,
-    isLoading:
-      (include.stats && statsQuery.isLoading) ||
-      (include.plans && plansQuery.isLoading) ||
-      (include.groups && groupsQuery.isLoading) ||
-      (include.invitations && invitationsQuery.isLoading) ||
-      (include.sentInvitations && sentInvitationsQuery.isLoading) ||
-      (include.recommendations && recommendationsQuery.isLoading),
     hasAllIncludedData,
     isError: isBlockingError,
     isOfflineUnavailable,
-    refetchAll: () =>
-      queryClient.refetchQueries({
-        queryKey: APP_QUERY_KEYS.home.all,
-        type: "active",
-      }),
   };
 }
