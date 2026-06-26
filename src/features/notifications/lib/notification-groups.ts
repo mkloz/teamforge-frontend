@@ -8,6 +8,21 @@ export type NotificationRecencyGroupKey =
   | "past-month"
   | "earlier";
 
+const NOTIFICATION_RECENCY_GROUPS = [
+  { key: "today", label: "Today", daysAgo: 0 },
+  { key: "past-week", label: "Past week", daysAgo: 7 },
+  { key: "past-month", label: "Past month", daysAgo: 30 },
+] as const satisfies readonly {
+  key: Exclude<NotificationRecencyGroupKey, "earlier">;
+  label: string;
+  daysAgo: number;
+}[];
+
+const EARLIER_RECENCY_GROUP = {
+  key: "earlier",
+  label: "Earlier",
+} as const;
+
 export interface NotificationRecencyGroup {
   key: NotificationRecencyGroupKey;
   label: string;
@@ -18,46 +33,17 @@ export function groupNotificationsByRecency(
   items: Notification[],
   referenceTime: number,
 ): NotificationRecencyGroup[] {
-  const today: Notification[] = [];
-  const pastWeek: Notification[] = [];
-  const pastMonth: Notification[] = [];
-  const earlier: Notification[] = [];
   const todayStart = getLocalDayStart(referenceTime);
-  const pastWeekStart = todayStart - 7 * DAY_IN_MS;
-  const pastMonthStart = todayStart - 30 * DAY_IN_MS;
+  const groups = createEmptyRecencyGroups();
 
   for (const item of items) {
     const createdAt = new Date(item.createdAt).getTime();
+    const groupKey = getRecencyGroupKey(createdAt, todayStart);
 
-    if (Number.isNaN(createdAt)) {
-      earlier.push(item);
-      continue;
-    }
-
-    if (createdAt >= todayStart) {
-      today.push(item);
-      continue;
-    }
-
-    if (createdAt >= pastWeekStart) {
-      pastWeek.push(item);
-      continue;
-    }
-
-    if (createdAt >= pastMonthStart) {
-      pastMonth.push(item);
-      continue;
-    }
-
-    earlier.push(item);
+    groups[groupKey].items.push(item);
   }
 
-  return [
-    { key: "today", label: "Today", items: today },
-    { key: "past-week", label: "Past week", items: pastWeek },
-    { key: "past-month", label: "Past month", items: pastMonth },
-    { key: "earlier", label: "Earlier", items: earlier },
-  ];
+  return Object.values(groups);
 }
 
 function getLocalDayStart(timestamp: number) {
@@ -68,4 +54,38 @@ function getLocalDayStart(timestamp: number) {
     date.getMonth(),
     date.getDate(),
   ).getTime();
+}
+
+function createEmptyRecencyGroups() {
+  return {
+    today: createRecencyGroup("today", "Today"),
+    "past-week": createRecencyGroup("past-week", "Past week"),
+    "past-month": createRecencyGroup("past-month", "Past month"),
+    earlier: createRecencyGroup(
+      EARLIER_RECENCY_GROUP.key,
+      EARLIER_RECENCY_GROUP.label,
+    ),
+  };
+}
+
+function getRecencyGroupKey(
+  createdAt: number,
+  todayStart: number,
+): NotificationRecencyGroupKey {
+  if (Number.isNaN(createdAt)) {
+    return EARLIER_RECENCY_GROUP.key;
+  }
+
+  return (
+    NOTIFICATION_RECENCY_GROUPS.find(
+      (group) => createdAt >= todayStart - group.daysAgo * DAY_IN_MS,
+    )?.key ?? EARLIER_RECENCY_GROUP.key
+  );
+}
+
+function createRecencyGroup(
+  key: NotificationRecencyGroupKey,
+  label: string,
+): NotificationRecencyGroup {
+  return { key, label, items: [] };
 }

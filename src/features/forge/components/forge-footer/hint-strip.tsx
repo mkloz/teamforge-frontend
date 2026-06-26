@@ -3,6 +3,31 @@ import type { ReactNode } from "react";
 
 import type { ForgeFooterChildProps } from "./types";
 
+interface HintStripMessage {
+  key: string;
+  text: ReactNode;
+}
+
+const STEP_ONE_EMPTY_HINT: HintStripMessage = {
+  key: "h1-empty",
+  text: "Select a category to continue",
+};
+const STEP_ONE_SELECTED_HINT: HintStripMessage = {
+  key: "h1-selected",
+  text: "Next: add the plan details",
+};
+const STEP_FIVE_SUCCESS_HINT: HintStripMessage = {
+  key: "h5-success",
+  text: "Group formed — give it an identity next",
+};
+const STATIC_STEP_HINTS: Partial<
+  Record<ForgeFooterChildProps["fw"]["step"], HintStripMessage>
+> = {
+  2: { key: "h2", text: "Choose a starting point for this plan" },
+  3: { key: "h3", text: "Next: tune who should find this group" },
+  7: { key: "h7", text: "Final step — send your invitations" },
+};
+
 function HintText({ children }: { children: ReactNode }) {
   return (
     <motion.p
@@ -16,31 +41,32 @@ function HintText({ children }: { children: ReactNode }) {
   );
 }
 
+function getStepOneHint(
+  selectedActivity: ForgeFooterChildProps["fw"]["selectedActivity"],
+) {
+  return selectedActivity ? STEP_ONE_SELECTED_HINT : STEP_ONE_EMPTY_HINT;
+}
+
+function getHintStripMessage(
+  fw: ForgeFooterChildProps["fw"],
+): HintStripMessage | null {
+  if (fw.step === 1) {
+    return getStepOneHint(fw.selectedActivity);
+  }
+
+  return fw.step === 5 && fw.forgeResult === "SUCCESS"
+    ? STEP_FIVE_SUCCESS_HINT
+    : (STATIC_STEP_HINTS[fw.step] ?? null);
+}
+
 export function HintStrip({ fw }: ForgeFooterChildProps) {
+  const hint = getHintStripMessage(fw);
+
   return (
     <div className="sticky bottom-app-bottom-nav border-border/40 border-t bg-transparent px-4 py-2 backdrop-blur-sm md:bottom-14 md:px-12">
       <div className="mx-auto flex min-h-5.5 max-w-2xl items-center justify-center">
         <AnimatePresence mode="wait">
-          {fw.step === 1 && !fw.selectedActivity && (
-            <HintText key="h1-empty">Select a category to continue</HintText>
-          )}
-          {fw.step === 1 && fw.selectedActivity && (
-            <HintText key="h1-selected">Next: add the plan details</HintText>
-          )}
-          {fw.step === 2 && (
-            <HintText key="h2">Choose a starting point for this plan</HintText>
-          )}
-          {fw.step === 3 && (
-            <HintText key="h3">Next: tune who should find this group</HintText>
-          )}
-          {fw.step === 5 && fw.forgeResult === "SUCCESS" && (
-            <HintText key="h5-success">
-              Group formed — give it an identity next
-            </HintText>
-          )}
-          {fw.step === 7 && (
-            <HintText key="h7">Final step — send your invitations</HintText>
-          )}
+          {hint ? <HintText key={hint.key}>{hint.text}</HintText> : null}
         </AnimatePresence>
       </div>
     </div>

@@ -7,13 +7,9 @@ export const authTokensSchema = z.object({
   refreshToken: z.string().min(1).optional(),
 });
 
-export type AuthTokensPayload = z.infer<typeof authTokensSchema>;
-
 export const authResultSchema = authTokensSchema.extend({
   isNewUser: z.boolean(),
 });
-
-export type AuthResult = z.infer<typeof authResultSchema>;
 
 export const loginSchema = z.object({
   email: z

@@ -2,11 +2,54 @@ import { ArrowRight, Check, Users, Wifi } from "lucide-react";
 
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { IconTile } from "@/shared/components/ui/icon-tile";
-import { StatusPill } from "@/shared/components/ui/status-pill";
+import {
+  StatusPill,
+  type StatusPillTone,
+} from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 import { ICON_MAP } from "../step1-activity/activity-icon-map";
 import type { TemplateSuggestionCardProps } from "./types";
+
+type TemplateSuggestion = TemplateSuggestionCardProps["suggestion"];
+
+function getTemplateCoverImage(suggestion: TemplateSuggestion) {
+  return suggestion.coverImage ?? suggestion.template.coverImage;
+}
+
+function getTemplateTogglePayload(
+  suggestion: TemplateSuggestion,
+  coverImage: string | null,
+) {
+  return {
+    ...suggestion.template,
+    coverImage,
+  };
+}
+
+function getTemplateBadgeTone(badge: string): StatusPillTone {
+  return badge === "Personal fit" ? "teal" : "neutral";
+}
+
+function getTemplateBadgeClassName(badge: string) {
+  return cn(badge === "Personal fit" ? "bg-forge-teal/10" : "bg-muted");
+}
+
+function getTemplateCardClassName(active: boolean) {
+  return cn(
+    "group flex h-24 min-w-0 overflow-hidden rounded-lg border bg-card text-left transition-colors duration-200 hover:border-forge-teal/35 hover:bg-forge-teal/5 active:scale-95",
+    active
+      ? "border-forge-teal/65 bg-forge-teal/10 ring-1 ring-forge-teal/20"
+      : "border-border/40",
+  );
+}
+
+function getTemplateTitleClassName(active: boolean) {
+  return cn(
+    "min-w-0 flex-1 truncate font-semibold text-sm leading-tight",
+    active ? "text-forge-teal" : "text-foreground",
+  );
+}
 
 export function TemplateSuggestionCard({
   active,
@@ -14,24 +57,20 @@ export function TemplateSuggestionCard({
   suggestion,
 }: TemplateSuggestionCardProps) {
   const Icon = ICON_MAP[suggestion.categoryId] ?? ICON_MAP.fallback;
-  const coverImage = suggestion.coverImage ?? suggestion.template.coverImage;
+  const coverImage = getTemplateCoverImage(suggestion);
+  const handleTemplateToggle = () => {
+    onTemplateToggle(
+      suggestion.id,
+      getTemplateTogglePayload(suggestion, coverImage),
+    );
+  };
 
   return (
     <button
       type="button"
       aria-pressed={active}
-      onClick={() =>
-        onTemplateToggle(suggestion.id, {
-          ...suggestion.template,
-          coverImage,
-        })
-      }
-      className={cn(
-        "group flex h-24 min-w-0 overflow-hidden rounded-lg border bg-card text-left transition-colors duration-200 hover:border-forge-teal/35 hover:bg-forge-teal/5 active:scale-95",
-        active
-          ? "border-forge-teal/65 bg-forge-teal/10 ring-1 ring-forge-teal/20"
-          : "border-border/40",
-      )}
+      onClick={handleTemplateToggle}
+      className={getTemplateCardClassName(active)}
     >
       <div className="relative w-20 shrink-0 overflow-hidden bg-muted sm:w-24">
         <PlanCover
@@ -63,12 +102,7 @@ export function TemplateSuggestionCard({
 
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 px-3 py-2.5">
         <div className="flex min-w-0 items-center gap-2">
-          <p
-            className={cn(
-              "min-w-0 flex-1 truncate font-semibold text-sm leading-tight",
-              active ? "text-forge-teal" : "text-foreground",
-            )}
-          >
+          <p className={getTemplateTitleClassName(active)}>
             {suggestion.title}
           </p>
           <ArrowRight
@@ -86,33 +120,43 @@ export function TemplateSuggestionCard({
               <Users size={11} />
               {suggestion.template.fixedSize}
             </span>
-            {suggestion.template.locationType === "ONLINE" && (
-              <StatusPill
-                icon={Wifi}
-                iconClassName="size-2.5"
-                size="xs"
-                tone="teal"
-                surface="soft"
-                className="gap-1 px-1.5"
-              >
-                Online
-              </StatusPill>
-            )}
+            <OnlineTemplatePill
+              locationType={suggestion.template.locationType}
+            />
           </div>
           <StatusPill
             size="xs"
-            tone={suggestion.badge === "Personal fit" ? "teal" : "neutral"}
+            tone={getTemplateBadgeTone(suggestion.badge)}
             surface="soft"
-            className={cn(
-              suggestion.badge === "Personal fit"
-                ? "bg-forge-teal/10"
-                : "bg-muted",
-            )}
+            className={getTemplateBadgeClassName(suggestion.badge)}
           >
             {suggestion.badge}
           </StatusPill>
         </div>
       </div>
     </button>
+  );
+}
+
+function OnlineTemplatePill({
+  locationType,
+}: {
+  locationType: TemplateSuggestion["template"]["locationType"];
+}) {
+  if (locationType !== "ONLINE") {
+    return null;
+  }
+
+  return (
+    <StatusPill
+      icon={Wifi}
+      iconClassName="size-2.5"
+      size="xs"
+      tone="teal"
+      surface="soft"
+      className="gap-1 px-1.5"
+    >
+      Online
+    </StatusPill>
   );
 }

@@ -53,7 +53,7 @@ export function getInviteStatusCopy(
   }
 }
 
-export function formatInviteMoment(value: string | null) {
+function formatInviteMoment(value: string | null) {
   if (!value) {
     return "Awaiting a response";
   }

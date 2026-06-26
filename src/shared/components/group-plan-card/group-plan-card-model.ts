@@ -7,6 +7,18 @@ import {
 } from "@/shared/lib/explore-group-presenters";
 import type { ExploreGroup } from "@/shared/schemas";
 
+const PLAN_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+};
+const DEFAULT_PLAN_COST = "FREE";
+const DEFAULT_PLAN_DATE = "";
+const DEFAULT_PLAN_LOCATION_MODE = "TBD";
+
 export function getGroupPlanCardModel(group: ExploreGroup) {
   const title = getExploreGroupDisplayTitle(group);
 
@@ -36,19 +48,55 @@ export function getGroupPlanCapacityModel(group: ExploreGroup) {
 }
 
 export function getGroupPlanMetaModel(group: ExploreGroup, distance?: string) {
-  const plan = group.plan;
-  const dateStr = plan?.dateTime || "";
-  const locationMode = plan?.locationMode || "TBD";
-  const cost = plan?.cost || "FREE";
-  const isOnline = locationMode === "ONLINE";
-  const isFree = cost === "FREE";
+  const { cost, dateStr, locationMode } = getGroupPlanMetaSource(group);
+  const isOnline = isOnlineLocationMode(locationMode);
 
   return {
     formattedDate: formatPlanDate(dateStr),
-    isFree,
+    isFree: isFreePlanCost(cost),
     isOnline,
-    locationLabel: isOnline ? "Online" : distance || "Location pending",
+    locationLabel: getGroupPlanLocationLabel({ distance, isOnline }),
   };
+}
+
+function getGroupPlanMetaSource(group: ExploreGroup) {
+  const plan = group.plan;
+
+  return {
+    cost: getPlanCost(plan),
+    dateStr: getPlanDateString(plan),
+    locationMode: getPlanLocationMode(plan),
+  };
+}
+
+function getPlanCost(plan: ExploreGroup["plan"]) {
+  return plan?.cost || DEFAULT_PLAN_COST;
+}
+
+function getPlanDateString(plan: ExploreGroup["plan"]) {
+  return plan?.dateTime || DEFAULT_PLAN_DATE;
+}
+
+function getPlanLocationMode(plan: ExploreGroup["plan"]) {
+  return plan?.locationMode || DEFAULT_PLAN_LOCATION_MODE;
+}
+
+function isOnlineLocationMode(locationMode: string) {
+  return locationMode === "ONLINE";
+}
+
+function isFreePlanCost(cost: string) {
+  return cost === "FREE";
+}
+
+function getGroupPlanLocationLabel({
+  distance,
+  isOnline,
+}: {
+  distance?: string;
+  isOnline: boolean;
+}) {
+  return isOnline ? "Online" : distance || "Location pending";
 }
 
 function formatPlanDate(dateStr: string) {
@@ -59,13 +107,6 @@ function formatPlanDate(dateStr: string) {
   }
 
   return date
-    .toLocaleString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    })
+    .toLocaleString("en-US", PLAN_DATE_FORMAT_OPTIONS)
     .replace(/,/g, " •");
 }

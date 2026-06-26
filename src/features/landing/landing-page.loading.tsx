@@ -9,7 +9,7 @@ export function LandingPageLoading(_props: PageLoadingProps = {}) {
   return <LandingPageLoadingFixture />;
 }
 
-export function LandingPageLoadingFixture() {
+function LandingPageLoadingFixture() {
   return (
     <div
       aria-busy="true"
@@ -140,7 +140,7 @@ export function LandingPageLoadingFixture() {
               {["one", "two", "three"].map((item) => (
                 <div
                   key={item}
-                  className="border-white/10 border-b py-6 last:border-b-0 md:border-r md:border-b-0 md:px-8 md:last:border-r-0 md:last:pr-0 md:first:pl-0"
+                  className="border-white/10 border-b py-6 last:border-b-0 md:border-r md:border-b-0 md:px-8 last:md:border-r-0 last:md:pr-0 first:md:pl-0"
                 >
                   <Skeleton className="h-5 w-36" tone="teal" />
                   <SkeletonText
@@ -185,7 +185,7 @@ export function LandingPageLoadingFixture() {
               {["activity", "shape", "room"].map((item) => (
                 <div
                   key={item}
-                  className="border-white/10 border-t py-6 md:border-t-0 md:border-r md:px-8 md:last:border-r-0 md:last:pr-0 md:first:pl-0"
+                  className="border-white/10 border-t py-6 md:border-t-0 md:border-r md:px-8 last:md:border-r-0 last:md:pr-0 first:md:pl-0"
                 >
                   <Skeleton className="h-5 w-40" tone="teal" />
                   <SkeletonText
@@ -231,7 +231,7 @@ export function LandingPageLoadingFixture() {
               {["plans", "group", "search", "message"].map((item) => (
                 <div
                   key={item}
-                  className="border-white/10 border-b py-6 last:border-b-0 md:px-6 md:odd:border-r lg:border-r lg:border-b-0 lg:px-7 lg:last:border-r-0 lg:last:pr-0 lg:first:pl-0"
+                  className="border-white/10 border-b py-6 last:border-b-0 md:px-6 odd:md:border-r lg:border-r lg:border-b-0 lg:px-7 last:lg:border-r-0 last:lg:pr-0 first:lg:pl-0"
                 >
                   <Skeleton className="h-5 w-36" tone="teal" />
                   <SkeletonText
@@ -276,7 +276,7 @@ export function LandingPageLoadingFixture() {
               {["interests", "style", "fit", "trust"].map((item) => (
                 <div
                   key={item}
-                  className="border-white/10 border-b py-6 last:border-b-0 md:px-6 md:odd:border-r lg:border-r lg:border-b-0 lg:px-7 lg:last:border-r-0 lg:last:pr-0 lg:first:pl-0"
+                  className="border-white/10 border-b py-6 last:border-b-0 md:px-6 odd:md:border-r lg:border-r lg:border-b-0 lg:px-7 last:lg:border-r-0 last:lg:pr-0 first:lg:pl-0"
                 >
                   <Skeleton className="h-5 w-36" tone="teal" />
                   <SkeletonText
@@ -324,7 +324,7 @@ export function LandingPageLoadingFixture() {
               {["review", "decline", "leave", "reliability"].map((item) => (
                 <div
                   key={item}
-                  className="border-white/10 border-b py-6 last:border-b-0 md:px-6 md:odd:border-r lg:border-r lg:border-b-0 lg:px-7 lg:last:border-r-0 lg:last:pr-0 lg:first:pl-0"
+                  className="border-white/10 border-b py-6 last:border-b-0 md:px-6 odd:md:border-r lg:border-r lg:border-b-0 lg:px-7 last:lg:border-r-0 last:lg:pr-0 first:lg:pl-0"
                 >
                   <Skeleton className="h-5 w-36" tone="teal" />
                   <SkeletonText

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { memo } from "react";
+import { type ComponentType, memo, type ReactNode } from "react";
 import {
   MyNotesAvatarVisual,
   SavedMessagesAvatarVisual,
@@ -20,7 +20,7 @@ interface HeaderInfoProps {
   title: string;
   subtitle?: string;
   avatarUrl?: string | null;
-  avatarKind?: "default" | "notes" | "saved";
+  avatarKind?: HeaderAvatarKind;
   detailsNavigation?: ConversationDetailsNavigation;
   canToggleAction?: boolean;
   isGroup: boolean;
@@ -29,6 +29,14 @@ interface HeaderInfoProps {
   isActionOpen?: boolean;
   typingText?: string;
   onToggle: () => void;
+}
+
+type HeaderAvatarKind = "default" | "notes" | "saved";
+type SpecialHeaderAvatarKind = Exclude<HeaderAvatarKind, "default">;
+
+interface SpecialHeaderAvatarConfig {
+  Visual: ComponentType<{ className?: string }>;
+  visualClassName: string;
 }
 
 export const HeaderInfo = memo(
@@ -46,118 +54,206 @@ export const HeaderInfo = memo(
     typingText,
     onToggle,
   }: HeaderInfoProps) => {
-    const content = (
-      <>
-        {/* Avatar Section - Premium Rounded Squares for Groups, Circles for Users */}
-        <div className="relative flex shrink-0 items-center justify-center">
-          <HeaderAvatar
-            avatarKind={avatarKind}
-            avatarUrl={avatarUrl}
-            isGroup={isGroup}
-            title={title}
-          />
-
-          {avatarKind === "default" && !isGroup && onlineStatus ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <AvatarStatus
-                  status={onlineStatus}
-                  borderClassName="border-canvas"
-                  className={cn(
-                    "shadow-none transition-opacity duration-300",
-                    onlineStatus === "OFFLINE" && "opacity-50",
-                  )}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                {onlineStatus === "ONLINE"
-                  ? "Online"
-                  : onlineStatus === "AWAY"
-                    ? "Away"
-                    : "Offline"}
-              </TooltipContent>
-            </Tooltip>
-          ) : null}
-        </div>
-
-        {/* Title & Subtitle Section */}
-        <div className="flex h-10 min-w-0 flex-1 flex-col justify-center">
-          <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">
-            <h2 className="min-w-0 flex-1 truncate font-bold text-foreground text-sm leading-tight tracking-tight">
-              {title}
-            </h2>
-          </div>
-
-          <AnimatePresence mode="wait">
-            {isTyping && typingText ? (
-              <motion.div
-                key="typing"
-                initial={{ opacity: 0, y: 3 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -3 }}
-                transition={{ duration: 0.2 }}
-                className="mt-0.5 flex min-w-0 items-center gap-1.5"
-              >
-                <p className="min-w-0 truncate font-bold text-primary text-xs leading-tight">
-                  {typingText}
-                </p>
-                <UnifiedTypingIndicator
-                  variant="minimal"
-                  className="h-2.5 shrink-0 opacity-80"
-                />
-              </motion.div>
-            ) : subtitle ? (
-              <motion.p
-                key="subtitle"
-                initial={{ opacity: 0, y: 3 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -3 }}
-                transition={{ duration: 0.2 }}
-                className="mt-0.5 truncate font-medium text-slate-muted/80 text-xs leading-tight"
-              >
-                {subtitle}
-              </motion.p>
-            ) : null}
-          </AnimatePresence>
-        </div>
-      </>
-    );
-
-    if (detailsNavigation) {
-      return (
-        <Link
-          {...detailsNavigation}
-          className={headerInfoClassName}
-          aria-label={`Open ${title} ${isGroup ? "group" : "profile"}`}
-        >
-          {content}
-        </Link>
-      );
-    }
-
-    if (!canToggleAction) {
-      return (
-        <div className={cn(headerInfoClassName, "cursor-default")}>
-          {content}
-        </div>
-      );
-    }
-
     return (
-      <button
-        type="button"
-        aria-expanded={isActionOpen}
-        aria-label={`${isActionOpen ? "Close" : "Open"} ${title} ${
-          isGroup ? "group details" : "profile"
-        }`}
-        onClick={onToggle}
-        className={headerInfoClassName}
+      <HeaderInfoFrame
+        canToggleAction={canToggleAction}
+        detailsNavigation={detailsNavigation}
+        isActionOpen={isActionOpen}
+        isGroup={isGroup}
+        onToggle={onToggle}
+        title={title}
       >
-        {content}
-      </button>
+        <HeaderInfoContent
+          avatarKind={avatarKind}
+          avatarUrl={avatarUrl}
+          isGroup={isGroup}
+          isTyping={isTyping}
+          onlineStatus={onlineStatus}
+          subtitle={subtitle}
+          title={title}
+          typingText={typingText}
+        />
+      </HeaderInfoFrame>
     );
   },
 );
+
+function HeaderInfoFrame({
+  canToggleAction,
+  children,
+  detailsNavigation,
+  isActionOpen,
+  isGroup,
+  onToggle,
+  title,
+}: {
+  canToggleAction: boolean;
+  children: ReactNode;
+  detailsNavigation?: ConversationDetailsNavigation;
+  isActionOpen: boolean;
+  isGroup: boolean;
+  onToggle: () => void;
+  title: string;
+}) {
+  if (detailsNavigation) {
+    return (
+      <Link
+        {...detailsNavigation}
+        className={headerInfoClassName}
+        aria-label={getDetailsNavigationLabel(title, isGroup)}
+      >
+        {children}
+      </Link>
+    );
+  }
+
+  if (!canToggleAction) {
+    return (
+      <div className={cn(headerInfoClassName, "cursor-default")}>
+        {children}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      aria-expanded={isActionOpen}
+      aria-label={getToggleActionLabel(title, isGroup, isActionOpen)}
+      onClick={onToggle}
+      className={headerInfoClassName}
+    >
+      {children}
+    </button>
+  );
+}
+
+function HeaderInfoContent({
+  avatarKind,
+  avatarUrl,
+  isGroup,
+  isTyping,
+  onlineStatus,
+  subtitle,
+  title,
+  typingText,
+}: Pick<
+  HeaderInfoProps,
+  | "avatarKind"
+  | "avatarUrl"
+  | "isGroup"
+  | "isTyping"
+  | "onlineStatus"
+  | "subtitle"
+  | "title"
+  | "typingText"
+>) {
+  const resolvedAvatarKind = avatarKind ?? "default";
+
+  return (
+    <>
+      {/* Avatar Section - Premium Rounded Squares for Groups, Circles for Users */}
+      <div className="relative flex shrink-0 items-center justify-center">
+        <HeaderAvatar
+          avatarKind={resolvedAvatarKind}
+          avatarUrl={avatarUrl}
+          isGroup={isGroup}
+          title={title}
+        />
+        <HeaderOnlineStatus
+          avatarKind={resolvedAvatarKind}
+          isGroup={isGroup}
+          onlineStatus={onlineStatus}
+        />
+      </div>
+
+      {/* Title & Subtitle Section */}
+      <div className="flex h-10 min-w-0 flex-1 flex-col justify-center">
+        <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">
+          <h2 className="min-w-0 flex-1 truncate font-bold text-foreground text-sm leading-tight tracking-tight">
+            {title}
+          </h2>
+        </div>
+
+        <HeaderSubtitle
+          isTyping={isTyping}
+          subtitle={subtitle}
+          typingText={typingText}
+        />
+      </div>
+    </>
+  );
+}
+
+function HeaderOnlineStatus({
+  avatarKind,
+  isGroup,
+  onlineStatus,
+}: {
+  avatarKind: HeaderAvatarKind;
+  isGroup: boolean;
+  onlineStatus?: OnlineStatus;
+}) {
+  if (avatarKind !== "default" || isGroup || !onlineStatus) {
+    return null;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <AvatarStatus
+          status={onlineStatus}
+          borderClassName="border-canvas"
+          className={cn(
+            "shadow-none transition-opacity duration-300",
+            onlineStatus === "OFFLINE" && "opacity-50",
+          )}
+        />
+      </TooltipTrigger>
+      <TooltipContent>{ONLINE_STATUS_LABELS[onlineStatus]}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function HeaderSubtitle({
+  isTyping,
+  subtitle,
+  typingText,
+}: Pick<HeaderInfoProps, "isTyping" | "subtitle" | "typingText">) {
+  return (
+    <AnimatePresence mode="wait">
+      {isTyping && typingText ? (
+        <motion.div
+          key="typing"
+          initial={{ opacity: 0, y: 3 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -3 }}
+          transition={{ duration: 0.2 }}
+          className="mt-0.5 flex min-w-0 items-center gap-1.5"
+        >
+          <p className="min-w-0 truncate font-bold text-primary text-xs leading-tight">
+            {typingText}
+          </p>
+          <UnifiedTypingIndicator
+            variant="minimal"
+            className="h-2.5 shrink-0 opacity-80"
+          />
+        </motion.div>
+      ) : subtitle ? (
+        <motion.p
+          key="subtitle"
+          initial={{ opacity: 0, y: 3 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -3 }}
+          transition={{ duration: 0.2 }}
+          className="mt-0.5 truncate font-medium text-slate-muted/80 text-xs leading-tight"
+        >
+          {subtitle}
+        </motion.p>
+      ) : null}
+    </AnimatePresence>
+  );
+}
 
 function HeaderAvatar({
   avatarKind,
@@ -165,31 +261,13 @@ function HeaderAvatar({
   isGroup,
   title,
 }: {
-  avatarKind: "default" | "notes" | "saved";
+  avatarKind: HeaderAvatarKind;
   avatarUrl?: string | null;
   isGroup: boolean;
   title: string;
 }) {
-  if (avatarKind === "notes") {
-    return (
-      <span
-        className="flex size-10 shrink-0 items-center justify-center rounded-full bg-transparent text-foreground"
-        aria-hidden="true"
-      >
-        <MyNotesAvatarVisual className="size-full scale-110 overflow-visible" />
-      </span>
-    );
-  }
-
-  if (avatarKind === "saved") {
-    return (
-      <span
-        className="flex size-10 shrink-0 items-center justify-center rounded-full bg-transparent text-foreground"
-        aria-hidden="true"
-      >
-        <SavedMessagesAvatarVisual className="size-full" />
-      </span>
-    );
+  if (avatarKind !== "default") {
+    return <SpecialHeaderAvatar config={SPECIAL_HEADER_AVATARS[avatarKind]} />;
   }
 
   return (
@@ -212,8 +290,56 @@ function HeaderAvatar({
   );
 }
 
+function SpecialHeaderAvatar({
+  config,
+}: {
+  config: SpecialHeaderAvatarConfig;
+}) {
+  const { Visual, visualClassName } = config;
+
+  return (
+    <span
+      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-transparent text-foreground"
+      aria-hidden="true"
+    >
+      <Visual className={visualClassName} />
+    </span>
+  );
+}
+
+function getDetailsNavigationLabel(title: string, isGroup: boolean) {
+  return `Open ${title} ${isGroup ? "group" : "profile"}`;
+}
+
+function getToggleActionLabel(
+  title: string,
+  isGroup: boolean,
+  isActionOpen: boolean,
+) {
+  return `${isActionOpen ? "Close" : "Open"} ${title} ${
+    isGroup ? "group details" : "profile"
+  }`;
+}
+
 const headerInfoClassName = cn(
   "group/header-info -m-1 flex h-auto min-w-0 flex-1 cursor-pointer items-center justify-start gap-3 rounded-lg border-0 bg-transparent p-1 text-left shadow-none transition-none",
   "hover:bg-transparent hover:shadow-none active:bg-transparent active:shadow-none",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
 );
+
+const SPECIAL_HEADER_AVATARS = {
+  notes: {
+    Visual: MyNotesAvatarVisual,
+    visualClassName: "size-full scale-110 overflow-visible",
+  },
+  saved: {
+    Visual: SavedMessagesAvatarVisual,
+    visualClassName: "size-full",
+  },
+} satisfies Record<SpecialHeaderAvatarKind, SpecialHeaderAvatarConfig>;
+
+const ONLINE_STATUS_LABELS: Record<OnlineStatus, string> = {
+  AWAY: "Away",
+  OFFLINE: "Offline",
+  ONLINE: "Online",
+};

@@ -1,23 +1,3 @@
-export function observeElementVisibility(
-  element: Element | null,
-  onVisibleChange: (isVisible: boolean) => void,
-  options?: IntersectionObserverInit,
-) {
-  if (!element || typeof IntersectionObserver === "undefined") {
-    return () => undefined;
-  }
-
-  const observer = new IntersectionObserver(([entry]) => {
-    onVisibleChange(entry?.isIntersecting ?? false);
-  }, options);
-
-  observer.observe(element);
-
-  return () => {
-    observer.disconnect();
-  };
-}
-
 export interface ElementSize {
   height: number;
   width: number;

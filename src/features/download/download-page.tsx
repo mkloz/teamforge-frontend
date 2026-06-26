@@ -15,7 +15,7 @@ import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
 import Share from "lucide-react/dist/esm/icons/share.js";
 import Smartphone from "lucide-react/dist/esm/icons/smartphone.js";
 import Wifi from "lucide-react/dist/esm/icons/wifi.js";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { Fragment, lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   type DesktopBrowser,
   type DetectedPlatform,
@@ -319,21 +319,48 @@ const CAPABILITIES = [
   },
 ] as const;
 
+const DESKTOP_BROWSER_RULES = [
+  { browser: "edge", pattern: /edg\//i },
+  { browser: "firefox", pattern: /firefox|fxios/i },
+  { browser: "safari", pattern: /safari/i, exclude: /chrome|chromium|crios/i },
+  { browser: "chrome", pattern: /chrome|chromium|crios/i },
+] as const satisfies readonly {
+  browser: DesktopBrowser;
+  exclude?: RegExp;
+  pattern: RegExp;
+}[];
+
+const IOS_BROWSER_NAME_RULES = [
+  { name: "Chrome", pattern: /crios/i },
+  { name: "Firefox", pattern: /fxios/i },
+  { name: "Edge", pattern: /edgios/i },
+  { name: "Opera", pattern: /opt\//i },
+] as const;
+
+const INSTALL_DEVICE_SWITCH_OPTIONS = [
+  { id: "ios", label: "iPhone & iPad" },
+  { id: "android", label: "Android" },
+  { id: "desktop", label: "Desktop" },
+] as const satisfies readonly {
+  id: SelectedDevice;
+  label: string;
+}[];
+
+const INSTALL_DEVICE_SWITCH_BUTTON_CLASS =
+  "inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+const DOWNLOAD_PAGE_LINK_COPY_RESET_MS = 2500;
+
 // ─── Platform detection ───────────────────────────────────────────────────────
 
 function detectPlatform(): DetectedPlatform {
-  if (typeof navigator === "undefined") return "unknown";
+  const ua = getNavigatorUserAgent();
 
-  const ua = navigator.userAgent;
+  if (!ua) return "unknown";
+
   const uaLower = ua.toLowerCase();
-  const isTouchMac = ua.includes("Macintosh") && navigator.maxTouchPoints > 1;
-  const isIos = /iphone|ipad|ipod/.test(uaLower) || isTouchMac;
 
-  if (isIos) {
-    // Safari on iOS: has "Safari/" but NOT CriOS (Chrome), FxiOS (Firefox), EdgiOS (Edge), OPT/ (Opera)
-    const isIosSafari =
-      /safari\//i.test(ua) && !/crios|fxios|edgios|opt\//i.test(ua);
-    return isIosSafari ? "ios-safari" : "ios-other";
+  if (isIosDevice(ua, uaLower)) {
+    return isIosSafari(ua) ? "ios-safari" : "ios-other";
   }
 
   if (uaLower.includes("android")) return "android";
@@ -341,23 +368,55 @@ function detectPlatform(): DetectedPlatform {
 }
 
 function detectDesktopBrowser(): DesktopBrowser {
-  if (typeof navigator === "undefined") return "chrome";
-  const ua = navigator.userAgent;
-  if (/edg\//i.test(ua)) return "edge"; // must check before Chrome
-  if (/firefox|fxios/i.test(ua)) return "firefox";
-  if (/safari/i.test(ua) && !/chrome|chromium|crios/i.test(ua)) return "safari";
-  if (/chrome|chromium|crios/i.test(ua)) return "chrome";
-  return "other";
+  const ua = getNavigatorUserAgent();
+
+  if (!ua) return "chrome";
+
+  return getDesktopBrowserFromUserAgent(ua);
+}
+
+function getNavigatorUserAgent() {
+  return typeof navigator === "undefined" ? null : navigator.userAgent;
+}
+
+function isIosDevice(ua: string, uaLower: string) {
+  const isTouchMac =
+    ua.includes("Macintosh") &&
+    typeof navigator !== "undefined" &&
+    navigator.maxTouchPoints > 1;
+
+  return /iphone|ipad|ipod/.test(uaLower) || isTouchMac;
+}
+
+function isIosSafari(ua: string) {
+  return /safari\//i.test(ua) && !/crios|fxios|edgios|opt\//i.test(ua);
+}
+
+function getDesktopBrowserFromUserAgent(ua: string): DesktopBrowser {
+  return (
+    DESKTOP_BROWSER_RULES.find((rule) => isDesktopBrowserRuleMatch(rule, ua))
+      ?.browser ?? "other"
+  );
+}
+
+function isDesktopBrowserRuleMatch(
+  rule: (typeof DESKTOP_BROWSER_RULES)[number],
+  ua: string,
+) {
+  return (
+    rule.pattern.test(ua) && (!("exclude" in rule) || !rule.exclude.test(ua))
+  );
 }
 
 function getIosBrowserName(): string {
-  if (typeof navigator === "undefined") return "this browser";
-  const ua = navigator.userAgent;
-  if (/crios/i.test(ua)) return "Chrome";
-  if (/fxios/i.test(ua)) return "Firefox";
-  if (/edgios/i.test(ua)) return "Edge";
-  if (/opt\//i.test(ua)) return "Opera";
-  return "this browser";
+  const ua = getNavigatorUserAgent();
+
+  if (!ua) return "this browser";
+
+  return (
+    IOS_BROWSER_NAME_RULES.find((rule) => rule.pattern.test(ua))?.name ??
+    "this browser"
+  );
 }
 
 function useDeviceDetection() {
@@ -722,44 +781,27 @@ function InstallDeviceSwitch({
   onSelectedDeviceChange,
   selectedDevice,
 }: InstallDeviceSwitchProps) {
+  const options = INSTALL_DEVICE_SWITCH_OPTIONS.filter(
+    (option) => option.id !== selectedDevice,
+  );
+
   return (
     <div className="mb-10 flex flex-wrap items-center gap-x-3 gap-y-2 text-slate-muted text-sm">
       <span>Wrong device?</span>
-      {selectedDevice !== "ios" && (
-        <button
-          type="button"
-          className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          onClick={() => {
-            onSelectedDeviceChange("ios");
-          }}
-        >
-          iPhone & iPad
-        </button>
-      )}
-      {selectedDevice !== "ios" && selectedDevice !== "android" && "·"}
-      {selectedDevice !== "android" && (
-        <button
-          type="button"
-          className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          onClick={() => {
-            onSelectedDeviceChange("android");
-          }}
-        >
-          Android
-        </button>
-      )}
-      {selectedDevice !== "desktop" && "·"}
-      {selectedDevice !== "desktop" && (
-        <button
-          type="button"
-          className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          onClick={() => {
-            onSelectedDeviceChange("desktop");
-          }}
-        >
-          Desktop
-        </button>
-      )}
+      {options.map((option, index) => (
+        <Fragment key={option.id}>
+          {index > 0 && "·"}
+          <button
+            type="button"
+            className={INSTALL_DEVICE_SWITCH_BUTTON_CLASS}
+            onClick={() => {
+              onSelectedDeviceChange(option.id);
+            }}
+          >
+            {option.label}
+          </button>
+        </Fragment>
+      ))}
     </div>
   );
 }
@@ -969,6 +1011,23 @@ interface HeroCTAButtonsProps {
   onInstallClick: () => void;
 }
 
+type HeroPrimaryCtaState =
+  | { kind: "home"; label: "Open TeamForge"; showSecondaryAction: false }
+  | {
+      isLoading: boolean;
+      kind: "install";
+      label: "Install TeamForge";
+      showSecondaryAction: true;
+    }
+  | {
+      kind: "steps";
+      label:
+        | "How to switch to Safari ↓"
+        | "See install options ↓"
+        | "See install steps ↓";
+      showSecondaryAction: true;
+    };
+
 function HeroCTAButtons({
   selectedDevice,
   detected,
@@ -988,6 +1047,14 @@ function HeroCTAButtons({
     "Sign in",
     DOWNLOAD_AUTH_RETURN_TO,
   );
+  const primaryCta = getHeroPrimaryCtaState({
+    canUseNativePrompt,
+    desktopBrowser,
+    detected,
+    installState,
+    isStandalone,
+    selectedDevice,
+  });
 
   function renderSecondaryActionButton() {
     if (isResolvingAuthAction) {
@@ -1011,91 +1078,88 @@ function HeroCTAButtons({
     );
   }
 
-  // Already installed
-  if (isStandalone) {
-    return (
-      <div className={row}>
+  return (
+    <div className={row}>
+      {primaryCta.kind === "home" ? (
         <Button size="hero" asChild className={btnBase}>
-          <Link to="/home">Open TeamForge</Link>
+          <Link to="/home">{primaryCta.label}</Link>
         </Button>
-      </div>
-    );
-  }
-
-  // Native install prompt available (Android/desktop Chromium)
-  if (canUseNativePrompt) {
-    return (
-      <div className={row}>
+      ) : primaryCta.kind === "install" ? (
         <Button
           size="hero"
-          loading={installState === "prompting"}
+          loading={primaryCta.isLoading}
           className={btnBase}
           onClick={onInstallClick}
         >
-          Install TeamForge
+          {primaryCta.label}
         </Button>
-        {renderSecondaryActionButton()}
-      </div>
-    );
-  }
-
-  // iOS Safari — scroll to manual steps
-  if (selectedDevice === "ios" && detected !== "ios-other") {
-    return (
-      <div className={row}>
+      ) : (
         <Button size="hero" className={btnBase} onClick={scrollToSteps}>
-          See install steps ↓
+          {primaryCta.label}
         </Button>
-        {renderSecondaryActionButton()}
-      </div>
-    );
-  }
-
-  // iOS non-Safari — must switch browser
-  if (selectedDevice === "ios" && detected === "ios-other") {
-    return (
-      <div className={row}>
-        <Button size="hero" className={btnBase} onClick={scrollToSteps}>
-          How to switch to Safari ↓
-        </Button>
-        {renderSecondaryActionButton()}
-      </div>
-    );
-  }
-
-  // Desktop Firefox — can't install natively, show the workaround steps first
-  if (selectedDevice === "desktop" && desktopBrowser === "firefox") {
-    return (
-      <div className={row}>
-        <Button size="hero" className={btnBase} onClick={scrollToSteps}>
-          See install options ↓
-        </Button>
-        {renderSecondaryActionButton()}
-      </div>
-    );
-  }
-
-  // Desktop without a native prompt yet — scroll to browser-specific install steps
-  if (selectedDevice === "desktop") {
-    return (
-      <div className={row}>
-        <Button size="hero" className={btnBase} onClick={scrollToSteps}>
-          See install steps ↓
-        </Button>
-        {renderSecondaryActionButton()}
-      </div>
-    );
-  }
-
-  // Android without prompt / user manually selected Android from another device
-  return (
-    <div className={row}>
-      <Button size="hero" className={btnBase} onClick={scrollToSteps}>
-        See install steps ↓
-      </Button>
-      {renderSecondaryActionButton()}
+      )}
+      {primaryCta.showSecondaryAction ? renderSecondaryActionButton() : null}
     </div>
   );
+}
+
+function getHeroPrimaryCtaState({
+  canUseNativePrompt,
+  desktopBrowser,
+  detected,
+  installState,
+  isStandalone,
+  selectedDevice,
+}: Pick<
+  HeroCTAButtonsProps,
+  | "canUseNativePrompt"
+  | "desktopBrowser"
+  | "detected"
+  | "installState"
+  | "isStandalone"
+  | "selectedDevice"
+>): HeroPrimaryCtaState {
+  if (isStandalone) {
+    return {
+      kind: "home",
+      label: "Open TeamForge",
+      showSecondaryAction: false,
+    };
+  }
+
+  if (canUseNativePrompt) {
+    return {
+      isLoading: installState === "prompting",
+      kind: "install",
+      label: "Install TeamForge",
+      showSecondaryAction: true,
+    };
+  }
+
+  return {
+    kind: "steps",
+    label: getHeroStepsCtaLabel({ desktopBrowser, detected, selectedDevice }),
+    showSecondaryAction: true,
+  };
+}
+
+function getHeroStepsCtaLabel({
+  desktopBrowser,
+  detected,
+  selectedDevice,
+}: Pick<
+  HeroCTAButtonsProps,
+  "desktopBrowser" | "detected" | "selectedDevice"
+>): Extract<HeroPrimaryCtaState, { kind: "steps" }>["label"] {
+  if (selectedDevice === "ios" && detected === "ios-other") {
+    return "How to switch to Safari ↓";
+  }
+
+  if (selectedDevice === "desktop" && desktopBrowser === "firefox") {
+    return "See install options ↓";
+  }
+
+  return "See install steps ↓";
 }
 
 // ─── Hero visuals (per device) ────────────────────────────────────────────────
@@ -1305,18 +1369,63 @@ function InstallStep({ index, step }: InstallStepProps) {
 
 // ─── Special notices ──────────────────────────────────────────────────────────
 
-/** Shown when user is on iOS but not in Safari. */
-function IosNonSafariNotice() {
-  const browserName = getIosBrowserName();
+interface DownloadPageLinkCopyControlProps {
+  copied: boolean;
+  onCopy: () => Promise<void>;
+}
+
+function useDownloadPageLinkCopy() {
   const [copied, setCopied] = useState(false);
 
-  async function handleCopy() {
+  async function copyCurrentPageUrl() {
     await navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
-    }, 2500);
+    }, DOWNLOAD_PAGE_LINK_COPY_RESET_MS);
   }
+
+  return { copied, copyCurrentPageUrl };
+}
+
+function getDownloadPageLink() {
+  return typeof window !== "undefined"
+    ? window.location.href
+    : buildAppUrl("/download");
+}
+
+function DownloadPageLinkCopyControl({
+  copied,
+  onCopy,
+}: DownloadPageLinkCopyControlProps) {
+  return (
+    <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden rounded-xl border border-border/80 bg-background px-3 py-2">
+        <span className="truncate font-mono text-slate-muted text-xs">
+          {getDownloadPageLink()}
+        </span>
+      </div>
+      <Button variant="outline" size="sm" className="shrink-0" onClick={onCopy}>
+        {copied ? (
+          <>
+            <ClipboardCheck size={14} strokeWidth={2} aria-hidden="true" />
+            Copied!
+          </>
+        ) : (
+          <>
+            <ClipboardCopy size={14} strokeWidth={2} aria-hidden="true" />
+            Copy link
+          </>
+        )}
+      </Button>
+    </div>
+  );
+}
+
+/** Shown when user is on iOS but not in Safari. */
+function IosNonSafariNotice() {
+  const browserName = getIosBrowserName();
+  const { copied, copyCurrentPageUrl } = useDownloadPageLinkCopy();
 
   return (
     <div className="grid gap-6">
@@ -1332,41 +1441,10 @@ function IosNonSafariNotice() {
               Screen. You need to open this page in Safari to install TeamForge.
             </p>
 
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden rounded-xl border border-border/80 bg-background px-3 py-2">
-                <span className="truncate font-mono text-slate-muted text-xs">
-                  {typeof window !== "undefined"
-                    ? window.location.href
-                    : buildAppUrl("/download")}
-                </span>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="shrink-0"
-                onClick={handleCopy}
-              >
-                {copied ? (
-                  <>
-                    <ClipboardCheck
-                      size={14}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                    />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <ClipboardCopy
-                      size={14}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                    />
-                    Copy link
-                  </>
-                )}
-              </Button>
-            </div>
+            <DownloadPageLinkCopyControl
+              copied={copied}
+              onCopy={copyCurrentPageUrl}
+            />
           </div>
         </div>
       </div>
@@ -1416,15 +1494,7 @@ function IosNonSafariNotice() {
 
 /** Shown when user is on Firefox desktop — which doesn't support PWA install. */
 function FirefoxNotice() {
-  const [copied, setCopied] = useState(false);
-
-  async function handleCopy() {
-    await navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 2500);
-  }
+  const { copied, copyCurrentPageUrl } = useDownloadPageLinkCopy();
 
   return (
     <div className="rounded-2xl border border-spark-amber/20 bg-spark-amber/5 px-6 py-8 sm:px-8">
@@ -1441,37 +1511,10 @@ function FirefoxNotice() {
             installation takes two clicks.
           </p>
 
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden rounded-xl border border-border/80 bg-background px-3 py-2">
-              <span className="truncate font-mono text-slate-muted text-xs">
-                {typeof window !== "undefined"
-                  ? window.location.href
-                  : buildAppUrl("/download")}
-              </span>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="shrink-0"
-              onClick={handleCopy}
-            >
-              {copied ? (
-                <>
-                  <ClipboardCheck
-                    size={14}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                  />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <ClipboardCopy size={14} strokeWidth={2} aria-hidden="true" />
-                  Copy link
-                </>
-              )}
-            </Button>
-          </div>
+          <DownloadPageLinkCopyControl
+            copied={copied}
+            onCopy={copyCurrentPageUrl}
+          />
 
           <p className="mt-4 text-slate-muted text-sm">
             You can still use TeamForge in Firefox as a regular web page.{" "}

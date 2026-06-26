@@ -48,7 +48,7 @@ function hasUnsafePathSegment(pathname: string) {
   });
 }
 
-export function isPublicHttpUrl(value: unknown) {
+function isPublicHttpUrl(value: unknown) {
   const url = parseUrl(value);
 
   return (
@@ -105,7 +105,7 @@ export function isGiphyMediaUrl(value: unknown) {
   return GIPHY_MEDIA_HOST_PATTERN.test(url.hostname);
 }
 
-export function isChatAttachmentUrl(value: unknown) {
+function isChatAttachmentUrl(value: unknown) {
   return isManagedUploadUrl(value) || isGiphyMediaUrl(value);
 }
 

@@ -8,11 +8,6 @@ interface PersonalityScreenShellProps {
   className?: string;
 }
 
-interface BackLinkProps {
-  label?: string;
-  onBack: () => void;
-}
-
 interface StepNavigationProps {
   backClassName?: string;
   className?: string;
@@ -38,28 +33,8 @@ export function PersonalityScreenShell({
   );
 }
 
-export function MotionStep({
-  children,
-  className,
-}: PersonalityScreenShellProps) {
+function MotionStep({ children, className }: PersonalityScreenShellProps) {
   return <div className={className}>{children}</div>;
-}
-
-export function BackLink({ label = "Back", onBack }: BackLinkProps) {
-  return (
-    <MotionStep className="mb-5 self-start">
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        onClick={onBack}
-        className="h-8 rounded-md px-2 font-bold text-muted-foreground text-sm underline-offset-4 hover:bg-transparent hover:text-ink hover:underline focus-visible:ring-forge-teal dark:hover:text-white"
-      >
-        <ArrowLeft size={15} strokeWidth={2.5} aria-hidden="true" />
-        <span>{label}</span>
-      </Button>
-    </MotionStep>
-  );
 }
 
 export function StepNavigation({

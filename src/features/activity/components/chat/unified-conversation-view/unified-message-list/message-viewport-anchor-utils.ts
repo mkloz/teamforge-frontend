@@ -20,39 +20,90 @@ export function captureViewportAnchor(
     return null;
   }
 
-  const viewportTop = viewport.getBoundingClientRect().top;
+  const viewportTop = getViewportTop(viewport);
+  const visibleAnchor = getFirstVisibleBlockAnchor(
+    visibleBlocks,
+    getBlockElement,
+    viewportTop,
+  );
 
+  return (
+    visibleAnchor ??
+    getFallbackBlockAnchor(visibleBlocks, getBlockElement, viewportTop)
+  );
+}
+
+function getViewportTop(viewport: HTMLDivElement) {
+  return viewport.getBoundingClientRect().top;
+}
+
+function getFirstVisibleBlockAnchor(
+  visibleBlocks: VirtualizedMessageBlock[],
+  getBlockElement: (key: string) => HTMLDivElement | null,
+  viewportTop: number,
+): ViewportAnchorSnapshot | null {
   for (const block of visibleBlocks) {
-    const node = getBlockElement(block.key);
+    const anchor = getVisibleBlockAnchor(block, getBlockElement, viewportTop);
 
-    if (!node) {
-      continue;
-    }
-
-    const rect = node.getBoundingClientRect();
-    const offsetTop = rect.top - viewportTop;
-    const offsetBottom = rect.bottom - viewportTop;
-
-    if (offsetBottom > 0) {
-      return {
-        key: block.key,
-        offsetTop,
-      };
+    if (anchor) {
+      return anchor;
     }
   }
 
+  return null;
+}
+
+function getVisibleBlockAnchor(
+  block: VirtualizedMessageBlock,
+  getBlockElement: (key: string) => HTMLDivElement | null,
+  viewportTop: number,
+): ViewportAnchorSnapshot | null {
+  const node = getBlockElement(block.key);
+
+  if (!node) {
+    return null;
+  }
+
+  const offsets = getBlockViewportOffsets(node, viewportTop);
+
+  if (offsets.offsetBottom <= 0) {
+    return null;
+  }
+
+  return {
+    key: block.key,
+    offsetTop: offsets.offsetTop,
+  };
+}
+
+function getFallbackBlockAnchor(
+  visibleBlocks: VirtualizedMessageBlock[],
+  getBlockElement: (key: string) => HTMLDivElement | null,
+  viewportTop: number,
+): ViewportAnchorSnapshot | null {
   const fallbackBlock = visibleBlocks[0];
   const fallbackNode = fallbackBlock
     ? getBlockElement(fallbackBlock.key)
     : null;
 
-  if (!fallbackBlock || !fallbackNode) {
-    return null;
-  }
+  return fallbackBlock && fallbackNode
+    ? {
+        key: fallbackBlock.key,
+        offsetTop: getBlockOffsetTop(fallbackNode, viewportTop),
+      }
+    : null;
+}
+
+function getBlockOffsetTop(node: HTMLDivElement, viewportTop: number) {
+  return node.getBoundingClientRect().top - viewportTop;
+}
+
+function getBlockViewportOffsets(node: HTMLDivElement, viewportTop: number) {
+  const rect = node.getBoundingClientRect();
 
   return {
-    key: fallbackBlock.key,
-    offsetTop: fallbackNode.getBoundingClientRect().top - viewportTop,
+    offsetBottom: rect.bottom - viewportTop,
+    offsetTop: rect.top - viewportTop,
   };
 }
 
@@ -71,18 +122,23 @@ export function restoreViewportAnchor(
     return false;
   }
 
-  const currentOffsetTop =
-    node.getBoundingClientRect().top - viewport.getBoundingClientRect().top;
+  const currentOffsetTop = getBlockOffsetTop(node, getViewportTop(viewport));
   const delta = currentOffsetTop - anchor.offsetTop;
 
-  if (Math.abs(delta) > 0.5) {
-    viewport.scrollTo({
-      behavior: "instant",
-      top: Math.max(viewport.scrollTop + delta, 0),
-    });
-  }
+  applyViewportAnchorDelta(viewport, delta);
 
   return true;
+}
+
+function applyViewportAnchorDelta(viewport: HTMLDivElement, delta: number) {
+  if (Math.abs(delta) <= 0.5) {
+    return;
+  }
+
+  viewport.scrollTo({
+    behavior: "instant",
+    top: Math.max(viewport.scrollTop + delta, 0),
+  });
 }
 
 export function restorePrependAnchor(
@@ -101,6 +157,14 @@ export function restorePrependAnchor(
     return;
   }
 
-  const delta = totalHeight - prependAnchor.previousHeight;
-  viewport.scrollTop = prependAnchor.previousScrollTop + delta;
+  viewport.scrollTop =
+    prependAnchor.previousScrollTop +
+    getPrependedHeightDelta(totalHeight, prependAnchor);
+}
+
+function getPrependedHeightDelta(
+  totalHeight: number,
+  prependAnchor: PrependAnchorSnapshot,
+) {
+  return totalHeight - prependAnchor.previousHeight;
 }

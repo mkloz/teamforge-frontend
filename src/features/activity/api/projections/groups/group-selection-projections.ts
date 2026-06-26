@@ -2,6 +2,10 @@ import { toMessageApi } from "@/features/activity/api/messages/message-mappers";
 import type { Group } from "@/features/activity/lib/activity-contract";
 import type { GroupApi } from "@/shared/schemas";
 
+type SelectionActivity = NonNullable<Group["activity"]>;
+type SelectionMember = NonNullable<Group["members"]>[number];
+type SelectionMemberUser = NonNullable<SelectionMember["user"]>;
+
 export function mapApiGroupFromSelection(group: Group): GroupApi {
   return {
     id: group.id,
@@ -16,57 +20,157 @@ export function mapApiGroupFromSelection(group: Group): GroupApi {
     version: group.version,
     disbandedAt: group.disbandedAt,
     activityId: group.activityId,
-    activity: {
-      id: group.activity?.id ?? group.activityId,
-      title: group.activity?.title ?? group.name,
-      city: group.activity?.city ?? null,
-      status: group.activity?.status ?? "MATCHED",
-      visibility: group.activity?.visibility ?? "PUBLIC",
-      access: group.activity?.access ?? "OPEN",
-      forgeMode: group.activity?.forgeMode ?? "AUTO",
-      interests: [],
-    },
-    plan: group.plan
-      ? {
-          id: group.plan.id,
-          title: group.plan.title,
-          category: group.plan.category,
-          coverImage: group.plan.coverImage,
-          coverImageMedia: group.plan.coverImageMedia,
-          status: group.plan.status,
-          dateTime: group.plan.dateTime,
-          locationMode: group.plan.locationMode,
-          location: group.plan.location,
-          locationLat: group.plan.locationLat,
-          locationLng: group.plan.locationLng,
-          cost: group.plan.cost,
-        }
-      : null,
-    chat: group.chat
-      ? {
-          id: group.chat.id,
-          isMuted: group.chat.isMuted,
-          pinnedMessages: group.chat.pinnedMessages?.map((message) =>
-            toMessageApi(message),
-          ),
-        }
-      : null,
-    members:
-      group.members?.map((member) => ({
-        userId: member.userId,
-        role: member.role,
-        joinedAt: member.joinedAt,
-        leftAt: member.leftAt,
-        compatibilityScore: member.compatibilityScore,
-        user: {
-          id: member.user?.id ?? member.userId,
-          name: member.user?.name ?? "Member",
-          avatar: member.user?.avatar ?? null,
-          avatarMedia: member.user?.avatarMedia,
-          personalityType: member.user?.personalityType ?? null,
-          trustScore: member.user?.trustScore ?? 0,
-          onlineStatus: member.user?.onlineStatus,
-        },
-      })) ?? [],
+    activity: mapSelectionActivity(group),
+    plan: mapSelectionPlan(group.plan),
+    chat: mapSelectionChat(group.chat),
+    members: mapSelectionMembers(group.members),
   };
+}
+
+function mapSelectionActivity(group: Group): GroupApi["activity"] {
+  const { activity } = group;
+
+  return {
+    id: getSelectionActivityField(activity, ({ id }) => id, group.activityId),
+    title: getSelectionActivityField(
+      activity,
+      ({ title }) => title,
+      group.name,
+    ),
+    city: getSelectionActivityField(activity, ({ city }) => city, null),
+    status: getSelectionActivityField(
+      activity,
+      ({ status }) => status,
+      "MATCHED",
+    ),
+    visibility: getSelectionActivityField(
+      activity,
+      ({ visibility }) => visibility,
+      "PUBLIC",
+    ),
+    access: getSelectionActivityField(activity, ({ access }) => access, "OPEN"),
+    forgeMode: getSelectionActivityField(
+      activity,
+      ({ forgeMode }) => forgeMode,
+      "AUTO",
+    ),
+    interests: [],
+  };
+}
+
+function mapSelectionPlan(plan: Group["plan"]): GroupApi["plan"] {
+  if (!plan) {
+    return null;
+  }
+
+  return {
+    id: plan.id,
+    title: plan.title,
+    category: plan.category,
+    coverImage: plan.coverImage,
+    coverImageMedia: plan.coverImageMedia,
+    status: plan.status,
+    dateTime: plan.dateTime,
+    locationMode: plan.locationMode,
+    location: plan.location,
+    locationLat: plan.locationLat,
+    locationLng: plan.locationLng,
+    cost: plan.cost,
+  };
+}
+
+function mapSelectionChat(chat: Group["chat"]): GroupApi["chat"] {
+  if (!chat) {
+    return null;
+  }
+
+  return {
+    id: chat.id,
+    isMuted: chat.isMuted,
+    pinnedMessages: chat.pinnedMessages?.map((message) =>
+      toMessageApi(message),
+    ),
+  };
+}
+
+function mapSelectionMembers(members: Group["members"]): GroupApi["members"] {
+  return members?.map(mapSelectionMember) ?? [];
+}
+
+function mapSelectionMember(
+  member: SelectionMember,
+): GroupApi["members"][number] {
+  return {
+    userId: member.userId,
+    role: member.role,
+    joinedAt: member.joinedAt,
+    leftAt: member.leftAt,
+    compatibilityScore: member.compatibilityScore,
+    user: mapSelectionMemberUser(member),
+  };
+}
+
+function mapSelectionMemberUser(
+  member: SelectionMember,
+): GroupApi["members"][number]["user"] {
+  const { user } = member;
+
+  return {
+    id: getSelectionMemberUserField(user, ({ id }) => id, member.userId),
+    name: getSelectionMemberUserField(user, ({ name }) => name, "Member"),
+    avatar: getSelectionMemberUserField(user, ({ avatar }) => avatar, null),
+    avatarMedia: readSelectionMemberUserField(
+      user,
+      ({ avatarMedia }) => avatarMedia,
+    ),
+    personalityType: getSelectionMemberUserField(
+      user,
+      ({ personalityType }) => personalityType,
+      null,
+    ),
+    trustScore: getSelectionMemberUserField(
+      user,
+      ({ trustScore }) => trustScore,
+      0,
+    ),
+    onlineStatus: readSelectionMemberUserField(
+      user,
+      ({ onlineStatus }) => onlineStatus,
+    ),
+  };
+}
+
+function getSelectionActivityField<T>(
+  activity: Group["activity"],
+  readField: (activity: SelectionActivity) => T | null | undefined,
+  fallback: T,
+): T {
+  if (!activity) {
+    return fallback;
+  }
+
+  return readField(activity) ?? fallback;
+}
+
+function getSelectionMemberUserField<T>(
+  user: SelectionMember["user"],
+  readField: (user: SelectionMemberUser) => T | null | undefined,
+  fallback: T,
+): T {
+  if (!user) {
+    return fallback;
+  }
+
+  return readField(user) ?? fallback;
+}
+
+function readSelectionMemberUserField<T>(
+  user: SelectionMember["user"],
+  readField: (user: SelectionMemberUser) => T,
+): T | undefined {
+  if (!user) {
+    return undefined;
+  }
+
+  return readField(user);
 }

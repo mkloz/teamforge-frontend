@@ -11,6 +11,21 @@ interface UseSaveInterestsInput {
   selectedIds: string[];
 }
 
+const OFFLINE_SAVE_INTERESTS_ERROR =
+  "You are offline. Reconnect before saving your interests.";
+const SAVE_INTERESTS_FALLBACK_ERROR =
+  "We couldn’t save your interests just yet. Please try again.";
+
+type GuardOfflineAction = ReturnType<
+  typeof useOfflineActionGuard
+>["guardOfflineAction"];
+type SaveInterestsPayload = Parameters<
+  typeof OnboardingCommands.setInterests
+>[0];
+type SaveInterestsMutation = (
+  payload: SaveInterestsPayload,
+) => Promise<unknown>;
+
 export function useSaveInterests({
   canContinue,
   onComplete,
@@ -40,33 +55,16 @@ export function useSaveInterests({
 
     setSaveErrorMessage(null);
 
-    if (
-      guardOfflineAction({
-        id: "onboarding-interests-save-offline",
-        description: "Reconnect before saving your interests.",
-      })
-    ) {
-      setSaveErrorMessage(
-        "You are offline. Reconnect before saving your interests.",
-      );
+    if (shouldSkipSaveInterestsForOffline(guardOfflineAction)) {
+      setSaveErrorMessage(OFFLINE_SAVE_INTERESTS_ERROR);
       return;
     }
 
     try {
-      await saveInterests({
-        interestIds: selectedIds,
-      });
-
+      await saveSelectedInterests(saveInterests, selectedIds);
       onComplete();
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        setSaveErrorMessage(error.message);
-        return;
-      }
-
-      setSaveErrorMessage(
-        "We couldn’t save your interests just yet. Please try again.",
-      );
+      setSaveErrorMessage(getSaveInterestsErrorMessage(error));
     }
   }
 
@@ -76,4 +74,28 @@ export function useSaveInterests({
     isSaving,
     saveErrorMessage,
   };
+}
+
+function shouldSkipSaveInterestsForOffline(
+  guardOfflineAction: GuardOfflineAction,
+) {
+  return guardOfflineAction({
+    id: "onboarding-interests-save-offline",
+    description: "Reconnect before saving your interests.",
+  });
+}
+
+function saveSelectedInterests(
+  saveInterests: SaveInterestsMutation,
+  selectedIds: string[],
+) {
+  return saveInterests({
+    interestIds: selectedIds,
+  });
+}
+
+function getSaveInterestsErrorMessage(error: unknown) {
+  return error instanceof Error && error.message
+    ? error.message
+    : SAVE_INTERESTS_FALLBACK_ERROR;
 }

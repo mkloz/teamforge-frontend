@@ -5,6 +5,7 @@ import {
   activityVisibilitySchema,
   costTypeSchema,
   createActivityInputSchema,
+  createInvitePayloadSchema,
   createPaginatedSchema,
   forgeActivityInputSchema,
   forgeActivityResultSchema,
@@ -15,27 +16,12 @@ import {
   locationModeSchema,
   planCategorySchema,
   planSchema,
+  updateGroupPayloadSchema,
 } from "@/shared/schemas";
-import {
-  managedAssetReferenceSchema,
-  managedUploadUrlSchema,
-} from "@/shared/validators/url.validator";
-
-const updateGroupPayloadSchema = z.object({
-  name: z.string().trim().min(1).max(120).optional(),
-  description: z.string().trim().max(1000).nullable().optional(),
-  avatar: managedUploadUrlSchema.nullable().optional(),
-});
+import { managedAssetReferenceSchema } from "@/shared/validators/url.validator";
 
 const updatePlanPayloadSchema = z.object({
   coverImage: managedAssetReferenceSchema.nullable().optional(),
-});
-
-const createInvitePayloadSchema = z.object({
-  groupId: z.string().min(1),
-  inviteeId: z.string().min(1),
-  type: z.enum(["FRIEND_INVITE", "DIRECT_INVITE"]).optional(),
-  message: z.string().trim().max(500).optional(),
 });
 
 const recentActivityPlanSchema = z.object({

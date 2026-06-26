@@ -4,16 +4,12 @@ import { chatTypeSchema } from "@/shared/schemas/enums";
 import { unifiedMessageSchema } from "./activity-message.schemas";
 import { activityParticipantSchema } from "./activity-participant.schemas";
 
-export const activityChatParticipantSchema = z.object({
+const activityChatParticipantSchema = z.object({
   userId: z.string(),
   chatId: z.string(),
   lastReadMessageId: z.string().nullable().optional(),
   user: activityParticipantSchema.optional(),
 });
-
-export type ActivityChatParticipant = z.infer<
-  typeof activityChatParticipantSchema
->;
 
 export const activityMutualGroupSchema = z.object({
   id: z.string(),
@@ -21,9 +17,7 @@ export const activityMutualGroupSchema = z.object({
   avatar: z.string().nullable(),
 });
 
-export type ActivityMutualGroup = z.infer<typeof activityMutualGroupSchema>;
-
-export const directChatSchema = z.object({
+const directChatSchema = z.object({
   id: z.string(),
   type: chatTypeSchema,
   createdAt: z.string(),

@@ -1,8 +1,8 @@
 import type { PageMetadata } from "@/shared/lib/document-metadata";
 
-export const LANDING_TITLE = "TeamForge | Find your people, intelligently.";
+const LANDING_TITLE = "TeamForge | Find your people, intelligently.";
 
-export const LANDING_DESCRIPTION =
+const LANDING_DESCRIPTION =
   "TeamForge turns real plans into small compatible groups, using your setup to make the first room feel easier to join.";
 
 export const LANDING_SEO = {

@@ -5,6 +5,8 @@ import { Button } from "@/shared/components/ui/button";
 import { FriendCard } from "./friend-card";
 import { FriendMessageAction } from "./friend-message-action";
 
+type FriendListItem = ReturnType<typeof useProfileFriends>["friends"][number];
+
 export function FriendsList() {
   const {
     friends,
@@ -49,62 +51,120 @@ export function FriendsList() {
 
   return (
     <div className="flex flex-col gap-1">
-      {friends.map((friendship) => {
-        const user = friendship.counterpart;
-        const messageChatId =
-          friendship.privateChat?.id ?? friendship.privateChatId;
-        const isRemovingThisUser = isRemoving && removingFriendId === user.id;
-
-        return (
-          <FriendCard
-            key={user.id}
-            user={{
-              id: user.id,
-              name: user.name,
-              avatar: user.avatar,
-              personalityType: user.personalityType,
-              city: user.city,
-              trustScore: user.trustScore,
-              onlineStatus: user.onlineStatus,
-            }}
-            friendsSince={friendship.createdAt}
-            actions={
-              <>
-                <ActionDialog
-                  cancelLabel="Keep friend"
-                  confirmLabel={
-                    isRemovingThisUser ? "Removing..." : "Remove friend"
-                  }
-                  description={`${user.name} will no longer be on your friends list. You will still be in any shared groups.`}
-                  disabled={!isOnline || isRemovingThisUser}
-                  loading={isRemovingThisUser}
-                  onConfirm={() => removeFriend(user.id)}
-                  title="Remove this friend?"
-                  tone="danger"
-                  trigger={
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      disabled={!isOnline || isRemovingThisUser}
-                      aria-label="Remove friend"
-                      title="Remove friend"
-                      className="size-8 text-muted-foreground hover:text-destructive"
-                    >
-                      {isRemovingThisUser ? (
-                        <Loader2 className="size-4 animate-spin" />
-                      ) : (
-                        <UserMinus className="size-4" />
-                      )}
-                    </Button>
-                  }
-                />
-                <FriendMessageAction chatId={messageChatId} />
-              </>
-            }
-          />
-        );
-      })}
+      {friends.map((friendship) => (
+        <FriendListCard
+          key={friendship.counterpart.id}
+          friendship={friendship}
+          isOnline={isOnline}
+          isRemoving={isRemoving}
+          onRemoveFriend={removeFriend}
+          removingFriendId={removingFriendId}
+        />
+      ))}
     </div>
   );
+}
+
+function FriendListCard({
+  friendship,
+  isOnline,
+  isRemoving,
+  onRemoveFriend,
+  removingFriendId,
+}: {
+  friendship: FriendListItem;
+  isOnline: boolean;
+  isRemoving: boolean;
+  onRemoveFriend: (userId: string) => unknown;
+  removingFriendId: string | null;
+}) {
+  const user = friendship.counterpart;
+  const messageChatId = getFriendshipMessageChatId(friendship);
+  const isRemovingThisUser = isRemovingFriend({
+    isRemoving,
+    removingFriendId,
+    userId: user.id,
+  });
+
+  return (
+    <FriendCard
+      user={user}
+      friendsSince={friendship.createdAt}
+      actions={
+        <FriendListActions
+          isOnline={isOnline}
+          isRemovingThisUser={isRemovingThisUser}
+          messageChatId={messageChatId}
+          onRemoveFriend={onRemoveFriend}
+          userId={user.id}
+          userName={user.name}
+        />
+      }
+    />
+  );
+}
+
+function FriendListActions({
+  isOnline,
+  isRemovingThisUser,
+  messageChatId,
+  onRemoveFriend,
+  userId,
+  userName,
+}: {
+  isOnline: boolean;
+  isRemovingThisUser: boolean;
+  messageChatId: string | null;
+  onRemoveFriend: (userId: string) => unknown;
+  userId: string;
+  userName: string;
+}) {
+  return (
+    <>
+      <ActionDialog
+        cancelLabel="Keep friend"
+        confirmLabel={isRemovingThisUser ? "Removing..." : "Remove friend"}
+        description={`${userName} will no longer be on your friends list. You will still be in any shared groups.`}
+        disabled={!isOnline || isRemovingThisUser}
+        loading={isRemovingThisUser}
+        onConfirm={() => onRemoveFriend(userId)}
+        title="Remove this friend?"
+        tone="danger"
+        trigger={
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            disabled={!isOnline || isRemovingThisUser}
+            aria-label="Remove friend"
+            title="Remove friend"
+            className="size-8 text-muted-foreground hover:text-destructive"
+          >
+            {isRemovingThisUser ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <UserMinus className="size-4" />
+            )}
+          </Button>
+        }
+      />
+      <FriendMessageAction chatId={messageChatId} />
+    </>
+  );
+}
+
+function getFriendshipMessageChatId(friendship: FriendListItem) {
+  return friendship.privateChat?.id ?? friendship.privateChatId;
+}
+
+function isRemovingFriend({
+  isRemoving,
+  removingFriendId,
+  userId,
+}: {
+  isRemoving: boolean;
+  removingFriendId: string | null;
+  userId: string;
+}) {
+  return isRemoving && removingFriendId === userId;
 }

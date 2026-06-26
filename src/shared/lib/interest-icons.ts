@@ -5,7 +5,6 @@ import {
   BookOpen,
   Brain,
   BriefcaseBusiness,
-  Circle,
   Coffee,
   Dog,
   Dumbbell,
@@ -28,38 +27,6 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
-
-import type { Interest } from "@/shared/schemas";
-
-export const interestIconByName: Record<string, LucideIcon> = {
-  Activity,
-  Beer,
-  BookOpen,
-  Brain,
-  BriefcaseBusiness,
-  Circle,
-  Coffee,
-  Dog,
-  Dumbbell,
-  Gamepad2,
-  Hammer,
-  Headphones,
-  Heart,
-  Laptop,
-  Music,
-  Palette,
-  Pizza,
-  Plane,
-  Popcorn,
-  Scale,
-  Scissors,
-  Sofa,
-  Stethoscope,
-  Tent,
-  TrendingUp,
-  Trophy,
-  Users,
-};
 
 export const interestIconByTaxonomyId: Record<string, LucideIcon> = {
   careers: BriefcaseBusiness,
@@ -94,22 +61,3 @@ export const interestIconByTaxonomyId: Record<string, LucideIcon> = {
   books_learning: BookOpen,
   team_sports: Trophy,
 };
-
-export function getInterestIcon(interest: Interest): LucideIcon {
-  if (interest.icon && interestIconByName[interest.icon]) {
-    return interestIconByName[interest.icon];
-  }
-
-  return (
-    interestIconByTaxonomyId[interest.id] ??
-    interestIconByTaxonomyId[interest.slug] ??
-    (interest.parentId ? interestIconByTaxonomyId[interest.parentId] : null) ??
-    (interest.parent?.id
-      ? interestIconByTaxonomyId[interest.parent.id]
-      : null) ??
-    (interest.parent?.slug
-      ? interestIconByTaxonomyId[interest.parent.slug]
-      : null) ??
-    Circle
-  );
-}

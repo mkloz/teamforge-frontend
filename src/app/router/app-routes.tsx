@@ -10,26 +10,31 @@ import {
 import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { requireCanonicalAppRoute } from "@/app/router/route-guards";
+import {
+  validateGroupPlanDetailSearch,
+  validateUserDetailSearch,
+} from "@/app/router/route-search-validators";
 import { validateActivityRouteSearch } from "@/features/activity/lib/activity-route";
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { validateExploreRouteSearch } from "@/features/explore/lib/explore-route";
 import { validateForgeRouteSearch } from "@/features/forge/lib/forge-route";
-import {
-  type GroupPlanDetailRouteSearch,
-  type GroupPlanDetailSource,
-  groupPlanDetailSourceValues,
-} from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { validateHomeRouteSearch } from "@/features/home/lib/home-route";
-import {
-  type UserDetailIntent,
-  type UserDetailRouteSearch,
-  userDetailIntentValues,
-} from "@/features/profile/lib/profile-route";
 import { validateSettingsRouteSearch } from "@/features/settings/lib/settings-route";
 import { appQueryClient } from "@/shared/api/query-client";
 import { ForgeLoadingMark } from "@/shared/components/loading/forge-loading-mark";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
+
+interface PreloadableGroupPlanDetail {
+  plan?: { coverImage?: string | null } | null;
+  group: { avatar?: string | null };
+  members: { avatar?: string | null }[];
+}
+
+type SessionRestoredRoutePreload = () => Promise<void>;
+type SessionRestoredPreloadResolver = (
+  pathname: string,
+) => SessionRestoredRoutePreload | undefined;
 
 function loadAppShellWithNotifications() {
   return import("@/app/router/app-shell-with-notifications").then((module) => ({
@@ -147,45 +152,6 @@ const GroupPlanDetailRouteLoading = createLazyRouteLoading(
   { mode: "route" },
 );
 
-function parseOptionalSearchString(value: unknown) {
-  return typeof value === "string" ? value : undefined;
-}
-
-function isGroupPlanDetailSource(
-  value: unknown,
-): value is GroupPlanDetailSource {
-  return (
-    typeof value === "string" &&
-    groupPlanDetailSourceValues.some((source) => source === value)
-  );
-}
-
-function validateGroupPlanDetailSearch(
-  search: Record<string, unknown>,
-): GroupPlanDetailRouteSearch {
-  return {
-    plan: parseOptionalSearchString(search.plan),
-    proposal: parseOptionalSearchString(search.proposal),
-    returnTo: parseOptionalSearchString(search.returnTo),
-    source: isGroupPlanDetailSource(search.source) ? search.source : undefined,
-  };
-}
-
-function isUserDetailIntent(value: unknown): value is UserDetailIntent {
-  return (
-    typeof value === "string" &&
-    userDetailIntentValues.some((intent) => intent === value)
-  );
-}
-
-function validateUserDetailSearch(
-  search: Record<string, unknown>,
-): UserDetailRouteSearch {
-  return {
-    intent: isUserDetailIntent(search.intent) ? search.intent : undefined,
-  };
-}
-
 function createRouteModuleLoader(module: LazyRouteModule) {
   return async () => {
     await module.preload();
@@ -243,11 +209,7 @@ async function preloadGroupPlanDetail(groupId: string) {
   const detail = await appQueryClient.fetchQuery(
     GroupPlanDetailQueryFactory.detail(groupId),
   );
-  const coverSrc =
-    detail.plan?.coverImage ??
-    detail.group.avatar ??
-    detail.members.find((member) => member.avatar)?.avatar ??
-    null;
+  const coverSrc = getPreferredGroupPlanCoverSrc(detail);
 
   preloadRouteImage(getSizedImageUrl(coverSrc, 800) ?? coverSrc);
 }
@@ -265,32 +227,110 @@ async function preloadUserDetail(userId: string) {
 }
 
 function preloadRouteImage(src: string | null | undefined) {
-  if (!src || typeof globalThis.Image !== "function") {
+  if (!canPreloadRouteImage(src)) {
     return;
   }
 
-  if (typeof document !== "undefined") {
-    const absoluteSrc = new URL(src, document.baseURI).href;
-    const existingPreload = Array.from(
-      document.head.querySelectorAll<HTMLLinkElement>(
-        'link[rel="preload"][as="image"]',
-      ),
-    ).some((link) => link.href === absoluteSrc);
+  preloadRouteImageLink(src);
+  warmRouteImage(src);
+}
 
-    if (!existingPreload) {
-      const link = document.createElement("link");
-      link.rel = "preload";
-      link.as = "image";
-      link.href = src;
-      link.setAttribute("fetchpriority", "high");
-      document.head.append(link);
-    }
+function canPreloadRouteImage(src: string | null | undefined): src is string {
+  return Boolean(src) && typeof globalThis.Image === "function";
+}
+
+function preloadRouteImageLink(src: string) {
+  if (typeof document !== "undefined") {
+    appendRouteImagePreloadLink(src);
+  }
+}
+
+function appendRouteImagePreloadLink(src: string) {
+  if (hasRouteImagePreloadLink(src)) {
+    return;
   }
 
+  const link = document.createElement("link");
+  link.rel = "preload";
+  link.as = "image";
+  link.href = src;
+  link.setAttribute("fetchpriority", "high");
+  document.head.append(link);
+}
+
+function hasRouteImagePreloadLink(src: string) {
+  const absoluteSrc = new URL(src, document.baseURI).href;
+
+  return Array.from(
+    document.head.querySelectorAll<HTMLLinkElement>(
+      'link[rel="preload"][as="image"]',
+    ),
+  ).some((link) => link.href === absoluteSrc);
+}
+
+function warmRouteImage(src: string) {
   const image = new globalThis.Image();
   image.decoding = "async";
   image.fetchPriority = "high";
   image.src = src;
+}
+
+function createExploreSessionRestoredPreload(pathname: string) {
+  if (pathname === "/explore") {
+    return async () => {
+      await preloadDefaultExploreGroups();
+    };
+  }
+
+  return undefined;
+}
+
+function createActivitySessionRestoredPreload(pathname: string) {
+  if (pathname === "/activity" || pathname.startsWith("/activity/")) {
+    return async () => {
+      await preloadActivityFeed();
+    };
+  }
+
+  return undefined;
+}
+
+function createGroupSessionRestoredPreload(pathname: string) {
+  const groupId = getGroupPlanIdFromPathname(pathname);
+
+  return groupId
+    ? async () => {
+        await preloadGroupPlanDetail(groupId);
+      }
+    : undefined;
+}
+
+function createUserSessionRestoredPreload(pathname: string) {
+  const userId = getUserIdFromPathname(pathname);
+
+  return userId
+    ? async () => {
+        await preloadUserDetail(userId);
+      }
+    : undefined;
+}
+
+function getPreferredGroupPlanCoverSrc(detail: PreloadableGroupPlanDetail) {
+  return (
+    detail.plan?.coverImage ??
+    detail.group.avatar ??
+    getFirstMemberAvatar(detail.members)
+  );
+}
+
+function getFirstMemberAvatar(members: PreloadableGroupPlanDetail["members"]) {
+  return members.find(hasAvatar)?.avatar ?? null;
+}
+
+function hasAvatar(member: { avatar?: string | null }): member is {
+  avatar: string;
+} {
+  return Boolean(member.avatar);
 }
 
 function createGroupPlanDetailRouteLoader(module: LazyRouteModule) {
@@ -323,69 +363,72 @@ function getUserIdFromPathname(pathname: string) {
   return userId ? decodeURIComponent(userId) : null;
 }
 
+const SESSION_RESTORED_PRELOAD_RESOLVERS: SessionRestoredPreloadResolver[] = [
+  createExploreSessionRestoredPreload,
+  createActivitySessionRestoredPreload,
+  createGroupSessionRestoredPreload,
+  createUserSessionRestoredPreload,
+];
+
 function createSessionRestoredRoutePreload(pathname: string) {
-  if (pathname === "/explore") {
-    return () => preloadDefaultExploreGroups();
-  }
+  return getFirstSessionRestoredRoutePreload(pathname);
+}
 
-  if (pathname === "/activity" || pathname.startsWith("/activity/")) {
-    return () => preloadActivityFeed();
-  }
+function getFirstSessionRestoredRoutePreload(pathname: string) {
+  for (const resolvePreload of SESSION_RESTORED_PRELOAD_RESOLVERS) {
+    const preload = resolvePreload(pathname);
 
-  const groupId = getGroupPlanIdFromPathname(pathname);
-
-  if (groupId) {
-    return () => preloadGroupPlanDetail(groupId);
-  }
-
-  const userId = getUserIdFromPathname(pathname);
-
-  if (userId) {
-    return () => preloadUserDetail(userId);
+    if (preload) {
+      return preload;
+    }
   }
 
   return undefined;
 }
 
+const APP_ROUTE_MODULE_PRELOADERS = [
+  {
+    matches: (pathname: string) => pathname === "/home",
+    module: homePageModule,
+  },
+  {
+    matches: (pathname: string) => pathname === "/explore",
+    module: explorePageModule,
+  },
+  {
+    matches: (pathname: string) =>
+      pathname === "/activity" || pathname.startsWith("/activity/"),
+    module: activityPageModule,
+  },
+  {
+    matches: (pathname: string) => pathname === "/profile",
+    module: profilePageModule,
+  },
+  {
+    matches: (pathname: string) => pathname.startsWith("/users/"),
+    module: userDetailPageModule,
+  },
+  {
+    matches: (pathname: string) =>
+      pathname === "/settings" || pathname.startsWith("/settings/"),
+    module: settingsPageModule,
+  },
+  {
+    matches: (pathname: string) => pathname === "/forge",
+    module: forgePageModule,
+  },
+  {
+    matches: (pathname: string) => pathname.startsWith("/groups/"),
+    module: groupPlanDetailPageModule,
+  },
+] as const;
+
 function preloadMatchedAppRouteModule(pathname: string) {
-  if (pathname === "/home") {
-    void homePageModule.preload().catch(() => null);
-    return;
-  }
+  const matchedPreloader = APP_ROUTE_MODULE_PRELOADERS.find((preloader) =>
+    preloader.matches(pathname),
+  );
 
-  if (pathname === "/explore") {
-    void explorePageModule.preload().catch(() => null);
-    return;
-  }
-
-  if (pathname === "/activity" || pathname.startsWith("/activity/")) {
-    void activityPageModule.preload().catch(() => null);
-    return;
-  }
-
-  if (pathname === "/profile") {
-    void profilePageModule.preload().catch(() => null);
-    return;
-  }
-
-  if (pathname.startsWith("/users/")) {
-    void userDetailPageModule.preload().catch(() => null);
-    return;
-  }
-
-  if (pathname === "/settings" || pathname.startsWith("/settings/")) {
-    void settingsPageModule.preload().catch(() => null);
-    return;
-  }
-
-  if (pathname === "/forge") {
-    void forgePageModule.preload().catch(() => null);
-    return;
-  }
-
-  if (pathname.startsWith("/groups/")) {
-    void groupPlanDetailPageModule.preload().catch(() => null);
-  }
+  void matchedPreloader?.module.preload().catch(() => null);
 }
 
 function AppShellRouteComponent() {

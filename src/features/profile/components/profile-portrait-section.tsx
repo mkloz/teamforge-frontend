@@ -9,17 +9,59 @@ interface ProfilePortraitSectionProps {
   portrait: ProfilePortraitInsight;
 }
 
+const PROFILE_CONFIDENCE_LABELS = {
+  early: "Early read",
+  high: "Strong read",
+  medium: "Good read",
+} satisfies Record<ProfilePortraitInsight["confidence"], string>;
+
+const DETAIL_ICON_RULES = [
+  {
+    Icon: Compass,
+    matches: (label: string) => label.includes("setting"),
+  },
+  {
+    Icon: TriangleAlert,
+    matches: (label: string) =>
+      label.includes("watch") || label.includes("avoid"),
+  },
+  {
+    Icon: BadgeCheck,
+    matches: (label: string) =>
+      label.includes("basis") || label.includes("trait"),
+  },
+] as const;
+
+const SHOW_UP_RANK_LABELS = [
+  "Most visible",
+  "Also present",
+  "Quiet signal",
+] as const;
+
+const COMPACT_SHOW_UP_TITLES = {
+  activeCatalyst: "You turn loose plans into real outings",
+  cafeConnector: "You make easy plans feel personal",
+  calmAnchor: "You keep the pace feeling human",
+  creativeInstigator: "You give the plan a point of view",
+  curiousSpecialist: "You bring the tangent people remember",
+  flexibleParticipant: "You find the thread others can follow",
+  focusedBuilder: "You turn talk into something concrete",
+  ideaFirstExplorer: "You find the better angle on a plan",
+  playfulScout: "You make joining feel easier",
+  practicalOrganizer: "You help the plan actually hold",
+  quietSpecialist: "You bring the interesting side route",
+  restlessInstigator: "You get people moving before things stall",
+  socialGameHost: "You give everyone something to do",
+  steadyHost: "You help the room settle",
+  tasteMaker: "You make the plan feel chosen",
+  warmConnector: "You make the room feel easier",
+} satisfies Record<ProfilePortraitInsight["candidates"][number]["key"], string>;
+
 export function ProfilePortraitSection({
   portrait,
 }: ProfilePortraitSectionProps) {
-  const confidenceLabel = {
-    early: "Early read",
-    high: "Strong read",
-    medium: "Good read",
-  }[portrait.confidence];
-  const readLabel =
-    portrait.mode === "hybrid" ? "Blended read" : confidenceLabel;
-  const visibleDetails = portrait.details.slice(0, 3);
+  const readLabel = getPortraitReadLabel(portrait);
+  const visibleDetails = getVisiblePortraitDetails(portrait);
 
   return (
     <section className="border-border/60 border-t pt-6 sm:pt-8">
@@ -61,7 +103,7 @@ function HowYouShowUpCard({
 }: {
   candidates: ProfilePortraitInsight["candidates"];
 }) {
-  const visibleCandidates = candidates.slice(0, 3);
+  const visibleCandidates = getVisibleShowUpCandidates(candidates);
   const leaderScore = visibleCandidates[0]?.score ?? 0;
 
   if (visibleCandidates.length === 0) {
@@ -150,7 +192,7 @@ function PortraitDetailRow({
   const Icon = getDetailIcon(detail.label);
 
   return (
-    <div className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 md:last:pr-0 md:first:border-l-0 md:first:pl-0">
+    <div className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 last:md:pr-0 first:md:border-l-0 first:md:pl-0">
       <div className="flex min-w-0 items-center gap-2">
         <IconTile icon={Icon} shape="circle" size="sm" />
         <p className="font-bold text-slate-muted text-sm">{detail.label}</p>
@@ -174,20 +216,11 @@ function getCompactSentence(value: string) {
 
 function getDetailIcon(label: string): LucideIcon {
   const normalizedLabel = label.toLowerCase();
+  const matchingRule = DETAIL_ICON_RULES.find((rule) =>
+    rule.matches(normalizedLabel),
+  );
 
-  if (normalizedLabel.includes("setting")) {
-    return Compass;
-  }
-
-  if (normalizedLabel.includes("watch") || normalizedLabel.includes("avoid")) {
-    return TriangleAlert;
-  }
-
-  if (normalizedLabel.includes("basis") || normalizedLabel.includes("trait")) {
-    return BadgeCheck;
-  }
-
-  return Eye;
+  return matchingRule?.Icon ?? Eye;
 }
 
 function formatSignalStrengthPercent(score: number, leaderScore: number) {
@@ -223,36 +256,32 @@ function getFilledSignalSegments(percent: number) {
 }
 
 function getShowUpRankLabel(rank: number) {
-  return ["Most visible", "Also present", "Quiet signal"][rank] ?? "Signal";
+  return SHOW_UP_RANK_LABELS[rank] ?? "Signal";
 }
 
 function getCompactShowUpTitle(
   key: ProfilePortraitInsight["candidates"][number]["key"],
   fallback: string,
 ) {
-  const labels: Record<
-    ProfilePortraitInsight["candidates"][number]["key"],
-    string
-  > = {
-    activeCatalyst: "You turn loose plans into real outings",
-    cafeConnector: "You make easy plans feel personal",
-    calmAnchor: "You keep the pace feeling human",
-    creativeInstigator: "You give the plan a point of view",
-    curiousSpecialist: "You bring the tangent people remember",
-    flexibleParticipant: "You find the thread others can follow",
-    focusedBuilder: "You turn talk into something concrete",
-    ideaFirstExplorer: "You find the better angle on a plan",
-    playfulScout: "You make joining feel easier",
-    practicalOrganizer: "You help the plan actually hold",
-    quietSpecialist: "You bring the interesting side route",
-    restlessInstigator: "You get people moving before things stall",
-    socialGameHost: "You give everyone something to do",
-    steadyHost: "You help the room settle",
-    tasteMaker: "You make the plan feel chosen",
-    warmConnector: "You make the room feel easier",
-  };
+  return COMPACT_SHOW_UP_TITLES[key] ?? fallback;
+}
 
-  return labels[key] ?? fallback;
+function getPortraitReadLabel(portrait: ProfilePortraitInsight) {
+  if (portrait.mode === "hybrid") {
+    return "Blended read";
+  }
+
+  return PROFILE_CONFIDENCE_LABELS[portrait.confidence];
+}
+
+function getVisiblePortraitDetails(portrait: ProfilePortraitInsight) {
+  return portrait.details.slice(0, 3);
+}
+
+function getVisibleShowUpCandidates(
+  candidates: ProfilePortraitInsight["candidates"],
+) {
+  return candidates.slice(0, 3);
 }
 
 const SHOW_UP_SEGMENTS = [1, 2, 3, 4, 5, 6];

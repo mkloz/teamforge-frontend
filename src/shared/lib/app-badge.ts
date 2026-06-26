@@ -6,6 +6,14 @@ interface AppBadgeApi {
   setAppBadge?: (contents?: number) => Promise<void>;
 }
 
+interface ClearAppBadgeApi {
+  clearAppBadge: () => Promise<void>;
+}
+
+interface SyncAppBadgeApi extends ClearAppBadgeApi {
+  setAppBadge: (contents?: number) => Promise<void>;
+}
+
 function getBadgeNavigator(): AppBadgeApi | null {
   if (typeof navigator === "undefined") {
     return null;
@@ -22,61 +30,95 @@ function getAppBadgeCount(unreadCount: number) {
   return Math.max(0, Math.floor(unreadCount));
 }
 
-export function isAppBadgeSupported() {
-  const badgeNavigator = getBadgeNavigator();
+function hasClearAppBadgeApi(
+  badgeNavigator: AppBadgeApi | null,
+): badgeNavigator is ClearAppBadgeApi {
+  return typeof badgeNavigator?.clearAppBadge === "function";
+}
 
+function hasSyncAppBadgeApi(
+  badgeNavigator: AppBadgeApi | null,
+): badgeNavigator is SyncAppBadgeApi {
   return (
-    typeof badgeNavigator?.setAppBadge === "function" &&
-    typeof badgeNavigator.clearAppBadge === "function"
+    typeof badgeNavigator?.clearAppBadge === "function" &&
+    typeof badgeNavigator.setAppBadge === "function"
   );
 }
 
-export async function clearAppBadge() {
+function getClearAppBadgeApi() {
   const badgeNavigator = getBadgeNavigator();
 
-  if (typeof badgeNavigator?.clearAppBadge !== "function") {
-    return;
+  return hasClearAppBadgeApi(badgeNavigator) ? badgeNavigator : null;
+}
+
+function getSyncAppBadgeApi() {
+  const badgeNavigator = getBadgeNavigator();
+
+  return hasSyncAppBadgeApi(badgeNavigator) ? badgeNavigator : null;
+}
+
+function getUnreadBadgeSyncReason(badgeCount: number) {
+  if (badgeCount === 0) {
+    return "clear unread notifications";
   }
 
+  return `set ${badgeCount} unread notification${badgeCount === 1 ? "" : "s"}`;
+}
+
+async function runAppBadgeSync(
+  syncReason: string,
+  operation: () => Promise<void>,
+  warningMessage: string,
+) {
   try {
-    recordPwaAppBadgeSync("running", "clear app badge");
-    await badgeNavigator.clearAppBadge();
-    recordPwaAppBadgeSync("success", "clear app badge");
+    recordPwaAppBadgeSync("running", syncReason);
+    await operation();
+    recordPwaAppBadgeSync("success", syncReason);
   } catch (error) {
-    recordPwaAppBadgeSync("error", "clear app badge", error);
-    warnInDevelopment("TeamForge app badge could not be cleared.", error);
+    recordPwaAppBadgeSync("error", syncReason, error);
+    warnInDevelopment(warningMessage, error);
   }
 }
 
-export async function syncUnreadAppBadge(unreadCount: number) {
-  const badgeNavigator = getBadgeNavigator();
+async function applyUnreadAppBadge(
+  badgeNavigator: SyncAppBadgeApi,
+  badgeCount: number,
+) {
+  if (badgeCount > 0) {
+    await badgeNavigator.setAppBadge(badgeCount);
+    return;
+  }
 
-  if (
-    typeof badgeNavigator?.setAppBadge !== "function" ||
-    typeof badgeNavigator.clearAppBadge !== "function"
-  ) {
+  await badgeNavigator.clearAppBadge();
+}
+
+export async function clearAppBadge() {
+  const badgeNavigator = getClearAppBadgeApi();
+
+  if (!badgeNavigator) {
+    return;
+  }
+
+  await runAppBadgeSync(
+    "clear app badge",
+    () => badgeNavigator.clearAppBadge(),
+    "TeamForge app badge could not be cleared.",
+  );
+}
+
+export async function syncUnreadAppBadge(unreadCount: number) {
+  const badgeNavigator = getSyncAppBadgeApi();
+
+  if (!badgeNavigator) {
     return;
   }
 
   const badgeCount = getAppBadgeCount(unreadCount);
-  const syncReason =
-    badgeCount > 0
-      ? `set ${badgeCount} unread notification${badgeCount === 1 ? "" : "s"}`
-      : "clear unread notifications";
+  const syncReason = getUnreadBadgeSyncReason(badgeCount);
 
-  try {
-    recordPwaAppBadgeSync("running", syncReason);
-
-    if (badgeCount > 0) {
-      await badgeNavigator.setAppBadge(badgeCount);
-      recordPwaAppBadgeSync("success", syncReason);
-      return;
-    }
-
-    await badgeNavigator.clearAppBadge();
-    recordPwaAppBadgeSync("success", syncReason);
-  } catch (error) {
-    recordPwaAppBadgeSync("error", syncReason, error);
-    warnInDevelopment("TeamForge app badge could not be updated.", error);
-  }
+  await runAppBadgeSync(
+    syncReason,
+    () => applyUnreadAppBadge(badgeNavigator, badgeCount),
+    "TeamForge app badge could not be updated.",
+  );
 }

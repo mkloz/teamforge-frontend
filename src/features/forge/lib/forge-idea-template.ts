@@ -25,6 +25,17 @@ interface PreferredTemplateRule {
   seedId: string;
 }
 
+interface TextCategoryRule {
+  id: PlanCategory;
+  pattern: RegExp;
+}
+
+interface TokenNormalizationRule {
+  minLength: number;
+  normalize: (token: string) => string;
+  suffix: string;
+}
+
 interface IdeaTemplateText {
   detail: string;
   eventDescription: string;
@@ -46,6 +57,18 @@ type PlanTemplateSection = Pick<
   | "planCost"
   | "planCostAmount"
   | "planCostDetails"
+>;
+type PlanCopyTemplateSection = Pick<
+  PlanTemplateSection,
+  "planName" | "planDescription"
+>;
+type PlanLocationTemplateSection = Pick<
+  PlanTemplateSection,
+  "planLocation" | "planLocationLat" | "planLocationLng" | "locationType"
+>;
+type PlanCostTemplateSection = Pick<
+  PlanTemplateSection,
+  "planCost" | "planCostAmount" | "planCostDetails"
 >;
 
 type GroupSettingsTemplateSection = Pick<
@@ -130,15 +153,40 @@ function buildPlanTemplateSection(
   baseTemplate: ResolvedForgeTemplate,
 ): PlanTemplateSection {
   return {
+    ...buildPlanCopyTemplateSection(text, baseTemplate),
+    ...buildPlanLocationTemplateSection(baseTemplate),
+    ...buildPlanCostTemplateSection(baseTemplate),
+  };
+}
+
+function buildPlanCopyTemplateSection(
+  text: IdeaTemplateText,
+  baseTemplate: ResolvedForgeTemplate,
+): PlanCopyTemplateSection {
+  return {
     planName: truncateText(text.title, MAX_PLAN_NAME_LENGTH),
     planDescription: truncateText(
       text.eventDescription || baseTemplate?.planDescription || text.detail,
       MAX_PLAN_DESCRIPTION_LENGTH,
     ),
+  };
+}
+
+function buildPlanLocationTemplateSection(
+  baseTemplate: ResolvedForgeTemplate,
+): PlanLocationTemplateSection {
+  return {
     planLocation: baseTemplate?.planLocation ?? "",
     planLocationLat: baseTemplate?.planLocationLat ?? null,
     planLocationLng: baseTemplate?.planLocationLng ?? null,
     locationType: baseTemplate?.locationType ?? "TBD",
+  };
+}
+
+function buildPlanCostTemplateSection(
+  baseTemplate: ResolvedForgeTemplate,
+): PlanCostTemplateSection {
+  return {
     planCost: baseTemplate?.planCost ?? "FREE",
     planCostAmount: baseTemplate?.planCostAmount ?? "",
     planCostDetails: baseTemplate?.planCostDetails ?? "",
@@ -248,9 +296,7 @@ function findPreferredTemplateSeed(
 }
 
 function getPreferredSeedId(idea: ForgeIdeaLaunch) {
-  const text = normalizeForMatching(
-    `${idea.title} ${idea.detail} ${idea.eventDescription ?? ""}`,
-  );
+  const text = normalizeForMatching(getIdeaSearchText(idea));
 
   return (
     PREFERRED_TEMPLATE_RULES.find((rule) =>
@@ -303,18 +349,7 @@ function getCandidateCategories(idea: ForgeIdeaLaunch) {
     resolvedTitleCategoryId,
     RESOLVED_TITLE_CATEGORY_WEIGHT,
   );
-
-  if (/\b(?:route|walk|photo|city|local|map)\b/i.test(text)) {
-    addCategoryWeight(scoreById, "TRAVEL", TEXT_CATEGORY_WEIGHT);
-  }
-
-  if (/\b(?:photo|gallery|art|creative|prompt)\b/i.test(text)) {
-    addCategoryWeight(scoreById, "ARTS", TEXT_CATEGORY_WEIGHT);
-  }
-
-  if (/\b(?:coffee|cafe|table|brunch|food)\b/i.test(text)) {
-    addCategoryWeight(scoreById, "FOOD", TEXT_CATEGORY_WEIGHT);
-  }
+  addTextCategoryWeights(scoreById, text);
 
   if (scoreById.size === 0) {
     addCategoryWeight(scoreById, "OTHER", FALLBACK_CATEGORY_WEIGHT);
@@ -329,25 +364,22 @@ function getCandidateCategories(idea: ForgeIdeaLaunch) {
 }
 
 function mapLaneToCategoryId(lane: ForgeIdeaLaunch["laneKey"]) {
-  const categoryByLane: Partial<
-    Record<NonNullable<ForgeIdeaLaunch["laneKey"]>, PlanCategory>
-  > = {
-    builder: "TECH",
-    creative: "ARTS",
-    food: "FOOD",
-    general: "OTHER",
-    learning: "LEARNING",
-    outdoors: "OUTDOORS",
-    play: "GAMING",
-    social: "SOCIAL",
-    wellness: "WELLNESS",
-  };
-
-  return lane ? categoryByLane[lane] : null;
+  return lane ? CATEGORY_ID_BY_LANE[lane] : null;
 }
 
 function getIdeaSearchText(idea: ForgeIdeaLaunch) {
   return `${idea.title} ${idea.detail} ${idea.eventDescription ?? ""}`;
+}
+
+function addTextCategoryWeights(
+  scoreById: Map<PlanCategory, number>,
+  text: string,
+) {
+  for (const rule of TEXT_CATEGORY_RULES) {
+    if (rule.pattern.test(text)) {
+      addCategoryWeight(scoreById, rule.id, TEXT_CATEGORY_WEIGHT);
+    }
+  }
 }
 
 function addResolvedCategoryWeight(
@@ -449,31 +481,26 @@ function normalizeForMatching(value: string) {
 }
 
 function normalizeToken(token: string) {
-  if (token === "photowalk") {
-    return "photo";
-  }
+  return (
+    TOKEN_NORMALIZATION_OVERRIDES.get(token) ??
+    normalizeTokenSuffix(token) ??
+    token
+  );
+}
 
-  if (token === "movies") {
-    return "movie";
-  }
+function normalizeTokenSuffix(token: string) {
+  const rule = TOKEN_SUFFIX_NORMALIZATION_RULES.find((candidate) =>
+    matchesTokenNormalizationRule(token, candidate),
+  );
 
-  if (token.length > 5 && token.endsWith("ies")) {
-    return `${token.slice(0, -3)}y`;
-  }
+  return rule?.normalize(token) ?? null;
+}
 
-  if (token.length > 5 && token.endsWith("ing")) {
-    return removeTrailingDoubleConsonant(token.slice(0, -3));
-  }
-
-  if (token.length > 4 && token.endsWith("ed")) {
-    return removeTrailingDoubleConsonant(token.slice(0, -2));
-  }
-
-  if (token.length > 4 && token.endsWith("s")) {
-    return token.slice(0, -1);
-  }
-
-  return token;
+function matchesTokenNormalizationRule(
+  token: string,
+  rule: TokenNormalizationRule,
+) {
+  return token.length >= rule.minLength && token.endsWith(rule.suffix);
 }
 
 function removeTrailingDoubleConsonant(value: string) {
@@ -509,6 +536,32 @@ const FALLBACK_CATEGORY_WEIGHT = 0.6;
 const TITLE_TOKEN_WEIGHT = 2.4;
 const DETAIL_TOKEN_WEIGHT = 1.35;
 const EVENT_DESCRIPTION_TOKEN_WEIGHT = 0.55;
+const TOKEN_NORMALIZATION_OVERRIDES = new Map([
+  ["photowalk", "photo"],
+  ["movies", "movie"],
+]);
+const TOKEN_SUFFIX_NORMALIZATION_RULES: readonly TokenNormalizationRule[] = [
+  {
+    minLength: 6,
+    normalize: (token) => `${token.slice(0, -3)}y`,
+    suffix: "ies",
+  },
+  {
+    minLength: 6,
+    normalize: (token) => removeTrailingDoubleConsonant(token.slice(0, -3)),
+    suffix: "ing",
+  },
+  {
+    minLength: 5,
+    normalize: (token) => removeTrailingDoubleConsonant(token.slice(0, -2)),
+    suffix: "ed",
+  },
+  {
+    minLength: 5,
+    normalize: (token) => token.slice(0, -1),
+    suffix: "s",
+  },
+];
 const MEANINGFUL_SHORT_TEMPLATE_TOKENS = new Set([
   "2d",
   "3d",
@@ -519,6 +572,33 @@ const MEANINGFUL_SHORT_TEMPLATE_TOKENS = new Set([
   "ux",
   "vr",
 ]);
+const CATEGORY_ID_BY_LANE: Partial<
+  Record<NonNullable<ForgeIdeaLaunch["laneKey"]>, PlanCategory>
+> = {
+  builder: "TECH",
+  creative: "ARTS",
+  food: "FOOD",
+  general: "OTHER",
+  learning: "LEARNING",
+  outdoors: "OUTDOORS",
+  play: "GAMING",
+  social: "SOCIAL",
+  wellness: "WELLNESS",
+};
+const TEXT_CATEGORY_RULES: readonly TextCategoryRule[] = [
+  {
+    id: "TRAVEL",
+    pattern: /\b(?:route|walk|photo|city|local|map)\b/i,
+  },
+  {
+    id: "ARTS",
+    pattern: /\b(?:photo|gallery|art|creative|prompt)\b/i,
+  },
+  {
+    id: "FOOD",
+    pattern: /\b(?:coffee|cafe|table|brunch|food)\b/i,
+  },
+];
 const PREFERRED_TEMPLATE_RULES: PreferredTemplateRule[] = [
   {
     patterns: [/\bphoto\b/, /\b(?:coffee|cafe)\b/],

@@ -5,6 +5,19 @@ import {
 } from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
+const HERO_STATUS_PILL_KEYS = ["browse", "chat", "profile"];
+const ATTENTION_QUEUE_ROW_KEYS = [
+  "invite-a",
+  "invite-b",
+  "request-a",
+  "request-b",
+  "plan-a",
+  "plan-b",
+];
+const UPCOMING_PLAN_ROW_KEYS = ["first", "second", "third", "fourth"];
+const RECOMMENDED_GROUP_CARD_KEYS = ["first", "second", "third"];
+const GROUP_ROW_KEYS = ["first", "second", "third", "fourth"];
+
 export function HomeHeroSkeleton() {
   return (
     <section
@@ -56,7 +69,7 @@ export function HomeHeroSkeleton() {
 
             <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
               <Skeleton shape="pill" className="h-9 w-32 sm:h-8" tone="teal" />
-              {["browse", "chat", "profile"].map((item) => (
+              {HERO_STATUS_PILL_KEYS.map((item) => (
                 <Skeleton
                   key={item}
                   shape="pill"
@@ -108,29 +121,22 @@ export function HomeAttentionQueueSkeleton() {
 export function HomeAttentionQueueRowsSkeleton() {
   return (
     <>
-      {[
-        "invite-a",
-        "invite-b",
-        "request-a",
-        "request-b",
-        "plan-a",
-        "plan-b",
-      ].map((item, index) => (
+      {ATTENTION_QUEUE_ROW_KEYS.map((item, index) => (
         <li
           key={item}
           className="flex min-w-0 flex-col gap-3 border-border/55 border-b px-1 py-3 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:px-3"
         >
           <div className="flex min-w-0 flex-1 items-start gap-3">
-            {index < 2 || index >= 4 ? (
+            {shouldRenderAttentionSquare(index) ? (
               <Skeleton
                 shape="square"
                 className="size-10 shrink-0 rounded-lg"
-                tone={index >= 4 ? "amber" : "teal"}
+                tone={getAttentionSquareTone(index)}
               />
             ) : (
               <SkeletonAvatar
                 className="size-10 shrink-0"
-                tone={index < 2 ? "teal" : "default"}
+                tone={getAttentionAvatarTone(index)}
               />
             )}
             <div className="min-w-0 flex-1">
@@ -141,7 +147,7 @@ export function HomeAttentionQueueRowsSkeleton() {
                 className="mt-1 min-w-0 flex-1"
                 lines={1}
                 size="sm"
-                widths={index >= 4 ? ["w-56"] : index < 2 ? ["w-72"] : ["w-56"]}
+                widths={getAttentionTextWidths(index)}
               />
               <div className="mt-2 flex flex-wrap gap-3">
                 <Skeleton className="h-3 w-12" />
@@ -153,9 +159,9 @@ export function HomeAttentionQueueRowsSkeleton() {
           <div className="flex shrink-0 items-center gap-2">
             <SkeletonButton
               className="h-9 w-24 rounded-full"
-              tone={index >= 4 ? "default" : "teal"}
+              tone={getAttentionButtonTone(index)}
             />
-            {index < 4 ? (
+            {shouldRenderAttentionBadge(index) ? (
               <Skeleton shape="circle" className="size-9" tone="amber" />
             ) : null}
           </div>
@@ -180,7 +186,7 @@ export function HomeUpcomingPlansSkeleton() {
       <span className="sr-only">Loading upcoming plans</span>
       <HomeSectionHeadingSkeleton actionWidth="w-14" />
       <ul className="border-border/55 border-y">
-        {["first", "second", "third", "fourth"].map((item, index) => (
+        {UPCOMING_PLAN_ROW_KEYS.map((item, index) => (
           <li
             key={item}
             className="grid min-h-20 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-border/55 border-b py-3.5 pr-1 last:border-b-0 sm:grid-cols-[4rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4"
@@ -231,11 +237,9 @@ export function HomeRecommendedGroupsSkeleton() {
         <HomeRecommendedGroupCardSkeleton className="w-full" />
       </div>
       <ul className="responsive-card-grid hidden list-none gap-5 p-0 md:grid">
-        {["first", "second", "third"].map((item, index) => (
+        {RECOMMENDED_GROUP_CARD_KEYS.map((item, index) => (
           <li key={item} className="min-w-0">
-            <HomeRecommendedGroupCardSkeleton
-              tone={index === 0 ? "teal" : "default"}
-            />
+            <HomeRecommendedGroupCardSkeleton tone={getFirstItemTone(index)} />
           </li>
         ))}
       </ul>
@@ -257,24 +261,20 @@ export function HomeGroupsSkeleton() {
         aria-label="Loading your groups"
         className="flex list-none flex-col gap-2 p-0"
       >
-        {["first", "second", "third", "fourth"].map((item, index) => (
+        {GROUP_ROW_KEYS.map((item, index) => (
           <li
             key={item}
             className="grid min-h-20 grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-x-3 rounded-xl px-2.5 py-2.5"
           >
             <SkeletonAvatar
               className="size-11"
-              tone={index === 0 ? "teal" : "default"}
+              tone={getFirstItemTone(index)}
             />
             <SkeletonText
               className="min-w-0 flex-1"
               lines={3}
               size="sm"
-              widths={
-                index % 2 === 0
-                  ? ["w-32", "w-44", "w-16"]
-                  : ["w-36", "w-40", "w-20"]
-              }
+              widths={getGroupRowTextWidths(index)}
             />
             <Skeleton shape="square" className="h-7 w-12 rounded-lg" />
           </li>
@@ -325,6 +325,38 @@ export function HomeInviteSkeleton() {
       </div>
     </section>
   );
+}
+
+function shouldRenderAttentionSquare(index: number) {
+  return index < 2 || index >= 4;
+}
+
+function shouldRenderAttentionBadge(index: number) {
+  return index < 4;
+}
+
+function getAttentionSquareTone(index: number) {
+  return index >= 4 ? "amber" : "teal";
+}
+
+function getAttentionAvatarTone(index: number) {
+  return index < 2 ? "teal" : "default";
+}
+
+function getAttentionButtonTone(index: number) {
+  return index >= 4 ? "default" : "teal";
+}
+
+function getAttentionTextWidths(index: number) {
+  return index >= 4 ? ["w-56"] : index < 2 ? ["w-72"] : ["w-56"];
+}
+
+function getFirstItemTone(index: number) {
+  return index === 0 ? "teal" : "default";
+}
+
+function getGroupRowTextWidths(index: number) {
+  return index % 2 === 0 ? ["w-32", "w-44", "w-16"] : ["w-36", "w-40", "w-20"];
 }
 
 function HomeSectionHeadingSkeleton({

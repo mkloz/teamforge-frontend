@@ -1,19 +1,12 @@
 import { redirect } from "@tanstack/react-router";
-
+import {
+  validateGroupPlanDetailSearch,
+  validateUserDetailSearch,
+} from "@/app/router/route-search-validators";
 import { validateActivityRouteSearch } from "@/features/activity/lib/activity-route";
 import { validateExploreRouteSearch } from "@/features/explore/lib/explore-route";
 import { validateForgeRouteSearch } from "@/features/forge/lib/forge-route";
-import {
-  type GroupPlanDetailRouteSearch,
-  type GroupPlanDetailSource,
-  groupPlanDetailSourceValues,
-} from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { validateHomeRouteSearch } from "@/features/home/lib/home-route";
-import {
-  type UserDetailIntent,
-  type UserDetailRouteSearch,
-  userDetailIntentValues,
-} from "@/features/profile/lib/profile-route";
 import { validateSettingsRouteSearch } from "@/features/settings/lib/settings-route";
 import { refreshAuthSession } from "@/shared/api/api";
 import { isApiNetworkError } from "@/shared/api/api-network-error";
@@ -43,6 +36,35 @@ interface RequireAuthenticatedUserOptions {
 }
 
 type AuthSessionRestoreState = "authenticated" | "missing" | "offline";
+type CanonicalSearchValidator = (search: Record<string, unknown>) => object;
+type EditableOnboardingDestination =
+  | "/onboarding/personality"
+  | "/onboarding/interests";
+type PostAuthRedirectPath = ReturnType<typeof getPostAuthRedirectPath>;
+type SerializableSearchValue = boolean | number | string;
+
+const STATIC_CANONICAL_SEARCH_VALIDATORS: Record<
+  string,
+  CanonicalSearchValidator
+> = {
+  "/activity": validateActivityRouteSearch,
+  "/explore": validateExploreRouteSearch,
+  "/forge": validateForgeRouteSearch,
+  "/home": validateHomeRouteSearch,
+  "/profile": () => ({}),
+  "/settings": validateSettingsRouteSearch,
+};
+
+const DYNAMIC_CANONICAL_SEARCH_VALIDATORS = [
+  {
+    prefix: "/groups/",
+    validate: validateGroupPlanDetailSearch,
+  },
+  {
+    prefix: "/users/",
+    validate: validateUserDetailSearch,
+  },
+] as const;
 
 async function restoreAuthSessionIfNeeded(): Promise<AuthSessionRestoreState> {
   if (!authSession.hasTokens()) {
@@ -90,48 +112,69 @@ function parseReturnSearch(searchStr: string | null | undefined) {
   return search;
 }
 
-function serializeCanonicalSearchValue(
-  params: URLSearchParams,
-  key: string,
-  value: unknown,
-) {
+function isSearchValueOmitted(value: unknown) {
   if (
     value === null ||
     value === undefined ||
     value === false ||
     value === ""
   ) {
-    return;
+    return true;
+  }
+
+  return false;
+}
+
+function isSerializableSearchValue(
+  value: unknown,
+): value is SerializableSearchValue {
+  return (
+    typeof value === "boolean" ||
+    typeof value === "number" ||
+    typeof value === "string"
+  );
+}
+
+function isSerializableArrayItem(value: unknown): value is number | string {
+  return (
+    (typeof value === "number" || typeof value === "string") && value !== ""
+  );
+}
+
+function getCanonicalArraySearchValue(value: unknown[]) {
+  const items = value.filter(isSerializableArrayItem);
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  return items.every((item) => typeof item === "number")
+    ? items.join("-")
+    : items.join(",");
+}
+
+function getCanonicalSearchParamValue(value: unknown) {
+  if (isSearchValueOmitted(value)) {
+    return null;
   }
 
   if (Array.isArray(value)) {
-    const items = value.filter(
-      (item): item is number | string =>
-        (typeof item === "number" || typeof item === "string") && item !== "",
-    );
-
-    if (items.length === 0) {
-      return;
-    }
-
-    params.set(
-      key,
-      items.every((item) => typeof item === "number")
-        ? items.join("-")
-        : items.join(","),
-    );
-    return;
+    return getCanonicalArraySearchValue(value);
   }
 
-  if (
-    typeof value !== "boolean" &&
-    typeof value !== "number" &&
-    typeof value !== "string"
-  ) {
-    return;
-  }
+  return isSerializableSearchValue(value) ? String(value) : null;
+}
 
-  params.set(key, String(value));
+function serializeCanonicalSearchValue(
+  params: URLSearchParams,
+  key: string,
+  value: unknown,
+) {
+  const serializedValue = getCanonicalSearchParamValue(value);
+
+  if (serializedValue !== null) {
+    params.set(key, serializedValue);
+  }
 }
 
 function serializeCanonicalSearch(search: object) {
@@ -175,10 +218,6 @@ function hasEquivalentSearchParams(
   });
 }
 
-function parseOptionalSearchString(value: unknown) {
-  return typeof value === "string" ? value : undefined;
-}
-
 function parseTrueSearchFlag(value: unknown) {
   return value === true || value === "true" ? true : undefined;
 }
@@ -189,42 +228,11 @@ function validateGlobalAppRouteSearch(search: Record<string, unknown>) {
   };
 }
 
-function isGroupPlanDetailSource(
-  value: unknown,
-): value is GroupPlanDetailSource {
-  return (
-    typeof value === "string" &&
-    groupPlanDetailSourceValues.some((source) => source === value)
-  );
-}
-
-function validateGroupPlanDetailReturnSearch(
-  search: Record<string, unknown>,
-): GroupPlanDetailRouteSearch {
-  return {
-    plan: parseOptionalSearchString(search.plan),
-    proposal: parseOptionalSearchString(search.proposal),
-    returnTo: parseOptionalSearchString(search.returnTo),
-    source: isGroupPlanDetailSource(search.source) ? search.source : undefined,
-  };
-}
-
-function isUserDetailIntent(value: unknown): value is UserDetailIntent {
-  return (
-    typeof value === "string" &&
-    userDetailIntentValues.some((intent) => intent === value)
-  );
-}
-
-function validateUserDetailReturnSearch(
-  search: Record<string, unknown>,
-): UserDetailRouteSearch {
-  return {
-    intent: isUserDetailIntent(search.intent) ? search.intent : undefined,
-  };
-}
-
 function isSingleSegmentRouteParam(pathname: string, prefix: string) {
+  if (!pathname.startsWith(prefix)) {
+    return false;
+  }
+
   const value = pathname.slice(prefix.length);
 
   return value.length > 0 && !value.includes("/");
@@ -234,38 +242,17 @@ function getCanonicalRouteSearch(
   pathname: string,
   search: Record<string, unknown>,
 ): object | null {
-  switch (pathname) {
-    case "/activity":
-      return validateActivityRouteSearch(search);
-    case "/explore":
-      return validateExploreRouteSearch(search);
-    case "/forge":
-      return validateForgeRouteSearch(search);
-    case "/home":
-      return validateHomeRouteSearch(search);
-    case "/profile":
-      return {};
-    case "/settings":
-      return validateSettingsRouteSearch(search);
-    default:
-      break;
+  const staticValidator = STATIC_CANONICAL_SEARCH_VALIDATORS[pathname];
+
+  if (staticValidator) {
+    return staticValidator(search);
   }
 
-  if (
-    pathname.startsWith("/groups/") &&
-    isSingleSegmentRouteParam(pathname, "/groups/")
-  ) {
-    return validateGroupPlanDetailReturnSearch(search);
-  }
+  const dynamicValidator = DYNAMIC_CANONICAL_SEARCH_VALIDATORS.find((route) =>
+    isSingleSegmentRouteParam(pathname, route.prefix),
+  );
 
-  if (
-    pathname.startsWith("/users/") &&
-    isSingleSegmentRouteParam(pathname, "/users/")
-  ) {
-    return validateUserDetailReturnSearch(search);
-  }
-
-  return null;
+  return dynamicValidator ? dynamicValidator.validate(search) : null;
 }
 
 function buildGuardReturnHref(location: RouteLocationLike | undefined) {
@@ -327,7 +314,48 @@ function isOnboardingEditMode(searchStr: string) {
   return new URLSearchParams(searchStr).get("mode") === "edit";
 }
 
-export async function redirectAuthenticatedUser({
+function notifySessionRestored(options?: RequireAuthenticatedUserOptions) {
+  if (!options?.onSessionRestored) {
+    return;
+  }
+
+  void Promise.resolve(options.onSessionRestored()).catch(() => null);
+}
+
+function resolveSessionFallback(
+  sessionState: AuthSessionRestoreState,
+  returnHref: string | null,
+) {
+  if (sessionState === "missing") {
+    return redirectToLogin(returnHref);
+  }
+
+  if (sessionState === "offline") {
+    return getOfflineCurrentUserFallback(returnHref);
+  }
+
+  return null;
+}
+
+async function resolveAuthenticatedCurrentUser(returnHref: string | null) {
+  try {
+    const currentUser = await resolveCurrentUser();
+
+    if (!currentUser) {
+      return redirectToLogin(returnHref);
+    }
+
+    return currentUser;
+  } catch (error) {
+    if (isApiNetworkError(error)) {
+      return getOfflineCurrentUserFallback(returnHref);
+    }
+
+    return redirectToLogin(returnHref);
+  }
+}
+
+async function redirectAuthenticatedUser({
   location,
 }: PublicAuthRouteLoadContext) {
   if (!authSession.hasTokens()) {
@@ -351,43 +379,24 @@ export async function redirectAuthenticatedUser({
   throw redirect(buildPostAuthRedirectNavigation(currentUser, returnTo));
 }
 
-export async function requireAuthenticatedUser(
+async function requireAuthenticatedUser(
   location?: RouteLocationLike,
   options?: RequireAuthenticatedUserOptions,
 ) {
   const returnHref = buildGuardReturnHref(location);
   const sessionState = await restoreAuthSessionIfNeeded();
+  const sessionFallback = resolveSessionFallback(sessionState, returnHref);
 
-  if (sessionState === "missing") {
-    return redirectToLogin(returnHref);
+  if (sessionFallback) {
+    return sessionFallback;
   }
 
-  if (sessionState === "offline") {
-    return getOfflineCurrentUserFallback(returnHref);
-  }
+  notifySessionRestored(options);
 
-  if (options?.onSessionRestored) {
-    void Promise.resolve(options.onSessionRestored()).catch(() => null);
-  }
-
-  try {
-    const currentUser = await resolveCurrentUser();
-
-    if (!currentUser) {
-      return redirectToLogin(returnHref);
-    }
-
-    return currentUser;
-  } catch (error) {
-    if (isApiNetworkError(error)) {
-      return getOfflineCurrentUserFallback(returnHref);
-    }
-
-    return redirectToLogin(returnHref);
-  }
+  return resolveAuthenticatedCurrentUser(returnHref);
 }
 
-export async function requireCanonicalAppRoute(
+async function requireCanonicalAppRoute(
   location: RouteLocationLike,
   options?: RequireAuthenticatedUserOptions,
 ) {
@@ -406,7 +415,7 @@ export async function requireCanonicalAppRoute(
   redirectToCanonicalRouteHref(location);
 }
 
-export async function requireCanonicalOnboardingRoute(
+async function requireCanonicalOnboardingRoute(
   location: RouteLocationLike,
   expectedDestination:
     | "/onboarding/profile"
@@ -426,9 +435,80 @@ export async function requireCanonicalOnboardingRoute(
   }
 }
 
-export async function requireEditableOnboardingRoute(
+function getEditableOnboardingRedirectTarget({
+  canonicalDestination,
+  expectedDestination,
+  isEditMode,
+}: {
+  canonicalDestination: PostAuthRedirectPath;
+  expectedDestination: EditableOnboardingDestination;
+  isEditMode: boolean;
+}) {
+  return isEditMode
+    ? getEditModeOnboardingRedirectTarget(canonicalDestination)
+    : getLinearOnboardingRedirectTarget({
+        canonicalDestination,
+        expectedDestination,
+      });
+}
+
+function getEditModeOnboardingRedirectTarget(
+  canonicalDestination: PostAuthRedirectPath,
+) {
+  return canonicalDestination === "/home" ? null : canonicalDestination;
+}
+
+function getLinearOnboardingRedirectTarget({
+  canonicalDestination,
+  expectedDestination,
+}: {
+  canonicalDestination: PostAuthRedirectPath;
+  expectedDestination: EditableOnboardingDestination;
+}) {
+  if (
+    canStayOnEditableOnboardingRoute({
+      canonicalDestination,
+      expectedDestination,
+    })
+  ) {
+    return null;
+  }
+
+  return canonicalDestination;
+}
+
+function canStayOnEditableOnboardingRoute({
+  canonicalDestination,
+  expectedDestination,
+}: {
+  canonicalDestination: PostAuthRedirectPath;
+  expectedDestination: EditableOnboardingDestination;
+}) {
+  return (
+    canonicalDestination === expectedDestination ||
+    isReturningFromInterestsToPersonality({
+      canonicalDestination,
+      expectedDestination,
+    })
+  );
+}
+
+function isReturningFromInterestsToPersonality({
+  canonicalDestination,
+  expectedDestination,
+}: {
+  canonicalDestination: PostAuthRedirectPath;
+  expectedDestination: EditableOnboardingDestination;
+}) {
+  return (
+    expectedDestination === "/onboarding/personality" &&
+    canonicalDestination === "/onboarding/interests"
+  );
+}
+
+async function requireEditableOnboardingRoute(
   location: RouteLocationLike,
-  expectedDestination: "/onboarding/personality" | "/onboarding/interests",
+  expectedDestination: EditableOnboardingDestination,
 ) {
   const currentUser = await requireAuthenticatedUser(location);
 
@@ -437,24 +517,20 @@ export async function requireEditableOnboardingRoute(
   }
 
   const canonicalDestination = getPostAuthRedirectPath(currentUser);
+  const redirectTarget = getEditableOnboardingRedirectTarget({
+    canonicalDestination,
+    expectedDestination,
+    isEditMode: isOnboardingEditMode(location.searchStr),
+  });
 
-  if (isOnboardingEditMode(location.searchStr)) {
-    if (canonicalDestination !== "/home") {
-      throw redirect({ to: canonicalDestination });
-    }
-
-    return;
-  }
-
-  if (canonicalDestination !== expectedDestination) {
-    const isReturningFromInterestsToPersonality =
-      expectedDestination === "/onboarding/personality" &&
-      canonicalDestination === "/onboarding/interests";
-
-    if (isReturningFromInterestsToPersonality) {
-      return;
-    }
-
-    throw redirect({ to: canonicalDestination });
+  if (redirectTarget) {
+    throw redirect({ to: redirectTarget });
   }
 }
+
+export const routeGuardImplementations = {
+  redirectAuthenticatedUser,
+  requireCanonicalAppRoute,
+  requireCanonicalOnboardingRoute,
+  requireEditableOnboardingRoute,
+} as const;

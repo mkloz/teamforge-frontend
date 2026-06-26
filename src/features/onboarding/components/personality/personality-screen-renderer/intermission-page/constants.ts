@@ -5,7 +5,7 @@ import {
   type TestLength,
 } from "@/features/onboarding/data/ipip-questions";
 
-export const INTERMISSION_CONTENT: {
+const INTERMISSION_CONTENT: {
   icon: LucideIcon;
   title: string;
   description: string;
@@ -93,7 +93,7 @@ export const INTERMISSION_CONTENT: {
   },
 ];
 
-export const INTERMISSION_UPGRADE_OPTIONS: TestLength[] = [30, 50, 150];
+const INTERMISSION_UPGRADE_OPTIONS: TestLength[] = [30, 50, 150];
 
 export function getIntermissionContent(milestoneIndex: number) {
   const validIndex = Math.max(0, milestoneIndex - 1);
@@ -119,7 +119,7 @@ export function getIntermissionActionLabel({
   return isDone ? "Finish assessment" : "Continue assessment";
 }
 
-export function getCurrentEstimatedMinutes(totalQuestions: number) {
+function getCurrentEstimatedMinutes(totalQuestions: number) {
   return (
     Object.values(TEST_LENGTH_CONFIG).find(
       (config) => config.itemsPerDimension * 5 === totalQuestions,

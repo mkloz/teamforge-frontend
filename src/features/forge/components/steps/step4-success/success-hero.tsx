@@ -17,43 +17,72 @@ interface SuccessHeroProps {
   removedIds: Set<string>;
 }
 
+interface ScoredParticipant {
+  participant: ForgeParticipant;
+  score: number;
+}
+
+function getActiveParticipants(
+  participants: ForgeParticipant[],
+  removedIds: Set<string>,
+) {
+  return participants.filter(
+    (participant) => !removedIds.has(participant.userId),
+  );
+}
+
+function getScoredParticipants(
+  participants: ForgeParticipant[],
+): ScoredParticipant[] {
+  return participants
+    .map((participant) => ({
+      participant,
+      score: getParticipantScorePercent(participant),
+    }))
+    .filter((item): item is ScoredParticipant => item.score !== null);
+}
+
+function getAverageScore(scoredParticipants: ScoredParticipant[]) {
+  if (scoredParticipants.length === 0) {
+    return null;
+  }
+
+  return Math.round(
+    scoredParticipants.reduce((sum, item) => sum + item.score, 0) /
+      scoredParticipants.length,
+  );
+}
+
+function getTopFit(scoredParticipants: ScoredParticipant[]) {
+  return scoredParticipants.reduce<ScoredParticipant | null>(
+    (best, item) => (!best || item.score > best.score ? item : best),
+    null,
+  );
+}
+
+function getParticipantVisibility(participants: ForgeParticipant[]) {
+  const visibleParticipants = participants.slice(0, 3);
+
+  return {
+    visibleParticipants,
+    hiddenCount: Math.max(participants.length - visibleParticipants.length, 0),
+  };
+}
+
+function getSuccessHeroDisplayTitle(planTitle: string) {
+  return planTitle.trim() || "your plan";
+}
+
 export function SuccessHero({
   planTitle,
   participants,
   removedIds,
 }: SuccessHeroProps) {
-  const displayTitle = planTitle.trim() || "your plan";
-  const activeParticipants = participants.filter(
-    (participant) => !removedIds.has(participant.userId),
-  );
-  const scoredParticipants = activeParticipants
-    .map((participant) => ({
-      participant,
-      score: getParticipantScorePercent(participant),
-    }))
-    .filter(
-      (item): item is { participant: ForgeParticipant; score: number } =>
-        item.score !== null,
-    );
-  const averageScore =
-    scoredParticipants.length > 0
-      ? Math.round(
-          scoredParticipants.reduce((sum, item) => sum + item.score, 0) /
-            scoredParticipants.length,
-        )
-      : null;
-  const topFit = scoredParticipants.reduce<{
-    participant: ForgeParticipant;
-    score: number;
-  } | null>(
-    (best, item) => (!best || item.score > best.score ? item : best),
-    null,
-  );
-  const visibleParticipants = activeParticipants.slice(0, 3);
-  const hiddenCount = Math.max(
-    activeParticipants.length - visibleParticipants.length,
-    0,
-  );
+  const displayTitle = getSuccessHeroDisplayTitle(planTitle);
+  const activeParticipants = getActiveParticipants(participants, removedIds);
+  const scoredParticipants = getScoredParticipants(activeParticipants);
+  const averageScore = getAverageScore(scoredParticipants);
+  const topFit = getTopFit(scoredParticipants);
 
   return (
     <section className="overflow-hidden rounded-lg border border-border/40 bg-card/70">
@@ -84,49 +113,9 @@ export function SuccessHero({
         </div>
 
         <div className="flex items-center justify-between gap-3 border-border/35 border-y py-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <div className="flex">
-              <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-forge-teal font-bold text-micro text-primary-foreground">
-                You
-              </div>
-              {visibleParticipants.map((participant) => (
-                <Avatar
-                  key={participant.userId}
-                  src={participant.user?.avatar}
-                  name={getParticipantName(participant)}
-                  fallback={getParticipantInitials(participant)}
-                  shape="rounded"
-                  className="-ml-2 size-8 rounded-lg border border-card bg-muted"
-                  fallbackClassName="bg-muted text-xs font-bold text-foreground/80"
-                />
-              ))}
-              {hiddenCount > 0 && (
-                <div className="-ml-2 flex size-8 items-center justify-center rounded-lg border border-card bg-muted font-bold text-muted-foreground text-xs">
-                  +{hiddenCount}
-                </div>
-              )}
-            </div>
-            <div className="min-w-0">
-              <p className="font-semibold text-foreground text-sm leading-tight">
-                {activeParticipants.length + 1} people
-              </p>
-              <p className="truncate text-muted-foreground text-xs">
-                Hosted by you
-              </p>
-            </div>
-          </div>
+          <SuccessHeroPeopleStack activeParticipants={activeParticipants} />
 
-          <div className="flex shrink-0 items-center gap-2 text-right">
-            <UsersRound size={15} className="text-forge-teal" />
-            <div>
-              <p className="font-bold text-foreground text-sm leading-tight">
-                {averageScore !== null ? `${averageScore}%` : "Ready"}
-              </p>
-              <p className="font-semibold text-micro text-muted-foreground">
-                Avg fit
-              </p>
-            </div>
-          </div>
+          <AverageFitStat averageScore={averageScore} />
         </div>
 
         <div
@@ -137,31 +126,111 @@ export function SuccessHero({
               : "grid-cols-1",
           )}
         >
-          <p className="min-w-0 text-muted-foreground">
-            {topFit ? (
-              <>
-                Strongest fit is{" "}
-                <span className="font-semibold text-foreground">
-                  {getParticipantName(topFit.participant)}
-                </span>
-                .
-              </>
-            ) : (
-              "The group is ready for review."
-            )}
-          </p>
-          {topFit && (
-            <StatusPill
-              tone="amber"
-              size="xs"
-              numeric
-              className="justify-self-start"
-            >
-              {topFit.score}%
-            </StatusPill>
-          )}
+          <TopFitSummary topFit={topFit} />
+          <TopFitScorePill topFit={topFit} />
         </div>
       </div>
     </section>
+  );
+}
+
+function SuccessHeroPeopleStack({
+  activeParticipants,
+}: {
+  activeParticipants: ForgeParticipant[];
+}) {
+  const { hiddenCount, visibleParticipants } =
+    getParticipantVisibility(activeParticipants);
+
+  return (
+    <div className="flex min-w-0 items-center gap-2">
+      <div className="flex">
+        <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-forge-teal font-bold text-micro text-primary-foreground">
+          You
+        </div>
+        {visibleParticipants.map((participant) => (
+          <Avatar
+            key={participant.userId}
+            src={participant.user?.avatar}
+            name={getParticipantName(participant)}
+            fallback={getParticipantInitials(participant)}
+            shape="rounded"
+            className="-ml-2 size-8 rounded-lg border border-card bg-muted"
+            fallbackClassName="bg-muted text-xs font-bold text-foreground/80"
+          />
+        ))}
+        <HiddenParticipantCount hiddenCount={hiddenCount} />
+      </div>
+      <div className="min-w-0">
+        <p className="font-semibold text-foreground text-sm leading-tight">
+          {activeParticipants.length + 1} people
+        </p>
+        <p className="truncate text-muted-foreground text-xs">Hosted by you</p>
+      </div>
+    </div>
+  );
+}
+
+function HiddenParticipantCount({ hiddenCount }: { hiddenCount: number }) {
+  if (hiddenCount <= 0) {
+    return null;
+  }
+
+  return (
+    <div className="-ml-2 flex size-8 items-center justify-center rounded-lg border border-card bg-muted font-bold text-muted-foreground text-xs">
+      +{hiddenCount}
+    </div>
+  );
+}
+
+function AverageFitStat({ averageScore }: { averageScore: number | null }) {
+  return (
+    <div className="flex shrink-0 items-center gap-2 text-right">
+      <UsersRound size={15} className="text-forge-teal" />
+      <div>
+        <p className="font-bold text-foreground text-sm leading-tight">
+          {getAverageFitLabel(averageScore)}
+        </p>
+        <p className="font-semibold text-micro text-muted-foreground">
+          Avg fit
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function getAverageFitLabel(averageScore: number | null) {
+  return averageScore !== null ? `${averageScore}%` : "Ready";
+}
+
+function TopFitSummary({ topFit }: { topFit: ScoredParticipant | null }) {
+  if (!topFit) {
+    return (
+      <p className="min-w-0 text-muted-foreground">
+        The group is ready for review.
+      </p>
+    );
+  }
+
+  return (
+    <p className="min-w-0 text-muted-foreground">
+      Strongest fit is{" "}
+      <span className="font-semibold text-foreground">
+        {getParticipantName(topFit.participant)}
+      </span>
+      .
+    </p>
+  );
+}
+
+function TopFitScorePill({ topFit }: { topFit: ScoredParticipant | null }) {
+  if (!topFit) {
+    return null;
+  }
+
+  return (
+    <StatusPill tone="amber" size="xs" numeric className="justify-self-start">
+      {topFit.score}%
+    </StatusPill>
   );
 }

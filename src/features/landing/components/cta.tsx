@@ -5,15 +5,18 @@ import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
 import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
 import { Button } from "@/shared/components/ui/button";
 
+type LandingPrimaryAction = ReturnType<
+  typeof useResolvedLandingAuthActions
+>["primaryAction"];
+
+const CTA_VIEWPORT = { once: true, margin: "-100px" } as const;
+
 export function CtaSection() {
   const { sectionRef, glowRef, glowHandlers } = useMouseGlow();
   const prefersReducedMotion = useReducedMotion();
   const { isResolvingAuthAction, primaryAction } =
     useResolvedLandingAuthActions("Create Free Account");
-  const revealInitial = prefersReducedMotion ? false : { opacity: 0, y: 20 };
-  const revealTransition = prefersReducedMotion
-    ? { duration: 0 }
-    : { duration: 0.7 };
+  const revealInitial = getCtaRevealInitial(prefersReducedMotion);
 
   return (
     <section
@@ -33,12 +36,8 @@ export function CtaSection() {
         <motion.div
           initial={revealInitial}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={
-            prefersReducedMotion
-              ? revealTransition
-              : { ...revealTransition, delay: 0.1 }
-          }
+          viewport={CTA_VIEWPORT}
+          transition={getCtaRevealTransition(prefersReducedMotion, 0.1)}
         >
           <h2 className="mb-6 text-balance font-bold font-sans text-3xl text-white leading-tight sm:text-5xl">
             Stop waiting for the right{" "}
@@ -52,64 +51,22 @@ export function CtaSection() {
         <motion.div
           initial={revealInitial}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={
-            prefersReducedMotion
-              ? revealTransition
-              : { ...revealTransition, delay: 0.2 }
-          }
+          viewport={CTA_VIEWPORT}
+          transition={getCtaRevealTransition(prefersReducedMotion, 0.2)}
           className="mb-6 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
-          {isResolvingAuthAction ? (
-            <Button
-              size="hero"
-              loading
-              className="w-full text-white sm:w-auto"
-              aria-label="Checking TeamForge session"
-            >
-              {primaryAction.label}
-            </Button>
-          ) : (
-            <Button
-              asChild
-              size="hero"
-              className="w-full text-white hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
-            >
-              <Link
-                {...primaryAction.navigation}
-                aria-label={primaryAction.label}
-              >
-                {primaryAction.label}
-                <ArrowRight
-                  size={20}
-                  className="ml-2 transition-transform duration-200 group-hover:translate-x-1"
-                  aria-hidden="true"
-                />
-              </Link>
-            </Button>
-          )}
+          <CtaPrimaryActionButton
+            isResolvingAuthAction={isResolvingAuthAction}
+            primaryAction={primaryAction}
+          />
 
-          <Button
-            asChild
-            variant="outline"
-            size="hero"
-            className="w-full hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none sm:w-auto"
-          >
-            <Link to="/download" aria-label="Download TeamForge">
-              Download TeamForge
-              <Download className="size-5" aria-hidden="true" />
-            </Link>
-          </Button>
+          <CtaDownloadButton />
         </motion.div>
         <motion.p
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={
-            prefersReducedMotion
-              ? revealTransition
-              : { ...revealTransition, delay: 0.7 }
-          }
+          viewport={CTA_VIEWPORT}
+          transition={getCtaRevealTransition(prefersReducedMotion, 0.7)}
           className="font-sans text-text-dark-muted text-xs"
         >
           Free to use &nbsp;&middot;&nbsp; No card required &nbsp;&middot;&nbsp;
@@ -118,4 +75,71 @@ export function CtaSection() {
       </div>
     </section>
   );
+}
+
+function CtaPrimaryActionButton({
+  isResolvingAuthAction,
+  primaryAction,
+}: {
+  isResolvingAuthAction: boolean;
+  primaryAction: LandingPrimaryAction;
+}) {
+  if (isResolvingAuthAction) {
+    return (
+      <Button
+        size="hero"
+        loading
+        className="w-full text-white sm:w-auto"
+        aria-label="Checking TeamForge session"
+      >
+        {primaryAction.label}
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      asChild
+      size="hero"
+      className="w-full text-white hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
+    >
+      <Link {...primaryAction.navigation} aria-label={primaryAction.label}>
+        {primaryAction.label}
+        <ArrowRight
+          size={20}
+          className="ml-2 transition-transform duration-200 group-hover:translate-x-1"
+          aria-hidden="true"
+        />
+      </Link>
+    </Button>
+  );
+}
+
+function CtaDownloadButton() {
+  return (
+    <Button
+      asChild
+      variant="outline"
+      size="hero"
+      className="w-full hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none sm:w-auto"
+    >
+      <Link to="/download" aria-label="Download TeamForge">
+        Download TeamForge
+        <Download className="size-5" aria-hidden="true" />
+      </Link>
+    </Button>
+  );
+}
+
+function getCtaRevealInitial(prefersReducedMotion: boolean | null) {
+  return prefersReducedMotion ? false : { opacity: 0, y: 20 };
+}
+
+function getCtaRevealTransition(
+  prefersReducedMotion: boolean | null,
+  delay: number,
+) {
+  const transition = prefersReducedMotion ? { duration: 0 } : { duration: 0.7 };
+
+  return prefersReducedMotion ? transition : { ...transition, delay };
 }

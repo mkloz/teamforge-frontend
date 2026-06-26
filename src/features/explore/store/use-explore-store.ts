@@ -29,6 +29,17 @@ interface ExploreState extends ExploreFilters {
   isAnythingFiltered: () => boolean;
 }
 
+const SCALAR_FILTER_KEYS = [
+  "locationMode",
+  "access",
+  "timeWindow",
+  "startsAfter",
+  "startsBefore",
+  "distance",
+] as const satisfies readonly (keyof ExploreFilters)[];
+
+type ScalarFilterKey = (typeof SCALAR_FILTER_KEYS)[number];
+
 function areCategoryFiltersEqual(
   left: ExploreCategory[],
   right: ExploreCategory[],
@@ -40,6 +51,53 @@ function areCategoryFiltersEqual(
   return left.every((category, index) => category === right[index]);
 }
 
+function normalizeSelectedCategories(
+  selectedCategories: ExploreCategory[],
+): ExploreCategory[] {
+  if (selectedCategories.includes("ALL")) {
+    return ["ALL"];
+  }
+
+  return Array.from(new Set(selectedCategories)).slice(
+    0,
+    EXPLORE_MAX_CATEGORY_FILTERS,
+  );
+}
+
+function getResetExploreFiltersState(): ExploreFilters &
+  Pick<ExploreState, "searchQuery"> {
+  return {
+    ...DEFAULT_FILTERS,
+    searchQuery: "",
+  };
+}
+
+function isSelectedCategoriesFiltered(selectedCategories: ExploreCategory[]) {
+  return !areCategoryFiltersEqual(
+    selectedCategories,
+    DEFAULT_FILTERS.selectedCategories,
+  );
+}
+
+function isScalarFilterChanged(state: ExploreState, key: ScalarFilterKey) {
+  return state[key] !== DEFAULT_FILTERS[key];
+}
+
+function isSizeRangeFiltered(sizeRange: ExploreFilters["sizeRange"]) {
+  return (
+    sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
+    sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1]
+  );
+}
+
+function isExploreFiltered(state: ExploreState) {
+  return (
+    isSelectedCategoriesFiltered(state.selectedCategories) ||
+    SCALAR_FILTER_KEYS.some((key) => isScalarFilterChanged(state, key)) ||
+    isSizeRangeFiltered(state.sizeRange)
+  );
+}
+
 export const useExploreStore = create<ExploreState>((set, get) => ({
   ...DEFAULT_FILTERS,
   searchQuery: "",
@@ -47,12 +105,7 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   setSelectedCategories: (selectedCategories) =>
     set({
-      selectedCategories: selectedCategories.includes("ALL")
-        ? ["ALL"]
-        : Array.from(new Set(selectedCategories)).slice(
-            0,
-            EXPLORE_MAX_CATEGORY_FILTERS,
-          ),
+      selectedCategories: normalizeSelectedCategories(selectedCategories),
     }),
   setSizeRange: (sizeRange) => set({ sizeRange }),
   setDistance: (distance) => set({ distance }),
@@ -63,35 +116,7 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
   setStartsAfter: (startsAfter) => set({ startsAfter }),
   setStartsBefore: (startsBefore) => set({ startsBefore }),
 
-  resetFilters: () =>
-    set({
-      searchQuery: "",
-      selectedCategories: DEFAULT_FILTERS.selectedCategories,
-      sizeRange: DEFAULT_FILTERS.sizeRange,
-      distance: DEFAULT_FILTERS.distance,
-      locationMode: DEFAULT_FILTERS.locationMode,
-      access: DEFAULT_FILTERS.access,
-      sortBy: DEFAULT_FILTERS.sortBy,
-      timeWindow: DEFAULT_FILTERS.timeWindow,
-      startsAfter: DEFAULT_FILTERS.startsAfter,
-      startsBefore: DEFAULT_FILTERS.startsBefore,
-    }),
+  resetFilters: () => set(getResetExploreFiltersState()),
 
-  isAnythingFiltered: () => {
-    const state = get();
-    return (
-      !areCategoryFiltersEqual(
-        state.selectedCategories,
-        DEFAULT_FILTERS.selectedCategories,
-      ) ||
-      state.locationMode !== DEFAULT_FILTERS.locationMode ||
-      state.access !== DEFAULT_FILTERS.access ||
-      state.timeWindow !== DEFAULT_FILTERS.timeWindow ||
-      state.startsAfter !== DEFAULT_FILTERS.startsAfter ||
-      state.startsBefore !== DEFAULT_FILTERS.startsBefore ||
-      state.distance !== DEFAULT_FILTERS.distance ||
-      state.sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
-      state.sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1]
-    );
-  },
+  isAnythingFiltered: () => isExploreFiltered(get()),
 }));

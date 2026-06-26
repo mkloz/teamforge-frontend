@@ -14,6 +14,10 @@ interface UseVoiceNoteSenderOptions {
   stopRecording: ReturnType<typeof useVoiceRecording>["stopRecording"];
 }
 
+type StopRecordingResult = Awaited<
+  ReturnType<UseVoiceNoteSenderOptions["stopRecording"]>
+>;
+
 export function useVoiceNoteSender({
   isDisabled,
   isOnline,
@@ -26,7 +30,7 @@ export function useVoiceNoteSender({
   return async function handleStopRecording() {
     const result = await stopRecording();
 
-    if (!result || result.durationSeconds <= 0 || isDisabled) {
+    if (!hasSendableRecordingResult(result, isDisabled)) {
       return;
     }
 
@@ -35,33 +39,48 @@ export function useVoiceNoteSender({
       return;
     }
 
-    const mimeType = result.blob.type || "audio/webm";
-    const extension = getVoiceExtension(mimeType);
-    const voiceFile = new File(
-      [result.blob],
-      `voice-note-${Date.now()}.${extension}`,
-      {
-        type: mimeType,
-      },
-    );
+    const voiceFile = createVoiceNoteFile(result);
 
     setIsSubmitting(true);
 
     try {
-      await onSend({
-        content: "",
-        attachments: [
-          {
-            file: voiceFile,
-            duration: result.durationSeconds,
-          },
-        ],
-      });
+      await onSend(createVoiceNoteMessageInput(voiceFile, result));
       onSent();
     } catch {
       return;
     } finally {
       setIsSubmitting(false);
     }
+  };
+}
+
+function hasSendableRecordingResult(
+  result: StopRecordingResult,
+  isDisabled: boolean,
+): result is NonNullable<StopRecordingResult> {
+  return Boolean(result && result.durationSeconds > 0 && !isDisabled);
+}
+
+function createVoiceNoteFile(result: NonNullable<StopRecordingResult>) {
+  const mimeType = result.blob.type || "audio/webm";
+  const extension = getVoiceExtension(mimeType);
+
+  return new File([result.blob], `voice-note-${Date.now()}.${extension}`, {
+    type: mimeType,
+  });
+}
+
+function createVoiceNoteMessageInput(
+  voiceFile: File,
+  result: NonNullable<StopRecordingResult>,
+): ActivitySendMessageInput {
+  return {
+    content: "",
+    attachments: [
+      {
+        file: voiceFile,
+        duration: result.durationSeconds,
+      },
+    ],
   };
 }

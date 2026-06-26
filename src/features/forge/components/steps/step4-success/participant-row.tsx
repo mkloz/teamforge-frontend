@@ -15,6 +15,8 @@ import {
 } from "./participant-utils";
 import type { ParticipantRowProps } from "./types";
 
+type ParticipantViewState = ReturnType<typeof getParticipantViewState>;
+
 export function ParticipantRow({
   participant,
   removed,
@@ -22,10 +24,11 @@ export function ParticipantRow({
   onRemoveParticipant,
   onRestoreParticipant,
 }: ParticipantRowProps) {
-  const participantMeta = getParticipantMeta(participant);
-  const participantName = getParticipantName(participant);
-  const scorePercent = getParticipantScorePercent(participant);
-  const profileNavigation = buildProfileNavigation(participant.userId);
+  const viewState = getParticipantViewState({
+    highlight,
+    participant,
+    removed,
+  });
 
   return (
     <div
@@ -39,120 +42,260 @@ export function ParticipantRow({
       )}
     >
       {/* Full-surface link */}
-      <Link
-        {...profileNavigation}
-        aria-label={`View ${participantName}'s profile`}
-        className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <span className="sr-only">View {participantName}'s profile</span>
-      </Link>
+      <ParticipantProfileLink viewState={viewState} />
 
       {/* Avatar */}
-      <div className="relative shrink-0">
-        <Avatar
-          src={participant.user?.avatar}
-          name={participantName}
-          fallback={getParticipantInitials(participant)}
-          className={cn(
-            "size-10 ring-1",
-            removed
-              ? "ring-border/30 grayscale"
-              : highlight
-                ? "ring-2 ring-spark-amber/35"
-                : "ring-border/40",
-          )}
-          fallbackClassName={cn(
-            "font-bold text-xs",
-            highlight ? "text-spark-amber" : "text-foreground/80",
-          )}
-        />
-      </div>
+      <ParticipantAvatar participant={participant} viewState={viewState} />
 
       {/* Identity + meta */}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <p
-            className={cn(
-              "truncate font-black text-sm leading-tight transition-colors",
-              removed
-                ? "text-muted-foreground line-through"
-                : highlight
-                  ? "text-spark-amber"
-                  : "text-foreground",
-            )}
-          >
-            {participantName}
-          </p>
-          {!removed && highlight && (
-            <StatusPill
-              tone="amber"
-              size="xs"
-              surface="soft"
-              className="h-4 shrink-0 px-1.5 py-0 leading-4"
-            >
-              Best fit
-            </StatusPill>
-          )}
-        </div>
-
-        {/* Score bar or removed label */}
-        {removed ? (
-          <p className="mt-0.5 text-muted-foreground text-xs">Removed</p>
-        ) : scorePercent !== null ? (
-          <div className="mt-1.5 flex items-center gap-2">
-            <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-muted/55">
-              <div
-                className={cn(
-                  "h-full rounded-full transition-all duration-500",
-                  highlight ? "bg-spark-amber" : "bg-forge-teal",
-                )}
-                style={{ width: `${Math.min(scorePercent, 100)}%` }}
-              />
-            </div>
-            <StatusPill
-              icon={ShieldCheck}
-              tone={highlight ? "amber" : "neutral"}
-              size="xs"
-              surface="soft"
-              className="h-4 shrink-0 px-1.5 py-0 leading-4"
-              numeric
-            >
-              {participantMeta.value}
-            </StatusPill>
-          </div>
-        ) : null}
-
-        {scorePercent !== null && !removed && (
-          <span className="sr-only">
-            {participantName} has a {scorePercent}% compatibility score.
-          </span>
-        )}
-      </div>
+      <ParticipantIdentity viewState={viewState} />
 
       {/* Action button – z-20, revealed on hover on desktop */}
-      <div className="relative z-20 shrink-0 transition-opacity duration-150 md:opacity-0 md:group-hover:opacity-100">
-        {removed ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onRestoreParticipant(participant.userId)}
-            aria-label={`Restore ${participantName}`}
-            className="size-7 rounded-full text-muted-foreground hover:text-forge-teal"
-          >
-            <UserPlus size={13} />
-          </Button>
-        ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onRemoveParticipant(participant.userId)}
-            aria-label={`Remove ${participantName}`}
-            className="size-7 rounded-full text-muted-foreground hover:text-destructive"
-          >
-            <UserMinus size={13} />
-          </Button>
-        )}
+      <ParticipantActionButton
+        participant={participant}
+        removed={removed}
+        viewState={viewState}
+        onRemoveParticipant={onRemoveParticipant}
+        onRestoreParticipant={onRestoreParticipant}
+      />
+    </div>
+  );
+}
+
+function getParticipantViewState({
+  highlight,
+  participant,
+  removed,
+}: {
+  highlight: boolean;
+  participant: ParticipantRowProps["participant"];
+  removed: boolean;
+}) {
+  const participantName = getParticipantName(participant);
+  const scorePercent = getParticipantScorePercent(participant);
+
+  return {
+    avatarClassName: getParticipantAvatarClassName({ highlight, removed }),
+    avatarFallbackClassName: getParticipantAvatarFallbackClassName(highlight),
+    bestFitVisible: !removed && highlight,
+    nameClassName: getParticipantNameClassName({ highlight, removed }),
+    participantMeta: getParticipantMeta(participant),
+    participantName,
+    profileNavigation: buildProfileNavigation(participant.userId),
+    removed,
+    scoreBarClassName: getParticipantScoreBarClassName(highlight),
+    scoreBarWidth:
+      scorePercent === null ? null : `${Math.min(scorePercent, 100)}%`,
+    scorePercent,
+    scoreVisible: !removed && scorePercent !== null,
+    statusTone: getParticipantScoreTone(highlight),
+  };
+}
+
+function getParticipantAvatarClassName({
+  highlight,
+  removed,
+}: {
+  highlight: boolean;
+  removed: boolean;
+}) {
+  return cn(
+    "size-10 ring-1",
+    removed
+      ? "ring-border/30 grayscale"
+      : highlight
+        ? "ring-2 ring-spark-amber/35"
+        : "ring-border/40",
+  );
+}
+
+function getParticipantAvatarFallbackClassName(highlight: boolean) {
+  return cn(
+    "font-bold text-xs",
+    highlight ? "text-spark-amber" : "text-foreground/80",
+  );
+}
+
+function getParticipantNameClassName({
+  highlight,
+  removed,
+}: {
+  highlight: boolean;
+  removed: boolean;
+}) {
+  return cn(
+    "truncate font-black text-sm leading-tight transition-colors",
+    removed
+      ? "text-muted-foreground line-through"
+      : highlight
+        ? "text-spark-amber"
+        : "text-foreground",
+  );
+}
+
+function getParticipantScoreBarClassName(highlight: boolean) {
+  return cn(
+    "h-full rounded-full transition-all duration-500",
+    highlight ? "bg-spark-amber" : "bg-forge-teal",
+  );
+}
+
+function getParticipantScoreTone(highlight: boolean): "amber" | "neutral" {
+  return highlight ? "amber" : "neutral";
+}
+
+function ParticipantProfileLink({
+  viewState,
+}: {
+  viewState: ParticipantViewState;
+}) {
+  return (
+    <Link
+      {...viewState.profileNavigation}
+      aria-label={`View ${viewState.participantName}'s profile`}
+      className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="sr-only">
+        {`View ${viewState.participantName}'s profile`}
+      </span>
+    </Link>
+  );
+}
+
+function ParticipantAvatar({
+  participant,
+  viewState,
+}: {
+  participant: ParticipantRowProps["participant"];
+  viewState: ParticipantViewState;
+}) {
+  return (
+    <div className="relative shrink-0">
+      <Avatar
+        src={participant.user?.avatar}
+        name={viewState.participantName}
+        fallback={getParticipantInitials(participant)}
+        className={viewState.avatarClassName}
+        fallbackClassName={viewState.avatarFallbackClassName}
+      />
+    </div>
+  );
+}
+
+function ParticipantIdentity({
+  viewState,
+}: {
+  viewState: ParticipantViewState;
+}) {
+  return (
+    <div className="min-w-0 flex-1">
+      <ParticipantNameLine viewState={viewState} />
+
+      {/* Score bar or removed label */}
+      <ParticipantScoreStatus viewState={viewState} />
+
+      {viewState.scoreVisible && (
+        <span className="sr-only">
+          {`${viewState.participantName} has a ${viewState.scorePercent}% compatibility score.`}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function ParticipantNameLine({
+  viewState,
+}: {
+  viewState: ParticipantViewState;
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <p className={viewState.nameClassName}>{viewState.participantName}</p>
+      {viewState.bestFitVisible && (
+        <StatusPill
+          tone="amber"
+          size="xs"
+          surface="soft"
+          className="h-4 shrink-0 px-1.5 py-0 leading-4"
+        >
+          Best fit
+        </StatusPill>
+      )}
+    </div>
+  );
+}
+
+function ParticipantScoreStatus({
+  viewState,
+}: {
+  viewState: ParticipantViewState;
+}) {
+  if (viewState.removed) {
+    return <p className="mt-0.5 text-muted-foreground text-xs">Removed</p>;
+  }
+
+  if (viewState.scorePercent === null) {
+    return null;
+  }
+
+  return (
+    <div className="mt-1.5 flex items-center gap-2">
+      <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-muted/55">
+        <div
+          className={viewState.scoreBarClassName}
+          style={{ width: viewState.scoreBarWidth ?? undefined }}
+        />
       </div>
+      <StatusPill
+        icon={ShieldCheck}
+        tone={viewState.statusTone}
+        size="xs"
+        surface="soft"
+        className="h-4 shrink-0 px-1.5 py-0 leading-4"
+        numeric
+      >
+        {viewState.participantMeta.value}
+      </StatusPill>
+    </div>
+  );
+}
+
+function ParticipantActionButton({
+  participant,
+  removed,
+  viewState,
+  onRemoveParticipant,
+  onRestoreParticipant,
+}: {
+  participant: ParticipantRowProps["participant"];
+  removed: boolean;
+  viewState: ParticipantViewState;
+  onRemoveParticipant: ParticipantRowProps["onRemoveParticipant"];
+  onRestoreParticipant: ParticipantRowProps["onRestoreParticipant"];
+}) {
+  return (
+    <div className="relative z-20 shrink-0 transition-opacity duration-150 md:opacity-0 md:group-hover:opacity-100">
+      {removed ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onRestoreParticipant(participant.userId)}
+          aria-label={`Restore ${viewState.participantName}`}
+          className="size-7 rounded-full text-muted-foreground hover:text-forge-teal"
+        >
+          <UserPlus size={13} />
+        </Button>
+      ) : (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onRemoveParticipant(participant.userId)}
+          aria-label={`Remove ${viewState.participantName}`}
+          className="size-7 rounded-full text-muted-foreground hover:text-destructive"
+        >
+          <UserMinus size={13} />
+        </Button>
+      )}
     </div>
   );
 }

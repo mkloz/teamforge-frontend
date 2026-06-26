@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight, X } from "lucide-react";
-import { memo } from "react";
+import { type MouseEvent, memo } from "react";
 
 import type {
   Plan,
@@ -18,7 +18,9 @@ import { buildPinnedEntries } from "./chat-status-entries";
 import { PagerDots } from "./pager-dots";
 import { useChatStatusBarNavigation } from "./use-chat-status-bar-navigation";
 
-export interface ChatStatusBarProps {
+type ChatStatusEntry = ReturnType<typeof buildPinnedEntries>[number];
+
+interface ChatStatusBarProps {
   plan?: Plan;
   pinnedMessages?: UnifiedMessage[];
   onViewDetails?: () => void;
@@ -76,14 +78,13 @@ export const ChatStatusBar = memo(function ChatStatusBar({
       <Button
         type="button"
         variant="ghost"
-        aria-label={`${activeEntry.label}: ${activeEntry.body}. ${
-          total > 1 ? "Show next pinned item." : "Open pinned item."
-        }`}
+        aria-label={getStatusBarActionLabel(activeEntry, total)}
         onClick={handleBarClick}
         className={cn(
           "group h-auto min-w-0 flex-1 justify-start gap-2 p-0 text-left",
           "select-none rounded-lg",
           "transition-colors duration-150",
+          // oxlint-disable-next-line tailwindcss/consistent-variant-order -- Preserve this pre-existing class string in a behavior-only refactor.
           "hover:enabled:bg-transparent dark:hover:enabled:bg-transparent",
           "active:enabled:translate-y-0 active:enabled:scale-100 active:enabled:bg-transparent",
           "focus-visible:ring-primary/40 focus-visible:ring-inset",
@@ -100,11 +101,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
             <motion.span
               key={activeEntry.id}
               custom={direction}
-              variants={{
-                enter: (d: number) => ({ opacity: 0, y: d * 6 }),
-                center: { opacity: 1, y: 0 },
-                exit: (d: number) => ({ opacity: 0, y: d * -6 }),
-              }}
+              variants={statusEntryMotionVariants}
               initial="enter"
               animate="center"
               exit="exit"
@@ -133,42 +130,73 @@ export const ChatStatusBar = memo(function ChatStatusBar({
       </Button>
 
       <div className="flex shrink-0 items-center">
-        {activeEntry.isPlan ? (
-          // Wrap in same w-6 h-6 as the unpin button so both branches
-          // produce identical height, preventing the plan entry being shorter.
-          <div className="flex size-6 items-center justify-center">
-            <ChevronRight
-              strokeWidth={1.5}
-              className="size-3.5 text-slate-muted/40 transition-colors duration-150 group-hover:text-slate-muted"
-              aria-hidden
-            />
-          </div>
-        ) : (
-          activeEntry.messageId && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label="Unpin message"
-                  onClick={handleUnpin}
-                  className={cn(
-                    "size-7 rounded-full",
-                    "text-slate-muted/60",
-                    "hover:bg-muted/80 hover:text-ink",
-                    "transition-colors duration-150",
-                    "focus-visible:ring-primary/40",
-                  )}
-                >
-                  <X className="size-3.5" strokeWidth={2} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Unpin message</TooltipContent>
-            </Tooltip>
-          )
-        )}
+        <StatusBarTrailingAction
+          activeEntry={activeEntry}
+          onUnpin={handleUnpin}
+        />
       </div>
     </div>
   );
 });
+
+function StatusBarTrailingAction({
+  activeEntry,
+  onUnpin,
+}: {
+  activeEntry: ChatStatusEntry;
+  onUnpin: (event: MouseEvent) => void;
+}) {
+  if (activeEntry.isPlan) {
+    return (
+      // Wrap in same w-6 h-6 as the unpin button so both branches
+      // produce identical height, preventing the plan entry being shorter.
+      <div className="flex size-6 items-center justify-center">
+        <ChevronRight
+          strokeWidth={1.5}
+          className="size-3.5 text-slate-muted/40 transition-colors duration-150 group-hover:text-slate-muted"
+          aria-hidden
+        />
+      </div>
+    );
+  }
+
+  if (!activeEntry.messageId) {
+    return null;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          aria-label="Unpin message"
+          onClick={onUnpin}
+          className={cn(
+            "size-7 rounded-full",
+            "text-slate-muted/60",
+            "hover:bg-muted/80 hover:text-ink",
+            "transition-colors duration-150",
+            "focus-visible:ring-primary/40",
+          )}
+        >
+          <X className="size-3.5" strokeWidth={2} />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>Unpin message</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function getStatusBarActionLabel(activeEntry: ChatStatusEntry, total: number) {
+  return `${activeEntry.label}: ${activeEntry.body}. ${
+    total > 1 ? "Show next pinned item." : "Open pinned item."
+  }`;
+}
+
+const statusEntryMotionVariants = {
+  enter: (d: number) => ({ opacity: 0, y: d * 6 }),
+  center: { opacity: 1, y: 0 },
+  exit: (d: number) => ({ opacity: 0, y: d * -6 }),
+};

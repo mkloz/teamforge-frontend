@@ -46,7 +46,7 @@ function normalizeFlowSearch(value: string | null | undefined) {
   return normalized.length > 0 ? normalized : null;
 }
 
-export function resolveOnboardingReturnTo(
+function resolveOnboardingReturnTo(
   value: string | null | undefined,
 ): OnboardingReturnTarget | null {
   if (!value) {
@@ -72,23 +72,6 @@ export function toOptionalOnboardingSearch<T extends Record<string, unknown>>(
   search: T,
 ) {
   return Object.keys(search).length > 0 ? search : undefined;
-}
-
-export function parseOnboardingFlowSearch(searchString: string) {
-  const params = new URLSearchParams(searchString);
-  const mode = params.get("mode");
-  const returnTo = resolveOnboardingReturnTo(params.get("returnTo"));
-  const returnSearch = normalizeFlowSearch(params.get("returnSearch"));
-  const returnSection = normalizeSettingsSection(params.get("returnSection"));
-  const mbti = params.get("mbti");
-
-  return {
-    isEditMode: mode === "edit",
-    returnTo,
-    returnSearch,
-    returnSection: returnTo === "/settings" ? returnSection : null,
-    mbti: mbti && isPersonalityType(mbti) ? mbti : null,
-  };
 }
 
 export function useOnboardingFlowState() {

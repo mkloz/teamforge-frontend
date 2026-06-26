@@ -17,13 +17,13 @@ export const buttonVariants = cva(
         secondary:
           "border-2 border-accent/35 bg-accent/12 text-accent after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:border-accent/45 hover:bg-accent/18 hover:shadow-button-secondary focus-visible:ring-accent active:translate-y-0 active:shadow-none",
         outline:
-          "border-2 border-ink bg-transparent text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-outline focus-visible:ring-ink active:translate-y-0! active:shadow-none! dark:border-white dark:text-white dark:focus-visible:ring-white dark:hover:shadow-button-outline-dark",
+          "border-2 border-ink bg-transparent text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-outline focus-visible:ring-ink active:translate-y-0! active:shadow-none! dark:border-white dark:text-white focus-visible:dark:ring-white hover:dark:shadow-button-outline-dark",
         destructive:
-          "border-2 border-destructive/50 bg-transparent text-destructive after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-destructive focus-visible:ring-destructive active:translate-y-0! active:shadow-none! dark:hover:shadow-button-destructive",
+          "border-2 border-destructive/50 bg-transparent text-destructive after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-destructive focus-visible:ring-destructive active:translate-y-0! active:shadow-none! hover:dark:shadow-button-destructive",
         ghost:
-          "border-2 border-transparent bg-transparent text-ink hover:bg-ink/5 focus-visible:ring-ink active:translate-y-px active:bg-ink/10 dark:text-white dark:focus-visible:ring-white dark:hover:bg-white/10",
+          "border-2 border-transparent bg-transparent text-ink hover:bg-ink/5 focus-visible:ring-ink active:translate-y-px active:bg-ink/10 dark:text-white focus-visible:dark:ring-white hover:dark:bg-white/10",
         accentGhost:
-          "border-2 border-transparent bg-transparent text-slate-muted hover:bg-primary/8 hover:text-primary focus-visible:ring-primary active:translate-y-px active:bg-primary/12 dark:focus-visible:ring-primary dark:hover:bg-primary/12 dark:hover:text-primary",
+          "border-2 border-transparent bg-transparent text-slate-muted hover:bg-primary/8 hover:text-primary focus-visible:ring-primary active:translate-y-px active:bg-primary/12 focus-visible:dark:ring-primary hover:dark:bg-primary/12 hover:dark:text-primary",
         inverseGhost:
           "border border-white/10 bg-white/8 text-white/80 backdrop-blur-sm hover:border-white/25 hover:bg-white/14 hover:text-white hover:shadow-sm focus-visible:ring-white active:translate-y-px",
         link: "text-primary underline-offset-4 hover:underline focus-visible:ring-primary",

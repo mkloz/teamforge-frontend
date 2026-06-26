@@ -2,12 +2,16 @@ import type { RefObject } from "react";
 import { memo, useEffect, useRef, useState } from "react";
 import { PlanChangeDialog } from "@/features/activity/components/groups/group-detail-panel/plan-section/plan-change-dialog";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
-import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
+import {
+  type UseConversationDataProps,
+  useConversationData,
+} from "@/features/activity/hooks/use-conversation-data";
 import type {
   ActivityParticipant,
   ActivitySendMessageInput,
   DirectChat,
   Group,
+  Plan,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import { ChatStatusBar } from "./chat-status-bar";
@@ -86,7 +90,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     onViewPlan,
     onSendMessage,
   } = props;
-  const { kind, data } = props;
+  const { kind } = props;
   const {
     activePlan,
     allPinnedMessages,
@@ -110,9 +114,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const { unpinMessage } = useActivityMessageActions();
 
   const conversationData = useConversationData(
-    kind === "group"
-      ? { kind, data, isTyping, typingUsers }
-      : { kind, data, isTyping, typingUsers },
+    getConversationDataProps(props, isTyping, typingUsers),
   );
 
   const { headerProps, activeTypingUsers, typingText, isCompleted } =
@@ -154,10 +156,20 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     matchCount,
     normalizedQuery,
   });
-  const handleCreateProposal =
-    kind === "group" && activePlan && !isCompleted
-      ? () => setIsProposalDialogOpen(true)
-      : undefined;
+  const handleCreateProposal = canOpenPlanProposalDialog(
+    kind,
+    activePlan,
+    isCompleted,
+  )
+    ? createOpenProposalDialogHandler(setIsProposalDialogOpen)
+    : undefined;
+  const handleUnpinPinnedMessage = createPinnedMessageUnpinHandler({
+    allPinnedMessages,
+    unpinMessage,
+  });
+  const handleActivatePinnedMessage = createPinnedMessageActivateHandler(
+    activeMessageScrollHandleRef,
+  );
 
   return (
     <div
@@ -166,24 +178,23 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     >
       <ChatBackground />
 
-      {activePlan && !isCompleted ? (
-        <PlanChangeDialog
-          open={isProposalDialogOpen}
-          onOpenChange={setIsProposalDialogOpen}
-          plan={activePlan}
-          trigger={null}
-        />
-      ) : null}
+      <ConversationPlanProposalDialog
+        activePlan={activePlan}
+        isCompleted={isCompleted}
+        isOpen={isProposalDialogOpen}
+        onOpenChange={setIsProposalDialogOpen}
+      />
 
       <UnifiedChatHeader
         kind={kind}
         title={headerProps.title}
         subtitle={headerProps.subtitle}
         avatarUrl={headerProps.avatarUrl}
-        avatarKind={isNotesChat ? "notes" : "default"}
-        detailsNavigation={
-          openHeaderDetailsInPanel ? undefined : headerProps.detailsNavigation
-        }
+        avatarKind={getHeaderAvatarKind(isNotesChat)}
+        detailsNavigation={getHeaderDetailsNavigation(
+          openHeaderDetailsInPanel,
+          headerProps.detailsNavigation,
+        )}
         onlineStatus={headerProps.onlineStatus}
         isTyping={activeTypingUsers.length > 0}
         typingText={typingText}
@@ -196,29 +207,19 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         onSearchQueryChange={setSearchQuery}
         onSearchNext={goToNextMatch}
         onSearchPrevious={goToPreviousMatch}
-        onToggleAction={isNotesChat ? () => {} : onToggleAction}
+        onToggleAction={getHeaderToggleHandler(isNotesChat, onToggleAction)}
       />
 
       <ChatStatusBar
-        plan={kind === "group" ? (data.plan ?? undefined) : undefined}
+        plan={getConversationStatusBarPlan(props)}
         pinnedMessages={allPinnedMessages}
-        onViewDetails={isNotesChat ? () => {} : (onViewPlan ?? onToggleAction)}
-        onUnpinPinnedMessage={(messageId) => {
-          const targetMessage = allPinnedMessages.find(
-            (message) => message.id === messageId,
-          );
-
-          if (!targetMessage) {
-            return;
-          }
-
-          void unpinMessage(targetMessage);
-        }}
-        onActivatePinnedMessage={(messageId) =>
-          activeMessageScrollHandleRef.current?.scrollToMessage(messageId, {
-            highlight: true,
-          })
-        }
+        onViewDetails={getStatusBarDetailsHandler({
+          isNotesChat,
+          onToggleAction,
+          onViewPlan,
+        })}
+        onUnpinPinnedMessage={handleUnpinPinnedMessage}
+        onActivatePinnedMessage={handleActivatePinnedMessage}
       />
 
       <ConversationAlertBanners
@@ -258,7 +259,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       {/* Input area */}
       <ConversationComposer
         chatId={chatId}
-        group={kind === "group" ? data : null}
+        group={getConversationComposerGroup(props)}
         inputPlaceholder={inputPlaceholder}
         isBlockedDirectChat={isBlockedDirectChat}
         isCompleted={isCompleted}
@@ -273,3 +274,134 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     </div>
   );
 });
+
+function ConversationPlanProposalDialog({
+  activePlan,
+  isCompleted,
+  isOpen,
+  onOpenChange,
+}: {
+  activePlan?: Plan | null;
+  isCompleted: boolean;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+}) {
+  if (!canShowPlanProposalDialog(activePlan, isCompleted)) {
+    return null;
+  }
+
+  return (
+    <PlanChangeDialog
+      open={isOpen}
+      onOpenChange={onOpenChange}
+      plan={activePlan}
+      trigger={null}
+    />
+  );
+}
+
+function canShowPlanProposalDialog(
+  activePlan: Plan | null | undefined,
+  isCompleted: boolean,
+): activePlan is Plan {
+  return Boolean(activePlan && !isCompleted);
+}
+
+function canOpenPlanProposalDialog(
+  kind: UnifiedConversationViewProps["kind"],
+  activePlan: Plan | null | undefined,
+  isCompleted: boolean,
+) {
+  return kind === "group" && canShowPlanProposalDialog(activePlan, isCompleted);
+}
+
+function createOpenProposalDialogHandler(
+  setIsProposalDialogOpen: (isOpen: boolean) => void,
+) {
+  return () => setIsProposalDialogOpen(true);
+}
+
+function getConversationDataProps(
+  props: UnifiedConversationViewProps,
+  isTyping: boolean,
+  typingUsers: { name: string; avatar: string | null }[],
+): UseConversationDataProps {
+  if (props.kind === "group") {
+    return { kind: props.kind, data: props.data, isTyping, typingUsers };
+  }
+
+  return { kind: props.kind, data: props.data, isTyping, typingUsers };
+}
+
+function getHeaderAvatarKind(isNotesChat: boolean) {
+  return isNotesChat ? "notes" : "default";
+}
+
+function getHeaderDetailsNavigation<T>(
+  openHeaderDetailsInPanel: boolean,
+  detailsNavigation: T,
+) {
+  return openHeaderDetailsInPanel ? undefined : detailsNavigation;
+}
+
+function getHeaderToggleHandler(
+  isNotesChat: boolean,
+  onToggleAction: () => void,
+) {
+  return isNotesChat ? noop : onToggleAction;
+}
+
+function getConversationStatusBarPlan(
+  props: UnifiedConversationViewProps,
+): Plan | undefined {
+  return props.kind === "group" ? (props.data.plan ?? undefined) : undefined;
+}
+
+function getStatusBarDetailsHandler({
+  isNotesChat,
+  onToggleAction,
+  onViewPlan,
+}: {
+  isNotesChat: boolean;
+  onToggleAction: () => void;
+  onViewPlan?: () => void;
+}) {
+  return isNotesChat ? noop : (onViewPlan ?? onToggleAction);
+}
+
+function createPinnedMessageUnpinHandler({
+  allPinnedMessages,
+  unpinMessage,
+}: {
+  allPinnedMessages: UnifiedMessage[];
+  unpinMessage: (message: UnifiedMessage) => Promise<void> | void;
+}) {
+  return (messageId: string) => {
+    const targetMessage = allPinnedMessages.find(
+      (message) => message.id === messageId,
+    );
+
+    if (!targetMessage) {
+      return;
+    }
+
+    void unpinMessage(targetMessage);
+  };
+}
+
+function createPinnedMessageActivateHandler(
+  activeMessageScrollHandleRef: RefObject<MessageScrollHandle | null>,
+) {
+  return (messageId: string) =>
+    activeMessageScrollHandleRef.current?.scrollToMessage(messageId, {
+      highlight: true,
+    });
+}
+
+function getConversationComposerGroup(
+  props: UnifiedConversationViewProps,
+): Group | null {
+  return props.kind === "group" ? props.data : null;
+}
+
+const noop = () => {};

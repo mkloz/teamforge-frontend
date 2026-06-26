@@ -55,6 +55,46 @@ type GroupPlanLocationInitialValues = Pick<
 >;
 
 type GroupPlan = Group["plan"];
+type ExistingGroupPlan = NonNullable<GroupPlan>;
+type GroupPayloadComparableField = keyof UpdateGroupPayload & keyof Group;
+type PlanPayloadComparableField = keyof UpdatePlanPayload &
+  keyof ExistingGroupPlan;
+
+const DEFAULT_PLAN_VALUES = {
+  coverImage: null,
+  planCategory: "",
+  planCost: "FREE",
+  planCostAmount: "",
+  planCostDetails: "",
+  planDateTime: "",
+  planDescription: "",
+  planLocation: "",
+  planLocationLat: null,
+  planLocationLng: null,
+  planLocationMode: "TBD",
+  planTitle: "",
+} satisfies GroupPlanInitialValues;
+
+const GROUP_PAYLOAD_CHANGE_FIELDS = [
+  "avatar",
+  "description",
+  "name",
+] satisfies readonly GroupPayloadComparableField[];
+
+const PLAN_PAYLOAD_CHANGE_FIELDS = [
+  "category",
+  "cost",
+  "costAmount",
+  "costDetails",
+  "coverImage",
+  "dateTime",
+  "description",
+  "location",
+  "locationLat",
+  "locationLng",
+  "locationMode",
+  "title",
+] satisfies readonly PlanPayloadComparableField[];
 
 export function getInitialGroupIdentityValues(
   group: Group,
@@ -92,22 +132,36 @@ function getInitialGroupDetailsValues(
 }
 
 function getInitialPlanValues(plan: GroupPlan): GroupPlanInitialValues {
+  if (!plan) {
+    return DEFAULT_PLAN_VALUES;
+  }
+
   return {
-    coverImage: plan?.coverImage ?? null,
-    planCategory: plan?.category ?? "",
+    coverImage: getInitialPlanCoverImage(plan),
+    planCategory: getInitialPlanCategory(plan),
     ...getInitialPlanCostValues(plan),
-    planDateTime: toDateTimeLocalValue(plan?.dateTime ?? null),
-    planDescription: plan?.description ?? "",
+    planDateTime: getInitialPlanDateTime(plan),
+    planDescription: getInitialPlanDescription(plan),
     ...getInitialPlanLocationValues(plan),
-    planTitle: plan?.title ?? "",
+    planTitle: getInitialPlanTitle(plan),
   };
 }
 
-function getInitialPlanCostValues(plan: GroupPlan): GroupPlanCostInitialValues {
+function getInitialPlanCoverImage(plan: ExistingGroupPlan) {
+  return plan.coverImage ?? DEFAULT_PLAN_VALUES.coverImage;
+}
+
+function getInitialPlanCategory(plan: ExistingGroupPlan) {
+  return plan.category ?? DEFAULT_PLAN_VALUES.planCategory;
+}
+
+function getInitialPlanCostValues(
+  plan: ExistingGroupPlan,
+): GroupPlanCostInitialValues {
   return {
-    planCost: plan?.cost ?? "FREE",
-    planCostAmount: formatInitialCostAmount(plan?.costAmount),
-    planCostDetails: plan?.costDetails ?? "",
+    planCost: plan.cost ?? DEFAULT_PLAN_VALUES.planCost,
+    planCostAmount: formatInitialCostAmount(plan.costAmount),
+    planCostDetails: plan.costDetails ?? DEFAULT_PLAN_VALUES.planCostDetails,
   };
 }
 
@@ -115,15 +169,46 @@ function formatInitialCostAmount(costAmount: number | null | undefined) {
   return typeof costAmount === "number" ? String(costAmount) : "";
 }
 
-function getInitialPlanLocationValues(
-  plan: GroupPlan,
-): GroupPlanLocationInitialValues {
+function getInitialPlanDateTime(plan: ExistingGroupPlan) {
+  return toDateTimeLocalValue(plan.dateTime ?? null);
+}
+
+function getInitialPlanDescription(plan: ExistingGroupPlan) {
+  return plan.description ?? DEFAULT_PLAN_VALUES.planDescription;
+}
+
+function getInitialPlanLocationValues({
+  location,
+  locationLat,
+  locationLng,
+  locationMode,
+}: ExistingGroupPlan): GroupPlanLocationInitialValues {
   return {
-    planLocation: plan?.location ?? "",
-    planLocationLat: plan?.locationLat ?? null,
-    planLocationLng: plan?.locationLng ?? null,
-    planLocationMode: plan?.locationMode ?? "TBD",
+    planLocation: getInitialPlanLocation(location),
+    planLocationLat: getInitialPlanLocationCoordinate(locationLat),
+    planLocationLng: getInitialPlanLocationCoordinate(locationLng),
+    planLocationMode: getInitialPlanLocationMode(locationMode),
   };
+}
+
+function getInitialPlanLocation(location: string | null | undefined) {
+  return location ?? DEFAULT_PLAN_VALUES.planLocation;
+}
+
+function getInitialPlanLocationCoordinate(
+  coordinate: number | null | undefined,
+) {
+  return coordinate ?? null;
+}
+
+function getInitialPlanLocationMode(
+  locationMode: ExistingGroupPlan["locationMode"],
+) {
+  return locationMode ?? DEFAULT_PLAN_VALUES.planLocationMode;
+}
+
+function getInitialPlanTitle(plan: ExistingGroupPlan) {
+  return plan.title ?? DEFAULT_PLAN_VALUES.planTitle;
 }
 
 export function isGroupIdentityNameValid(name: string) {
@@ -161,13 +246,9 @@ export function buildGroupIdentityUpdateInput(
   values: GroupIdentityFormValues,
 ): GroupIdentityUpdateInput {
   const groupPayload = buildGroupPayload(values);
-  const nextGroupPayload = hasGroupPayloadChanges(group, groupPayload)
-    ? groupPayload
-    : undefined;
-  const nextPlanPayload =
-    group.plan && hasPlanPayloadChanges(group, buildPlanPayload(values))
-      ? buildPlanPayload(values)
-      : undefined;
+  const planPayload = buildPlanPayload(values);
+  const nextGroupPayload = getChangedGroupPayload(group, groupPayload);
+  const nextPlanPayload = getChangedPlanPayload(group, planPayload);
 
   return {
     groupId: group.id,
@@ -175,6 +256,19 @@ export function buildGroupIdentityUpdateInput(
     planId: nextPlanPayload ? group.plan?.id : undefined,
     planPayload: nextPlanPayload,
   };
+}
+
+function getChangedGroupPayload(
+  group: Group,
+  groupPayload: UpdateGroupPayload,
+) {
+  return hasGroupPayloadChanges(group, groupPayload) ? groupPayload : undefined;
+}
+
+function getChangedPlanPayload(group: Group, planPayload: UpdatePlanPayload) {
+  return group.plan && hasPlanPayloadChanges(group, planPayload)
+    ? planPayload
+    : undefined;
 }
 
 function buildGroupPayload(
@@ -188,10 +282,8 @@ function buildGroupPayload(
 }
 
 function hasGroupPayloadChanges(group: Group, payload: UpdateGroupPayload) {
-  return (
-    payload.name !== group.name ||
-    payload.description !== group.description ||
-    payload.avatar !== group.avatar
+  return GROUP_PAYLOAD_CHANGE_FIELDS.some(
+    (field) => payload[field] !== group[field],
   );
 }
 
@@ -215,51 +307,50 @@ function buildPlanPayload(values: GroupIdentityFormValues): UpdatePlanPayload {
 }
 
 function hasPlanPayloadChanges(group: Group, payload: UpdatePlanPayload) {
-  if (!group.plan) {
+  const plan = group.plan;
+
+  if (!plan) {
     return false;
   }
 
-  return (
-    payload.category !== group.plan.category ||
-    payload.cost !== group.plan.cost ||
-    payload.costAmount !== group.plan.costAmount ||
-    payload.costDetails !== group.plan.costDetails ||
-    payload.coverImage !== group.plan.coverImage ||
-    payload.dateTime !== group.plan.dateTime ||
-    payload.description !== group.plan.description ||
-    payload.location !== group.plan.location ||
-    payload.locationLat !== group.plan.locationLat ||
-    payload.locationLng !== group.plan.locationLng ||
-    payload.locationMode !== group.plan.locationMode ||
-    payload.title !== group.plan.title
+  return PLAN_PAYLOAD_CHANGE_FIELDS.some(
+    (field) => payload[field] !== plan[field],
   );
 }
 
 export function isGroupPlanValid(values: GroupIdentityFormValues) {
-  if (!values.planTitle.trim()) {
-    return false;
-  }
+  return [
+    hasRequiredPlanTitle(values),
+    hasRequiredPlanCategory(values),
+    hasValidPlanDateTime(values),
+    hasRequiredPlanLocation(values),
+    hasRequiredPlanCostAmount(values),
+  ].every(Boolean);
+}
 
-  if (!values.planCategory) {
-    return false;
-  }
+function hasRequiredPlanTitle(values: GroupIdentityFormValues) {
+  return values.planTitle.trim().length > 0;
+}
 
-  if (values.planDateTime && !normalizeDateTime(values.planDateTime)) {
-    return false;
-  }
+function hasRequiredPlanCategory(values: GroupIdentityFormValues) {
+  return Boolean(values.planCategory);
+}
 
-  if (
-    values.planLocationMode !== "TBD" &&
-    !normalizeOptionalText(values.planLocation)
-  ) {
-    return false;
-  }
+function hasValidPlanDateTime(values: GroupIdentityFormValues) {
+  return (
+    !values.planDateTime || Boolean(normalizeDateTime(values.planDateTime))
+  );
+}
 
-  if (values.planCost === "PAID" && !normalizeCostAmount(values)) {
-    return false;
-  }
+function hasRequiredPlanLocation(values: GroupIdentityFormValues) {
+  return (
+    values.planLocationMode === "TBD" ||
+    Boolean(normalizeOptionalText(values.planLocation))
+  );
+}
 
-  return true;
+function hasRequiredPlanCostAmount(values: GroupIdentityFormValues) {
+  return values.planCost !== "PAID" || Boolean(normalizeCostAmount(values));
 }
 
 function normalizeCostAmount(values: GroupIdentityFormValues) {

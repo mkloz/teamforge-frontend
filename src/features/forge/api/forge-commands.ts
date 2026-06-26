@@ -110,18 +110,10 @@ async function executeForge(
     });
   }
 
-  const group = await ForgeApi.getGroup(forgeResult.data.group.id);
-
-  return buildSuccessfulForgeResult({
-    activityId: forgeResult.data.activityId,
-    chatId: forgeResult.data.chat.id,
+  return buildForgeSuccessResult({
+    createActivityRequestId: activityResult.requestId,
     currentUserId: currentUser.id,
-    group,
-    planId: forgeResult.data.plan.id,
-    requestIds: {
-      createActivity: activityResult.requestId,
-      forgeActivity: forgeResult.requestId,
-    },
+    forgeResult,
   });
 }
 
@@ -130,16 +122,33 @@ async function executePendingAutoForgeRequest(
 ): Promise<ForgeExecutionResult> {
   const currentUser = await getCurrentUser();
   const forgeResult = await ForgeApi.forgePendingActivity(activityId);
+
+  return buildForgeSuccessResult({
+    currentUserId: currentUser.id,
+    forgeResult,
+    createActivityRequestId: null,
+  });
+}
+
+async function buildForgeSuccessResult({
+  createActivityRequestId,
+  currentUserId,
+  forgeResult,
+}: {
+  createActivityRequestId: string | null;
+  currentUserId: string;
+  forgeResult: Awaited<ReturnType<typeof ForgeApi.forgeActivity>>;
+}) {
   const group = await ForgeApi.getGroup(forgeResult.data.group.id);
 
   return buildSuccessfulForgeResult({
     activityId: forgeResult.data.activityId,
     chatId: forgeResult.data.chat.id,
-    currentUserId: currentUser.id,
+    currentUserId,
     group,
     planId: forgeResult.data.plan.id,
     requestIds: {
-      createActivity: null,
+      createActivity: createActivityRequestId,
       forgeActivity: forgeResult.requestId,
     },
   });

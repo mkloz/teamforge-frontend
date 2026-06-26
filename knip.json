@@ -14,5 +14,6 @@
     "src/shared/types/google-maps.d.ts",
     "src/shared/types/react-css-properties.d.ts"
   ],
+  "entry": ["vite.config.ts", "*.{mjs,js}", "src/main.tsx"],
   "project": ["src/**/*.{ts,tsx}", "*.{js,mjs,ts}", "src/**/*.css"]
 }

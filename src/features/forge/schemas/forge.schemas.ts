@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { groupRoleSchema } from "@/shared/schemas/enums";
 
-export const forgeParticipantSchema = z.object({
+const forgeParticipantSchema = z.object({
   userId: z.string(),
   groupId: z.string(),
   role: groupRoleSchema,

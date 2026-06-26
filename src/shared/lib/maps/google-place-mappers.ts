@@ -1,24 +1,61 @@
 import type { LocationValue } from "@/shared/lib/maps/location.types";
 
+const CITY_ADDRESS_COMPONENT_TYPES = [
+  "locality",
+  "postal_town",
+  "administrative_area_level_2",
+  "administrative_area_level_1",
+];
+
+function hasAddressComponentType(
+  component: GoogleAddressComponent,
+  type: string,
+) {
+  return component.types.includes(type);
+}
+
+function findAddressComponentByType(
+  components: GoogleAddressComponent[],
+  type: string,
+) {
+  return components.find((component) =>
+    hasAddressComponentType(component, type),
+  );
+}
+
+function findPreferredCityComponent(components: GoogleAddressComponent[]) {
+  return CITY_ADDRESS_COMPONENT_TYPES.reduce<
+    GoogleAddressComponent | undefined
+  >(
+    (match, type) => match ?? findAddressComponentByType(components, type),
+    undefined,
+  );
+}
+
 function getCityFromComponents(components: GoogleAddressComponent[] = []) {
-  const preferredTypes = [
-    "locality",
-    "postal_town",
-    "administrative_area_level_2",
-    "administrative_area_level_1",
-  ];
+  return findPreferredCityComponent(components)?.long_name ?? "";
+}
 
-  for (const type of preferredTypes) {
-    const match = components.find((component) =>
-      component.types.includes(type),
-    );
+function getPlaceAddress(place: GooglePlaceResult, fallbackAddress: string) {
+  return place.formatted_address ?? place.name ?? fallbackAddress;
+}
 
-    if (match) {
-      return match.long_name;
-    }
-  }
+function getPlaceCoordinates(location: GoogleLatLng | null | undefined) {
+  return {
+    lat: location?.lat() ?? null,
+    lng: location?.lng() ?? null,
+  };
+}
 
-  return "";
+function getAddressFallbackCity(address: string) {
+  return address.split(",")[0]?.trim() ?? address;
+}
+
+function getPlaceCity(address: string, components?: GoogleAddressComponent[]) {
+  const city =
+    getCityFromComponents(components) ?? getAddressFallbackCity(address);
+
+  return city || address;
 }
 
 export function locationFromPlace(
@@ -26,18 +63,14 @@ export function locationFromPlace(
   fallbackAddress: string,
   placeId?: string,
 ): LocationValue {
-  const address = place.formatted_address ?? place.name ?? fallbackAddress;
-  const city =
-    getCityFromComponents(place.address_components) ??
-    address.split(",")[0]?.trim() ??
-    address;
-  const location = place.geometry?.location;
+  const address = getPlaceAddress(place, fallbackAddress);
+  const coordinates = getPlaceCoordinates(place.geometry?.location);
 
   return {
     address,
-    city: city || address,
-    lat: location?.lat() ?? null,
-    lng: location?.lng() ?? null,
+    city: getPlaceCity(address, place.address_components),
+    lat: coordinates.lat,
+    lng: coordinates.lng,
     placeId: placeId ?? null,
   };
 }

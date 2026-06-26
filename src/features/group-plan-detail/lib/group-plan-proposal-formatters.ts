@@ -1,4 +1,3 @@
-import { z } from "zod";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import {
   dateTimeLocalToIsoString,
@@ -8,10 +7,8 @@ import {
   cleanPlanProposalText,
   formatPlanLocationValue as formatSharedPlanLocationValue,
   isPlanLocationMode,
-  normalizePlanLocationValue as normalizeSharedPlanLocationValue,
   PLAN_LOCATION_MODE_LABELS,
   type PlanLocationValue,
-  parsePlanLocationValue as parseSharedPlanLocationValue,
   serializePlanLocationValue as serializeSharedPlanLocationValue,
 } from "@/shared/lib/plan-proposal-values";
 import type {
@@ -20,7 +17,6 @@ import type {
   PlanCategory,
   PlanProposalField,
 } from "@/shared/schemas/enums";
-import type { PlanProposal } from "@/shared/schemas/plan";
 
 export const planProposalFieldOptions = [
   { value: "TITLE", label: "Title" },
@@ -64,16 +60,6 @@ export interface PlanCostValue {
   costDetails: string | null;
 }
 
-const planCostPayloadSchema = z.object({
-  cost: z.enum(["FREE", "PAID"]),
-  costAmount: z.number().nullable().optional(),
-  costDetails: z.string().nullable().optional(),
-});
-
-function isPlanCategory(value: string): value is PlanCategory {
-  return Object.keys(planCategoryLabels).some((category) => category === value);
-}
-
 export function isLocationMode(value: string): value is LocationMode {
   return isPlanLocationMode(value);
 }
@@ -95,13 +81,6 @@ export function isPlanProposalField(value: string): value is PlanProposalField {
   return planProposalFieldOptions.some((option) => option.value === value);
 }
 
-export function getPlanProposalFieldLabel(field: PlanProposalField) {
-  return (
-    planProposalFieldOptions.find((option) => option.value === field)?.label ??
-    field
-  );
-}
-
 export function getPlanLocationValue(plan: Plan): PlanLocationValue {
   return {
     location: plan.location,
@@ -111,18 +90,8 @@ export function getPlanLocationValue(plan: Plan): PlanLocationValue {
   };
 }
 
-export function normalizePlanLocationValue(
-  value: Partial<PlanLocationValue> & { locationMode: LocationMode },
-): PlanLocationValue {
-  return normalizeSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
-}
-
 export function serializePlanLocationValue(value: PlanLocationValue) {
   return serializeSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
-}
-
-export function parsePlanLocationValue(value: string | null) {
-  return parseSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
 }
 
 export function formatPlanLocationValue(value: PlanLocationValue) {
@@ -145,31 +114,6 @@ export function serializePlanCostValue(value: PlanCostValue) {
   });
 }
 
-export function parsePlanCostValue(value: string | null) {
-  const trimmed = value?.trim() ?? "";
-
-  if (!trimmed.startsWith("{")) {
-    return null;
-  }
-
-  try {
-    const parsed = planCostPayloadSchema.safeParse(JSON.parse(trimmed));
-
-    if (!parsed.success) {
-      return null;
-    }
-
-    return {
-      cost: parsed.data.cost,
-      costAmount:
-        parsed.data.cost === "PAID" ? (parsed.data.costAmount ?? null) : null,
-      costDetails: cleanText(parsed.data.costDetails),
-    } satisfies PlanCostValue;
-  } catch {
-    return null;
-  }
-}
-
 export function formatPlanCostValue(value: PlanCostValue) {
   if (value.cost === "FREE") {
     return value.costDetails ? `Free: ${value.costDetails}` : "Free";
@@ -182,45 +126,35 @@ export function formatPlanCostValue(value: PlanCostValue) {
   return `Paid${amount}${details}`;
 }
 
+type ProposalValueGetter = (plan: Plan) => string;
+
+const CURRENT_PROPOSAL_VALUE_GETTERS = {
+  CATEGORY: (plan) => plan.category,
+  COST: (plan) => formatPlanCostValue(getPlanCostValue(plan)),
+  DATE_TIME: (plan) => toDateTimeLocalValue(plan.dateTime),
+  DESCRIPTION: (plan) => plan.description ?? "",
+  LOCATION: (plan) => formatPlanLocationValue(getPlanLocationValue(plan)),
+  TITLE: (plan) => plan.title,
+} satisfies Partial<Record<PlanProposalField, ProposalValueGetter>>;
+
+const CURRENT_SERIALIZED_PROPOSAL_VALUE_GETTERS = {
+  CATEGORY: (plan) => plan.category,
+  COST: (plan) => serializePlanCostValue(getPlanCostValue(plan)),
+  DATE_TIME: (plan) => plan.dateTime ?? "",
+  DESCRIPTION: (plan) => plan.description ?? "",
+  LOCATION: (plan) => serializePlanLocationValue(getPlanLocationValue(plan)),
+  TITLE: (plan) => plan.title,
+} satisfies Partial<Record<PlanProposalField, ProposalValueGetter>>;
+
 export function getCurrentProposalValue(plan: Plan, field: PlanProposalField) {
-  switch (field) {
-    case "TITLE":
-      return plan.title;
-    case "DESCRIPTION":
-      return plan.description ?? "";
-    case "DATE_TIME":
-      return toDateTimeLocalValue(plan.dateTime);
-    case "LOCATION":
-      return formatPlanLocationValue(getPlanLocationValue(plan));
-    case "COST":
-      return formatPlanCostValue(getPlanCostValue(plan));
-    case "CATEGORY":
-      return plan.category;
-    default:
-      return "";
-  }
+  return CURRENT_PROPOSAL_VALUE_GETTERS[field]?.(plan) ?? "";
 }
 
 export function getCurrentSerializedProposalValue(
   plan: Plan,
   field: PlanProposalField,
 ) {
-  switch (field) {
-    case "DATE_TIME":
-      return plan.dateTime ?? "";
-    case "LOCATION":
-      return serializePlanLocationValue(getPlanLocationValue(plan));
-    case "COST":
-      return serializePlanCostValue(getPlanCostValue(plan));
-    case "DESCRIPTION":
-      return plan.description ?? "";
-    case "CATEGORY":
-      return plan.category;
-    case "TITLE":
-      return plan.title;
-    default:
-      return "";
-  }
+  return CURRENT_SERIALIZED_PROPOSAL_VALUE_GETTERS[field]?.(plan) ?? "";
 }
 
 export function normalizeProposalValue(
@@ -232,58 +166,4 @@ export function normalizeProposalValue(
   }
 
   return value.trim();
-}
-
-export function formatProposalDate(value: string) {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return date.toLocaleString("en-GB", {
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    month: "short",
-  });
-}
-
-export function formatProposalValue(
-  field: PlanProposal["field"],
-  value: string | null,
-) {
-  if (!value) {
-    return "Not set";
-  }
-
-  if (field === "LOCATION") {
-    const parsed = parsePlanLocationValue(value);
-
-    return parsed ? formatPlanLocationValue(parsed) : value;
-  }
-
-  if (field === "COST") {
-    const parsed = parsePlanCostValue(value);
-
-    return parsed ? formatPlanCostValue(parsed) : value;
-  }
-
-  if (field === "CATEGORY") {
-    return isPlanCategory(value) ? planCategoryLabels[value] : value;
-  }
-
-  const date = new Date(value);
-
-  if (!Number.isNaN(date.getTime()) && value.includes("T")) {
-    return date.toLocaleString("en-GB", {
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      month: "short",
-      weekday: "short",
-    });
-  }
-
-  return value;
 }

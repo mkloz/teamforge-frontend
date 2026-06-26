@@ -1,30 +1,61 @@
 import type { User } from "@/shared/schemas";
 
+const OCEAN_SCORE_FIELDS = [
+  "oceanO",
+  "oceanC",
+  "oceanE",
+  "oceanA",
+  "oceanN",
+] as const;
+
+type PostAuthOnboardingPath =
+  | "/onboarding/profile"
+  | "/onboarding/personality"
+  | "/onboarding/interests";
+
+interface PostAuthRedirectRule {
+  path: PostAuthOnboardingPath;
+  shouldRedirect: (user: User) => boolean;
+}
+
+function isMissingProfileBasics(user: User) {
+  return user.age === null || user.gender === null || !user.city?.trim();
+}
+
+function isMissingPersonality(user: User) {
+  return (
+    !user.personalityType ||
+    OCEAN_SCORE_FIELDS.some((field) => user[field] === null)
+  );
+}
+
+function isMissingInterests(user: User) {
+  return !user.interests?.length;
+}
+
+const POST_AUTH_REDIRECT_RULES: PostAuthRedirectRule[] = [
+  {
+    path: "/onboarding/profile",
+    shouldRedirect: isMissingProfileBasics,
+  },
+  {
+    path: "/onboarding/personality",
+    shouldRedirect: isMissingPersonality,
+  },
+  {
+    path: "/onboarding/interests",
+    shouldRedirect: isMissingInterests,
+  },
+];
+
 export function getPostAuthRedirectPath(user: User | null | undefined) {
   if (!user) {
     return "/auth/login" as const;
   }
 
-  const missingProfileBasics =
-    user.age === null || user.gender === null || !user.city?.trim();
+  const redirectRule = POST_AUTH_REDIRECT_RULES.find((rule) =>
+    rule.shouldRedirect(user),
+  );
 
-  if (missingProfileBasics) {
-    return "/onboarding/profile" as const;
-  }
-
-  const missingPersonality =
-    !user.personalityType ||
-    [user.oceanO, user.oceanC, user.oceanE, user.oceanA, user.oceanN].some(
-      (value) => value === null,
-    );
-
-  if (missingPersonality) {
-    return "/onboarding/personality" as const;
-  }
-
-  if (!user.interests?.length) {
-    return "/onboarding/interests" as const;
-  }
-
-  return "/home" as const;
+  return redirectRule?.path ?? ("/home" as const);
 }

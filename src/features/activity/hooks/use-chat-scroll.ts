@@ -1,4 +1,4 @@
-import type { RefObject } from "react";
+import type { MutableRefObject, RefObject, UIEvent } from "react";
 import {
   useEffect,
   useEffectEvent,
@@ -20,6 +20,24 @@ interface UseChatScrollInput {
   ) => void;
 }
 
+type InitialScrollTarget = "bottom" | "unread";
+type LatestMessageScrollAction =
+  | "increment-count"
+  | "none"
+  | "scroll"
+  | "unchanged";
+
+interface LatestMessageScrollActionInput {
+  isInitialRender: boolean;
+  isNearBottom: boolean;
+  latestMessageId: string | null;
+  latestMessageIsOwn: boolean;
+  previousLatestMessageId: string | null;
+}
+
+const INITIAL_SCROLL_SETTLE_DELAY_MS = 250;
+const NEAR_BOTTOM_DISTANCE_PX = 100;
+
 /**
  * useChatScroll - Encapsulates scroll behavior for the chat window,
  * including auto-scroll on new messages and manual "scroll to bottom" actions.
@@ -37,7 +55,7 @@ export function useChatScroll({
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [newMessageCount, setNewMessageCount] = useState(0);
   const isInitialRender = useRef(true);
-  const initialScrollTargetRef = useRef<"bottom" | "unread" | null>(null);
+  const initialScrollTargetRef = useRef<InitialScrollTarget | null>(null);
   const isNearBottomRef = useRef(true);
   const latestMessageIdRef = useRef<string | null>(latestMessageId);
   const shouldSettleInitialScrollRef = useRef(true);
@@ -75,13 +93,8 @@ export function useChatScroll({
     latestMessageIdRef.current = latestMessageId;
     initialScrollTargetRef.current = null;
     shouldSettleInitialScrollRef.current = true;
-    if (initialScrollSettleTimerRef.current) {
-      clearTimeout(initialScrollSettleTimerRef.current);
-      initialScrollSettleTimerRef.current = null;
-    }
-    isNearBottomRef.current = true;
-    setIsNearBottom(true);
-    setShowScrollToBottom(false);
+    clearInitialScrollSettleTimer(initialScrollSettleTimerRef);
+    syncNearBottomState(true);
     setNewMessageCount(0);
     const target = getInitialScrollTarget();
     initialScrollTargetRef.current = target;
@@ -94,6 +107,19 @@ export function useChatScroll({
 
     isInitialRender.current = false;
   });
+  const applyLatestMessageScrollAction = useEffectEvent(
+    (action: LatestMessageScrollAction) => {
+      if (action === "scroll") {
+        scrollMessagesEndIntoView("smooth");
+        setNewMessageCount(0);
+        return;
+      }
+
+      if (action === "increment-count") {
+        setNewMessageCount((current) => Math.min(current + 1, 99));
+      }
+    },
+  );
 
   // Scroll to bottom on initial load or conversation switch
   // biome-ignore lint/correctness/useExhaustiveDependencies: conversationId intentionally triggers a reset even though it is not read in the effect body.
@@ -108,10 +134,10 @@ export function useChatScroll({
     }
 
     const availableTarget = getInitialScrollTarget();
-    const nextTarget =
-      availableTarget === "unread"
-        ? "unread"
-        : (initialScrollTargetRef.current ?? availableTarget);
+    const nextTarget = getNextInitialScrollTarget(
+      availableTarget,
+      initialScrollTargetRef.current,
+    );
 
     if (!nextTarget) {
       return undefined;
@@ -125,20 +151,15 @@ export function useChatScroll({
       scrollMessagesEndIntoView("instant");
     }
 
-    if (initialScrollSettleTimerRef.current) {
-      clearTimeout(initialScrollSettleTimerRef.current);
-    }
+    clearInitialScrollSettleTimer(initialScrollSettleTimerRef);
 
     initialScrollSettleTimerRef.current = setTimeout(() => {
       shouldSettleInitialScrollRef.current = false;
       initialScrollSettleTimerRef.current = null;
-    }, 250);
+    }, INITIAL_SCROLL_SETTLE_DELAY_MS);
 
     return () => {
-      if (initialScrollSettleTimerRef.current) {
-        clearTimeout(initialScrollSettleTimerRef.current);
-        initialScrollSettleTimerRef.current = null;
-      }
+      clearInitialScrollSettleTimer(initialScrollSettleTimerRef);
     };
   }, [initialUnreadMessageId, latestMessageId, layoutVersion]);
 
@@ -146,36 +167,23 @@ export function useChatScroll({
   // pages does not change latestMessageId, so it won't trip this path.
   useEffect(() => {
     const previousLatestMessageId = latestMessageIdRef.current;
+    const scrollAction = getLatestMessageScrollAction({
+      isInitialRender: isInitialRender.current,
+      isNearBottom: isNearBottomRef.current,
+      latestMessageId,
+      latestMessageIsOwn,
+      previousLatestMessageId,
+    });
 
-    if (previousLatestMessageId === latestMessageId) {
+    if (scrollAction === "unchanged") {
       return;
     }
 
     latestMessageIdRef.current = latestMessageId;
-
-    if (!latestMessageId) {
-      return;
-    }
-
-    if (
-      !isInitialRender.current &&
-      (isNearBottomRef.current || latestMessageIsOwn)
-    ) {
-      scrollMessagesEndIntoView("smooth");
-      setNewMessageCount(0);
-      return;
-    }
-
-    if (previousLatestMessageId !== null) {
-      setNewMessageCount((current) => Math.min(current + 1, 99));
-    }
+    applyLatestMessageScrollAction(scrollAction);
   }, [latestMessageId, latestMessageIsOwn]);
 
-  function handleScroll(e: React.UIEvent<HTMLDivElement>) {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-    const nearBottom = distanceFromBottom < 100;
-
+  function syncNearBottomState(nearBottom: boolean) {
     isNearBottomRef.current = nearBottom;
     setIsNearBottom(nearBottom);
     setShowScrollToBottom(!nearBottom);
@@ -185,11 +193,12 @@ export function useChatScroll({
     }
   }
 
+  function handleScroll(e: UIEvent<HTMLDivElement>) {
+    syncNearBottomState(isScrolledNearBottom(e.currentTarget));
+  }
+
   function scrollToBottom(behavior: ScrollBehavior = "smooth") {
-    setNewMessageCount(0);
-    setIsNearBottom(true);
-    setShowScrollToBottom(false);
-    isNearBottomRef.current = true;
+    syncNearBottomState(true);
     messagesEndRef.current?.scrollIntoView({ behavior });
   }
 
@@ -200,4 +209,76 @@ export function useChatScroll({
     showScrollToBottom,
     scrollToBottom,
   };
+}
+
+function clearInitialScrollSettleTimer(
+  timerRef: MutableRefObject<ReturnType<typeof setTimeout> | null>,
+) {
+  if (timerRef.current) {
+    clearTimeout(timerRef.current);
+    timerRef.current = null;
+  }
+}
+
+function getNextInitialScrollTarget(
+  availableTarget: InitialScrollTarget | null,
+  currentTarget: InitialScrollTarget | null,
+) {
+  if (availableTarget === "unread") {
+    return "unread";
+  }
+
+  return currentTarget ?? availableTarget;
+}
+
+function isScrolledNearBottom(element: HTMLDivElement) {
+  const { scrollTop, scrollHeight, clientHeight } = element;
+  const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+  return distanceFromBottom < NEAR_BOTTOM_DISTANCE_PX;
+}
+
+function getLatestMessageScrollAction({
+  isInitialRender,
+  isNearBottom,
+  latestMessageId,
+  latestMessageIsOwn,
+  previousLatestMessageId,
+}: LatestMessageScrollActionInput): LatestMessageScrollAction {
+  if (previousLatestMessageId === latestMessageId) {
+    return "unchanged";
+  }
+
+  if (!latestMessageId) {
+    return "none";
+  }
+
+  if (
+    shouldAutoScrollLatestMessage({
+      isInitialRender,
+      isNearBottom,
+      latestMessageIsOwn,
+    })
+  ) {
+    return "scroll";
+  }
+
+  return getUnreadMessageCountAction(previousLatestMessageId);
+}
+
+function shouldAutoScrollLatestMessage({
+  isInitialRender,
+  isNearBottom,
+  latestMessageIsOwn,
+}: Pick<
+  LatestMessageScrollActionInput,
+  "isInitialRender" | "isNearBottom" | "latestMessageIsOwn"
+>) {
+  return !isInitialRender && (isNearBottom || latestMessageIsOwn);
+}
+
+function getUnreadMessageCountAction(
+  previousLatestMessageId: string | null,
+): LatestMessageScrollAction {
+  return previousLatestMessageId !== null ? "increment-count" : "none";
 }

@@ -52,6 +52,52 @@ const HOME_PAGE_METADATA = createTeamForgePageMetadata({
     "Your TeamForge home for groups, invitations, plans, and recommended next moves.",
 });
 
+type HomeDataState = ReturnType<typeof useHomeData>;
+type HomePageStatus = "error" | "offline" | "ready";
+type HomePageStatusPredicate = (input: HomePageStatusInput) => boolean;
+
+interface HomePageStatusInput {
+  isCoreHomeDataError: boolean;
+  isCoreHomeDataLoading: boolean;
+  isCoreHomeDataOfflineUnavailable: boolean;
+  isSentInvitationsError: boolean;
+  isSentInvitationsLoading: boolean;
+  isSentInvitationsOfflineUnavailable: boolean;
+  isViewerOfflineUnavailable: boolean;
+  shouldLoadSentInvitations: boolean;
+  viewerError: boolean;
+  viewerLoading: boolean;
+}
+
+const HOME_OFFLINE_BLOCKERS: HomePageStatusPredicate[] = [
+  ({ isCoreHomeDataLoading, isCoreHomeDataOfflineUnavailable }) =>
+    isCoreHomeDataOfflineUnavailable && !isCoreHomeDataLoading,
+  ({
+    isSentInvitationsLoading,
+    isSentInvitationsOfflineUnavailable,
+    shouldLoadSentInvitations,
+  }) =>
+    shouldLoadSentInvitations &&
+    isSentInvitationsOfflineUnavailable &&
+    !isSentInvitationsLoading,
+  ({ isViewerOfflineUnavailable, viewerLoading }) =>
+    isViewerOfflineUnavailable && !viewerLoading,
+];
+
+const HOME_ERROR_BLOCKERS: HomePageStatusPredicate[] = [
+  ({ isCoreHomeDataError, isCoreHomeDataLoading }) =>
+    isCoreHomeDataError && !isCoreHomeDataLoading,
+  ({
+    isSentInvitationsError,
+    isSentInvitationsLoading,
+    shouldLoadSentInvitations,
+  }) =>
+    shouldLoadSentInvitations &&
+    isSentInvitationsError &&
+    !isSentInvitationsLoading,
+  ({ viewerError, viewerLoading }) => viewerError && !viewerLoading,
+];
+
 export function HomePage() {
   usePageMetadata(HOME_PAGE_METADATA);
 
@@ -95,12 +141,18 @@ export function HomePage() {
     refetch: refetchViewer,
   } = useHomeViewerState();
   const invitationsRef = useRef<HTMLElement | null>(null);
-  const hasOfflineHomeUnavailable =
-    (isCoreHomeDataOfflineUnavailable && !isCoreHomeDataLoading) ||
-    (shouldLoadSentInvitations &&
-      isSentInvitationsOfflineUnavailable &&
-      !isSentInvitationsLoading) ||
-    (isViewerOfflineUnavailable && !viewerLoading);
+  const pageStatus = getHomePageStatus({
+    isCoreHomeDataError,
+    isCoreHomeDataLoading,
+    isCoreHomeDataOfflineUnavailable,
+    isSentInvitationsError,
+    isSentInvitationsLoading,
+    isSentInvitationsOfflineUnavailable,
+    isViewerOfflineUnavailable,
+    shouldLoadSentInvitations,
+    viewerError,
+    viewerLoading,
+  });
 
   function refetchHomePage() {
     void refetchAll();
@@ -118,45 +170,23 @@ export function HomePage() {
     });
   }, [focusedPanel]);
 
-  if (hasOfflineHomeUnavailable) {
+  if (pageStatus === "offline") {
     return <HomeOfflineLaunchState onRetry={refetchHomePage} />;
   }
 
-  if (
-    (isCoreHomeDataError && !isCoreHomeDataLoading) ||
-    (shouldLoadSentInvitations &&
-      isSentInvitationsError &&
-      !isSentInvitationsLoading) ||
-    (viewerError && !viewerLoading)
-  ) {
-    return (
-      <section
-        aria-label="Home error"
-        className="mx-auto w-full max-w-screen-2xl px-4 pt-3 pb-8 sm:px-5 md:pt-6 lg:px-8"
-      >
-        <PageErrorState
-          title="Home could not load"
-          description="Your plans, groups, and invitations could not be refreshed right now."
-          onRetry={refetchHomePage}
-        />
-      </section>
-    );
+  if (pageStatus === "error") {
+    return <HomePageErrorSection onRetry={refetchHomePage} />;
   }
 
   return (
     <HomePageContent
       hero={<HomeHero />}
-      sentInvitationsReview={
-        focusedPanel === "invitations" && invitationView === "sent" ? (
-          <Suspense fallback={null}>
-            <LazySentInvitationsReview
-              focusedInviteId={focusedInviteId}
-              invitations={sentInvitations}
-              onClose={clearInvitationFocus}
-            />
-          </Suspense>
-        ) : null
-      }
+      sentInvitationsReview={getSentInvitationsReviewSlot({
+        focusedInviteId,
+        invitations: sentInvitations,
+        onClose: clearInvitationFocus,
+        shouldShow: focusedPanel === "invitations" && invitationView === "sent",
+      })}
       attentionQueue={
         <AttentionQueue
           focusedPanel={focusedPanel}
@@ -191,6 +221,63 @@ export function HomePage() {
         </DeferredHomePanel>
       }
     />
+  );
+}
+
+function getHomePageStatus(input: HomePageStatusInput): HomePageStatus {
+  if (hasHomeOfflineUnavailable(input)) {
+    return "offline";
+  }
+
+  return hasHomeBlockingError(input) ? "error" : "ready";
+}
+
+function hasHomeOfflineUnavailable(input: HomePageStatusInput) {
+  return HOME_OFFLINE_BLOCKERS.some((isBlocked) => isBlocked(input));
+}
+
+function hasHomeBlockingError(input: HomePageStatusInput) {
+  return HOME_ERROR_BLOCKERS.some((isBlocked) => isBlocked(input));
+}
+
+function HomePageErrorSection({ onRetry }: { onRetry: () => void }) {
+  return (
+    <section
+      aria-label="Home error"
+      className="mx-auto w-full max-w-screen-2xl px-4 pt-3 pb-8 sm:px-5 md:pt-6 lg:px-8"
+    >
+      <PageErrorState
+        title="Home could not load"
+        description="Your plans, groups, and invitations could not be refreshed right now."
+        onRetry={onRetry}
+      />
+    </section>
+  );
+}
+
+function getSentInvitationsReviewSlot({
+  focusedInviteId,
+  invitations,
+  onClose,
+  shouldShow,
+}: {
+  focusedInviteId: string | null;
+  invitations: HomeDataState["sentInvitations"];
+  onClose: () => void;
+  shouldShow: boolean;
+}) {
+  if (!shouldShow) {
+    return null;
+  }
+
+  return (
+    <Suspense fallback={null}>
+      <LazySentInvitationsReview
+        focusedInviteId={focusedInviteId}
+        invitations={invitations}
+        onClose={onClose}
+      />
+    </Suspense>
   );
 }
 

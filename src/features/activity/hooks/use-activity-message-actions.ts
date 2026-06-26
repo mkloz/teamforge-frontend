@@ -12,10 +12,65 @@ import { useActivityStore } from "@/features/activity/store/activity.store";
 import type { ActivitySelectionKind } from "@/features/activity/store/activity-store/activity-store.types";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 
+interface MessageActionOfflineGuard {
+  description: string;
+  id: string;
+}
+
+interface SelectedMessageConversation {
+  id: string;
+  kind: "group" | "dm";
+}
+
+const MESSAGE_ACTION_OFFLINE_GUARDS = {
+  delete: {
+    id: "activity-message-delete-offline",
+    description: "Reconnect before changing messages.",
+  },
+  edit: {
+    id: "activity-message-edit-offline",
+    description: "Reconnect before changing messages.",
+  },
+  forward: {
+    id: "activity-message-forward-offline",
+    description: "Reconnect before forwarding messages.",
+  },
+  pin: {
+    id: "activity-message-pin-offline",
+    description: "Reconnect before updating message actions.",
+  },
+  reaction: {
+    id: "activity-message-reaction-offline",
+    description: "Reconnect before reacting to messages.",
+  },
+  retry: {
+    id: "activity-message-retry-offline",
+    description: "Reconnect before sending messages.",
+  },
+  save: {
+    id: "activity-message-save-offline",
+    description: "Reconnect before updating message actions.",
+  },
+  unpin: {
+    id: "activity-message-unpin-offline",
+    description: "Reconnect before updating message actions.",
+  },
+} as const satisfies Record<string, MessageActionOfflineGuard>;
+
 function isMessageConversationKind(
   kind: ActivitySelectionKind | null,
 ): kind is "group" | "dm" {
   return kind === "group" || kind === "dm";
+}
+
+function clearComposerReference(
+  message: UnifiedMessage | null,
+  messageId: string,
+  clearMessage: (message: UnifiedMessage | null) => void,
+) {
+  if (message?.id === messageId) {
+    clearMessage(null);
+  }
 }
 
 export function useActivityMessageActions() {
@@ -29,8 +84,19 @@ export function useActivityMessageActions() {
   );
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
-  function guardMessageAction(id: string, description: string) {
-    return guardOfflineAction({ id, description });
+  function guardMessageAction(guard: MessageActionOfflineGuard) {
+    return guardOfflineAction(guard);
+  }
+
+  function getSelectedMessageConversation(): SelectedMessageConversation | null {
+    if (!isMessageConversationKind(selectedKind) || !selectedId) {
+      return null;
+    }
+
+    return {
+      id: selectedId,
+      kind: selectedKind,
+    };
   }
 
   function startReply(message: UnifiedMessage) {
@@ -63,24 +129,17 @@ export function useActivityMessageActions() {
       return;
     }
 
-    if (
-      guardMessageAction(
-        "activity-message-delete-offline",
-        "Reconnect before changing messages.",
-      )
-    ) {
+    if (guardMessageAction(MESSAGE_ACTION_OFFLINE_GUARDS.delete)) {
       return;
     }
 
     await ActivityCommands.deleteMessage(selectedKind, selectedId, message.id);
+    clearComposerReferencesForMessage(message.id);
+  }
 
-    if (replyingTo?.id === message.id) {
-      setReplyingTo(null);
-    }
-
-    if (editingMessage?.id === message.id) {
-      setEditingMessage(null);
-    }
+  function clearComposerReferencesForMessage(messageId: string) {
+    clearComposerReference(replyingTo, messageId, setReplyingTo);
+    clearComposerReference(editingMessage, messageId, setEditingMessage);
   }
 
   async function retryMessage(message: UnifiedMessage) {
@@ -88,12 +147,7 @@ export function useActivityMessageActions() {
       return;
     }
 
-    if (
-      guardMessageAction(
-        "activity-message-retry-offline",
-        "Reconnect before sending messages.",
-      )
-    ) {
+    if (guardMessageAction(MESSAGE_ACTION_OFFLINE_GUARDS.retry)) {
       return;
     }
 
@@ -108,12 +162,7 @@ export function useActivityMessageActions() {
       return;
     }
 
-    if (
-      guardMessageAction(
-        "activity-message-reaction-offline",
-        "Reconnect before reacting to messages.",
-      )
-    ) {
+    if (guardMessageAction(MESSAGE_ACTION_OFFLINE_GUARDS.reaction)) {
       return;
     }
 
@@ -130,12 +179,7 @@ export function useActivityMessageActions() {
       return;
     }
 
-    if (
-      guardMessageAction(
-        "activity-message-pin-offline",
-        "Reconnect before updating message actions.",
-      )
-    ) {
+    if (guardMessageAction(MESSAGE_ACTION_OFFLINE_GUARDS.pin)) {
       return;
     }
 
@@ -147,12 +191,7 @@ export function useActivityMessageActions() {
       return;
     }
 
-    if (
-      guardMessageAction(
-        "activity-message-unpin-offline",
-        "Reconnect before updating message actions.",
-      )
-    ) {
+    if (guardMessageAction(MESSAGE_ACTION_OFFLINE_GUARDS.unpin)) {
       return;
     }
 
@@ -160,52 +199,38 @@ export function useActivityMessageActions() {
   }
 
   async function toggleSaved(message: UnifiedMessage, isSaved = false) {
-    if (
-      !isMessageConversationKind(selectedKind) ||
-      !selectedId ||
-      !canSaveMessage(message)
-    ) {
+    const conversation = getSelectedMessageConversation();
+
+    if (!conversation || !canSaveMessage(message)) {
       return;
     }
 
-    if (
-      guardMessageAction(
-        "activity-message-save-offline",
-        "Reconnect before updating message actions.",
-      )
-    ) {
+    if (guardMessageAction(MESSAGE_ACTION_OFFLINE_GUARDS.save)) {
       return;
     }
 
     await ActivityCommands.toggleSavedMessage(
-      selectedKind,
-      selectedId,
+      conversation.kind,
+      conversation.id,
       message,
       isSaved,
     );
   }
 
   async function forwardMessage(message: UnifiedMessage, targetChatId: string) {
-    if (
-      !isMessageConversationKind(selectedKind) ||
-      !selectedId ||
-      !canSaveMessage(message)
-    ) {
+    const conversation = getSelectedMessageConversation();
+
+    if (!conversation || !canSaveMessage(message)) {
       return null;
     }
 
-    if (
-      guardMessageAction(
-        "activity-message-forward-offline",
-        "Reconnect before forwarding messages.",
-      )
-    ) {
+    if (guardMessageAction(MESSAGE_ACTION_OFFLINE_GUARDS.forward)) {
       return null;
     }
 
     return ActivityCommands.forwardMessage(
-      selectedKind,
-      selectedId,
+      conversation.kind,
+      conversation.id,
       message,
       targetChatId,
     );
@@ -216,12 +241,7 @@ export function useActivityMessageActions() {
       return null;
     }
 
-    if (
-      guardMessageAction(
-        "activity-message-edit-offline",
-        "Reconnect before changing messages.",
-      )
-    ) {
+    if (guardMessageAction(MESSAGE_ACTION_OFFLINE_GUARDS.edit)) {
       return null;
     }
 

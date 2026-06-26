@@ -29,13 +29,27 @@ export function buildSettingsProfileFormValues(
 ): SettingsProfileValues {
   return {
     name: user.name,
-    age: user.age ? String(user.age) : "",
-    gender: user.gender ?? "",
-    city: user.city ?? "",
-    locationLat: user.locationLat ?? null,
-    locationLng: user.locationLng ?? null,
-    bio: user.bio ?? "",
+    age: toSettingsProfileAgeValue(user.age),
+    gender: toSettingsProfileTextValue(user.gender),
+    city: toSettingsProfileTextValue(user.city),
+    locationLat: toSettingsProfileLocationValue(user.locationLat),
+    locationLng: toSettingsProfileLocationValue(user.locationLng),
+    bio: toSettingsProfileTextValue(user.bio),
   };
+}
+
+function toSettingsProfileAgeValue(age: User["age"]) {
+  return age ? String(age) : "";
+}
+
+function toSettingsProfileTextValue<T extends string>(
+  value: T | null | undefined,
+): T | "" {
+  return value ?? "";
+}
+
+function toSettingsProfileLocationValue(value: number | null | undefined) {
+  return value ?? null;
 }
 
 export function buildSettingsProfilePayload(

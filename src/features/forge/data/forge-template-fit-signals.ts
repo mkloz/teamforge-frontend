@@ -1,7 +1,4 @@
-import {
-  ACTIVITIES,
-  type ActivityOption,
-} from "@/features/forge/constants/forge.constants";
+import type { ActivityOption } from "@/features/forge/constants/forge.constants";
 import type { TemplateTrait } from "@/features/forge/data/forge-template-seed-types";
 
 export const FALLBACK_CATEGORY: ActivityOption = {
@@ -9,9 +6,6 @@ export const FALLBACK_CATEGORY: ActivityOption = {
   label: "Projects & Wildcards",
   description: "Volunteering, swaps, niche ideas",
 };
-export const ACTIVITY_BY_LABEL = new Map(
-  ACTIVITIES.map((activity) => [activity.label, activity]),
-);
 
 export const TRAIT_KEYWORDS: Record<TemplateTrait, string[]> = {
   active: [

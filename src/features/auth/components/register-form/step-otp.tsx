@@ -30,6 +30,39 @@ interface StepOtpProps {
 const OTP_SLOT_CLASS =
   "h-12 w-10 max-w-12 rounded-xl border border-border bg-card font-mono text-lg transition-all duration-200 hover:border-forge-teal/40 focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-forge-teal/15 sm:w-12";
 
+const OTP_SLOT_GROUPS = [
+  [0, 1, 2],
+  [3, 4, 5],
+] as const;
+
+function getSubmitTitle(isOnline: boolean) {
+  return isOnline ? undefined : "Reconnect before verifying your email.";
+}
+
+function getSubmitLabel(isOnline: boolean) {
+  return isOnline ? "I'm ready to forge" : "Reconnect to continue";
+}
+
+function getResendTitle(isOnline: boolean) {
+  return isOnline
+    ? undefined
+    : "Reconnect before resending your verification code.";
+}
+
+function getResendLabel(resendLoading: boolean) {
+  return resendLoading ? "Sending a fresh code..." : "Resend code";
+}
+
+function OtpSlotGroup({ slots }: { slots: readonly number[] }) {
+  return (
+    <InputOTPGroup className="flex-1 justify-between gap-1 sm:gap-2">
+      {slots.map((idx) => (
+        <InputOTPSlot key={idx} index={idx} className={OTP_SLOT_CLASS} />
+      ))}
+    </InputOTPGroup>
+  );
+}
+
 export function StepOtp({
   onBack,
   loading,
@@ -67,29 +100,13 @@ export function StepOtp({
                 className="flex w-full"
                 {...field}
               >
-                <InputOTPGroup className="flex-1 justify-between gap-1 sm:gap-2">
-                  {[0, 1, 2].map((idx) => (
-                    <InputOTPSlot
-                      key={idx}
-                      index={idx}
-                      className={OTP_SLOT_CLASS}
-                    />
-                  ))}
-                </InputOTPGroup>
+                <OtpSlotGroup slots={OTP_SLOT_GROUPS[0]} />
 
                 <div className="flex items-center justify-center px-2 font-medium text-slate-muted/70">
                   -
                 </div>
 
-                <InputOTPGroup className="flex-1 justify-between gap-1 sm:gap-2">
-                  {[3, 4, 5].map((idx) => (
-                    <InputOTPSlot
-                      key={idx}
-                      index={idx}
-                      className={OTP_SLOT_CLASS}
-                    />
-                  ))}
-                </InputOTPGroup>
+                <OtpSlotGroup slots={OTP_SLOT_GROUPS[1]} />
               </InputOTP>
             </FormControl>
             <FormMessage className="text-center font-medium text-destructive text-xs" />
@@ -101,11 +118,11 @@ export function StepOtp({
         type="submit"
         disabled={!isOnline}
         loading={loading}
-        title={isOnline ? undefined : "Reconnect before verifying your email."}
+        title={getSubmitTitle(isOnline)}
         size="lg"
         className="mt-4 w-full"
       >
-        {isOnline ? "I'm ready to forge" : "Reconnect to continue"}
+        {getSubmitLabel(isOnline)}
         <ArrowRightAnimated />
       </Button>
 
@@ -113,17 +130,13 @@ export function StepOtp({
         type="button"
         variant="outline"
         disabled={!isOnline || loading || resendLoading}
-        title={
-          isOnline
-            ? undefined
-            : "Reconnect before resending your verification code."
-        }
+        title={getResendTitle(isOnline)}
         onClick={onResend}
         size="sm"
         className="w-full"
       >
         <RefreshCw className="size-4" aria-hidden="true" />
-        {resendLoading ? "Sending a fresh code..." : "Resend code"}
+        {getResendLabel(resendLoading)}
       </Button>
 
       <Button

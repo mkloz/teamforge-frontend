@@ -1,16 +1,25 @@
 import { z } from "zod";
+
+import { managedUploadUrlSchema } from "@/shared/validators/url.validator";
+
 import { messageApiSchema } from "./chat-api";
+import {
+  groupBaseFields,
+  userAvatarMediaField,
+  userIdentitySummaryFields,
+  userPersonalityScoreFields,
+  userPresenceFields,
+  userProfileSummaryFields,
+  userTrustScoreField,
+} from "./entity-fragments";
 import {
   activityAccessSchema,
   activityStatusSchema,
   activityVisibilitySchema,
   costTypeSchema,
   forgeModeSchema,
-  genderSchema,
   groupRoleSchema,
-  groupStatusSchema,
   locationModeSchema,
-  onlineStatusSchema,
   personalityTypeSchema,
   planCategorySchema,
   planStatusSchema,
@@ -18,7 +27,7 @@ import {
 import { exploreInterestSchema } from "./explore";
 import { imageMediaSchema } from "./media";
 
-export const groupActivitySummarySchema = z.object({
+const groupActivitySummarySchema = z.object({
   id: z.string(),
   title: z.string(),
   city: z.string().nullable(),
@@ -29,9 +38,7 @@ export const groupActivitySummarySchema = z.object({
   interests: z.array(exploreInterestSchema),
 });
 
-export type GroupActivitySummary = z.infer<typeof groupActivitySummarySchema>;
-
-export const groupPlanSummarySchema = z.object({
+const groupPlanSummarySchema = z.object({
   id: z.string(),
   title: z.string(),
   category: planCategorySchema,
@@ -46,32 +53,17 @@ export const groupPlanSummarySchema = z.object({
   cost: costTypeSchema,
 });
 
-export type GroupPlanSummary = z.infer<typeof groupPlanSummarySchema>;
-
-export const groupMemberUserSummarySchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  avatar: z.string().nullable(),
-  avatarMedia: imageMediaSchema.nullable().optional(),
-  bio: z.string().nullable().optional(),
-  age: z.number().nullable().optional(),
-  gender: genderSchema.nullable().optional(),
-  city: z.string().nullable().optional(),
+const groupMemberUserSummarySchema = z.object({
+  ...userIdentitySummaryFields,
+  ...userAvatarMediaField,
+  ...userProfileSummaryFields,
   personalityType: personalityTypeSchema.nullable(),
-  oceanO: z.number().nullable().optional(),
-  oceanC: z.number().nullable().optional(),
-  oceanE: z.number().nullable().optional(),
-  oceanA: z.number().nullable().optional(),
-  oceanN: z.number().nullable().optional(),
-  trustScore: z.number(),
-  onlineStatus: onlineStatusSchema.optional(),
+  ...userPersonalityScoreFields,
+  ...userTrustScoreField,
+  ...userPresenceFields,
 });
 
-export type GroupMemberUserSummary = z.infer<
-  typeof groupMemberUserSummarySchema
->;
-
-export const groupMemberApiSchema = z.object({
+const groupMemberApiSchema = z.object({
   userId: z.string(),
   role: groupRoleSchema,
   joinedAt: z.string().datetime(),
@@ -82,15 +74,15 @@ export const groupMemberApiSchema = z.object({
 
 export type GroupMemberApi = z.infer<typeof groupMemberApiSchema>;
 
+export const updateGroupPayloadSchema = z.object({
+  name: z.string().trim().min(1).max(120).optional(),
+  description: z.string().trim().max(1000).nullable().optional(),
+  avatar: managedUploadUrlSchema.nullable().optional(),
+});
+
 export const groupApiSchema = z
   .object({
-    id: z.string(),
-    name: z.string(),
-    description: z.string().nullable(),
-    avatar: z.string().nullable(),
-    avatarMedia: imageMediaSchema.nullable().optional(),
-    status: groupStatusSchema,
-    maxMembers: z.number(),
+    ...groupBaseFields,
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     version: z.number().optional(),

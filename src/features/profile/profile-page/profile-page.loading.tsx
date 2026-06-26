@@ -36,10 +36,6 @@ export function ProfilePageLoading(_props: PageLoadingProps = {}) {
   );
 }
 
-export function ProfilePageFixture() {
-  return <ProfilePageLoading />;
-}
-
 function ProfileHeroSkeleton() {
   return (
     <section className="relative z-0 flex w-full flex-col pb-4 sm:px-0 sm:pb-8">

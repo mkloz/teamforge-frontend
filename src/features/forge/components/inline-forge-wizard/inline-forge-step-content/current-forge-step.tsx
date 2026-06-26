@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ActivityStepPanel } from "./activity-step-panel";
 import { GroupStepPanel } from "./group-step-panel";
 import { IdentityStepPanel } from "./identity-step-panel";
@@ -7,44 +8,62 @@ import { ResultStepPanel } from "./result-step-panel";
 import { TemplatesStepPanel } from "./templates-step-panel";
 import type { CurrentForgeStepProps } from "./types";
 
-export function CurrentForgeStep({
+type ForgeStepRenderer = (props: CurrentForgeStepProps) => ReactNode;
+
+const FORGE_STEP_RENDERERS = {
+  1: renderActivityStep,
+  2: renderTemplatesStep,
+  3: renderPlanStep,
+  4: renderGroupStep,
+  5: renderResultStep,
+  6: renderIdentityStep,
+  7: renderInviteStep,
+} satisfies Record<number, ForgeStepRenderer>;
+
+export function CurrentForgeStep(props: CurrentForgeStepProps) {
+  const renderStep = FORGE_STEP_RENDERERS[props.fw.step] ?? renderEmptyStep;
+
+  return renderStep(props);
+}
+
+function renderActivityStep({
   actions,
   activityShakeRequestId,
   fw,
 }: CurrentForgeStepProps) {
-  if (fw.step === 1) {
-    return (
-      <ActivityStepPanel
-        actions={actions}
-        activityShakeRequestId={activityShakeRequestId}
-        fw={fw}
-      />
-    );
-  }
+  return (
+    <ActivityStepPanel
+      actions={actions}
+      activityShakeRequestId={activityShakeRequestId}
+      fw={fw}
+    />
+  );
+}
 
-  if (fw.step === 2) {
-    return <TemplatesStepPanel actions={actions} fw={fw} />;
-  }
+function renderTemplatesStep({ actions, fw }: CurrentForgeStepProps) {
+  return <TemplatesStepPanel actions={actions} fw={fw} />;
+}
 
-  if (fw.step === 3) {
-    return <PlanStepPanel fw={fw} />;
-  }
+function renderPlanStep({ fw }: CurrentForgeStepProps) {
+  return <PlanStepPanel fw={fw} />;
+}
 
-  if (fw.step === 4) {
-    return <GroupStepPanel fw={fw} />;
-  }
+function renderGroupStep({ fw }: CurrentForgeStepProps) {
+  return <GroupStepPanel fw={fw} />;
+}
 
-  if (fw.step === 5) {
-    return <ResultStepPanel actions={actions} fw={fw} />;
-  }
+function renderResultStep({ actions, fw }: CurrentForgeStepProps) {
+  return <ResultStepPanel actions={actions} fw={fw} />;
+}
 
-  if (fw.step === 6) {
-    return <IdentityStepPanel fw={fw} />;
-  }
+function renderIdentityStep({ fw }: CurrentForgeStepProps) {
+  return <IdentityStepPanel fw={fw} />;
+}
 
-  if (fw.step === 7) {
-    return <InviteStepPanel fw={fw} />;
-  }
+function renderInviteStep({ fw }: CurrentForgeStepProps) {
+  return <InviteStepPanel fw={fw} />;
+}
 
+function renderEmptyStep() {
   return null;
 }

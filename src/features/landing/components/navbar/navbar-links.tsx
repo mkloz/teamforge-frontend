@@ -79,6 +79,40 @@ interface MobileNavbarLinksProps extends NavbarLinksProps {
   menuOpen: boolean;
 }
 
+function getNavbarThemeClasses(staticPublicTheme: boolean) {
+  return {
+    activeClass: staticPublicTheme
+      ? MOBILE_ACTIVE_CLASS.static
+      : MOBILE_ACTIVE_CLASS.token,
+    focusClass: staticPublicTheme
+      ? NAV_FOCUS_CLASS.static
+      : NAV_FOCUS_CLASS.token,
+    underlineColorClass: staticPublicTheme
+      ? NAV_UNDERLINE_COLOR_CLASS.static
+      : NAV_UNDERLINE_COLOR_CLASS.token,
+  };
+}
+
+function getMobileNavLinkClassName({
+  active,
+  focusClass,
+  index,
+  menuOpen,
+}: {
+  active: string | false;
+  focusClass: string;
+  index: number;
+  menuOpen: boolean;
+}) {
+  return cn(
+    MOBILE_NAV_LINK_CLASS,
+    focusClass,
+    menuOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+    MOBILE_NAV_LINK_DELAYS[index],
+    active,
+  );
+}
+
 export function DesktopNavbarLinks({
   activeLandingSection,
   currentPathname,
@@ -87,12 +121,8 @@ export function DesktopNavbarLinks({
   showLandingSectionLinks,
   staticPublicTheme = false,
 }: NavbarLinksProps) {
-  const focusClass = staticPublicTheme
-    ? NAV_FOCUS_CLASS.static
-    : NAV_FOCUS_CLASS.token;
-  const underlineColorClass = staticPublicTheme
-    ? NAV_UNDERLINE_COLOR_CLASS.static
-    : NAV_UNDERLINE_COLOR_CLASS.token;
+  const { focusClass, underlineColorClass } =
+    getNavbarThemeClasses(staticPublicTheme);
 
   if (showLandingSectionLinks) {
     return LANDING_NAV_LINKS.map((link) => {
@@ -171,23 +201,17 @@ export function MobileNavbarLinks({
   showLandingSectionLinks,
   staticPublicTheme = false,
 }: MobileNavbarLinksProps) {
-  const focusClass = staticPublicTheme
-    ? NAV_FOCUS_CLASS.static
-    : NAV_FOCUS_CLASS.token;
-  const activeClass = staticPublicTheme
-    ? MOBILE_ACTIVE_CLASS.static
-    : MOBILE_ACTIVE_CLASS.token;
+  const { activeClass, focusClass } = getNavbarThemeClasses(staticPublicTheme);
 
   if (showLandingSectionLinks) {
     return LANDING_NAV_LINKS.map((link, index) => {
       const isActive = isLandingPage && activeLandingSection === link.id;
-      const mobileLinkClass = cn(
-        MOBILE_NAV_LINK_CLASS,
+      const mobileLinkClass = getMobileNavLinkClassName({
+        active: isActive && activeClass,
         focusClass,
-        menuOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
-        MOBILE_NAV_LINK_DELAYS[index],
-        isActive && activeClass,
-      );
+        index,
+        menuOpen,
+      });
 
       return (
         <a
@@ -204,13 +228,13 @@ export function MobileNavbarLinks({
   }
 
   return COMPACT_NAV_LINKS.map((link, index) => {
-    const mobileLinkClass = cn(
-      MOBILE_NAV_LINK_CLASS,
+    const mobileLinkClass = getMobileNavLinkClassName({
+      active:
+        link.kind === "route" && currentPathname === link.to && activeClass,
       focusClass,
-      menuOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
-      MOBILE_NAV_LINK_DELAYS[index],
-      link.kind === "route" && currentPathname === link.to && activeClass,
-    );
+      index,
+      menuOpen,
+    });
 
     if (link.kind === "landing-section") {
       return (

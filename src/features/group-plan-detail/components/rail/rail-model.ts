@@ -1,6 +1,33 @@
 import { CalendarHeart, ShieldCheck, UsersRound } from "lucide-react";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 
+const GROUP_AGE_DAY_MS = 1000 * 60 * 60 * 24;
+
+const GROUP_AGE_RULES = [
+  {
+    format: () => "Just formed today",
+    matches: (days: number) => days < 1,
+  },
+  {
+    format: (days: number) => formatActiveAge(days, "day"),
+    matches: (days: number) => days < 14,
+  },
+  {
+    format: (days: number) => formatActiveAge(getAgeWeeks(days), "week"),
+    matches: (days: number) => getAgeWeeks(days) < 9,
+  },
+  {
+    format: (days: number) => formatActiveAge(getAgeMonths(days), "month"),
+    matches: () => true,
+  },
+] as const;
+
+const RELIABILITY_TIERS = [
+  { label: "Strong", min: 80 },
+  { label: "Healthy", min: 60 },
+  { label: "Building", min: 40 },
+] as const;
+
 export function getPendingVoteHeadline(pending: number) {
   return pending === 1
     ? "1 plan change needs your vote"
@@ -38,17 +65,37 @@ export function getTrustRows(detail: GroupPlanDetail) {
 }
 
 function formatGroupAge(createdAt: string) {
-  const created = new Date(createdAt);
-  if (Number.isNaN(created.getTime())) return null;
-  const days = Math.floor(
-    (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24),
+  const days = getGroupAgeDays(createdAt);
+
+  if (days === null) {
+    return null;
+  }
+
+  return (
+    GROUP_AGE_RULES.find((rule) => rule.matches(days))?.format(days) ?? null
   );
-  if (days < 1) return "Just formed today";
-  if (days < 14) return `Active ${days} ${days === 1 ? "day" : "days"}`;
-  const weeks = Math.floor(days / 7);
-  if (weeks < 9) return `Active ${weeks} ${weeks === 1 ? "week" : "weeks"}`;
-  const months = Math.floor(days / 30);
-  return `Active ${months} ${months === 1 ? "month" : "months"}`;
+}
+
+function getGroupAgeDays(createdAt: string) {
+  const created = new Date(createdAt);
+
+  if (Number.isNaN(created.getTime())) {
+    return null;
+  }
+
+  return Math.floor((Date.now() - created.getTime()) / GROUP_AGE_DAY_MS);
+}
+
+function getAgeWeeks(days: number) {
+  return Math.floor(days / 7);
+}
+
+function getAgeMonths(days: number) {
+  return Math.floor(days / 30);
+}
+
+function formatActiveAge(count: number, unit: "day" | "month" | "week") {
+  return `Active ${count} ${count === 1 ? unit : `${unit}s`}`;
 }
 
 function formatReliability(detail: GroupPlanDetail) {
@@ -57,8 +104,9 @@ function formatReliability(detail: GroupPlanDetail) {
     detail.members.reduce((sum, member) => sum + member.trustScore, 0) /
     detail.members.length;
   const pct = Math.round(Math.max(0, Math.min(1, avg)) * 100);
-  if (pct >= 80) return `Strong (${pct}% avg)`;
-  if (pct >= 60) return `Healthy (${pct}% avg)`;
-  if (pct >= 40) return `Building (${pct}% avg)`;
-  return `New (${pct}% avg)`;
+  return `${getReliabilityLabel(pct)} (${pct}% avg)`;
+}
+
+function getReliabilityLabel(percent: number) {
+  return RELIABILITY_TIERS.find((tier) => percent >= tier.min)?.label ?? "New";
 }

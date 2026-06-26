@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   costTypeLabels,
   formatPlanCostValue,
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import { Textarea } from "@/shared/components/ui/textarea";
+import type { LocationValue } from "@/shared/lib/maps/location.types";
 import type {
   CostType,
   LocationMode,
@@ -37,75 +39,123 @@ interface ProposalValueInputProps {
   value: string;
 }
 
-export function ProposalValueInput({
-  costValue,
-  field,
+type ProposalFieldRenderer = (props: ProposalValueInputProps) => ReactNode;
+
+interface LocationModeInputProps {
+  nextLocation: PlanLocationValue;
+  onChange: (value: PlanLocationValue) => void;
+}
+
+const PROPOSAL_FIELD_RENDERERS = {
+  CATEGORY: renderCategoryProposalInput,
+  COST: renderCostProposalInput,
+  DATE_TIME: renderDateTimeProposalInput,
+  DESCRIPTION: renderTextProposalInput,
+  LOCATION: renderLocationProposalInput,
+  TITLE: renderTextProposalInput,
+} satisfies Record<PlanProposalField, ProposalFieldRenderer>;
+
+const LOCATION_MODE_RENDERERS = {
+  IN_PERSON: renderInPersonLocationInput,
+  ONLINE: renderOnlineLocationInput,
+  TBD: renderTbdLocationInput,
+} satisfies Record<LocationMode, (props: LocationModeInputProps) => ReactNode>;
+
+const EMPTY_SELECTED_ADDRESS_LOCATION = {
+  location: "",
+  locationLat: null,
+  locationLng: null,
+} satisfies Pick<PlanLocationValue, "location" | "locationLat" | "locationLng">;
+
+export function ProposalValueInput(props: ProposalValueInputProps) {
+  return PROPOSAL_FIELD_RENDERERS[props.field](props);
+}
+
+function renderDateTimeProposalInput({
   labelId,
-  locationValue,
-  onCostChange,
-  onLocationChange,
   onValueChange,
   value,
 }: ProposalValueInputProps) {
-  if (field === "DATE_TIME") {
-    return (
-      <fieldset aria-labelledby={labelId} className="min-w-0 border-0 p-0">
-        <DateTimeInput value={value} onValueChange={onValueChange} />
-      </fieldset>
-    );
-  }
+  return (
+    <fieldset aria-labelledby={labelId} className="min-w-0 border-0 p-0">
+      <DateTimeInput value={value} onValueChange={onValueChange} />
+    </fieldset>
+  );
+}
 
-  if (field === "LOCATION") {
-    return (
-      <LocationProposalInput
-        labelId={labelId}
-        value={locationValue}
-        onChange={onLocationChange}
-      />
-    );
-  }
+function renderLocationProposalInput({
+  labelId,
+  locationValue,
+  onLocationChange,
+}: ProposalValueInputProps) {
+  return (
+    <LocationProposalInput
+      labelId={labelId}
+      value={locationValue}
+      onChange={onLocationChange}
+    />
+  );
+}
 
-  if (field === "COST") {
-    return (
-      <CostProposalInput
-        labelId={labelId}
-        value={costValue}
-        onChange={onCostChange}
-      />
-    );
-  }
+function renderCostProposalInput({
+  costValue,
+  labelId,
+  onCostChange,
+}: ProposalValueInputProps) {
+  return (
+    <CostProposalInput
+      labelId={labelId}
+      value={costValue}
+      onChange={onCostChange}
+    />
+  );
+}
 
-  if (field === "CATEGORY") {
-    return (
-      <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger
-          id="plan-change-value"
-          aria-labelledby={labelId}
-          className="bg-card"
-        >
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {Object.entries(planCategoryLabels).map(([category, label]) => (
-            <SelectItem key={category} value={category}>
-              {label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    );
-  }
+function renderCategoryProposalInput({
+  labelId,
+  onValueChange,
+  value,
+}: ProposalValueInputProps) {
+  return (
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger
+        id="plan-change-value"
+        aria-labelledby={labelId}
+        className="bg-card"
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {Object.entries(planCategoryLabels).map(([category, label]) => (
+          <SelectItem key={category} value={category}>
+            {label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
+function renderTextProposalInput({
+  field,
+  labelId,
+  onValueChange,
+  value,
+}: ProposalValueInputProps) {
   return (
     <Textarea
       id="plan-change-value"
       aria-labelledby={labelId}
       value={value}
-      rows={field === "DESCRIPTION" ? 4 : 2}
+      rows={getTextProposalRows(field)}
       onChange={(event) => onValueChange(event.target.value)}
       className="resize-none bg-card"
     />
   );
+}
+
+function getTextProposalRows(field: PlanProposalField) {
+  return field === "DESCRIPTION" ? 4 : 2;
 }
 
 function LocationProposalInput({
@@ -155,55 +205,99 @@ function LocationProposalInput({
           ))}
         </SelectContent>
       </Select>
-      {nextLocation.locationMode === "IN_PERSON" ? (
-        <AddressAutocomplete
-          label="Place or address"
-          badge="Plan location"
-          hint="Members will see this place if the group approves the change."
-          placeholder="Search address or venue name..."
-          value={
-            nextLocation.location
-              ? {
-                  address: nextLocation.location,
-                  city: nextLocation.location,
-                  lat: nextLocation.locationLat,
-                  lng: nextLocation.locationLng,
-                }
-              : null
-          }
-          onLocationSelect={(location) => {
-            onChange({
-              ...nextLocation,
-              location: location?.address ?? "",
-              locationLat: location?.lat ?? null,
-              locationLng: location?.lng ?? null,
-            });
-          }}
-          className="[&_label]:font-semibold [&_label]:text-muted-foreground [&_label]:text-xs"
-        />
-      ) : nextLocation.locationMode === "ONLINE" ? (
-        <Input
-          id="plan-change-location"
-          aria-label="Location"
-          value={nextLocation.location ?? ""}
-          placeholder="Meeting link or platform"
-          className="bg-card"
-          onChange={(event) => {
-            onChange({
-              ...nextLocation,
-              location: event.target.value,
-              locationLat: null,
-              locationLng: null,
-            });
-          }}
-        />
-      ) : (
-        <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 font-medium text-muted-foreground text-sm">
-          {formatPlanLocationValue(nextLocation)}
-        </div>
-      )}
+      {LOCATION_MODE_RENDERERS[nextLocation.locationMode]({
+        nextLocation,
+        onChange,
+      })}
     </fieldset>
   );
+}
+
+function renderInPersonLocationInput({
+  nextLocation,
+  onChange,
+}: LocationModeInputProps) {
+  return (
+    <AddressAutocomplete
+      label="Place or address"
+      badge="Plan location"
+      hint="Members will see this place if the group approves the change."
+      placeholder="Search address or venue name..."
+      value={getAddressAutocompleteValue(nextLocation)}
+      onLocationSelect={(location) => {
+        onChange(getSelectedAddressLocation(nextLocation, location));
+      }}
+      className="[&_label]:font-semibold [&_label]:text-muted-foreground [&_label]:text-xs"
+    />
+  );
+}
+
+function renderOnlineLocationInput({
+  nextLocation,
+  onChange,
+}: LocationModeInputProps) {
+  return (
+    <Input
+      id="plan-change-location"
+      aria-label="Location"
+      value={nextLocation.location ?? ""}
+      placeholder="Meeting link or platform"
+      className="bg-card"
+      onChange={(event) => {
+        onChange({
+          ...nextLocation,
+          location: event.target.value,
+          locationLat: null,
+          locationLng: null,
+        });
+      }}
+    />
+  );
+}
+
+function renderTbdLocationInput({ nextLocation }: LocationModeInputProps) {
+  return (
+    <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 font-medium text-muted-foreground text-sm">
+      {formatPlanLocationValue(nextLocation)}
+    </div>
+  );
+}
+
+function getAddressAutocompleteValue(nextLocation: PlanLocationValue) {
+  if (!nextLocation.location) {
+    return null;
+  }
+
+  return {
+    address: nextLocation.location,
+    city: nextLocation.location,
+    lat: nextLocation.locationLat,
+    lng: nextLocation.locationLng,
+  };
+}
+
+function getSelectedAddressLocation(
+  nextLocation: PlanLocationValue,
+  location: LocationValue | null,
+): PlanLocationValue {
+  const selectedLocation = getSelectedAddressFields(location);
+
+  return {
+    ...nextLocation,
+    ...selectedLocation,
+  };
+}
+
+function getSelectedAddressFields(location: LocationValue | null) {
+  if (!location) {
+    return EMPTY_SELECTED_ADDRESS_LOCATION;
+  }
+
+  return {
+    location: location.address,
+    locationLat: location.lat,
+    locationLng: location.lng,
+  };
 }
 
 function CostProposalInput({

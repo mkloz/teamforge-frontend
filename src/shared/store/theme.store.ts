@@ -20,7 +20,7 @@ import {
   scheduleAnimationFrame,
 } from "@/shared/lib/browser-scheduling";
 
-export const Theme = {
+const Theme = {
   LIGHT: "light",
   DARK: "dark",
 } as const;

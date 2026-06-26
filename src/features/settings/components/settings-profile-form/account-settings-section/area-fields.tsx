@@ -1,7 +1,10 @@
 import { MapPin } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
-import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
+import {
+  AddressAutocomplete,
+  type LocationValue,
+} from "@/shared/components/maps/address-autocomplete";
 import { FactItem } from "@/shared/components/ui/fact-item";
 import {
   FormControl,
@@ -15,6 +18,11 @@ interface AreaFieldsProps {
   currentUser: User | undefined;
   form: UseFormReturn<SettingsProfileValues>;
 }
+
+const LOCATION_SET_OPTIONS = {
+  shouldDirty: true,
+  shouldValidate: true,
+} as const;
 
 export function AreaFields({ currentUser, form }: AreaFieldsProps) {
   const locationLat = form.watch("locationLat");
@@ -32,26 +40,14 @@ export function AreaFields({ currentUser, form }: AreaFieldsProps) {
               <AddressAutocomplete
                 label="City"
                 placeholder="Search your city or area..."
-                value={
-                  field.value
-                    ? {
-                        address: field.value,
-                        city: field.value,
-                        lat: locationLat,
-                        lng: locationLng,
-                      }
-                    : null
-                }
+                value={getSettingsProfileLocationValue({
+                  city: field.value,
+                  locationLat,
+                  locationLng,
+                })}
                 onLocationSelect={(location) => {
                   field.onChange(location?.city ?? "");
-                  form.setValue("locationLat", location?.lat ?? null, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  });
-                  form.setValue("locationLng", location?.lng ?? null, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  });
+                  setSettingsProfileCoordinates(form, location);
                 }}
               />
             </FormControl>
@@ -85,4 +81,42 @@ export function AreaFields({ currentUser, form }: AreaFieldsProps) {
       />
     </div>
   );
+}
+
+function getSettingsProfileLocationValue({
+  city,
+  locationLat,
+  locationLng,
+}: Pick<
+  SettingsProfileValues,
+  "city" | "locationLat" | "locationLng"
+>): LocationValue | null {
+  if (!city) {
+    return null;
+  }
+
+  return {
+    address: city,
+    city,
+    lat: locationLat,
+    lng: locationLng,
+  };
+}
+
+function setSettingsProfileCoordinates(
+  form: UseFormReturn<SettingsProfileValues>,
+  location: LocationValue | null,
+) {
+  const coordinates = getLocationCoordinates(location);
+
+  form.setValue("locationLat", coordinates.lat, LOCATION_SET_OPTIONS);
+  form.setValue("locationLng", coordinates.lng, LOCATION_SET_OPTIONS);
+}
+
+function getLocationCoordinates(location: LocationValue | null) {
+  if (!location) {
+    return { lat: null, lng: null };
+  }
+
+  return { lat: location.lat, lng: location.lng };
 }

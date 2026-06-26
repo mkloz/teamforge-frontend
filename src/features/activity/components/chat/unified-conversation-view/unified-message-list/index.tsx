@@ -51,6 +51,83 @@ interface UnifiedMessageListProps {
 }
 
 const UNREAD_SEPARATOR_DISMISS_BOTTOM_THRESHOLD_PX = 24;
+const LOAD_OLDER_SCROLL_TOP_THRESHOLD_PX = 180;
+
+type MessageListFeedbackState = "empty" | "error" | "loading" | "messages";
+type VisibleMessageBlocks = ReturnType<
+  typeof useVirtualizedMessageBlocks
+>["visibleBlocks"];
+type ScrollToMessage = ReturnType<
+  typeof useFocusedMessageScroll
+>["scrollToMessage"];
+type ChatScrollInput = Parameters<typeof useChatScroll>[0];
+
+interface MessageListContentProps {
+  blocks: VisibleMessageBlocks;
+  emptyStateVariant: NonNullable<UnifiedMessageListProps["emptyStateVariant"]>;
+  getBlockRef: ReturnType<typeof useVirtualizedMessageBlocks>["getBlockRef"];
+  getMessageRef: ReturnType<typeof useMessageElementRegistry>["getMessageRef"];
+  highlightedMessageId: string | null;
+  isOffline: boolean;
+  isSelectionMode: boolean;
+  isLoadingOlderMessages: boolean;
+  kind: UnifiedMessageListProps["kind"];
+  listState: MessageListFeedbackState;
+  messagesEndRef: UnifiedMessageListProps["messagesEndRef"];
+  onActivateReplyTarget: (messageId: string) => void;
+  onRetryInitialError: UnifiedMessageListProps["onRetryInitialError"];
+  onShowParticipantProfile: UnifiedMessageListProps["onShowParticipantProfile"];
+  onStartSelection: UnifiedMessageListProps["onStartSelection"];
+  onToggleSelected: UnifiedMessageListProps["onToggleSelected"];
+  searchQuery: string;
+  selectedMessageIds: UnifiedMessageListProps["selectedMessageIds"];
+  totalHeight: number;
+  typingUsers: NonNullable<UnifiedMessageListProps["typingUsers"]>;
+}
+
+type MessageListMessagesContentProps = Omit<
+  MessageListContentProps,
+  "emptyStateVariant" | "isOffline" | "listState" | "onRetryInitialError"
+>;
+
+type MessageListFeedbackContentProps = Pick<
+  MessageListContentProps,
+  | "emptyStateVariant"
+  | "isOffline"
+  | "listState"
+  | "messagesEndRef"
+  | "onRetryInitialError"
+>;
+
+interface LoadOlderMessagesState {
+  hasOlderMessages: boolean;
+  isLoadingOlderMessages: boolean;
+  olderLoadInFlight: boolean;
+  onLoadOlderMessages: UnifiedMessageListProps["onLoadOlderMessages"];
+}
+
+interface LoadOlderMessagesRequestOptions {
+  beforeLoad?: () => void;
+}
+
+interface ChatScrollInputConfig {
+  conversationId: string;
+  firstUnreadMessageId: string | null;
+  focusedMessageId: string | null;
+  layoutVersion: number;
+  messages: UnifiedMessage[];
+  messagesEndRef: UnifiedMessageListProps["messagesEndRef"];
+  scrollToMessage: ScrollToMessage;
+}
+
+interface MessageListScrollActionsProps {
+  hasProposalShortcut: boolean;
+  isEmpty: boolean;
+  newMessageCount: number;
+  onScrollToBottom: () => void;
+  onScrollToProposal: () => void;
+  showScrollToBottom: boolean;
+}
 
 /**
  * UnifiedMessageList - Shared container for message rendering.
@@ -81,21 +158,16 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   selectedMessageIds,
   typingUsers = [],
 }: UnifiedMessageListProps) {
-  const latestMessage = messages[messages.length - 1] ?? null;
   const previousScrollTopRef = useRef<number | null>(null);
-  const olderLoadInFlightRef = useRef(false);
-  const [pendingReplyTargetId, setPendingReplyTargetId] = useState<
-    string | null
-  >(null);
   const [dismissedUnreadMessageId, setDismissedUnreadMessageId] = useState<
     string | null
   >(null);
   const groupedMessages = useMessageGrouping(messages);
   const { getMessageElement, getMessageRef } = useMessageElementRegistry();
-  const visibleUnreadMessageId =
-    dismissedUnreadMessageId === firstUnreadMessageId
-      ? null
-      : firstUnreadMessageId;
+  const visibleUnreadMessageId = getVisibleUnreadMessageId({
+    dismissedUnreadMessageId,
+    firstUnreadMessageId,
+  });
   const blocks = useMemo(
     () => buildMessageBlocks(groupedMessages, visibleUnreadMessageId),
     [groupedMessages, visibleUnreadMessageId],
@@ -124,15 +196,17 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
     isNearBottom,
     newMessageCount,
     scrollToBottom,
-  } = useChatScroll({
-    conversationId,
-    initialUnreadMessageId: focusedMessageId ? null : firstUnreadMessageId,
-    latestMessageId: latestMessage?.id ?? null,
-    latestMessageIsOwn: latestMessage?.isOwn ?? false,
-    layoutVersion: totalHeight,
-    messagesEndRef,
-    scrollToInitialUnreadMessage: scrollToMessage,
-  });
+  } = useChatScroll(
+    getChatScrollInput({
+      conversationId,
+      firstUnreadMessageId,
+      focusedMessageId,
+      layoutVersion: totalHeight,
+      messages,
+      messagesEndRef,
+      scrollToMessage,
+    }),
+  );
 
   const { rememberPrependAnchor } = useMessageViewportAnchor({
     containerRef,
@@ -143,83 +217,28 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
     visibleBlocks,
   });
 
-  const loadOlderMessagesForReplyTarget = useCallback(() => {
-    if (
-      !hasOlderMessages ||
-      isLoadingOlderMessages ||
-      olderLoadInFlightRef.current ||
-      !onLoadOlderMessages
-    ) {
-      return;
-    }
-
-    olderLoadInFlightRef.current = true;
-    void Promise.resolve(onLoadOlderMessages()).finally(() => {
-      olderLoadInFlightRef.current = false;
-    });
-  }, [hasOlderMessages, isLoadingOlderMessages, onLoadOlderMessages]);
-
-  const activateReplyTarget = useCallback(
-    (messageId: string) => {
-      const isLoaded = messages.some((message) => message.id === messageId);
-
-      if (isLoaded) {
-        scrollToMessage(messageId, { highlight: true });
-        return;
-      }
-
-      setPendingReplyTargetId(messageId);
-      loadOlderMessagesForReplyTarget();
-    },
-    [loadOlderMessagesForReplyTarget, messages, scrollToMessage],
-  );
-
-  useEffect(() => {
-    if (!pendingReplyTargetId) {
-      return undefined;
-    }
-
-    const isLoaded = messages.some(
-      (message) => message.id === pendingReplyTargetId,
-    );
-
-    if (isLoaded) {
-      const frame = requestAnimationFrame(() => {
-        scrollToMessage(pendingReplyTargetId, { highlight: true });
-        setPendingReplyTargetId(null);
-      });
-
-      return () => cancelAnimationFrame(frame);
-    }
-
-    if (!hasOlderMessages) {
-      setPendingReplyTargetId(null);
-      return undefined;
-    }
-
-    loadOlderMessagesForReplyTarget();
-    return undefined;
-  }, [
+  const {
+    getLoadOlderState,
+    requestLoadOlderMessages,
+    resetLoadOlderMessagesRequest,
+  } = useLoadOlderMessagesRequest({
     hasOlderMessages,
-    loadOlderMessagesForReplyTarget,
-    messages,
-    pendingReplyTargetId,
+    isLoadingOlderMessages,
+    onLoadOlderMessages,
+  });
+
+  const { activateReplyTarget, resetPendingReplyTarget } =
+    useReplyTargetNavigation({
+      hasOlderMessages,
+      messages,
+      requestLoadOlderMessages,
+      scrollToMessage,
+    });
+
+  useMessageScrollHandleRegistration({
+    messageScrollHandleRef,
     scrollToMessage,
-  ]);
-
-  useEffect(() => {
-    if (!messageScrollHandleRef) {
-      return undefined;
-    }
-
-    messageScrollHandleRef.current = { scrollToMessage };
-
-    return () => {
-      if (messageScrollHandleRef.current?.scrollToMessage === scrollToMessage) {
-        messageScrollHandleRef.current = null;
-      }
-    };
-  }, [messageScrollHandleRef, scrollToMessage]);
+  });
 
   const { hasProposalShortcut, scrollToClosestProposal } =
     usePendingProposalShortcut({
@@ -229,16 +248,19 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       scrollToMessage,
     });
   const isEmpty = messages.length === 0;
-  const shouldShowInitialLoading = isInitialLoading && isEmpty;
-  const shouldShowInitialError = isInitialError && isEmpty;
+  const listState = getMessageListFeedbackState({
+    isEmpty,
+    isInitialError,
+    isInitialLoading,
+  });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: conversationId intentionally resets per-thread scroll bookkeeping.
   useEffect(() => {
     previousScrollTopRef.current = null;
-    olderLoadInFlightRef.current = false;
-    setPendingReplyTargetId(null);
+    resetLoadOlderMessagesRequest();
+    resetPendingReplyTarget();
     setDismissedUnreadMessageId(null);
-  }, [conversationId]);
+  }, [conversationId, resetLoadOlderMessagesRequest, resetPendingReplyTarget]);
 
   useEffect(() => {
     setDismissedUnreadMessageId((current) =>
@@ -248,38 +270,34 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
 
   function handleViewportScroll(event: UIEvent<HTMLDivElement>) {
     const viewport = event.currentTarget;
-    const previousScrollTop = previousScrollTopRef.current;
-    const nextScrollTop = viewport.scrollTop;
-    const isScrollingUp =
-      previousScrollTop !== null && nextScrollTop < previousScrollTop;
+    const scrollState = getViewportScrollState(
+      viewport,
+      previousScrollTopRef.current,
+    );
 
-    previousScrollTopRef.current = nextScrollTop;
+    previousScrollTopRef.current = scrollState.nextScrollTop;
     handleScroll(event);
-    setScrollTop(nextScrollTop);
-
-    const distanceFromBottom =
-      viewport.scrollHeight - nextScrollTop - viewport.clientHeight;
+    setScrollTop(scrollState.nextScrollTop);
 
     if (
-      firstUnreadMessageId &&
-      dismissedUnreadMessageId !== firstUnreadMessageId &&
-      distanceFromBottom <= UNREAD_SEPARATOR_DISMISS_BOTTOM_THRESHOLD_PX
+      shouldDismissUnreadSeparator({
+        dismissedUnreadMessageId,
+        distanceFromBottom: scrollState.distanceFromBottom,
+        firstUnreadMessageId,
+      })
     ) {
       setDismissedUnreadMessageId(firstUnreadMessageId);
     }
 
     if (
-      isScrollingUp &&
-      nextScrollTop < 180 &&
-      hasOlderMessages &&
-      !isLoadingOlderMessages &&
-      !olderLoadInFlightRef.current &&
-      onLoadOlderMessages
+      shouldLoadOlderMessagesFromScroll({
+        ...getLoadOlderState(),
+        isScrollingUp: scrollState.isScrollingUp,
+        scrollTop: scrollState.nextScrollTop,
+      })
     ) {
-      olderLoadInFlightRef.current = true;
-      rememberPrependAnchor(nextScrollTop);
-      void Promise.resolve(onLoadOlderMessages()).finally(() => {
-        olderLoadInFlightRef.current = false;
+      requestLoadOlderMessages({
+        beforeLoad: () => rememberPrependAnchor(scrollState.nextScrollTop),
       });
     }
   }
@@ -297,61 +315,512 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       <MessageListViewport
         containerRef={containerRef}
         onScroll={handleViewportScroll}
-        totalHeight={isEmpty ? 0 : totalHeight}
+        totalHeight={getViewportTotalHeight({ isEmpty, totalHeight })}
       >
-        {shouldShowInitialLoading ? (
-          <>
-            <MessageListSkeleton />
-            <div ref={messagesEndRef} className="h-0 w-full shrink-0" />
-          </>
-        ) : shouldShowInitialError ? (
-          <>
-            <MessageListErrorState
-              isOffline={isOffline}
-              onRetry={onRetryInitialError}
-            />
-            <div ref={messagesEndRef} className="h-0 w-full shrink-0" />
-          </>
-        ) : isEmpty ? (
-          <>
-            <MessageListEmptyState variant={emptyStateVariant} />
-            <div ref={messagesEndRef} className="h-0 w-full shrink-0" />
-          </>
-        ) : (
-          <>
-            {isLoadingOlderMessages && <LoadingOlderIndicator />}
-            <MessageBlockList
-              blocks={visibleBlocks}
-              getBlockRef={getBlockRef}
-              getMessageRef={getMessageRef}
-              highlightedMessageId={highlightedMessageId}
-              isSelectionMode={isSelectionMode}
-              kind={kind}
-              onActivateReplyTarget={activateReplyTarget}
-              onStartSelection={onStartSelection}
-              onToggleSelected={onToggleSelected}
-              onShowParticipantProfile={onShowParticipantProfile}
-              searchQuery={searchQuery}
-              selectedMessageIds={selectedMessageIds}
-            />
-            <MessageListBottomAnchor
-              messagesEndRef={messagesEndRef}
-              totalHeight={totalHeight}
-              typingUsers={typingUsers}
-            />
-          </>
-        )}
+        <MessageListContent
+          blocks={visibleBlocks}
+          emptyStateVariant={emptyStateVariant}
+          getBlockRef={getBlockRef}
+          getMessageRef={getMessageRef}
+          highlightedMessageId={highlightedMessageId}
+          isLoadingOlderMessages={isLoadingOlderMessages}
+          isOffline={isOffline}
+          isSelectionMode={isSelectionMode}
+          kind={kind}
+          listState={listState}
+          messagesEndRef={messagesEndRef}
+          onActivateReplyTarget={activateReplyTarget}
+          onRetryInitialError={onRetryInitialError}
+          onShowParticipantProfile={onShowParticipantProfile}
+          onStartSelection={onStartSelection}
+          onToggleSelected={onToggleSelected}
+          searchQuery={searchQuery}
+          selectedMessageIds={selectedMessageIds}
+          totalHeight={totalHeight}
+          typingUsers={typingUsers}
+        />
       </MessageListViewport>
 
-      {isEmpty ? null : (
-        <ScrollActionButtons
-          showScrollToBottom={showScrollToBottom}
-          onScrollToBottom={handleScrollToLatestMessages}
-          newMessageCount={newMessageCount}
-          hasProposalShortcut={hasProposalShortcut}
-          onScrollToProposal={scrollToClosestProposal}
-        />
-      )}
+      <MessageListScrollActions
+        hasProposalShortcut={hasProposalShortcut}
+        isEmpty={isEmpty}
+        newMessageCount={newMessageCount}
+        onScrollToBottom={handleScrollToLatestMessages}
+        onScrollToProposal={scrollToClosestProposal}
+        showScrollToBottom={showScrollToBottom}
+      />
     </div>
   );
 });
+
+function getChatScrollInput({
+  conversationId,
+  firstUnreadMessageId,
+  focusedMessageId,
+  layoutVersion,
+  messages,
+  messagesEndRef,
+  scrollToMessage,
+}: ChatScrollInputConfig): ChatScrollInput {
+  const latestMessage = getLatestMessage(messages);
+
+  return {
+    conversationId,
+    initialUnreadMessageId: getInitialUnreadMessageId({
+      firstUnreadMessageId,
+      focusedMessageId,
+    }),
+    latestMessageId: getLatestMessageId(latestMessage),
+    latestMessageIsOwn: getLatestMessageIsOwn(latestMessage),
+    layoutVersion,
+    messagesEndRef,
+    scrollToInitialUnreadMessage: scrollToMessage,
+  };
+}
+
+function getLatestMessage(messages: UnifiedMessage[]) {
+  return messages[messages.length - 1] ?? null;
+}
+
+function getLatestMessageId(message: UnifiedMessage | null) {
+  return message ? message.id : null;
+}
+
+function getLatestMessageIsOwn(message: UnifiedMessage | null) {
+  return message ? message.isOwn : false;
+}
+
+function getInitialUnreadMessageId({
+  firstUnreadMessageId,
+  focusedMessageId,
+}: Pick<ChatScrollInputConfig, "firstUnreadMessageId" | "focusedMessageId">) {
+  return focusedMessageId ? null : firstUnreadMessageId;
+}
+
+function getViewportTotalHeight({
+  isEmpty,
+  totalHeight,
+}: {
+  isEmpty: boolean;
+  totalHeight: number;
+}) {
+  return isEmpty ? 0 : totalHeight;
+}
+
+function MessageListScrollActions({
+  hasProposalShortcut,
+  isEmpty,
+  newMessageCount,
+  onScrollToBottom,
+  onScrollToProposal,
+  showScrollToBottom,
+}: MessageListScrollActionsProps) {
+  if (isEmpty) {
+    return null;
+  }
+
+  return (
+    <ScrollActionButtons
+      showScrollToBottom={showScrollToBottom}
+      onScrollToBottom={onScrollToBottom}
+      newMessageCount={newMessageCount}
+      hasProposalShortcut={hasProposalShortcut}
+      onScrollToProposal={onScrollToProposal}
+    />
+  );
+}
+
+function useLoadOlderMessagesRequest({
+  hasOlderMessages,
+  isLoadingOlderMessages,
+  onLoadOlderMessages,
+}: Pick<
+  LoadOlderMessagesState,
+  "hasOlderMessages" | "isLoadingOlderMessages" | "onLoadOlderMessages"
+>) {
+  const olderLoadInFlightRef = useRef(false);
+
+  const getLoadOlderState = useCallback(
+    (): LoadOlderMessagesState => ({
+      hasOlderMessages,
+      isLoadingOlderMessages,
+      olderLoadInFlight: olderLoadInFlightRef.current,
+      onLoadOlderMessages,
+    }),
+    [hasOlderMessages, isLoadingOlderMessages, onLoadOlderMessages],
+  );
+
+  const requestLoadOlderMessages = useCallback(
+    (options: LoadOlderMessagesRequestOptions = {}) => {
+      const loadOlderState = getLoadOlderState();
+
+      if (
+        !canLoadOlderMessages(loadOlderState) ||
+        !loadOlderState.onLoadOlderMessages
+      ) {
+        return false;
+      }
+
+      olderLoadInFlightRef.current = true;
+      options.beforeLoad?.();
+      void Promise.resolve(loadOlderState.onLoadOlderMessages()).finally(() => {
+        olderLoadInFlightRef.current = false;
+      });
+
+      return true;
+    },
+    [getLoadOlderState],
+  );
+
+  const resetLoadOlderMessagesRequest = useCallback(() => {
+    olderLoadInFlightRef.current = false;
+  }, []);
+
+  return {
+    getLoadOlderState,
+    requestLoadOlderMessages,
+    resetLoadOlderMessagesRequest,
+  };
+}
+
+function useReplyTargetNavigation({
+  hasOlderMessages,
+  messages,
+  requestLoadOlderMessages,
+  scrollToMessage,
+}: {
+  hasOlderMessages: boolean;
+  messages: UnifiedMessage[];
+  requestLoadOlderMessages: (
+    options?: LoadOlderMessagesRequestOptions,
+  ) => boolean;
+  scrollToMessage: ScrollToMessage;
+}) {
+  const [pendingReplyTargetId, setPendingReplyTargetId] = useState<
+    string | null
+  >(null);
+
+  const activateReplyTarget = useCallback(
+    (messageId: string) => {
+      if (hasLoadedMessage(messages, messageId)) {
+        scrollToMessage(messageId, { highlight: true });
+        return;
+      }
+
+      setPendingReplyTargetId(messageId);
+      requestLoadOlderMessages();
+    },
+    [messages, requestLoadOlderMessages, scrollToMessage],
+  );
+
+  useEffect(() => {
+    if (!pendingReplyTargetId) {
+      return undefined;
+    }
+
+    if (hasLoadedMessage(messages, pendingReplyTargetId)) {
+      const frame = requestAnimationFrame(() => {
+        scrollToMessage(pendingReplyTargetId, { highlight: true });
+        setPendingReplyTargetId(null);
+      });
+
+      return () => cancelAnimationFrame(frame);
+    }
+
+    if (!hasOlderMessages) {
+      setPendingReplyTargetId(null);
+      return undefined;
+    }
+
+    requestLoadOlderMessages();
+    return undefined;
+  }, [
+    messages,
+    pendingReplyTargetId,
+    hasOlderMessages,
+    requestLoadOlderMessages,
+    scrollToMessage,
+  ]);
+
+  const resetPendingReplyTarget = useCallback(() => {
+    setPendingReplyTargetId(null);
+  }, []);
+
+  return {
+    activateReplyTarget,
+    resetPendingReplyTarget,
+  };
+}
+
+function useMessageScrollHandleRegistration({
+  messageScrollHandleRef,
+  scrollToMessage,
+}: {
+  messageScrollHandleRef: UnifiedMessageListProps["messageScrollHandleRef"];
+  scrollToMessage: ScrollToMessage;
+}) {
+  useEffect(() => {
+    if (!messageScrollHandleRef) {
+      return undefined;
+    }
+
+    messageScrollHandleRef.current = { scrollToMessage };
+
+    return () => {
+      if (messageScrollHandleRef.current?.scrollToMessage === scrollToMessage) {
+        messageScrollHandleRef.current = null;
+      }
+    };
+  }, [messageScrollHandleRef, scrollToMessage]);
+}
+
+function MessageListContent({
+  blocks,
+  emptyStateVariant,
+  getBlockRef,
+  getMessageRef,
+  highlightedMessageId,
+  isLoadingOlderMessages,
+  isOffline,
+  isSelectionMode,
+  kind,
+  listState,
+  messagesEndRef,
+  onActivateReplyTarget,
+  onRetryInitialError,
+  onShowParticipantProfile,
+  onStartSelection,
+  onToggleSelected,
+  searchQuery,
+  selectedMessageIds,
+  totalHeight,
+  typingUsers,
+}: MessageListContentProps) {
+  if (listState !== "messages") {
+    return (
+      <MessageListFeedbackContent
+        emptyStateVariant={emptyStateVariant}
+        isOffline={isOffline}
+        listState={listState}
+        messagesEndRef={messagesEndRef}
+        onRetryInitialError={onRetryInitialError}
+      />
+    );
+  }
+
+  return (
+    <MessageListMessagesContent
+      blocks={blocks}
+      getBlockRef={getBlockRef}
+      getMessageRef={getMessageRef}
+      highlightedMessageId={highlightedMessageId}
+      isLoadingOlderMessages={isLoadingOlderMessages}
+      isSelectionMode={isSelectionMode}
+      kind={kind}
+      messagesEndRef={messagesEndRef}
+      onActivateReplyTarget={onActivateReplyTarget}
+      onShowParticipantProfile={onShowParticipantProfile}
+      onStartSelection={onStartSelection}
+      onToggleSelected={onToggleSelected}
+      searchQuery={searchQuery}
+      selectedMessageIds={selectedMessageIds}
+      totalHeight={totalHeight}
+      typingUsers={typingUsers}
+    />
+  );
+}
+
+function MessageListFeedbackContent({
+  emptyStateVariant,
+  isOffline,
+  listState,
+  messagesEndRef,
+  onRetryInitialError,
+}: MessageListFeedbackContentProps) {
+  const feedbackElement = getMessageListFeedbackElement({
+    emptyStateVariant,
+    isOffline,
+    listState,
+    onRetryInitialError,
+  });
+
+  return (
+    <>
+      {feedbackElement}
+      <MessageEndAnchor messagesEndRef={messagesEndRef} />
+    </>
+  );
+}
+
+function MessageListMessagesContent({
+  blocks,
+  getBlockRef,
+  getMessageRef,
+  highlightedMessageId,
+  isLoadingOlderMessages,
+  isSelectionMode,
+  kind,
+  messagesEndRef,
+  onActivateReplyTarget,
+  onShowParticipantProfile,
+  onStartSelection,
+  onToggleSelected,
+  searchQuery,
+  selectedMessageIds,
+  totalHeight,
+  typingUsers,
+}: MessageListMessagesContentProps) {
+  return (
+    <>
+      {isLoadingOlderMessages && <LoadingOlderIndicator />}
+      <MessageBlockList
+        blocks={blocks}
+        getBlockRef={getBlockRef}
+        getMessageRef={getMessageRef}
+        highlightedMessageId={highlightedMessageId}
+        isSelectionMode={isSelectionMode}
+        kind={kind}
+        onActivateReplyTarget={onActivateReplyTarget}
+        onStartSelection={onStartSelection}
+        onToggleSelected={onToggleSelected}
+        onShowParticipantProfile={onShowParticipantProfile}
+        searchQuery={searchQuery}
+        selectedMessageIds={selectedMessageIds}
+      />
+      <MessageListBottomAnchor
+        messagesEndRef={messagesEndRef}
+        totalHeight={totalHeight}
+        typingUsers={typingUsers}
+      />
+    </>
+  );
+}
+
+function getMessageListFeedbackElement({
+  emptyStateVariant,
+  isOffline,
+  listState,
+  onRetryInitialError,
+}: Omit<MessageListFeedbackContentProps, "messagesEndRef">) {
+  if (listState === "loading") {
+    return <MessageListSkeleton />;
+  }
+
+  if (listState === "error") {
+    return (
+      <MessageListErrorState
+        isOffline={isOffline}
+        onRetry={onRetryInitialError}
+      />
+    );
+  }
+
+  return <MessageListEmptyState variant={emptyStateVariant} />;
+}
+
+function MessageEndAnchor({
+  messagesEndRef,
+}: Pick<UnifiedMessageListProps, "messagesEndRef">) {
+  return <div ref={messagesEndRef} className="h-0 w-full shrink-0" />;
+}
+
+function getVisibleUnreadMessageId({
+  dismissedUnreadMessageId,
+  firstUnreadMessageId,
+}: {
+  dismissedUnreadMessageId: string | null;
+  firstUnreadMessageId: string | null;
+}) {
+  return dismissedUnreadMessageId === firstUnreadMessageId
+    ? null
+    : firstUnreadMessageId;
+}
+
+function hasLoadedMessage(messages: UnifiedMessage[], messageId: string) {
+  return messages.some((message) => message.id === messageId);
+}
+
+function getMessageListFeedbackState({
+  isEmpty,
+  isInitialError,
+  isInitialLoading,
+}: {
+  isEmpty: boolean;
+  isInitialError: boolean;
+  isInitialLoading: boolean;
+}): MessageListFeedbackState {
+  if (!isEmpty) {
+    return "messages";
+  }
+
+  if (isInitialLoading) {
+    return "loading";
+  }
+
+  return isInitialError ? "error" : "empty";
+}
+
+function getViewportScrollState(
+  viewport: HTMLDivElement,
+  previousScrollTop: number | null,
+) {
+  const nextScrollTop = viewport.scrollTop;
+
+  return {
+    distanceFromBottom:
+      viewport.scrollHeight - nextScrollTop - viewport.clientHeight,
+    isScrollingUp:
+      previousScrollTop !== null && nextScrollTop < previousScrollTop,
+    nextScrollTop,
+  };
+}
+
+function shouldDismissUnreadSeparator({
+  dismissedUnreadMessageId,
+  distanceFromBottom,
+  firstUnreadMessageId,
+}: {
+  dismissedUnreadMessageId: string | null;
+  distanceFromBottom: number;
+  firstUnreadMessageId: string | null;
+}) {
+  return Boolean(
+    firstUnreadMessageId &&
+      dismissedUnreadMessageId !== firstUnreadMessageId &&
+      distanceFromBottom <= UNREAD_SEPARATOR_DISMISS_BOTTOM_THRESHOLD_PX,
+  );
+}
+
+function canLoadOlderMessages({
+  hasOlderMessages,
+  isLoadingOlderMessages,
+  olderLoadInFlight,
+  onLoadOlderMessages,
+}: {
+  hasOlderMessages: boolean;
+  isLoadingOlderMessages: boolean;
+  olderLoadInFlight: boolean;
+  onLoadOlderMessages: UnifiedMessageListProps["onLoadOlderMessages"];
+}) {
+  return (
+    hasOlderMessages &&
+    !isLoadingOlderMessages &&
+    !olderLoadInFlight &&
+    Boolean(onLoadOlderMessages)
+  );
+}
+
+function shouldLoadOlderMessagesFromScroll({
+  isScrollingUp,
+  scrollTop,
+  ...loadOlderState
+}: Parameters<typeof canLoadOlderMessages>[0] & {
+  isScrollingUp: boolean;
+  scrollTop: number;
+}) {
+  return (
+    isScrollingUp &&
+    scrollTop < LOAD_OLDER_SCROLL_TOP_THRESHOLD_PX &&
+    canLoadOlderMessages(loadOlderState)
+  );
+}

@@ -1,8 +1,10 @@
 import { Loader2 } from "lucide-react";
 import {
+  type Dispatch,
   type ImgHTMLAttributes,
   type ReactNode,
   type Ref,
+  type SetStateAction,
   type SyntheticEvent,
   useEffect,
   useRef,
@@ -67,6 +69,73 @@ function isCompleteImage(
   return Boolean(image?.complete && image.naturalWidth > 0);
 }
 
+function getInitialImageLoadingState({
+  imageSrc,
+  isSrcProvided,
+  showLoadingState,
+}: {
+  imageSrc?: string;
+  isSrcProvided: boolean;
+  showLoadingState: boolean;
+}) {
+  return showLoadingState && isSrcProvided && !hasLoadedImageSource(imageSrc);
+}
+
+function getResetImageLoadingState({
+  image,
+  imageSrc,
+  isSrcProvided,
+  showLoadingState,
+}: {
+  image: HTMLImageElement | null;
+  imageSrc?: string;
+  isSrcProvided: boolean;
+  showLoadingState: boolean;
+}) {
+  return (
+    getInitialImageLoadingState({
+      imageSrc,
+      isSrcProvided,
+      showLoadingState,
+    }) && !isCompleteImage(image)
+  );
+}
+
+function syncCompleteImage({
+  actualSrc,
+  image,
+  onLoaded,
+}: {
+  actualSrc?: string;
+  image: HTMLImageElement | null;
+  onLoaded: () => void;
+}) {
+  if (!isCompleteImage(image)) {
+    return;
+  }
+
+  rememberLoadedImage(image, actualSrc);
+  onLoaded();
+}
+
+function syncCompleteMountedImage({
+  actualSrc,
+  image,
+  isSrcProvided,
+  onLoaded,
+}: {
+  actualSrc?: string;
+  image: HTMLImageElement | null;
+  isSrcProvided: boolean;
+  onLoaded: () => void;
+}) {
+  if (!isSrcProvided) {
+    return;
+  }
+
+  syncCompleteImage({ actualSrc, image, onLoaded });
+}
+
 function syncForwardedImageRef(
   ref: Ref<HTMLImageElement> | undefined,
   node: HTMLImageElement | null,
@@ -105,6 +174,220 @@ function shouldShowLoader({
   return showLoadingState && isLoading && isSrcProvided && !fallbackFailed;
 }
 
+function shouldRenderImage({
+  fallbackFailed,
+  isSrcProvided,
+}: {
+  fallbackFailed: boolean;
+  isSrcProvided: boolean;
+}) {
+  return isSrcProvided && !fallbackFailed;
+}
+
+function getImageRenderState({
+  error,
+  fallbackFailed,
+  fallbackSrc,
+  imageSrc,
+  isLoading,
+  showLoadingState,
+}: {
+  error: boolean;
+  fallbackFailed: boolean;
+  fallbackSrc?: string;
+  imageSrc?: string;
+  isLoading: boolean;
+  showLoadingState: boolean;
+}) {
+  const isSrcProvided = Boolean(imageSrc);
+  const actualSrc = error && fallbackSrc ? fallbackSrc : imageSrc;
+
+  return {
+    actualSrc,
+    isSrcProvided,
+    showFallback: shouldShowFallback({ fallbackFailed, isSrcProvided }),
+    showLoader: shouldShowLoader({
+      fallbackFailed,
+      isLoading,
+      isSrcProvided,
+      showLoadingState,
+    }),
+  };
+}
+
+function getImageClassName({
+  className,
+  isLoading,
+  showLoadingState,
+}: {
+  className?: string;
+  isLoading: boolean;
+  showLoadingState: boolean;
+}) {
+  return cn(
+    "size-full object-cover transition-all duration-700 ease-out",
+    showLoadingState && isLoading ? "blur-sm" : "blur-none",
+    className,
+  );
+}
+
+interface ImageFallbackLayerProps {
+  className?: string;
+  fallbackComponent: ReactNode;
+  fallbackFailed: boolean;
+  noImageComponent: ReactNode;
+  showNoImage: boolean;
+}
+
+interface OptionalImageFallbackLayerProps extends ImageFallbackLayerProps {
+  showFallback: boolean;
+}
+
+interface ImageLoaderLayerProps {
+  className?: string;
+  loadingClassName?: string;
+  loadingComponent: ReactNode;
+}
+
+interface OptionalImageLoaderLayerProps extends ImageLoaderLayerProps {
+  showLoader: boolean;
+}
+
+interface ImageElementProps extends ImgHTMLAttributes<HTMLImageElement> {
+  actualSrc?: string;
+  alt: string;
+  forwardedRef: Ref<HTMLImageElement> | undefined;
+  imageRef: { current: HTMLImageElement | null };
+  isLoading: boolean;
+  onCompleteImageLoad: () => void;
+  renderImage: boolean;
+  showLoadingState: boolean;
+}
+
+function shouldRetryWithFallback({
+  actualSrc,
+  fallbackSrc,
+}: {
+  actualSrc?: string;
+  fallbackSrc?: string;
+}) {
+  return Boolean(fallbackSrc && actualSrc !== fallbackSrc);
+}
+
+function updateImageErrorState({
+  actualSrc,
+  fallbackSrc,
+  setError,
+  setFallbackFailed,
+}: {
+  actualSrc?: string;
+  fallbackSrc?: string;
+  setError: Dispatch<SetStateAction<boolean>>;
+  setFallbackFailed: Dispatch<SetStateAction<boolean>>;
+}) {
+  if (shouldRetryWithFallback({ actualSrc, fallbackSrc })) {
+    setError(true);
+    return;
+  }
+
+  setFallbackFailed(true);
+}
+
+function ImageElement({
+  actualSrc,
+  alt,
+  className,
+  forwardedRef,
+  imageRef,
+  isLoading,
+  onCompleteImageLoad,
+  renderImage,
+  showLoadingState,
+  ...props
+}: ImageElementProps) {
+  if (!renderImage) {
+    return null;
+  }
+
+  return (
+    <img
+      ref={(node) => {
+        imageRef.current = node;
+        syncForwardedImageRef(forwardedRef, node);
+
+        syncCompleteImage({
+          actualSrc,
+          image: node,
+          onLoaded: onCompleteImageLoad,
+        });
+      }}
+      src={actualSrc}
+      alt={alt}
+      className={getImageClassName({
+        className,
+        isLoading,
+        showLoadingState,
+      })}
+      {...props}
+    />
+  );
+}
+
+function ImageFallbackLayer({
+  className,
+  fallbackComponent,
+  fallbackFailed,
+  noImageComponent,
+  showNoImage,
+}: ImageFallbackLayerProps) {
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 flex items-center justify-center",
+        className,
+      )}
+    >
+      {fallbackFailed
+        ? fallbackComponent
+        : showNoImage
+          ? noImageComponent
+          : null}
+    </div>
+  );
+}
+
+function OptionalImageFallbackLayer({
+  showFallback,
+  ...props
+}: OptionalImageFallbackLayerProps) {
+  return showFallback ? <ImageFallbackLayer {...props} /> : null;
+}
+
+function ImageLoaderLayer({
+  className,
+  loadingClassName,
+  loadingComponent,
+}: ImageLoaderLayerProps) {
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 flex items-center justify-center bg-background/20",
+        className,
+        loadingClassName,
+      )}
+    >
+      {loadingComponent}
+    </div>
+  );
+}
+
+function OptionalImageLoaderLayer({
+  showLoader,
+  ...props
+}: OptionalImageLoaderLayerProps) {
+  return showLoader ? <ImageLoaderLayer {...props} /> : null;
+}
+
 export function Image({
   src,
   fallbackSrc,
@@ -127,41 +410,46 @@ export function Image({
 }: ImageProps) {
   const imageSrc = getImageSourceKey(src) ?? undefined;
   const isSrcProvided = Boolean(imageSrc);
-  const [isLoading, setIsLoading] = useState(
-    showLoadingState && isSrcProvided && !hasLoadedImageSource(imageSrc),
+  const [isLoading, setIsLoading] = useState(() =>
+    getInitialImageLoadingState({
+      imageSrc,
+      isSrcProvided,
+      showLoadingState,
+    }),
   );
   const [error, setError] = useState(false);
   const [fallbackFailed, setFallbackFailed] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const actualSrc = error && fallbackSrc ? fallbackSrc : imageSrc;
-  const showFallback = shouldShowFallback({ fallbackFailed, isSrcProvided });
-  const showLoader = shouldShowLoader({
+  const { actualSrc, showFallback, showLoader } = getImageRenderState({
+    error,
     fallbackFailed,
+    fallbackSrc,
+    imageSrc,
     isLoading,
-    isSrcProvided,
     showLoadingState,
   });
+  const renderImage = shouldRenderImage({ fallbackFailed, isSrcProvided });
 
   useEffect(() => {
     setError(false);
     setFallbackFailed(false);
     setIsLoading(
-      showLoadingState &&
-        isSrcProvided &&
-        !hasLoadedImageSource(imageSrc) &&
-        !isCompleteImage(imageRef.current),
+      getResetImageLoadingState({
+        image: imageRef.current,
+        imageSrc,
+        isSrcProvided,
+        showLoadingState,
+      }),
     );
   }, [imageSrc, isSrcProvided, showLoadingState]);
 
   useEffect(() => {
-    if (!isSrcProvided || !imageRef.current) {
-      return;
-    }
-
-    if (isCompleteImage(imageRef.current)) {
-      rememberLoadedImage(imageRef.current, actualSrc);
-      setIsLoading(false);
-    }
+    syncCompleteMountedImage({
+      actualSrc,
+      image: imageRef.current,
+      isSrcProvided,
+      onLoaded: () => setIsLoading(false),
+    });
   }, [actualSrc, isSrcProvided]);
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
@@ -172,74 +460,52 @@ export function Image({
 
   const handleError = (event: SyntheticEvent<HTMLImageElement>) => {
     setIsLoading(false);
-
-    if (fallbackSrc && actualSrc !== fallbackSrc) {
-      setError(true);
-    } else {
-      setFallbackFailed(true);
-    }
-
+    updateImageErrorState({
+      actualSrc,
+      fallbackSrc,
+      setError,
+      setFallbackFailed,
+    });
     onError?.(event);
   };
 
   return (
     <div className={cn("relative size-full overflow-hidden", wrapperClassName)}>
-      {isSrcProvided && !fallbackFailed ? (
-        <>
-          {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: Image load/error lifecycle handlers are not user interaction. */}
-          <img
-            ref={(node) => {
-              imageRef.current = node;
-              syncForwardedImageRef(ref, node);
+      <ImageElement
+        {...props}
+        actualSrc={actualSrc}
+        alt={alt}
+        className={className}
+        decoding={decoding}
+        forwardedRef={ref}
+        imageRef={imageRef}
+        isLoading={isLoading}
+        loading={loading}
+        onCompleteImageLoad={() =>
+          setIsLoading((current) => (current ? false : current))
+        }
+        onError={handleError}
+        onLoad={handleLoad}
+        renderImage={renderImage}
+        showLoadingState={showLoadingState}
+        style={style}
+      />
 
-              if (isCompleteImage(node)) {
-                rememberLoadedImage(node, actualSrc);
-                setIsLoading((current) => (current ? false : current));
-              }
-            }}
-            src={actualSrc}
-            alt={alt}
-            style={style}
-            className={cn(
-              "size-full object-cover transition-all duration-700 ease-out",
-              showLoadingState && isLoading ? "blur-sm" : "blur-none",
-              className,
-            )}
-            loading={loading}
-            decoding={decoding}
-            onLoad={handleLoad}
-            onError={handleError}
-            {...props}
-          />
-        </>
-      ) : null}
+      <OptionalImageFallbackLayer
+        className={className}
+        fallbackComponent={fallbackComponent}
+        fallbackFailed={fallbackFailed}
+        noImageComponent={noImageComponent}
+        showFallback={showFallback}
+        showNoImage={showNoImage}
+      />
 
-      {showFallback ? (
-        <div
-          className={cn(
-            "absolute inset-0 flex items-center justify-center",
-            className,
-          )}
-        >
-          {fallbackFailed
-            ? fallbackComponent
-            : showNoImage
-              ? noImageComponent
-              : null}
-        </div>
-      ) : null}
-
-      {showLoader ? (
-        <div
-          className={cn(
-            "absolute inset-0 flex items-center justify-center bg-background/20",
-            className,
-            loadingClassName,
-          )}
-        >
-          {loadingComponent}
-        </div>
-      ) : null}
+      <OptionalImageLoaderLayer
+        className={className}
+        loadingClassName={loadingClassName}
+        loadingComponent={loadingComponent}
+        showLoader={showLoader}
+      />
     </div>
   );
 }

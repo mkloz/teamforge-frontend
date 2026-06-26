@@ -41,6 +41,8 @@ interface MessageInputActionProps {
   viewState: MessageInputViewState;
 }
 
+const EMPTY_ATTACHMENT_HANDLER = () => {};
+
 export function MessageInputDropzonePortal({
   composer,
   dropzoneRoot,
@@ -71,9 +73,7 @@ export function MessageInputContextPanel({
         onClear={composer.clearReply}
       />
 
-      {composer.isEditing && composer.editingMessage && (
-        <EditingMessageBanner onCancel={composer.cancelEditing} />
-      )}
+      <EditingContextBanner composer={composer} />
 
       <AttachmentPreviewPanel
         disabled={composer.areNetworkActionsDisabled}
@@ -83,58 +83,96 @@ export function MessageInputContextPanel({
         onRemoveAttachment={composer.removeAttachment}
       />
 
-      {composer.attachmentNotice && (
-        <div
-          role="status"
-          className="flex items-center gap-2 px-3 py-2.5 text-slate-muted"
+      <AttachmentNotice message={composer.attachmentNotice} />
+
+      <ComposerOfflineNotice isOnline={composer.isOnline} />
+
+      <RecordingErrorNotice message={viewState.recordingErrorMessage} />
+
+      <SendErrorNotice message={errorMessage} onClearError={onClearError} />
+    </div>
+  );
+}
+
+function EditingContextBanner({ composer }: { composer: MessageComposer }) {
+  return composer.isEditing && composer.editingMessage ? (
+    <EditingMessageBanner onCancel={composer.cancelEditing} />
+  ) : null;
+}
+
+function AttachmentNotice({ message }: { message: string | null }) {
+  if (!message) {
+    return null;
+  }
+
+  return (
+    <div
+      role="status"
+      className="flex items-center gap-2 px-3 py-2.5 text-slate-muted"
+    >
+      <Paperclip className="size-4 shrink-0" aria-hidden="true" />
+      <p className="min-w-0 flex-1 font-medium text-xs">{message}</p>
+    </div>
+  );
+}
+
+function ComposerOfflineNotice({ isOnline }: { isOnline: boolean }) {
+  if (isOnline) {
+    return null;
+  }
+
+  return (
+    <OfflineNotice
+      size="xs"
+      iconClassName="mt-0"
+      className="items-center border-0 bg-transparent px-3 py-2.5 text-accent"
+      contentClassName="font-medium"
+    >
+      <p>
+        You are offline. Reconnect before sending messages or adding
+        attachments.
+      </p>
+    </OfflineNotice>
+  );
+}
+
+function RecordingErrorNotice({ message }: { message: string | null }) {
+  return message ? (
+    <p className="px-4 py-2 font-medium text-destructive/80 text-xs">
+      {message}
+    </p>
+  ) : null;
+}
+
+function SendErrorNotice({
+  message,
+  onClearError,
+}: {
+  message: string | null;
+  onClearError?: () => void;
+}) {
+  if (!message) {
+    return null;
+  }
+
+  return (
+    <div role="alert" className="flex items-center gap-2 px-3 py-2.5">
+      <ErrorMessageSendFailedVisual className="h-5 w-auto shrink-0 text-foreground" />
+      <p className="min-w-0 flex-1 font-medium text-destructive/80 text-xs">
+        {message}
+      </p>
+      {onClearError ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          aria-label="Dismiss send error"
+          className="size-7 shrink-0 rounded-full text-slate-muted focus-visible:ring-destructive/25 hover:enabled:bg-destructive/8 hover:enabled:text-destructive"
+          onClick={onClearError}
         >
-          <Paperclip className="size-4 shrink-0" aria-hidden="true" />
-          <p className="min-w-0 flex-1 font-medium text-xs">
-            {composer.attachmentNotice}
-          </p>
-        </div>
-      )}
-
-      {!composer.isOnline && (
-        <OfflineNotice
-          size="xs"
-          iconClassName="mt-0"
-          className="items-center border-0 bg-transparent px-3 py-2.5 text-accent"
-          contentClassName="font-medium"
-        >
-          <p>
-            You are offline. Reconnect before sending messages or adding
-            attachments.
-          </p>
-        </OfflineNotice>
-      )}
-
-      {viewState.recordingErrorMessage && (
-        <p className="px-4 py-2 font-medium text-destructive/80 text-xs">
-          {viewState.recordingErrorMessage}
-        </p>
-      )}
-
-      {errorMessage && (
-        <div role="alert" className="flex items-center gap-2 px-3 py-2.5">
-          <ErrorMessageSendFailedVisual className="h-5 w-auto shrink-0 text-foreground" />
-          <p className="min-w-0 flex-1 font-medium text-destructive/80 text-xs">
-            {errorMessage}
-          </p>
-          {onClearError ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-xs"
-              aria-label="Dismiss send error"
-              className="size-7 shrink-0 rounded-full text-slate-muted focus-visible:ring-destructive/25 hover:enabled:bg-destructive/8 hover:enabled:text-destructive"
-              onClick={onClearError}
-            >
-              <X className="size-3.5" />
-            </Button>
-          ) : null}
-        </div>
-      )}
+          <X className="size-3.5" />
+        </Button>
+      ) : null}
     </div>
   );
 }
@@ -144,6 +182,11 @@ export function MessageInputPill({
   onCreateProposal,
   viewState,
 }: MessageInputPillProps) {
+  const attachmentControls = getMessageInputAttachmentControls(
+    composer,
+    onCreateProposal,
+  );
+
   return (
     <div className={viewState.inputPillClasses}>
       {composer.isRecording ? (
@@ -160,26 +203,53 @@ export function MessageInputPill({
           onSelectGif={composer.sendGif}
           placeholder={viewState.inputPlaceholder}
           disabled={composer.isDisabled}
-          onSelectImages={
-            composer.isEditing ? () => {} : composer.appendImageAttachments
-          }
-          onSelectFiles={
-            composer.isEditing ? () => {} : composer.appendAttachments
-          }
+          onSelectImages={attachmentControls.onSelectImages}
+          onSelectFiles={attachmentControls.onSelectFiles}
           controlsDisabled={composer.areNetworkActionsDisabled}
-          canAttach={!composer.isEditing}
-          canSendGif={!composer.isEditing && composer.isOnline}
-          onCreateProposal={composer.isEditing ? undefined : onCreateProposal}
+          canAttach={attachmentControls.canAttach}
+          canSendGif={attachmentControls.canSendGif}
+          onCreateProposal={attachmentControls.onCreateProposal}
         />
       )}
     </div>
   );
 }
 
+function getMessageInputAttachmentControls(
+  composer: MessageComposer,
+  onCreateProposal?: () => void,
+) {
+  const isComposingNewMessage = !composer.isEditing;
+
+  return {
+    canAttach: isComposingNewMessage,
+    canSendGif: isComposingNewMessage && composer.isOnline,
+    onCreateProposal: isComposingNewMessage ? onCreateProposal : undefined,
+    onSelectFiles: isComposingNewMessage
+      ? composer.appendAttachments
+      : EMPTY_ATTACHMENT_HANDLER,
+    onSelectImages: isComposingNewMessage
+      ? composer.appendImageAttachments
+      : EMPTY_ATTACHMENT_HANDLER,
+  };
+}
+
 export function MessageInputAction({
   composer,
   viewState,
 }: MessageInputActionProps) {
+  function startRecordingIfEnabled() {
+    if (!viewState.isActionTargetDisabled) {
+      void composer.startRecording();
+    }
+  }
+
+  function stopRecordingIfAllowed() {
+    if (composer.isRecording || !viewState.isActionTargetDisabled) {
+      void composer.handleStopRecording();
+    }
+  }
+
   return (
     <div className="flex h-11 shrink-0 items-center">
       <ActionTarget
@@ -189,16 +259,8 @@ export function MessageInputAction({
           composer.handleSubmit();
         }}
         onCancelRecording={composer.cancelRecording}
-        onStartRecording={() => {
-          if (!viewState.isActionTargetDisabled) {
-            void composer.startRecording();
-          }
-        }}
-        onStopRecording={() => {
-          if (composer.isRecording || !viewState.isActionTargetDisabled) {
-            void composer.handleStopRecording();
-          }
-        }}
+        onStartRecording={startRecordingIfEnabled}
+        onStopRecording={stopRecordingIfAllowed}
         disabled={viewState.isActionTargetDisabled}
       />
     </div>

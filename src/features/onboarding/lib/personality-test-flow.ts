@@ -19,11 +19,21 @@ interface GetIntermissionContinuationParams {
   totalPages: number;
 }
 
-export function getIntermissionInterval(length: TestLength) {
+const PROGRESSIVE_SCREEN_IDS = new Set<ScreenState["id"]>([
+  "questions",
+  "intermission",
+  "length",
+]);
+const COMPLETE_PROGRESS_SCREEN_IDS = new Set<ScreenState["id"]>([
+  "calculating",
+  "results",
+]);
+
+function getIntermissionInterval(length: TestLength) {
   return length === 50 ? 6 : 5;
 }
 
-export function shouldTriggerIntermission(
+function shouldTriggerIntermission(
   currentPage: number,
   length: TestLength,
   totalPages: number,
@@ -39,33 +49,68 @@ export function getNextQuestionStep({
   totalPages,
 }: GetNextQuestionStepParams) {
   const isFinalPage = currentPage === totalPages;
-  const isNotDeep = testLength < 150;
 
   if (
-    !isReviewMode &&
-    (shouldTriggerIntermission(currentPage, testLength, totalPages) ||
-      (isFinalPage && isNotDeep))
+    shouldShowIntermissionStep({
+      currentPage,
+      isReviewMode,
+      testLength,
+      totalPages,
+    })
   ) {
-    return {
-      screen: {
-        id: "intermission",
-        type: isFinalPage
-          ? 99
-          : currentPage / getIntermissionInterval(testLength),
-        nextPageIndex: currentPage + 1,
-      },
-      type: "intermission",
-    } as const;
+    return getQuestionIntermissionStep(currentPage, isFinalPage, testLength);
   }
 
   if (currentPage < totalPages) {
-    return {
-      screen: { id: "questions", currentPage: currentPage + 1 },
-      type: "questions",
-    } as const;
+    return getQuestionStep(currentPage + 1);
   }
 
   return { type: "complete" } as const;
+}
+
+function shouldShowIntermissionStep({
+  currentPage,
+  isReviewMode,
+  testLength,
+  totalPages,
+}: GetNextQuestionStepParams) {
+  return (
+    !isReviewMode &&
+    (shouldTriggerIntermission(currentPage, testLength, totalPages) ||
+      shouldShowFinalIntermission(currentPage, testLength, totalPages))
+  );
+}
+
+function shouldShowFinalIntermission(
+  currentPage: number,
+  testLength: TestLength,
+  totalPages: number,
+) {
+  return currentPage === totalPages && testLength < 150;
+}
+
+function getQuestionIntermissionStep(
+  currentPage: number,
+  isFinalPage: boolean,
+  testLength: TestLength,
+) {
+  return {
+    screen: {
+      id: "intermission",
+      type: isFinalPage
+        ? 99
+        : currentPage / getIntermissionInterval(testLength),
+      nextPageIndex: currentPage + 1,
+    },
+    type: "intermission",
+  } as const;
+}
+
+function getQuestionStep(currentPage: number) {
+  return {
+    screen: { id: "questions", currentPage },
+    type: "questions",
+  } as const;
 }
 
 export function getIntermissionContinuationStep({
@@ -76,10 +121,7 @@ export function getIntermissionContinuationStep({
     return { type: "complete" } as const;
   }
 
-  return {
-    screen: { id: "questions", currentPage: nextPageIndex },
-    type: "questions",
-  } as const;
+  return getQuestionStep(nextPageIndex);
 }
 
 export function calculatePersonalityResult(
@@ -97,20 +139,22 @@ export function calculatePersonalityProgress(
   answersCount: number,
   totalQuestions: number,
 ) {
-  if (
-    screenId === "questions" ||
-    screenId === "intermission" ||
-    screenId === "length"
-  ) {
-    if (totalQuestions === 0) return 0;
-    return answersCount / totalQuestions;
+  if (PROGRESSIVE_SCREEN_IDS.has(screenId)) {
+    return getAnsweredQuestionsRatio(answersCount, totalQuestions);
   }
 
-  if (screenId === "calculating" || screenId === "results") {
+  if (COMPLETE_PROGRESS_SCREEN_IDS.has(screenId)) {
     return 1;
   }
 
   return 0;
+}
+
+function getAnsweredQuestionsRatio(
+  answersCount: number,
+  totalQuestions: number,
+) {
+  return totalQuestions === 0 ? 0 : answersCount / totalQuestions;
 }
 
 export function resolvePersonalityQuestions(

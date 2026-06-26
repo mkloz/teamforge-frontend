@@ -21,6 +21,8 @@ export function BlockedUserRow({
   onUnblockUser,
 }: BlockedUserRowProps) {
   const user = friendship.counterpart;
+  const isDisabled = !isOnline || isUnblocking;
+  const unblockLabel = getUnblockLabel(isUnblocking);
 
   return (
     <div className="flex flex-col gap-4 border-border border-b py-4 md:flex-row md:items-center md:justify-between">
@@ -39,20 +41,16 @@ export function BlockedUserRow({
           <p className="truncate font-semibold text-ink text-sm transition-colors group-hover:text-primary">
             {user.name}
           </p>
-          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-slate-muted text-xs">
-            <span>Blocked {formatBlockedDate(friendship.updatedAt)}</span>
-            {user.city && <span>{user.city}</span>}
-            {user.personalityType && <span>{user.personalityType}</span>}
-          </div>
+          <BlockedUserMetadata friendship={friendship} />
         </div>
       </Link>
 
       <ActionDialog
         cancelLabel="Keep blocked"
-        confirmLabel={isUnblocking ? "Unblocking..." : "Unblock"}
+        confirmLabel={unblockLabel}
         description={`${user.name} will leave your blocked people list and can contact you again.`}
         details={["You can block them again from their profile panel."]}
-        disabled={!isOnline || isUnblocking}
+        disabled={isDisabled}
         loading={isUnblocking}
         onConfirm={() => onUnblockUser(user.id)}
         title="Unblock this user?"
@@ -61,18 +59,46 @@ export function BlockedUserRow({
           <Button
             type="button"
             variant="outline"
-            disabled={!isOnline || isUnblocking}
+            disabled={isDisabled}
             className="w-full md:w-auto"
           >
-            {isUnblocking ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <ShieldOff size={14} />
-            )}
-            {isUnblocking ? "Unblocking..." : "Unblock"}
+            <UnblockButtonIcon isUnblocking={isUnblocking} />
+            {unblockLabel}
           </Button>
         }
       />
     </div>
   );
+}
+
+function BlockedUserMetadata({ friendship }: { friendship: FriendshipApi }) {
+  const user = friendship.counterpart;
+
+  return (
+    <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-slate-muted text-xs">
+      <span>Blocked {formatBlockedDate(friendship.updatedAt)}</span>
+      <OptionalBlockedUserMeta value={user.city} />
+      <OptionalBlockedUserMeta value={user.personalityType} />
+    </div>
+  );
+}
+
+function OptionalBlockedUserMeta({ value }: { value?: string | null }) {
+  if (!value) {
+    return null;
+  }
+
+  return <span>{value}</span>;
+}
+
+function UnblockButtonIcon({ isUnblocking }: { isUnblocking: boolean }) {
+  if (isUnblocking) {
+    return <Loader2 size={14} className="animate-spin" />;
+  }
+
+  return <ShieldOff size={14} />;
+}
+
+function getUnblockLabel(isUnblocking: boolean) {
+  return isUnblocking ? "Unblocking..." : "Unblock";
 }

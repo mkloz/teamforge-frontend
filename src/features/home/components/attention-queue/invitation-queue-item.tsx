@@ -1,27 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Check,
-  Clock3,
-  Handshake,
-  Hourglass,
-  type LucideIcon,
-  UserRoundPlus,
-  UsersRound,
-  X,
-} from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { AvatarWithBadge } from "@/shared/components/common/avatar-with-badge";
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 
 import type { AttentionQueueInvitation } from "./attention-queue.types";
-import {
-  getInviteMemberLabel,
-  getQueueMomentLabel,
-} from "./attention-queue-formatters";
 import { AttentionQueueMeta } from "./attention-queue-meta";
+import { getInvitationQueueItemRenderState } from "./invitation-queue-item-render-state";
 
 interface InvitationQueueItemProps {
   invite: AttentionQueueInvitation;
@@ -46,34 +31,29 @@ export function InvitationQueueItem({
   onAccept,
   onDecline,
 }: InvitationQueueItemProps) {
-  const detailsNavigation = buildGroupPlanDetailNavigation(invite.group.id, {
-    source: "invite",
+  const {
+    acceptButtonDisabled,
+    acceptButtonLoading,
+    acceptButtonTitle,
+    declineButtonDisabled,
+    declineButtonLoading,
+    declineButtonTitle,
+    detailsNavigation,
+    InviteBadgeIcon,
+    inviteMeta,
+    rowClassName,
+  } = getInvitationQueueItemRenderState({
+    acceptingInviteId,
+    decliningInviteId,
+    invite,
+    isAccepting,
+    isDeclining,
+    isFocused,
+    isOnline,
   });
-  const InviteBadgeIcon = getInviteBadgeIcon(invite.type);
-  const inviteMeta = [
-    {
-      icon: UsersRound,
-      label: getInviteMemberLabel(invite),
-    },
-    {
-      icon: Clock3,
-      label: getQueueMomentLabel(invite.createdAt, "Sent"),
-    },
-    {
-      icon: Hourglass,
-      label: invite.expiresAt
-        ? getQueueMomentLabel(invite.expiresAt, "Expires")
-        : null,
-    },
-  ].filter((item) => item.label);
 
   return (
-    <li
-      className={cn(
-        "group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 sm:px-3",
-        isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
-      )}
-    >
+    <li className={rowClassName}>
       <div className="flex min-w-0 items-center justify-between gap-3">
         <Link
           {...detailsNavigation}
@@ -115,11 +95,11 @@ export function InvitationQueueItem({
           <Button
             size="icon-xs"
             className="sm:w-auto sm:px-3"
-            loading={acceptingInviteId === invite.id}
-            disabled={!isOnline || isAccepting || isDeclining}
+            loading={acceptButtonLoading}
+            disabled={acceptButtonDisabled}
             onClick={() => void onAccept(invite.id)}
             aria-label={`Join ${invite.group.name}`}
-            title={isOnline ? undefined : "Reconnect before accepting invites."}
+            title={acceptButtonTitle}
           >
             <Check className="size-3" />
             <span className="hidden sm:inline">Join</span>
@@ -128,11 +108,11 @@ export function InvitationQueueItem({
             type="button"
             variant="destructive"
             size="icon-xs"
-            loading={decliningInviteId === invite.id}
-            disabled={!isOnline || isAccepting || isDeclining}
+            loading={declineButtonLoading}
+            disabled={declineButtonDisabled}
             onClick={() => void onDecline(invite.id)}
             aria-label={`Decline invitation to ${invite.group.name}`}
-            title={isOnline ? undefined : "Reconnect before declining invites."}
+            title={declineButtonTitle}
           >
             <X className="size-3.5" />
           </Button>
@@ -140,18 +120,4 @@ export function InvitationQueueItem({
       </div>
     </li>
   );
-}
-
-function getInviteBadgeIcon(
-  type: AttentionQueueInvitation["type"],
-): LucideIcon {
-  if (type === "ALGORITHM_MATCH") {
-    return UsersRound;
-  }
-
-  if (type === "FRIEND_INVITE") {
-    return Handshake;
-  }
-
-  return UserRoundPlus;
 }

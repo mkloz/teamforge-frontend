@@ -19,6 +19,24 @@ export const PROPOSAL_STATUS_LABELS: Record<PlanProposal["status"], string> = {
   CANCELLED: "Cancelled",
 };
 
+const PROPOSAL_TIMELINE_FIELD_LABELS: Record<PlanProposal["field"], string> = {
+  CATEGORY: "the category",
+  COST: "the cost details",
+  DATE_TIME: "the date and time",
+  DESCRIPTION: "the description",
+  LOCATION: "the location",
+  TITLE: "the title",
+};
+
+type ProposalValueFormatter = (value: string) => string;
+
+const PROPOSAL_VALUE_FORMATTERS: Partial<
+  Record<PlanProposal["field"], ProposalValueFormatter>
+> = {
+  COST: formatCostProposalValue,
+  LOCATION: formatPlanLocationProposalValue,
+};
+
 export function formatProposalDate(value: string) {
   const date = new Date(value);
 
@@ -42,27 +60,31 @@ export function formatProposalValue(
     return "Not set";
   }
 
-  if (field === "COST") {
-    return formatCostProposalValue(value);
-  }
+  const fieldFormatter = PROPOSAL_VALUE_FORMATTERS[field];
 
-  if (field === "LOCATION") {
-    return formatPlanLocationProposalValue(value);
-  }
+  return fieldFormatter
+    ? fieldFormatter(value)
+    : formatTextProposalValue(value);
+}
 
+function formatTextProposalValue(value: string) {
   const date = new Date(value);
 
   if (!Number.isNaN(date.getTime()) && value.includes("T")) {
-    return date.toLocaleString("en-GB", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      hour: "numeric",
-      minute: "2-digit",
-    });
+    return formatProposalDateTime(date);
   }
 
   return value;
+}
+
+function formatProposalDateTime(date: Date) {
+  return date.toLocaleString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 type CostProposalValue = {
@@ -99,19 +121,31 @@ function formatCostProposalValue(value: string) {
   const details = parsedValue.costDetails;
 
   if (parsedValue.cost === "FREE") {
-    return details ? `Free \u00b7 ${details}` : "Free";
+    return formatFreeCostProposalValue(details);
   }
 
+  return formatPaidCostProposalValue(parsedValue);
+}
+
+function formatFreeCostProposalValue(details: string | null) {
+  return details ? `Free \u00b7 ${details}` : "Free";
+}
+
+function formatPaidCostProposalValue({
+  costAmount,
+  costDetails,
+}: CostProposalValue) {
   const amount =
-    parsedValue.costAmount === null
-      ? null
-      : `About \u00a3${formatCostAmount(parsedValue.costAmount)}`;
+    costAmount === null ? null : `About \u00a3${formatCostAmount(costAmount)}`;
 
-  if (amount && details) {
-    return `${amount} \u00b7 ${details}`;
-  }
+  return joinCostParts(amount, costDetails) ?? "Paid";
+}
 
-  return amount ?? details ?? "Paid";
+function joinCostParts(
+  amount: string | null,
+  details: string | null,
+): string | null {
+  return [amount, details].filter(Boolean).join(" \u00b7 ") || null;
 }
 
 function parseCostProposalValue(value: string): CostProposalValue | null {
@@ -140,29 +174,8 @@ export function buildProposalTimelineContent(proposal: PlanProposal) {
   return `${proposal.proposer.name} proposed updating ${getProposalTimelineFieldLabel(proposal.field)}`;
 }
 
-export function buildProposalSummaryText(proposal: PlanProposal) {
-  return `${PROPOSAL_FIELD_LABELS[proposal.field]} proposed: ${formatProposalValue(proposal.field, proposal.proposedValue)}`;
-}
-
 function getProposalTimelineFieldLabel(field: PlanProposal["field"]) {
-  switch (field) {
-    case "TITLE":
-      return "the title";
-    case "DESCRIPTION":
-      return "the description";
-    case "DATE_TIME":
-      return "the date and time";
-    case "LOCATION":
-      return "the location";
-    case "CATEGORY":
-      return "the category";
-    case "COST":
-      return "the cost details";
-    default: {
-      const exhaustiveField: never = field;
-      return exhaustiveField;
-    }
-  }
+  return PROPOSAL_TIMELINE_FIELD_LABELS[field];
 }
 
 export function buildProposalClipboardText(
@@ -170,18 +183,7 @@ export function buildProposalClipboardText(
   options: { eligibleVoterCount?: number } = {},
 ) {
   const fieldLabel = PROPOSAL_FIELD_LABELS[proposal.field];
-  const approveCount = proposal.votes.filter(
-    (vote) => vote.vote === "APPROVE",
-  ).length;
-  const rejectCount = proposal.votes.filter(
-    (vote) => vote.vote === "REJECT",
-  ).length;
-  const totalVotes = approveCount + rejectCount;
-  const eligibleVoterCount = Math.max(
-    options.eligibleVoterCount ?? proposal.votes.length,
-    proposal.votes.length,
-    1,
-  );
+  const voteSummary = getProposalVoteSummary(proposal, options);
 
   return [
     `Plan change: ${fieldLabel}`,
@@ -189,6 +191,32 @@ export function buildProposalClipboardText(
     `Current: ${formatProposalValue(proposal.field, proposal.currentValue)}`,
     `New: ${formatProposalValue(proposal.field, proposal.proposedValue)}`,
     `Status: ${PROPOSAL_STATUS_LABELS[proposal.status]}`,
-    `Votes: ${totalVotes}/${eligibleVoterCount} (${approveCount} approve, ${rejectCount} reject)`,
+    `Votes: ${voteSummary.totalVotes}/${voteSummary.eligibleVoterCount} (${voteSummary.approveCount} approve, ${voteSummary.rejectCount} reject)`,
   ].join("\n");
+}
+
+function getProposalVoteSummary(
+  proposal: PlanProposal,
+  options: { eligibleVoterCount?: number },
+) {
+  const approveCount = countProposalVotes(proposal, "APPROVE");
+  const rejectCount = countProposalVotes(proposal, "REJECT");
+
+  return {
+    approveCount,
+    eligibleVoterCount: Math.max(
+      options.eligibleVoterCount ?? proposal.votes.length,
+      proposal.votes.length,
+      1,
+    ),
+    rejectCount,
+    totalVotes: approveCount + rejectCount,
+  };
+}
+
+function countProposalVotes(
+  proposal: PlanProposal,
+  voteType: PlanProposal["votes"][number]["vote"],
+) {
+  return proposal.votes.filter((vote) => vote.vote === voteType).length;
 }

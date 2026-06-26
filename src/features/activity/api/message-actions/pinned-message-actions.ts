@@ -6,6 +6,18 @@ import { canPinMessage } from "@/features/activity/lib/message-action-capabiliti
 
 const PINNED_MESSAGE_MUTATION_KEY_PART = "pinned";
 
+interface PinnedMessageActionInput {
+  context: ActivityActionContext;
+  isPinned: boolean;
+  kind: "group" | "dm" | null;
+  message: UnifiedMessage;
+  persist: (
+    chatId: string,
+    messageId: string,
+  ) => ReturnType<typeof ActivityApi.pinMessage>;
+  selectedId: string | null;
+}
+
 export const ActivityPinnedMessageActions = {
   async pinMessage(
     context: ActivityActionContext,
@@ -13,29 +25,13 @@ export const ActivityPinnedMessageActions = {
     selectedId: string | null,
     message: UnifiedMessage,
   ) {
-    if (!kind || !selectedId || !canPinMessage(message)) {
-      return null;
-    }
-
-    const chatId = await context.resolveChatId(kind, selectedId);
-
-    if (!chatId) {
-      return null;
-    }
-
-    return runMappedMessageMutation({
-      chatId,
+    return togglePinnedMessage({
       context,
-      createOptimisticMessage: (targetMessage) => ({
-        ...targetMessage,
-        isPinned: true,
-      }),
+      isPinned: true,
       kind,
       message,
-      mutationKeyPart: PINNED_MESSAGE_MUTATION_KEY_PART,
-      persist: () => ActivityApi.pinMessage(chatId, message.id),
+      persist: ActivityApi.pinMessage,
       selectedId,
-      syncPinned: true,
     });
   },
 
@@ -45,29 +41,47 @@ export const ActivityPinnedMessageActions = {
     selectedId: string | null,
     message: UnifiedMessage,
   ) {
-    if (!kind || !selectedId || !canPinMessage(message)) {
-      return null;
-    }
-
-    const chatId = await context.resolveChatId(kind, selectedId);
-
-    if (!chatId) {
-      return null;
-    }
-
-    return runMappedMessageMutation({
-      chatId,
+    return togglePinnedMessage({
       context,
-      createOptimisticMessage: (targetMessage) => ({
-        ...targetMessage,
-        isPinned: false,
-      }),
+      isPinned: false,
       kind,
       message,
-      mutationKeyPart: PINNED_MESSAGE_MUTATION_KEY_PART,
-      persist: () => ActivityApi.unpinMessage(chatId, message.id),
+      persist: ActivityApi.unpinMessage,
       selectedId,
-      syncPinned: true,
     });
   },
 };
+
+async function togglePinnedMessage({
+  context,
+  isPinned,
+  kind,
+  message,
+  persist,
+  selectedId,
+}: PinnedMessageActionInput) {
+  if (!kind || !selectedId || !canPinMessage(message)) {
+    return null;
+  }
+
+  const chatId = await context.resolveChatId(kind, selectedId);
+
+  if (!chatId) {
+    return null;
+  }
+
+  return runMappedMessageMutation({
+    chatId,
+    context,
+    createOptimisticMessage: (targetMessage) => ({
+      ...targetMessage,
+      isPinned,
+    }),
+    kind,
+    message,
+    mutationKeyPart: PINNED_MESSAGE_MUTATION_KEY_PART,
+    persist: () => persist(chatId, message.id),
+    selectedId,
+    syncPinned: true,
+  });
+}

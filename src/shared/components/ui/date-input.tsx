@@ -10,6 +10,26 @@ import { Button } from "@/shared/components/ui/button";
 import { Input, type InputProps } from "@/shared/components/ui/input";
 import { useFloatingInputPanel } from "@/shared/hooks/use-floating-input-panel";
 import { cn } from "@/shared/lib/utils";
+import {
+  type CalendarView,
+  formatDisplayValue,
+  getCalendarDayButtonClassName,
+  getCalendarDayButtonViewState,
+  getCalendarDays,
+  getCalendarMonthButtonViewState,
+  getCalendarOptionButtonClassName,
+  getCalendarPanelViewState,
+  getCalendarYearButtonViewState,
+  getCalendarYears,
+  getMovedVisibleMonth,
+  getNextCalendarView,
+  isCalendarOpenKey,
+  isOutOfRange,
+  monthNames,
+  parseDateValue,
+  toDateValue,
+  weekdays,
+} from "./date-input-utils";
 
 type DateInputProps = Omit<
   InputProps,
@@ -22,86 +42,27 @@ type DateInputProps = Omit<
   value?: string | null;
 };
 
-type CalendarView = "days" | "months" | "years";
-
-const weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-const monthNames = Array.from({ length: 12 }, (_, month) =>
-  new Intl.DateTimeFormat("en", { month: "short" }).format(
-    new Date(2026, month, 1),
-  ),
-);
-
-function toDateValue(date: Date) {
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, "0");
-  const day = `${date.getDate()}`.padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
+interface DateInputCalendarInput {
+  max?: string;
+  min?: string;
+  onValueChange: (value: string) => void;
+  value?: string | null;
 }
 
-function parseDateValue(value: string | null | undefined) {
-  if (!value) {
-    return null;
-  }
+type DateInputCalendarState = ReturnType<typeof useDateInputCalendar>;
+type DateInputControlProps = Omit<
+  DateInputProps,
+  "clearable" | "max" | "min" | "onValueChange" | "wrapperClassName"
+> & {
+  calendar: DateInputCalendarState;
+};
 
-  const [year, month, day] = value.split("-").map(Number);
-
-  if (!year || !month || !day) {
-    return null;
-  }
-
-  return new Date(year, month - 1, day);
-}
-
-function formatDisplayValue(value: string | null | undefined) {
-  const date = parseDateValue(value);
-
-  if (!date) {
-    return "";
-  }
-
-  return new Intl.DateTimeFormat("en", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(date);
-}
-
-function getCalendarDays(monthDate: Date) {
-  const year = monthDate.getFullYear();
-  const month = monthDate.getMonth();
-  const firstDay = new Date(year, month, 1);
-  const mondayOffset = (firstDay.getDay() + 6) % 7;
-  const startDate = new Date(year, month, 1 - mondayOffset);
-
-  return Array.from({ length: 42 }, (_, index) => {
-    const date = new Date(startDate);
-    date.setDate(startDate.getDate() + index);
-    return date;
-  });
-}
-
-function isOutOfRange(value: string, min?: string, max?: string) {
-  return (min != null && value < min) || (max != null && value > max);
-}
-
-function isMonthOutOfRange(
-  year: number,
-  month: number,
-  min?: string,
-  max?: string,
-) {
-  const firstDay = toDateValue(new Date(year, month, 1));
-  const lastDay = toDateValue(new Date(year, month + 1, 0));
-
-  return (min != null && lastDay < min) || (max != null && firstDay > max);
-}
-
-function isYearOutOfRange(year: number, min?: string, max?: string) {
-  const firstDay = toDateValue(new Date(year, 0, 1));
-  const lastDay = toDateValue(new Date(year, 11, 31));
-
-  return (min != null && lastDay < min) || (max != null && firstDay > max);
+interface DateInputPanelPortalProps {
+  calendar: DateInputCalendarState;
+  clearable: boolean;
+  max?: string;
+  min?: string;
+  value?: string | null;
 }
 
 function DateInput({
@@ -116,73 +77,149 @@ function DateInput({
   wrapperClassName,
   ...props
 }: DateInputProps) {
+  const calendar = useDateInputCalendar({
+    max,
+    min,
+    onValueChange,
+    value,
+  });
+
+  return (
+    <div
+      ref={calendar.triggerRef}
+      className={cn("relative w-full", wrapperClassName)}
+    >
+      <DateInputControl
+        {...props}
+        calendar={calendar}
+        className={className}
+        disabled={disabled}
+        placeholder={placeholder}
+        value={value}
+      />
+
+      <DateInputPanelPortal
+        calendar={calendar}
+        clearable={clearable}
+        max={max}
+        min={min}
+        value={value}
+      />
+    </div>
+  );
+}
+
+function DateInputControl({
+  calendar,
+  className,
+  disabled,
+  placeholder,
+  value,
+  ...props
+}: DateInputControlProps) {
+  return (
+    <Input
+      {...props}
+      readOnly
+      disabled={disabled}
+      role="combobox"
+      aria-controls={calendar.open ? calendar.panelId : undefined}
+      aria-expanded={calendar.open}
+      value={formatDisplayValue(value)}
+      placeholder={placeholder}
+      leftIcon={<CalendarIcon size={15} />}
+      className={cn("cursor-pointer caret-transparent", className)}
+      onClick={() => {
+        if (!disabled) {
+          calendar.openCalendar();
+        }
+      }}
+      onKeyDown={(event) => {
+        if (!disabled && isCalendarOpenKey(event.key)) {
+          event.preventDefault();
+          calendar.openCalendar();
+        }
+      }}
+    />
+  );
+}
+
+function DateInputPanelPortal({
+  calendar,
+  clearable,
+  max,
+  min,
+  value,
+}: DateInputPanelPortalProps) {
+  if (!(calendar.open && calendar.panelStyle && calendar.portalTarget)) {
+    return null;
+  }
+
+  return createPortal(
+    <DateInputPanel
+      calendarPanelState={calendar.calendarPanelState}
+      calendarView={calendar.calendarView}
+      clearable={clearable}
+      days={calendar.days}
+      max={max}
+      min={min}
+      onClear={calendar.clearDate}
+      onMoveVisibleRange={calendar.moveVisibleRange}
+      onSelectDate={calendar.selectDate}
+      onSelectMonth={calendar.selectMonth}
+      onSelectYear={calendar.selectYear}
+      onToggleCalendarView={calendar.toggleCalendarView}
+      panelId={calendar.panelId}
+      panelRef={calendar.panelRef}
+      panelStyle={calendar.panelStyle}
+      todayValue={calendar.todayValue}
+      value={value}
+      visibleMonth={calendar.visibleMonth}
+      years={calendar.years}
+    />,
+    calendar.portalTarget,
+  );
+}
+
+function useDateInputCalendar({
+  max,
+  min,
+  onValueChange,
+  value,
+}: DateInputCalendarInput) {
   const panelId = useId();
   const selectedDate = parseDateValue(value);
   const todayValue = toDateValue(new Date());
   const [calendarView, setCalendarView] = useState<CalendarView>("days");
   const [visibleMonth, setVisibleMonth] = useState(selectedDate ?? new Date());
-  const {
-    closePanel,
-    open,
-    openPanel,
-    panelRef,
-    panelStyle,
-    portalTarget,
-    triggerRef,
-  } = useFloatingInputPanel({
+  const floatingPanel = useFloatingInputPanel({
     panelHeight: 360,
     panelWidth: 288,
   });
-  const monthLabel = new Intl.DateTimeFormat("en", {
-    month: "long",
-    year: "numeric",
-  }).format(visibleMonth);
-  const yearLabel = String(visibleMonth.getFullYear());
-  const yearRangeStart = Math.floor(visibleMonth.getFullYear() / 12) * 12;
-  const yearRangeLabel = `${yearRangeStart} - ${yearRangeStart + 11}`;
-
+  const calendarPanelState = getCalendarPanelViewState({
+    calendarView,
+    visibleMonth,
+  });
   const days = useMemo(() => getCalendarDays(visibleMonth), [visibleMonth]);
   const years = useMemo(
-    () => Array.from({ length: 12 }, (_, index) => yearRangeStart + index),
-    [yearRangeStart],
+    () => getCalendarYears(calendarPanelState.yearRangeStart),
+    [calendarPanelState.yearRangeStart],
   );
 
   const openCalendar = () => {
     setVisibleMonth(selectedDate ?? new Date());
     setCalendarView("days");
-    openPanel();
+    floatingPanel.openPanel();
   };
 
   const moveVisibleRange = (amount: number) => {
     setVisibleMonth((current) => {
-      if (calendarView === "months") {
-        return new Date(current.getFullYear() + amount, current.getMonth(), 1);
-      }
-
-      if (calendarView === "years") {
-        return new Date(
-          current.getFullYear() + amount * 12,
-          current.getMonth(),
-          1,
-        );
-      }
-
-      return new Date(current.getFullYear(), current.getMonth() + amount, 1);
+      return getMovedVisibleMonth(current, calendarView, amount);
     });
   };
 
   const toggleCalendarView = () => {
-    setCalendarView((current) => {
-      if (current === "days") {
-        return "months";
-      }
-
-      if (current === "months") {
-        return "years";
-      }
-
-      return "days";
-    });
+    setCalendarView((current) => getNextCalendarView(current));
   };
 
   const selectMonth = (month: number) => {
@@ -203,230 +240,402 @@ function DateInput({
     }
 
     onValueChange(nextValue);
-    closePanel();
+    floatingPanel.closePanel();
   };
 
+  const clearDate = () => {
+    onValueChange("");
+    floatingPanel.closePanel();
+  };
+
+  return {
+    calendarPanelState,
+    calendarView,
+    clearDate,
+    days,
+    moveVisibleRange,
+    open: floatingPanel.open,
+    openCalendar,
+    panelId,
+    panelRef: floatingPanel.panelRef,
+    panelStyle: floatingPanel.panelStyle,
+    portalTarget: floatingPanel.portalTarget,
+    selectDate,
+    selectMonth,
+    selectYear,
+    todayValue,
+    toggleCalendarView,
+    triggerRef: floatingPanel.triggerRef,
+    visibleMonth,
+    years,
+  };
+}
+
+type DateInputPanelRef = ReturnType<typeof useFloatingInputPanel>["panelRef"];
+type DateInputPanelStyle = NonNullable<
+  ReturnType<typeof useFloatingInputPanel>["panelStyle"]
+>;
+type CalendarPanelState = ReturnType<typeof getCalendarPanelViewState>;
+
+interface DateInputPanelProps {
+  calendarPanelState: CalendarPanelState;
+  calendarView: CalendarView;
+  clearable: boolean;
+  days: Date[];
+  max?: string;
+  min?: string;
+  onClear: () => void;
+  onMoveVisibleRange: (amount: number) => void;
+  onSelectDate: (date: Date) => void;
+  onSelectMonth: (month: number) => void;
+  onSelectYear: (year: number) => void;
+  onToggleCalendarView: () => void;
+  panelId: string;
+  panelRef: DateInputPanelRef;
+  panelStyle: DateInputPanelStyle;
+  todayValue: string;
+  value?: string | null;
+  visibleMonth: Date;
+  years: number[];
+}
+
+function DateInputPanel({
+  calendarPanelState,
+  calendarView,
+  clearable,
+  days,
+  max,
+  min,
+  onClear,
+  onMoveVisibleRange,
+  onSelectDate,
+  onSelectMonth,
+  onSelectYear,
+  onToggleCalendarView,
+  panelId,
+  panelRef,
+  panelStyle,
+  todayValue,
+  value,
+  visibleMonth,
+  years,
+}: DateInputPanelProps) {
   return (
-    <div ref={triggerRef} className={cn("relative w-full", wrapperClassName)}>
-      <Input
-        {...props}
-        readOnly
-        disabled={disabled}
-        role="combobox"
-        aria-controls={open ? panelId : undefined}
-        aria-expanded={open}
-        value={formatDisplayValue(value)}
-        placeholder={placeholder}
-        leftIcon={<CalendarIcon size={15} />}
-        className={cn("cursor-pointer caret-transparent", className)}
-        onClick={() => {
-          if (!disabled) {
-            openCalendar();
-          }
-        }}
-        onKeyDown={(event) => {
-          if (
-            !disabled &&
-            (event.key === "Enter" ||
-              event.key === " " ||
-              event.key === "ArrowDown")
-          ) {
-            event.preventDefault();
-            openCalendar();
-          }
-        }}
+    <div
+      id={panelId}
+      ref={panelRef}
+      style={panelStyle}
+      className="z-100 rounded-xl border border-border bg-card p-3 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]"
+    >
+      <DateInputPanelHeader
+        calendarPanelState={calendarPanelState}
+        onMoveVisibleRange={onMoveVisibleRange}
+        onToggleCalendarView={onToggleCalendarView}
       />
 
-      {open && panelStyle && portalTarget
-        ? createPortal(
-            <div
-              id={panelId}
-              ref={panelRef}
-              style={panelStyle}
-              className="z-100 rounded-xl border border-border bg-card p-3 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]"
-            >
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label={
-                    calendarView === "years"
-                      ? "Previous years"
-                      : calendarView === "months"
-                        ? "Previous year"
-                        : "Previous month"
-                  }
-                  className="rounded-md text-slate-muted hover:text-ink"
-                  onClick={() => moveVisibleRange(-1)}
-                >
-                  <ChevronLeft size={15} />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="xs"
-                  className="min-w-32 rounded-md font-bold text-ink text-sm"
-                  aria-label="Change calendar view"
-                  onClick={toggleCalendarView}
-                >
-                  {calendarView === "years"
-                    ? yearRangeLabel
-                    : calendarView === "months"
-                      ? yearLabel
-                      : monthLabel}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label={
-                    calendarView === "years"
-                      ? "Next years"
-                      : calendarView === "months"
-                        ? "Next year"
-                        : "Next month"
-                  }
-                  className="rounded-md text-slate-muted hover:text-ink"
-                  onClick={() => moveVisibleRange(1)}
-                >
-                  <ChevronRight size={15} />
-                </Button>
-              </div>
+      {calendarView === "days" ? (
+        <DateInputDaysView
+          days={days}
+          max={max}
+          min={min}
+          onSelectDate={onSelectDate}
+          todayValue={todayValue}
+          value={value}
+          visibleMonth={visibleMonth}
+        />
+      ) : null}
 
-              {calendarView === "days" ? (
-                <div className="grid grid-cols-7 gap-1 text-center">
-                  {weekdays.map((weekday) => (
-                    <span
-                      key={weekday}
-                      className="py-1 font-black text-slate-muted text-xs uppercase tracking-wide"
-                    >
-                      {weekday}
-                    </span>
-                  ))}
-                  {days.map((date) => {
-                    const dateValue = toDateValue(date);
-                    const selected = value === dateValue;
-                    const today = todayValue === dateValue;
-                    const outsideMonth =
-                      date.getMonth() !== visibleMonth.getMonth();
-                    const disabledDay = isOutOfRange(dateValue, min, max);
+      {calendarView === "months" ? (
+        <DateInputMonthsView
+          max={max}
+          min={min}
+          onSelectMonth={onSelectMonth}
+          visibleMonth={visibleMonth}
+        />
+      ) : null}
 
-                    return (
-                      <Button
-                        key={dateValue}
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        disabled={disabledDay}
-                        aria-pressed={selected}
-                        className={cn(
-                          "size-8 rounded-lg font-bold text-xs",
-                          selected &&
-                            "border-primary bg-primary text-primary-foreground",
-                          outsideMonth && "text-slate-muted/35",
-                          today &&
-                            !selected &&
-                            "border-primary/30 text-primary",
-                        )}
-                        onClick={() => selectDate(date)}
-                      >
-                        {date.getDate()}
-                      </Button>
-                    );
-                  })}
-                </div>
-              ) : null}
+      {calendarView === "years" ? (
+        <DateInputYearsView
+          max={max}
+          min={min}
+          onSelectYear={onSelectYear}
+          visibleMonth={visibleMonth}
+          years={years}
+        />
+      ) : null}
 
-              {calendarView === "months" ? (
-                <div className="grid min-h-72 grid-cols-3 content-center gap-2">
-                  {monthNames.map((month, monthIndex) => {
-                    const selected = visibleMonth.getMonth() === monthIndex;
-                    const disabledMonth = isMonthOutOfRange(
-                      visibleMonth.getFullYear(),
-                      monthIndex,
-                      min,
-                      max,
-                    );
+      <DateInputPanelFooter
+        clearable={clearable}
+        max={max}
+        min={min}
+        onClear={onClear}
+        onSelectDate={onSelectDate}
+        todayValue={todayValue}
+      />
+    </div>
+  );
+}
 
-                    return (
-                      <Button
-                        key={month}
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        disabled={disabledMonth}
-                        aria-pressed={selected}
-                        className={cn(
-                          "h-10 rounded-lg text-xs",
-                          selected &&
-                            "border-primary bg-primary text-primary-foreground",
-                        )}
-                        onClick={() => selectMonth(monthIndex)}
-                      >
-                        {month}
-                      </Button>
-                    );
-                  })}
-                </div>
-              ) : null}
+interface DateInputPanelHeaderProps {
+  calendarPanelState: CalendarPanelState;
+  onMoveVisibleRange: (amount: number) => void;
+  onToggleCalendarView: () => void;
+}
 
-              {calendarView === "years" ? (
-                <div className="grid min-h-72 grid-cols-3 content-center gap-2">
-                  {years.map((year) => {
-                    const selected = visibleMonth.getFullYear() === year;
-                    const disabledYear = isYearOutOfRange(year, min, max);
+function DateInputPanelHeader({
+  calendarPanelState,
+  onMoveVisibleRange,
+  onToggleCalendarView,
+}: DateInputPanelHeaderProps) {
+  return (
+    <div className="mb-3 flex items-center justify-between gap-2">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-xs"
+        aria-label={calendarPanelState.previousRangeLabel}
+        className="rounded-md text-slate-muted hover:text-ink"
+        onClick={() => onMoveVisibleRange(-1)}
+      >
+        <ChevronLeft size={15} />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="xs"
+        className="min-w-32 rounded-md font-bold text-ink text-sm"
+        aria-label="Change calendar view"
+        onClick={onToggleCalendarView}
+      >
+        {calendarPanelState.title}
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-xs"
+        aria-label={calendarPanelState.nextRangeLabel}
+        className="rounded-md text-slate-muted hover:text-ink"
+        onClick={() => onMoveVisibleRange(1)}
+      >
+        <ChevronRight size={15} />
+      </Button>
+    </div>
+  );
+}
 
-                    return (
-                      <Button
-                        key={year}
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        disabled={disabledYear}
-                        aria-pressed={selected}
-                        className={cn(
-                          "h-10 rounded-lg text-xs tabular-nums",
-                          selected &&
-                            "border-primary bg-primary text-primary-foreground",
-                        )}
-                        onClick={() => selectYear(year)}
-                      >
-                        {year}
-                      </Button>
-                    );
-                  })}
-                </div>
-              ) : null}
+interface DateInputDaysViewProps {
+  days: Date[];
+  max?: string;
+  min?: string;
+  onSelectDate: (date: Date) => void;
+  todayValue: string;
+  value?: string | null;
+  visibleMonth: Date;
+}
 
-              <div className="mt-3 flex items-center justify-between border-border/70 border-t pt-3">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="xs"
-                  disabled={isOutOfRange(todayValue, min, max)}
-                  onClick={() => selectDate(new Date())}
-                >
-                  Today
-                </Button>
-                {clearable ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="xs"
-                    onClick={() => {
-                      onValueChange("");
-                      closePanel();
-                    }}
-                  >
-                    Clear
-                  </Button>
-                ) : null}
-              </div>
-            </div>,
-            portalTarget,
-          )
-        : null}
+interface DateInputDayButtonProps {
+  date: Date;
+  max?: string;
+  min?: string;
+  onSelectDate: (date: Date) => void;
+  todayValue: string;
+  value?: string | null;
+  visibleMonth: Date;
+}
+
+function DateInputDaysView({
+  days,
+  max,
+  min,
+  onSelectDate,
+  todayValue,
+  value,
+  visibleMonth,
+}: DateInputDaysViewProps) {
+  return (
+    <div className="grid grid-cols-7 gap-1 text-center">
+      {weekdays.map((weekday) => (
+        <span
+          key={weekday}
+          className="py-1 font-black text-slate-muted text-xs uppercase tracking-wide"
+        >
+          {weekday}
+        </span>
+      ))}
+      {days.map((date) => (
+        <DateInputDayButton
+          key={toDateValue(date)}
+          date={date}
+          max={max}
+          min={min}
+          onSelectDate={onSelectDate}
+          todayValue={todayValue}
+          value={value}
+          visibleMonth={visibleMonth}
+        />
+      ))}
+    </div>
+  );
+}
+
+function DateInputDayButton({
+  date,
+  max,
+  min,
+  onSelectDate,
+  todayValue,
+  value,
+  visibleMonth,
+}: DateInputDayButtonProps) {
+  const dayState = getCalendarDayButtonViewState({
+    date,
+    max,
+    min,
+    todayValue,
+    value,
+    visibleMonth,
+  });
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon-xs"
+      disabled={dayState.disabled}
+      aria-pressed={dayState.selected}
+      className={getCalendarDayButtonClassName(dayState)}
+      onClick={() => onSelectDate(date)}
+    >
+      {dayState.dayLabel}
+    </Button>
+  );
+}
+
+interface DateInputMonthsViewProps {
+  max?: string;
+  min?: string;
+  onSelectMonth: (month: number) => void;
+  visibleMonth: Date;
+}
+
+function DateInputMonthsView({
+  max,
+  min,
+  onSelectMonth,
+  visibleMonth,
+}: DateInputMonthsViewProps) {
+  return (
+    <div className="grid min-h-72 grid-cols-3 content-center gap-2">
+      {monthNames.map((month, monthIndex) => {
+        const monthState = getCalendarMonthButtonViewState({
+          max,
+          min,
+          monthIndex,
+          visibleMonth,
+        });
+
+        return (
+          <Button
+            key={month}
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={monthState.disabled}
+            aria-pressed={monthState.selected}
+            className={getCalendarOptionButtonClassName({
+              baseClassName: "h-10 rounded-lg text-xs",
+              selected: monthState.selected,
+            })}
+            onClick={() => onSelectMonth(monthIndex)}
+          >
+            {month}
+          </Button>
+        );
+      })}
+    </div>
+  );
+}
+
+interface DateInputYearsViewProps {
+  max?: string;
+  min?: string;
+  onSelectYear: (year: number) => void;
+  visibleMonth: Date;
+  years: number[];
+}
+
+function DateInputYearsView({
+  max,
+  min,
+  onSelectYear,
+  visibleMonth,
+  years,
+}: DateInputYearsViewProps) {
+  return (
+    <div className="grid min-h-72 grid-cols-3 content-center gap-2">
+      {years.map((year) => {
+        const yearState = getCalendarYearButtonViewState({
+          max,
+          min,
+          visibleMonth,
+          year,
+        });
+
+        return (
+          <Button
+            key={year}
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={yearState.disabled}
+            aria-pressed={yearState.selected}
+            className={getCalendarOptionButtonClassName({
+              baseClassName: "h-10 rounded-lg text-xs tabular-nums",
+              selected: yearState.selected,
+            })}
+            onClick={() => onSelectYear(year)}
+          >
+            {year}
+          </Button>
+        );
+      })}
+    </div>
+  );
+}
+
+interface DateInputPanelFooterProps {
+  clearable: boolean;
+  max?: string;
+  min?: string;
+  onClear: () => void;
+  onSelectDate: (date: Date) => void;
+  todayValue: string;
+}
+
+function DateInputPanelFooter({
+  clearable,
+  max,
+  min,
+  onClear,
+  onSelectDate,
+  todayValue,
+}: DateInputPanelFooterProps) {
+  return (
+    <div className="mt-3 flex items-center justify-between border-border/70 border-t pt-3">
+      <Button
+        type="button"
+        variant="ghost"
+        size="xs"
+        disabled={isOutOfRange(todayValue, min, max)}
+        onClick={() => onSelectDate(new Date())}
+      >
+        Today
+      </Button>
+      {clearable ? (
+        <Button type="button" variant="ghost" size="xs" onClick={onClear}>
+          Clear
+        </Button>
+      ) : null}
     </div>
   );
 }

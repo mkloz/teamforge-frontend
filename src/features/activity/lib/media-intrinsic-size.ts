@@ -16,32 +16,50 @@ export function cacheMediaIntrinsicSize(
   width: number,
   height: number,
 ) {
-  if (
-    !Number.isFinite(width) ||
-    !Number.isFinite(height) ||
-    width <= 0 ||
-    height <= 0
-  ) {
+  if (!hasUsableIntrinsicDimensions(width, height)) {
     return null;
   }
 
-  const nextSize = {
+  const nextSize = createMediaIntrinsicSize(width, height);
+
+  evictOldestIntrinsicSizeIfNeeded(mediaId);
+
+  mediaIntrinsicSizeCache.set(mediaId, nextSize);
+  return nextSize;
+}
+
+function hasUsableIntrinsicDimensions(width: number, height: number) {
+  return (
+    Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0
+  );
+}
+
+function createMediaIntrinsicSize(
+  width: number,
+  height: number,
+): MediaIntrinsicSize {
+  return {
     width,
     height,
     aspectRatio: width / height,
   };
+}
 
-  if (
-    !mediaIntrinsicSizeCache.has(mediaId) &&
-    mediaIntrinsicSizeCache.size >= MAX_MEDIA_INTRINSIC_SIZE_CACHE_ITEMS
-  ) {
-    const oldestKey = mediaIntrinsicSizeCache.keys().next().value;
-
-    if (oldestKey) {
-      mediaIntrinsicSizeCache.delete(oldestKey);
-    }
+function evictOldestIntrinsicSizeIfNeeded(mediaId: string) {
+  if (!shouldEvictOldestIntrinsicSize(mediaId)) {
+    return;
   }
 
-  mediaIntrinsicSizeCache.set(mediaId, nextSize);
-  return nextSize;
+  const oldestKey = mediaIntrinsicSizeCache.keys().next().value;
+
+  if (oldestKey) {
+    mediaIntrinsicSizeCache.delete(oldestKey);
+  }
+}
+
+function shouldEvictOldestIntrinsicSize(mediaId: string) {
+  return (
+    !mediaIntrinsicSizeCache.has(mediaId) &&
+    mediaIntrinsicSizeCache.size >= MAX_MEDIA_INTRINSIC_SIZE_CACHE_ITEMS
+  );
 }

@@ -2,11 +2,6 @@ import type { Options } from "ky";
 
 export type ApiAuthMode = "access" | "refresh" | "none";
 
-export interface ApiRequestContext {
-  auth?: ApiAuthMode;
-  retryOnUnauthorized?: boolean;
-}
-
 export interface ResolvedApiRequestContext {
   auth: ApiAuthMode;
   retryOnUnauthorized: boolean;

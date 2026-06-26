@@ -1,54 +1,27 @@
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
 
 export function getPlanTimingLabel(plan: PlannedGroup["plan"]) {
-  if (!plan.dateTime) {
+  const meta = getDateMeta(plan.dateTime);
+
+  if (!meta) {
     return "Time open";
   }
 
-  const date = new Date(plan.dateTime);
+  const time = formatPlanClockTime(meta.date);
 
-  if (Number.isNaN(date.getTime())) {
-    return "Time open";
-  }
-
-  const now = new Date();
-  const startOfToday = new Date(now);
-  startOfToday.setHours(0, 0, 0, 0);
-  const startOfPlanDay = new Date(date);
-  startOfPlanDay.setHours(0, 0, 0, 0);
-  const dayDiff = Math.round(
-    (startOfPlanDay.getTime() - startOfToday.getTime()) / 86_400_000,
-  );
-  const time = date.toLocaleString("en-GB", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  if (dayDiff === 0) {
+  if (meta.isToday) {
     return `Today at ${time}`;
   }
 
-  if (dayDiff === 1) {
+  if (meta.isTomorrow) {
     return `Tomorrow at ${time}`;
   }
 
-  if (dayDiff > 1 && dayDiff < 7) {
-    return date.toLocaleString("en-GB", {
-      weekday: "long",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
+  if (isPlanWithinNextWeek(meta.dayDiff)) {
+    return formatPlanWeekdayTime(meta.date);
   }
 
-  return date.toLocaleString("en-GB", {
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
+  return formatPlanCalendarTime(meta.date);
 }
 
 export function getDateMeta(value: string | null) {
@@ -104,6 +77,37 @@ export function getHeroPlanSignal(plan: PlannedGroup["plan"]) {
   }
 
   return getPlanTimingLabel(plan);
+}
+
+function formatPlanClockTime(date: Date) {
+  return date.toLocaleString("en-GB", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+function formatPlanWeekdayTime(date: Date) {
+  return date.toLocaleString("en-GB", {
+    weekday: "long",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+function formatPlanCalendarTime(date: Date) {
+  return date.toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+function isPlanWithinNextWeek(dayDiff: number) {
+  return dayDiff > 1 && dayDiff < 7;
 }
 
 function getPlanUrgency(group: PlannedGroup) {

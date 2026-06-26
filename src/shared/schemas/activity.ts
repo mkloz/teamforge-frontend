@@ -16,8 +16,133 @@ import {
   planStatusSchema,
 } from "./enums";
 
-export type { Activity } from "./activity-group-plan";
+type RefinementContext = z.RefinementCtx;
+type CoordinateInput = {
+  locationLat?: number;
+  locationLng?: number;
+};
+type ForgePlanRefinementInput = CoordinateInput & {
+  cost: z.infer<typeof costTypeSchema>;
+  costAmount?: number | null;
+  dateTime: string;
+  location?: string | null;
+  locationMode: z.infer<typeof locationModeSchema>;
+};
+
 export { activitySchema } from "./activity-group-plan";
+
+function hasCoordinate(value: number | undefined) {
+  return value !== undefined;
+}
+
+function validateCoordinatePair(
+  input: CoordinateInput,
+  ctx: RefinementContext,
+) {
+  const hasLat = hasCoordinate(input.locationLat);
+  const hasLng = hasCoordinate(input.locationLng);
+
+  if (hasLat === hasLng) {
+    return;
+  }
+
+  ctx.addIssue({
+    code: "custom",
+    message: "Provide both latitude and longitude.",
+    path: hasLat ? ["locationLng"] : ["locationLat"],
+  });
+}
+
+function validateFuturePlanDate(
+  input: ForgePlanRefinementInput,
+  ctx: RefinementContext,
+) {
+  if (new Date(input.dateTime).getTime() > Date.now()) {
+    return;
+  }
+
+  ctx.addIssue({
+    code: "custom",
+    message: "Plan date-time must be in the future.",
+    path: ["dateTime"],
+  });
+}
+
+function validatePlanLocation(
+  input: ForgePlanRefinementInput,
+  ctx: RefinementContext,
+) {
+  if (
+    (input.locationMode === "IN_PERSON" || input.locationMode === "ONLINE") &&
+    !input.location
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Location is required for in-person and online plans.",
+      path: ["location"],
+    });
+  }
+
+  if (input.locationMode === "TBD" && input.location) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Location must be omitted when location mode is TBD.",
+      path: ["location"],
+    });
+  }
+}
+
+function validatePlanCoordinates(
+  input: ForgePlanRefinementInput,
+  ctx: RefinementContext,
+) {
+  const hasLat = hasCoordinate(input.locationLat);
+  const hasLng = hasCoordinate(input.locationLng);
+
+  if (input.locationMode !== "IN_PERSON" && (hasLat || hasLng)) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Coordinates are only accepted for in-person plans.",
+      path: ["locationLat"],
+    });
+    return;
+  }
+
+  if (input.locationMode === "IN_PERSON") {
+    validateCoordinatePair(input, ctx);
+  }
+}
+
+function validatePlanCost(
+  input: ForgePlanRefinementInput,
+  ctx: RefinementContext,
+) {
+  if (input.cost === "PAID" && input.costAmount == null) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Paid plans need a positive amount.",
+      path: ["costAmount"],
+    });
+  }
+
+  if (input.cost === "FREE" && input.costAmount != null) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Free plans must omit the amount.",
+      path: ["costAmount"],
+    });
+  }
+}
+
+function validateForgePlanInput(
+  input: ForgePlanRefinementInput,
+  ctx: RefinementContext,
+) {
+  validateFuturePlanDate(input, ctx);
+  validatePlanLocation(input, ctx);
+  validatePlanCoordinates(input, ctx);
+  validatePlanCost(input, ctx);
+}
 
 export const createActivityInputSchema = z
   .object({
@@ -33,21 +158,12 @@ export const createActivityInputSchema = z
   })
   .strict()
   .superRefine((input, ctx) => {
-    const hasLat = input.locationLat !== undefined;
-    const hasLng = input.locationLng !== undefined;
-
-    if (hasLat !== hasLng) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Provide both latitude and longitude.",
-        path: hasLat ? ["locationLng"] : ["locationLat"],
-      });
-    }
+    validateCoordinatePair(input, ctx);
   });
 
 export type CreateActivityInput = z.infer<typeof createActivityInputSchema>;
 
-export const forgePlanInputSchema = z
+const forgePlanInputSchema = z
   .object({
     title: z.string().trim().min(1).max(140),
     description: z.string().trim().min(1).max(1000).nullable().optional(),
@@ -64,74 +180,12 @@ export const forgePlanInputSchema = z
   })
   .strict()
   .superRefine((input, ctx) => {
-    if (new Date(input.dateTime).getTime() <= Date.now()) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Plan date-time must be in the future.",
-        path: ["dateTime"],
-      });
-    }
-
-    if (
-      (input.locationMode === "IN_PERSON" || input.locationMode === "ONLINE") &&
-      !input.location
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Location is required for in-person and online plans.",
-        path: ["location"],
-      });
-    }
-
-    if (input.locationMode === "TBD" && input.location) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Location must be omitted when location mode is TBD.",
-        path: ["location"],
-      });
-    }
-
-    const hasLat = input.locationLat !== undefined;
-    const hasLng = input.locationLng !== undefined;
-
-    if (input.locationMode !== "IN_PERSON" && (hasLat || hasLng)) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Coordinates are only accepted for in-person plans.",
-        path: ["locationLat"],
-      });
-    }
-
-    if (input.locationMode === "IN_PERSON" && hasLat !== hasLng) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Provide both latitude and longitude.",
-        path: hasLat ? ["locationLng"] : ["locationLat"],
-      });
-    }
-
-    if (input.cost === "PAID" && input.costAmount == null) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Paid plans need a positive amount.",
-        path: ["costAmount"],
-      });
-    }
-
-    if (input.cost === "FREE" && input.costAmount != null) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Free plans must omit the amount.",
-        path: ["costAmount"],
-      });
-    }
+    validateForgePlanInput(input, ctx);
   });
-
-export type ForgePlanInput = z.infer<typeof forgePlanInputSchema>;
 
 const forgeMatchingPreferenceSchema = z.number().int().min(0).max(100);
 
-export const forgeMatchingPreferencesInputSchema = z
+const forgeMatchingPreferencesInputSchema = z
   .object({
     sharedGround: forgeMatchingPreferenceSchema.optional(),
     freshPerspectives: forgeMatchingPreferenceSchema.optional(),
@@ -139,10 +193,6 @@ export const forgeMatchingPreferencesInputSchema = z
     maxDistanceKm: z.number().int().min(15).max(80).optional(),
   })
   .strict();
-
-export type ForgeMatchingPreferencesInput = z.infer<
-  typeof forgeMatchingPreferencesInputSchema
->;
 
 export const forgeActivityInputSchema = z
   .object({
@@ -157,22 +207,18 @@ export const forgeActivityInputSchema = z
 
 export type ForgeActivityInput = z.infer<typeof forgeActivityInputSchema>;
 
-export const forgedChatSchema = z.object({
+const forgedChatSchema = z.object({
   id: z.string(),
   type: z.enum(["GROUP", "PRIVATE"]),
 });
 
-export type ForgedChat = z.infer<typeof forgedChatSchema>;
-
-export const forgedGroupMemberSchema = z.object({
+const forgedGroupMemberSchema = z.object({
   userId: z.string(),
   role: groupRoleSchema,
   compatibilityScore: z.number().nullable(),
 });
 
-export type ForgedGroupMember = z.infer<typeof forgedGroupMemberSchema>;
-
-export const forgedGroupSchema = z.object({
+const forgedGroupSchema = z.object({
   id: z.string(),
   name: z.string(),
   status: groupStatusSchema,
@@ -180,9 +226,7 @@ export const forgedGroupSchema = z.object({
   members: z.array(forgedGroupMemberSchema),
 });
 
-export type ForgedGroup = z.infer<typeof forgedGroupSchema>;
-
-export const forgedPlanSchema = z.object({
+const forgedPlanSchema = z.object({
   id: z.string(),
   title: z.string(),
   coverImage: z.string().nullable(),
@@ -192,8 +236,6 @@ export const forgedPlanSchema = z.object({
   cost: costTypeSchema,
 });
 
-export type ForgedPlan = z.infer<typeof forgedPlanSchema>;
-
 export const forgeActivityResultSchema = z.object({
   activityId: z.string(),
   activityStatus: activityStatusSchema,
@@ -201,5 +243,3 @@ export const forgeActivityResultSchema = z.object({
   group: forgedGroupSchema,
   plan: forgedPlanSchema,
 });
-
-export type ForgeActivityResult = z.infer<typeof forgeActivityResultSchema>;

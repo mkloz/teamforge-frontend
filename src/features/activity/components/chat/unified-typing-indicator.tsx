@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { memo } from "react";
+import { memo, type ReactNode } from "react";
 import { formatTypingText } from "@/features/activity/lib/chat-utils";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
@@ -16,6 +16,26 @@ interface UnifiedTypingIndicatorProps {
   isGroup?: boolean;
 }
 
+type TypingIndicatorVariant = NonNullable<
+  UnifiedTypingIndicatorProps["variant"]
+>;
+
+interface TypingIndicatorRenderProps {
+  className?: string;
+  text: string;
+  users: TypingUser[];
+}
+
+const TYPING_DOT_INDICES = [0, 1, 2] as const;
+const TYPING_INDICATOR_RENDERERS = {
+  floating: renderFloatingTypingIndicator,
+  inline: renderInlineTypingIndicator,
+  minimal: renderMinimalTypingIndicator,
+} as const satisfies Record<
+  TypingIndicatorVariant,
+  (props: TypingIndicatorRenderProps) => ReactNode
+>;
+
 /**
  * UnifiedTypingIndicator - Renders an organic typing animation with user avatar(s).
  * Supports inline, floating, and minimal (dots only) variants.
@@ -26,56 +46,92 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
   className,
   isGroup = true, // Default to true if not specified
 }: UnifiedTypingIndicatorProps) {
-  if (variant !== "minimal" && users.length === 0) return null;
+  if (!shouldRenderTypingIndicator(variant, users)) return null;
 
   const text = formatTypingText(users, isGroup) || "";
 
-  if (variant === "minimal") {
-    return <TypingDots dotSize="size-1" className={className} />;
-  }
+  return TYPING_INDICATOR_RENDERERS[variant]({ className, text, users });
+});
 
-  if (variant === "floating") {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 12, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 8, scale: 0.95 }}
-        transition={{ type: "spring", damping: 25, stiffness: 350 }}
-        className="pointer-events-none absolute right-4 bottom-4 left-4 z-20"
-      >
-        <div className="inline-flex items-center gap-3 rounded-full border border-border/40 bg-canvas/80 px-4 py-2.5 shadow-lg backdrop-blur-xl">
-          <div className="flex">
-            <AnimatePresence mode="popLayout">
-              {users.slice(0, 3).map((user, index) => (
-                <motion.div
-                  key={user.name}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  className={index > 0 ? "-ml-2" : undefined}
-                >
-                  <Avatar
-                    src={user.avatar}
-                    name={user.name}
-                    className="size-5.5 shadow-sm ring-2 ring-canvas"
-                    fallbackClassName="text-nano"
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+function shouldRenderTypingIndicator(
+  variant: NonNullable<UnifiedTypingIndicatorProps["variant"]>,
+  users: TypingUser[],
+) {
+  return variant === "minimal" || users.length > 0;
+}
 
-          <TypingDots />
+function renderMinimalTypingIndicator({
+  className,
+}: TypingIndicatorRenderProps) {
+  return <TypingDots dotSize="size-1" className={className} />;
+}
 
-          <span className="pr-1 font-semibold text-micro text-slate-muted tracking-tight">
-            {text.toUpperCase()}
-          </span>
-        </div>
-      </motion.div>
-    );
-  }
+function renderFloatingTypingIndicator({
+  text,
+  users,
+}: TypingIndicatorRenderProps) {
+  return <FloatingTypingIndicator text={text} users={users} />;
+}
 
-  // Inline variant (composites into the vertical message flow)
+function renderInlineTypingIndicator({ users }: TypingIndicatorRenderProps) {
+  // Inline variant composites into the vertical message flow.
+  return <InlineTypingIndicator users={users} />;
+}
+
+function FloatingTypingIndicator({
+  text,
+  users,
+}: {
+  text: string;
+  users: TypingUser[];
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 8, scale: 0.95 }}
+      transition={{ type: "spring", damping: 25, stiffness: 350 }}
+      className="pointer-events-none absolute right-4 bottom-4 left-4 z-20"
+    >
+      <div className="inline-flex items-center gap-3 rounded-full border border-border/40 bg-canvas/80 px-4 py-2.5 shadow-lg backdrop-blur-xl">
+        <TypingAvatarStack users={users} />
+
+        <TypingDots />
+
+        <span className="pr-1 font-semibold text-micro text-slate-muted tracking-tight">
+          {text.toUpperCase()}
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
+function TypingAvatarStack({ users }: { users: TypingUser[] }) {
+  return (
+    <div className="flex">
+      <AnimatePresence mode="popLayout">
+        {users.slice(0, 3).map((user, index) => (
+          <motion.div
+            key={user.name}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            className={index > 0 ? "-ml-2" : undefined}
+          >
+            <Avatar
+              src={user.avatar}
+              name={user.name}
+              className="size-5.5 shadow-sm ring-2 ring-canvas"
+              fallbackClassName="text-nano"
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function InlineTypingIndicator({ users }: { users: TypingUser[] }) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }}
@@ -106,7 +162,7 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
       </div>
     </motion.div>
   );
-});
+}
 
 function TypingDots({
   className,
@@ -117,7 +173,7 @@ function TypingDots({
 }) {
   return (
     <div className={cn("flex items-end justify-start gap-1", className)}>
-      {[0, 1, 2].map((i) => (
+      {TYPING_DOT_INDICES.map((i) => (
         <motion.span
           key={i}
           animate={{

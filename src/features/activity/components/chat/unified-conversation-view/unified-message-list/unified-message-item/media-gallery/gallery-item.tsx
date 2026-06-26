@@ -20,6 +20,44 @@ interface GalleryItemProps {
   onClick: () => void;
 }
 
+interface GalleryItemButtonClassInput {
+  count: number;
+  index: number;
+  isGif: boolean;
+  visibleState: ReturnType<typeof getGalleryItemViewState>["visibleState"];
+}
+
+type GalleryItemShapeClassInput = Omit<
+  GalleryItemButtonClassInput,
+  "visibleState"
+>;
+
+const GALLERY_ITEM_SHAPE_RULES: {
+  className: string;
+  matches: (input: GalleryItemShapeClassInput) => boolean;
+}[] = [
+  {
+    className: "aspect-square max-h-120",
+    matches: ({ count, isGif }) => count === 1 && isGif,
+  },
+  {
+    className: "aspect-square max-h-120 sm:aspect-video",
+    matches: ({ count }) => count === 1,
+  },
+  {
+    className: "aspect-3/4",
+    matches: ({ count }) => count === 2,
+  },
+  {
+    className: "col-span-2 aspect-2/1 sm:aspect-16/7",
+    matches: ({ count, index }) => count === 3 && index === 2,
+  },
+  {
+    className: "aspect-square",
+    matches: ({ count, index }) => count >= 4 || (count === 3 && index < 2),
+  },
+];
+
 export const GalleryItem = memo(
   ({ media, index, count, onClick }: GalleryItemProps) => {
     const { state, onLoad, onError } = useImageState();
@@ -44,6 +82,7 @@ export const GalleryItem = memo(
       index,
       media,
     });
+    const canOpen = canOpenGalleryItem(visibleState);
 
     return (
       <motion.button
@@ -52,22 +91,15 @@ export const GalleryItem = memo(
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.98 }}
-        disabled={visibleState === "error"}
-        onClick={visibleState === "error" ? undefined : onClick}
+        disabled={!canOpen}
+        onClick={canOpen ? onClick : undefined}
         aria-label={ariaLabel}
-        className={cn(
-          "group/gallery-item relative block w-full appearance-none overflow-hidden bg-muted/60 text-left",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2",
-          "disabled:cursor-not-allowed",
-          visibleState !== "error" && "cursor-zoom-in",
-          count === 1 &&
-            (isGif
-              ? "aspect-square max-h-120"
-              : "aspect-square max-h-120 sm:aspect-video"),
-          count === 2 && "aspect-3/4",
-          count === 3 && index === 2 && "col-span-2 aspect-2/1 sm:aspect-16/7",
-          (count >= 4 || (count === 3 && index < 2)) && "aspect-square",
-        )}
+        className={getGalleryItemButtonClassName({
+          count,
+          index,
+          isGif,
+          visibleState,
+        })}
         style={singleAspectRatioStyle}
       >
         <GalleryItemLoadingSkeleton isLoading={visibleState === "loading"} />
@@ -101,3 +133,36 @@ export const GalleryItem = memo(
     );
   },
 );
+
+function canOpenGalleryItem(
+  visibleState: ReturnType<typeof getGalleryItemViewState>["visibleState"],
+) {
+  return visibleState !== "error";
+}
+
+function getGalleryItemButtonClassName({
+  count,
+  index,
+  isGif,
+  visibleState,
+}: GalleryItemButtonClassInput) {
+  return cn(
+    "group/gallery-item relative block w-full appearance-none overflow-hidden bg-muted/60 text-left",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2",
+    "disabled:cursor-not-allowed",
+    canOpenGalleryItem(visibleState) && "cursor-zoom-in",
+    getGalleryItemShapeClassName({ count, index, isGif }),
+  );
+}
+
+function getGalleryItemShapeClassName({
+  count,
+  index,
+  isGif,
+}: GalleryItemShapeClassInput) {
+  return (
+    GALLERY_ITEM_SHAPE_RULES.find((rule) =>
+      rule.matches({ count, index, isGif }),
+    )?.className ?? null
+  );
+}

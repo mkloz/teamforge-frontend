@@ -18,15 +18,22 @@ interface ThumbnailStripProps {
   onSelect: (index: number) => void;
 }
 
-function ThumbnailItem({
-  media,
-  isSelected,
-  onSelect,
-}: {
+interface ThumbnailItemProps {
   media: UnifiedAttachment;
   isSelected: boolean;
   onSelect: () => void;
-}) {
+}
+
+interface ThumbnailMediaProps {
+  imageState: ReturnType<typeof useImageState>["state"];
+  isGif: boolean;
+  media: UnifiedAttachment;
+  onError: () => void;
+  onLoad: () => void;
+  shouldRenderVideo: boolean;
+}
+
+function ThumbnailItem({ media, isSelected, onSelect }: ThumbnailItemProps) {
   const { state, onLoad, onError } = useImageState();
   const isGif = isGifAttachment(media);
   const shouldRenderVideo =
@@ -37,7 +44,7 @@ function ThumbnailItem({
       type="button"
       variant="ghost"
       onClick={onSelect}
-      aria-label={`Open ${isGif ? "GIF" : media.type === "VIDEO" ? "video" : "image"} thumbnail`}
+      aria-label={getThumbnailAriaLabel(media, isGif)}
       aria-current={isSelected ? "true" : undefined}
       className={cn(
         "relative size-12 shrink-0 overflow-hidden rounded-lg p-0",
@@ -48,82 +55,167 @@ function ThumbnailItem({
           : "opacity-40 grayscale-50 hover:opacity-100 hover:grayscale-0",
       )}
     >
-      {/* Skeleton */}
-      {state === "loading" && (
-        <Skeleton
-          className="absolute inset-0 rounded-lg bg-white/10 ring-white/10"
-          tone="muted"
-        />
-      )}
-
-      {/* Error */}
-      {state === "error" && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/5">
-          <ImageOff className="size-3.5 text-white/30" />
-        </div>
-      )}
-
-      {shouldRenderVideo ? (
-        <>
-          <video
-            src={media.url}
-            poster={media.thumbnailUrl || undefined}
-            autoPlay={isGif}
-            loop={isGif}
-            preload="metadata"
-            muted
-            playsInline
-            onLoadedMetadata={(event) => {
-              cacheMediaIntrinsicSize(
-                media.id,
-                event.currentTarget.videoWidth,
-                event.currentTarget.videoHeight,
-              );
-              onLoad();
-            }}
-            onError={onError}
-            className={cn(
-              "size-full object-cover transition-opacity duration-200",
-              state === "loaded" ? "opacity-100" : "opacity-0",
-            )}
-          />
-          {state === "loaded" && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
-              {isGif ? (
-                <span className="rounded bg-black/35 px-1 font-black text-nano text-white/90 leading-3">
-                  GIF
-                </span>
-              ) : (
-                <Play className="size-3.5 fill-white text-white/90" />
-              )}
-            </div>
-          )}
-        </>
-      ) : (
-        <Image
-          src={media.thumbnailUrl || media.url}
-          alt=""
-          onLoad={(event) => {
-            cacheMediaIntrinsicSize(
-              media.id,
-              event.currentTarget.naturalWidth,
-              event.currentTarget.naturalHeight,
-            );
-            onLoad();
-          }}
-          onError={onError}
-          wrapperClassName="absolute inset-0"
-          className={cn(
-            "transition-opacity duration-200",
-            state === "loaded" ? "opacity-100" : "opacity-0",
-          )}
-          loadingComponent={null}
-          fallbackComponent={null}
-          showNoImage={false}
-        />
-      )}
+      <ThumbnailLoadingState isLoading={state === "loading"} />
+      <ThumbnailErrorState hasError={state === "error"} />
+      <ThumbnailMedia
+        imageState={state}
+        isGif={isGif}
+        media={media}
+        onError={onError}
+        onLoad={onLoad}
+        shouldRenderVideo={shouldRenderVideo}
+      />
     </Button>
   );
+}
+
+function ThumbnailLoadingState({ isLoading }: { isLoading: boolean }) {
+  if (!isLoading) {
+    return null;
+  }
+
+  return (
+    <Skeleton
+      className="absolute inset-0 rounded-lg bg-white/10 ring-white/10"
+      tone="muted"
+    />
+  );
+}
+
+function ThumbnailErrorState({ hasError }: { hasError: boolean }) {
+  if (!hasError) {
+    return null;
+  }
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center bg-white/5">
+      <ImageOff className="size-3.5 text-white/30" />
+    </div>
+  );
+}
+
+function ThumbnailMedia({
+  imageState,
+  isGif,
+  media,
+  onError,
+  onLoad,
+  shouldRenderVideo,
+}: ThumbnailMediaProps) {
+  if (shouldRenderVideo) {
+    return (
+      <ThumbnailVideo
+        imageState={imageState}
+        isGif={isGif}
+        media={media}
+        onError={onError}
+        onLoad={onLoad}
+      />
+    );
+  }
+
+  return (
+    <ThumbnailImage
+      imageState={imageState}
+      media={media}
+      onError={onError}
+      onLoad={onLoad}
+    />
+  );
+}
+
+function ThumbnailVideo({
+  imageState,
+  isGif,
+  media,
+  onError,
+  onLoad,
+}: Omit<ThumbnailMediaProps, "shouldRenderVideo">) {
+  return (
+    <>
+      <video
+        src={media.url}
+        poster={media.thumbnailUrl || undefined}
+        autoPlay={isGif}
+        loop={isGif}
+        preload="metadata"
+        muted
+        playsInline
+        onLoadedMetadata={(event) => {
+          cacheMediaIntrinsicSize(
+            media.id,
+            event.currentTarget.videoWidth,
+            event.currentTarget.videoHeight,
+          );
+          onLoad();
+        }}
+        onError={onError}
+        className={cn(
+          "size-full object-cover transition-opacity duration-200",
+          imageState === "loaded" ? "opacity-100" : "opacity-0",
+        )}
+      />
+      <ThumbnailVideoLoadedOverlay imageState={imageState} isGif={isGif} />
+    </>
+  );
+}
+
+function ThumbnailVideoLoadedOverlay({
+  imageState,
+  isGif,
+}: Pick<ThumbnailMediaProps, "imageState" | "isGif">) {
+  if (imageState !== "loaded") {
+    return null;
+  }
+
+  return (
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
+      {isGif ? (
+        <span className="rounded bg-black/35 px-1 font-black text-nano text-white/90 leading-3">
+          GIF
+        </span>
+      ) : (
+        <Play className="size-3.5 fill-white text-white/90" />
+      )}
+    </div>
+  );
+}
+
+function ThumbnailImage({
+  imageState,
+  media,
+  onError,
+  onLoad,
+}: Omit<ThumbnailMediaProps, "isGif" | "shouldRenderVideo">) {
+  return (
+    <Image
+      src={media.thumbnailUrl || media.url}
+      alt=""
+      onLoad={(event) => {
+        cacheMediaIntrinsicSize(
+          media.id,
+          event.currentTarget.naturalWidth,
+          event.currentTarget.naturalHeight,
+        );
+        onLoad();
+      }}
+      onError={onError}
+      wrapperClassName="absolute inset-0"
+      className={cn(
+        "transition-opacity duration-200",
+        imageState === "loaded" ? "opacity-100" : "opacity-0",
+      )}
+      loadingComponent={null}
+      fallbackComponent={null}
+      showNoImage={false}
+    />
+  );
+}
+
+function getThumbnailAriaLabel(media: UnifiedAttachment, isGif: boolean) {
+  const mediaType = isGif ? "GIF" : media.type === "VIDEO" ? "video" : "image";
+
+  return `Open ${mediaType} thumbnail`;
 }
 
 export const ThumbnailStrip = memo(

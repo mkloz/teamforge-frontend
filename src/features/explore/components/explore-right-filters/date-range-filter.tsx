@@ -3,12 +3,60 @@ import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route
 import { Button } from "@/shared/components/ui/button";
 import { DateInput } from "@/shared/components/ui/date-input";
 
-function getTodayDateValue() {
-  const today = new Date();
-  const month = `${today.getMonth() + 1}`.padStart(2, "0");
-  const day = `${today.getDate()}`.padStart(2, "0");
+interface DateRangeFilterState {
+  hasDateRange: boolean;
+  startsAfterMax: string | undefined;
+  startsAfterValue: string;
+  startsBeforeMin: string;
+  startsBeforeValue: string;
+  todayValue: string;
+}
 
-  return `${today.getFullYear()}-${month}-${day}`;
+function getTodayDateValue() {
+  return toDateInputValue(new Date());
+}
+
+function toDateInputValue(date: Date) {
+  return [
+    date.getFullYear(),
+    toDateInputPart(date.getMonth() + 1),
+    toDateInputPart(date.getDate()),
+  ].join("-");
+}
+
+function toDateInputPart(value: number) {
+  return String(value).padStart(2, "0");
+}
+
+function getDateRangeFilterState(input: {
+  startsAfter: string | null;
+  startsBefore: string | null;
+}): DateRangeFilterState {
+  const todayValue = getTodayDateValue();
+
+  return {
+    hasDateRange: hasDateRangeValue(input),
+    startsAfterMax: getStartsAfterMax(input.startsBefore, todayValue),
+    startsAfterValue: input.startsAfter ?? "",
+    startsBeforeMin: getStartsBeforeMin(input.startsAfter, todayValue),
+    startsBeforeValue: input.startsBefore ?? "",
+    todayValue,
+  };
+}
+
+function hasDateRangeValue(input: {
+  startsAfter: string | null;
+  startsBefore: string | null;
+}) {
+  return Boolean(input.startsAfter || input.startsBefore);
+}
+
+function getStartsAfterMax(startsBefore: string | null, todayValue: string) {
+  return startsBefore && startsBefore >= todayValue ? startsBefore : undefined;
+}
+
+function getStartsBeforeMin(startsAfter: string | null, todayValue: string) {
+  return startsAfter && startsAfter > todayValue ? startsAfter : todayValue;
 }
 
 export function DateRangeFilter() {
@@ -19,12 +67,7 @@ export function DateRangeFilter() {
     startsAfter,
     startsBefore,
   } = useExploreRouteState();
-  const hasDateRange = Boolean(startsAfter || startsBefore);
-  const todayValue = getTodayDateValue();
-  const startsAfterMax =
-    startsBefore && startsBefore >= todayValue ? startsBefore : undefined;
-  const startsBeforeMin =
-    startsAfter && startsAfter > todayValue ? startsAfter : todayValue;
+  const rangeState = getDateRangeFilterState({ startsAfter, startsBefore });
 
   function updateStartsAfter(nextStartsAfter: string) {
     setTimeWindow("ALL");
@@ -45,7 +88,7 @@ export function DateRangeFilter() {
     <section className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
         <h4 className="font-bold text-foreground text-sm">Date range</h4>
-        {hasDateRange ? (
+        {rangeState.hasDateRange ? (
           <Button
             type="button"
             variant="ghost"
@@ -63,9 +106,9 @@ export function DateRangeFilter() {
           <span className="sr-only">From</span>
           <DateInput
             id="explore-starts-after"
-            value={startsAfter ?? ""}
-            min={todayValue}
-            max={startsAfterMax}
+            value={rangeState.startsAfterValue}
+            min={rangeState.todayValue}
+            max={rangeState.startsAfterMax}
             placeholder="From"
             onValueChange={updateStartsAfter}
             className="h-9 pr-2 pl-8 text-xs"
@@ -76,8 +119,8 @@ export function DateRangeFilter() {
           <span className="sr-only">To</span>
           <DateInput
             id="explore-starts-before"
-            value={startsBefore ?? ""}
-            min={startsBeforeMin}
+            value={rangeState.startsBeforeValue}
+            min={rangeState.startsBeforeMin}
             placeholder="To"
             onValueChange={updateStartsBefore}
             className="h-9 pr-2 pl-8 text-xs"

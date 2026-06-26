@@ -36,6 +36,11 @@ export interface ExploreRouteSearch {
   to?: string;
 }
 
+interface NumericRangeBounds {
+  max: number;
+  min: number;
+}
+
 function parseOptionalSearchString(value: unknown) {
   return typeof value === "string" ? value : undefined;
 }
@@ -84,19 +89,9 @@ function parseCategoryValues(value: unknown) {
 }
 
 function parseDistance(value: unknown): number | undefined {
-  const distance =
-    typeof value === "number"
-      ? value
-      : typeof value === "string"
-        ? Number(value)
-        : undefined;
+  const distance = parseSearchNumber(value);
 
-  if (
-    typeof distance !== "number" ||
-    !Number.isInteger(distance) ||
-    distance < FILTER_BOUNDARIES.distance.min ||
-    distance > FILTER_BOUNDARIES.distance.max
-  ) {
+  if (!isIntegerInRange(distance, FILTER_BOUNDARIES.distance)) {
     return undefined;
   }
 
@@ -104,25 +99,51 @@ function parseDistance(value: unknown): number | undefined {
 }
 
 function parseSizeRange(value: unknown): [number, number] | undefined {
+  const [minSize, maxSize] = parseSearchRangeParts(value);
+
+  if (!isValidSizeRange(minSize, maxSize)) {
+    return undefined;
+  }
+
+  return [minSize, maxSize];
+}
+
+function parseSearchNumber(value: unknown): number | undefined {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  return typeof value === "string" ? Number(value) : undefined;
+}
+
+function parseSearchRangeParts(value: unknown) {
   const [min, max] = Array.isArray(value)
     ? value
     : typeof value === "string"
       ? value.split("-")
       : [];
-  const minSize = Number(min);
-  const maxSize = Number(max);
 
-  if (
-    !Number.isInteger(minSize) ||
-    !Number.isInteger(maxSize) ||
-    minSize > maxSize ||
-    minSize < FILTER_BOUNDARIES.size.min ||
-    maxSize > FILTER_BOUNDARIES.size.max
-  ) {
-    return undefined;
-  }
+  return [Number(min), Number(max)] as const;
+}
 
-  return [minSize, maxSize];
+function isIntegerInRange(
+  value: number | undefined,
+  { max, min }: NumericRangeBounds,
+) {
+  return (
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= min &&
+    value <= max
+  );
+}
+
+function isValidSizeRange(minSize: number, maxSize: number) {
+  return (
+    isIntegerInRange(minSize, FILTER_BOUNDARIES.size) &&
+    isIntegerInRange(maxSize, FILTER_BOUNDARIES.size) &&
+    minSize <= maxSize
+  );
 }
 
 function parseDateValue(value: unknown) {

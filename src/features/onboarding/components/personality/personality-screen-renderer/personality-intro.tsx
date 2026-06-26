@@ -1,6 +1,8 @@
-import { ArrowLeft, ArrowRight, Brain, Lock, RefreshCcw } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { IconTile } from "@/shared/components/ui/icon-tile";
+import { Brain, Lock, RefreshCcw } from "lucide-react";
+import {
+  OnboardingIntroActions,
+  OnboardingIntroBenefitList,
+} from "@/features/onboarding/components/onboarding-intro-parts";
 import { PersonalityScreenShell } from "./personality-screen-layout";
 
 interface PersonalityIntroProps {
@@ -54,36 +56,18 @@ export function PersonalityIntro({
 
       <div className="mb-6 h-px w-full bg-muted dark:bg-white/10" />
 
-      <div className="mb-8 flex w-full flex-col gap-4 text-left">
-        {BENEFITS.map(({ icon: Icon, text }) => (
-          <div key={text} className="flex items-start gap-3.5">
-            <IconTile icon={Icon} size="md" tone="teal" className="mt-0.5" />
-            <p className="font-sans text-muted-foreground text-xs leading-relaxed">
-              {text}
-            </p>
-          </div>
-        ))}
-      </div>
+      <OnboardingIntroBenefitList
+        benefits={BENEFITS}
+        iconTileClassName="mt-0.5"
+        textClassName="font-sans text-muted-foreground text-xs leading-relaxed"
+      />
 
-      <div className="mt-auto flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-6">
-        <Button
-          size="md"
-          variant="outline"
-          onClick={onBack}
-          className="w-full xs:w-auto min-w-0 xs:shrink-0 px-4"
-        >
-          <ArrowLeft size={16} strokeWidth={2.5} />
-          <span className="truncate">{backLabel}</span>
-        </Button>
-        <Button
-          size="md"
-          onClick={onStart}
-          className="flex w-full min-w-0 xs:flex-1 items-center justify-center gap-2"
-        >
-          <span className="truncate">Let's find out</span>
-          <ArrowRight size={16} strokeWidth={2.5} />
-        </Button>
-      </div>
+      <OnboardingIntroActions
+        backLabel={backLabel}
+        onBack={onBack}
+        onStart={onStart}
+        startLabel="Let's find out"
+      />
     </PersonalityScreenShell>
   );
 }

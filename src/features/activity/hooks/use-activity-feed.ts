@@ -1,19 +1,19 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createActivityFeedActions } from "@/features/activity/hooks/activity-feed-actions";
 import { useActivityFeedDerivedState } from "@/features/activity/hooks/activity-feed-derived-state";
+import {
+  useActivityListControlActions,
+  useActivityListDisplayState,
+} from "@/features/activity/hooks/use-activity-list-store-controls";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 
 export function useActivityFeed() {
   const queryClient = useQueryClient();
-  const searchQuery = useActivityStore((state) => state.searchQuery);
-  const activeFilter = useActivityStore((state) => state.activeFilter);
-  const sidebarDensity = useActivityStore((state) => state.sidebarDensity);
+  const { activeFilter, searchQuery, sidebarDensity } =
+    useActivityListDisplayState();
   const typingByChatId = useActivityStore((state) => state.typingByChatId);
-  const setSearchQuery = useActivityStore((state) => state.setSearchQuery);
-  const setActiveFilter = useActivityStore((state) => state.setActiveFilter);
-  const setSidebarDensity = useActivityStore(
-    (state) => state.setSidebarDensity,
-  );
+  const { setActiveFilter, setSearchQuery, setSidebarDensity } =
+    useActivityListControlActions();
   const {
     allItems,
     allUnreadMessageCount,

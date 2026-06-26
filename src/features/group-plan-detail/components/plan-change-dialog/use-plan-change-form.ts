@@ -21,6 +21,36 @@ interface UsePlanChangeFormParams {
   onSubmitted: () => void;
 }
 
+type Plan = NonNullable<GroupPlanDetail["plan"]>;
+
+interface ProposedValueInput {
+  costValue: PlanCostValue | null;
+  field: PlanProposalField;
+  locationValue: PlanLocationValue | null;
+  value: string;
+}
+
+interface PlanChangeSubmissionInput extends ProposedValueInput {
+  plan: GroupPlanDetail["plan"];
+}
+
+type PlanChangeSubmission =
+  | { kind: "error"; message: string }
+  | { kind: "ready"; payload: CreateGroupPlanProposalPayload };
+
+type ProposedValueResult =
+  | { kind: "error"; message: string }
+  | { kind: "ready"; proposedValue: string };
+
+type ProposedValueResolver = (input: ProposedValueInput) => string;
+
+const PROPOSED_VALUE_RESOLVERS: Partial<
+  Record<PlanProposalField, ProposedValueResolver>
+> = {
+  COST: getCostProposedValue,
+  LOCATION: getLocationProposedValue,
+};
+
 export function usePlanChangeForm({
   detail,
   onCreate,
@@ -56,43 +86,23 @@ export function usePlanChangeForm({
   }
 
   async function submit() {
-    if (!plan) {
-      setError("This group does not have a plan to change yet.");
-      return;
-    }
+    const submission = getPlanChangeSubmission({
+      costValue,
+      field,
+      locationValue,
+      plan,
+      value,
+    });
 
-    let proposedValue = "";
-
-    try {
-      proposedValue = getProposedValue({
-        costValue,
-        field,
-        locationValue,
-        value,
-      });
-    } catch (submitError) {
-      setError(
-        submitError instanceof Error
-          ? submitError.message
-          : "Check the change and try again.",
-      );
-      return;
-    }
-
-    if (!proposedValue) {
-      setError("Add a new value before sending a change.");
-      return;
-    }
-
-    if (proposedValue === getCurrentSerializedProposalValue(plan, field)) {
-      setError("Change at least one detail before sending.");
+    if (submission.kind === "error") {
+      setError(submission.message);
       return;
     }
 
     setError(null);
 
     try {
-      await onCreate({ field, proposedValue });
+      await onCreate(submission.payload);
     } catch {
       return;
     }
@@ -118,32 +128,98 @@ export function usePlanChangeForm({
   };
 }
 
-function getProposedValue({
-  costValue,
-  field,
+function getPlanChangeSubmission(
+  input: PlanChangeSubmissionInput,
+): PlanChangeSubmission {
+  if (!input.plan) {
+    return {
+      kind: "error",
+      message: "This group does not have a plan to change yet.",
+    };
+  }
+
+  return getPlanChangeSubmissionForPlan(input.plan, input);
+}
+
+function getPlanChangeSubmissionForPlan(
+  plan: Plan,
+  input: ProposedValueInput,
+): PlanChangeSubmission {
+  const proposedValueResult = getProposedValueResult(input);
+
+  if (proposedValueResult.kind === "error") {
+    return proposedValueResult;
+  }
+
+  const { field } = input;
+  const { proposedValue } = proposedValueResult;
+
+  if (!proposedValue) {
+    return {
+      kind: "error",
+      message: "Add a new value before sending a change.",
+    };
+  }
+
+  if (proposedValue === getCurrentSerializedProposalValue(plan, field)) {
+    return {
+      kind: "error",
+      message: "Change at least one detail before sending.",
+    };
+  }
+
+  return {
+    kind: "ready",
+    payload: { field, proposedValue },
+  };
+}
+
+function getProposedValueResult(
+  input: ProposedValueInput,
+): ProposedValueResult {
+  try {
+    return {
+      kind: "ready",
+      proposedValue: getProposedValue(input),
+    };
+  } catch (submitError) {
+    return {
+      kind: "error",
+      message: getSubmitErrorMessage(submitError),
+    };
+  }
+}
+
+function getSubmitErrorMessage(error: unknown) {
+  return error instanceof Error
+    ? error.message
+    : "Check the change and try again.";
+}
+
+function getProposedValue(input: ProposedValueInput) {
+  const resolver = PROPOSED_VALUE_RESOLVERS[input.field];
+
+  return resolver
+    ? resolver(input)
+    : normalizeProposalValue(input.field, input.value);
+}
+
+function getLocationProposedValue({
   locationValue,
-  value,
-}: {
-  costValue: PlanCostValue | null;
-  field: PlanProposalField;
-  locationValue: PlanLocationValue | null;
-  value: string;
-}) {
-  if (field === "LOCATION") {
-    if (!locationValue) {
-      throw new Error("Choose a location option first.");
-    }
-
-    return serializePlanLocationValue(locationValue);
+}: Pick<ProposedValueInput, "locationValue">) {
+  if (!locationValue) {
+    throw new Error("Choose a location option first.");
   }
 
-  if (field === "COST") {
-    if (!costValue) {
-      throw new Error("Choose a cost option first.");
-    }
+  return serializePlanLocationValue(locationValue);
+}
 
-    return serializePlanCostValue(costValue);
+function getCostProposedValue({
+  costValue,
+}: Pick<ProposedValueInput, "costValue">) {
+  if (!costValue) {
+    throw new Error("Choose a cost option first.");
   }
 
-  return normalizeProposalValue(field, value);
+  return serializePlanCostValue(costValue);
 }

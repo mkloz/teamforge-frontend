@@ -6,7 +6,7 @@
 
 import React from "react";
 import { cn } from "@/shared/lib/utils";
-import { Button, type ButtonV2Props } from "./button";
+import { Button } from "./button";
 import {
   Dialog,
   DialogClose,
@@ -60,16 +60,6 @@ const AlertDialogDescription = React.forwardRef<
 ));
 AlertDialogDescription.displayName = "AlertDialogDescription";
 
-const AlertDialogAction = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement> & Pick<ButtonV2Props, "variant">
->(({ className, variant = "primary", ...props }, ref) => (
-  <DialogClose asChild>
-    <Button ref={ref} variant={variant} className={className} {...props} />
-  </DialogClose>
-));
-AlertDialogAction.displayName = "AlertDialogAction";
-
 const AlertDialogCancel = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
@@ -82,7 +72,6 @@ AlertDialogCancel.displayName = "AlertDialogCancel";
 
 export {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,

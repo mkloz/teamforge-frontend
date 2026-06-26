@@ -15,6 +15,12 @@ interface AvatarProfileSectionProps {
   onAvatarDelete: () => Promise<unknown>;
 }
 
+interface AvatarProfileRenderState {
+  canDeleteSavedAvatar: boolean;
+  displayedAvatarUrl: string | null | undefined;
+  isAvatarBusy: boolean;
+}
+
 export function AvatarProfileSection({
   currentUser,
   avatarError,
@@ -30,9 +36,12 @@ export function AvatarProfileSection({
     clearSelectedAvatar,
     selectAvatarFile,
   } = useAvatarPreview();
-  const isAvatarBusy = isUploadingAvatar || isDeletingAvatar;
-  const canDeleteSavedAvatar = Boolean(currentUser?.avatar);
-  const displayedAvatarUrl = avatarPreviewUrl ?? currentUser?.avatar;
+  const renderState = getAvatarProfileRenderState({
+    avatarPreviewUrl,
+    currentUser,
+    isDeletingAvatar,
+    isUploadingAvatar,
+  });
 
   async function uploadSelectedAvatar() {
     if (!selectedAvatarFile) {
@@ -57,7 +66,7 @@ export function AvatarProfileSection({
   }
 
   function handleAvatarFiles(files: File[]) {
-    const file = files[0];
+    const file = getSelectedAvatarFile(files);
 
     if (!file) {
       return;
@@ -70,14 +79,14 @@ export function AvatarProfileSection({
     <div className="flex flex-col gap-5">
       <AvatarIdentityHeader
         currentUser={currentUser}
-        displayedAvatarUrl={displayedAvatarUrl}
+        displayedAvatarUrl={renderState.displayedAvatarUrl}
       />
 
       <AvatarDropzones
         currentUser={currentUser}
-        displayedAvatarUrl={displayedAvatarUrl}
+        displayedAvatarUrl={renderState.displayedAvatarUrl}
         selectedAvatarFile={selectedAvatarFile}
-        isAvatarBusy={isAvatarBusy}
+        isAvatarBusy={renderState.isAvatarBusy}
         isUploadingAvatar={isUploadingAvatar}
         isOnline={isOnline}
         avatarError={avatarError}
@@ -92,11 +101,11 @@ export function AvatarProfileSection({
 
       <AvatarActions
         selectedAvatarFile={selectedAvatarFile}
-        isAvatarBusy={isAvatarBusy}
+        isAvatarBusy={renderState.isAvatarBusy}
         isUploadingAvatar={isUploadingAvatar}
         isDeletingAvatar={isDeletingAvatar}
         isOnline={isOnline}
-        canDeleteSavedAvatar={canDeleteSavedAvatar}
+        canDeleteSavedAvatar={renderState.canDeleteSavedAvatar}
         onUploadSelectedAvatar={() => {
           void uploadSelectedAvatar();
         }}
@@ -106,4 +115,26 @@ export function AvatarProfileSection({
       />
     </div>
   );
+}
+
+function getAvatarProfileRenderState({
+  avatarPreviewUrl,
+  currentUser,
+  isDeletingAvatar,
+  isUploadingAvatar,
+}: Pick<
+  AvatarProfileSectionProps,
+  "currentUser" | "isDeletingAvatar" | "isUploadingAvatar"
+> & {
+  avatarPreviewUrl: string | null;
+}): AvatarProfileRenderState {
+  return {
+    canDeleteSavedAvatar: Boolean(currentUser?.avatar),
+    displayedAvatarUrl: avatarPreviewUrl ?? currentUser?.avatar,
+    isAvatarBusy: isUploadingAvatar || isDeletingAvatar,
+  };
+}
+
+function getSelectedAvatarFile(files: File[]) {
+  return files[0] ?? null;
 }

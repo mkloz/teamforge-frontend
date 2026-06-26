@@ -33,7 +33,7 @@ const GOOGLE_AUTH_SCOPE = "openid profile email";
 
 let googleIdentityScriptPromise: Promise<GoogleIdentityServices> | null = null;
 
-export class GoogleAuthFlowError extends Error {
+class GoogleAuthFlowError extends Error {
   phase: GoogleAuthPhase;
 
   constructor(message: string, phase: GoogleAuthPhase) {

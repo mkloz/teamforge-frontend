@@ -22,8 +22,18 @@ import ts from "typescript";
  * @typedef {"architecture" | "biome" | "compiler" | "oxlint" | "types"} Stage
  * @typedef {"fast" | "full"} OxlintMode
  * @typedef {{ files: string[] | null; oxlintMode: OxlintMode; staged: boolean; stages: Stage[] }} CliOptions
+ * @typedef {{ argv: string[]; index: number; options: CliOptions }} CliParseContext
+ * @typedef {{ nextIndex: number; stop: boolean }} CliParseResult
+ * @typedef {(context: CliParseContext) => CliParseResult} CliOptionHandler
+ * @typedef {{ apply: (context: CliParseContext, value: string) => CliParseResult; prefix: string }} PrefixedCliOptionHandler
  * @typedef {{ argsPrefix: string[]; command: string; shell: boolean }} CommandSpec
+ * @typedef {{ baseArgs: string[]; command: string; files: string[]; name: string }} FileCommandOptions
  * @typedef {{ name: string; output: string; status: number }} StageResult
+ * @typedef {() => Promise<StageResult>} StageJob
+ * @typedef {{ changedFiles: string[]; options: CliOptions; stageSet: ReadonlySet<Stage> }} StageJobContext
+ * @typedef {(context: StageJobContext) => StageJob | null} StageJobBuilder
+ * @typedef {{ configPath: string; files: string[] }} TypeCheckOptions
+ * @typedef {{ architecture: Set<string>; biome: Set<string>; oxlint: Set<string>; typescript: Set<string> }} ExtensionSets
  */
 
 const INVOCATION_CWD = process.cwd();
@@ -50,6 +60,30 @@ const JS_PLUGIN_RULE_PREFIXES = [
   "tailwindcss/",
 ];
 
+/** @type {ReadonlyMap<string, CliOptionHandler>} */
+const EXACT_CLI_OPTION_HANDLERS = new Map([
+  ["--files", applyFilesOption],
+  ["--full-oxlint", applyFullOxlintOption],
+  ["--oxlint-mode", applyOxlintModeOption],
+  ["--staged", applyStagedOption],
+  ["--stages", applyStagesOption],
+]);
+
+/** @type {readonly PrefixedCliOptionHandler[]} */
+const PREFIXED_CLI_OPTION_HANDLERS = [
+  { prefix: "--oxlint-mode=", apply: applyInlineOxlintModeOption },
+  { prefix: "--stages=", apply: applyInlineStagesOption },
+];
+
+/** @type {readonly StageJobBuilder[]} */
+const STAGE_JOB_BUILDERS = [
+  createOxlintStageJob,
+  createCompilerStageJob,
+  createBiomeStageJob,
+  createArchitectureStageJob,
+  createTypesStageJob,
+];
+
 /** @type {Readonly<Record<string, string>>} */
 const PACKAGE_BIN_PATHS = {
   biome: "node_modules/@biomejs/biome/bin/biome",
@@ -59,6 +93,7 @@ const PACKAGE_BIN_PATHS = {
     "node_modules/@doist/react-compiler-tracker/dist/index.js",
 };
 
+/** @type {Readonly<ExtensionSets>} */
 const EXTENSIONS = {
   architecture: new Set([".cjs", ".js", ".jsx", ".mjs", ".ts", ".tsx"]),
   biome: new Set([
@@ -87,6 +122,9 @@ const EXTENSIONS = {
   typescript: new Set([".ts", ".tsx"]),
 };
 
+/**
+ * @returns {Promise<void>} Resolves when all selected lint stages complete.
+ */
 async function main() {
   const options = parseCliArgs(process.argv.slice(2));
   const changedFiles = getSelectedFiles(options);
@@ -451,7 +489,7 @@ function addChildProcessListener(child, event, listener) {
 }
 
 /**
- * @param {{ baseArgs: string[]; command: string; files: string[]; name: string }} options
+ * @param {FileCommandOptions} options File command options.
  * @returns {Promise<StageResult>} Stage result.
  */
 async function runFileCommand({ baseArgs, command, files, name }) {
@@ -582,7 +620,7 @@ function readTsConfig(configPath) {
  * are included for ambient types, but diagnostics are reported for changed
  * roots only.
  *
- * @param {{ configPath: string; files: string[] }} options Type-check options.
+ * @param {TypeCheckOptions} options Type-check options.
  * @returns {import("typescript").Diagnostic[]} Diagnostics.
  */
 function typeCheckChangedFiles({ configPath, files }) {
@@ -689,68 +727,163 @@ function runChangedTypeCheck(changedFiles) {
  * @returns {CliOptions} Parsed options.
  */
 function parseCliArgs(argv) {
-  /** @type {CliOptions} */
-  const options = {
+  const options = createDefaultCliOptions();
+
+  for (let index = 0; index < argv.length; ) {
+    const result = parseCliArg({ argv, index, options });
+
+    if (result.stop) {
+      break;
+    }
+
+    index = result.nextIndex;
+  }
+
+  validateCliOptions(options);
+  return options;
+}
+
+/**
+ * @returns {CliOptions} Default CLI options.
+ */
+function createDefaultCliOptions() {
+  return {
     files: null,
     oxlintMode: "fast",
     staged: false,
     stages: [...ALL_STAGES],
   };
+}
 
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
+/**
+ * @param {CliParseContext} context Parser context.
+ * @returns {CliParseResult} Next parse step.
+ */
+function parseCliArg(context) {
+  const arg = context.argv[context.index];
+  const exactHandler = EXACT_CLI_OPTION_HANDLERS.get(arg);
 
-    if (arg === "--stages") {
-      options.stages = parseStages(readOptionValue(argv, index, "--stages"));
-      index += 1;
-      continue;
-    }
+  if (exactHandler) {
+    return exactHandler(context);
+  }
 
-    if (arg.startsWith("--stages=")) {
-      options.stages = parseStages(arg.slice("--stages=".length));
-      continue;
-    }
+  const prefixedHandler = PREFIXED_CLI_OPTION_HANDLERS.find(({ prefix }) =>
+    arg.startsWith(prefix),
+  );
 
-    if (arg === "--full-oxlint") {
-      options.oxlintMode = "full";
-      continue;
-    }
-
-    if (arg === "--oxlint-mode") {
-      options.oxlintMode = parseOxlintMode(
-        readOptionValue(argv, index, "--oxlint-mode"),
-      );
-      index += 1;
-      continue;
-    }
-
-    if (arg.startsWith("--oxlint-mode=")) {
-      options.oxlintMode = parseOxlintMode(arg.slice("--oxlint-mode=".length));
-      continue;
-    }
-
-    if (arg === "--staged") {
-      options.staged = true;
-      continue;
-    }
-
-    if (arg === "--files") {
-      options.files = argv.slice(index + 1);
-      break;
-    }
-
-    fail(
-      arg.startsWith("--")
-        ? `Unknown option: ${arg}`
-        : `Unexpected argument: ${arg}`,
+  if (prefixedHandler) {
+    return prefixedHandler.apply(
+      context,
+      arg.slice(prefixedHandler.prefix.length),
     );
   }
 
+  fail(getUnknownCliArgumentMessage(arg));
+  return stopParsing();
+}
+
+/**
+ * @param {string} arg Raw CLI argument.
+ * @returns {string} Failure message for an unsupported argument.
+ */
+function getUnknownCliArgumentMessage(arg) {
+  return arg.startsWith("--")
+    ? `Unknown option: ${arg}`
+    : `Unexpected argument: ${arg}`;
+}
+
+/**
+ * @param {CliParseContext} context Parser context.
+ * @returns {CliParseResult} Next parse step.
+ */
+function applyStagesOption(context) {
+  context.options.stages = parseStages(
+    readOptionValue(context.argv, context.index, "--stages"),
+  );
+  return continueParsing(context.index + 2);
+}
+
+/**
+ * @param {CliParseContext} context Parser context.
+ * @param {string} value Inline stage value.
+ * @returns {CliParseResult} Next parse step.
+ */
+function applyInlineStagesOption(context, value) {
+  context.options.stages = parseStages(value);
+  return continueParsing(context.index + 1);
+}
+
+/**
+ * @param {CliParseContext} context Parser context.
+ * @returns {CliParseResult} Next parse step.
+ */
+function applyFullOxlintOption(context) {
+  context.options.oxlintMode = "full";
+  return continueParsing(context.index + 1);
+}
+
+/**
+ * @param {CliParseContext} context Parser context.
+ * @returns {CliParseResult} Next parse step.
+ */
+function applyOxlintModeOption(context) {
+  context.options.oxlintMode = parseOxlintMode(
+    readOptionValue(context.argv, context.index, "--oxlint-mode"),
+  );
+  return continueParsing(context.index + 2);
+}
+
+/**
+ * @param {CliParseContext} context Parser context.
+ * @param {string} value Inline Oxlint mode.
+ * @returns {CliParseResult} Next parse step.
+ */
+function applyInlineOxlintModeOption(context, value) {
+  context.options.oxlintMode = parseOxlintMode(value);
+  return continueParsing(context.index + 1);
+}
+
+/**
+ * @param {CliParseContext} context Parser context.
+ * @returns {CliParseResult} Next parse step.
+ */
+function applyStagedOption(context) {
+  context.options.staged = true;
+  return continueParsing(context.index + 1);
+}
+
+/**
+ * @param {CliParseContext} context Parser context.
+ * @returns {CliParseResult} Next parse step.
+ */
+function applyFilesOption(context) {
+  context.options.files = context.argv.slice(context.index + 1);
+  return stopParsing();
+}
+
+/**
+ * @param {number} nextIndex Next argument index.
+ * @returns {CliParseResult} Continue result.
+ */
+function continueParsing(nextIndex) {
+  return { nextIndex, stop: false };
+}
+
+/**
+ * @returns {CliParseResult} Stop result.
+ */
+function stopParsing() {
+  return { nextIndex: Number.POSITIVE_INFINITY, stop: true };
+}
+
+/**
+ * @param {CliOptions} options Parsed options.
+ * @returns {void}
+ */
+function validateCliOptions(options) {
   if (options.files && options.staged) {
     fail("Use either --files or --staged, not both.");
   }
-
-  return options;
 }
 
 /**
@@ -846,65 +979,142 @@ async function runStages(options, changedFiles) {
 /**
  * @param {CliOptions} options CLI options.
  * @param {string[]} changedFiles Existing changed files.
- * @returns {Array<() => Promise<StageResult>>} Stage jobs.
+ * @returns {StageJob[]} Stage jobs.
  */
 function getStageJobs(options, changedFiles) {
-  const stageSet = new Set(options.stages);
-  const jobs = [];
+  const context = {
+    changedFiles,
+    options,
+    stageSet: new Set(options.stages),
+  };
 
-  if (stageSet.has("oxlint")) {
-    const files = changedFiles.filter((filePath) =>
-      hasExtension(filePath, EXTENSIONS.oxlint),
-    );
+  return compactStageJobs(
+    STAGE_JOB_BUILDERS.map((builder) => builder(context)),
+  );
+}
 
-    jobs.push(() =>
-      runFileCommand({
-        baseArgs: oxlintArgs(options.oxlintMode),
-        command: "oxlint",
-        files,
-        name:
-          options.oxlintMode === "full" ? "lint:oxlint" : "lint:oxlint:fast",
-      }),
-    );
+/**
+ * @param {(StageJob | null)[]} jobs Stage jobs with skipped entries.
+ * @returns {StageJob[]} Runnable stage jobs.
+ */
+function compactStageJobs(jobs) {
+  /** @type {StageJob[]} */
+  const compactJobs = [];
+
+  for (const job of jobs) {
+    if (job) {
+      compactJobs.push(job);
+    }
   }
 
-  if (stageSet.has("compiler")) {
-    jobs.push(() =>
-      runFileCommand({
-        baseArgs: ["--check-files"],
-        command: "react-compiler-tracker",
-        files: changedFiles.filter(
-          (filePath) =>
-            filePath.startsWith("src/") &&
-            hasExtension(filePath, EXTENSIONS.oxlint),
-        ),
-        name: "lint:compiler",
-      }),
-    );
+  return compactJobs;
+}
+
+/**
+ * @param {StageJobContext} context Stage job context.
+ * @returns {StageJob | null} Oxlint job.
+ */
+function createOxlintStageJob({ changedFiles, options, stageSet }) {
+  if (!stageSet.has("oxlint")) {
+    return null;
   }
 
-  if (stageSet.has("biome")) {
-    jobs.push(() =>
-      runFileCommand({
-        baseArgs: ["check", "--no-errors-on-unmatched", "--write"],
-        command: "biome",
-        files: changedFiles.filter((filePath) =>
-          hasExtension(filePath, EXTENSIONS.biome),
-        ),
-        name: "lint:biome",
-      }),
-    );
+  const files = getFilesForExtensions(changedFiles, EXTENSIONS.oxlint);
+
+  return () =>
+    runFileCommand({
+      baseArgs: oxlintArgs(options.oxlintMode),
+      command: "oxlint",
+      files,
+      name: getOxlintStageName(options.oxlintMode),
+    });
+}
+
+/**
+ * @param {OxlintMode} mode Changed-file Oxlint mode.
+ * @returns {string} Stage name.
+ */
+function getOxlintStageName(mode) {
+  return mode === "full" ? "lint:oxlint" : "lint:oxlint:fast";
+}
+
+/**
+ * @param {StageJobContext} context Stage job context.
+ * @returns {StageJob | null} React compiler job.
+ */
+function createCompilerStageJob({ changedFiles, stageSet }) {
+  if (!stageSet.has("compiler")) {
+    return null;
   }
 
-  if (stageSet.has("architecture")) {
-    jobs.push(() => runArchitectureStage(changedFiles));
+  return () =>
+    runFileCommand({
+      baseArgs: ["--check-files"],
+      command: "react-compiler-tracker",
+      files: changedFiles.filter(isReactCompilerFile),
+      name: "lint:compiler",
+    });
+}
+
+/**
+ * @param {StageJobContext} context Stage job context.
+ * @returns {StageJob | null} Biome job.
+ */
+function createBiomeStageJob({ changedFiles, stageSet }) {
+  if (!stageSet.has("biome")) {
+    return null;
   }
 
-  if (stageSet.has("types")) {
-    jobs.push(() => Promise.resolve(runChangedTypeCheck(changedFiles)));
+  return () =>
+    runFileCommand({
+      baseArgs: ["check", "--no-errors-on-unmatched", "--write"],
+      command: "biome",
+      files: getFilesForExtensions(changedFiles, EXTENSIONS.biome),
+      name: "lint:biome",
+    });
+}
+
+/**
+ * @param {StageJobContext} context Stage job context.
+ * @returns {StageJob | null} Architecture job.
+ */
+function createArchitectureStageJob({ changedFiles, stageSet }) {
+  if (!stageSet.has("architecture")) {
+    return null;
   }
 
-  return jobs;
+  return () => runArchitectureStage(changedFiles);
+}
+
+/**
+ * @param {StageJobContext} context Stage job context.
+ * @returns {StageJob | null} TypeScript job.
+ */
+function createTypesStageJob({ changedFiles, stageSet }) {
+  if (!stageSet.has("types")) {
+    return null;
+  }
+
+  return () => Promise.resolve(runChangedTypeCheck(changedFiles));
+}
+
+/**
+ * @param {string[]} files Candidate files.
+ * @param {Set<string>} extensions Supported extensions.
+ * @returns {string[]} Matching files.
+ */
+function getFilesForExtensions(files, extensions) {
+  return files.filter((filePath) => hasExtension(filePath, extensions));
+}
+
+/**
+ * @param {string} filePath Repository-relative path.
+ * @returns {boolean} Whether the file should be checked by React Compiler.
+ */
+function isReactCompilerFile(filePath) {
+  return (
+    filePath.startsWith("src/") && hasExtension(filePath, EXTENSIONS.oxlint)
+  );
 }
 
 /**

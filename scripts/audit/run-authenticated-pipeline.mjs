@@ -1,3 +1,5 @@
+// @ts-check
+
 import { spawn } from "node:child_process";
 import {
   closeSync,
@@ -16,10 +18,12 @@ import {
   getAuditBaseUrl,
   getAuditCredentialsFromEnv,
   getRefreshCookieName,
+  getSpawnInvocation,
   loadAuditEnvFiles,
   loginAuditUser,
   removeAuditTokens,
   resolveAuditPreviewHttps,
+  runCommand,
   todayStamp,
   waitForHttpOk,
   writeError,
@@ -34,15 +38,74 @@ import {
 } from "./routes.mjs";
 
 /**
- * @typedef {object} CommandOptions
- * @property {NodeJS.ProcessEnv} [env] Environment for the spawned command.
- * @property {string} [label] Friendly command label for logs.
- * @property {"inherit" | "pipe" | "ignore"} [stdio] Stdio mode.
- *
  * @typedef {object} PreviewServer
  * @property {import("node:child_process").ChildProcess} child Preview process.
  * @property {number} errFile Open stderr file descriptor.
  * @property {number} outFile Open stdout file descriptor.
+ *
+ * @typedef {object} PipelinePreviewConfig
+ * @property {string | undefined} previewCertPath Preview TLS certificate path.
+ * @property {boolean} previewHttps Whether the local preview uses HTTPS.
+ * @property {string | undefined} previewKeyPath Preview TLS private-key path.
+ * @property {number} previewPort Local preview port.
+ *
+ * @typedef {object} PipelineApiConfig
+ * @property {string} apiProxyPath Same-origin API proxy mount path.
+ * @property {string} apiProxyTarget Backend API target for the preview proxy.
+ * @property {string} baseUrl Frontend base URL under audit.
+ * @property {string} browserApiUrl API URL baked into the audit build.
+ *
+ * @typedef {PipelinePreviewConfig & PipelineApiConfig & { outputRoot: string }} PipelineConfig
+ *
+ * @typedef {object} PipelineStageFlags
+ * @property {boolean} keepPreview Whether to leave the preview process running.
+ * @property {boolean} runBuild Whether to run the Vite build first.
+ * @property {boolean} runLighthouse Whether to run Lighthouse.
+ * @property {boolean} runLoaded Whether to run the loaded browser audit.
+ * @property {boolean} runPlaywright Whether to run Playwright route health.
+ * @property {boolean} runSquirrel Whether to run SquirrelScan.
+ * @property {boolean} startPreview Whether the pipeline starts preview itself.
+ *
+ * @typedef {object} AuditSessionRequirement
+ * @property {boolean} needsAuditSession Whether selected lanes need auth tokens.
+ * @property {boolean} useLighthouseAuthSession Whether Lighthouse needs auth tokens.
+ *
+ * @typedef {object} StartPreviewServerOptions
+ * @property {string} apiProxyPath Same-origin API proxy mount path.
+ * @property {string} apiProxyTarget Backend API target for the preview proxy.
+ * @property {string} [certPath] Preview TLS certificate path.
+ * @property {string} [keyPath] Preview TLS private-key path.
+ * @property {number} port Local preview port.
+ * @property {boolean} useHttps Whether to serve HTTPS.
+ *
+ * @typedef {object} AuditBrowserApiUrlOptions
+ * @property {string} baseUrl Frontend base URL under audit.
+ * @property {string} proxyPath Same-origin API proxy mount path.
+ * @property {boolean} previewHttps Whether the local preview uses HTTPS.
+ *
+ * @typedef {object} ChildAuditStage
+ * @property {boolean} enabled Whether the child stage is selected.
+ * @property {string} label Friendly stage label for logs.
+ * @property {string} outputDirName Directory name under the combined output root.
+ * @property {string} outputEnvName Environment variable consumed by the child script.
+ * @property {string} scriptPath Absolute path to the child script.
+ *
+ * @typedef {object} ChildAuditEnvOptions
+ * @property {string} auditSessionJson Serialized audit session JSON.
+ * @property {string} baseUrl Frontend base URL under audit.
+ * @property {string} outputRoot Combined report root directory.
+ * @property {Pick<ChildAuditStage, "outputDirName" | "outputEnvName">} stage Child stage output settings.
+ *
+ * @typedef {object} ChildAuditStageOptions
+ * @property {string} auditSessionJson Serialized audit session JSON.
+ * @property {string} baseUrl Frontend base URL under audit.
+ * @property {string} outputRoot Combined report root directory.
+ * @property {ChildAuditStage} stage Child stage to run.
+ *
+ * @typedef {object} RunEnabledChildAuditStagesOptions
+ * @property {string} auditSessionJson Serialized audit session JSON.
+ * @property {PipelineConfig} config Resolved pipeline config.
+ * @property {PipelineStageFlags} stages Selected stage flags.
  *
  * @typedef {object} LoadedAuditSummary
  * @property {number} blocked Routes that ended at the auth guard.
@@ -117,65 +180,202 @@ const routeInventorySchema = z.object({
       .passthrough(),
   ),
 });
+const pipelineOutputLinkEntries = [
+  {
+    flag: "runLoaded",
+    link: "- [Loaded browser route audit](loaded/index.md)",
+  },
+  {
+    flag: "runPlaywright",
+    link: "- [Playwright route health](playwright/index.md)",
+  },
+  {
+    flag: "runLighthouse",
+    link: "- [Lighthouse report-only audit](lighthouse/index.md)",
+  },
+  {
+    flag: "runSquirrel",
+    link: "- [Authenticated SquirrelScan reports](squirrel/index.md)",
+  },
+];
 
 /**
- * Normalizes commands that Windows cannot spawn directly in some shells.
+ * Resolves static pipeline config from environment variables.
  *
- * @param {string} command Command executable.
- * @param {string[]} args Command arguments.
- * @returns {{ command: string; args: string[] }} Spawn-ready invocation.
+ * @returns {PipelineConfig} Pipeline config.
  */
-function getSpawnInvocation(command, args) {
-  if (process.platform !== "win32" || !command.endsWith(".cmd")) {
-    return { command, args };
-  }
+function getPipelineConfig() {
+  const previewConfig = getPipelinePreviewConfig();
+  const apiConfig = getPipelineApiConfig(previewConfig.previewHttps);
 
   return {
-    command: "cmd.exe",
-    args: ["/d", "/s", "/c", command.slice(0, -4), ...args],
+    ...apiConfig,
+    ...previewConfig,
+    outputRoot: getPipelineOutputRoot(),
   };
 }
 
 /**
- * Runs a child command and rejects on non-zero exit.
+ * Resolves the combined pipeline output root.
  *
- * @param {string} command Command executable.
- * @param {string[]} args Command arguments.
- * @param {CommandOptions} [options] Spawn options.
+ * @returns {string} Output root directory.
+ */
+function getPipelineOutputRoot() {
+  return (
+    process.env.AUDIT_OUTPUT_ROOT ??
+    path.join(cwd, "reports", `authenticated-audit-${todayStamp()}`)
+  );
+}
+
+/**
+ * Resolves preview server settings from environment variables.
+ *
+ * @returns {PipelinePreviewConfig} Preview config.
+ */
+function getPipelinePreviewConfig() {
+  const previewCertPath = process.env.AUDIT_PREVIEW_CERT_PATH;
+  const previewKeyPath = process.env.AUDIT_PREVIEW_KEY_PATH;
+
+  return {
+    previewCertPath,
+    previewHttps: resolveAuditPreviewHttps({
+      certPath: previewCertPath,
+      keyPath: previewKeyPath,
+    }),
+    previewKeyPath,
+    previewPort: Number(process.env.AUDIT_PREVIEW_PORT ?? "4173"),
+  };
+}
+
+/**
+ * Resolves frontend/backend API settings for the pipeline.
+ *
+ * @param {boolean} previewHttps Whether the local preview uses HTTPS.
+ * @returns {PipelineApiConfig} API config.
+ */
+function getPipelineApiConfig(previewHttps) {
+  const baseUrl = process.env.AUDIT_BASE_URL ?? getAuditBaseUrl();
+  const apiProxyPath = getAuditApiProxyPath(process.env.AUDIT_API_PROXY_PATH);
+  const browserApiUrl = getAuditBrowserApiUrl({
+    baseUrl,
+    proxyPath: apiProxyPath,
+    previewHttps,
+  });
+
+  return {
+    apiProxyPath,
+    apiProxyTarget: getPipelineApiProxyTarget(),
+    baseUrl,
+    browserApiUrl,
+  };
+}
+
+/**
+ * Resolves the backend API target for the preview proxy.
+ *
+ * @returns {string} Backend API proxy target.
+ */
+function getPipelineApiProxyTarget() {
+  return (
+    process.env.AUDIT_API_PROXY_TARGET ??
+    process.env.AUDIT_API_URL ??
+    getApiUrl()
+  );
+}
+
+/**
+ * Resolves pipeline stage flags from environment variables.
+ *
+ * @returns {PipelineStageFlags} Stage flags.
+ */
+function getPipelineStageFlags() {
+  return {
+    keepPreview: envFlag("AUDIT_KEEP_PREVIEW", false),
+    runBuild: envFlag("AUDIT_RUN_BUILD", true),
+    runLighthouse: envFlag("AUDIT_RUN_LIGHTHOUSE", false),
+    runLoaded: envFlag("AUDIT_RUN_LOADED", true),
+    runPlaywright: envFlag("AUDIT_RUN_PLAYWRIGHT", false),
+    runSquirrel: envFlag("AUDIT_RUN_SQUIRREL", true),
+    startPreview: envFlag("AUDIT_START_PREVIEW", true),
+  };
+}
+
+/**
+ * Resolves whether any selected stage needs an authenticated audit session.
+ *
+ * @param {PipelineStageFlags} stages Stage flags.
+ * @returns {AuditSessionRequirement} Session requirements.
+ */
+function getAuditSessionRequirement({
+  runLighthouse,
+  runLoaded,
+  runPlaywright,
+  runSquirrel,
+}) {
+  const useLighthouseAuthSession = shouldRunLighthouseWithAuth({
+    runLighthouse,
+  });
+
+  return {
+    needsAuditSession: needsAuthenticatedAuditSession(
+      {
+        runLoaded,
+        runPlaywright,
+        runSquirrel,
+      },
+      useLighthouseAuthSession,
+    ),
+    useLighthouseAuthSession,
+  };
+}
+
+/**
+ * Returns whether Lighthouse should run with an authenticated session.
+ *
+ * @param {Pick<PipelineStageFlags, "runLighthouse">} stages Stage flags.
+ * @returns {boolean} Whether Lighthouse needs auth.
+ */
+function shouldRunLighthouseWithAuth({ runLighthouse }) {
+  return runLighthouse && shouldUseLighthouseAuthSession();
+}
+
+/**
+ * Returns whether any selected child stage needs audit credentials.
+ *
+ * @param {Pick<PipelineStageFlags, "runLoaded" | "runPlaywright" | "runSquirrel">} stages Stage flags.
+ * @param {boolean} useLighthouseAuthSession Whether Lighthouse needs auth.
+ * @returns {boolean} Whether an audit session is required.
+ */
+function needsAuthenticatedAuditSession(
+  { runLoaded, runPlaywright, runSquirrel },
+  useLighthouseAuthSession,
+) {
+  return [runLoaded, runPlaywright, useLighthouseAuthSession, runSquirrel].some(
+    Boolean,
+  );
+}
+
+/**
+ * Runs the Vite production build for audit.
+ *
+ * @param {string} browserApiUrl Browser-visible API URL.
  * @returns {Promise<void>}
  */
-function runCommand(
-  command,
-  args,
-  { env = process.env, label, stdio = "inherit" } = {},
-) {
-  writeOutput(`RUN ${label ?? [command, ...args].join(" ")}`);
-
-  return new Promise((resolve, reject) => {
-    const invocation = getSpawnInvocation(command, args);
-    const child = spawn(invocation.command, invocation.args, {
-      cwd,
-      env,
-      stdio,
-      windowsHide: true,
-    });
-
-    child.on("error", reject);
-    child.on("exit", (code) => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-
-      reject(new Error(`${label ?? command} failed with exit code ${code}`));
-    });
+async function runAuditBuild(browserApiUrl) {
+  await runCommand(npmCommand, ["run", "build"], {
+    env: {
+      ...process.env,
+      VITE_AUDIT_AUTH_ENABLED: "true",
+      VITE_API_URL: browserApiUrl,
+    },
+    label: "npm run build",
   });
 }
 
 /**
  * Starts the audit static preview server for the built app.
  *
- * @param {{ apiProxyPath: string; apiProxyTarget: string; certPath?: string; keyPath?: string; port: number; useHttps: boolean }} options Preview options.
+ * @param {StartPreviewServerOptions} options Preview options.
  * @returns {PreviewServer} Preview process and log descriptors.
  */
 function startPreviewServer({
@@ -253,7 +453,7 @@ function getAuditApiProxyPath(value) {
  * HTTPS local previews use a same-origin API proxy so crawlers do not see
  * mixed content while the local backend can continue serving plain HTTP.
  *
- * @param {{ baseUrl: string; proxyPath: string; previewHttps: boolean }} options Resolution options.
+ * @param {AuditBrowserApiUrlOptions} options Resolution options.
  * @returns {string} Browser-visible API URL.
  */
 function getAuditBrowserApiUrl({ baseUrl, proxyPath, previewHttps }) {
@@ -290,11 +490,215 @@ function stopPreviewServer(preview) {
 }
 
 /**
+ * Starts or validates the audit preview target.
+ *
+ * @param {PipelineConfig} config Pipeline config.
+ * @param {Pick<PipelineStageFlags, "startPreview">} stages Stage flags.
+ * @returns {Promise<PreviewServer | undefined>} Started preview server, if any.
+ */
+async function prepareAuditPreview(config, stages) {
+  if (!stages.startPreview) {
+    await waitForHttpOk(config.baseUrl, 10_000);
+    return undefined;
+  }
+
+  const preview = startPreviewServer({
+    apiProxyPath: config.apiProxyPath,
+    apiProxyTarget: config.apiProxyTarget,
+    certPath: config.previewCertPath,
+    keyPath: config.previewKeyPath,
+    port: config.previewPort,
+    useHttps: config.previewHttps,
+  });
+
+  await waitForHttpOk(config.baseUrl, 45_000);
+  writeOutput(`PREVIEW ${config.baseUrl}`);
+
+  return preview;
+}
+
+/**
+ * Logs in once for child audit stages when a session is required.
+ *
+ * @param {boolean} needsAuditSession Whether selected stages need auth.
+ * @returns {Promise<string>} Serialized audit session JSON.
+ */
+async function getAuditSessionJson(needsAuditSession) {
+  if (!needsAuditSession) {
+    return "";
+  }
+
+  return JSON.stringify(
+    await loginAuditUser({
+      apiUrl: getApiUrl(),
+      refreshCookieName: getRefreshCookieName(),
+    }),
+  );
+}
+
+/**
+ * Returns enabled child audit stages in pipeline execution order.
+ *
+ * @param {PipelineStageFlags} stages Stage flags.
+ * @returns {ChildAuditStage[]} Enabled child stages.
+ */
+function getEnabledChildAuditStages(stages) {
+  return [
+    {
+      enabled: stages.runLoaded,
+      label: "loaded route audit",
+      outputDirName: "loaded",
+      outputEnvName: "LOADED_AUDIT_OUTPUT_DIR",
+      scriptPath: loadedAuditScript,
+    },
+    {
+      enabled: stages.runPlaywright,
+      label: "Playwright route health audit",
+      outputDirName: "playwright",
+      outputEnvName: "AUDIT_PLAYWRIGHT_OUTPUT_DIR",
+      scriptPath: playwrightAuditScript,
+    },
+    {
+      enabled: stages.runLighthouse,
+      label: "Lighthouse report-only audit",
+      outputDirName: "lighthouse",
+      outputEnvName: "AUDIT_LIGHTHOUSE_OUTPUT_DIR",
+      scriptPath: lighthouseAuditScript,
+    },
+    {
+      enabled: stages.runSquirrel,
+      label: "authenticated SquirrelScan",
+      outputDirName: "squirrel",
+      outputEnvName: "AUDIT_OUTPUT_DIR",
+      scriptPath: squirrelAuditScript,
+    },
+  ].filter((stage) => stage.enabled);
+}
+
+/**
+ * Builds the environment for a child audit script.
+ *
+ * @param {ChildAuditEnvOptions} options Env options.
+ * @returns {NodeJS.ProcessEnv} Child process environment.
+ */
+function getChildAuditEnv({ auditSessionJson, baseUrl, outputRoot, stage }) {
+  return {
+    ...process.env,
+    AUDIT_SESSION_JSON: auditSessionJson,
+    AUDIT_BASE_URL: baseUrl,
+    [stage.outputEnvName]: path.join(outputRoot, stage.outputDirName),
+  };
+}
+
+/**
+ * Runs one child audit script.
+ *
+ * @param {ChildAuditStageOptions} options Stage options.
+ * @returns {Promise<void>}
+ */
+async function runChildAuditStage({
+  auditSessionJson,
+  baseUrl,
+  outputRoot,
+  stage,
+}) {
+  await runCommand(process.execPath, [stage.scriptPath], {
+    env: getChildAuditEnv({ auditSessionJson, baseUrl, outputRoot, stage }),
+    label: stage.label,
+  });
+}
+
+/**
+ * Runs selected child audit stages sequentially.
+ *
+ * @param {RunEnabledChildAuditStagesOptions} options Stage runner options.
+ * @returns {Promise<void>}
+ */
+async function runEnabledChildAuditStages({
+  auditSessionJson,
+  config,
+  stages,
+}) {
+  await getEnabledChildAuditStages(stages).reduce(
+    (previous, stage) =>
+      previous.then(() =>
+        runChildAuditStage({
+          auditSessionJson,
+          baseUrl: config.baseUrl,
+          outputRoot: config.outputRoot,
+          stage,
+        }),
+      ),
+    Promise.resolve(),
+  );
+}
+
+function ensureAuditCredentialsIfRequired(needsAuditSession) {
+  if (needsAuditSession) {
+    getAuditCredentialsFromEnv();
+  }
+}
+
+function ensurePipelineOutputRoot(outputRoot) {
+  mkdirSync(outputRoot, { recursive: true });
+}
+
+async function runAuthenticatedAuditPipeline({
+  config,
+  needsAuditSession,
+  stages,
+}) {
+  let preview;
+
+  try {
+    if (stages.runBuild) {
+      await runAuditBuild(config.browserApiUrl);
+    }
+
+    preview = await prepareAuditPreview(config, stages);
+
+    await runEnabledChildAuditStages({
+      auditSessionJson: await getAuditSessionJson(needsAuditSession),
+      config,
+      stages,
+    });
+
+    writePipelineRunSummary(config, stages);
+  } finally {
+    cleanupAuditPipeline(preview, stages.keepPreview);
+  }
+}
+
+function writePipelineRunSummary(config, stages) {
+  writePipelineIndex({
+    baseUrl: config.baseUrl,
+    browserApiUrl: config.browserApiUrl,
+    buildRan: stages.runBuild,
+    outputRoot: config.outputRoot,
+    previewStarted: stages.startPreview,
+    runLighthouse: stages.runLighthouse,
+    runLoaded: stages.runLoaded,
+    runPlaywright: stages.runPlaywright,
+    runSquirrel: stages.runSquirrel,
+  });
+  writeOutput(`DONE authenticated audit pipeline: ${config.outputRoot}`);
+}
+
+function cleanupAuditPipeline(preview, keepPreview) {
+  removeAuditTokens();
+
+  if (!keepPreview) {
+    stopPreviewServer(preview);
+  }
+}
+
+/**
  * Reads and validates a generated JSON report.
  *
+ * @template T
  * @param {string} filePath JSON file path.
- * @param {z.ZodType} schema Schema used to validate the parsed payload.
- * @returns {unknown} Validated payload.
+ * @param {z.ZodType<T>} schema Schema used to validate the parsed payload.
+ * @returns {T} Validated payload.
  */
 function readJsonFile(filePath, schema) {
   const parsedPayload = schema.safeParse(
@@ -306,6 +710,16 @@ function readJsonFile(filePath, schema) {
   }
 
   return parsedPayload.data;
+}
+
+/**
+ * Checks whether a loaded audit row can become a route inventory entry.
+ *
+ * @param {{ path: string; slug: string } | null} route Route candidate.
+ * @returns {route is import("./routes.mjs").AuditRoute} Whether the route is complete.
+ */
+function isAuditRouteInventoryEntry(route) {
+  return route !== null;
 }
 
 /**
@@ -372,7 +786,7 @@ function getPipelineRouteInventory(outputRoot) {
           ? { slug: result.slug, path: result.requestedPath }
           : null,
       )
-      .filter(Boolean);
+      .filter(isAuditRouteInventoryEntry);
 
     if (routes.length > 0) {
       return routes;
@@ -419,74 +833,86 @@ function shouldUseLighthouseAuthSession() {
   return getLighthouseRouteSlugs().some((slug) => !publicRouteSlugs.has(slug));
 }
 
-/**
- * Writes the combined pipeline manifest and markdown index.
- *
- * @param {PipelineIndexOptions} options Pipeline report options.
- */
-function writePipelineIndex({
-  baseUrl,
-  browserApiUrl,
-  buildRan,
-  outputRoot,
-  previewStarted,
+function formatPipelineRouteRows(routes) {
+  return routes
+    .map((route) => `| \`${route.path}\` | \`${route.slug}\` |`)
+    .join("\n");
+}
+
+function formatLoadedAuditSummaryLine(loadedSummary) {
+  if (!loadedSummary) {
+    return "Loaded audit: not run or no report found.";
+  }
+
+  return `Loaded audit: ${loadedSummary.routes} routes, ${loadedSummary.blocked} blocked, ${loadedSummary.loading} still loading, ${loadedSummary.consoleEvents} console warnings/errors, ${loadedSummary.failedRequests} failed/error requests.`;
+}
+
+function formatPlaywrightSummaryLine(runPlaywright) {
+  if (!runPlaywright) {
+    return "Playwright: skipped.";
+  }
+
+  return `Playwright: ${process.env.AUDIT_PLAYWRIGHT_ROUTE_SET === "smoke" ? "smoke" : "authenticated"} route set, ${process.env.AUDIT_PLAYWRIGHT_LANES ?? "route-health"} lane(s).`;
+}
+
+function formatLighthouseSummaryLine(runLighthouse) {
+  if (!runLighthouse) {
+    return "Lighthouse: skipped.";
+  }
+
+  return `Lighthouse: ${process.env.AUDIT_LIGHTHOUSE_ROUTE_SLUGS ?? "01-landing,02-download,14-home"} route slug(s), ${process.env.AUDIT_LIGHTHOUSE_CATEGORIES ?? "performance,accessibility,best-practices,seo"} category set.`;
+}
+
+function formatSquirrelSummaryLine(runSquirrel) {
+  return runSquirrel
+    ? "SquirrelScan: one LLM report per explicit route."
+    : "SquirrelScan: skipped.";
+}
+
+function formatPipelineOutputLinks({
   runLighthouse,
   runLoaded,
   runPlaywright,
   runSquirrel,
 }) {
-  const loadedSummary = summarizeLoadedAudit(outputRoot);
-  const routes = getPipelineRouteInventory(outputRoot);
-  const routeRows = routes
-    .map((route) => `| \`${route.path}\` | \`${route.slug}\` |`)
-    .join("\n");
-  const loadedLine = loadedSummary
-    ? `Loaded audit: ${loadedSummary.routes} routes, ${loadedSummary.blocked} blocked, ${loadedSummary.loading} still loading, ${loadedSummary.consoleEvents} console warnings/errors, ${loadedSummary.failedRequests} failed/error requests.`
-    : "Loaded audit: not run or no report found.";
-  const squirrelLine = runSquirrel
-    ? "SquirrelScan: one LLM report per explicit route."
-    : "SquirrelScan: skipped.";
-  const playwrightLine = runPlaywright
-    ? `Playwright: ${process.env.AUDIT_PLAYWRIGHT_ROUTE_SET === "smoke" ? "smoke" : "authenticated"} route set, ${process.env.AUDIT_PLAYWRIGHT_LANES ?? "route-health"} lane(s).`
-    : "Playwright: skipped.";
-  const lighthouseLine = runLighthouse
-    ? `Lighthouse: ${process.env.AUDIT_LIGHTHOUSE_ROUTE_SLUGS ?? "01-landing,02-download,14-home"} route slug(s), ${process.env.AUDIT_LIGHTHOUSE_CATEGORIES ?? "performance,accessibility,best-practices,seo"} category set.`
-    : "Lighthouse: skipped.";
-  const outputLinks = [
-    runLoaded ? "- [Loaded browser route audit](loaded/index.md)" : null,
-    runPlaywright ? "- [Playwright route health](playwright/index.md)" : null,
-    runLighthouse
-      ? "- [Lighthouse report-only audit](lighthouse/index.md)"
-      : null,
-    runSquirrel
-      ? "- [Authenticated SquirrelScan reports](squirrel/index.md)"
-      : null,
-  ]
-    .filter(Boolean)
-    .join("\n");
+  const flags = { runLighthouse, runLoaded, runPlaywright, runSquirrel };
 
-  writeJson(path.join(outputRoot, "manifest.json"), {
+  return pipelineOutputLinkEntries
+    .filter((entry) => flags[entry.flag])
+    .map((entry) => entry.link)
+    .join("\n");
+}
+
+function writePipelineManifest(options, routes, loadedSummary) {
+  writeJson(path.join(options.outputRoot, "manifest.json"), {
     generatedAt: new Date().toISOString(),
-    target: baseUrl,
-    browserApiUrl,
-    buildRan,
-    previewStarted,
-    runLighthouse,
-    runLoaded,
-    runPlaywright,
-    runSquirrel,
+    target: options.baseUrl,
+    browserApiUrl: options.browserApiUrl,
+    buildRan: options.buildRan,
+    previewStarted: options.previewStarted,
+    runLighthouse: options.runLighthouse,
+    runLoaded: options.runLoaded,
+    runPlaywright: options.runPlaywright,
+    runSquirrel: options.runSquirrel,
     refreshCookieName: getRefreshCookieName(),
     routeCount: routes.length,
     routes,
     loadedSummary,
   });
+}
 
-  writeText(
-    path.join(outputRoot, "index.md"),
-    `# TeamForge Authenticated Audit Pipeline
+function formatPipelineIndexMarkdown(options, routes, loadedSummary) {
+  const outputLinks = formatPipelineOutputLinks(options);
+  const routeRows = formatPipelineRouteRows(routes);
+  const loadedLine = formatLoadedAuditSummaryLine(loadedSummary);
+  const playwrightLine = formatPlaywrightSummaryLine(options.runPlaywright);
+  const lighthouseLine = formatLighthouseSummaryLine(options.runLighthouse);
+  const squirrelLine = formatSquirrelSummaryLine(options.runSquirrel);
+
+  return `# TeamForge Authenticated Audit Pipeline
 
 Date: ${new Date().toISOString()}
-Target: \`${baseUrl}\`
+Target: \`${options.baseUrl}\`
 
 ## Outputs
 
@@ -494,9 +920,9 @@ ${outputLinks || "- No audit stages were run."}
 
 ## Summary
 
-- Build step: ${buildRan ? "ran with `VITE_AUDIT_AUTH_ENABLED=true`" : "skipped"}
-- Browser API URL: \`${browserApiUrl}\`
-- Preview server: ${previewStarted ? "started by pipeline" : "external server expected"}
+- Build step: ${options.buildRan ? "ran with `VITE_AUDIT_AUTH_ENABLED=true`" : "skipped"}
+- Browser API URL: \`${options.browserApiUrl}\`
+- Preview server: ${options.previewStarted ? "started by pipeline" : "external server expected"}
 - ${loadedLine}
 - ${playwrightLine}
 - ${lighthouseLine}
@@ -513,7 +939,22 @@ ${routeRows}
 - Copy \`.env.audit.example\` to \`.env.audit.local\`, then set \`AUDIT_USER_EMAIL\` and \`AUDIT_USER_PASSWORD\` for the local audit test account.
 - The runner writes \`audit-auth-tokens.json\` only while auditing, refreshes sessions during the loaded browser audit when a refresh cookie/token exists, gives Playwright and SquirrelScan a fresh batch login, and removes token files at the end.
 - SquirrelScan is still crawler-oriented; use the loaded browser and Playwright route-health audits to confirm authenticated SPA routes were not blocked by guards.
-`,
+`;
+}
+
+/**
+ * Writes the combined pipeline manifest and markdown index.
+ *
+ * @param {PipelineIndexOptions} options Pipeline report options.
+ */
+function writePipelineIndex(options) {
+  const loadedSummary = summarizeLoadedAudit(options.outputRoot);
+  const routes = getPipelineRouteInventory(options.outputRoot);
+
+  writePipelineManifest(options, routes, loadedSummary);
+  writeText(
+    path.join(options.outputRoot, "index.md"),
+    formatPipelineIndexMarkdown(options, routes, loadedSummary),
   );
 }
 
@@ -525,151 +966,18 @@ ${routeRows}
 async function main() {
   loadAuditEnvFiles();
 
-  const outputRoot =
-    process.env.AUDIT_OUTPUT_ROOT ??
-    path.join(cwd, "reports", `authenticated-audit-${todayStamp()}`);
-  const previewPort = Number(process.env.AUDIT_PREVIEW_PORT ?? "4173");
-  const previewCertPath = process.env.AUDIT_PREVIEW_CERT_PATH;
-  const previewKeyPath = process.env.AUDIT_PREVIEW_KEY_PATH;
-  const previewHttps = resolveAuditPreviewHttps({
-    certPath: previewCertPath,
-    keyPath: previewKeyPath,
+  const config = getPipelineConfig();
+  const stages = getPipelineStageFlags();
+  const { needsAuditSession } = getAuditSessionRequirement(stages);
+
+  ensureAuditCredentialsIfRequired(needsAuditSession);
+  ensurePipelineOutputRoot(config.outputRoot);
+
+  await runAuthenticatedAuditPipeline({
+    config,
+    needsAuditSession,
+    stages,
   });
-  const baseUrl = process.env.AUDIT_BASE_URL ?? getAuditBaseUrl();
-  const apiProxyPath = getAuditApiProxyPath(process.env.AUDIT_API_PROXY_PATH);
-  const apiProxyTarget =
-    process.env.AUDIT_API_PROXY_TARGET ??
-    process.env.AUDIT_API_URL ??
-    getApiUrl();
-  const browserApiUrl = getAuditBrowserApiUrl({
-    baseUrl,
-    proxyPath: apiProxyPath,
-    previewHttps,
-  });
-  const runBuild = envFlag("AUDIT_RUN_BUILD", true);
-  const startPreview = envFlag("AUDIT_START_PREVIEW", true);
-  const runLoaded = envFlag("AUDIT_RUN_LOADED", true);
-  const runPlaywright = envFlag("AUDIT_RUN_PLAYWRIGHT", false);
-  const runLighthouse = envFlag("AUDIT_RUN_LIGHTHOUSE", false);
-  const runSquirrel = envFlag("AUDIT_RUN_SQUIRREL", true);
-  const keepPreview = envFlag("AUDIT_KEEP_PREVIEW", false);
-  const useLighthouseAuthSession =
-    runLighthouse && shouldUseLighthouseAuthSession();
-  const needsAuditSession =
-    runLoaded || runPlaywright || useLighthouseAuthSession || runSquirrel;
-  let auditSessionJson = "";
-
-  if (needsAuditSession) {
-    getAuditCredentialsFromEnv();
-  }
-
-  mkdirSync(outputRoot, { recursive: true });
-
-  let preview;
-
-  try {
-    if (runBuild) {
-      await runCommand(npmCommand, ["run", "build"], {
-        env: {
-          ...process.env,
-          VITE_AUDIT_AUTH_ENABLED: "true",
-          VITE_API_URL: browserApiUrl,
-        },
-        label: "npm run build",
-      });
-    }
-
-    if (startPreview) {
-      preview = startPreviewServer({
-        apiProxyPath,
-        apiProxyTarget,
-        certPath: previewCertPath,
-        keyPath: previewKeyPath,
-        port: previewPort,
-        useHttps: previewHttps,
-      });
-      await waitForHttpOk(baseUrl, 45_000);
-      writeOutput(`PREVIEW ${baseUrl}`);
-    } else {
-      await waitForHttpOk(baseUrl, 10_000);
-    }
-
-    if (needsAuditSession) {
-      auditSessionJson = JSON.stringify(
-        await loginAuditUser({
-          apiUrl: getApiUrl(),
-          refreshCookieName: getRefreshCookieName(),
-        }),
-      );
-    }
-
-    if (runLoaded) {
-      await runCommand(process.execPath, [loadedAuditScript], {
-        env: {
-          ...process.env,
-          AUDIT_SESSION_JSON: auditSessionJson,
-          AUDIT_BASE_URL: baseUrl,
-          LOADED_AUDIT_OUTPUT_DIR: path.join(outputRoot, "loaded"),
-        },
-        label: "loaded route audit",
-      });
-    }
-
-    if (runPlaywright) {
-      await runCommand(process.execPath, [playwrightAuditScript], {
-        env: {
-          ...process.env,
-          AUDIT_SESSION_JSON: auditSessionJson,
-          AUDIT_BASE_URL: baseUrl,
-          AUDIT_PLAYWRIGHT_OUTPUT_DIR: path.join(outputRoot, "playwright"),
-        },
-        label: "Playwright route health audit",
-      });
-    }
-
-    if (runLighthouse) {
-      await runCommand(process.execPath, [lighthouseAuditScript], {
-        env: {
-          ...process.env,
-          AUDIT_SESSION_JSON: auditSessionJson,
-          AUDIT_BASE_URL: baseUrl,
-          AUDIT_LIGHTHOUSE_OUTPUT_DIR: path.join(outputRoot, "lighthouse"),
-        },
-        label: "Lighthouse report-only audit",
-      });
-    }
-
-    if (runSquirrel) {
-      await runCommand(process.execPath, [squirrelAuditScript], {
-        env: {
-          ...process.env,
-          AUDIT_SESSION_JSON: auditSessionJson,
-          AUDIT_BASE_URL: baseUrl,
-          AUDIT_OUTPUT_DIR: path.join(outputRoot, "squirrel"),
-        },
-        label: "authenticated SquirrelScan",
-      });
-    }
-
-    writePipelineIndex({
-      baseUrl,
-      browserApiUrl,
-      buildRan: runBuild,
-      outputRoot,
-      previewStarted: startPreview,
-      runLighthouse,
-      runLoaded,
-      runPlaywright,
-      runSquirrel,
-    });
-    writeOutput(`DONE authenticated audit pipeline: ${outputRoot}`);
-  } finally {
-    removeAuditTokens();
-
-    if (!keepPreview) {
-      stopPreviewServer(preview);
-    }
-  }
 }
 
 main().catch((error) => {

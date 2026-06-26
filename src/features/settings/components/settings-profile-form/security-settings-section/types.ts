@@ -1,19 +1,3 @@
-import type { AuthSession, User } from "@/shared/schemas";
+import type { SecuritySettingsState } from "../settings-form-types";
 
-export interface SecuritySettingsSectionProps {
-  currentUser: User | undefined;
-  sessions: AuthSession[];
-  isOnline: boolean;
-  isLoadingSessions: boolean;
-  isSendingPasswordResetLink: boolean;
-  isRevokingOtherSessions: boolean;
-  isDeletingAccount: boolean;
-  revokingSessionId: string | null;
-  securityError: string | null;
-  sessionsError: string | null;
-  deleteAccountError: string | null;
-  onSendPasswordResetLink: () => Promise<unknown>;
-  onRevokeSession: (session: AuthSession) => Promise<void>;
-  onRevokeOtherSessions: () => Promise<void>;
-  onDeleteAccount: () => Promise<void>;
-}
+export type SecuritySettingsSectionProps = SecuritySettingsState;

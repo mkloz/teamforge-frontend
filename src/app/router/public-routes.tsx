@@ -63,6 +63,8 @@ const DOWNLOAD_PREVIEW_IMAGES = {
   },
 } as const;
 
+type DownloadPreviewDevice = keyof typeof DOWNLOAD_PREVIEW_IMAGES;
+
 const privacyPageModule = createLazyRouteModule(() =>
   import("@/features/legal/legal-page").then((m) => ({
     default: () => <m.LegalPage kind="privacy" />,
@@ -172,19 +174,41 @@ function getDownloadPreviewImageForDevice() {
     return DOWNLOAD_PREVIEW_IMAGES.desktop;
   }
 
-  const ua = navigator.userAgent;
-  const uaLower = ua.toLowerCase();
-  const isTouchMac = ua.includes("Macintosh") && navigator.maxTouchPoints > 1;
+  return DOWNLOAD_PREVIEW_IMAGES[getDownloadPreviewDevice()];
+}
 
-  if (/iphone|ipad|ipod/.test(uaLower) || isTouchMac) {
-    return DOWNLOAD_PREVIEW_IMAGES.ios;
+function getDownloadPreviewDevice(): DownloadPreviewDevice {
+  if (isIosLikeDevice()) {
+    return "ios";
   }
 
-  if (uaLower.includes("android")) {
-    return DOWNLOAD_PREVIEW_IMAGES.android;
+  if (isAndroidDevice()) {
+    return "android";
   }
 
-  return DOWNLOAD_PREVIEW_IMAGES.desktop;
+  return "desktop";
+}
+
+function getNavigatorUserAgent() {
+  return navigator.userAgent;
+}
+
+function isIosLikeDevice() {
+  const userAgent = getNavigatorUserAgent();
+
+  return isIosUserAgent(userAgent.toLowerCase()) || isTouchMac(userAgent);
+}
+
+function isIosUserAgent(userAgent: string) {
+  return /iphone|ipad|ipod/.test(userAgent);
+}
+
+function isTouchMac(userAgent: string) {
+  return userAgent.includes("Macintosh") && navigator.maxTouchPoints > 1;
+}
+
+function isAndroidDevice() {
+  return getNavigatorUserAgent().toLowerCase().includes("android");
 }
 
 function preloadDownloadPreviewImage() {

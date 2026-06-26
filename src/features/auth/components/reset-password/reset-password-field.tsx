@@ -25,7 +25,6 @@ interface ResetPasswordFieldProps {
 export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
   const { control } = useFormContext<ResetPasswordValues>();
   const [isVisible, setIsVisible] = useState(false);
-  const isConfirmation = name === "confirmPassword";
 
   return (
     <FormField
@@ -40,24 +39,11 @@ export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
               autoComplete="new-password"
               placeholder="••••••••"
               rightIcon={
-                <Button
-                  type="button"
-                  variant="accentGhost"
-                  size="icon-sm"
-                  onClick={() => setIsVisible((value) => !value)}
-                  className="size-8 rounded-md"
-                  aria-label={
-                    isVisible
-                      ? isConfirmation
-                        ? "Hide password confirmation"
-                        : "Hide password"
-                      : isConfirmation
-                        ? "Show password confirmation"
-                        : "Show password"
-                  }
-                >
-                  {isVisible ? <EyeOff size={16} /> : <Eye size={16} />}
-                </Button>
+                <ResetPasswordVisibilityToggle
+                  isVisible={isVisible}
+                  name={name}
+                  onToggle={() => setIsVisible((value) => !value)}
+                />
               }
               {...field}
             />
@@ -67,4 +53,45 @@ export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
       )}
     />
   );
+}
+
+function ResetPasswordVisibilityToggle({
+  isVisible,
+  name,
+  onToggle,
+}: {
+  isVisible: boolean;
+  name: ResetPasswordFieldProps["name"];
+  onToggle: () => void;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="accentGhost"
+      size="icon-sm"
+      onClick={onToggle}
+      className="size-8 rounded-md"
+      aria-label={getPasswordVisibilityAriaLabel({ isVisible, name })}
+    >
+      <PasswordVisibilityIcon isVisible={isVisible} />
+    </Button>
+  );
+}
+
+function PasswordVisibilityIcon({ isVisible }: { isVisible: boolean }) {
+  return isVisible ? <EyeOff size={16} /> : <Eye size={16} />;
+}
+
+function getPasswordVisibilityAriaLabel({
+  isVisible,
+  name,
+}: {
+  isVisible: boolean;
+  name: ResetPasswordFieldProps["name"];
+}) {
+  const action = isVisible ? "Hide" : "Show";
+  const target =
+    name === "confirmPassword" ? "password confirmation" : "password";
+
+  return `${action} ${target}`;
 }

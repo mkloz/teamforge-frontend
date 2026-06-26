@@ -7,6 +7,7 @@ import { defineConfig, loadEnv } from "vite";
 import type { ManifestOptions } from "vite-plugin-pwa";
 import { VitePWA } from "vite-plugin-pwa";
 import { changedFileLintPlugin } from "./scripts/vite-changed-file-lint-plugin";
+import { normalizeBaseUrl } from "./src/shared/lib/url-normalization";
 
 const teamForgeManifest = {
   id: "/",
@@ -289,24 +290,6 @@ function getNodeModuleChunkName(id: string) {
   );
 }
 
-function normalizePublicUrl(value: string | undefined) {
-  const trimmed = value?.trim();
-
-  if (!trimmed) {
-    return null;
-  }
-
-  try {
-    const url = new URL(trimmed);
-    url.hash = "";
-    url.search = "";
-
-    return url.toString().replace(/\/$/u, "");
-  } catch {
-    return null;
-  }
-}
-
 function replaceAppUrlPlaceholder(source: string, appUrl: string) {
   return source.replaceAll(APP_URL_PLACEHOLDER, appUrl);
 }
@@ -543,9 +526,9 @@ function teamForgeManifestDevPlugin(): Plugin {
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const appUrl = normalizePublicUrl(env.VITE_APP_URL);
-  const apiUrl = normalizePublicUrl(env.VITE_API_URL);
-  const mediaBaseUrl = normalizePublicUrl(env.VITE_MEDIA_BASE_URL);
+  const appUrl = normalizeBaseUrl(env.VITE_APP_URL);
+  const apiUrl = normalizeBaseUrl(env.VITE_API_URL);
+  const mediaBaseUrl = normalizeBaseUrl(env.VITE_MEDIA_BASE_URL);
 
   if (command === "build" && (!appUrl || !apiUrl || !mediaBaseUrl)) {
     throw new Error(

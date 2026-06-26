@@ -24,8 +24,40 @@ function parseAuditTokens(payload: unknown): AuthTokens | null {
   return parsedPayload.data;
 }
 
-export function isAuditAuthEnabled() {
+function isAuditAuthEnabled() {
   return import.meta.env.VITE_AUDIT_AUTH_ENABLED === "true";
+}
+
+function markAuditAuthBootstrapped(auditWindow: AuditAuthWindow) {
+  auditWindow.__TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED = true;
+}
+
+function hasAuditAuthBootstrapped(auditWindow: AuditAuthWindow) {
+  return auditWindow.__TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED === true;
+}
+
+async function fetchAuditTokensResponse() {
+  return fetch(`${AUDIT_AUTH_TOKENS_PATH}?v=${Date.now()}`, {
+    cache: "no-store",
+  });
+}
+
+async function readAuditTokens() {
+  const response = await fetchAuditTokensResponse();
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return parseAuditTokens(JSON.parse(await response.text()));
+}
+
+async function applyAuditTokensFromFile() {
+  const tokens = await readAuditTokens();
+
+  if (tokens) {
+    authApi.setTokens(tokens);
+  }
 }
 
 export async function bootstrapAuditAuthSession() {
@@ -35,28 +67,14 @@ export async function bootstrapAuditAuthSession() {
 
   const auditWindow = window as AuditAuthWindow;
 
-  if (auditWindow.__TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED) {
+  if (hasAuditAuthBootstrapped(auditWindow)) {
     return;
   }
 
-  auditWindow.__TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED = true;
+  markAuditAuthBootstrapped(auditWindow);
 
   try {
-    const response = await fetch(`${AUDIT_AUTH_TOKENS_PATH}?v=${Date.now()}`, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      return;
-    }
-
-    const tokens = parseAuditTokens(JSON.parse(await response.text()));
-
-    if (!tokens) {
-      return;
-    }
-
-    authApi.setTokens(tokens);
+    await applyAuditTokensFromFile();
   } catch {
     return;
   }

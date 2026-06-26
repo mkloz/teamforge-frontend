@@ -10,8 +10,6 @@ const ratingUserEntitySchema = z.object({
   trustScore: z.number(),
 });
 
-export type RatingUserEntity = z.infer<typeof ratingUserEntitySchema>;
-
 export const ratingEntitySchema = z
   .object({
     id: z.string(),
@@ -31,8 +29,6 @@ export const ratingEntitySchema = z
     planId: rating.planId ?? null,
   }));
 
-export type RatingEntity = z.infer<typeof ratingEntitySchema>;
-
 export const createRatingPayloadSchema = z.object({
   groupId: z.string().min(1),
   planId: z.string().min(1),
@@ -43,10 +39,7 @@ export const createRatingPayloadSchema = z.object({
 
 export type CreateRatingPayload = z.infer<typeof createRatingPayloadSchema>;
 
-export const reviewDeferralReasonSchema = z.enum([
-  "NOT_PRESENT",
-  "NEED_MORE_TIME",
-]);
+const reviewDeferralReasonSchema = z.enum(["NOT_PRESENT", "NEED_MORE_TIME"]);
 
 export type ReviewDeferralReason = z.infer<typeof reviewDeferralReasonSchema>;
 
@@ -80,7 +73,7 @@ export const groupReviewStateSchema = z.object({
 
 export type GroupReviewState = z.infer<typeof groupReviewStateSchema>;
 
-export const trustScoreLogEntitySchema = z.object({
+const trustScoreLogEntitySchema = z.object({
   id: z.string(),
   score: z.number(),
   change: z.number(),
@@ -94,5 +87,3 @@ export const createRatingResultSchema = z.object({
   trustScoreLog: trustScoreLogEntitySchema,
   updatedTrustScore: z.number(),
 });
-
-export type CreateRatingResult = z.infer<typeof createRatingResultSchema>;

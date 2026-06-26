@@ -45,24 +45,11 @@ export function FeedbackState({
           className,
         )}
       >
-        {visual ? (
-          <div
-            className="mx-auto mb-6 flex max-w-44 justify-center"
-            aria-hidden="true"
-          >
-            {visual}
-          </div>
-        ) : icon ? (
-          <IconTile
-            tone="none"
-            size="xl"
-            shape="square"
-            className={cn("mx-auto mb-5 rounded-2xl", iconClassName)}
-            aria-hidden="true"
-          >
-            {icon}
-          </IconTile>
-        ) : null}
+        <FeedbackVisual
+          icon={icon}
+          iconClassName={iconClassName}
+          visual={visual}
+        />
 
         <h1 id={headingId} className="font-bold text-2xl text-ink">
           {title}
@@ -76,12 +63,53 @@ export function FeedbackState({
           {description}
         </p>
 
-        {actions ? (
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-            {actions}
-          </div>
-        ) : null}
+        <FeedbackActions actions={actions} />
       </section>
+    </div>
+  );
+}
+
+function FeedbackVisual({
+  icon,
+  iconClassName,
+  visual,
+}: Pick<FeedbackStateProps, "icon" | "iconClassName" | "visual">) {
+  if (visual) {
+    return (
+      <div
+        className="mx-auto mb-6 flex max-w-44 justify-center"
+        aria-hidden="true"
+      >
+        {visual}
+      </div>
+    );
+  }
+
+  if (!icon) {
+    return null;
+  }
+
+  return (
+    <IconTile
+      tone="none"
+      size="xl"
+      shape="square"
+      className={cn("mx-auto mb-5 rounded-2xl", iconClassName)}
+      aria-hidden="true"
+    >
+      {icon}
+    </IconTile>
+  );
+}
+
+function FeedbackActions({ actions }: Pick<FeedbackStateProps, "actions">) {
+  if (!actions) {
+    return null;
+  }
+
+  return (
+    <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+      {actions}
     </div>
   );
 }

@@ -32,6 +32,41 @@ interface MobileSocialStatsInput {
   requestsCount: number;
 }
 
+interface MobileSocialQueryScope {
+  canShowPublicFriends: boolean;
+  commonFriendsUserId: string | undefined;
+  publicFriendsUserId: string;
+}
+
+type MobileSocialStatConfig = Omit<MobileSocialStat, "count">;
+
+const MOBILE_SOCIAL_STAT_CONFIGS = {
+  friends: {
+    Icon: Users,
+    label: "Friends",
+    tab: "friends",
+    variant: "teal",
+  },
+  mutualFriends: {
+    Icon: Link2,
+    label: "Mutual Friends",
+    tab: "friends",
+    variant: "mutual",
+  },
+  publicFriends: {
+    Icon: Users,
+    label: "Friends",
+    tab: "public_friends",
+    variant: "teal",
+  },
+  requests: {
+    Icon: UserPlus,
+    label: "Requests",
+    tab: "requests",
+    variant: "amber",
+  },
+} satisfies Record<string, MobileSocialStatConfig>;
+
 const SOCIAL_STAT_VARIANTS: Record<
   SocialStatVariant,
   { buttonClassName: string; iconContainerClassName: string }
@@ -65,52 +100,75 @@ function getMobileSocialStats({
   requestsCount,
 }: MobileSocialStatsInput): MobileSocialStat[] {
   if (isSelf) {
-    const stats: MobileSocialStat[] = [
-      {
-        count: friendsCount,
-        Icon: Users,
-        label: "Friends",
-        tab: "friends",
-        variant: "teal",
-      },
-    ];
-
-    if (requestsCount > 0) {
-      stats.push({
-        count: requestsCount,
-        Icon: UserPlus,
-        label: "Requests",
-        tab: "requests",
-        variant: "amber",
-      });
-    }
-
-    return stats;
+    return getSelfMobileSocialStats({ friendsCount, requestsCount });
   }
 
-  const stats: MobileSocialStat[] = [];
+  return getPublicMobileSocialStats({
+    canShowPublicFriends,
+    commonFriendsCount,
+    publicFriendsCount,
+  });
+}
 
-  if (canShowPublicFriends) {
-    stats.push({
-      count: publicFriendsCount,
-      Icon: Users,
-      label: "Friends",
-      tab: "public_friends",
-      variant: "teal",
-    });
-  }
+function getSelfMobileSocialStats({
+  friendsCount,
+  requestsCount,
+}: Pick<MobileSocialStatsInput, "friendsCount" | "requestsCount">) {
+  const stats = [
+    createMobileSocialStat(MOBILE_SOCIAL_STAT_CONFIGS.friends, friendsCount),
+  ];
 
-  if (commonFriendsCount > 0) {
-    stats.push({
-      count: commonFriendsCount,
-      Icon: Link2,
-      label: "Mutual Friends",
-      tab: "friends",
-      variant: "mutual",
-    });
+  if (requestsCount > 0) {
+    stats.push(
+      createMobileSocialStat(
+        MOBILE_SOCIAL_STAT_CONFIGS.requests,
+        requestsCount,
+      ),
+    );
   }
 
   return stats;
+}
+
+function getPublicMobileSocialStats({
+  canShowPublicFriends,
+  commonFriendsCount,
+  publicFriendsCount,
+}: Pick<
+  MobileSocialStatsInput,
+  "canShowPublicFriends" | "commonFriendsCount" | "publicFriendsCount"
+>) {
+  const stats: MobileSocialStat[] = [];
+
+  if (canShowPublicFriends) {
+    stats.push(
+      createMobileSocialStat(
+        MOBILE_SOCIAL_STAT_CONFIGS.publicFriends,
+        publicFriendsCount,
+      ),
+    );
+  }
+
+  if (commonFriendsCount > 0) {
+    stats.push(
+      createMobileSocialStat(
+        MOBILE_SOCIAL_STAT_CONFIGS.mutualFriends,
+        commonFriendsCount,
+      ),
+    );
+  }
+
+  return stats;
+}
+
+function createMobileSocialStat(
+  config: MobileSocialStatConfig,
+  count: number,
+): MobileSocialStat {
+  return {
+    ...config,
+    count,
+  };
 }
 
 interface MobileSocialStatPillProps {
@@ -149,32 +207,7 @@ export function ProfileMobileSocialStats({
   user,
   onOpenFriends,
 }: ProfileMobileSocialStatsProps) {
-  const { data: currentUser } = useCurrentUserQuery();
-  const isSelf = currentUser?.id === user.id;
-
-  const { friends } = useProfileFriends();
-  const { requests } = useProfileFriendRequests();
-  const { commonFriends } = useProfileCommonFriends(
-    !isSelf ? user.id : undefined,
-  );
-  const { publicFriends } = useProfilePublicFriends(
-    !isSelf && user.showFriendsListOnProfile ? user.id : "",
-  );
-
-  const friendsCount = friends?.length ?? 0;
-  const requestsCount = requests?.length ?? 0;
-  const commonFriendsCount = commonFriends?.length ?? 0;
-  const publicFriendsCount = publicFriends?.length ?? 0;
-
-  const canShowPublicFriends = !isSelf && user.showFriendsListOnProfile;
-  const socialStats = getMobileSocialStats({
-    canShowPublicFriends,
-    commonFriendsCount,
-    friendsCount,
-    isSelf,
-    publicFriendsCount,
-    requestsCount,
-  });
+  const socialStats = useMobileSocialStats(user);
 
   if (socialStats.length === 0) {
     return null;
@@ -191,4 +224,49 @@ export function ProfileMobileSocialStats({
       ))}
     </div>
   );
+}
+
+function useMobileSocialStats(user: User) {
+  const { data: currentUser } = useCurrentUserQuery();
+  const isSelf = getIsSelfProfile(currentUser?.id ?? null, user.id);
+  const queryScope = getMobileSocialQueryScope(user, isSelf);
+
+  const { friends } = useProfileFriends();
+  const { requests } = useProfileFriendRequests();
+  const { commonFriends } = useProfileCommonFriends(
+    queryScope.commonFriendsUserId,
+  );
+  const { publicFriends } = useProfilePublicFriends(
+    queryScope.publicFriendsUserId,
+  );
+
+  return getMobileSocialStats({
+    canShowPublicFriends: queryScope.canShowPublicFriends,
+    commonFriendsCount: getCollectionCount(commonFriends),
+    friendsCount: getCollectionCount(friends),
+    isSelf,
+    publicFriendsCount: getCollectionCount(publicFriends),
+    requestsCount: getCollectionCount(requests),
+  });
+}
+
+function getMobileSocialQueryScope(
+  user: User,
+  isSelf: boolean,
+): MobileSocialQueryScope {
+  const canShowPublicFriends = !isSelf && user.showFriendsListOnProfile;
+
+  return {
+    canShowPublicFriends,
+    commonFriendsUserId: isSelf ? undefined : user.id,
+    publicFriendsUserId: canShowPublicFriends ? user.id : "",
+  };
+}
+
+function getIsSelfProfile(currentUserId: string | null, profileUserId: string) {
+  return currentUserId === profileUserId;
+}
+
+function getCollectionCount(collection: { length: number } | null | undefined) {
+  return collection?.length ?? 0;
 }

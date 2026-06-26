@@ -51,6 +51,47 @@ const FIELD_ICON: Record<ProposalField, LucideIcon> = {
 
 type PlanProposalForm = ReturnType<typeof usePlanProposalForm>;
 type PlanProposalFieldOption = (typeof PLAN_PROPOSAL_FIELD_OPTIONS)[number];
+type ProposalLocationValue = PlanProposalForm["locationValue"];
+
+interface PlanLocationSelection {
+  address: string;
+  city: string;
+  lat: number | null;
+  lng: number | null;
+}
+
+function getLocationValueFromSelection(
+  current: ProposalLocationValue,
+  location: PlanLocationSelection | null,
+): ProposalLocationValue {
+  if (!location) {
+    return {
+      ...current,
+      location: "",
+      locationLat: null,
+      locationLng: null,
+    };
+  }
+
+  return {
+    ...current,
+    location: location.address,
+    locationLat: location.lat,
+    locationLng: location.lng,
+  };
+}
+
+function getLocationValueFromLink(
+  current: ProposalLocationValue,
+  value: string,
+): ProposalLocationValue {
+  return {
+    ...current,
+    location: value,
+    locationLat: null,
+    locationLng: null,
+  };
+}
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -383,6 +424,18 @@ function PlanFieldInput({
   onLocationModeChange: (mode: string) => void;
   option: PlanProposalFieldOption;
 }) {
+  function handleLocationSelect(location: PlanLocationSelection | null) {
+    form.setLocationValue((current) =>
+      getLocationValueFromSelection(current, location),
+    );
+  }
+
+  function handleLinkChange(value: string) {
+    form.setLocationValue((current) =>
+      getLocationValueFromLink(current, value),
+    );
+  }
+
   if (form.isDateField) {
     return <DateTimeInput value={form.value} onValueChange={form.setValue} />;
   }
@@ -392,22 +445,8 @@ function PlanFieldInput({
       <LocationInput
         locationValue={form.locationValue}
         onModeChange={onLocationModeChange}
-        onLocationSelect={(location) =>
-          form.setLocationValue((current) => ({
-            ...current,
-            location: location?.address ?? "",
-            locationLat: location?.lat ?? null,
-            locationLng: location?.lng ?? null,
-          }))
-        }
-        onLinkChange={(value) =>
-          form.setLocationValue((current) => ({
-            ...current,
-            location: value,
-            locationLat: null,
-            locationLng: null,
-          }))
-        }
+        onLocationSelect={handleLocationSelect}
+        onLinkChange={handleLinkChange}
       />
     );
   }
@@ -487,14 +526,7 @@ interface LocationInputProps {
     locationLng: number | null;
   };
   onModeChange: (mode: string) => void;
-  onLocationSelect: (
-    location: {
-      address: string;
-      city: string;
-      lat: number | null;
-      lng: number | null;
-    } | null,
-  ) => void;
+  onLocationSelect: (location: PlanLocationSelection | null) => void;
   onLinkChange: (value: string) => void;
 }
 

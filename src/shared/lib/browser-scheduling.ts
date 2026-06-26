@@ -54,7 +54,7 @@ export function cancelIdleTask(handle: ScheduledIdleTaskHandle) {
   }
 }
 
-export function getCurrentTimeMs() {
+function getCurrentTimeMs() {
   return globalThis.performance?.now() ?? Date.now();
 }
 

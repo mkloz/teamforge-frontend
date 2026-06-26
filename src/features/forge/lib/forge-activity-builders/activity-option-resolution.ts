@@ -210,6 +210,11 @@ interface ActivityScore {
   score: number;
 }
 
+interface ActivityScoreRanking {
+  bestScore: ActivityScore | null;
+  runnerUpScore: ActivityScore | null;
+}
+
 export function findActivityOption(selectedActivity: string | null) {
   if (!selectedActivity?.trim()) {
     return null;
@@ -244,8 +249,19 @@ function findFuzzyActivityOption(selectedActivity: string) {
     return null;
   }
 
-  let bestScore: ActivityScore | null = null;
-  let runnerUpScore: ActivityScore | null = null;
+  const ranking = getFuzzyActivityScoreRanking(normalizedQuery, queryTokens);
+
+  return getConfidentActivityOption(ranking);
+}
+
+function getFuzzyActivityScoreRanking(
+  normalizedQuery: string,
+  queryTokens: string[],
+): ActivityScoreRanking {
+  let ranking: ActivityScoreRanking = {
+    bestScore: null,
+    runnerUpScore: null,
+  };
 
   for (const option of ACTIVITIES) {
     const score = scoreActivityOption(option, normalizedQuery, queryTokens);
@@ -254,17 +270,37 @@ function findFuzzyActivityOption(selectedActivity: string) {
       continue;
     }
 
-    if (!bestScore || score > bestScore.score) {
-      runnerUpScore = bestScore;
-      bestScore = { option, score };
-      continue;
-    }
-
-    if (!runnerUpScore || score > runnerUpScore.score) {
-      runnerUpScore = { option, score };
-    }
+    ranking = getUpdatedActivityScoreRanking(ranking, { option, score });
   }
 
+  return ranking;
+}
+
+function getUpdatedActivityScoreRanking(
+  ranking: ActivityScoreRanking,
+  score: ActivityScore,
+): ActivityScoreRanking {
+  if (!ranking.bestScore || score.score > ranking.bestScore.score) {
+    return {
+      bestScore: score,
+      runnerUpScore: ranking.bestScore,
+    };
+  }
+
+  if (!ranking.runnerUpScore || score.score > ranking.runnerUpScore.score) {
+    return {
+      ...ranking,
+      runnerUpScore: score,
+    };
+  }
+
+  return ranking;
+}
+
+function getConfidentActivityOption({
+  bestScore,
+  runnerUpScore,
+}: ActivityScoreRanking) {
   if (!bestScore || bestScore.score < MIN_ACTIVITY_MATCH_SCORE) {
     return null;
   }

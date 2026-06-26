@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, type ReactNode, Suspense } from "react";
 import {
   SettingsActiveSessionsSkeleton,
   SettingsBlockedUsersSkeleton,
@@ -40,151 +40,177 @@ const NotificationSettingsSection = lazy(() =>
   })),
 );
 
-export function SettingsProfileForm({
-  activeSection,
-  account,
+type SettingsSectionRenderer = (props: SettingsProfileFormProps) => ReactNode;
+
+const SETTINGS_SECTION_RENDERERS = {
+  account: renderAccountSettingsSection,
+  appearance: renderAppearanceSettingsSection,
+  matching: renderMatchingSettingsSection,
+  notifications: renderNotificationSettingsSection,
+  privacy: renderPrivacySettingsSection,
+  safety: renderSafetySettingsSection,
+  security: renderSecuritySettingsSection,
+} satisfies Record<
+  SettingsProfileFormProps["activeSection"],
+  SettingsSectionRenderer
+>;
+
+export function SettingsProfileForm(props: SettingsProfileFormProps) {
+  const renderActiveSection = SETTINGS_SECTION_RENDERERS[props.activeSection];
+
+  return (
+    <div className="flex flex-col gap-6">{renderActiveSection(props)}</div>
+  );
+}
+
+function renderAccountSettingsSection({ account }: SettingsProfileFormProps) {
+  return (
+    <AccountSettingsSection
+      currentUser={account.currentUser}
+      form={account.form}
+      onSubmit={account.onSubmit}
+      onAvatarSelect={account.onAvatarSelect}
+      onAvatarDelete={account.onAvatarDelete}
+      isOnline={account.isOnline}
+      isSaving={account.isSaving}
+      isUploadingAvatar={account.isUploadingAvatar}
+      isDeletingAvatar={account.isDeletingAvatar}
+      saveError={account.saveError}
+      avatarError={account.avatarError}
+      profileSummary={account.profileSummary}
+    />
+  );
+}
+
+function renderAppearanceSettingsSection({
   appearance,
-  matching,
-  privacy,
-  security,
-  safety,
+}: SettingsProfileFormProps) {
+  return (
+    <Suspense fallback={<SettingsPanelSkeleton />}>
+      <AppearanceSettingsSection
+        notificationPreferences={appearance.notificationPreferences}
+        isLoadingNotificationPreferences={
+          appearance.isLoadingNotificationPreferences
+        }
+        isSavingNotificationPreferences={
+          appearance.isSavingNotificationPreferences
+        }
+        savingNotificationPreferenceKeys={
+          appearance.savingNotificationPreferenceKeys
+        }
+        error={appearance.error}
+        isOnline={appearance.isOnline}
+        onChange={appearance.onChange}
+      />
+    </Suspense>
+  );
+}
+
+function renderMatchingSettingsSection({ matching }: SettingsProfileFormProps) {
+  return (
+    <Suspense fallback={<SettingsPreferencesSkeleton />}>
+      <MatchingSettingsSection
+        currentUser={matching.currentUser}
+        notificationPreferences={matching.notificationPreferences}
+        isLoadingNotificationPreferences={
+          matching.isLoadingNotificationPreferences
+        }
+        isSavingNotificationPreferences={
+          matching.isSavingNotificationPreferences
+        }
+        savingNotificationPreferenceKeys={
+          matching.savingNotificationPreferenceKeys
+        }
+        error={matching.error}
+        isOnline={matching.isOnline}
+        onChange={matching.onChange}
+      />
+    </Suspense>
+  );
+}
+
+function renderPrivacySettingsSection({ privacy }: SettingsProfileFormProps) {
+  return (
+    <Suspense fallback={<SettingsPreferencesSkeleton />}>
+      <PrivacySettingsSection
+        notificationPreferences={privacy.notificationPreferences}
+        isLoadingNotificationPreferences={
+          privacy.isLoadingNotificationPreferences
+        }
+        isSavingNotificationPreferences={
+          privacy.isSavingNotificationPreferences
+        }
+        savingNotificationPreferenceKeys={
+          privacy.savingNotificationPreferenceKeys
+        }
+        error={privacy.error}
+        isOnline={privacy.isOnline}
+        onChange={privacy.onChange}
+      />
+    </Suspense>
+  );
+}
+
+function renderSecuritySettingsSection({ security }: SettingsProfileFormProps) {
+  return (
+    <Suspense fallback={<SettingsActiveSessionsSkeleton />}>
+      <SecuritySettingsSection
+        currentUser={security.currentUser}
+        sessions={security.sessions}
+        isOnline={security.isOnline}
+        isLoadingSessions={security.isLoadingSessions}
+        isSendingPasswordResetLink={security.isSendingPasswordResetLink}
+        isRevokingOtherSessions={security.isRevokingOtherSessions}
+        isDeletingAccount={security.isDeletingAccount}
+        revokingSessionId={security.revokingSessionId}
+        securityError={security.securityError}
+        sessionsError={security.sessionsError}
+        deleteAccountError={security.deleteAccountError}
+        onSendPasswordResetLink={security.onSendPasswordResetLink}
+        onRevokeSession={security.onRevokeSession}
+        onRevokeOtherSessions={security.onRevokeOtherSessions}
+        onDeleteAccount={security.onDeleteAccount}
+      />
+    </Suspense>
+  );
+}
+
+function renderSafetySettingsSection({ safety }: SettingsProfileFormProps) {
+  return (
+    <Suspense fallback={<SettingsBlockedUsersSkeleton />}>
+      <BlockedUsersSection
+        blockedUsers={safety.blockedUsers}
+        errorMessage={safety.blockedUsersError}
+        isOnline={safety.isOnline}
+        isLoading={safety.isLoadingBlockedUsers}
+        unblockingUserId={safety.unblockingUserId}
+        onUnblockUser={safety.onUnblockUser}
+      />
+    </Suspense>
+  );
+}
+
+function renderNotificationSettingsSection({
   notifications,
 }: SettingsProfileFormProps) {
   return (
-    <div className="flex flex-col gap-6">
-      {activeSection === "account" && (
-        <AccountSettingsSection
-          currentUser={account.currentUser}
-          form={account.form}
-          onSubmit={account.onSubmit}
-          onAvatarSelect={account.onAvatarSelect}
-          onAvatarDelete={account.onAvatarDelete}
-          isOnline={account.isOnline}
-          isSaving={account.isSaving}
-          isUploadingAvatar={account.isUploadingAvatar}
-          isDeletingAvatar={account.isDeletingAvatar}
-          saveError={account.saveError}
-          avatarError={account.avatarError}
-          profileSummary={account.profileSummary}
-        />
-      )}
-
-      {activeSection === "appearance" && (
-        <Suspense fallback={<SettingsPanelSkeleton />}>
-          <AppearanceSettingsSection
-            notificationPreferences={appearance.notificationPreferences}
-            isLoadingNotificationPreferences={
-              appearance.isLoadingNotificationPreferences
-            }
-            isSavingNotificationPreferences={
-              appearance.isSavingNotificationPreferences
-            }
-            savingNotificationPreferenceKeys={
-              appearance.savingNotificationPreferenceKeys
-            }
-            error={appearance.error}
-            isOnline={appearance.isOnline}
-            onChange={appearance.onChange}
-          />
-        </Suspense>
-      )}
-
-      {activeSection === "matching" && (
-        <Suspense fallback={<SettingsPreferencesSkeleton />}>
-          <MatchingSettingsSection
-            currentUser={matching.currentUser}
-            notificationPreferences={matching.notificationPreferences}
-            isLoadingNotificationPreferences={
-              matching.isLoadingNotificationPreferences
-            }
-            isSavingNotificationPreferences={
-              matching.isSavingNotificationPreferences
-            }
-            savingNotificationPreferenceKeys={
-              matching.savingNotificationPreferenceKeys
-            }
-            error={matching.error}
-            isOnline={matching.isOnline}
-            onChange={matching.onChange}
-          />
-        </Suspense>
-      )}
-
-      {activeSection === "privacy" && (
-        <Suspense fallback={<SettingsPreferencesSkeleton />}>
-          <PrivacySettingsSection
-            notificationPreferences={privacy.notificationPreferences}
-            isLoadingNotificationPreferences={
-              privacy.isLoadingNotificationPreferences
-            }
-            isSavingNotificationPreferences={
-              privacy.isSavingNotificationPreferences
-            }
-            savingNotificationPreferenceKeys={
-              privacy.savingNotificationPreferenceKeys
-            }
-            error={privacy.error}
-            isOnline={privacy.isOnline}
-            onChange={privacy.onChange}
-          />
-        </Suspense>
-      )}
-
-      {activeSection === "security" && (
-        <Suspense fallback={<SettingsActiveSessionsSkeleton />}>
-          <SecuritySettingsSection
-            currentUser={security.currentUser}
-            sessions={security.sessions}
-            isOnline={security.isOnline}
-            isLoadingSessions={security.isLoadingSessions}
-            isSendingPasswordResetLink={security.isSendingPasswordResetLink}
-            isRevokingOtherSessions={security.isRevokingOtherSessions}
-            isDeletingAccount={security.isDeletingAccount}
-            revokingSessionId={security.revokingSessionId}
-            securityError={security.securityError}
-            sessionsError={security.sessionsError}
-            deleteAccountError={security.deleteAccountError}
-            onSendPasswordResetLink={security.onSendPasswordResetLink}
-            onRevokeSession={security.onRevokeSession}
-            onRevokeOtherSessions={security.onRevokeOtherSessions}
-            onDeleteAccount={security.onDeleteAccount}
-          />
-        </Suspense>
-      )}
-
-      {activeSection === "safety" && (
-        <Suspense fallback={<SettingsBlockedUsersSkeleton />}>
-          <BlockedUsersSection
-            blockedUsers={safety.blockedUsers}
-            errorMessage={safety.blockedUsersError}
-            isOnline={safety.isOnline}
-            isLoading={safety.isLoadingBlockedUsers}
-            unblockingUserId={safety.unblockingUserId}
-            onUnblockUser={safety.onUnblockUser}
-          />
-        </Suspense>
-      )}
-
-      {activeSection === "notifications" && (
-        <Suspense fallback={<SettingsPreferencesSkeleton />}>
-          <NotificationSettingsSection
-            notificationPreferences={notifications.notificationPreferences}
-            isLoadingNotificationPreferences={
-              notifications.isLoadingNotificationPreferences
-            }
-            isSavingNotificationPreferences={
-              notifications.isSavingNotificationPreferences
-            }
-            savingNotificationPreferenceKeys={
-              notifications.savingNotificationPreferenceKeys
-            }
-            error={notifications.error}
-            isOnline={notifications.isOnline}
-            onChange={notifications.onChange}
-          />
-        </Suspense>
-      )}
-    </div>
+    <Suspense fallback={<SettingsPreferencesSkeleton />}>
+      <NotificationSettingsSection
+        notificationPreferences={notifications.notificationPreferences}
+        isLoadingNotificationPreferences={
+          notifications.isLoadingNotificationPreferences
+        }
+        isSavingNotificationPreferences={
+          notifications.isSavingNotificationPreferences
+        }
+        savingNotificationPreferenceKeys={
+          notifications.savingNotificationPreferenceKeys
+        }
+        error={notifications.error}
+        isOnline={notifications.isOnline}
+        onChange={notifications.onChange}
+      />
+    </Suspense>
   );
 }
 

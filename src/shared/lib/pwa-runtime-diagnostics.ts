@@ -1,13 +1,13 @@
 type RuntimeDiagnosticStatus = "error" | "idle" | "running" | "success";
 
-export interface RuntimeDiagnosticEntry {
+interface RuntimeDiagnosticEntry {
   errorMessage: string | null;
   reason: string | null;
   status: RuntimeDiagnosticStatus;
   updatedAt: number | null;
 }
 
-export interface PwaRuntimeDiagnosticsSnapshot {
+interface PwaRuntimeDiagnosticsSnapshot {
   appBadge: RuntimeDiagnosticEntry;
   reconnectRefresh: RuntimeDiagnosticEntry;
   realtimeResync: RuntimeDiagnosticEntry;

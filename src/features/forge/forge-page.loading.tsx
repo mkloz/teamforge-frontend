@@ -33,7 +33,7 @@ export function ForgePageLoading(_props: PageLoadingProps = {}) {
   );
 }
 
-export function ForgePageLoadingFixture() {
+function ForgePageLoadingFixture() {
   return (
     <div className="mx-auto flex size-full max-w-6xl flex-col gap-8 px-4 sm:px-6 md:px-8 md:pb-12">
       <div className="flex flex-col gap-10 py-5 lg:py-10">

@@ -1,12 +1,16 @@
-import {
-  type RefObject,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { type RefObject, useCallback } from "react";
+import { useCollapsibleScrollState } from "@/shared/hooks/use-collapsible-scroll-state";
 import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+import {
+  type CssPropertyPair,
+  getBooleanCssValue,
+  getCollapsedCssValue,
+  getMotionSafeActiveCssValue,
+  getMotionSafeCollapsedCssValue,
+  getMotionSafeRevealDelay,
+  getPrefersReducedMotion,
+  setCssPropertyPairs,
+} from "@/shared/lib/collapsible-motion";
 
 interface UseHomeCollapsibleHeroOptions<TElement extends HTMLElement> {
   ref: RefObject<TElement | null>;
@@ -16,15 +20,17 @@ const HOME_COLLAPSE_TRIGGER = 72;
 const HOME_EXPAND_TRIGGER = 12;
 const COMPACT_REVEAL_DELAY_MS = 180;
 
+interface HomeHeroStyleState {
+  compactOpacity: string;
+  compactY: string;
+  originalDelay: string;
+  originalOpacity: string;
+  originalY: string;
+}
+
 export function useHomeCollapsibleHero<TElement extends HTMLElement>({
   ref,
 }: UseHomeCollapsibleHeroOptions<TElement>) {
-  const frameRef = useRef<number | null>(null);
-  const compactRevealTimeoutRef = useRef<number | null>(null);
-  const isCollapsedRef = useRef(false);
-  const isCompactVisibleRef = useRef(false);
-  const [isCompactVisible, setIsCompactVisible] = useState(false);
-
   const applyHeroState = useCallback(
     ({
       collapsed,
@@ -36,133 +42,81 @@ export function useHomeCollapsibleHero<TElement extends HTMLElement>({
       const element = ref.current;
 
       if (!element || !hasBrowserWindow()) {
-        return;
+        return false;
       }
 
-      const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-
-      element.style.setProperty(
-        "--home-hero-original-opacity",
-        collapsed ? "0" : "1",
-      );
-      element.style.setProperty(
-        "--home-hero-original-y",
-        collapsed && !prefersReducedMotion ? "-16px" : "0px",
-      );
-      element.style.setProperty(
-        "--home-hero-original-delay",
-        collapsed || prefersReducedMotion ? "0ms" : "100ms",
-      );
-      element.style.setProperty(
-        "--home-compact-opacity",
-        compactVisible ? "1" : "0",
-      );
-      element.style.setProperty(
-        "--home-compact-y",
-        compactVisible || prefersReducedMotion ? "0px" : "-10px",
+      applyHomeHeroStyleState(
+        element,
+        getHomeHeroStyleState({
+          collapsed,
+          compactVisible,
+          prefersReducedMotion: getPrefersReducedMotion(),
+        }),
       );
 
-      if (isCompactVisibleRef.current !== compactVisible) {
-        isCompactVisibleRef.current = compactVisible;
-        setIsCompactVisible(compactVisible);
-      }
+      return true;
     },
     [ref],
   );
 
-  const clearCompactRevealTimeout = useCallback(() => {
-    if (compactRevealTimeoutRef.current === null || !hasBrowserWindow()) {
-      return;
-    }
-
-    window.clearTimeout(compactRevealTimeoutRef.current);
-    compactRevealTimeoutRef.current = null;
-  }, []);
-
-  const revealCompactHero = useCallback(() => {
-    compactRevealTimeoutRef.current = null;
-    applyHeroState({ collapsed: true, compactVisible: true });
-  }, [applyHeroState]);
-
-  const applyScrollState = useCallback(
-    ({ force = false }: { force?: boolean } = {}) => {
-      if (!hasBrowserWindow()) {
-        return;
-      }
-
-      const scrollY = window.scrollY;
-      const nextCollapsed = isCollapsedRef.current
-        ? scrollY > HOME_EXPAND_TRIGGER
-        : scrollY >= HOME_COLLAPSE_TRIGGER;
-
-      if (!force && isCollapsedRef.current === nextCollapsed) {
-        return;
-      }
-
-      clearCompactRevealTimeout();
-
-      if (nextCollapsed) {
-        isCollapsedRef.current = true;
-        applyHeroState({ collapsed: true, compactVisible: false });
-
-        const prefersReducedMotion = window.matchMedia(
-          "(prefers-reduced-motion: reduce)",
-        ).matches;
-
-        if (prefersReducedMotion) {
-          revealCompactHero();
-          return;
-        }
-
-        compactRevealTimeoutRef.current = window.setTimeout(
-          revealCompactHero,
-          COMPACT_REVEAL_DELAY_MS,
-        );
-        return;
-      }
-
-      isCollapsedRef.current = false;
-      applyHeroState({ collapsed: false, compactVisible: false });
-    },
-    [applyHeroState, clearCompactRevealTimeout, revealCompactHero],
-  );
-
-  const handleViewportChange = useCallback(() => {
-    if (!hasBrowserWindow() || frameRef.current !== null) {
-      return;
-    }
-
-    frameRef.current = window.requestAnimationFrame(() => {
-      frameRef.current = null;
-      applyScrollState();
-    });
-  }, [applyScrollState]);
-
-  useLayoutEffect(() => {
-    applyScrollState({ force: true });
-  }, [applyScrollState]);
-
-  useEffect(() => {
-    if (!hasBrowserWindow()) {
-      return undefined;
-    }
-
-    window.addEventListener("scroll", handleViewportChange, { passive: true });
-    window.addEventListener("resize", handleViewportChange);
-
-    return () => {
-      window.removeEventListener("scroll", handleViewportChange);
-      window.removeEventListener("resize", handleViewportChange);
-
-      if (frameRef.current !== null) {
-        window.cancelAnimationFrame(frameRef.current);
-      }
-
-      clearCompactRevealTimeout();
-    };
-  }, [clearCompactRevealTimeout, handleViewportChange]);
+  const { isCompactVisible } = useCollapsibleScrollState({
+    applyState: applyHeroState,
+    collapseTrigger: HOME_COLLAPSE_TRIGGER,
+    compactRevealDelayMs: COMPACT_REVEAL_DELAY_MS,
+    expandTrigger: HOME_EXPAND_TRIGGER,
+    listenForResize: true,
+  });
 
   return { isCompactVisible };
+}
+
+function getHomeHeroStyleState({
+  collapsed,
+  compactVisible,
+  prefersReducedMotion,
+}: {
+  collapsed: boolean;
+  compactVisible: boolean;
+  prefersReducedMotion: boolean;
+}): HomeHeroStyleState {
+  return {
+    compactOpacity: getBooleanCssValue(compactVisible, "1", "0"),
+    compactY: getMotionSafeActiveCssValue({
+      active: compactVisible,
+      activeValue: "0px",
+      inactiveValue: "-10px",
+      prefersReducedMotion,
+    }),
+    originalDelay: getMotionSafeRevealDelay({
+      collapsed,
+      expandedDelay: "100ms",
+      prefersReducedMotion,
+    }),
+    originalOpacity: getCollapsedCssValue(collapsed, "0", "1"),
+    originalY: getMotionSafeCollapsedCssValue({
+      collapsed,
+      collapsedValue: "-16px",
+      expandedValue: "0px",
+      prefersReducedMotion,
+    }),
+  };
+}
+
+function applyHomeHeroStyleState(
+  element: HTMLElement,
+  styleState: HomeHeroStyleState,
+) {
+  setCssPropertyPairs(element, getHomeHeroStyleProperties(styleState));
+}
+
+function getHomeHeroStyleProperties(
+  styleState: HomeHeroStyleState,
+): CssPropertyPair[] {
+  return [
+    ["--home-hero-original-opacity", styleState.originalOpacity],
+    ["--home-hero-original-y", styleState.originalY],
+    ["--home-hero-original-delay", styleState.originalDelay],
+    ["--home-compact-opacity", styleState.compactOpacity],
+    ["--home-compact-y", styleState.compactY],
+  ];
 }

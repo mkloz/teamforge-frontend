@@ -255,6 +255,13 @@ const OCEAN_TRAIT_RULES: readonly OceanTraitRule[] = [
     score: "oceanN",
   },
 ];
+const OCEAN_SCORE_KEYS: readonly OceanScoreKey[] = [
+  "oceanO",
+  "oceanC",
+  "oceanE",
+  "oceanA",
+  "oceanN",
+];
 const TEMPLATE_COVER_PRESET_IDS = PLAN_COVER_PRESETS.map((preset) => preset.id);
 const PLAN_COVER_PRESET_ID_SET = new Set<string>(PLAN_COVER_PRESET_IDS);
 const VARIANT_READY_ORIGINAL_PATH = /\/original[.][a-z0-9]+$/i;
@@ -362,20 +369,20 @@ function normalizeToken(token: string) {
     return "movie";
   }
 
+  return normalizeInflectedToken(normalized);
+}
+
+function normalizeInflectedToken(normalized: string) {
   if (normalized.length > 5 && normalized.endsWith("ies")) {
     return `${normalized.slice(0, -3)}y`;
   }
 
   if (normalized.length > 5 && normalized.endsWith("ing")) {
-    const stem = normalized.slice(0, -3);
-
-    return stem.at(-1) === stem.at(-2) ? stem.slice(0, -1) : stem;
+    return normalizeRepeatedStem(normalized.slice(0, -3));
   }
 
   if (normalized.length > 4 && normalized.endsWith("ed")) {
-    const stem = normalized.slice(0, -2);
-
-    return stem.at(-1) === stem.at(-2) ? stem.slice(0, -1) : stem;
+    return normalizeRepeatedStem(normalized.slice(0, -2));
   }
 
   if (normalized.length > 4 && normalized.endsWith("s")) {
@@ -383,6 +390,10 @@ function normalizeToken(token: string) {
   }
 
   return normalized;
+}
+
+function normalizeRepeatedStem(stem: string) {
+  return stem.at(-1) === stem.at(-2) ? stem.slice(0, -1) : stem;
 }
 
 function getTextTokens(value: string) {
@@ -528,15 +539,36 @@ function getInterestMatches(
   ].join(" ");
   const candidatePhrase = getNormalizedPhrase(candidateText);
   const candidateTokens = new Set(getTextTokens(candidateText));
+  const score =
+    getInterestPhraseMatchScore(
+      interestSignals.phrases,
+      candidatePhrase,
+      candidateTokens,
+    ) +
+    getInterestTokenMatchScore(
+      interestSignals.tokens,
+      candidateTokens,
+      hintTokens,
+    );
+
+  return Math.min(score, 7);
+}
+
+function getInterestPhraseMatchScore(
+  phrases: Iterable<string>,
+  candidatePhrase: string,
+  candidateTokens: ReadonlySet<string>,
+) {
+  const paddedCandidatePhrase = ` ${candidatePhrase} `;
   let score = 0;
 
-  for (const phrase of interestSignals.phrases) {
+  for (const phrase of phrases) {
     if (!phrase) {
       continue;
     }
 
     if (phrase.includes(" ")) {
-      if (` ${candidatePhrase} `.includes(` ${phrase} `)) {
+      if (paddedCandidatePhrase.includes(` ${phrase} `)) {
         score += 1.8;
       }
 
@@ -548,7 +580,17 @@ function getInterestMatches(
     }
   }
 
-  for (const token of interestSignals.tokens) {
+  return score;
+}
+
+function getInterestTokenMatchScore(
+  tokens: Iterable<string>,
+  candidateTokens: ReadonlySet<string>,
+  hintTokens: ReadonlySet<string>,
+) {
+  let score = 0;
+
+  for (const token of tokens) {
     if (!candidateTokens.has(token)) {
       continue;
     }
@@ -556,7 +598,7 @@ function getInterestMatches(
     score += hintTokens.has(token) ? 1.2 : 0.7;
   }
 
-  return Math.min(score, 7);
+  return score;
 }
 
 function getPersonalityTraits(user: User | undefined): WeightedTraits {
@@ -640,18 +682,33 @@ function getPersonalScore(
   user: User | undefined,
 ) {
   const interestScore = getInterestMatches(seed, category, user) * 1.65;
-  const cityScore =
+  const traitScore = getTraitScore(seed, category, user);
+
+  return (
+    interestScore +
+    getCityFitScore(seed, user) +
+    traitScore +
+    getOnlineActivityPenalty(seed, user)
+  );
+}
+
+function getCityFitScore(seed: TemplateSeed, user: User | undefined) {
+  if (
     user?.city &&
     (seed.locationType === "IN_PERSON" || seed.locationType === "TBD")
-      ? 0.45
-      : 0;
-  const traitScore = getTraitScore(seed, category, user);
-  const onlinePenalty =
-    seed.locationType === "ONLINE" && user?.city && (user.oceanE ?? 50) >= 55
-      ? -0.35
-      : 0;
+  ) {
+    return 0.45;
+  }
 
-  return interestScore + cityScore + traitScore + onlinePenalty;
+  return 0;
+}
+
+function getOnlineActivityPenalty(seed: TemplateSeed, user: User | undefined) {
+  return seed.locationType === "ONLINE" &&
+    user?.city &&
+    (user.oceanE ?? 50) >= 55
+    ? -0.35
+    : 0;
 }
 
 function getAverage(values: number[]) {
@@ -846,14 +903,18 @@ function getCategorySeeds(categoryId: string) {
 function hasPersonalizationSignals(user: User | undefined) {
   return Boolean(
     user &&
-      ((user.interests?.length ?? 0) > 0 ||
+      (hasInterestSignals(user) ||
         user.personalityType ||
-        typeof user.oceanO === "number" ||
-        typeof user.oceanC === "number" ||
-        typeof user.oceanE === "number" ||
-        typeof user.oceanA === "number" ||
-        typeof user.oceanN === "number"),
+        hasOceanScoreSignals(user)),
   );
+}
+
+function hasInterestSignals(user: User) {
+  return (user.interests?.length ?? 0) > 0;
+}
+
+function hasOceanScoreSignals(user: User) {
+  return OCEAN_SCORE_KEYS.some((score) => typeof user[score] === "number");
 }
 
 export function buildCategoryFitHighlights(user: User | undefined) {

@@ -18,6 +18,9 @@ interface UseFocusedMessageScrollInput {
   virtualizedBlocks: VirtualizedMessageBlock[];
 }
 
+const MESSAGE_BLOCK_SCROLL_OFFSET = 120;
+const MESSAGE_HIGHLIGHT_DURATION_MS = 2200;
+
 export function useFocusedMessageScroll({
   containerRef,
   focusedMessageId,
@@ -34,16 +37,7 @@ export function useFocusedMessageScroll({
   );
 
   const requestMessageHighlight = useCallback((id: string) => {
-    if (highlightFrameRef.current !== null) {
-      cancelAnimationFrame(highlightFrameRef.current);
-      highlightFrameRef.current = null;
-    }
-
-    if (highlightTimeoutRef.current !== null) {
-      clearTimeout(highlightTimeoutRef.current);
-      highlightTimeoutRef.current = null;
-    }
-
+    clearScheduledHighlight(highlightFrameRef, highlightTimeoutRef);
     setHighlightedMessageId(null);
 
     highlightFrameRef.current = requestAnimationFrame(() => {
@@ -54,38 +48,22 @@ export function useFocusedMessageScroll({
     highlightTimeoutRef.current = setTimeout(() => {
       setHighlightedMessageId((current) => (current === id ? null : current));
       highlightTimeoutRef.current = null;
-    }, 2200);
+    }, MESSAGE_HIGHLIGHT_DURATION_MS);
   }, []);
 
   const scrollToMessage = useCallback(
     (id: string, options: ScrollToMessageOptions = {}) => {
-      const element = getMessageElement(id);
       const behavior = options.behavior ?? "smooth";
 
-      if (element) {
-        element.scrollIntoView({ behavior, block: "center" });
-
-        if (options.highlight) {
-          requestMessageHighlight(id);
-        }
-
-        return;
-      }
-
-      const targetBlock = virtualizedBlocks.find((block) =>
-        block.senderGroup.items.some((message) => message.id === id),
-      );
-
-      if (targetBlock && containerRef?.current) {
-        containerRef.current.scrollTo({
-          behavior,
-          top: Math.max(targetBlock.start - 120, 0),
-        });
-
-        if (options.highlight) {
-          requestMessageHighlight(id);
-        }
-      }
+      scrollToMessageTarget({
+        behavior,
+        container: containerRef?.current ?? null,
+        getMessageElement,
+        highlight: Boolean(options.highlight),
+        id,
+        onHighlight: requestMessageHighlight,
+        virtualizedBlocks,
+      });
     },
     [
       containerRef,
@@ -132,13 +110,7 @@ export function useFocusedMessageScroll({
 
   useEffect(() => {
     return () => {
-      if (highlightFrameRef.current !== null) {
-        cancelAnimationFrame(highlightFrameRef.current);
-      }
-
-      if (highlightTimeoutRef.current !== null) {
-        clearTimeout(highlightTimeoutRef.current);
-      }
+      clearScheduledHighlight(highlightFrameRef, highlightTimeoutRef);
     };
   }, []);
 
@@ -163,23 +135,93 @@ function scrollToFocusedMessage({
   onHighlight,
   virtualizedBlocks,
 }: ScrollToFocusedMessageInput) {
+  scrollToMessageTarget({
+    behavior: "smooth",
+    container,
+    getMessageElement,
+    highlight: true,
+    id,
+    onHighlight,
+    virtualizedBlocks,
+  });
+}
+
+interface ScrollToMessageTargetInput {
+  behavior: ScrollBehavior;
+  container: HTMLDivElement | null;
+  getMessageElement: (id: string) => HTMLDivElement | null;
+  highlight: boolean;
+  id: string;
+  onHighlight: (messageId: string) => void;
+  virtualizedBlocks: VirtualizedMessageBlock[];
+}
+
+function scrollToMessageTarget({
+  behavior,
+  container,
+  getMessageElement,
+  highlight,
+  id,
+  onHighlight,
+  virtualizedBlocks,
+}: ScrollToMessageTargetInput) {
   const element = getMessageElement(id);
 
   if (element) {
-    element.scrollIntoView({ behavior: "smooth", block: "center" });
-    onHighlight(id);
+    element.scrollIntoView({ behavior, block: "center" });
+    requestHighlightIfNeeded(id, highlight, onHighlight);
     return;
   }
 
-  const targetBlock = virtualizedBlocks.find((block) =>
-    block.senderGroup.items.some((message) => message.id === id),
-  );
+  const targetBlock = findVirtualizedMessageBlock(virtualizedBlocks, id);
 
   if (targetBlock && container) {
-    container.scrollTo({
-      behavior: "smooth",
-      top: Math.max(targetBlock.start - 120, 0),
-    });
+    scrollToVirtualizedMessageBlock(container, targetBlock, behavior);
+    requestHighlightIfNeeded(id, highlight, onHighlight);
+  }
+}
+
+function requestHighlightIfNeeded(
+  id: string,
+  highlight: boolean,
+  onHighlight: (messageId: string) => void,
+) {
+  if (highlight) {
     onHighlight(id);
+  }
+}
+
+function findVirtualizedMessageBlock(
+  virtualizedBlocks: VirtualizedMessageBlock[],
+  id: string,
+) {
+  return virtualizedBlocks.find((block) =>
+    block.senderGroup.items.some((message) => message.id === id),
+  );
+}
+
+function scrollToVirtualizedMessageBlock(
+  container: HTMLDivElement,
+  targetBlock: VirtualizedMessageBlock,
+  behavior: ScrollBehavior,
+) {
+  container.scrollTo({
+    behavior,
+    top: Math.max(targetBlock.start - MESSAGE_BLOCK_SCROLL_OFFSET, 0),
+  });
+}
+
+function clearScheduledHighlight(
+  highlightFrameRef: RefObject<number | null>,
+  highlightTimeoutRef: RefObject<ReturnType<typeof setTimeout> | null>,
+) {
+  if (highlightFrameRef.current !== null) {
+    cancelAnimationFrame(highlightFrameRef.current);
+    highlightFrameRef.current = null;
+  }
+
+  if (highlightTimeoutRef.current !== null) {
+    clearTimeout(highlightTimeoutRef.current);
+    highlightTimeoutRef.current = null;
   }
 }

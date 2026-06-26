@@ -1,23 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Check,
-  Clock3,
-  MapPin,
-  ShieldCheck,
-  UserPlus,
-  X,
-} from "lucide-react";
+import { ArrowRight, Check, UserPlus, X } from "lucide-react";
 
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { AvatarWithBadge } from "@/shared/components/common/avatar-with-badge";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
-import { cn } from "@/shared/lib/utils";
 
 import type { AttentionQueueFriendRequest } from "./attention-queue.types";
-import { getFriendRequestMeta } from "./attention-queue-formatters";
 import { AttentionQueueMeta } from "./attention-queue-meta";
+import { getFriendRequestQueueItemRenderState } from "./friend-request-queue-item-render-state";
 
 interface FriendRequestQueueItemProps {
   request: AttentionQueueFriendRequest;
@@ -42,21 +32,28 @@ export function FriendRequestQueueItem({
   onDecline,
   request,
 }: FriendRequestQueueItemProps) {
-  const profileNavigation = buildProfileNavigation(request.counterpart.id);
-  const [cityLabel, trustLabel, sentLabel] = getFriendRequestMeta(request);
-  const requestMeta = [
-    { icon: MapPin, label: cityLabel },
-    { icon: ShieldCheck, label: trustLabel },
-    { icon: Clock3, label: sentLabel },
-  ].filter((item) => item.label);
+  const {
+    acceptButtonDisabled,
+    acceptButtonLoading,
+    actionButtonTitle,
+    declineButtonDisabled,
+    declineButtonLoading,
+    firstName,
+    profileNavigation,
+    requestMeta,
+    rowClassName,
+  } = getFriendRequestQueueItemRenderState({
+    acceptingRequestId,
+    decliningRequestId,
+    isAccepting,
+    isDeclining,
+    isFocused,
+    isOnline,
+    request,
+  });
 
   return (
-    <li
-      className={cn(
-        "group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 sm:px-3",
-        isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
-      )}
-    >
+    <li className={rowClassName}>
       <div className="flex min-w-0 items-center justify-between gap-3">
         <Link
           {...profileNavigation}
@@ -92,8 +89,7 @@ export function FriendRequestQueueItem({
               />
             </div>
             <p className="mt-1 truncate font-medium text-muted-foreground text-xs">
-              {getFirstName(request.counterpart.name)} wants to connect with
-              you.
+              {firstName} wants to connect with you.
             </p>
             <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1.5">
               {requestMeta.map((item) => (
@@ -108,15 +104,11 @@ export function FriendRequestQueueItem({
           <Button
             size="icon-xs"
             className="sm:w-auto sm:px-3"
-            loading={acceptingRequestId === request.requesterId}
-            disabled={!isOnline || isAccepting || isDeclining}
+            loading={acceptButtonLoading}
+            disabled={acceptButtonDisabled}
             onClick={() => void onAccept(request.requesterId)}
             aria-label={`Accept ${request.counterpart.name}'s friend request`}
-            title={
-              isOnline
-                ? undefined
-                : "Reconnect before responding to friend requests."
-            }
+            title={actionButtonTitle}
           >
             <Check className="size-3" />
             <span className="hidden sm:inline">Accept</span>
@@ -125,15 +117,11 @@ export function FriendRequestQueueItem({
             type="button"
             variant="destructive"
             size="icon-xs"
-            loading={decliningRequestId === request.requesterId}
-            disabled={!isOnline || isAccepting || isDeclining}
+            loading={declineButtonLoading}
+            disabled={declineButtonDisabled}
             onClick={() => void onDecline(request.requesterId)}
             aria-label={`Decline ${request.counterpart.name}'s friend request`}
-            title={
-              isOnline
-                ? undefined
-                : "Reconnect before responding to friend requests."
-            }
+            title={actionButtonTitle}
           >
             <X className="size-3.5" />
           </Button>
@@ -141,8 +129,4 @@ export function FriendRequestQueueItem({
       </div>
     </li>
   );
-}
-
-function getFirstName(name: string) {
-  return name.trim().split(/\s+/)[0] ?? name;
 }

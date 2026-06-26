@@ -27,6 +27,40 @@ interface InviteMembersDialogProps {
   onInvite: (inviteeId: string) => Promise<void> | void;
 }
 
+interface InviteCandidateRowProps {
+  candidate: ActivityParticipant;
+  disabled: boolean;
+  isInviting: boolean;
+  onInvite: (inviteeId: string) => Promise<void> | void;
+}
+
+function filterInviteCandidates(
+  candidates: ActivityParticipant[],
+  query: string,
+) {
+  const normalizedQuery = query.trim().toLowerCase();
+
+  if (!normalizedQuery) {
+    return candidates;
+  }
+
+  return candidates.filter((candidate) =>
+    getInviteCandidateSearchText(candidate).includes(normalizedQuery),
+  );
+}
+
+function getInviteCandidateSearchText(candidate: ActivityParticipant) {
+  return [candidate.name, candidate.city ?? "", candidate.personalityType ?? ""]
+    .join(" ")
+    .toLowerCase();
+}
+
+function getInviteCandidateMeta(candidate: ActivityParticipant) {
+  return `${candidate.city || "Location pending"}${
+    candidate.personalityType ? ` · ${candidate.personalityType}` : ""
+  }`;
+}
+
 export function InviteMembersDialog({
   candidates,
   disabled = false,
@@ -37,25 +71,10 @@ export function InviteMembersDialog({
   const [query, setQuery] = useState("");
   const [inviteError, setInviteError] = useState<string | null>(null);
 
-  const filteredCandidates = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
-    if (!normalizedQuery) {
-      return candidates;
-    }
-
-    return candidates.filter((candidate) => {
-      const haystack = [
-        candidate.name,
-        candidate.city ?? "",
-        candidate.personalityType ?? "",
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return haystack.includes(normalizedQuery);
-    });
-  }, [candidates, query]);
+  const filteredCandidates = useMemo(
+    () => filterInviteCandidates(candidates, query),
+    [candidates, query],
+  );
 
   const handleInvite = async (inviteeId: string) => {
     if (disabled) {
@@ -138,64 +157,67 @@ export function InviteMembersDialog({
                 </p>
               </div>
             ) : (
-              filteredCandidates.map((candidate) => {
-                const isInviting = invitingMemberId === candidate.id;
-
-                return (
-                  <div
-                    key={candidate.id}
-                    className="flex items-center gap-3 rounded-lg border border-border/60 bg-card px-3 py-3"
-                  >
-                    <Link
-                      {...buildProfileNavigation(candidate.id)}
-                      aria-label={`View ${candidate.name}'s profile`}
-                      className="group flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <Avatar
-                        src={candidate.avatar}
-                        name={candidate.name}
-                        fallback={candidate.name.slice(0, 1).toUpperCase()}
-                        className={cn(
-                          "size-11 bg-muted font-semibold text-foreground text-sm transition-transform group-hover:scale-105",
-                          candidate.avatar && "bg-transparent",
-                        )}
-                      />
-
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-semibold text-foreground text-sm transition-colors group-hover:text-forge-teal">
-                          {candidate.name}
-                        </span>
-                        <span className="block truncate text-slate-muted text-xs">
-                          {candidate.city || "Location pending"}
-                          {candidate.personalityType
-                            ? ` · ${candidate.personalityType}`
-                            : ""}
-                        </span>
-                      </span>
-                    </Link>
-
-                    <Button
-                      size="xs"
-                      disabled={disabled || isInviting}
-                      onClick={() => {
-                        void handleInvite(candidate.id);
-                      }}
-                      title={
-                        disabled
-                          ? "Reconnect before inviting members."
-                          : undefined
-                      }
-                    >
-                      <UserPlus className="size-3.5" aria-hidden="true" />
-                      {isInviting ? "Inviting..." : "Invite"}
-                    </Button>
-                  </div>
-                );
-              })
+              filteredCandidates.map((candidate) => (
+                <InviteCandidateRow
+                  key={candidate.id}
+                  candidate={candidate}
+                  disabled={disabled}
+                  isInviting={invitingMemberId === candidate.id}
+                  onInvite={handleInvite}
+                />
+              ))
             )}
           </div>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function InviteCandidateRow({
+  candidate,
+  disabled,
+  isInviting,
+  onInvite,
+}: InviteCandidateRowProps) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-card px-3 py-3">
+      <Link
+        {...buildProfileNavigation(candidate.id)}
+        aria-label={`View ${candidate.name}'s profile`}
+        className="group flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <Avatar
+          src={candidate.avatar}
+          name={candidate.name}
+          fallback={candidate.name.slice(0, 1).toUpperCase()}
+          className={cn(
+            "size-11 bg-muted font-semibold text-foreground text-sm transition-transform group-hover:scale-105",
+            candidate.avatar && "bg-transparent",
+          )}
+        />
+
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-semibold text-foreground text-sm transition-colors group-hover:text-forge-teal">
+            {candidate.name}
+          </span>
+          <span className="block truncate text-slate-muted text-xs">
+            {getInviteCandidateMeta(candidate)}
+          </span>
+        </span>
+      </Link>
+
+      <Button
+        size="xs"
+        disabled={disabled || isInviting}
+        onClick={() => {
+          void onInvite(candidate.id);
+        }}
+        title={disabled ? "Reconnect before inviting members." : undefined}
+      >
+        <UserPlus className="size-3.5" aria-hidden="true" />
+        {isInviting ? "Inviting..." : "Invite"}
+      </Button>
+    </div>
   );
 }

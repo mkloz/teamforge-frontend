@@ -1,5 +1,5 @@
 import { Check, Loader2, type LucideIcon, Mail } from "lucide-react";
-import { type PointerEvent, useRef } from "react";
+import { type MutableRefObject, type PointerEvent, useRef } from "react";
 import {
   type AvatarBadgeTone,
   AvatarWithBadge,
@@ -17,6 +17,12 @@ import { getTypeConfig, relativeTime } from "./notification-display";
 
 const SWIPE_TOGGLE_THRESHOLD = 48;
 const SWIPE_VERTICAL_TOLERANCE = 36;
+
+interface SwipeStart {
+  pointerId: number;
+  x: number;
+  y: number;
+}
 
 interface NotificationItemProps {
   item: Notification;
@@ -38,11 +44,7 @@ export function NotificationItem({
   const config = getTypeConfig(item.type);
   const Icon = config.icon;
   const isBusy = isPending || isTogglingRead;
-  const swipeStartRef = useRef<{
-    pointerId: number;
-    x: number;
-    y: number;
-  } | null>(null);
+  const swipeStartRef = useRef<SwipeStart | null>(null);
   const didSwipeRef = useRef(false);
 
   function handleSelect() {
@@ -55,7 +57,13 @@ export function NotificationItem({
   }
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (event.pointerType !== "touch" || isBusy || isReadActionDisabled) {
+    if (
+      !canStartReadSwipe({
+        event,
+        isBusy,
+        isReadActionDisabled,
+      })
+    ) {
       return;
     }
 
@@ -77,30 +85,18 @@ export function NotificationItem({
 
     if (
       !start ||
-      start.pointerId !== event.pointerId ||
-      event.pointerType !== "touch" ||
-      isBusy ||
-      isReadActionDisabled
+      !canCompleteReadSwipe({ event, isBusy, isReadActionDisabled, start })
     ) {
       return;
     }
 
-    const deltaX = event.clientX - start.x;
-    const deltaY = event.clientY - start.y;
-    const isHorizontalSwipe =
-      Math.abs(deltaX) >= SWIPE_TOGGLE_THRESHOLD &&
-      Math.abs(deltaY) <= SWIPE_VERTICAL_TOLERANCE &&
-      Math.abs(deltaX) > Math.abs(deltaY) * 1.25;
-
-    if (!isHorizontalSwipe) {
+    if (!isHorizontalReadSwipe(getSwipeDelta(event, start))) {
       return;
     }
 
     didSwipeRef.current = true;
     onToggleRead(item);
-    window.setTimeout(() => {
-      didSwipeRef.current = false;
-    }, 0);
+    resetSwipeSelectionGuard(didSwipeRef);
   }
 
   return (
@@ -132,49 +128,125 @@ export function NotificationItem({
         aria-label={`Open notification details. ${item.isRead ? "Read" : "Unread"} notification. ${item.title}. ${item.message}`}
         className="h-auto min-w-0 flex-1 justify-start rounded-none border-none py-4 pr-5 pl-0 text-left focus-visible:ring-inset active:enabled:bg-transparent hover:enabled:bg-transparent"
       >
-        <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="flex min-w-0 items-start gap-2">
-            <span
-              className={cn(
-                "min-w-0 flex-1 truncate text-sm leading-tight",
-                item.isRead
-                  ? "font-semibold text-ink/80"
-                  : "font-bold text-ink",
-              )}
-            >
-              {item.title}
-            </span>
-            {!item.isRead && (
-              <span
-                className="mt-1.5 size-2 shrink-0 rounded-full bg-forge-teal"
-                aria-hidden="true"
-              />
-            )}
-            <time
-              dateTime={item.createdAt}
-              className="mt-0.5 shrink-0 font-medium text-slate-muted/70 text-xs"
-            >
-              {relativeTime(item.createdAt)}
-            </time>
-          </span>
-          <span className="min-w-0 truncate font-normal text-slate-muted text-sm leading-snug">
-            {item.message}
-          </span>
-          {isPending && (
-            <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span className="inline-flex items-center gap-1 font-semibold text-forge-teal text-xs">
-                <Loader2
-                  className="size-3 shrink-0 animate-spin"
-                  aria-hidden="true"
-                />
-                Opening
-              </span>
-            </span>
-          )}
-        </span>
+        <NotificationItemContent item={item} isPending={isPending} />
       </Button>
     </div>
   );
+}
+
+function NotificationItemContent({
+  isPending,
+  item,
+}: {
+  isPending: boolean;
+  item: Notification;
+}) {
+  return (
+    <span className="flex min-w-0 flex-1 flex-col gap-1">
+      <NotificationTitleLine item={item} />
+      <span className="min-w-0 truncate font-normal text-slate-muted text-sm leading-snug">
+        {item.message}
+      </span>
+      <NotificationPendingState isPending={isPending} />
+    </span>
+  );
+}
+
+function NotificationTitleLine({ item }: { item: Notification }) {
+  return (
+    <span className="flex min-w-0 items-start gap-2">
+      <span
+        className={cn(
+          "min-w-0 flex-1 truncate text-sm leading-tight",
+          item.isRead ? "font-semibold text-ink/80" : "font-bold text-ink",
+        )}
+      >
+        {item.title}
+      </span>
+      {!item.isRead && (
+        <span
+          className="mt-1.5 size-2 shrink-0 rounded-full bg-forge-teal"
+          aria-hidden="true"
+        />
+      )}
+      <time
+        dateTime={item.createdAt}
+        className="mt-0.5 shrink-0 font-medium text-slate-muted/70 text-xs"
+      >
+        {relativeTime(item.createdAt)}
+      </time>
+    </span>
+  );
+}
+
+function NotificationPendingState({ isPending }: { isPending: boolean }) {
+  if (!isPending) {
+    return null;
+  }
+
+  return (
+    <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+      <span className="inline-flex items-center gap-1 font-semibold text-forge-teal text-xs">
+        <Loader2 className="size-3 shrink-0 animate-spin" aria-hidden="true" />
+        Opening
+      </span>
+    </span>
+  );
+}
+
+function canStartReadSwipe({
+  event,
+  isBusy,
+  isReadActionDisabled,
+}: {
+  event: PointerEvent<HTMLDivElement>;
+  isBusy: boolean;
+  isReadActionDisabled: boolean;
+}) {
+  return event.pointerType === "touch" && !isBusy && !isReadActionDisabled;
+}
+
+function canCompleteReadSwipe({
+  event,
+  isBusy,
+  isReadActionDisabled,
+  start,
+}: {
+  event: PointerEvent<HTMLDivElement>;
+  isBusy: boolean;
+  isReadActionDisabled: boolean;
+  start: SwipeStart;
+}) {
+  return (
+    start.pointerId === event.pointerId &&
+    event.pointerType === "touch" &&
+    !isBusy &&
+    !isReadActionDisabled
+  );
+}
+
+function getSwipeDelta(event: PointerEvent<HTMLDivElement>, start: SwipeStart) {
+  return {
+    x: event.clientX - start.x,
+    y: event.clientY - start.y,
+  };
+}
+
+function isHorizontalReadSwipe({ x, y }: { x: number; y: number }) {
+  const absoluteX = Math.abs(x);
+  const absoluteY = Math.abs(y);
+
+  return (
+    absoluteX >= SWIPE_TOGGLE_THRESHOLD &&
+    absoluteY <= SWIPE_VERTICAL_TOLERANCE &&
+    absoluteX > absoluteY * 1.25
+  );
+}
+
+function resetSwipeSelectionGuard(didSwipeRef: MutableRefObject<boolean>) {
+  window.setTimeout(() => {
+    didSwipeRef.current = false;
+  }, 0);
 }
 
 interface NotificationSourceProps {

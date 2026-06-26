@@ -100,15 +100,64 @@ function MessageSenderLabel({
   senderName: string | null | undefined;
   showSender: boolean;
 }) {
-  if (isOwn || kind !== "group" || !showSender) {
+  const label = getMessageSenderLabel({
+    isOwn,
+    kind,
+    senderName,
+    showSender,
+  });
+
+  if (!label) {
     return null;
   }
 
   return (
     <p className="mb-0.5 ml-1.5 font-bold text-micro text-primary opacity-90">
-      {senderName || "Unknown"}
+      {label}
     </p>
   );
+}
+
+function getMessageSenderLabel({
+  isOwn,
+  kind,
+  senderName,
+  showSender,
+}: {
+  isOwn: boolean;
+  kind: "dm" | "group";
+  senderName: string | null | undefined;
+  showSender: boolean;
+}) {
+  if (!shouldShowMessageSenderLabel({ isOwn, kind, showSender })) {
+    return null;
+  }
+
+  return getMessageSenderFallbackName(senderName);
+}
+
+function shouldShowMessageSenderLabel({
+  isOwn,
+  kind,
+  showSender,
+}: {
+  isOwn: boolean;
+  kind: "dm" | "group";
+  showSender: boolean;
+}) {
+  if (isOwn) {
+    return false;
+  }
+
+  if (kind !== "group") {
+    return false;
+  }
+
+  return showSender;
+}
+
+function getMessageSenderFallbackName(senderName: string | null | undefined) {
+  return senderName || "Unknown";
 }
 
 interface MessageBubbleShellProps {
@@ -132,22 +181,67 @@ export function MessageBubbleShell({
 }: MessageBubbleShellProps) {
   return (
     <div
-      className={cn(
-        "relative flex w-fit min-w-0 max-w-full flex-col rounded-xl px-1 py-1 shadow-xs transition duration-300",
-        isOwn
-          ? "rounded-br-none border border-primary/15 bg-primary/8 text-ink shadow-sm backdrop-blur-md"
-          : "rounded-bl-none border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md",
-        isHighlighted
-          ? "message-search-focus"
-          : isInteractionFocused && "message-action-focus",
-        isSelected && "border-primary/65 bg-primary/12 ring-1 ring-primary/35",
-        !content && "min-w-30",
-        usesInlineFooter && "min-w-40",
-      )}
+      className={getMessageBubbleShellClassName({
+        content,
+        isHighlighted,
+        isInteractionFocused,
+        isOwn,
+        isSelected,
+        usesInlineFooter,
+      })}
     >
       {children}
     </div>
   );
+}
+
+function getMessageBubbleShellClassName({
+  content,
+  isHighlighted,
+  isInteractionFocused,
+  isOwn,
+  isSelected,
+  usesInlineFooter,
+}: Pick<
+  MessageBubbleShellProps,
+  | "content"
+  | "isHighlighted"
+  | "isInteractionFocused"
+  | "isOwn"
+  | "isSelected"
+  | "usesInlineFooter"
+>) {
+  return cn(
+    "relative flex w-fit min-w-0 max-w-full flex-col rounded-xl px-1 py-1 shadow-xs transition duration-300",
+    getMessageBubbleToneClassName(isOwn),
+    getMessageBubbleFocusClassName({ isHighlighted, isInteractionFocused }),
+    isSelected && "border-primary/65 bg-primary/12 ring-1 ring-primary/35",
+    getMessageBubbleSizeClassName({ content, usesInlineFooter }),
+  );
+}
+
+function getMessageBubbleToneClassName(isOwn: boolean) {
+  return isOwn
+    ? "rounded-br-none border border-primary/15 bg-primary/8 text-ink shadow-sm backdrop-blur-md"
+    : "rounded-bl-none border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md";
+}
+
+function getMessageBubbleFocusClassName({
+  isHighlighted,
+  isInteractionFocused,
+}: Pick<MessageBubbleShellProps, "isHighlighted" | "isInteractionFocused">) {
+  if (isHighlighted) {
+    return "message-search-focus";
+  }
+
+  return isInteractionFocused && "message-action-focus";
+}
+
+function getMessageBubbleSizeClassName({
+  content,
+  usesInlineFooter,
+}: Pick<MessageBubbleShellProps, "content" | "usesInlineFooter">) {
+  return cn(!content && "min-w-30", usesInlineFooter && "min-w-40");
 }
 
 export function ForwardedIndicator({

@@ -1,17 +1,191 @@
 import { useState } from "react";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
-import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
+import type {
+  ActivitySendMessageInput,
+  UnifiedMessage,
+} from "@/features/activity/lib/activity-contract";
 import { canReplyToMessage } from "@/features/activity/lib/message-action-capabilities";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
-import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
+import {
+  type TrackedMutationName,
+  trackedMutationNames,
+} from "@/shared/lib/telemetry-contract";
 import { useActivityMessageActions } from "./use-activity-message-actions";
+
+const SEND_MESSAGE_ERROR_MESSAGE =
+  "We couldn't send that message. Please try again.";
+
+type SendableConversationKind = "dm" | "group";
+
+interface ComposerTelemetryContext {
+  attachmentCount: number;
+  conversationKind: string;
+  hasReply: boolean;
+}
+
+interface ExecuteComposerMutationParams {
+  context: ComposerTelemetryContext;
+  isEdit: boolean;
+  mutationName: TrackedMutationName;
+  run: () => Promise<{ requestId?: string | null } | null | undefined>;
+}
+
+interface ExecuteComposerMutationWithErrorMessageParams
+  extends ExecuteComposerMutationParams {
+  setSendError: (message: string | null) => void;
+}
+
+interface SubmitComposerInputParams {
+  editingMessage: UnifiedMessage | null;
+  input: ActivitySendMessageInput;
+  mutationName: TrackedMutationName;
+  replyTarget: UnifiedMessage | null;
+  selectedId: string | null;
+  selectedKind: SendableConversationKind;
+  setSendError: (message: string | null) => void;
+  submitEdit: ReturnType<typeof useActivityMessageActions>["submitEdit"];
+  telemetryContext: ComposerTelemetryContext;
+}
 
 function getRequestId(
   result: { requestId?: string | null } | null | undefined,
 ) {
   return result?.requestId ?? null;
+}
+
+function isSendableConversationKind(
+  kind: string | null,
+): kind is SendableConversationKind {
+  return kind === "group" || kind === "dm";
+}
+
+function getReplyTarget(replyingTo: UnifiedMessage | null) {
+  return replyingTo && canReplyToMessage(replyingTo) ? replyingTo : null;
+}
+
+function getMutationName(isEdit: boolean) {
+  return isEdit
+    ? trackedMutationNames.activityMessageEdit
+    : trackedMutationNames.activityMessageSend;
+}
+
+function getTelemetryContext(
+  input: ActivitySendMessageInput,
+  conversationKind: string,
+  replyTarget: UnifiedMessage | null,
+): ComposerTelemetryContext {
+  return {
+    attachmentCount: input.attachments?.length ?? 0,
+    conversationKind,
+    hasReply: Boolean(replyTarget),
+  };
+}
+
+function getSuccessTelemetryPayload(
+  { attachmentCount, conversationKind, hasReply }: ComposerTelemetryContext,
+  requestId: string | null,
+  isEdit: boolean,
+) {
+  return isEdit
+    ? {
+        conversationKind,
+        requestId,
+      }
+    : {
+        attachmentCount,
+        conversationKind,
+        hasReply,
+        requestId,
+      };
+}
+
+function getErrorTelemetryPayload({
+  attachmentCount,
+  conversationKind,
+  hasReply,
+}: ComposerTelemetryContext) {
+  return {
+    attachmentCount,
+    conversationKind,
+    hasReply,
+  };
+}
+
+async function executeComposerMutation({
+  context,
+  isEdit,
+  mutationName,
+  run,
+}: ExecuteComposerMutationParams) {
+  try {
+    const result = await run();
+    trackMutationOutcome(
+      mutationName,
+      "success",
+      getSuccessTelemetryPayload(context, getRequestId(result), isEdit),
+    );
+  } catch (error) {
+    const errorTelemetry = getErrorTelemetryPayload(context);
+
+    captureException(mutationName, error, {
+      ...errorTelemetry,
+      isEdit,
+    });
+    trackMutationOutcome(mutationName, "error", errorTelemetry);
+    throw error;
+  }
+}
+
+async function executeComposerMutationWithErrorMessage({
+  setSendError,
+  ...mutationParams
+}: ExecuteComposerMutationWithErrorMessageParams) {
+  try {
+    await executeComposerMutation(mutationParams);
+  } catch (error) {
+    setSendError(getApiErrorMessage(error, SEND_MESSAGE_ERROR_MESSAGE));
+    throw error;
+  }
+}
+
+async function submitComposerInput({
+  editingMessage,
+  input,
+  mutationName,
+  replyTarget,
+  selectedId,
+  selectedKind,
+  setSendError,
+  submitEdit,
+  telemetryContext,
+}: SubmitComposerInputParams) {
+  if (editingMessage) {
+    await executeComposerMutationWithErrorMessage({
+      context: telemetryContext,
+      isEdit: true,
+      mutationName,
+      run: () => submitEdit(input.content),
+      setSendError,
+    });
+    return;
+  }
+
+  const replyToId = replyTarget ? replyTarget.id : null;
+
+  await executeComposerMutationWithErrorMessage({
+    context: telemetryContext,
+    isEdit: false,
+    mutationName,
+    run: () =>
+      ActivityCommands.sendMessage(selectedKind, selectedId, {
+        ...input,
+        replyTo: replyTarget,
+        replyToId,
+      }),
+    setSendError,
+  });
 }
 
 export function useActivityComposer() {
@@ -24,94 +198,30 @@ export function useActivityComposer() {
   async function handleSendMessage(input: ActivitySendMessageInput) {
     setSendError(null);
     const conversationKind = selectedKind ?? "unknown";
-    const attachmentCount = input.attachments?.length ?? 0;
-    const replyTarget =
-      replyingTo && canReplyToMessage(replyingTo) ? replyingTo : null;
-    const hasReply = Boolean(replyTarget);
-    const mutationName = editingMessage
-      ? trackedMutationNames.activityMessageEdit
-      : trackedMutationNames.activityMessageSend;
+    const replyTarget = getReplyTarget(replyingTo);
+    const isEdit = Boolean(editingMessage);
+    const mutationName = getMutationName(isEdit);
+    const telemetryContext = getTelemetryContext(
+      input,
+      conversationKind,
+      replyTarget,
+    );
 
-    if (selectedKind !== "group" && selectedKind !== "dm") {
+    if (!isSendableConversationKind(selectedKind)) {
       return;
     }
 
-    if (editingMessage) {
-      try {
-        const result = await submitEdit(input.content);
-        trackMutationOutcome(
-          trackedMutationNames.activityMessageEdit,
-          "success",
-          {
-            conversationKind,
-            requestId: getRequestId(result),
-          },
-        );
-        return;
-      } catch (error) {
-        captureException(mutationName, error, {
-          attachmentCount,
-          conversationKind,
-          hasReply,
-          isEdit: true,
-        });
-        trackMutationOutcome(mutationName, "error", {
-          attachmentCount,
-          conversationKind,
-          hasReply,
-        });
-        setSendError(
-          getApiErrorMessage(
-            error,
-            "We couldn't send that message. Please try again.",
-          ),
-        );
-        throw error;
-      }
-    }
-
-    const replyToId = replyTarget ? replyTarget.id : null;
-
-    try {
-      const result = await ActivityCommands.sendMessage(
-        selectedKind,
-        selectedId,
-        {
-          ...input,
-          replyTo: replyTarget,
-          replyToId,
-        },
-      );
-      trackMutationOutcome(
-        trackedMutationNames.activityMessageSend,
-        "success",
-        {
-          attachmentCount,
-          conversationKind,
-          hasReply,
-          requestId: getRequestId(result),
-        },
-      );
-    } catch (error) {
-      captureException(mutationName, error, {
-        attachmentCount,
-        conversationKind,
-        hasReply,
-        isEdit: false,
-      });
-      trackMutationOutcome(mutationName, "error", {
-        attachmentCount,
-        conversationKind,
-        hasReply,
-      });
-      setSendError(
-        getApiErrorMessage(
-          error,
-          "We couldn't send that message. Please try again.",
-        ),
-      );
-      throw error;
-    }
+    await submitComposerInput({
+      editingMessage,
+      input,
+      mutationName,
+      replyTarget,
+      selectedId,
+      selectedKind,
+      setSendError,
+      submitEdit,
+      telemetryContext,
+    });
   }
 
   return {

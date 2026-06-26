@@ -1,4 +1,9 @@
-import { type RefObject, useLayoutEffect, useRef } from "react";
+import {
+  type MutableRefObject,
+  type RefObject,
+  useLayoutEffect,
+  useRef,
+} from "react";
 import { hasBrowserWindow } from "@/shared/lib/browser-environment";
 
 interface UseResetScrollOnChangeOptions<TElement extends HTMLElement> {
@@ -8,6 +13,75 @@ interface UseResetScrollOnChangeOptions<TElement extends HTMLElement> {
   ref?: RefObject<TElement | null>;
   resetKey: unknown;
   skipInitial?: boolean;
+}
+
+interface ResetKeyTracker {
+  hasSeenResetKeyRef: MutableRefObject<boolean>;
+  previousResetKeyRef: MutableRefObject<unknown>;
+}
+
+function shouldResetForKey({
+  hasSeenResetKeyRef,
+  previousResetKeyRef,
+  resetKey,
+  skipInitial,
+}: ResetKeyTracker &
+  Pick<
+    UseResetScrollOnChangeOptions<HTMLElement>,
+    "resetKey" | "skipInitial"
+  >) {
+  if (!hasSeenResetKeyRef.current) {
+    hasSeenResetKeyRef.current = true;
+    previousResetKeyRef.current = resetKey;
+
+    return !skipInitial;
+  }
+
+  if (Object.is(previousResetKeyRef.current, resetKey)) {
+    return false;
+  }
+
+  previousResetKeyRef.current = resetKey;
+
+  return true;
+}
+
+function getScrollOptions(behavior: ScrollBehavior): ScrollToOptions {
+  return {
+    behavior,
+    left: 0,
+    top: 0,
+  };
+}
+
+function resetScrollPosition<TElement extends HTMLElement>({
+  behavior,
+  ref,
+}: Pick<UseResetScrollOnChangeOptions<TElement>, "behavior" | "ref">) {
+  const scrollOptions = getScrollOptions(behavior ?? "auto");
+
+  if (ref?.current) {
+    ref.current.scrollTo(scrollOptions);
+    return;
+  }
+
+  window.scrollTo(scrollOptions);
+}
+
+function shouldRunScrollReset({
+  enabled,
+  shouldReset,
+}: {
+  enabled: boolean;
+  shouldReset: boolean;
+}) {
+  return shouldReset && enabled && hasBrowserWindow();
+}
+
+function notifyScrollReset(
+  onReset: UseResetScrollOnChangeOptions<HTMLElement>["onReset"],
+) {
+  onReset?.();
 }
 
 export function useResetScrollOnChange<TElement extends HTMLElement>({
@@ -22,35 +96,18 @@ export function useResetScrollOnChange<TElement extends HTMLElement>({
   const hasSeenResetKeyRef = useRef(false);
 
   useLayoutEffect(() => {
-    if (!hasSeenResetKeyRef.current) {
-      hasSeenResetKeyRef.current = true;
-      previousResetKeyRef.current = resetKey;
+    const shouldReset = shouldResetForKey({
+      hasSeenResetKeyRef,
+      previousResetKeyRef,
+      resetKey,
+      skipInitial,
+    });
 
-      if (skipInitial) {
-        return;
-      }
-    } else if (Object.is(previousResetKeyRef.current, resetKey)) {
+    if (!shouldRunScrollReset({ enabled, shouldReset })) {
       return;
     }
 
-    previousResetKeyRef.current = resetKey;
-
-    if (!enabled || !hasBrowserWindow()) {
-      return;
-    }
-
-    const scrollOptions: ScrollToOptions = {
-      behavior,
-      left: 0,
-      top: 0,
-    };
-
-    if (ref?.current) {
-      ref.current.scrollTo(scrollOptions);
-    } else {
-      window.scrollTo(scrollOptions);
-    }
-
-    onReset?.();
+    resetScrollPosition({ behavior, ref });
+    notifyScrollReset(onReset);
   }, [behavior, enabled, onReset, ref, resetKey, skipInitial]);
 }

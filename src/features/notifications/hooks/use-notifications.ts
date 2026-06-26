@@ -7,40 +7,83 @@ import { NotificationsQueryFactory } from "@/features/notifications/api/notifica
 import { groupNotificationsByRecency } from "@/features/notifications/lib/notification-groups";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 
-export function useUnreadNotifications() {
-  const unreadItemsQuery = useQuery(NotificationsQueryFactory.unreadList());
-
-  return {
-    unreadItems: unreadItemsQuery.data ?? [],
-    isLoading: unreadItemsQuery.isLoading,
-  };
-}
-
 interface UseNotificationsOptions {
   enabled?: boolean;
 }
 
+const NOTIFICATION_OFFLINE_ACTIONS = {
+  markAllRead: {
+    id: "notifications-mark-all-read-offline",
+    description: "Reconnect before clearing notification badges.",
+  },
+  markRead: {
+    id: "notifications-mark-read-offline",
+    description: "Reconnect before marking notifications as read.",
+  },
+  markUnread: {
+    id: "notifications-mark-unread-offline",
+    description: "Reconnect before marking notifications as unread.",
+  },
+} as const;
+
+type GuardOfflineAction = ReturnType<
+  typeof useOfflineActionGuard
+>["guardOfflineAction"];
+type NotificationQueries = ReturnType<typeof useNotificationQueries>;
+type NotificationMutations = ReturnType<typeof useNotificationMutations>;
+type NotificationOfflineAction =
+  (typeof NOTIFICATION_OFFLINE_ACTIONS)[keyof typeof NOTIFICATION_OFFLINE_ACTIONS];
+
 export function useNotifications({
   enabled = true,
 }: UseNotificationsOptions = {}) {
-  const listQuery = useQuery({
+  const queries = useNotificationQueries(enabled);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
+  const [referenceTime] = useState(() => Date.now());
+  const items = queries.list.data ?? [];
+  const unreadItems = getUnreadNotificationItems(queries, items);
+  const mutations = useNotificationMutations();
+  const actions = createNotificationActions({
+    guardOfflineAction,
+    mutations,
+  });
+
+  return {
+    items,
+    unreadItems,
+    notificationGroups: groupNotificationsByRecency(items, referenceTime),
+    count: getUnreadNotificationCount(queries, items),
+    isLoading: queries.list.isLoading && items.length === 0,
+    isRefreshing: getIsRefreshingNotifications(queries),
+    isMarkingAllRead: mutations.markAllRead.isPending,
+    ...actions,
+    refreshNotifications: () => refreshNotificationQueries(queries),
+    isOnline,
+  };
+}
+
+function useNotificationQueries(enabled: boolean) {
+  const list = useQuery({
     ...NotificationsQueryFactory.list(),
     enabled,
   });
-  const unreadItemsQuery = useQuery({
+  const unreadItems = useQuery({
     ...NotificationsQueryFactory.unreadList(),
     enabled,
   });
-  const unreadCountQuery = useQuery({
+  const unreadCount = useQuery({
     ...NotificationsQueryFactory.unreadCount(),
     enabled,
   });
-  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
-  const items = listQuery.data ?? [];
-  const unreadItems =
-    unreadItemsQuery.data ?? items.filter((item) => !item.isRead);
-  const [referenceTime] = useState(() => Date.now());
 
+  return {
+    list,
+    unreadCount,
+    unreadItems,
+  };
+}
+
+function useNotificationMutations() {
   const markReadMutation = useMutation({
     meta: {
       errorToastMessage: "We couldn't update that notification right now.",
@@ -116,107 +159,116 @@ export function useNotifications({
     },
   });
 
-  const count =
-    unreadCountQuery.data ??
-    unreadItemsQuery.data?.length ??
-    NotificationsCache.countUnread(items);
+  return {
+    markAllRead: markAllReadMutation,
+    markRead: markReadMutation,
+    markUnread: markUnreadMutation,
+  };
+}
 
-  const notificationGroups = groupNotificationsByRecency(items, referenceTime);
+function getUnreadNotificationItems(
+  queries: NotificationQueries,
+  items: NonNullable<NotificationQueries["list"]["data"]>,
+) {
+  return queries.unreadItems.data ?? items.filter((item) => !item.isRead);
+}
 
-  function guardReadStateAction(id: string, description: string) {
-    return guardOfflineAction({
-      id,
-      description,
-    });
-  }
+function getUnreadNotificationCount(
+  queries: NotificationQueries,
+  items: NonNullable<NotificationQueries["list"]["data"]>,
+) {
+  return (
+    queries.unreadCount.data ??
+    queries.unreadItems.data?.length ??
+    NotificationsCache.countUnread(items)
+  );
+}
 
+function getIsRefreshingNotifications(queries: NotificationQueries) {
+  return (
+    queries.list.isFetching ||
+    queries.unreadItems.isFetching ||
+    queries.unreadCount.isFetching
+  );
+}
+
+function createNotificationActions({
+  guardOfflineAction,
+  mutations,
+}: {
+  guardOfflineAction: GuardOfflineAction;
+  mutations: NotificationMutations;
+}) {
   function markRead(id: string) {
-    if (
-      guardReadStateAction(
-        "notifications-mark-read-offline",
-        "Reconnect before marking notifications as read.",
-      )
-    ) {
+    if (shouldSkipNotificationAction(guardOfflineAction, "markRead")) {
       return;
     }
 
-    markReadMutation.mutate(id);
+    mutations.markRead.mutate(id);
   }
 
   async function markReadAsync(id: string) {
-    if (
-      guardReadStateAction(
-        "notifications-mark-read-offline",
-        "Reconnect before marking notifications as read.",
-      )
-    ) {
+    if (shouldSkipNotificationAction(guardOfflineAction, "markRead")) {
       return null;
     }
 
-    return markReadMutation.mutateAsync(id);
+    return mutations.markRead.mutateAsync(id);
   }
 
   function markUnread(id: string) {
-    if (
-      guardReadStateAction(
-        "notifications-mark-unread-offline",
-        "Reconnect before marking notifications as unread.",
-      )
-    ) {
+    if (shouldSkipNotificationAction(guardOfflineAction, "markUnread")) {
       return;
     }
 
-    markUnreadMutation.mutate(id);
+    mutations.markUnread.mutate(id);
   }
 
   async function markUnreadAsync(id: string) {
-    if (
-      guardReadStateAction(
-        "notifications-mark-unread-offline",
-        "Reconnect before marking notifications as unread.",
-      )
-    ) {
+    if (shouldSkipNotificationAction(guardOfflineAction, "markUnread")) {
       return null;
     }
 
-    return markUnreadMutation.mutateAsync(id);
+    return mutations.markUnread.mutateAsync(id);
   }
 
   async function markAllReadAsync() {
-    if (
-      guardReadStateAction(
-        "notifications-mark-all-read-offline",
-        "Reconnect before clearing notification badges.",
-      )
-    ) {
+    if (shouldSkipNotificationAction(guardOfflineAction, "markAllRead")) {
       return null;
     }
 
-    return markAllReadMutation.mutateAsync();
+    return mutations.markAllRead.mutateAsync();
   }
 
   return {
-    items,
-    unreadItems,
-    notificationGroups,
-    count,
-    isLoading: listQuery.isLoading && items.length === 0,
-    isRefreshing:
-      listQuery.isFetching ||
-      unreadItemsQuery.isFetching ||
-      unreadCountQuery.isFetching,
-    isMarkingAllRead: markAllReadMutation.isPending,
     markRead,
     markReadAsync,
     markUnread,
     markUnreadAsync,
     markAllReadAsync,
-    refreshNotifications: () =>
-      Promise.all([
-        listQuery.refetch(),
-        unreadItemsQuery.refetch(),
-        unreadCountQuery.refetch(),
-      ]),
-    isOnline,
   };
+}
+
+function shouldSkipNotificationAction(
+  guardOfflineAction: GuardOfflineAction,
+  action: keyof typeof NOTIFICATION_OFFLINE_ACTIONS,
+) {
+  return guardNotificationOfflineAction(
+    guardOfflineAction,
+    NOTIFICATION_OFFLINE_ACTIONS[action],
+  );
+}
+
+function guardNotificationOfflineAction(
+  guardOfflineAction: GuardOfflineAction,
+  action: NotificationOfflineAction,
+) {
+  return guardOfflineAction(action);
+}
+
+function refreshNotificationQueries(queries: NotificationQueries) {
+  return Promise.all([
+    queries.list.refetch(),
+    queries.unreadItems.refetch(),
+    queries.unreadCount.refetch(),
+  ]);
 }

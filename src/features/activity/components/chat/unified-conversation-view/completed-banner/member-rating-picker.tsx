@@ -10,6 +10,12 @@ interface MemberRatingPickerProps {
   ratedUserIds: Set<string>;
 }
 
+interface MemberRatingButtonState {
+  isDisabled: boolean;
+  isRated: boolean;
+  isSelected: boolean;
+}
+
 export function MemberRatingPicker({
   activeUserId,
   disabled,
@@ -20,31 +26,80 @@ export function MemberRatingPicker({
   return (
     <div className="flex gap-2 overflow-x-auto pb-1">
       {members.map((member) => {
-        const isRated = ratedUserIds.has(member.userId);
-        const isSelected = activeUserId === member.userId;
+        const state = getMemberRatingButtonState({
+          activeUserId,
+          disabled,
+          member,
+          ratedUserIds,
+        });
 
         return (
-          <Button
+          <MemberRatingButton
             key={member.userId}
-            type="button"
-            variant="ghost"
-            size="xs"
-            disabled={isRated || disabled}
-            onClick={() => onSelect(member)}
-            className={cn(
-              "h-auto shrink-0 rounded-full border px-3 py-1.5 text-xs transition-colors",
-              "focus-visible:ring-primary/40",
-              isSelected
-                ? "border-primary/40 bg-primary/10 text-primary"
-                : "border-border bg-card text-ink hover:border-primary/30",
-              isRated && "opacity-50",
-            )}
-          >
-            {member.user?.name ?? "Teammate"}
-            {isRated ? " rated" : ""}
-          </Button>
+            member={member}
+            onSelect={onSelect}
+            state={state}
+          />
         );
       })}
     </div>
+  );
+}
+
+function MemberRatingButton({
+  member,
+  onSelect,
+  state,
+}: {
+  member: GroupMember;
+  onSelect: (member: GroupMember) => void;
+  state: MemberRatingButtonState;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="xs"
+      disabled={state.isDisabled}
+      onClick={() => onSelect(member)}
+      className={getMemberRatingButtonClassName(state)}
+    >
+      {member.user?.name ?? "Teammate"}
+      {state.isRated ? " rated" : ""}
+    </Button>
+  );
+}
+
+function getMemberRatingButtonState({
+  activeUserId,
+  disabled,
+  member,
+  ratedUserIds,
+}: {
+  activeUserId: string | null;
+  disabled: boolean;
+  member: GroupMember;
+  ratedUserIds: Set<string>;
+}): MemberRatingButtonState {
+  const isRated = ratedUserIds.has(member.userId);
+
+  return {
+    isDisabled: isRated || disabled,
+    isRated,
+    isSelected: activeUserId === member.userId,
+  };
+}
+
+function getMemberRatingButtonClassName({
+  isRated,
+  isSelected,
+}: MemberRatingButtonState) {
+  return cn(
+    "h-auto shrink-0 rounded-full border px-3 py-1.5 text-xs transition-colors",
+    "focus-visible:ring-primary/40",
+    isSelected
+      ? "border-primary/40 bg-primary/10 text-primary"
+      : "border-border bg-card text-ink hover:border-primary/30",
+    isRated && "opacity-50",
   );
 }

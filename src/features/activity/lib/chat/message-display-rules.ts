@@ -30,18 +30,6 @@ export function shouldShowSenderAnchor(
   return getMessageGapMs(previous, current) > MESSAGE_SEQUENCE_GAP_MS;
 }
 
-export function shouldShowAvatar(
-  current: UnifiedMessage,
-  next?: UnifiedMessage,
-): boolean {
-  if (isStandaloneTimelineItem(current)) return false;
-  if (!next) return true;
-  if (isStandaloneTimelineItem(next)) return true;
-  if (next.senderId !== current.senderId) return true;
-
-  return getMessageGapMs(current, next) > MESSAGE_SEQUENCE_GAP_MS;
-}
-
 function getMessageGapMs(left: UnifiedMessage, right: UnifiedMessage) {
   return (
     new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()

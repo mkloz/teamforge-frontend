@@ -9,16 +9,12 @@ import { fullUserResponseSchema } from "@/shared/schemas/user-response";
 
 import { CURRENT_USER_QUERY_KEY } from "./current-user-cache";
 
-export { useAuthSessionState } from "./auth-session-state";
 export {
   CURRENT_USER_QUERY_KEY,
   clearCurrentUserCache,
 } from "./current-user-cache";
 
-export const AUTH_SESSION_RESTORE_QUERY_KEY = [
-  "auth",
-  "session-restore",
-] as const;
+const AUTH_SESSION_RESTORE_QUERY_KEY = ["auth", "session-restore"] as const;
 
 function shouldSkipAuditSessionRestore() {
   return (

@@ -1,8 +1,4 @@
-import type {
-  OceanScores,
-  OceanTraitKey,
-  OceanTraitMeta,
-} from "../types/psychometrics";
+import type { OceanTraitKey, OceanTraitMeta } from "../types/psychometrics";
 
 interface ExtendedTraitInfo {
   key: OceanTraitKey;
@@ -109,6 +105,13 @@ const EXTENDED_TRAITS: Record<OceanTraitKey, ExtendedTraitInfo> = {
   },
 };
 
+const TRAIT_LEVEL_THRESHOLDS = [
+  { minScore: 80, label: "Very High" },
+  { minScore: 60, label: "High" },
+  { minScore: 40, label: "Moderate" },
+  { minScore: 20, label: "Low" },
+] as const;
+
 export function getExtendedTraitInfo(key: OceanTraitKey, score: number) {
   const trait = EXTENDED_TRAITS[key];
   const isHigh = score >= 50;
@@ -125,20 +128,9 @@ export function getExtendedTraitInfo(key: OceanTraitKey, score: number) {
   };
 }
 
-export function getTraitLevel(score: number) {
-  if (score >= 80) return "Very High";
-  if (score >= 60) return "High";
-  if (score >= 40) return "Moderate";
-  if (score >= 20) return "Low";
-  return "Very Low";
-}
-
-export function getDefaultOceanScores(): OceanScores {
-  return {
-    openness: 82,
-    conscientiousness: 65,
-    extraversion: 40,
-    agreeableness: 88,
-    neuroticism: 15,
-  };
+function getTraitLevel(score: number) {
+  return (
+    TRAIT_LEVEL_THRESHOLDS.find(({ minScore }) => score >= minScore)?.label ??
+    "Very Low"
+  );
 }

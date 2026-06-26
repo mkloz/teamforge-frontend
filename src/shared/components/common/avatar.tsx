@@ -7,7 +7,7 @@ import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
 import type { ImageMedia } from "@/shared/schemas/media";
 
-function getAvatarInitials(name?: string | null) {
+export function getAvatarInitials(name?: string | null) {
   const initials = (name ?? "")
     .trim()
     .split(/\s+/)
@@ -32,6 +32,8 @@ interface AvatarProps
   loading?: ImgHTMLAttributes<HTMLImageElement>["loading"];
   shape?: "circle" | "rounded";
 }
+
+type AvatarShape = NonNullable<AvatarProps["shape"]>;
 
 interface AvatarStatusProps extends HTMLAttributes<HTMLSpanElement> {
   status: OnlineStatus;
@@ -81,21 +83,12 @@ export function Avatar({
   children,
   ...props
 }: AvatarProps) {
-  const initials = fallback ?? getAvatarInitials(name);
-  const radiusClass = shape === "circle" ? "rounded-full" : "rounded-lg";
-  const resolvedSrc = getImageMediaVariant(media, "avatar128", src);
-  const imageSrc = imageSize
-    ? getSizedImageUrl(resolvedSrc, imageSize)
-    : resolvedSrc;
+  const radiusClass = getAvatarRadiusClass(shape);
   const fallbackNode = (
-    <div
-      className={cn(
-        "flex size-full items-center justify-center bg-forge-teal/10 font-black text-[0.72em] text-forge-teal leading-none",
-        fallbackClassName,
-      )}
-    >
-      {initials}
-    </div>
+    <AvatarFallback
+      className={fallbackClassName}
+      content={getAvatarFallbackContent({ fallback, name })}
+    />
   );
 
   return (
@@ -108,8 +101,8 @@ export function Avatar({
       {...props}
     >
       <Image
-        src={imageSrc ?? undefined}
-        alt={alt ?? name ?? "Avatar"}
+        src={getAvatarImageSrc({ imageSize, media, src })}
+        alt={getAvatarAlt({ alt, name })}
         loading={loading}
         wrapperClassName={cn("absolute inset-0", radiusClass)}
         className={cn("size-full object-cover", imageClassName)}
@@ -118,6 +111,53 @@ export function Avatar({
         loadingComponent={<Skeleton className="size-full" />}
       />
       {children}
+    </div>
+  );
+}
+
+function getAvatarRadiusClass(shape: AvatarShape) {
+  return shape === "circle" ? "rounded-full" : "rounded-lg";
+}
+
+function getAvatarFallbackContent({
+  fallback,
+  name,
+}: Pick<AvatarProps, "fallback" | "name">) {
+  return fallback ?? getAvatarInitials(name);
+}
+
+function getAvatarImageSrc({
+  imageSize,
+  media,
+  src,
+}: Pick<AvatarProps, "imageSize" | "media" | "src">) {
+  const resolvedSrc = getImageMediaVariant(media, "avatar128", src);
+  const imageSrc = imageSize
+    ? getSizedImageUrl(resolvedSrc, imageSize)
+    : resolvedSrc;
+
+  return imageSrc ?? undefined;
+}
+
+function getAvatarAlt({ alt, name }: Pick<AvatarProps, "alt" | "name">) {
+  return alt ?? name ?? "Avatar";
+}
+
+function AvatarFallback({
+  className,
+  content,
+}: {
+  className?: string;
+  content: ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex size-full items-center justify-center bg-forge-teal/10 font-black text-[0.72em] text-forge-teal leading-none",
+        className,
+      )}
+    >
+      {content}
     </div>
   );
 }

@@ -16,46 +16,94 @@ export function buildRecentActivityItems(
     getSelectedRecentActivityCategoryId(selectedActivity);
 
   for (const activity of activities) {
-    const title = normalizeRecentActivityTitle(activity.title);
-
-    if (!title) {
-      continue;
-    }
-
-    const key = title.toLowerCase();
-    const categoryId = getRecentActivityCategoryId(activity);
-    const current = byTitle.get(key);
-
-    if (!current) {
-      byTitle.set(key, {
-        id: activity.id,
-        title,
-        categoryId,
-        count: 1,
-        lastUsedAt: activity.createdAt,
-        template: buildRecentActivityTemplate(activity),
-      });
-      continue;
-    }
-
-    current.count += 1;
-
-    if (Date.parse(activity.createdAt) > Date.parse(current.lastUsedAt)) {
-      current.id = activity.id;
-      current.lastUsedAt = activity.createdAt;
-      current.categoryId = categoryId;
-      current.template = buildRecentActivityTemplate(activity);
-    }
+    upsertRecentActivityItem(byTitle, activity);
   }
 
-  return [...byTitle.values()].sort((left, right) => {
-    const leftRecommended = selectedCategoryId === left.categoryId;
-    const rightRecommended = selectedCategoryId === right.categoryId;
+  return [...byTitle.values()].sort(
+    compareRecentActivityItems(selectedCategoryId),
+  );
+}
+
+function upsertRecentActivityItem(
+  byTitle: Map<string, RecentActivityItem>,
+  activity: RecentForgeActivity,
+) {
+  const title = normalizeRecentActivityTitle(activity.title);
+
+  if (!title) {
+    return;
+  }
+
+  const key = title.toLowerCase();
+  const categoryId = getRecentActivityCategoryId(activity);
+  const current = byTitle.get(key);
+
+  if (!current) {
+    byTitle.set(key, createRecentActivityItem(activity, title, categoryId));
+    return;
+  }
+
+  updateRecentActivityItem(current, activity, categoryId);
+}
+
+function createRecentActivityItem(
+  activity: RecentForgeActivity,
+  title: string,
+  categoryId: RecentActivityItem["categoryId"],
+): RecentActivityItem {
+  return {
+    id: activity.id,
+    title,
+    categoryId,
+    count: 1,
+    lastUsedAt: activity.createdAt,
+    template: buildRecentActivityTemplate(activity),
+  };
+}
+
+function updateRecentActivityItem(
+  current: RecentActivityItem,
+  activity: RecentForgeActivity,
+  categoryId: RecentActivityItem["categoryId"],
+) {
+  current.count += 1;
+
+  if (isMoreRecentActivity(activity.createdAt, current.lastUsedAt)) {
+    current.id = activity.id;
+    current.lastUsedAt = activity.createdAt;
+    current.categoryId = categoryId;
+    current.template = buildRecentActivityTemplate(activity);
+  }
+}
+
+function isMoreRecentActivity(candidateDate: string, currentDate: string) {
+  return Date.parse(candidateDate) > Date.parse(currentDate);
+}
+
+function compareRecentActivityItems(
+  selectedCategoryId: RecentActivityItem["categoryId"] | null,
+) {
+  return (left: RecentActivityItem, right: RecentActivityItem) => {
+    const leftRecommended = isRecommendedRecentActivity(
+      left,
+      selectedCategoryId,
+    );
+    const rightRecommended = isRecommendedRecentActivity(
+      right,
+      selectedCategoryId,
+    );
 
     if (leftRecommended !== rightRecommended) {
       return leftRecommended ? -1 : 1;
     }
 
     return Date.parse(right.lastUsedAt) - Date.parse(left.lastUsedAt);
-  });
+  };
+}
+
+function isRecommendedRecentActivity(
+  item: RecentActivityItem,
+  selectedCategoryId: RecentActivityItem["categoryId"] | null,
+) {
+  return selectedCategoryId === item.categoryId;
 }

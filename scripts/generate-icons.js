@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+// @ts-check
+
 /**
  * Generates TeamForge PWA icon assets from the canonical SVG favicon.
  *
@@ -17,6 +19,116 @@ const FAVICON_PATH = path.join(ROOT_DIR, "public", "favicon.svg");
 const ICONS_DIR = path.join(ROOT_DIR, "public", "icons");
 
 /**
+ * @typedef {object} TransparentIconSpec
+ * @property {string} fileName Output file name.
+ * @property {number} size Output width and height.
+ *
+ * @typedef {object} SolidIconSpec
+ * @property {string} background Solid background color.
+ * @property {string} fileName Output file name.
+ * @property {number} iconSize Inner favicon size.
+ * @property {number} size Output width and height.
+ */
+
+/** @type {readonly TransparentIconSpec[]} */
+const TRANSPARENT_ICON_SPECS = [
+  { fileName: "pwa-192x192.png", size: 192 },
+  { fileName: "pwa-512x512.png", size: 512 },
+];
+
+/** @type {readonly SolidIconSpec[]} */
+const SOLID_ICON_SPECS = [
+  {
+    background: "#000000",
+    fileName: "pwa-maskable-512x512.png",
+    iconSize: 384,
+    size: 512,
+  },
+  {
+    background: "#000000",
+    fileName: "apple-touch-icon.png",
+    iconSize: 144,
+    size: 180,
+  },
+];
+
+/**
+ * Resolves a generated icon path.
+ *
+ * @param {string} fileName Icon file name.
+ * @returns {string} Absolute icon path.
+ */
+function getIconPath(fileName) {
+  return path.join(ICONS_DIR, fileName);
+}
+
+/**
+ * Builds a relative icon log path.
+ *
+ * @param {string} fileName Icon file name.
+ * @returns {string} Relative icon path.
+ */
+function getIconLogPath(fileName) {
+  return `icons/${fileName}`;
+}
+
+/**
+ * Generates one transparent PWA icon.
+ *
+ * @param {TransparentIconSpec} spec Icon spec.
+ * @returns {Promise<void>}
+ */
+async function generateTransparentIcon({ fileName, size }) {
+  await sharp(FAVICON_PATH)
+    .resize(size, size)
+    .png()
+    .toFile(getIconPath(fileName));
+  console.log(`Generated: ${getIconLogPath(fileName)} (transparent)`);
+}
+
+/**
+ * Generates one solid-background PWA icon.
+ *
+ * @param {SolidIconSpec} spec Icon spec.
+ * @returns {Promise<void>}
+ */
+async function generateSolidIcon({ background, fileName, iconSize, size }) {
+  const resizedSvg = await sharp(FAVICON_PATH)
+    .resize(iconSize, iconSize)
+    .toBuffer();
+
+  await sharp({
+    create: {
+      width: size,
+      height: size,
+      channels: 4,
+      background,
+    },
+  })
+    .composite([{ input: resizedSvg, gravity: "centre" }])
+    .png()
+    .toFile(getIconPath(fileName));
+  console.log(
+    `Generated: ${getIconLogPath(fileName)} (solid background ${background})`,
+  );
+}
+
+/**
+ * Runs async icon tasks in order.
+ *
+ * @template T
+ * @param {readonly T[]} items Items to process.
+ * @param {(item: T) => Promise<void>} task Async task.
+ * @returns {Promise<void>}
+ */
+function runSequentially(items, task) {
+  return items.reduce(
+    (previous, item) => previous.then(() => task(item)),
+    Promise.resolve(),
+  );
+}
+
+/**
  * Builds all PWA icon renditions under `public/icons`.
  *
  * @returns {Promise<void>}
@@ -28,57 +140,8 @@ async function generateIcons() {
     // Make sure the icons directory exists
     await fs.mkdir(ICONS_DIR, { recursive: true });
 
-    // 1. Generate pwa-192x192.png (Transparent background)
-    await sharp(FAVICON_PATH)
-      .resize(192, 192)
-      .png()
-      .toFile(path.join(ICONS_DIR, "pwa-192x192.png"));
-    console.log("Generated: icons/pwa-192x192.png (transparent)");
-
-    // 2. Generate pwa-512x512.png (Transparent background)
-    await sharp(FAVICON_PATH)
-      .resize(512, 512)
-      .png()
-      .toFile(path.join(ICONS_DIR, "pwa-512x512.png"));
-    console.log("Generated: icons/pwa-512x512.png (transparent)");
-
-    // 3. Generate pwa-maskable-512x512.png (Solid background for Android maskable compliance)
-    // Sizing the SVG to 384x384 (75% of 512x512) keeps it safely inside the 80% circle safe zone
-    const svg512 = await sharp(FAVICON_PATH).resize(384, 384).toBuffer();
-
-    await sharp({
-      create: {
-        width: 512,
-        height: 512,
-        channels: 4,
-        background: "#000000",
-      },
-    })
-      .composite([{ input: svg512, gravity: "centre" }])
-      .png()
-      .toFile(path.join(ICONS_DIR, "pwa-maskable-512x512.png"));
-    console.log(
-      "Generated: icons/pwa-maskable-512x512.png (solid background #000000)",
-    );
-
-    // 4. Generate apple-touch-icon.png (Solid background for iOS compatibility)
-    // Sizing the SVG to 144x144 (80% of 180x180) leaves a clean border margin
-    const svg180 = await sharp(FAVICON_PATH).resize(144, 144).toBuffer();
-
-    await sharp({
-      create: {
-        width: 180,
-        height: 180,
-        channels: 4,
-        background: "#000000",
-      },
-    })
-      .composite([{ input: svg180, gravity: "centre" }])
-      .png()
-      .toFile(path.join(ICONS_DIR, "apple-touch-icon.png"));
-    console.log(
-      "Generated: icons/apple-touch-icon.png (solid background #000000)",
-    );
+    await runSequentially(TRANSPARENT_ICON_SPECS, generateTransparentIcon);
+    await runSequentially(SOLID_ICON_SPECS, generateSolidIcon);
 
     console.log("All PWA icons successfully updated!");
   } catch (error) {

@@ -7,7 +7,6 @@ export {
 } from "./chat/date-time-formatters";
 export { formatFileSize } from "./chat/file-formatters";
 export {
-  shouldShowAvatar,
   shouldShowDateSeparator,
   shouldShowSenderAnchor,
 } from "./chat/message-display-rules";

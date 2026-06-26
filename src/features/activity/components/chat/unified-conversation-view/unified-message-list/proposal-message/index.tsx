@@ -3,56 +3,43 @@
 // oxlint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- Message rows are focusable context-menu triggers.
 import { motion } from "framer-motion";
 import { Reply } from "lucide-react";
-import {
-  type KeyboardEvent,
-  type MouseEvent,
-  memo,
-  type ReactNode,
-  useState,
-} from "react";
+import { memo, type ReactNode } from "react";
 
-import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
-import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
-import { usePlanProposalActions } from "@/features/activity/hooks/use-plan-proposal-actions";
-import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
-import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-import { useCurrentUserQuery } from "@/shared/api/current-user-query";
-import { showAppErrorToast } from "@/shared/lib/error-toast";
-import { cn } from "@/shared/lib/utils";
+import type { ProposalMessageProps } from "../message-renderer-props";
 import { MessageContextMenu } from "../unified-message-item/message-actions-menu";
 import { MessageFooter } from "../unified-message-item/message-footer";
 import { ReplyReference } from "../unified-message-item/reply-reference";
 import { ProposalHeader } from "./proposal-header";
+import {
+  type AvailableProposalMessageControllerState,
+  useProposalMessageController,
+} from "./proposal-message-controller";
 import { ProposalMessageDetails } from "./proposal-message-details";
-import { getProposalMessageInteractionState } from "./proposal-message-interaction-state";
-import { getProposalMessageViewState } from "./proposal-message-view-model";
-
-interface ProposalMessageProps {
-  message: UnifiedMessage;
-  showSender: boolean;
-  isHighlighted?: boolean;
-  isSelectable?: boolean;
-  isSelected?: boolean;
-  isSelectionMode?: boolean;
-  kind: "dm" | "group";
-  onActivateReplyTarget: (messageId: string) => void;
-  onStartSelection?: (message: UnifiedMessage) => void;
-  onToggleSelected?: (message: UnifiedMessage) => void;
-}
-
-const PROPOSAL_QUICK_REACTIONS = ["👍", "👀"] as const;
+import {
+  getProposalArticleClassName,
+  getProposalMessageBubbleClassName,
+  getProposalMessageContainerClassName,
+  getProposalMessageDetailsActionState,
+  getProposalMessageFooterState,
+  getProposalMessageSenderViewState,
+  getProposalMessageStackClassName,
+  getProposalSwipeShellStateForOwnership,
+} from "./proposal-message-render-state";
 
 type AvailableProposalMessageViewState = NonNullable<
-  ReturnType<typeof getProposalMessageViewState>
+  AvailableProposalMessageControllerState["viewState"]
 >;
-type ProposalMessageActions = ReturnType<typeof useActivityMessageActions>;
-type ProposalPlanActions = ReturnType<typeof usePlanProposalActions>;
-type ProposalMessageInteractionState = ReturnType<
-  typeof getProposalMessageInteractionState
->;
-type ProposalMessageLayoutState = ReturnType<typeof useMessageLayout>;
-type ProposalMessageSwipeState = ReturnType<typeof useSwipeToReply>;
+type ProposalMessageActions =
+  AvailableProposalMessageControllerState["messageActions"];
+type ProposalPlanActions =
+  AvailableProposalMessageControllerState["proposalActions"];
+type ProposalMessageInteractionState =
+  AvailableProposalMessageControllerState["bubbleState"];
+type ProposalMessageLayoutState =
+  AvailableProposalMessageControllerState["layoutState"];
+type ProposalMessageSwipeState =
+  AvailableProposalMessageControllerState["swipeState"];
 
 export const ProposalMessage = memo(function ProposalMessage({
   message,
@@ -65,143 +52,39 @@ export const ProposalMessage = memo(function ProposalMessage({
   onStartSelection,
   onToggleSelected,
 }: ProposalMessageProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-  const { data: currentUser } = useCurrentUserQuery();
-  const viewState = getProposalMessageViewState(message, currentUser?.id);
-  const { reactionGroups, isReadByOthers } = useMessageLayout({
-    message,
-    isOwn: message.isOwn,
-  });
-  const { x, opacity, scale, handleDragEnd } = useSwipeToReply(
-    message,
-    message.isOwn,
-  );
-  const messageActions = useActivityMessageActions();
-  const savedMessageIds = useSavedMessageIds();
-  const proposalActions = usePlanProposalActions({
-    mutationKeyScope: `message-${viewState?.proposal.id ?? "missing"}`,
-  });
-
-  if (!viewState) {
-    return null;
-  }
-
-  const proposal = viewState.proposal;
-  const {
-    canShowQuickReactions,
-    canToggleSelection,
-    isInteractionFocused,
-    isSaved,
-    messageAriaLabel,
-    selectedReactionEmojis,
-    shouldShowOuterFocus,
-  } = getProposalMessageInteractionState({
-    editingMessageId: messageActions.editingMessage?.id ?? null,
-    isContextMenuOpen,
+  const proposalMessage = useProposalMessageController({
     isHighlighted,
     isSelectable,
     isSelected,
     isSelectionMode,
     message,
-    proposalProposerName: proposal.proposer.name,
-    reactionGroups,
-    replyingToId: messageActions.replyingTo?.id ?? null,
-    savedMessageIds,
+    onToggleSelected,
   });
-  const toggleReaction = (emoji: string) => {
-    void messageActions.toggleReaction(message, emoji).catch((error) =>
-      showAppErrorToast(error, {
-        fallbackMessage: "We couldn't update that reaction.",
-      }),
-    );
-  };
-  const handleMessageClick = (event: MouseEvent<HTMLElement>) => {
-    if (!canToggleSelection) {
-      return;
-    }
 
-    event.preventDefault();
-    event.stopPropagation();
-    onToggleSelected?.(message);
-  };
-  const handleMessageKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (!canToggleSelection || (event.key !== "Enter" && event.key !== " ")) {
-      return;
-    }
-
-    event.preventDefault();
-    onToggleSelected?.(message);
-  };
+  if (!proposalMessage.isAvailable) {
+    return null;
+  }
 
   return (
     <ProposalMessageContextMenu
       message={message}
-      messageActions={messageActions}
-      isSaved={isSaved}
+      messageActions={proposalMessage.messageActions}
+      isSaved={proposalMessage.contextMenuState.isSaved}
       isSelectable={isSelectable}
-      onOpenChange={setIsContextMenuOpen}
+      onOpenChange={proposalMessage.setIsContextMenuOpen}
       onStartSelection={onStartSelection}
-      selectedReactionEmojis={selectedReactionEmojis}
+      selectedReactionEmojis={
+        proposalMessage.contextMenuState.selectedReactionEmojis
+      }
     >
-      <article
-        tabIndex={0}
-        aria-roledescription="message"
-        aria-label={messageAriaLabel}
-        className={cn(
-          "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
-          canToggleSelection && "cursor-pointer",
-          shouldShowOuterFocus ? "overflow-visible" : "overflow-hidden",
-        )}
-        onClickCapture={handleMessageClick}
-        onKeyDown={handleMessageKeyDown}
-      >
-        <ProposalMessageSwipeShell
-          handleDragEnd={handleDragEnd}
-          message={message}
-          opacity={opacity}
-          scale={scale}
-          x={x}
-        >
-          <div
-            className={cn(
-              "group/proposal flex w-full min-w-0 max-w-xs flex-col sm:max-w-md",
-              message.isOwn ? "ml-auto items-end" : "mr-auto items-start",
-            )}
-          >
-            <ProposalMessageSender
-              message={message}
-              proposalProposerName={proposal.proposer.name}
-              showSender={showSender}
-            />
-
-            <div
-              className={cn(
-                "flex w-full min-w-0 max-w-full flex-col gap-1",
-                message.isOwn ? "items-end" : "items-start",
-              )}
-            >
-              <ProposalMessageBubble
-                interactionState={{
-                  canShowQuickReactions,
-                  isInteractionFocused,
-                  isSaved,
-                }}
-                isExpanded={isExpanded}
-                isHighlighted={isHighlighted}
-                isSelected={isSelected}
-                layoutState={{ isReadByOthers, reactionGroups }}
-                message={message}
-                onActivateReplyTarget={onActivateReplyTarget}
-                onToggleExpanded={() => setIsExpanded((value) => !value)}
-                onToggleReaction={toggleReaction}
-                proposalActions={proposalActions}
-                viewState={viewState}
-              />
-            </div>
-          </div>
-        </ProposalMessageSwipeShell>
-      </article>
+      <ProposalMessageArticle
+        isHighlighted={isHighlighted}
+        isSelected={isSelected}
+        message={message}
+        onActivateReplyTarget={onActivateReplyTarget}
+        proposalMessage={proposalMessage}
+        showSender={showSender}
+      />
     </ProposalMessageContextMenu>
   );
 });
@@ -251,6 +134,101 @@ function ProposalMessageContextMenu({
   );
 }
 
+interface ProposalMessageArticleProps {
+  isHighlighted: boolean;
+  isSelected: boolean;
+  message: UnifiedMessage;
+  onActivateReplyTarget: (messageId: string) => void;
+  proposalMessage: AvailableProposalMessageControllerState;
+  showSender: boolean;
+}
+
+function ProposalMessageArticle({
+  isHighlighted,
+  isSelected,
+  message,
+  onActivateReplyTarget,
+  proposalMessage,
+  showSender,
+}: ProposalMessageArticleProps) {
+  const { articleState, swipeState, viewState } = proposalMessage;
+
+  return (
+    <article
+      tabIndex={0}
+      aria-roledescription="message"
+      aria-label={articleState.messageAriaLabel}
+      className={getProposalArticleClassName(articleState)}
+      onClickCapture={articleState.handleMessageClick}
+      onKeyDown={articleState.handleMessageKeyDown}
+    >
+      <ProposalMessageSwipeShell
+        handleDragEnd={swipeState.handleDragEnd}
+        message={message}
+        opacity={swipeState.opacity}
+        scale={swipeState.scale}
+        x={swipeState.x}
+      >
+        <ProposalMessageContent
+          isHighlighted={isHighlighted}
+          isSelected={isSelected}
+          message={message}
+          onActivateReplyTarget={onActivateReplyTarget}
+          proposalMessage={proposalMessage}
+          showSender={showSender}
+          viewState={viewState}
+        />
+      </ProposalMessageSwipeShell>
+    </article>
+  );
+}
+
+interface ProposalMessageContentProps {
+  isHighlighted: boolean;
+  isSelected: boolean;
+  message: UnifiedMessage;
+  onActivateReplyTarget: (messageId: string) => void;
+  proposalMessage: AvailableProposalMessageControllerState;
+  showSender: boolean;
+  viewState: AvailableProposalMessageViewState;
+}
+
+function ProposalMessageContent({
+  isHighlighted,
+  isSelected,
+  message,
+  onActivateReplyTarget,
+  proposalMessage,
+  showSender,
+  viewState,
+}: ProposalMessageContentProps) {
+  return (
+    <div className={getProposalMessageContainerClassName(message.isOwn)}>
+      <ProposalMessageSender
+        message={message}
+        proposalProposerName={viewState.proposal.proposer.name}
+        showSender={showSender}
+      />
+
+      <div className={getProposalMessageStackClassName(message.isOwn)}>
+        <ProposalMessageBubble
+          interactionState={proposalMessage.bubbleState}
+          isExpanded={proposalMessage.isExpanded}
+          isHighlighted={isHighlighted}
+          isSelected={isSelected}
+          layoutState={proposalMessage.layoutState}
+          message={message}
+          onActivateReplyTarget={onActivateReplyTarget}
+          onToggleExpanded={proposalMessage.toggleExpanded}
+          onToggleReaction={proposalMessage.toggleReaction}
+          proposalActions={proposalMessage.proposalActions}
+          viewState={viewState}
+        />
+      </div>
+    </div>
+  );
+}
+
 interface ProposalMessageSwipeShellProps {
   children: ReactNode;
   handleDragEnd: ProposalMessageSwipeState["handleDragEnd"];
@@ -268,31 +246,24 @@ function ProposalMessageSwipeShell({
   scale,
   x,
 }: ProposalMessageSwipeShellProps) {
+  const swipeShellState = getProposalSwipeShellStateForOwnership(message.isOwn);
+
   return (
     <>
       <motion.div
-        style={{ opacity, scale, x: message.isOwn ? -20 : 20 }}
-        className={cn(
-          "absolute top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-primary/20 text-primary",
-          message.isOwn ? "right-10" : "left-10",
-        )}
+        style={{ opacity, scale, x: swipeShellState.replyIndicatorX }}
+        className={swipeShellState.replyIndicatorClassName}
       >
         <Reply className="size-4" strokeWidth={2.5} />
       </motion.div>
 
       <motion.div
         drag="x"
-        dragConstraints={{
-          left: message.isOwn ? -100 : 0,
-          right: message.isOwn ? 0 : 100,
-        }}
+        dragConstraints={swipeShellState.dragConstraints}
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
         style={{ x }}
-        className={cn(
-          "relative z-10 flex w-full min-w-0 items-end",
-          message.isOwn ? "justify-end" : "justify-start",
-        )}
+        className={swipeShellState.dragSurfaceClassName}
       >
         {children}
       </motion.div>
@@ -311,13 +282,19 @@ function ProposalMessageSender({
   proposalProposerName,
   showSender,
 }: ProposalMessageSenderProps) {
-  if (message.isOwn || !showSender) {
+  const sender = getProposalMessageSenderViewState({
+    message,
+    proposalProposerName,
+    showSender,
+  });
+
+  if (!sender.isVisible) {
     return null;
   }
 
   return (
     <p className="mb-0.5 ml-1.5 font-bold text-micro text-primary opacity-90">
-      {message.sender?.name || proposalProposerName}
+      {sender.senderName}
     </p>
   );
 }
@@ -359,16 +336,12 @@ function ProposalMessageBubble({
 
   return (
     <div
-      className={cn(
-        "relative flex w-full min-w-0 max-w-full flex-col rounded-xl border px-1 py-1 shadow-sm backdrop-blur-md transition duration-300",
-        message.isOwn
-          ? "rounded-br-none border-primary/15 bg-primary/8 text-ink"
-          : "rounded-bl-none border-border/60 bg-card/75 text-ink",
-        isHighlighted
-          ? "message-search-focus"
-          : interactionState.isInteractionFocused && "message-action-focus",
-        isSelected && "border-primary/65 bg-primary/12 ring-1 ring-primary/35",
-      )}
+      className={getProposalMessageBubbleClassName({
+        interactionState,
+        isHighlighted,
+        isOwn: message.isOwn,
+        isSelected,
+      })}
     >
       <ReplyReference
         replyTo={message.replyTo}
@@ -383,45 +356,69 @@ function ProposalMessageBubble({
         status={proposal.status}
       />
 
-      {isExpanded && (
-        <ProposalMessageDetails
-          isVoting={proposalActions.isVoting}
-          isWithdrawing={proposalActions.isWithdrawing}
-          onApprove={() => {
-            void proposalActions.approveProposal(proposal.id);
-          }}
-          onReject={() => {
-            void proposalActions.rejectProposal(proposal.id);
-          }}
-          onWithdraw={async () => {
-            await proposalActions.withdrawProposal(proposal.id);
-          }}
-          isOnline={proposalActions.isOnline}
-          viewState={viewState}
-        />
-      )}
+      <ProposalMessageDetailsSection
+        isExpanded={isExpanded}
+        proposalActions={proposalActions}
+        viewState={viewState}
+      />
 
-      <MessageFooter
-        attachments={message.attachments}
-        content={message.content}
-        reactionGroups={layoutState.reactionGroups}
-        isOwn={message.isOwn}
-        createdAt={message.createdAt}
-        status={message.status}
-        isReadByOthers={layoutState.isReadByOthers}
-        readBy={message.readBy}
-        readByCount={message.readByCount}
-        isEdited={message.isEdited}
-        isPinned={message.isPinned}
-        isSaved={interactionState.isSaved}
-        hasReply={Boolean(message.replyTo)}
+      <ProposalMessageFooter
+        interactionState={interactionState}
+        layoutState={layoutState}
+        message={message}
         onToggleReaction={onToggleReaction}
-        reactionPlaceholderEmojis={
-          interactionState.canShowQuickReactions
-            ? PROPOSAL_QUICK_REACTIONS
-            : undefined
-        }
       />
     </div>
+  );
+}
+
+interface ProposalMessageDetailsSectionProps {
+  isExpanded: boolean;
+  proposalActions: ProposalPlanActions;
+  viewState: AvailableProposalMessageViewState;
+}
+
+function ProposalMessageDetailsSection({
+  isExpanded,
+  proposalActions,
+  viewState,
+}: ProposalMessageDetailsSectionProps) {
+  if (!isExpanded) {
+    return null;
+  }
+
+  return (
+    <ProposalMessageDetails
+      {...getProposalMessageDetailsActionState({
+        proposalActions,
+        proposalId: viewState.proposal.id,
+      })}
+      viewState={viewState}
+    />
+  );
+}
+
+interface ProposalMessageFooterProps {
+  interactionState: ProposalMessageInteractionState;
+  layoutState: ProposalMessageLayoutState;
+  message: UnifiedMessage;
+  onToggleReaction: (emoji: string) => void;
+}
+
+function ProposalMessageFooter({
+  interactionState,
+  layoutState,
+  message,
+  onToggleReaction,
+}: ProposalMessageFooterProps) {
+  return (
+    <MessageFooter
+      {...getProposalMessageFooterState({
+        interactionState,
+        layoutState,
+        message,
+        onToggleReaction,
+      })}
+    />
   );
 }

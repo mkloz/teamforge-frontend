@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, LogOut } from "lucide-react";
-import { lazy, Suspense, useState } from "react";
+import { lazy, type MouseEvent, Suspense, useState } from "react";
 
 import {
   buildSettingsNavigation,
@@ -25,6 +25,8 @@ interface SettingsSidebarProps {
   onSectionSelect: (section: SettingsSection) => void;
   onSignOut: () => Promise<void> | void;
 }
+
+type SettingsSectionItem = (typeof SETTINGS_SECTIONS)[number];
 
 export function SettingsSidebar({
   activeSection,
@@ -52,40 +54,91 @@ export function SettingsSidebar({
           onSectionSelect={onSectionSelect}
         />
 
-        <div className="mt-5 border-border border-y py-1 lg:border-x-0 lg:border-t lg:border-b-0 lg:py-4">
-          <Button
-            type="button"
-            variant="destructive"
-            className="h-auto w-full justify-start px-1 py-3 lg:px-4"
-            disabled={isSigningOut}
-            onClick={() => setSignOutDialogOpen(true)}
-          >
-            <LogOut size={16} />
-            {isSigningOut ? "Signing out..." : "Sign out"}
-          </Button>
-
-          {signOutDialogOpen ? (
-            <Suspense fallback={null}>
-              <ActionDialog
-                cancelLabel="Stay signed in"
-                confirmLabel={isSigningOut ? "Signing out..." : "Sign out"}
-                description="This ends the current session and returns you to the login screen."
-                details={[
-                  "You can come back with the same email and password.",
-                ]}
-                loading={isSigningOut}
-                onConfirm={onSignOut}
-                onOpenChange={setSignOutDialogOpen}
-                open={signOutDialogOpen}
-                title="Sign out of TeamForge?"
-                tone="warning"
-              />
-            </Suspense>
-          ) : null}
-        </div>
+        <SettingsSignOutSection
+          isSigningOut={isSigningOut}
+          open={signOutDialogOpen}
+          onOpenChange={setSignOutDialogOpen}
+          onSignOut={onSignOut}
+        />
       </div>
     </aside>
   );
+}
+
+function SettingsSignOutSection({
+  isSigningOut,
+  onOpenChange,
+  onSignOut,
+  open,
+}: {
+  isSigningOut: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSignOut: () => Promise<void> | void;
+  open: boolean;
+}) {
+  const signOutLabel = getSignOutLabel(isSigningOut);
+
+  return (
+    <div className="mt-5 border-border border-y py-1 lg:border-x-0 lg:border-t lg:border-b-0 lg:py-4">
+      <Button
+        type="button"
+        variant="destructive"
+        className="h-auto w-full justify-start px-1 py-3 lg:px-4"
+        disabled={isSigningOut}
+        onClick={() => onOpenChange(true)}
+      >
+        <LogOut size={16} />
+        {signOutLabel}
+      </Button>
+
+      <SettingsSignOutDialog
+        confirmLabel={signOutLabel}
+        isSigningOut={isSigningOut}
+        open={open}
+        onOpenChange={onOpenChange}
+        onSignOut={onSignOut}
+      />
+    </div>
+  );
+}
+
+function SettingsSignOutDialog({
+  confirmLabel,
+  isSigningOut,
+  onOpenChange,
+  onSignOut,
+  open,
+}: {
+  confirmLabel: string;
+  isSigningOut: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSignOut: () => Promise<void> | void;
+  open: boolean;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <Suspense fallback={null}>
+      <ActionDialog
+        cancelLabel="Stay signed in"
+        confirmLabel={confirmLabel}
+        description="This ends the current session and returns you to the login screen."
+        details={["You can come back with the same email and password."]}
+        loading={isSigningOut}
+        onConfirm={onSignOut}
+        onOpenChange={onOpenChange}
+        open={open}
+        title="Sign out of TeamForge?"
+        tone="warning"
+      />
+    </Suspense>
+  );
+}
+
+function getSignOutLabel(isSigningOut: boolean) {
+  return isSigningOut ? "Signing out..." : "Sign out";
 }
 
 interface SettingsSectionNavProps {
@@ -102,75 +155,108 @@ function SettingsSectionNav({
       aria-label="Settings sections"
       className="flex flex-col overflow-hidden"
     >
-      {SETTINGS_SECTIONS.map((section) => {
-        const isActive = activeSection === section.id;
-        const Icon = section.icon;
-
-        return (
-          <Link
-            key={section.id}
-            {...buildSettingsNavigation(section.id)}
-            onClick={(event) => {
-              if (
-                event.defaultPrevented ||
-                event.button !== 0 ||
-                event.metaKey ||
-                event.altKey ||
-                event.ctrlKey ||
-                event.shiftKey
-              ) {
-                return;
-              }
-
-              onSectionSelect(section.id);
-            }}
-            aria-current={isActive ? "page" : undefined}
-            className={cn(
-              "group relative flex w-full items-center justify-between gap-3 border-border border-b px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 lg:active:bg-transparent",
-              "after:absolute after:top-2.5 after:bottom-2.5 after:left-0 after:w-0.5 after:origin-center after:scale-y-0 after:bg-primary after:transition-transform",
-              isActive
-                ? "text-ink lg:after:scale-y-100"
-                : "text-slate-muted hover:text-ink",
-            )}
-          >
-            <IconTile
-              icon={Icon}
-              tone={isActive ? "teal" : "none"}
-              size="md"
-              shape="circle"
-              className={cn(
-                "transition-colors",
-                isActive
-                  ? "bg-primary/8"
-                  : "text-slate-muted group-hover:text-ink",
-              )}
-            />
-            <span className="min-w-0 flex-1">
-              <span
-                className={cn(
-                  "block font-semibold text-base leading-snug lg:text-sm",
-                  isActive ? "text-ink" : "text-inherit",
-                )}
-              >
-                {section.label}
-              </span>
-              <span
-                className={cn(
-                  "mt-1 block text-xs leading-snug",
-                  isActive ? "text-slate-muted" : "text-slate-muted/85",
-                )}
-              >
-                {section.description}
-              </span>
-            </span>
-            <ChevronRight
-              size={16}
-              className="shrink-0 text-slate-muted/60 transition-colors group-hover:text-slate-muted lg:hidden"
-              aria-hidden="true"
-            />
-          </Link>
-        );
-      })}
+      {SETTINGS_SECTIONS.map((section) => (
+        <SettingsSectionNavLink
+          key={section.id}
+          activeSection={activeSection}
+          section={section}
+          onSectionSelect={onSectionSelect}
+        />
+      ))}
     </nav>
+  );
+}
+
+function SettingsSectionNavLink({
+  activeSection,
+  onSectionSelect,
+  section,
+}: {
+  activeSection: SettingsSection;
+  onSectionSelect: (section: SettingsSection) => void;
+  section: SettingsSectionItem;
+}) {
+  const isActive = activeSection === section.id;
+  const Icon = section.icon;
+
+  return (
+    <Link
+      {...buildSettingsNavigation(section.id)}
+      onClick={(event) => {
+        if (shouldIgnoreSettingsNavigationClick(event)) {
+          return;
+        }
+
+        onSectionSelect(section.id);
+      }}
+      aria-current={isActive ? "page" : undefined}
+      className={getSettingsSectionClassName(isActive)}
+    >
+      <IconTile
+        icon={Icon}
+        tone={isActive ? "teal" : "none"}
+        size="md"
+        shape="circle"
+        className={getSettingsSectionIconClassName(isActive)}
+      />
+      <span className="min-w-0 flex-1">
+        <span className={getSettingsSectionLabelClassName(isActive)}>
+          {section.label}
+        </span>
+        <span className={getSettingsSectionDescriptionClassName(isActive)}>
+          {section.description}
+        </span>
+      </span>
+      <ChevronRight
+        size={16}
+        className="shrink-0 text-slate-muted/60 transition-colors group-hover:text-slate-muted lg:hidden"
+        aria-hidden="true"
+      />
+    </Link>
+  );
+}
+
+function shouldIgnoreSettingsNavigationClick(
+  event: MouseEvent<HTMLAnchorElement>,
+) {
+  return [
+    event.defaultPrevented,
+    event.button !== 0,
+    event.metaKey,
+    event.altKey,
+    event.ctrlKey,
+    event.shiftKey,
+  ].some(Boolean);
+}
+
+function getSettingsSectionClassName(isActive: boolean) {
+  return cn(
+    // oxlint-disable-next-line tailwindcss/consistent-variant-order -- Preserve this pre-existing class string in a behavior-only refactor.
+    "group relative flex w-full items-center justify-between gap-3 border-border border-b px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 lg:active:bg-transparent",
+    "after:absolute after:top-2.5 after:bottom-2.5 after:left-0 after:w-0.5 after:origin-center after:scale-y-0 after:bg-primary after:transition-transform",
+    isActive
+      ? "text-ink lg:after:scale-y-100"
+      : "text-slate-muted hover:text-ink",
+  );
+}
+
+function getSettingsSectionIconClassName(isActive: boolean) {
+  return cn(
+    "transition-colors",
+    isActive ? "bg-primary/8" : "text-slate-muted group-hover:text-ink",
+  );
+}
+
+function getSettingsSectionLabelClassName(isActive: boolean) {
+  return cn(
+    "block font-semibold text-base leading-snug lg:text-sm",
+    isActive ? "text-ink" : "text-inherit",
+  );
+}
+
+function getSettingsSectionDescriptionClassName(isActive: boolean) {
+  return cn(
+    "mt-1 block text-xs leading-snug",
+    isActive ? "text-slate-muted" : "text-slate-muted/85",
   );
 }

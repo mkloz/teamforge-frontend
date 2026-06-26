@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 
 import { useChatTypingSignal } from "@/features/activity/hooks/use-chat-typing-signal";
@@ -10,6 +11,10 @@ import { useAutoResize } from "@/shared/hooks/use-auto-resize";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 
+import {
+  getMessageComposerInteractionState,
+  shouldFocusComposerAction,
+} from "./message-composer-interaction-state";
 import { MAX_TEXTAREA_HEIGHT } from "./message-composer-utils";
 import {
   type MessageComposerAppendAttachmentOptions,
@@ -24,6 +29,7 @@ const OFFLINE_MESSAGE_DESCRIPTION =
   "Reconnect before sending messages or adding attachments.";
 const OFFLINE_UPLOAD_DESCRIPTION =
   "Reconnect before adding files to this message.";
+const EMOJI_CARET_RESTORE_DELAY_MS = 80;
 
 interface UseMessageComposerOptions {
   chatId: string | null;
@@ -32,6 +38,14 @@ interface UseMessageComposerOptions {
   errorMessage: string | null;
   onClearError?: () => void;
   onSend: (input: ActivitySendMessageInput) => Promise<void> | void;
+}
+
+type OfflineActionGuard = ReturnType<
+  typeof useOfflineActionGuard
+>["guardOfflineAction"];
+
+interface MessageReference {
+  id: string;
 }
 
 export function useMessageComposer({
@@ -70,6 +84,8 @@ export function useMessageComposer({
   });
 
   const editingActive = draft.editingMessage !== null;
+  const editingMessageId = getMessageReferenceId(draft.editingMessage);
+  const replyingToId = getMessageReferenceId(draft.replyingTo);
   const submit = useMessageComposerSubmit({
     disabled,
     isOnline,
@@ -85,25 +101,42 @@ export function useMessageComposer({
     pendingAttachments: attachments.pendingAttachments,
     value: draft.value,
   });
+  const {
+    areNetworkActionsDisabled,
+    composerActionFocusKey,
+    hasDraft,
+    isDisabled,
+    isDropzoneDisabled,
+    isGifSendDisabled,
+    isTypingSignalPaused,
+    shouldMoveActionCaretToEnd,
+  } = getMessageComposerInteractionState({
+    disabled,
+    editingMessageId,
+    hasEditingMessage: Boolean(draft.editingMessage),
+    hasReplyingToMessage: Boolean(draft.replyingTo),
+    isEditing: editingActive,
+    isOnline,
+    isRecording,
+    isSendingGif,
+    isSendingVoiceNote,
+    pendingAttachmentCount: attachments.pendingAttachments.length,
+    replyingToId,
+    submitDisabled: submit.isDisabled,
+    submitIsSubmitting: submit.isSubmitting,
+    value: draft.value,
+  });
 
   function appendAttachments(
     files: File[],
     options?: MessageComposerAppendAttachmentOptions,
   ) {
-    if (files.length === 0) {
-      return;
-    }
-
-    if (
-      guardOfflineAction({
-        id: "chat-attachments-offline",
-        description: OFFLINE_UPLOAD_DESCRIPTION,
-      })
-    ) {
-      return;
-    }
-
-    attachments.appendAttachments(files, options);
+    appendComposerAttachments({
+      appendAttachments: attachments.appendAttachments,
+      files,
+      guardOfflineAction,
+      options,
+    });
   }
 
   function appendImageAttachments(files: File[]) {
@@ -113,12 +146,7 @@ export function useMessageComposer({
   const dropzone = useMessageComposerDropzone({
     appendAttachments,
     dropzoneRoot,
-    isDisabled:
-      !isOnline ||
-      disabled ||
-      submit.isSubmitting ||
-      isSendingVoiceNote ||
-      isSendingGif,
+    isDisabled: isDropzoneDisabled,
     isEditing: editingActive,
   });
 
@@ -128,69 +156,40 @@ export function useMessageComposer({
   });
 
   function insertEmoji(emoji: string) {
-    const textarea = textareaRef.current;
-    const selectionStart = textarea?.selectionStart ?? draft.value.length;
-    const selectionEnd = textarea?.selectionEnd ?? draft.value.length;
-    const nextValue = `${draft.value.slice(0, selectionStart)}${emoji}${draft.value.slice(selectionEnd)}`;
-    const nextCaretPosition = selectionStart + emoji.length;
+    const { nextCaretPosition, nextValue } = getEmojiInsertion({
+      emoji,
+      textarea: textareaRef.current,
+      value: draft.value,
+    });
 
     draft.handleValueChange(nextValue);
-    setTimeout(() => {
-      textareaRef.current?.focus();
-      textareaRef.current?.setSelectionRange(
-        nextCaretPosition,
-        nextCaretPosition,
-      );
-    }, 80);
+    restoreTextareaCaret(textareaRef, nextCaretPosition);
   }
 
   async function sendGif(gif: ActivityOutgoingGifAttachment) {
-    if (
-      guardOfflineAction({
-        id: "chat-gif-offline",
-        description: OFFLINE_MESSAGE_DESCRIPTION,
-      })
-    ) {
-      return;
-    }
-
-    if (disabled || submit.isSubmitting || isSendingVoiceNote || isSendingGif) {
-      return;
-    }
-
-    setIsSendingGif(true);
-
-    try {
-      await onSend({
-        content: "",
-        gif,
-      });
-      draft.clearReply();
-    } catch (error) {
-      warnInDevelopment("GIF message send failed.", error);
-    } finally {
-      setIsSendingGif(false);
-    }
+    await sendComposerGif({
+      gif,
+      guardOfflineAction,
+      isGifSendDisabled,
+      onSend,
+      onSent: draft.clearReply,
+      setIsSendingGif,
+    });
   }
-
-  const hasDraft =
-    draft.value.trim().length > 0 || attachments.pendingAttachments.length > 0;
 
   useChatTypingSignal({
     chatId,
     isFocused,
-    isPaused:
-      !isOnline ||
-      isRecording ||
-      submit.isSubmitting ||
-      isSendingVoiceNote ||
-      isSendingGif ||
-      editingActive,
+    isPaused: isTypingSignalPaused,
     text: draft.value,
   });
 
   const handleStopRecording = useVoiceNoteSender({
-    isDisabled: disabled || submit.isSubmitting || isSendingVoiceNote,
+    isDisabled: isVoiceNoteSendDisabled({
+      disabled,
+      isSendingVoiceNote,
+      submitIsSubmitting: submit.isSubmitting,
+    }),
     isOnline,
     onSend,
     onOfflineSubmit: () => {
@@ -204,56 +203,14 @@ export function useMessageComposer({
     stopRecording,
   });
 
-  const isDisabled = submit.isDisabled || isSendingVoiceNote || isSendingGif;
-  const areNetworkActionsDisabled = isDisabled || !isOnline;
-  const composerActionFocusKey = draft.editingMessage
-    ? `edit:${draft.editingMessage.id}`
-    : draft.replyingTo
-      ? `reply:${draft.replyingTo.id}`
-      : null;
-  const shouldMoveActionCaretToEnd = Boolean(draft.editingMessage);
-
-  useEffect(() => {
-    if (!composerActionFocusKey) {
-      previousActionFocusKeyRef.current = null;
-      return undefined;
-    }
-
-    if (
-      previousActionFocusKeyRef.current === composerActionFocusKey ||
-      isDisabled ||
-      isRecording
-    ) {
-      return undefined;
-    }
-
-    previousActionFocusKeyRef.current = composerActionFocusKey;
-
-    const timeoutId = window.setTimeout(() => {
-      const textarea = textareaRef.current;
-
-      if (!textarea || textarea.disabled) {
-        return;
-      }
-
-      textarea.focus({ preventScroll: true });
-
-      if (shouldMoveActionCaretToEnd) {
-        const caretPosition = textarea.value.length;
-        textarea.setSelectionRange(caretPosition, caretPosition);
-      }
-    }, 0);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [
+  useComposerActionFocus({
     composerActionFocusKey,
     isDisabled,
     isRecording,
+    previousActionFocusKeyRef,
     shouldMoveActionCaretToEnd,
     textareaRef,
-  ]);
+  });
 
   return {
     appendAttachments,
@@ -292,4 +249,247 @@ export function useMessageComposer({
     textareaRef,
     value: draft.value,
   };
+}
+
+function getMessageReferenceId(message: MessageReference | null) {
+  if (message === null) {
+    return undefined;
+  }
+
+  return message.id;
+}
+
+function isVoiceNoteSendDisabled({
+  disabled,
+  isSendingVoiceNote,
+  submitIsSubmitting,
+}: {
+  disabled: boolean;
+  isSendingVoiceNote: boolean;
+  submitIsSubmitting: boolean;
+}) {
+  return hasAnyComposerBlocker(
+    disabled,
+    submitIsSubmitting,
+    isSendingVoiceNote,
+  );
+}
+
+function hasAnyComposerBlocker(...blockers: boolean[]) {
+  return blockers.includes(true);
+}
+
+function appendComposerAttachments({
+  appendAttachments,
+  files,
+  guardOfflineAction,
+  options,
+}: {
+  appendAttachments: (
+    files: File[],
+    options?: MessageComposerAppendAttachmentOptions,
+  ) => void;
+  files: File[];
+  guardOfflineAction: OfflineActionGuard;
+  options?: MessageComposerAppendAttachmentOptions;
+}) {
+  if (files.length === 0) {
+    return;
+  }
+
+  if (
+    guardOfflineAction({
+      id: "chat-attachments-offline",
+      description: OFFLINE_UPLOAD_DESCRIPTION,
+    })
+  ) {
+    return;
+  }
+
+  appendAttachments(files, options);
+}
+
+async function sendComposerGif({
+  gif,
+  guardOfflineAction,
+  isGifSendDisabled,
+  onSend,
+  onSent,
+  setIsSendingGif,
+}: {
+  gif: ActivityOutgoingGifAttachment;
+  guardOfflineAction: OfflineActionGuard;
+  isGifSendDisabled: boolean;
+  onSend: (input: ActivitySendMessageInput) => Promise<void> | void;
+  onSent: () => void;
+  setIsSendingGif: (isSendingGif: boolean) => void;
+}) {
+  if (
+    guardOfflineAction({
+      id: "chat-gif-offline",
+      description: OFFLINE_MESSAGE_DESCRIPTION,
+    })
+  ) {
+    return;
+  }
+
+  if (isGifSendDisabled) {
+    return;
+  }
+
+  setIsSendingGif(true);
+
+  try {
+    await onSend({
+      content: "",
+      gif,
+    });
+    onSent();
+  } catch (error) {
+    warnInDevelopment("GIF message send failed.", error);
+  } finally {
+    setIsSendingGif(false);
+  }
+}
+
+function getEmojiInsertion({
+  emoji,
+  textarea,
+  value,
+}: {
+  emoji: string;
+  textarea: HTMLTextAreaElement | null;
+  value: string;
+}) {
+  const { selectionEnd, selectionStart } = getTextareaSelection({
+    fallbackPosition: value.length,
+    textarea,
+  });
+
+  return {
+    nextCaretPosition: selectionStart + emoji.length,
+    nextValue: insertTextAtSelection({
+      insertion: emoji,
+      selectionEnd,
+      selectionStart,
+      value,
+    }),
+  };
+}
+
+function getTextareaSelection({
+  fallbackPosition,
+  textarea,
+}: {
+  fallbackPosition: number;
+  textarea: HTMLTextAreaElement | null;
+}) {
+  if (!textarea) {
+    return {
+      selectionEnd: fallbackPosition,
+      selectionStart: fallbackPosition,
+    };
+  }
+
+  return {
+    selectionEnd: textarea.selectionEnd,
+    selectionStart: textarea.selectionStart,
+  };
+}
+
+function insertTextAtSelection({
+  insertion,
+  selectionEnd,
+  selectionStart,
+  value,
+}: {
+  insertion: string;
+  selectionEnd: number;
+  selectionStart: number;
+  value: string;
+}) {
+  return `${value.slice(0, selectionStart)}${insertion}${value.slice(selectionEnd)}`;
+}
+
+function restoreTextareaCaret(
+  textareaRef: RefObject<HTMLTextAreaElement | null>,
+  caretPosition: number,
+) {
+  setTimeout(() => {
+    textareaRef.current?.focus();
+    textareaRef.current?.setSelectionRange(caretPosition, caretPosition);
+  }, EMOJI_CARET_RESTORE_DELAY_MS);
+}
+
+function useComposerActionFocus({
+  composerActionFocusKey,
+  isDisabled,
+  isRecording,
+  previousActionFocusKeyRef,
+  shouldMoveActionCaretToEnd,
+  textareaRef,
+}: {
+  composerActionFocusKey: string | null;
+  isDisabled: boolean;
+  isRecording: boolean;
+  previousActionFocusKeyRef: RefObject<string | null>;
+  shouldMoveActionCaretToEnd: boolean;
+  textareaRef: RefObject<HTMLTextAreaElement | null>;
+}) {
+  useEffect(() => {
+    if (!composerActionFocusKey) {
+      previousActionFocusKeyRef.current = null;
+      return undefined;
+    }
+
+    if (
+      !shouldFocusComposerAction({
+        composerActionFocusKey,
+        isDisabled,
+        isRecording,
+        previousActionFocusKey: previousActionFocusKeyRef.current,
+      })
+    ) {
+      return undefined;
+    }
+
+    previousActionFocusKeyRef.current = composerActionFocusKey;
+
+    const timeoutId = window.setTimeout(() => {
+      focusComposerActionTextarea({
+        shouldMoveActionCaretToEnd,
+        textarea: textareaRef.current,
+      });
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    composerActionFocusKey,
+    isDisabled,
+    isRecording,
+    previousActionFocusKeyRef,
+    shouldMoveActionCaretToEnd,
+    textareaRef,
+  ]);
+}
+
+function focusComposerActionTextarea({
+  shouldMoveActionCaretToEnd,
+  textarea,
+}: {
+  shouldMoveActionCaretToEnd: boolean;
+  textarea: HTMLTextAreaElement | null;
+}) {
+  if (!textarea || textarea.disabled) {
+    return;
+  }
+
+  textarea.focus({ preventScroll: true });
+
+  if (shouldMoveActionCaretToEnd) {
+    const caretPosition = textarea.value.length;
+    textarea.setSelectionRange(caretPosition, caretPosition);
+  }
 }

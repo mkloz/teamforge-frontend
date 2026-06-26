@@ -21,7 +21,7 @@ export type WebPushSupport =
       reason: WebPushUnsupportedReason;
     };
 
-export type WebPushBrowserErrorCode =
+type WebPushBrowserErrorCode =
   | "permission-timeout"
   | "permission-denied"
   | "subscription-missing-keys"
@@ -30,7 +30,50 @@ export type WebPushBrowserErrorCode =
 const SERVICE_WORKER_READY_TIMEOUT_MS = 8000;
 const NOTIFICATION_PERMISSION_TIMEOUT_MS = 30_000;
 
-export class WebPushBrowserError extends Error {
+type NotificationPermissionRequestResult = NotificationPermission | "timeout";
+
+interface WebPushSupportCheck {
+  isUnavailable: () => boolean;
+  reason: WebPushUnsupportedReason;
+}
+
+interface PushSubscriptionSerializationParts {
+  auth?: string;
+  endpoint?: string;
+  p256dh?: string;
+}
+
+interface CompletePushSubscriptionSerializationParts {
+  auth: string;
+  endpoint: string;
+  p256dh: string;
+}
+
+const WEB_PUSH_SUPPORT_CHECKS: readonly WebPushSupportCheck[] = [
+  {
+    isUnavailable: () =>
+      typeof window === "undefined" || typeof navigator === "undefined",
+    reason: "window-unavailable",
+  },
+  {
+    isUnavailable: () => !window.isSecureContext,
+    reason: "insecure-context",
+  },
+  {
+    isUnavailable: () => !("serviceWorker" in navigator),
+    reason: "service-worker-unavailable",
+  },
+  {
+    isUnavailable: () => !("PushManager" in window),
+    reason: "push-manager-unavailable",
+  },
+  {
+    isUnavailable: () => !("Notification" in window),
+    reason: "notifications-unavailable",
+  },
+];
+
+class WebPushBrowserError extends Error {
   readonly code: WebPushBrowserErrorCode;
 
   constructor(code: WebPushBrowserErrorCode, message: string) {
@@ -41,27 +84,13 @@ export class WebPushBrowserError extends Error {
 }
 
 export function getWebPushSupport(): WebPushSupport {
-  if (typeof window === "undefined" || typeof navigator === "undefined") {
-    return { isSupported: false, reason: "window-unavailable" };
-  }
+  const failedCheck = WEB_PUSH_SUPPORT_CHECKS.find((check) =>
+    check.isUnavailable(),
+  );
 
-  if (!window.isSecureContext) {
-    return { isSupported: false, reason: "insecure-context" };
-  }
-
-  if (!("serviceWorker" in navigator)) {
-    return { isSupported: false, reason: "service-worker-unavailable" };
-  }
-
-  if (!("PushManager" in window)) {
-    return { isSupported: false, reason: "push-manager-unavailable" };
-  }
-
-  if (!("Notification" in window)) {
-    return { isSupported: false, reason: "notifications-unavailable" };
-  }
-
-  return { isSupported: true, reason: null };
+  return failedCheck
+    ? { isSupported: false, reason: failedCheck.reason }
+    : { isSupported: true, reason: null };
 }
 
 export function getBrowserNotificationPermission(): BrowserNotificationPermission {
@@ -112,6 +141,41 @@ async function requestNotificationPermissionWithTimeout() {
   }
 }
 
+function assertWebPushSupported() {
+  const support = getWebPushSupport();
+
+  if (!support.isSupported) {
+    throw new WebPushBrowserError(
+      "unsupported",
+      "This browser cannot receive push notifications.",
+    );
+  }
+}
+
+async function readNotificationPermissionForSubscribe(): Promise<NotificationPermissionRequestResult> {
+  return Notification.permission === "granted"
+    ? "granted"
+    : requestNotificationPermissionWithTimeout();
+}
+
+function assertNotificationPermissionGranted(
+  permission: NotificationPermissionRequestResult,
+) {
+  if (permission === "timeout") {
+    throw new WebPushBrowserError(
+      "permission-timeout",
+      "Notification permission did not finish. Try again from the browser permission prompt.",
+    );
+  }
+
+  if (permission !== "granted") {
+    throw new WebPushBrowserError(
+      "permission-denied",
+      "Notification permission was not granted.",
+    );
+  }
+}
+
 async function getReadableServiceWorkerRegistration() {
   const registration = await withServiceWorkerTimeout(
     navigator.serviceWorker.getRegistration(),
@@ -123,6 +187,40 @@ async function getReadableServiceWorkerRegistration() {
   }
 
   return withServiceWorkerTimeout(navigator.serviceWorker.ready, null);
+}
+
+async function getRequiredServiceWorkerRegistration() {
+  const registration = await getReadableServiceWorkerRegistration();
+
+  if (!registration) {
+    throw new WebPushBrowserError(
+      "unsupported",
+      "TeamForge could not prepare push notifications on this device.",
+    );
+  }
+
+  return registration;
+}
+
+function createPushSubscriptionOptions(
+  publicKey: string,
+): PushSubscriptionOptionsInit {
+  return {
+    applicationServerKey: urlBase64ToUint8Array(publicKey),
+    userVisibleOnly: true,
+  };
+}
+
+async function getOrCreatePushSubscription(
+  registration: ServiceWorkerRegistration,
+  publicKey: string,
+) {
+  const existingSubscription = await registration.pushManager.getSubscription();
+
+  return (
+    existingSubscription ??
+    registration.pushManager.subscribe(createPushSubscriptionOptions(publicKey))
+  );
 }
 
 export async function getBrowserPushSubscription() {
@@ -138,75 +236,52 @@ export async function getBrowserPushSubscription() {
 }
 
 export async function subscribeBrowserToWebPush(publicKey: string) {
-  const support = getWebPushSupport();
+  assertWebPushSupported();
+  assertNotificationPermissionGranted(
+    await readNotificationPermissionForSubscribe(),
+  );
 
-  if (!support.isSupported) {
-    throw new WebPushBrowserError(
-      "unsupported",
-      "This browser cannot receive push notifications.",
-    );
-  }
-
-  const permission =
-    Notification.permission === "granted"
-      ? "granted"
-      : await requestNotificationPermissionWithTimeout();
-
-  if (permission === "timeout") {
-    throw new WebPushBrowserError(
-      "permission-timeout",
-      "Notification permission did not finish. Try again from the browser permission prompt.",
-    );
-  }
-
-  if (permission !== "granted") {
-    throw new WebPushBrowserError(
-      "permission-denied",
-      "Notification permission was not granted.",
-    );
-  }
-
-  const registration = await getReadableServiceWorkerRegistration();
-
-  if (!registration) {
-    throw new WebPushBrowserError(
-      "unsupported",
-      "TeamForge could not prepare push notifications on this device.",
-    );
-  }
-
-  const existingSubscription = await registration.pushManager.getSubscription();
-
-  if (existingSubscription) {
-    return existingSubscription;
-  }
-
-  return registration.pushManager.subscribe({
-    applicationServerKey: urlBase64ToUint8Array(publicKey),
-    userVisibleOnly: true,
-  });
+  return getOrCreatePushSubscription(
+    await getRequiredServiceWorkerRegistration(),
+    publicKey,
+  );
 }
 
-export function serializeBrowserPushSubscription(
+function readPushSubscriptionSerializationParts(
   subscription: PushSubscription,
-): WebPushSubscriptionPayload {
+): PushSubscriptionSerializationParts {
   const json = subscription.toJSON();
-  const p256dh = json.keys?.p256dh;
-  const auth = json.keys?.auth;
 
-  if (!json.endpoint || !p256dh || !auth) {
+  return {
+    auth: json.keys?.auth,
+    endpoint: json.endpoint,
+    p256dh: json.keys?.p256dh,
+  };
+}
+
+function assertCompletePushSubscriptionSerializationParts(
+  parts: PushSubscriptionSerializationParts,
+): asserts parts is CompletePushSubscriptionSerializationParts {
+  if (!parts.endpoint || !parts.p256dh || !parts.auth) {
     throw new WebPushBrowserError(
       "subscription-missing-keys",
       "The browser did not return a complete push subscription.",
     );
   }
+}
+
+export function serializeBrowserPushSubscription(
+  subscription: PushSubscription,
+): WebPushSubscriptionPayload {
+  const parts = readPushSubscriptionSerializationParts(subscription);
+  assertCompletePushSubscriptionSerializationParts(parts);
 
   return {
-    endpoint: json.endpoint,
+    endpoint: parts.endpoint,
     expirationTime: subscription.expirationTime ?? null,
     keys: {
-      auth,
-      p256dh,
+      auth: parts.auth,
+      p256dh: parts.p256dh,
     },
   };
 }

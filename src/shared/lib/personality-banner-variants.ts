@@ -20,7 +20,7 @@ interface PersonalityBannerVariant {
   imageSrc: string;
 }
 
-export const PERSONALITY_BANNER_VARIANTS: Record<
+const PERSONALITY_BANNER_VARIANTS: Record<
   PersonalityType,
   PersonalityBannerVariant
 > = {

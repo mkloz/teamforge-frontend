@@ -1,24 +1,7 @@
 import { config } from "@/config/config";
+import { normalizeBaseUrl } from "@/shared/lib/url-normalization";
 
-function normalizeBaseUrl(value: string | null | undefined) {
-  const trimmed = value?.trim();
-
-  if (!trimmed) {
-    return null;
-  }
-
-  try {
-    const url = new URL(trimmed);
-    url.hash = "";
-    url.search = "";
-
-    return url.toString().replace(/\/$/u, "");
-  } catch {
-    return null;
-  }
-}
-
-export function getMediaBaseUrl() {
+function getMediaBaseUrl() {
   return normalizeBaseUrl(config.mediaBaseUrl) ?? "";
 }
 

@@ -26,7 +26,7 @@ export function OnboardingPageLoading({ step }: OnboardingPageLoadingProps) {
   return <OnboardingPageLoadingFixture step={step} />;
 }
 
-export function OnboardingPageLoadingFixture({
+function OnboardingPageLoadingFixture({
   step,
 }: Pick<OnboardingPageLoadingProps, "step">) {
   if (step === "profile") {

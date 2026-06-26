@@ -9,7 +9,7 @@ import {
   IMAGE_UPLOAD_MAX_SIZE_BYTES,
 } from "@/shared/api/api-constraints";
 
-export const uploadedFileUrlSchema = z.object({
+const uploadedFileUrlSchema = z.object({
   url: z.string().url(),
 });
 
@@ -22,7 +22,7 @@ export function buildFileUploadBody(file: File, fieldName = "file") {
   return body;
 }
 
-export function assertFileSize(
+function assertFileSize(
   file: File,
   options: {
     maxSizeBytes: number;

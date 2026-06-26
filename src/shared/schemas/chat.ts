@@ -1,10 +1,9 @@
 import { z } from "zod";
+import { chatTypeSchema } from "./enums";
 import {
-  attachmentTypeSchema,
-  chatTypeSchema,
-  messageStatusSchema,
-  messageTypeSchema,
-} from "./enums";
+  messageApiCoreFields,
+  messageAttachmentApiFields,
+} from "./message-fragments";
 import type { User } from "./user";
 import { userSchema } from "./user";
 
@@ -19,7 +18,7 @@ export type ChatParticipant = z.infer<
   user?: User;
 };
 
-export const chatParticipantSchema: z.ZodSchema<ChatParticipant> = z.lazy(() =>
+const chatParticipantSchema: z.ZodSchema<ChatParticipant> = z.lazy(() =>
   z.object(chatParticipantData).extend({
     user: userSchema.optional(),
   }),
@@ -36,48 +35,22 @@ export type Reaction = z.infer<z.ZodObject<typeof reactionData>> & {
   user?: User;
 };
 
-export const reactionSchema: z.ZodSchema<Reaction> = z.lazy(() =>
+const reactionSchema: z.ZodSchema<Reaction> = z.lazy(() =>
   z.object(reactionData).extend({
     user: userSchema.optional(),
   }),
 );
 
-const attachmentData = {
-  id: z.string(),
-  type: attachmentTypeSchema,
-  url: z.string(),
-  name: z.string().nullable(),
-  size: z.number().nullable(),
-  mimeType: z.string().nullable(),
-  thumbnailUrl: z.string().nullable(),
-  duration: z.number().nullable(),
-  waveform: z.array(z.number()),
-  createdAt: z.string().datetime(),
-};
+const attachmentData = messageAttachmentApiFields;
 
 export type Attachment = z.infer<z.ZodObject<typeof attachmentData>>;
 
-export const attachmentSchema: z.ZodSchema<Attachment> = z.lazy(() =>
+const attachmentSchema: z.ZodSchema<Attachment> = z.lazy(() =>
   z.object(attachmentData),
 );
 
 const messageData = {
-  id: z.string(),
-  type: messageTypeSchema,
-  content: z.string(),
-  status: messageStatusSchema,
-  isEdited: z.boolean(),
-  isPinned: z.boolean(),
-  createdAt: z.string().datetime(),
-  editedAt: z.string().datetime().nullable(),
-  deletedAt: z.string().datetime().nullable(),
-  chatId: z.string(),
-  senderId: z.string(),
-  replyToId: z.string().nullable(),
-  forwardedFromMessageId: z.string().nullable().optional(),
-  forwardedFromChatId: z.string().nullable().optional(),
-  forwardedFromSenderId: z.string().nullable().optional(),
-  forwardedFromSenderName: z.string().nullable().optional(),
+  ...messageApiCoreFields,
   pinnedInChatId: z.string().nullable().optional(),
 };
 
@@ -88,7 +61,7 @@ export type Message = z.infer<z.ZodObject<typeof messageData>> & {
   attachments?: Attachment[];
 };
 
-export const messageSchema: z.ZodSchema<Message> = z.lazy(() =>
+const messageSchema: z.ZodSchema<Message> = z.lazy(() =>
   z.object(messageData).extend({
     sender: userSchema.optional(),
     replyTo: messageSchema.optional(),

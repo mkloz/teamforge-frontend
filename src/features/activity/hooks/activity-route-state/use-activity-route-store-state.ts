@@ -1,9 +1,12 @@
+import {
+  useActivityListControlActions,
+  useActivityListDisplayState,
+} from "@/features/activity/hooks/use-activity-list-store-controls";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 
 export function useActivityRouteStoreState() {
-  const searchQuery = useActivityStore((state) => state.searchQuery);
-  const activeFilter = useActivityStore((state) => state.activeFilter);
-  const sidebarDensity = useActivityStore((state) => state.sidebarDensity);
+  const { activeFilter, searchQuery, sidebarDensity } =
+    useActivityListDisplayState();
   const selectedId = useActivityStore((state) => state.selectedId);
   const selectedKind = useActivityStore((state) => state.selectedKind);
   const isGroupDetailOpen = useActivityStore(
@@ -12,11 +15,8 @@ export function useActivityRouteStoreState() {
   const isProfilePanelOpen = useActivityStore(
     (state) => state.direct.isProfilePanelOpen,
   );
-  const setSearchQuery = useActivityStore((state) => state.setSearchQuery);
-  const setActiveFilter = useActivityStore((state) => state.setActiveFilter);
-  const setSidebarDensity = useActivityStore(
-    (state) => state.setSidebarDensity,
-  );
+  const { setActiveFilter, setSearchQuery, setSidebarDensity } =
+    useActivityListControlActions();
   const selectConversation = useActivityStore(
     (state) => state.selectConversation,
   );

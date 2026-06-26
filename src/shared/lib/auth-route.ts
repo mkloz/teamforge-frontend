@@ -24,17 +24,28 @@ type AuthEntryRoute =
   | "/auth/login"
   | "/auth/register"
   | "/auth/forgot-password";
-export type AuthReturnTarget = StaticAuthReturnTarget | DynamicAuthReturnTarget;
+type AuthReturnTarget = StaticAuthReturnTarget | DynamicAuthReturnTarget;
 
 export interface RouteLocationLike {
   pathname: string;
   searchStr?: string | null;
 }
 
-export interface AuthReturnLocation {
+interface AuthReturnLocation {
   pathname: AuthReturnTarget;
   search: string | null;
   href: string;
+}
+
+interface ParsedRelativeLocation {
+  pathname: string;
+  search: string | null;
+}
+
+interface AuthReturnSearchState {
+  returnTo: string | null;
+  returnToPath: AuthReturnTarget | null;
+  returnToSearch: string | null;
 }
 
 function isStaticAuthReturnTarget(
@@ -77,23 +88,59 @@ function normalizeReturnSearch(
   return normalized.length > 0 ? normalized : null;
 }
 
-function parseRelativeLocation(value: string) {
-  if (!value.startsWith("/") || value.startsWith("//")) {
+function parseRelativeLocation(value: string): ParsedRelativeLocation | null {
+  if (!isRelativeLocationValue(value)) {
     return null;
   }
 
+  return splitRelativeLocation(stripLocationHash(value));
+}
+
+function isRelativeLocationValue(value: string) {
+  return value.startsWith("/") && !value.startsWith("//");
+}
+
+function stripLocationHash(value: string) {
   const hashIndex = value.indexOf("#");
-  const valueWithoutHash = hashIndex >= 0 ? value.slice(0, hashIndex) : value;
-  const searchIndex = valueWithoutHash.indexOf("?");
-  const pathname =
-    searchIndex >= 0
-      ? valueWithoutHash.slice(0, searchIndex)
-      : valueWithoutHash;
-  const search = searchIndex >= 0 ? valueWithoutHash.slice(searchIndex) : null;
+
+  return hashIndex >= 0 ? value.slice(0, hashIndex) : value;
+}
+
+function splitRelativeLocation(value: string): ParsedRelativeLocation {
+  const searchIndex = value.indexOf("?");
+
+  if (searchIndex < 0) {
+    return {
+      pathname: value || "/",
+      search: null,
+    };
+  }
 
   return {
-    pathname: pathname || "/",
-    search,
+    pathname: value.slice(0, searchIndex) || "/",
+    search: value.slice(searchIndex),
+  };
+}
+
+function getAuthReturnParam(searchString: string) {
+  return new URLSearchParams(searchString).get("returnTo");
+}
+
+function buildAuthReturnSearchState(
+  returnLocation: AuthReturnLocation | null,
+): AuthReturnSearchState {
+  if (!returnLocation) {
+    return {
+      returnTo: null,
+      returnToPath: null,
+      returnToSearch: null,
+    };
+  }
+
+  return {
+    returnTo: returnLocation.href,
+    returnToPath: returnLocation.pathname,
+    returnToSearch: returnLocation.search,
   };
 }
 
@@ -170,7 +217,7 @@ function buildAuthenticatedReturnNavigation(
   return null;
 }
 
-export function resolveAuthReturnLocation(
+function resolveAuthReturnLocation(
   value: string | null | undefined,
 ): AuthReturnLocation | null {
   if (!value) {
@@ -196,14 +243,9 @@ export function resolveAuthReturnLocation(
 }
 
 export function parseAuthReturnSearch(searchString: string) {
-  const params = new URLSearchParams(searchString);
-  const returnLocation = resolveAuthReturnLocation(params.get("returnTo"));
-
-  return {
-    returnTo: returnLocation?.href ?? null,
-    returnToPath: returnLocation?.pathname ?? null,
-    returnToSearch: returnLocation?.search ?? null,
-  };
+  return buildAuthReturnSearchState(
+    resolveAuthReturnLocation(getAuthReturnParam(searchString)),
+  );
 }
 
 export function useAuthReturnState() {

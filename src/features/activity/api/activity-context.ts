@@ -31,55 +31,16 @@ import {
   resolveChatId,
   resolveParticipants,
 } from "@/features/activity/api/context/activity-context-resolvers";
-import type { ActivityFeedStateMeta } from "@/features/activity/api/projections/activity-feed-projections";
-import type {
-  FilterChip,
-  UnifiedMessage,
-} from "@/features/activity/lib/activity-contract";
-import type { ChatApi, FriendshipApi, GroupApi, User } from "@/shared/schemas";
 import type { ActivityActionContext } from "./activity-actions";
-import type { ActivityFeedData } from "./activity-query-data";
 import type { ActivityQueryOptionsContext } from "./activity-query-options";
 import type { ActivityRealtimeContext } from "./activity-realtime";
 import { ActivitySurfaceCache } from "./activity-surface-cache";
 
-export { markActivityChatReadCache, updateActivityChatSummaryCache };
-
-export function deriveActivityFeedDataForContext(
-  activeFilter: FilterChip,
-  searchQuery: string,
-  groups: GroupApi[],
-  chats: ChatApi[],
-  friendships: FriendshipApi[],
-  currentUser: User,
-  typingByChatId: Record<
-    string,
-    Array<{ id: string; name: string; avatar: string | null }>
-  >,
-  meta?: ActivityFeedStateMeta,
-): ActivityFeedData {
-  return deriveActivityFeedData(
-    activeFilter,
-    searchQuery,
-    groups,
-    chats,
-    friendships,
-    currentUser,
-    typingByChatId,
-    meta,
-  );
-}
-
-export function mergeActivityConversationTimelineForContext(
-  messages: UnifiedMessage[],
-  proposalMessages: UnifiedMessage[],
-) {
-  return mergeActivityConversationTimeline(messages, proposalMessages);
-}
-
 export {
-  deriveActivityFeedDataForContext as deriveActivityFeedData,
-  mergeActivityConversationTimelineForContext as mergeActivityConversationTimeline,
+  deriveActivityFeedData,
+  markActivityChatReadCache,
+  mergeActivityConversationTimeline,
+  updateActivityChatSummaryCache,
 };
 
 export const ACTIVITY_QUERY_OPTIONS_CONTEXT: ActivityQueryOptionsContext = {

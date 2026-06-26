@@ -1,7 +1,7 @@
 import { mapSingleMessage } from "@/features/activity/api/projections/activity-message-projections";
+import { getDirectChatParticipantUsers } from "@/features/activity/api/projections/participants/participant-collection-projections";
 import type {
   ActivityParticipant,
-  DirectChat,
   UnifiedConversation,
 } from "@/features/activity/lib/activity-contract";
 import type { ChatApi, FriendshipApi } from "@/shared/schemas";
@@ -9,17 +9,6 @@ import type { ChatApi, FriendshipApi } from "@/shared/schemas";
 import { mapDirectChat, mapNotesChat } from "./direct-chat-projections";
 
 type ActivityFeedItem = UnifiedConversation;
-
-function getDirectChatParticipants(chat: DirectChat) {
-  return (
-    chat.participants
-      ?.map((participant) => participant.user)
-      .filter(
-        (participant): participant is ActivityParticipant =>
-          participant !== undefined,
-      ) ?? []
-  );
-}
 
 export function buildDirectFeedItem(
   friendship: FriendshipApi,
@@ -36,21 +25,34 @@ export function buildDirectFeedItem(
     return null;
   }
 
-  const latestMessage = chatSummary?.lastMessage
-    ? mapSingleMessage(
-        chatSummary.lastMessage,
-        getDirectChatParticipants(chat),
-        currentUserParticipant.id,
-      )
-    : undefined;
+  return buildDirectFeedConversation(
+    chat,
+    chatSummary,
+    currentUserParticipant,
+    typingByChatId,
+  );
+}
 
+function buildDirectFeedConversation(
+  chat: NonNullable<ActivityFeedItem["chat"]>,
+  chatSummary: ChatApi | null,
+  currentUserParticipant: ActivityParticipant,
+  typingByChatId: Record<
+    string,
+    Array<{ id: string; name: string; avatar: string | null }>
+  >,
+): ActivityFeedItem {
   return {
     id: chat.id,
     kind: "dm",
-    unreadCount: chatSummary?.unreadCount ?? 0,
-    isTyping: (typingByChatId[chat.id]?.length ?? 0) > 0,
-    isPinned: chatSummary?.isPinned ?? false,
-    latestMessage,
+    unreadCount: getChatUnreadCount(chatSummary),
+    isTyping: getChatIsTyping(chat.id, typingByChatId),
+    isPinned: getChatIsPinned(chatSummary),
+    latestMessage: mapDirectLatestMessage(
+      chatSummary,
+      chat,
+      currentUserParticipant.id,
+    ),
     chat,
   };
 }
@@ -76,9 +78,43 @@ export function buildNotesFeedItem(
     id: chat.id,
     kind: "dm",
     unreadCount: chatSummary.unreadCount ?? 0,
-    isTyping: (typingByChatId[chat.id]?.length ?? 0) > 0,
+    isTyping: getChatIsTyping(chat.id, typingByChatId),
     isPinned: chatSummary.isPinned,
     latestMessage,
     chat,
   };
+}
+
+function mapDirectLatestMessage(
+  chatSummary: ChatApi | null,
+  chat: NonNullable<ActivityFeedItem["chat"]>,
+  currentUserId: string,
+) {
+  if (!chatSummary?.lastMessage) {
+    return undefined;
+  }
+
+  return mapSingleMessage(
+    chatSummary.lastMessage,
+    getDirectChatParticipantUsers(chat),
+    currentUserId,
+  );
+}
+
+function getChatIsTyping(
+  chatId: string,
+  typingByChatId: Record<
+    string,
+    Array<{ id: string; name: string; avatar: string | null }>
+  >,
+) {
+  return (typingByChatId[chatId]?.length ?? 0) > 0;
+}
+
+function getChatUnreadCount(chatSummary: ChatApi | null) {
+  return chatSummary?.unreadCount ?? 0;
+}
+
+function getChatIsPinned(chatSummary: ChatApi | null) {
+  return chatSummary?.isPinned ?? false;
 }

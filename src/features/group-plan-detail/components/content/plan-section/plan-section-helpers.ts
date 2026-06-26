@@ -3,6 +3,19 @@ import type { PlanStatus } from "@/shared/schemas/enums";
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 const HOUR_IN_MS = 1000 * 60 * 60;
 
+const PLAN_STATUS_CONTEXT: Partial<Record<PlanStatus, string>> = {
+  CANCELLED: "This plan was called off",
+  COMPLETED: "This plan has wrapped up",
+  CONFIRMED: "Everything is set",
+  IN_PROGRESS: "Details are still being shaped",
+  PROPOSED: "Waiting for the group to agree",
+};
+
+interface EventTimeParts {
+  days: number;
+  hours: number;
+}
+
 export function getTimeUntilEvent(dateTime: string): string | undefined {
   const eventDate = new Date(dateTime);
   const now = new Date();
@@ -12,20 +25,34 @@ export function getTimeUntilEvent(dateTime: string): string | undefined {
     return undefined;
   }
 
-  const days = Math.floor(diff / DAY_IN_MS);
-  const hours = Math.floor((diff % DAY_IN_MS) / HOUR_IN_MS);
+  return formatTimeUntilEvent(getEventTimeParts(diff));
+}
 
+function getEventTimeParts(diffMs: number): EventTimeParts {
+  return {
+    days: Math.floor(diffMs / DAY_IN_MS),
+    hours: Math.floor((diffMs % DAY_IN_MS) / HOUR_IN_MS),
+  };
+}
+
+function formatTimeUntilEvent({ days, hours }: EventTimeParts) {
   if (days > 30) {
-    const weeks = Math.floor(days / 7);
-    return `In ${weeks} ${weeks === 1 ? "week" : "weeks"}`;
+    return `In ${formatPlural(Math.floor(days / 7), "week")}`;
   }
+
   if (days > 0) {
-    return `In ${days} ${days === 1 ? "day" : "days"}`;
+    return `In ${formatPlural(days, "day")}`;
   }
+
   if (hours > 0) {
-    return `In ${hours} ${hours === 1 ? "hour" : "hours"}`;
+    return `In ${formatPlural(hours, "hour")}`;
   }
+
   return "Starting soon";
+}
+
+function formatPlural(count: number, singularLabel: string) {
+  return `${count} ${count === 1 ? singularLabel : `${singularLabel}s`}`;
 }
 
 export function getStatusContext(
@@ -36,18 +63,5 @@ export function getStatusContext(
     return `${pendingProposals} ${pendingProposals === 1 ? "change" : "changes"} pending`;
   }
 
-  switch (status) {
-    case "PROPOSED":
-      return "Waiting for the group to agree";
-    case "IN_PROGRESS":
-      return "Details are still being shaped";
-    case "CONFIRMED":
-      return "Everything is set";
-    case "COMPLETED":
-      return "This plan has wrapped up";
-    case "CANCELLED":
-      return "This plan was called off";
-    default:
-      return undefined;
-  }
+  return PLAN_STATUS_CONTEXT[status];
 }

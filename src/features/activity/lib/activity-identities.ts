@@ -5,13 +5,13 @@ import type { User } from "@/shared/schemas";
 const LEGACY_ACTIVITY_CURRENT_USER_ID = "current-user";
 const LEGACY_ACTIVITY_CURRENT_USER_ID_ALT = "user-current";
 
-export function getActivityCurrentUser() {
+function getActivityCurrentUser() {
   return (
     appQueryClient.getQueryData<User>(APP_QUERY_KEYS.auth.currentUser) ?? null
   );
 }
 
-export function getActivityCurrentUserId() {
+function getActivityCurrentUserId() {
   return getActivityCurrentUser()?.id ?? null;
 }
 

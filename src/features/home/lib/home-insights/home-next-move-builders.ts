@@ -8,6 +8,30 @@ import {
   normalizeScore,
 } from "./recommendation-insights";
 
+type PlanDateMeta = NonNullable<ReturnType<typeof getDateMeta>>;
+type InviteTimingFlag = Extract<
+  keyof PlanDateMeta,
+  "isPast" | "isToday" | "isTomorrow"
+>;
+
+const INVITE_TIMING_SIGNALS: Array<{
+  flag: InviteTimingFlag;
+  label: string;
+}> = [
+  {
+    flag: "isPast",
+    label: "Invite expiring",
+  },
+  {
+    flag: "isToday",
+    label: "Expires today",
+  },
+  {
+    flag: "isTomorrow",
+    label: "Expires tomorrow",
+  },
+];
+
 export function buildInvitationMove(invite: Invite): HomeNextMove {
   const inviterName = invite.inviter?.name ?? "Someone";
 
@@ -81,18 +105,28 @@ export function buildDraftPlanMove(group: PlannedGroup): HomeNextMove {
 
 export function buildRecommendationMove(group: ExploreGroup): HomeNextMove {
   const fitScore = normalizeScore(group.compatibility.total);
-  const title = group.plan?.title || group.activity.title || group.name;
 
   return {
     kind: "recommendation",
-    eyebrow: fitScore >= 75 ? "Strong fit nearby" : "Worth checking",
-    title,
+    eyebrow: getRecommendationEyebrow(fitScore),
+    title: getRecommendationTitle(group),
     body: `${getRecommendationFitLine(group)} Take a look before the room fills up.`,
     primaryLabel: "See group",
     secondaryLabel: "Forge instead",
     signal: `${fitScore}% fit`,
     groupId: group.id,
   };
+}
+
+function getRecommendationEyebrow(fitScore: number) {
+  return fitScore >= 75 ? "Strong fit nearby" : "Worth checking";
+}
+
+function getRecommendationTitle(group: ExploreGroup) {
+  return (
+    [group.plan?.title, group.activity.title, group.name].find(Boolean) ??
+    group.name
+  );
 }
 
 export function buildFirstForgeMove(): HomeNextMove {
@@ -121,18 +155,17 @@ export function buildReturnForgeMove(activeGroupCount: number): HomeNextMove {
 
 function getInviteSignal(invite: Invite) {
   const expiry = getDateMeta(invite.expiresAt);
+  const timingSignal = getInviteTimingSignal(expiry);
 
-  if (expiry?.isPast) {
-    return "Invite expiring";
+  return timingSignal ?? `${invite.group.activeMembersCount} people inside`;
+}
+
+function getInviteTimingSignal(expiry: PlanDateMeta | null) {
+  if (!expiry) {
+    return null;
   }
 
-  if (expiry?.isToday) {
-    return "Expires today";
-  }
-
-  if (expiry?.isTomorrow) {
-    return "Expires tomorrow";
-  }
-
-  return `${invite.group.activeMembersCount} people inside`;
+  return (
+    INVITE_TIMING_SIGNALS.find((signal) => expiry[signal.flag])?.label ?? null
+  );
 }

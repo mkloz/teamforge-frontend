@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { groupBaseFields } from "@/shared/schemas/entity-fragments";
 import {
   activityAccessSchema,
   activityStatusSchema,
@@ -7,7 +8,6 @@ import {
   costTypeSchema,
   forgeModeSchema,
   groupRoleSchema,
-  groupStatusSchema,
   locationModeSchema,
   planCategorySchema,
   planStatusSchema,
@@ -19,7 +19,7 @@ import { activityMutualGroupSchema } from "./activity-conversation.schemas";
 import { unifiedMessageSchema } from "./activity-message.schemas";
 import { activityParticipantSchema } from "./activity-participant.schemas";
 
-export const activitySummarySchema = z.object({
+const activitySummarySchema = z.object({
   id: z.string(),
   title: z.string(),
   city: z.string().nullable(),
@@ -29,9 +29,7 @@ export const activitySummarySchema = z.object({
   forgeMode: forgeModeSchema,
 });
 
-export type ActivitySummary = z.infer<typeof activitySummarySchema>;
-
-export const planSchema = z.object({
+const planSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string().nullable(),
@@ -58,7 +56,7 @@ export const planSchema = z.object({
 
 export type Plan = z.infer<typeof planSchema>;
 
-export const groupMemberSchema = z.object({
+const groupMemberSchema = z.object({
   userId: z.string(),
   groupId: z.string(),
   role: groupRoleSchema,
@@ -70,7 +68,7 @@ export const groupMemberSchema = z.object({
 
 export type GroupMember = z.infer<typeof groupMemberSchema>;
 
-export const planHistoryItemSchema = z.object({
+const planHistoryItemSchema = z.object({
   id: z.string(),
   title: z.string(),
   category: planCategorySchema,
@@ -88,14 +86,8 @@ export const planHistoryItemSchema = z.object({
 
 export type PlanHistoryItem = z.infer<typeof planHistoryItemSchema>;
 
-export const groupSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string().nullable(),
-  avatar: z.string().nullable(),
-  avatarMedia: imageMediaSchema.nullable().optional(),
-  status: groupStatusSchema,
-  maxMembers: z.number(),
+const groupSchema = z.object({
+  ...groupBaseFields,
   createdAt: z.string(),
   updatedAt: z.string(),
   version: z.number(),

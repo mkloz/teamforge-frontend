@@ -73,29 +73,63 @@ function getCompletedReviewGateViewState(
   rating: CompletedGroupRating,
 ): CompletedReviewGateViewState {
   const isReviewFormBusy = rating.isSubmitting || rating.isDeferring;
-  const selectedMemberUser = rating.selectedMember?.user;
 
   return {
-    deferralDisabled: !rating.isOnline || rating.isSubmitting,
-    deferralTitle: rating.isOnline
-      ? undefined
-      : "Reconnect before moving review prompts.",
-    groupTitle: group.plan?.title ?? group.name,
+    deferralDisabled: isReviewDeferralDisabled(rating),
+    deferralTitle: getReviewReconnectTitle(
+      rating.isOnline,
+      "moving review prompts",
+    ),
+    groupTitle: getCompletedGroupTitle(group),
     isReviewFormBusy,
-    pendingCountLabel: rating.pendingCount || "No",
-    ratingLabel: selectedMemberUser
-      ? `Rating for ${selectedMemberUser.name}`
-      : "Rating",
-    shouldShowGate:
-      group.plan?.status === "COMPLETED" &&
-      (rating.isLoading || rating.isError || rating.shouldBlockReview),
+    pendingCountLabel: getPendingReviewCountLabel(rating.pendingCount),
+    ratingLabel: getRatingLabel(rating.selectedMember),
+    shouldShowGate: shouldShowCompletedReviewGate(group, rating),
     showOfflineNotice: !rating.isOnline,
-    submitDisabled:
-      !rating.isOnline || !rating.activeUserId || rating.score === 0,
-    submitTitle: rating.isOnline
-      ? undefined
-      : "Reconnect before submitting reviews.",
+    submitDisabled: isReviewSubmitDisabled(rating),
+    submitTitle: getReviewReconnectTitle(rating.isOnline, "submitting reviews"),
   };
+}
+
+function getCompletedGroupTitle(group: Group) {
+  return group.plan?.title ?? group.name;
+}
+
+function getPendingReviewCountLabel(
+  pendingCount: number,
+): CompletedReviewGateViewState["pendingCountLabel"] {
+  return pendingCount || "No";
+}
+
+function getRatingLabel(
+  selectedMember: CompletedGroupRating["selectedMember"],
+) {
+  const selectedMemberUser = selectedMember?.user;
+  return selectedMemberUser
+    ? `Rating for ${selectedMemberUser.name}`
+    : "Rating";
+}
+
+function shouldShowCompletedReviewGate(
+  group: Group,
+  rating: CompletedGroupRating,
+) {
+  return (
+    group.plan?.status === "COMPLETED" &&
+    (rating.isLoading || rating.isError || rating.shouldBlockReview)
+  );
+}
+
+function isReviewDeferralDisabled(rating: CompletedGroupRating) {
+  return !rating.isOnline || rating.isSubmitting;
+}
+
+function isReviewSubmitDisabled(rating: CompletedGroupRating) {
+  return !rating.isOnline || !rating.activeUserId || rating.score === 0;
+}
+
+function getReviewReconnectTitle(isOnline: boolean, action: string) {
+  return isOnline ? undefined : `Reconnect before ${action}.`;
 }
 
 function CompletedReviewGateHeader({

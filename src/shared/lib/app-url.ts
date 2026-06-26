@@ -1,23 +1,6 @@
 import { config } from "@/config/config";
 import { hasBrowserWindow } from "@/shared/lib/browser-environment";
-
-function normalizeBaseUrl(value: string | null | undefined) {
-  const trimmed = value?.trim();
-
-  if (!trimmed) {
-    return null;
-  }
-
-  try {
-    const url = new URL(trimmed);
-    url.hash = "";
-    url.search = "";
-
-    return url.toString().replace(/\/$/u, "");
-  } catch {
-    return null;
-  }
-}
+import { normalizeBaseUrl } from "@/shared/lib/url-normalization";
 
 export function getAppBaseUrl(fallback?: string | null) {
   const configuredUrl = normalizeBaseUrl(config.appUrl);

@@ -46,9 +46,11 @@ jobs:
       PAGES_DEPLOY_TARGET: ${{ inputs.deploy_target || 'production' }}
       PAGES_PRODUCTION_BRANCH: ${{ vars.CLOUDFLARE_PAGES_PRODUCTION_BRANCH || 'main' }}
       VITE_API_URL: ${{ vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
+      VITE_APP_URL: ${{ vars.VITE_APP_URL || 'https://teamforge.mkloz.com' }}
       VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY || secrets.VITE_GIPHY_API_KEY }}
       VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID || secrets.VITE_GOOGLE_CLIENT_ID }}
       VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY || secrets.VITE_GOOGLE_MAPS_API_KEY }}
+      VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL || 'https://mkloz-teamforge.s3.us-east-1.amazonaws.com' }}
 
     steps:
       - name: Checkout

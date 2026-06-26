@@ -11,11 +11,7 @@ interface InviteNoteProps {
 }
 
 export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
-  const manual = forgeMode === "MANUAL";
-  const inviteText =
-    inviteeCount === 1
-      ? "1 selected friend"
-      : `${inviteeCount} selected friends`;
+  const note = getInviteNoteViewState({ forgeMode, inviteeCount });
 
   return (
     <section className="flex flex-col gap-3 border-border/25 border-t pt-4">
@@ -28,32 +24,14 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
             A short handoff before the group opens.
           </p>
         </div>
-        <StatusPill tone={manual ? "amber" : "teal"} size="sm">
-          {manual ? inviteText : "Ready now"}
+        <StatusPill tone={note.statusTone} size="sm">
+          {note.statusText}
         </StatusPill>
       </div>
 
       <div className="border-border/25 border-t">
-        <NextStepItem
-          active
-          icon={manual ? Send : UsersRound}
-          title={manual ? "Invites go out" : "Group opens"}
-          text={
-            manual
-              ? "Selected people receive the group invitation."
-              : "The matched members land in the same group space."
-          }
-          tone={manual ? "amber" : "teal"}
-        />
-        <NextStepItem
-          icon={Bell}
-          title={manual ? "Replies arrive" : "Members are notified"}
-          text={
-            manual
-              ? "Accepted invites appear from the group hub."
-              : "Everyone can pick up the plan from the hub."
-          }
-        />
+        <NextStepItem {...note.primaryStep} />
+        <NextStepItem {...note.secondaryStep} />
         <NextStepItem
           icon={MessageSquare}
           title="Chat is ready"
@@ -74,6 +52,20 @@ interface NextStepItemProps {
   tone?: "teal" | "amber";
 }
 
+interface InviteNoteViewState {
+  primaryStep: NextStepItemProps;
+  secondaryStep: NextStepItemProps;
+  statusText: string;
+  statusTone: "teal" | "amber";
+}
+
+interface NextStepItemState {
+  bordered: boolean;
+  iconClassName: string;
+  iconTone: "amber" | "neutral" | "none";
+  titleClassName: string;
+}
+
 function NextStepItem({
   active = false,
   icon,
@@ -82,7 +74,7 @@ function NextStepItem({
   text,
   tone = "teal",
 }: NextStepItemProps) {
-  const amber = tone === "amber";
+  const itemState = getNextStepItemState({ active, tone });
 
   return (
     <div
@@ -90,24 +82,17 @@ function NextStepItem({
     >
       <IconTile
         icon={icon}
-        tone={active ? (amber ? "amber" : "none") : "neutral"}
+        tone={itemState.iconTone}
         size="md"
-        bordered={active && amber}
-        className={cn(
-          active && amber && "bg-spark-amber/12",
-          active && !amber && "bg-forge-teal text-primary-foreground",
-        )}
+        bordered={itemState.bordered}
+        className={cn(itemState.iconClassName)}
         iconClassName="size-3.5"
       />
       <div className="min-w-0">
         <p
           className={cn(
             "font-semibold text-sm leading-tight",
-            active
-              ? amber
-                ? "text-spark-amber"
-                : "text-forge-teal"
-              : "text-foreground",
+            itemState.titleClassName,
           )}
         >
           {title}
@@ -118,4 +103,88 @@ function NextStepItem({
       </div>
     </div>
   );
+}
+
+function getInviteNoteViewState({
+  forgeMode,
+  inviteeCount,
+}: InviteNoteProps): InviteNoteViewState {
+  const manual = forgeMode === "MANUAL";
+
+  return {
+    primaryStep: getPrimaryStep(manual),
+    secondaryStep: getSecondaryStep(manual),
+    statusText: manual ? getInviteText(inviteeCount) : "Ready now",
+    statusTone: manual ? "amber" : "teal",
+  };
+}
+
+function getInviteText(inviteeCount: number) {
+  return inviteeCount === 1
+    ? "1 selected friend"
+    : `${inviteeCount} selected friends`;
+}
+
+function getPrimaryStep(manual: boolean): NextStepItemProps {
+  return {
+    active: true,
+    icon: manual ? Send : UsersRound,
+    title: manual ? "Invites go out" : "Group opens",
+    text: manual
+      ? "Selected people receive the group invitation."
+      : "The matched members land in the same group space.",
+    tone: manual ? "amber" : "teal",
+  };
+}
+
+function getSecondaryStep(manual: boolean): NextStepItemProps {
+  return {
+    icon: Bell,
+    title: manual ? "Replies arrive" : "Members are notified",
+    text: manual
+      ? "Accepted invites appear from the group hub."
+      : "Everyone can pick up the plan from the hub.",
+  };
+}
+
+function getNextStepItemState({
+  active,
+  tone,
+}: Pick<NextStepItemProps, "active" | "tone">): NextStepItemState {
+  const isActive = Boolean(active);
+  const amber = tone === "amber";
+
+  return {
+    bordered: isActive && amber,
+    iconTone: getNextStepIconTone(isActive, amber),
+    iconClassName: getNextStepIconClassName(isActive, amber),
+    titleClassName: getNextStepTitleClassName(isActive, amber),
+  };
+}
+
+function getNextStepIconTone(
+  isActive: boolean,
+  amber: boolean,
+): NextStepItemState["iconTone"] {
+  if (!isActive) {
+    return "neutral";
+  }
+
+  return amber ? "amber" : "none";
+}
+
+function getNextStepIconClassName(isActive: boolean, amber: boolean) {
+  if (!isActive) {
+    return "";
+  }
+
+  return amber ? "bg-spark-amber/12" : "bg-forge-teal text-primary-foreground";
+}
+
+function getNextStepTitleClassName(isActive: boolean, amber: boolean) {
+  if (!isActive) {
+    return "text-foreground";
+  }
+
+  return amber ? "text-spark-amber" : "text-forge-teal";
 }

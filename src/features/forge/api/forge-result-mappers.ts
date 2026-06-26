@@ -22,22 +22,33 @@ interface SuccessfulForgeResultInput {
   requestIds: ForgeRequestIds;
 }
 
-export function buildFailedForgeResult(
-  overrides: FailedForgeResultOverrides = {},
-): ForgeExecutionResult {
+export function buildFailedForgeResult({
+  activityId = null,
+  chatId = null,
+  groupId = null,
+  planId = null,
+  requestIds,
+  searchKept,
+}: FailedForgeResultOverrides = {}): ForgeExecutionResult {
   return {
     forgeResult: "FAILED",
     participants: [],
-    activityId: overrides.activityId ?? null,
-    groupId: overrides.groupId ?? null,
-    chatId: overrides.chatId ?? null,
-    planId: overrides.planId ?? null,
-    searchKept: overrides.searchKept,
-    requestIds: overrides.requestIds ?? {
+    activityId,
+    groupId,
+    chatId,
+    planId,
+    searchKept,
+    requestIds: getFailedForgeRequestIds(requestIds),
+  };
+}
+
+function getFailedForgeRequestIds(requestIds: ForgeRequestIds | undefined) {
+  return (
+    requestIds ?? {
       createActivity: null,
       forgeActivity: null,
-    },
-  };
+    }
+  );
 }
 
 export function buildSuccessfulForgeResult({

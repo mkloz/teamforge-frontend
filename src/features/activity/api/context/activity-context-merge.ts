@@ -14,7 +14,7 @@ export function getGroupVersion(
   return group.version ?? new Date(group.updatedAt).getTime();
 }
 
-export function getFriendshipVersion(friendship: FriendshipApi) {
+function getFriendshipVersion(friendship: FriendshipApi) {
   return friendship.version ?? new Date(friendship.updatedAt).getTime();
 }
 
@@ -24,7 +24,7 @@ export function getPlanVersion(
   return plan.version ?? new Date(plan.updatedAt ?? plan.createdAt).getTime();
 }
 
-export function getProposalVersion(
+function getProposalVersion(
   proposal: Pick<PlanProposal, "createdAt" | "updatedAt" | "version">,
 ) {
   return (

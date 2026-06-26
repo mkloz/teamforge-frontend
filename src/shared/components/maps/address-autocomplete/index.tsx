@@ -5,8 +5,12 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { useAddressAutocomplete } from "@/shared/hooks/use-address-autocomplete";
+import type { AddressAutocompleteMessageTone } from "@/shared/hooks/use-address-autocomplete-state";
 import { getBrowserDocumentBody } from "@/shared/lib/browser-environment";
-import type { LocationValue } from "@/shared/lib/maps/location.types";
+import type {
+  GoogleMapsStatus,
+  LocationValue,
+} from "@/shared/lib/maps/location.types";
 import { cn } from "@/shared/lib/utils";
 import type { AddressAutocompleteProps } from "./address-autocomplete-types";
 import {
@@ -19,6 +23,206 @@ import { AddressSuggestionsPanel } from "./address-suggestions-panel";
 import { useAddressSuggestionsPanel } from "./use-address-suggestions-panel";
 
 export type { LocationValue };
+
+interface AddressAutocompleteRenderStateInput {
+  activeSuggestionIndex: number;
+  hint: string;
+  hintId: string;
+  inputValue: string;
+  isLocating: boolean;
+  isResolvingPlace: boolean;
+  isSuggestionsOpen: boolean;
+  mapsReady: boolean;
+  mapsStatus: GoogleMapsStatus;
+  message: string | null;
+  messageTone: AddressAutocompleteMessageTone | null;
+  suggestions: GoogleAutocompletePrediction[];
+  suggestionsId: string;
+}
+
+function isAddressAutocompleteBusy({
+  isLocating,
+  isResolvingPlace,
+  mapsStatus,
+}: Pick<
+  AddressAutocompleteRenderStateInput,
+  "isLocating" | "isResolvingPlace" | "mapsStatus"
+>) {
+  return mapsStatus === "loading" || isResolvingPlace || isLocating;
+}
+
+function shouldShowAddressBusyIndicator({
+  isBusy,
+  isLocating,
+}: {
+  isBusy: boolean;
+  isLocating: boolean;
+}) {
+  return isBusy && !isLocating;
+}
+
+function shouldRenderAddressInputControls({
+  inputValue,
+  isBusy,
+  mapsReady,
+}: Pick<AddressAutocompleteRenderStateInput, "inputValue" | "mapsReady"> & {
+  isBusy: boolean;
+}) {
+  return mapsReady || isBusy || Boolean(inputValue);
+}
+
+function getAddressAutocompleteDescribedBy({
+  hintId,
+  message,
+  showManualHint,
+}: Pick<AddressAutocompleteRenderStateInput, "hintId" | "message"> & {
+  showManualHint: boolean;
+}) {
+  return message || showManualHint ? hintId : undefined;
+}
+
+function getAddressAutocompleteRenderState(
+  input: AddressAutocompleteRenderStateInput,
+) {
+  const showManualHint = input.mapsStatus === "unavailable";
+  const isBusy = isAddressAutocompleteBusy(input);
+  const showBusyIndicator = shouldShowAddressBusyIndicator({
+    isBusy,
+    isLocating: input.isLocating,
+  });
+
+  return {
+    activeSuggestionId: getActiveSuggestionId({
+      activeSuggestionIndex: input.activeSuggestionIndex,
+      isSuggestionsOpen: input.isSuggestionsOpen,
+      suggestions: input.suggestions,
+      suggestionsId: input.suggestionsId,
+    }),
+    describedBy: getAddressAutocompleteDescribedBy({
+      hintId: input.hintId,
+      message: input.message,
+      showManualHint,
+    }),
+    hasErrorMessage: input.messageTone === "error",
+    hasRightControls: shouldRenderAddressInputControls({
+      inputValue: input.inputValue,
+      isBusy,
+      mapsReady: input.mapsReady,
+    }),
+    hintMessage: getLocationHintMessage({
+      hint: input.hint,
+      message: input.message,
+      showManualHint,
+    }),
+    isBusy,
+    rightPaddingClassName: getAddressInputRightPaddingClassName({
+      inputValue: input.inputValue,
+      mapsReady: input.mapsReady,
+      showBusyIndicator,
+    }),
+  };
+}
+
+type AddressAutocompleteRenderState = ReturnType<
+  typeof getAddressAutocompleteRenderState
+>;
+
+function AddressAutocompleteLabelRow({
+  badge,
+  inputId,
+  label,
+  required,
+}: Pick<AddressAutocompleteProps, "badge" | "label" | "required"> & {
+  inputId: string;
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-3">
+      <Label htmlFor={inputId} className="font-semibold text-ink text-sm">
+        {label}
+        {required ? <span className="ml-1 text-destructive">*</span> : null}
+      </Label>
+      <StatusPill
+        tone="none"
+        size="xs"
+        className="border-slate-muted/30 bg-canvas font-semibold text-ink"
+      >
+        {badge}
+      </StatusPill>
+    </div>
+  );
+}
+
+function getAddressInputControls({
+  clearLocation,
+  disabled,
+  hasCurrentAreaError,
+  hintId,
+  inputValue,
+  isLocating,
+  mapsReady,
+  renderState,
+  useCurrentArea,
+}: {
+  clearLocation: () => void;
+  disabled: AddressAutocompleteProps["disabled"];
+  hasCurrentAreaError: boolean;
+  hintId: string;
+  inputValue: string;
+  isLocating: boolean;
+  mapsReady: boolean;
+  renderState: Pick<
+    AddressAutocompleteRenderState,
+    "hasRightControls" | "isBusy"
+  >;
+  useCurrentArea: () => void;
+}) {
+  if (!renderState.hasRightControls) {
+    return null;
+  }
+
+  return (
+    <AddressInputControls
+      disabled={disabled}
+      hasCurrentAreaError={hasCurrentAreaError}
+      inputValue={inputValue}
+      isBusy={renderState.isBusy}
+      isLocating={isLocating}
+      mapsReady={mapsReady}
+      messageId={hintId}
+      onClearLocation={clearLocation}
+      onUseCurrentArea={useCurrentArea}
+    />
+  );
+}
+
+function AddressAutocompleteHint({
+  hintId,
+  message,
+  renderState,
+}: {
+  hintId: string;
+  message: string | null;
+  renderState: Pick<
+    AddressAutocompleteRenderState,
+    "hasErrorMessage" | "hintMessage"
+  >;
+}) {
+  return (
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <p
+        id={hintId}
+        aria-live={message ? "polite" : undefined}
+        role={renderState.hasErrorMessage ? "alert" : undefined}
+        className={cn(
+          "text-slate-muted text-xs leading-5",
+          renderState.hasErrorMessage && "font-medium text-destructive",
+        )}
+      >
+        {renderState.hintMessage}
+      </p>
+    </div>
+  );
+}
 
 export function AddressAutocomplete({
   value,
@@ -56,20 +260,18 @@ export function AddressAutocomplete({
     selectPrediction,
     useCurrentArea,
   } = useAddressAutocomplete({ value, onLocationSelect });
-  const showManualHint = mapsStatus === "unavailable";
-  const isBusy = mapsStatus === "loading" || isResolvingPlace || isLocating;
-  const showBusyIndicator = isBusy && !isLocating;
-  const hasErrorMessage = messageTone === "error";
-  const describedBy = message || showManualHint ? hintId : undefined;
-  const hasRightControls = mapsReady || isBusy || Boolean(inputValue);
-  const rightPaddingClassName = getAddressInputRightPaddingClassName({
-    inputValue,
-    mapsReady,
-    showBusyIndicator,
-  });
-  const activeSuggestionId = getActiveSuggestionId({
+  const renderState = getAddressAutocompleteRenderState({
     activeSuggestionIndex,
+    hint,
+    hintId,
+    inputValue,
+    isLocating,
+    isResolvingPlace,
     isSuggestionsOpen,
+    mapsReady,
+    mapsStatus,
+    message,
+    messageTone,
     suggestions,
     suggestionsId,
   });
@@ -96,19 +298,12 @@ export function AddressAutocomplete({
       ref={containerRef}
       className={cn("relative flex flex-col gap-2", className)}
     >
-      <div className="flex items-baseline justify-between gap-3">
-        <Label htmlFor={inputId} className="font-semibold text-ink text-sm">
-          {label}
-          {required ? <span className="ml-1 text-destructive">*</span> : null}
-        </Label>
-        <StatusPill
-          tone="none"
-          size="xs"
-          className="border-slate-muted/30 bg-canvas font-semibold text-ink"
-        >
-          {badge}
-        </StatusPill>
-      </div>
+      <AddressAutocompleteLabelRow
+        badge={badge}
+        inputId={inputId}
+        label={label}
+        required={required}
+      />
 
       <div ref={inputShellRef} className="relative">
         <Input
@@ -126,26 +321,22 @@ export function AddressAutocomplete({
           aria-autocomplete="list"
           aria-expanded={isSuggestionsOpen}
           aria-controls={suggestionsId}
-          aria-activedescendant={activeSuggestionId}
-          aria-describedby={describedBy}
-          aria-invalid={hasErrorMessage || undefined}
-          className={rightPaddingClassName}
+          aria-activedescendant={renderState.activeSuggestionId}
+          aria-describedby={renderState.describedBy}
+          aria-invalid={renderState.hasErrorMessage || undefined}
+          className={renderState.rightPaddingClassName}
           leftIcon={<Search className="size-3.5" strokeWidth={2} />}
-          rightIcon={
-            hasRightControls ? (
-              <AddressInputControls
-                disabled={disabled}
-                hasCurrentAreaError={hasCurrentAreaError}
-                inputValue={inputValue}
-                isBusy={isBusy}
-                isLocating={isLocating}
-                mapsReady={mapsReady}
-                messageId={hintId}
-                onClearLocation={clearLocation}
-                onUseCurrentArea={useCurrentArea}
-              />
-            ) : null
-          }
+          rightIcon={getAddressInputControls({
+            clearLocation,
+            disabled,
+            hasCurrentAreaError,
+            hintId,
+            inputValue,
+            isLocating,
+            mapsReady,
+            renderState,
+            useCurrentArea,
+          })}
         />
 
         {isSuggestionsOpen ? (
@@ -167,19 +358,11 @@ export function AddressAutocomplete({
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p
-          id={hintId}
-          aria-live={message ? "polite" : undefined}
-          role={hasErrorMessage ? "alert" : undefined}
-          className={cn(
-            "text-slate-muted text-xs leading-5",
-            hasErrorMessage && "font-medium text-destructive",
-          )}
-        >
-          {getLocationHintMessage({ hint, message, showManualHint })}
-        </p>
-      </div>
+      <AddressAutocompleteHint
+        hintId={hintId}
+        message={message}
+        renderState={renderState}
+      />
     </div>
   );
 }

@@ -40,6 +40,70 @@ const PLAN_CATEGORY_OPTIONS = [
 
 const COST_OPTIONS = ["FREE", "PAID"] as const satisfies readonly CostType[];
 
+interface PlanLocationSelection {
+  address: string;
+  city: string;
+  lat: number | null;
+  lng: number | null;
+}
+
+function getEditorLocationAutocompleteValue(editor: GroupIdentityEditor) {
+  if (!editor.planLocation) {
+    return null;
+  }
+
+  return {
+    address: editor.planLocation,
+    city: editor.planLocation,
+    lat: editor.planLocationLat,
+    lng: editor.planLocationLng,
+  };
+}
+
+function handleEditorLocationModeChange(
+  editor: GroupIdentityEditor,
+  value: string,
+) {
+  if (!isLocationMode(value)) {
+    return;
+  }
+
+  editor.setPlanLocationMode(value);
+  clearEditorLocationCoordinates(editor);
+
+  if (value === "TBD") {
+    editor.setPlanLocation("");
+  }
+}
+
+function handleEditorLocationSelection(
+  editor: GroupIdentityEditor,
+  location: PlanLocationSelection | null,
+) {
+  if (!location) {
+    editor.setPlanLocation("");
+    clearEditorLocationCoordinates(editor);
+    return;
+  }
+
+  editor.setPlanLocation(location.address);
+  editor.setPlanLocationLat(location.lat);
+  editor.setPlanLocationLng(location.lng);
+}
+
+function handleEditorLocationTextChange(
+  editor: GroupIdentityEditor,
+  value: string,
+) {
+  editor.setPlanLocation(value);
+  clearEditorLocationCoordinates(editor);
+}
+
+function clearEditorLocationCoordinates(editor: GroupIdentityEditor) {
+  editor.setPlanLocationLat(null);
+  editor.setPlanLocationLng(null);
+}
+
 export function EditPlanDetailsFields({ editor }: EditPlanDetailsFieldsProps) {
   return (
     <div className="flex flex-col gap-4">
@@ -128,19 +192,9 @@ export function EditPlanDetailsFields({ editor }: EditPlanDetailsFieldsProps) {
           </Label>
           <Select
             value={editor.planLocationMode}
-            onValueChange={(value) => {
-              if (!isLocationMode(value)) {
-                return;
-              }
-
-              editor.setPlanLocationMode(value);
-              editor.setPlanLocationLat(null);
-              editor.setPlanLocationLng(null);
-
-              if (value === "TBD") {
-                editor.setPlanLocation("");
-              }
-            }}
+            onValueChange={(value) =>
+              handleEditorLocationModeChange(editor, value)
+            }
           >
             <SelectTrigger id="plan-location-mode">
               <SelectValue />
@@ -162,21 +216,10 @@ export function EditPlanDetailsFields({ editor }: EditPlanDetailsFieldsProps) {
               badge="Plan location"
               hint="Members will see this place on the plan."
               placeholder="Search address or venue name..."
-              value={
-                editor.planLocation
-                  ? {
-                      address: editor.planLocation,
-                      city: editor.planLocation,
-                      lat: editor.planLocationLat,
-                      lng: editor.planLocationLng,
-                    }
-                  : null
+              value={getEditorLocationAutocompleteValue(editor)}
+              onLocationSelect={(location) =>
+                handleEditorLocationSelection(editor, location)
               }
-              onLocationSelect={(location) => {
-                editor.setPlanLocation(location?.address ?? "");
-                editor.setPlanLocationLat(location?.lat ?? null);
-                editor.setPlanLocationLng(location?.lng ?? null);
-              }}
               className="[&_label]:font-semibold [&_label]:text-muted-foreground [&_label]:text-xs"
             />
           </div>
@@ -192,11 +235,9 @@ export function EditPlanDetailsFields({ editor }: EditPlanDetailsFieldsProps) {
               id="plan-location"
               value={editor.planLocation}
               placeholder="Meeting link or platform"
-              onChange={(event) => {
-                editor.setPlanLocation(event.target.value);
-                editor.setPlanLocationLat(null);
-                editor.setPlanLocationLng(null);
-              }}
+              onChange={(event) =>
+                handleEditorLocationTextChange(editor, event.target.value)
+              }
             />
           </div>
         ) : null}

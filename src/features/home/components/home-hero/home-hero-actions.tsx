@@ -4,9 +4,11 @@ import {
   CalendarCheck2,
   Compass,
   Flame,
+  type LucideIcon,
   Mail,
   ShieldCheck,
 } from "lucide-react";
+import type { ReactElement } from "react";
 
 import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
@@ -29,124 +31,178 @@ interface HomeHeroMoveIconProps {
 
 const heroActionClassName = "h-11 flex-[1_1_9rem] sm:flex-none";
 
-export function HomeHeroMoveIcon({ kind, className }: HomeHeroMoveIconProps) {
-  switch (kind) {
-    case "profile":
-      return <ShieldCheck className={className} aria-hidden="true" />;
-    case "invitation":
-      return <Mail className={className} aria-hidden="true" />;
-    case "plan":
-      return <CalendarCheck2 className={className} aria-hidden="true" />;
-    case "recommendation":
-      return <Compass className={className} aria-hidden="true" />;
-    case "forge":
-      return <Flame className={className} aria-hidden="true" />;
-  }
+type HomeMoveKind = HomeNextMove["kind"];
+type HomeMoveByKind<Kind extends HomeMoveKind> = Extract<
+  HomeNextMove,
+  { kind: Kind }
+>;
+type HeroActionRenderer = (move: HomeNextMove) => ReactElement;
+type HeroActionRenderers = Record<HomeMoveKind, HeroActionRenderer>;
 
-  return null;
-}
+const HOME_HERO_MOVE_ICONS: Record<HomeMoveKind, LucideIcon> = {
+  forge: Flame,
+  invitation: Mail,
+  plan: CalendarCheck2,
+  profile: ShieldCheck,
+  recommendation: Compass,
+};
 
-export function PrimaryAction({ move }: { move: HomeNextMove }) {
-  if (move.kind === "profile") {
-    return <ProfilePrimaryAction move={move} />;
-  }
+const PRIMARY_ACTION_RENDERERS = {
+  profile: (move) => (
+    <ProfilePrimaryAction move={getHomeMoveByKind(move, "profile")} />
+  ),
+  invitation: (move) => {
+    const invitationMove = getHomeMoveByKind(move, "invitation");
 
-  if (move.kind === "invitation") {
     return (
       <Button asChild variant="primary" className={heroActionClassName}>
         <Link
           {...buildHomeNavigation({
             panel: "invitations",
-            invite: move.inviteId,
+            invite: invitationMove.inviteId,
             view: "received",
           })}
         >
-          {move.primaryLabel}
+          {invitationMove.primaryLabel}
           <ArrowRight className="size-4" />
         </Link>
       </Button>
     );
-  }
+  },
+  plan: (move) => {
+    const planMove = getHomeMoveByKind(move, "plan");
 
-  if (move.kind === "plan") {
     return (
       <Button asChild variant="primary" className={heroActionClassName}>
         <Link
-          {...buildGroupPlanDetailNavigation(move.groupId, {
+          {...buildGroupPlanDetailNavigation(planMove.groupId, {
             source: "home",
-            plan: move.planId,
+            plan: planMove.planId,
           })}
         >
-          {move.primaryLabel}
+          {planMove.primaryLabel}
           <ArrowRight className="size-4" />
         </Link>
       </Button>
     );
-  }
+  },
+  recommendation: (move) => {
+    const recommendationMove = getHomeMoveByKind(move, "recommendation");
 
-  if (move.kind === "recommendation") {
     return (
       <Button asChild variant="primary" className={heroActionClassName}>
         <Link
-          {...buildGroupPlanDetailNavigation(move.groupId, { source: "home" })}
+          {...buildGroupPlanDetailNavigation(recommendationMove.groupId, {
+            source: "home",
+          })}
         >
-          {move.primaryLabel}
+          {recommendationMove.primaryLabel}
           <ArrowRight className="size-4" />
         </Link>
       </Button>
     );
-  }
-
-  return (
+  },
+  forge: (move) => (
     <Button asChild variant="primary" className={heroActionClassName}>
       <Link {...buildForgeLaunchNavigation()}>
         {move.primaryLabel}
         <ArrowRight className="size-4" />
       </Link>
     </Button>
-  );
-}
+  ),
+} satisfies HeroActionRenderers;
 
-export function SecondaryAction({ move }: { move: HomeNextMove }) {
-  if (move.kind === "profile") {
+const SECONDARY_ACTION_RENDERERS = {
+  profile: (move) => {
+    const profileMove = getHomeMoveByKind(move, "profile");
+
     return (
       <Button asChild variant="outline" className={heroActionClassName}>
-        <Link {...buildProfileNavigation()}>{move.secondaryLabel}</Link>
+        <Link {...buildProfileNavigation()}>{profileMove.secondaryLabel}</Link>
       </Button>
     );
-  }
+  },
+  invitation: (move) => {
+    const invitationMove = getHomeMoveByKind(move, "invitation");
 
-  if (move.kind === "plan") {
     return (
       <Button asChild variant="outline" className={heroActionClassName}>
-        <Link {...buildActivityGroupNavigation(move.groupId)}>
-          {move.secondaryLabel}
+        <Link {...buildExploreNavigation()}>
+          {invitationMove.secondaryLabel}
         </Link>
       </Button>
     );
-  }
+  },
+  plan: (move) => {
+    const planMove = getHomeMoveByKind(move, "plan");
 
-  if (move.kind === "recommendation") {
     return (
       <Button asChild variant="outline" className={heroActionClassName}>
-        <Link {...buildForgeLaunchNavigation()}>{move.secondaryLabel}</Link>
+        <Link {...buildActivityGroupNavigation(planMove.groupId)}>
+          {planMove.secondaryLabel}
+        </Link>
       </Button>
     );
-  }
+  },
+  recommendation: (move) => {
+    const recommendationMove = getHomeMoveByKind(move, "recommendation");
 
-  if (move.kind === "forge") {
     return (
       <Button asChild variant="outline" className={heroActionClassName}>
-        <Link {...buildExploreNavigation()}>{move.secondaryLabel}</Link>
+        <Link {...buildForgeLaunchNavigation()}>
+          {recommendationMove.secondaryLabel}
+        </Link>
       </Button>
     );
+  },
+  forge: (move) => {
+    const forgeMove = getHomeMoveByKind(move, "forge");
+
+    return (
+      <Button asChild variant="outline" className={heroActionClassName}>
+        <Link {...buildExploreNavigation()}>{forgeMove.secondaryLabel}</Link>
+      </Button>
+    );
+  },
+} satisfies HeroActionRenderers;
+
+export function HomeHeroMoveIcon({ kind, className }: HomeHeroMoveIconProps) {
+  const Icon = HOME_HERO_MOVE_ICONS[kind];
+
+  return <Icon className={className} aria-hidden="true" />;
+}
+
+export function PrimaryAction({ move }: { move: HomeNextMove }) {
+  return renderHomeMoveAction(PRIMARY_ACTION_RENDERERS, move);
+}
+
+export function SecondaryAction({ move }: { move: HomeNextMove }) {
+  return renderHomeMoveAction(SECONDARY_ACTION_RENDERERS, move);
+}
+
+function renderHomeMoveAction(
+  renderers: HeroActionRenderers,
+  move: HomeNextMove,
+) {
+  return renderers[move.kind](move);
+}
+
+function getHomeMoveByKind<Kind extends HomeMoveKind>(
+  move: HomeNextMove,
+  kind: Kind,
+): HomeMoveByKind<Kind> {
+  if (isHomeMoveKind(move, kind)) {
+    return move;
   }
 
-  return (
-    <Button asChild variant="outline" className={heroActionClassName}>
-      <Link {...buildExploreNavigation()}>{move.secondaryLabel}</Link>
-    </Button>
-  );
+  throw new Error(`Unexpected home move kind: ${move.kind}`);
+}
+
+function isHomeMoveKind<Kind extends HomeMoveKind>(
+  move: HomeNextMove,
+  kind: Kind,
+): move is HomeMoveByKind<Kind> {
+  return move.kind === kind;
 }
 
 function ProfilePrimaryAction({

@@ -1,15 +1,27 @@
 import { z } from "zod";
 
 import {
-  attachmentTypeSchema,
-  chatTypeSchema,
-  genderSchema,
-  groupStatusSchema,
-  messageStatusSchema,
-  messageTypeSchema,
-  onlineStatusSchema,
-  personalityTypeSchema,
-} from "./enums";
+  userIdentitySummaryFields,
+  userOptionalPersonalityTypeField,
+  userOptionalTrustScoreField,
+  userPersonalityScoreFields,
+  userPresenceFields,
+  userProfileSummaryFields,
+} from "./entity-fragments";
+import { chatTypeSchema, groupStatusSchema, messageTypeSchema } from "./enums";
+import {
+  messageApiCoreFields,
+  messageAttachmentApiFields,
+} from "./message-fragments";
+
+const chatUserSummarySchema = z.object({
+  ...userIdentitySummaryFields,
+  ...userProfileSummaryFields,
+  ...userOptionalPersonalityTypeField,
+  ...userPersonalityScoreFields,
+  ...userOptionalTrustScoreField,
+  ...userPresenceFields,
+});
 
 export const chatApiSchema = z.object({
   id: z.string(),
@@ -38,46 +50,11 @@ export const chatApiSchema = z.object({
         joinedAt: z.string().datetime(),
         leftAt: z.string().datetime().nullable(),
         lastReadMessageId: z.string().nullable(),
-        user: z.object({
-          id: z.string(),
-          name: z.string(),
-          avatar: z.string().nullable(),
-          bio: z.string().nullable().optional(),
-          age: z.number().nullable().optional(),
-          gender: genderSchema.nullable().optional(),
-          city: z.string().nullable().optional(),
-          personalityType: personalityTypeSchema.nullable().optional(),
-          oceanO: z.number().nullable().optional(),
-          oceanC: z.number().nullable().optional(),
-          oceanE: z.number().nullable().optional(),
-          oceanA: z.number().nullable().optional(),
-          oceanN: z.number().nullable().optional(),
-          trustScore: z.number().optional(),
-          onlineStatus: onlineStatusSchema.optional(),
-        }),
+        user: chatUserSummarySchema,
       }),
     )
     .optional(),
-  counterpart: z
-    .object({
-      id: z.string(),
-      name: z.string(),
-      avatar: z.string().nullable(),
-      bio: z.string().nullable().optional(),
-      age: z.number().nullable().optional(),
-      gender: genderSchema.nullable().optional(),
-      city: z.string().nullable().optional(),
-      personalityType: personalityTypeSchema.nullable().optional(),
-      oceanO: z.number().nullable().optional(),
-      oceanC: z.number().nullable().optional(),
-      oceanE: z.number().nullable().optional(),
-      oceanA: z.number().nullable().optional(),
-      oceanN: z.number().nullable().optional(),
-      trustScore: z.number().optional(),
-      onlineStatus: onlineStatusSchema.optional(),
-    })
-    .nullable()
-    .optional(),
+  counterpart: chatUserSummarySchema.nullable().optional(),
   lastMessage: z
     .lazy(() => messageApiSchema)
     .nullable()
@@ -89,15 +66,11 @@ export const chatApiSchema = z.object({
 
 export type ChatApi = z.infer<typeof chatApiSchema>;
 
-export const messageSenderSummarySchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  avatar: z.string().nullable(),
-});
+const messageSenderSummarySchema = z.object(userIdentitySummaryFields);
 
 export type MessageSenderSummary = z.infer<typeof messageSenderSummarySchema>;
 
-export const messageReplyPreviewSchema = z.object({
+const messageReplyPreviewSchema = z.object({
   id: z.string(),
   type: messageTypeSchema,
   senderId: z.string(),
@@ -108,50 +81,23 @@ export const messageReplyPreviewSchema = z.object({
 
 export type MessageReplyPreview = z.infer<typeof messageReplyPreviewSchema>;
 
-export const messageReactionApiSchema = z.object({
+const messageReactionApiSchema = z.object({
   emoji: z.string(),
   createdAt: z.string().datetime(),
   messageId: z.string(),
   userId: z.string(),
 });
 
-export type MessageReactionApi = z.infer<typeof messageReactionApiSchema>;
-
-export const messageAttachmentApiSchema = z.object({
-  id: z.string(),
-  type: attachmentTypeSchema,
+const messageAttachmentApiSchema = z.object({
+  ...messageAttachmentApiFields,
   url: z.string().url(),
-  name: z.string().nullable(),
-  size: z.number().nullable(),
-  mimeType: z.string().nullable(),
-  thumbnailUrl: z.string().nullable(),
-  duration: z.number().nullable(),
-  waveform: z.array(z.number()),
-  createdAt: z.string().datetime(),
 });
-
-export type MessageAttachmentApi = z.infer<typeof messageAttachmentApiSchema>;
 
 export const messageApiSchema = z
   .object({
-    id: z.string(),
-    type: messageTypeSchema,
-    content: z.string(),
-    status: messageStatusSchema,
-    isEdited: z.boolean(),
-    isPinned: z.boolean(),
+    ...messageApiCoreFields,
     isSaved: z.boolean().optional().default(false),
-    createdAt: z.string().datetime(),
     updatedAt: z.string().datetime().optional(),
-    editedAt: z.string().datetime().nullable(),
-    deletedAt: z.string().datetime().nullable(),
-    chatId: z.string(),
-    senderId: z.string(),
-    replyToId: z.string().nullable(),
-    forwardedFromMessageId: z.string().nullable().optional(),
-    forwardedFromChatId: z.string().nullable().optional(),
-    forwardedFromSenderId: z.string().nullable().optional(),
-    forwardedFromSenderName: z.string().nullable().optional(),
     version: z.number().optional(),
     sender: messageSenderSummarySchema.optional(),
     replyTo: messageReplyPreviewSchema.nullable().optional(),

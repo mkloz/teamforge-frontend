@@ -14,7 +14,7 @@ import { exploreInterestSchema } from "@/shared/schemas/explore";
 import { imageMediaSchema } from "@/shared/schemas/media";
 import { planProposalSchema } from "@/shared/schemas/plan";
 
-export const groupPlanViewerRelationshipSchema = z.enum([
+const groupPlanViewerRelationshipSchema = z.enum([
   "NOT_MEMBER",
   "REQUESTED",
   "INVITED",
@@ -25,7 +25,7 @@ export const groupPlanViewerRelationshipSchema = z.enum([
   "RESTRICTED",
 ]);
 
-export const groupPlanJoinDisabledReasonSchema = z
+const groupPlanJoinDisabledReasonSchema = z
   .enum([
     "FULL",
     "DISBANDED",
@@ -36,7 +36,7 @@ export const groupPlanJoinDisabledReasonSchema = z
   ])
   .nullable();
 
-export const groupPlanFitSignalSchema = z.object({
+const groupPlanFitSignalSchema = z.object({
   key: z.enum([
     "SHARED_INTERESTS",
     "SOCIAL_PACE",

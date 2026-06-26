@@ -1,6 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, type ReactNode, Suspense } from "react";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
+import type { ScreenState } from "@/features/onboarding/store/personality-test-store.types";
 import { PersonalityIntro } from "./personality-intro";
 import { usePersonalityScreenNavigation } from "./use-personality-screen-navigation";
 
@@ -36,6 +37,27 @@ const PersonalityResults = lazy(() =>
   })),
 );
 
+type PersonalityTestState = ReturnType<typeof usePersonalityTest>;
+type PersonalityScreenNavigation = ReturnType<
+  typeof usePersonalityScreenNavigation
+>;
+type PersonalityScreenId = ScreenState["id"];
+
+interface PersonalityScreenRenderContext {
+  backLabel: string;
+  continueLabel: string;
+  isOnline: boolean;
+  navigation: PersonalityScreenNavigation;
+  onContinue: () => void;
+  onSelectionChange: (length: TestLength) => void;
+  state: PersonalityTestState;
+}
+
+type PersonalityScreenRendererMap = Record<
+  PersonalityScreenId,
+  (context: PersonalityScreenRenderContext) => ReactNode
+>;
+
 interface PersonalityScreenRendererProps {
   backLabel: string;
   continueLabel: string;
@@ -44,7 +66,7 @@ interface PersonalityScreenRendererProps {
   onContinue: () => void;
   onSelectionChange: (length: TestLength) => void;
   questionsPerPage: number;
-  state: ReturnType<typeof usePersonalityTest>;
+  state: PersonalityTestState;
 }
 
 export function PersonalityScreenRenderer({
@@ -57,86 +79,166 @@ export function PersonalityScreenRenderer({
   questionsPerPage,
   state,
 }: PersonalityScreenRendererProps) {
-  const {
-    screen,
-    questions,
-    answers,
-    result,
-    vector,
-    totalPages,
-    currentPage,
-    pageStart,
-    pageQuestions,
-    actions,
-  } = state;
   const navigation = usePersonalityScreenNavigation({
     onBack,
     questionsPerPage,
     state,
   });
-
-  const renderedScreen = (() => {
-    switch (screen.id) {
-      case "intro":
-        return <PersonalityIntro {...navigation.intro} backLabel={backLabel} />;
-      case "theory":
-        return <Theory101 {...navigation.theory} />;
-      case "guidelines":
-        return <KeepInMind {...navigation.guidelines} />;
-      case "length":
-        return (
-          <LengthSelector
-            {...navigation.length}
-            initialLength={state.testLength}
-            answers={answers}
-            onSelectionChange={onSelectionChange}
-          />
-        );
-      case "questions":
-        return (
-          <QuestionPage
-            pageQuestions={pageQuestions}
-            startIndex={pageStart + 1}
-            pageNumber={currentPage}
-            totalPages={totalPages}
-            totalQuestions={questions.length}
-            answers={answers}
-            {...navigation.questions}
-          />
-        );
-      case "intermission":
-        return (
-          <IntermissionPage
-            milestoneIndex={screen.type}
-            answeredCount={state.answeredInPoolCount}
-            totalQuestions={questions.length}
-            {...navigation.intermission}
-          />
-        );
-      case "calculating":
-        if (!vector) return null;
-        return (
-          <CalculatingScreen
-            vector={vector}
-            onDone={actions.handleCalculationDone}
-          />
-        );
-      case "results":
-        if (!result || !vector) return null;
-        return (
-          <PersonalityResults
-            result={result}
-            vector={vector}
-            onContinue={onContinue}
-            onRetake={actions.handleRetake}
-            continueLabel={continueLabel}
-            isOnline={isOnline}
-          />
-        );
-      default:
-        return null;
-    }
-  })();
+  const renderedScreen = renderPersonalityScreen({
+    backLabel,
+    continueLabel,
+    isOnline,
+    navigation,
+    onContinue,
+    onSelectionChange,
+    state,
+  });
 
   return <Suspense fallback={null}>{renderedScreen}</Suspense>;
+}
+
+function renderPersonalityScreen(context: PersonalityScreenRenderContext) {
+  const renderer = getPersonalityScreenRenderer(context.state.screen.id);
+
+  return renderer ? renderer(context) : null;
+}
+
+const PERSONALITY_SCREEN_RENDERERS: PersonalityScreenRendererMap = {
+  calculating: renderCalculatingScreen,
+  guidelines: renderGuidelinesScreen,
+  intermission: renderIntermissionScreen,
+  intro: renderIntroScreen,
+  length: renderLengthScreen,
+  questions: renderQuestionsScreen,
+  results: renderResultsScreen,
+  theory: renderTheoryScreen,
+};
+
+function getPersonalityScreenRenderer(screenId: string) {
+  return isPersonalityScreenId(screenId)
+    ? PERSONALITY_SCREEN_RENDERERS[screenId]
+    : null;
+}
+
+function isPersonalityScreenId(
+  screenId: string,
+): screenId is PersonalityScreenId {
+  return screenId in PERSONALITY_SCREEN_RENDERERS;
+}
+
+function renderIntroScreen({
+  backLabel,
+  navigation,
+}: PersonalityScreenRenderContext) {
+  return <PersonalityIntro {...navigation.intro} backLabel={backLabel} />;
+}
+
+function renderTheoryScreen({ navigation }: PersonalityScreenRenderContext) {
+  return <Theory101 {...navigation.theory} />;
+}
+
+function renderGuidelinesScreen({
+  navigation,
+}: PersonalityScreenRenderContext) {
+  return <KeepInMind {...navigation.guidelines} />;
+}
+
+function renderLengthScreen({
+  navigation,
+  onSelectionChange,
+  state,
+}: PersonalityScreenRenderContext) {
+  return (
+    <LengthSelector
+      {...navigation.length}
+      initialLength={state.testLength}
+      answers={state.answers}
+      onSelectionChange={onSelectionChange}
+    />
+  );
+}
+
+function renderQuestionsScreen({
+  navigation,
+  state,
+}: PersonalityScreenRenderContext) {
+  const {
+    questions,
+    answers,
+    totalPages,
+    currentPage,
+    pageStart,
+    pageQuestions,
+  } = state;
+
+  return (
+    <QuestionPage
+      pageQuestions={pageQuestions}
+      startIndex={pageStart + 1}
+      pageNumber={currentPage}
+      totalPages={totalPages}
+      totalQuestions={questions.length}
+      answers={answers}
+      {...navigation.questions}
+    />
+  );
+}
+
+function renderIntermissionScreen({
+  navigation,
+  state,
+}: PersonalityScreenRenderContext) {
+  const milestoneIndex = getIntermissionMilestoneIndex(state.screen);
+
+  if (milestoneIndex === null) {
+    return null;
+  }
+
+  return (
+    <IntermissionPage
+      milestoneIndex={milestoneIndex}
+      answeredCount={state.answeredInPoolCount}
+      totalQuestions={state.questions.length}
+      {...navigation.intermission}
+    />
+  );
+}
+
+function renderCalculatingScreen({ state }: PersonalityScreenRenderContext) {
+  if (!state.vector) {
+    return null;
+  }
+
+  return (
+    <CalculatingScreen
+      vector={state.vector}
+      onDone={state.actions.handleCalculationDone}
+    />
+  );
+}
+
+function renderResultsScreen({
+  continueLabel,
+  isOnline,
+  onContinue,
+  state,
+}: PersonalityScreenRenderContext) {
+  if (!state.result || !state.vector) {
+    return null;
+  }
+
+  return (
+    <PersonalityResults
+      result={state.result}
+      vector={state.vector}
+      onContinue={onContinue}
+      onRetake={state.actions.handleRetake}
+      continueLabel={continueLabel}
+      isOnline={isOnline}
+    />
+  );
+}
+
+function getIntermissionMilestoneIndex(screen: ScreenState) {
+  return screen.id === "intermission" ? screen.type : null;
 }

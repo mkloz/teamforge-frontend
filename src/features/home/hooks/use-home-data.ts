@@ -40,6 +40,13 @@ const NO_HOME_DATA: Record<HomeDataSlice, boolean> = {
 };
 
 type IncludedHomeData = Record<HomeDataSlice, boolean>;
+type HomeLoadingSlice =
+  | "groups"
+  | "invitations"
+  | "plans"
+  | "recommendations"
+  | "sentInvitations"
+  | "stats";
 
 interface HomeQueryState {
   data: unknown;
@@ -69,16 +76,12 @@ export function useHomeData(options?: UseHomeDataOptions) {
   const queryClient = useQueryClient();
   const queries = useHomeQueries(include);
   const activeQueries = getActiveHomeQueries(include, queries);
+  const homeData = getHomeDataValues(queries);
   const loadingState = getHomeLoadingState(include, queries);
   const availabilityState = getHomeAvailabilityState(activeQueries);
 
   return {
-    stats: queries.stats.data ?? EMPTY_HOME_STATS,
-    plans: queries.plans.data ?? EMPTY_PLANS,
-    groups: queries.groups.data ?? EMPTY_GROUPS,
-    invitations: queries.invitations.data ?? EMPTY_INVITATIONS,
-    sentInvitations: queries.sentInvitations.data ?? EMPTY_INVITATIONS,
-    recommendations: queries.recommendations.data ?? EMPTY_RECOMMENDATIONS,
+    ...homeData,
     ...loadingState,
     ...availabilityState,
     refetchAll: () =>
@@ -127,6 +130,30 @@ function useHomeQueries(include: IncludedHomeData) {
 
 type HomeQueries = ReturnType<typeof useHomeQueries>;
 
+function getHomeDataValues(queries: HomeQueries) {
+  return {
+    stats: getQueryDataOrDefault(queries.stats.data, EMPTY_HOME_STATS),
+    plans: getQueryDataOrDefault(queries.plans.data, EMPTY_PLANS),
+    groups: getQueryDataOrDefault(queries.groups.data, EMPTY_GROUPS),
+    invitations: getQueryDataOrDefault(
+      queries.invitations.data,
+      EMPTY_INVITATIONS,
+    ),
+    sentInvitations: getQueryDataOrDefault(
+      queries.sentInvitations.data,
+      EMPTY_INVITATIONS,
+    ),
+    recommendations: getQueryDataOrDefault(
+      queries.recommendations.data,
+      EMPTY_RECOMMENDATIONS,
+    ),
+  };
+}
+
+function getQueryDataOrDefault<Data>(data: Data | undefined, fallback: Data) {
+  return data ?? fallback;
+}
+
 function getHomeQueryEntries(
   include: IncludedHomeData,
   queries: HomeQueries,
@@ -149,31 +176,35 @@ function getActiveHomeQueries(
 }
 
 function getHomeLoadingState(include: IncludedHomeData, queries: HomeQueries) {
-  const isStatsLoading = include.stats && queries.stats.isLoading;
-  const isPlansLoading = include.plans && queries.plans.isLoading;
-  const isGroupsLoading = include.groups && queries.groups.isLoading;
-  const isInvitationsLoading =
-    include.invitations && queries.invitations.isLoading;
-  const isSentInvitationsLoading =
-    include.sentInvitations && queries.sentInvitations.isLoading;
-  const isRecommendationsLoading =
-    include.recommendations && queries.recommendations.isLoading;
+  const loadingState = {
+    isStatsLoading: isHomeSliceLoading(include, queries, "stats"),
+    isPlansLoading: isHomeSliceLoading(include, queries, "plans"),
+    isGroupsLoading: isHomeSliceLoading(include, queries, "groups"),
+    isInvitationsLoading: isHomeSliceLoading(include, queries, "invitations"),
+    isSentInvitationsLoading: isHomeSliceLoading(
+      include,
+      queries,
+      "sentInvitations",
+    ),
+    isRecommendationsLoading: isHomeSliceLoading(
+      include,
+      queries,
+      "recommendations",
+    ),
+  };
 
   return {
-    isStatsLoading,
-    isPlansLoading,
-    isGroupsLoading,
-    isInvitationsLoading,
-    isSentInvitationsLoading,
-    isRecommendationsLoading,
-    isLoading:
-      isStatsLoading ||
-      isPlansLoading ||
-      isGroupsLoading ||
-      isInvitationsLoading ||
-      isSentInvitationsLoading ||
-      isRecommendationsLoading,
+    ...loadingState,
+    isLoading: Object.values(loadingState).some(Boolean),
   };
+}
+
+function isHomeSliceLoading(
+  include: IncludedHomeData,
+  queries: HomeQueries,
+  slice: HomeLoadingSlice,
+) {
+  return include[slice] && queries[slice].isLoading;
 }
 
 function getHomeAvailabilityState(activeQueries: HomeQueryEntry[]) {

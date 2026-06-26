@@ -1,5 +1,6 @@
 import { startTransition, useMemo, useOptimistic, useState } from "react";
 
+import { getRateableReviewMembers } from "@/features/activity/hooks/activity-review-waiting-state";
 import { useGroupRatings } from "@/features/activity/hooks/use-group-ratings";
 import type {
   Group,
@@ -7,7 +8,10 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
-import type { ReviewDeferralReason } from "@/shared/schemas";
+import type {
+  CreateRatingPayload,
+  ReviewDeferralReason,
+} from "@/shared/schemas";
 
 interface ReviewDraft {
   comment: string;
@@ -46,42 +50,38 @@ export function useCompletedGroupRating(group: Group) {
   );
 
   const rateableMembers = useMemo(
-    () =>
-      (group.members ?? [])
-        .filter((member) => member.leftAt === null)
-        .filter((member) => member.userId !== currentUserId)
-        .filter((member) => member.user !== undefined),
+    () => getRateableReviewMembers(group.members, currentUserId),
     [currentUserId, group.members],
   );
   const pendingMembers = useMemo(
     () =>
-      pendingUserIds.size > 0
-        ? rateableMembers.filter((member) => pendingUserIds.has(member.userId))
-        : rateableMembers.filter(
-            (member) => !optimisticRatedUserIds.has(member.userId),
-          ),
+      getPendingReviewMembers({
+        optimisticRatedUserIds,
+        pendingUserIds,
+        rateableMembers,
+      }),
     [optimisticRatedUserIds, pendingUserIds, rateableMembers],
   );
-  const nextMember = rateableMembers.find(
-    (member) =>
-      pendingMembers.some((pending) => pending.userId === member.userId) &&
-      !optimisticRatedUserIds.has(member.userId),
+  const nextMember = getNextPendingReviewMember({
+    optimisticRatedUserIds,
+    pendingMembers,
+    rateableMembers,
+  });
+  const activeUserId = getActiveReviewUserId({
+    nextMember,
+    optimisticRatedUserIds,
+    selectedUserId,
+  });
+  const selectedMember = getSelectedRateableMember(
+    rateableMembers,
+    activeUserId,
   );
-  const activeUserId =
-    selectedUserId && !optimisticRatedUserIds.has(selectedUserId)
-      ? selectedUserId
-      : (nextMember?.userId ?? null);
-  const selectedMember =
-    rateableMembers.find((member) => member.userId === activeUserId) ?? null;
-  const allRated =
-    rateableMembers.length > 0 &&
-    rateableMembers.every((member) =>
-      optimisticRatedUserIds.has(member.userId),
-    );
-  const currentPlanId = reviewState?.currentPlan?.id ?? group.plan?.id ?? null;
-  const activeDraft = activeUserId
-    ? (reviewDrafts[activeUserId] ?? emptyReviewDraft)
-    : emptyReviewDraft;
+  const allRated = getAllRateableMembersRated(
+    rateableMembers,
+    optimisticRatedUserIds,
+  );
+  const currentPlanId = getCurrentReviewPlanId(group, reviewState);
+  const activeDraft = getActiveReviewDraft(reviewDrafts, activeUserId);
 
   const selectMember = (member: GroupMember) => {
     setSelectedUserId(member.userId);
@@ -94,10 +94,7 @@ export function useCompletedGroupRating(group: Group) {
 
     setReviewDrafts((current) => ({
       ...current,
-      [activeUserId]: {
-        ...(current[activeUserId] ?? emptyReviewDraft),
-        score,
-      },
+      [activeUserId]: getUpdatedReviewDraft(current[activeUserId], { score }),
     }));
   };
 
@@ -108,15 +105,19 @@ export function useCompletedGroupRating(group: Group) {
 
     setReviewDrafts((current) => ({
       ...current,
-      [activeUserId]: {
-        ...(current[activeUserId] ?? emptyReviewDraft),
-        comment,
-      },
+      [activeUserId]: getUpdatedReviewDraft(current[activeUserId], { comment }),
     }));
   };
 
   const submitActiveRating = () => {
-    if (!activeUserId || !currentPlanId || activeDraft.score === 0) {
+    const ratingPayload = getActiveRatingPayload({
+      activeDraft,
+      activeUserId,
+      currentPlanId,
+      groupId: group.id,
+    });
+
+    if (!ratingPayload) {
       return;
     }
 
@@ -129,26 +130,16 @@ export function useCompletedGroupRating(group: Group) {
       return;
     }
 
-    const reviewedUserId = activeUserId;
-    const submittedDraft = activeDraft;
-    const ratingPayload = {
-      groupId: group.id,
-      planId: currentPlanId,
-      rateeId: reviewedUserId,
-      score: submittedDraft.score,
-      comment: submittedDraft.comment.trim() || undefined,
-    };
+    const reviewedUserId = ratingPayload.rateeId;
 
     startTransition(async () => {
       addOptimisticRatedUser(reviewedUserId);
       try {
         await submitRating(ratingPayload);
         setSelectedUserId(null);
-        setReviewDrafts((current) => {
-          const next = { ...current };
-          delete next[reviewedUserId];
-          return next;
-        });
+        setReviewDrafts((current) =>
+          removeReviewDraft(current, reviewedUserId),
+        );
       } catch (error) {
         warnInDevelopment("Completed group rating submission failed.", error);
       }
@@ -204,4 +195,134 @@ export function useCompletedGroupRating(group: Group) {
     submitActiveRating,
     submittedRatings,
   };
+}
+
+function getPendingReviewMembers({
+  optimisticRatedUserIds,
+  pendingUserIds,
+  rateableMembers,
+}: {
+  optimisticRatedUserIds: ReadonlySet<string>;
+  pendingUserIds: ReadonlySet<string>;
+  rateableMembers: GroupMember[];
+}) {
+  if (pendingUserIds.size > 0) {
+    return rateableMembers.filter((member) =>
+      pendingUserIds.has(member.userId),
+    );
+  }
+
+  return rateableMembers.filter(
+    (member) => !optimisticRatedUserIds.has(member.userId),
+  );
+}
+
+function getNextPendingReviewMember({
+  optimisticRatedUserIds,
+  pendingMembers,
+  rateableMembers,
+}: {
+  optimisticRatedUserIds: ReadonlySet<string>;
+  pendingMembers: GroupMember[];
+  rateableMembers: GroupMember[];
+}) {
+  return rateableMembers.find(
+    (member) =>
+      pendingMembers.some((pending) => pending.userId === member.userId) &&
+      !optimisticRatedUserIds.has(member.userId),
+  );
+}
+
+function getActiveReviewUserId({
+  nextMember,
+  optimisticRatedUserIds,
+  selectedUserId,
+}: {
+  nextMember: GroupMember | undefined;
+  optimisticRatedUserIds: ReadonlySet<string>;
+  selectedUserId: string | null;
+}) {
+  if (selectedUserId && !optimisticRatedUserIds.has(selectedUserId)) {
+    return selectedUserId;
+  }
+
+  return nextMember?.userId ?? null;
+}
+
+function getSelectedRateableMember(
+  rateableMembers: GroupMember[],
+  activeUserId: string | null,
+) {
+  return (
+    rateableMembers.find((member) => member.userId === activeUserId) ?? null
+  );
+}
+
+function getAllRateableMembersRated(
+  rateableMembers: GroupMember[],
+  optimisticRatedUserIds: ReadonlySet<string>,
+) {
+  return (
+    rateableMembers.length > 0 &&
+    rateableMembers.every((member) => optimisticRatedUserIds.has(member.userId))
+  );
+}
+
+function getCurrentReviewPlanId(
+  group: Group,
+  reviewState: ReturnType<typeof useGroupRatings>["reviewState"],
+) {
+  return reviewState?.currentPlan?.id ?? group.plan?.id ?? null;
+}
+
+function getActiveReviewDraft(
+  reviewDrafts: Record<string, ReviewDraft>,
+  activeUserId: string | null,
+) {
+  return activeUserId
+    ? (reviewDrafts[activeUserId] ?? emptyReviewDraft)
+    : emptyReviewDraft;
+}
+
+function getUpdatedReviewDraft(
+  currentDraft: ReviewDraft | undefined,
+  patch: Partial<ReviewDraft>,
+): ReviewDraft {
+  return {
+    ...(currentDraft ?? emptyReviewDraft),
+    ...patch,
+  };
+}
+
+function getActiveRatingPayload({
+  activeDraft,
+  activeUserId,
+  currentPlanId,
+  groupId,
+}: {
+  activeDraft: ReviewDraft;
+  activeUserId: string | null;
+  currentPlanId: string | null;
+  groupId: string;
+}): CreateRatingPayload | null {
+  if (!activeUserId || !currentPlanId || activeDraft.score === 0) {
+    return null;
+  }
+
+  return {
+    groupId,
+    planId: currentPlanId,
+    rateeId: activeUserId,
+    score: activeDraft.score,
+    comment: activeDraft.comment.trim() || undefined,
+  };
+}
+
+function removeReviewDraft(
+  reviewDrafts: Record<string, ReviewDraft>,
+  reviewedUserId: string,
+) {
+  const next = { ...reviewDrafts };
+  delete next[reviewedUserId];
+  return next;
 }

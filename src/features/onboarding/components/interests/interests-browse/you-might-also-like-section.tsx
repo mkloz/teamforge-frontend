@@ -3,7 +3,7 @@ import { cn } from "@/shared/lib/utils";
 import type { Interest } from "@/shared/schemas";
 
 import { CollapsibleInterestSection } from "./collapsible-interest-section";
-import { TagPill } from "./tag-pill";
+import { InterestTagPillList } from "./interest-tag-pill-list";
 
 interface YouMightAlsoLikeSectionProps {
   tags: Interest[];
@@ -34,18 +34,14 @@ export function YouMightAlsoLikeSection({
       className="group/section mb-4 overflow-hidden rounded-xl border border-slate-muted/10 bg-canvas p-0.5 transition-colors duration-300 hover:border-forge-teal/20"
     >
       <div className="flex flex-wrap gap-1 px-2.5 pt-2 pb-3 sm:gap-1.5 sm:px-4 sm:pb-4">
-        {tags.map((tag) => (
-          <TagPill
-            key={tag.id}
-            label={tag.name}
-            selected={selectedIds.has(tag.id)}
-            disabled={isAtMax}
-            onToggle={() => onToggle(tag.id)}
-            onReject={() => onReject(tag.id)}
-            aliases={tag.aliases}
-            animated
-          />
-        ))}
+        <InterestTagPillList
+          animated
+          disabled={isAtMax}
+          onReject={onReject}
+          onToggle={onToggle}
+          selectedIds={selectedIds}
+          tags={tags}
+        />
       </div>
     </CollapsibleInterestSection>
   );

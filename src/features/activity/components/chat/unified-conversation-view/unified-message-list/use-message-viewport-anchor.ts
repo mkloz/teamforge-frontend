@@ -18,6 +18,16 @@ interface UseMessageViewportAnchorInput {
   visibleBlocks: VirtualizedMessageBlock[];
 }
 
+interface ViewportAnchorRestoreInput {
+  currentAnchor: ViewportAnchorSnapshot;
+  isLoadingOlderMessages: boolean;
+  isNearBottom: boolean;
+  prependAnchor: PrependAnchorSnapshot | null;
+  previousAnchor: ViewportAnchorSnapshot | null;
+  previousTotalHeight: number;
+  totalHeight: number;
+}
+
 export function useMessageViewportAnchor({
   containerRef,
   getBlockElement,
@@ -31,17 +41,19 @@ export function useMessageViewportAnchor({
   const previousTotalHeightRef = useRef(0);
 
   useEffect(() => {
-    if (
-      !prependAnchorRef.current ||
-      !containerRef?.current ||
-      isLoadingOlderMessages
-    ) {
+    const pendingRestore = getPendingPrependRestore(
+      prependAnchorRef.current,
+      containerRef?.current,
+      isLoadingOlderMessages,
+    );
+
+    if (!pendingRestore) {
       return;
     }
 
     restorePrependAnchor(
-      containerRef.current,
-      prependAnchorRef.current,
+      pendingRestore.viewport,
+      pendingRestore.prependAnchor,
       totalHeight,
       getBlockElement,
     );
@@ -64,24 +76,27 @@ export function useMessageViewportAnchor({
     }
 
     const previousTotalHeight = previousTotalHeightRef.current;
-    const totalHeightChanged = previousTotalHeight !== totalHeight;
 
     if (
-      !isNearBottom &&
-      !isLoadingOlderMessages &&
-      !prependAnchorRef.current &&
-      totalHeightChanged &&
-      viewportAnchorRef.current?.key === currentAnchor.key
+      shouldRestoreViewportAnchor({
+        currentAnchor,
+        isLoadingOlderMessages,
+        isNearBottom,
+        prependAnchor: prependAnchorRef.current,
+        previousAnchor: viewportAnchorRef.current,
+        previousTotalHeight,
+        totalHeight,
+      })
     ) {
       restoreViewportAnchor(
         viewport,
         viewportAnchorRef.current,
         getBlockElement,
       );
-      viewportAnchorRef.current = {
-        key: currentAnchor.key,
-        offsetTop: viewportAnchorRef.current.offsetTop,
-      };
+      viewportAnchorRef.current = keepPreviousAnchorOffset(
+        viewportAnchorRef.current,
+        currentAnchor,
+      );
       previousTotalHeightRef.current = totalHeight;
       return;
     }
@@ -111,5 +126,43 @@ export function useMessageViewportAnchor({
 
   return {
     rememberPrependAnchor,
+  };
+}
+
+function getPendingPrependRestore(
+  prependAnchor: PrependAnchorSnapshot | null,
+  viewport: HTMLDivElement | null | undefined,
+  isLoadingOlderMessages: boolean,
+) {
+  return prependAnchor && viewport && !isLoadingOlderMessages
+    ? { prependAnchor, viewport }
+    : null;
+}
+
+function shouldRestoreViewportAnchor({
+  currentAnchor,
+  isLoadingOlderMessages,
+  isNearBottom,
+  prependAnchor,
+  previousAnchor,
+  previousTotalHeight,
+  totalHeight,
+}: ViewportAnchorRestoreInput) {
+  return (
+    !isNearBottom &&
+    !isLoadingOlderMessages &&
+    !prependAnchor &&
+    previousTotalHeight !== totalHeight &&
+    previousAnchor?.key === currentAnchor.key
+  );
+}
+
+function keepPreviousAnchorOffset(
+  previousAnchor: ViewportAnchorSnapshot | null,
+  currentAnchor: ViewportAnchorSnapshot,
+): ViewportAnchorSnapshot {
+  return {
+    key: currentAnchor.key,
+    offsetTop: previousAnchor?.offsetTop ?? currentAnchor.offsetTop,
   };
 }

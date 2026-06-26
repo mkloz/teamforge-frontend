@@ -9,9 +9,3 @@ export const ACTIVITY_FRIENDSHIPS_QUERY_KEY =
 
 export const ACTIVITY_SAVED_MESSAGES_QUERY_KEY =
   APP_QUERY_KEYS.activity.savedMessages;
-
-export const ACTIVITY_GROUP_SELECTION_QUERY_KEY =
-  APP_QUERY_KEYS.activity.groupSelection;
-
-export const ACTIVITY_DIRECT_SELECTION_QUERY_KEY =
-  APP_QUERY_KEYS.activity.directSelection;

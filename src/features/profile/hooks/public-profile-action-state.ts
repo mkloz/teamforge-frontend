@@ -31,6 +31,16 @@ type ConnectDisabledOptions = {
   isViewerProfile: boolean;
 };
 
+type FriendshipStatus = FriendshipLabelState["status"] | undefined;
+
+const CONNECT_LABEL_BY_STATUS: Partial<
+  Record<NonNullable<FriendshipStatus>, string>
+> = {
+  ACCEPTED: "Connected",
+  BLOCKED: "Blocked",
+  PENDING: "Requested",
+};
+
 export const REMOVE_CONNECTION_OFFLINE_ACTION = {
   id: "profile-remove-friend-offline",
   description: "Reconnect before removing connections.",
@@ -76,23 +86,23 @@ export function getConnectLabel(
   friendship: FriendshipLabelState | null | undefined,
   currentUserId: string | null,
 ) {
-  if (friendship?.status === "ACCEPTED") {
-    return "Connected";
-  }
-
   if (isIncomingRequest(friendship, currentUserId)) {
     return "Accept";
   }
 
-  if (friendship?.status === "PENDING") {
-    return "Requested";
+  return getConnectLabelForStatus(friendship?.status);
+}
+
+function getConnectLabelForStatus(status: FriendshipStatus) {
+  return getKnownConnectLabel(status) ?? "Connect";
+}
+
+function getKnownConnectLabel(status: FriendshipStatus) {
+  if (!status) {
+    return undefined;
   }
 
-  if (friendship?.status === "BLOCKED") {
-    return "Blocked";
-  }
-
-  return "Connect";
+  return CONNECT_LABEL_BY_STATUS[status];
 }
 
 export function getMessageChatId(friendship: FriendshipApi | null | undefined) {
@@ -130,14 +140,43 @@ export function getConnectDisabled({
   isViewerProfile,
 }: ConnectDisabledOptions) {
   return (
-    !currentUserId ||
-    !isOnline ||
-    currentUserLoading ||
-    connectPending ||
-    isViewerProfile ||
-    friendshipLoading ||
-    displayFriendship?.status === "ACCEPTED" ||
-    (displayFriendship?.status === "PENDING" && !incomingRequest) ||
-    displayFriendship?.status === "BLOCKED"
+    hasConnectPrerequisiteBlocker({
+      connectPending,
+      currentUserId,
+      currentUserLoading,
+      friendshipLoading,
+      isOnline,
+      isViewerProfile,
+    }) ||
+    hasBlockingFriendshipStatus(displayFriendship?.status, incomingRequest)
   );
+}
+
+function hasConnectPrerequisiteBlocker({
+  connectPending,
+  currentUserId,
+  currentUserLoading,
+  friendshipLoading,
+  isOnline,
+  isViewerProfile,
+}: Omit<ConnectDisabledOptions, "displayFriendship" | "incomingRequest">) {
+  return [
+    !currentUserId,
+    !isOnline,
+    currentUserLoading,
+    connectPending,
+    isViewerProfile,
+    friendshipLoading,
+  ].some(Boolean);
+}
+
+function hasBlockingFriendshipStatus(
+  status: FriendshipStatus,
+  incomingRequest: boolean,
+) {
+  if (status === "PENDING") {
+    return !incomingRequest;
+  }
+
+  return status === "ACCEPTED" || status === "BLOCKED";
 }

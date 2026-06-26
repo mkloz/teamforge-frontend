@@ -16,14 +16,6 @@ export function getRouteScreenshotPath(outputDir: string, slug: string) {
   return path.join(screenshotDir, `${slug}.png`);
 }
 
-export function getRouteResultPath(outputDir: string, slug: string) {
-  const routeDir = path.join(outputDir, "routes");
-
-  mkdirSync(routeDir, { recursive: true });
-
-  return path.join(routeDir, `${slug}.json`);
-}
-
 export function getAccessibilityResultPath(outputDir: string, slug: string) {
   const accessibilityDir = path.join(outputDir, "accessibility");
 

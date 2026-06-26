@@ -1,7 +1,6 @@
 import {
   cleanPlanProposalText,
   formatPlanLocationValue,
-  normalizePlanLocationValue as normalizeSharedPlanLocationValue,
   PLAN_LOCATION_MODE_LABELS,
   type PlanLocationValue,
   parsePlanLocationValue as parseSharedPlanLocationValue,
@@ -21,22 +20,12 @@ const PLAN_LOCATION_OPTIONS = {
   requireCoordinatePair: true,
 } as const;
 
-export function normalizePlanLocationValue(
-  value: Partial<PlanLocationValue> & { locationMode: LocationMode },
-): PlanLocationValue {
-  return normalizeSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
-}
-
 export function serializePlanLocationValue(value: PlanLocationValue) {
   return serializeSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
 }
 
-export function parsePlanLocationValue(value: string | null) {
+function parsePlanLocationValue(value: string | null) {
   return parseSharedPlanLocationValue(value, PLAN_LOCATION_OPTIONS);
-}
-
-export function getPlanLocationValue(plan: PlanLocationValue) {
-  return normalizePlanLocationValue(plan);
 }
 
 export function formatPlanLocation(value: PlanLocationValue) {

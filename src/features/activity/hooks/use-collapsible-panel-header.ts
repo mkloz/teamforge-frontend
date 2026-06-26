@@ -1,12 +1,16 @@
+import { type RefObject, useCallback } from "react";
 import {
-  type RefObject,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+  type CollapsibleRenderState,
+  useCollapsibleScrollState,
+} from "@/shared/hooks/use-collapsible-scroll-state";
+import {
+  getBooleanCssValue,
+  getCollapsedCssValue,
+  getMotionSafeActiveCssValue,
+  getMotionSafeCollapsedCssValue,
+  getMotionSafeRevealDelay,
+  getPrefersReducedMotion,
+} from "@/shared/lib/collapsible-motion";
 
 interface UseCollapsiblePanelHeaderOptions<TElement extends HTMLElement> {
   collapsedHeight: number;
@@ -21,47 +25,107 @@ const DEFAULT_COLLAPSE_TRIGGER = 32;
 const DEFAULT_EXPAND_TRIGGER = 8;
 const COMPACT_REVEAL_DELAY_MS = 280;
 
-interface HeaderState {
-  collapsed: boolean;
-  compactVisible: boolean;
-}
-
-function getPrefersReducedMotion() {
-  return (
-    hasBrowserWindow() &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-}
-
-function getHeaderStyleVariables({
-  collapsed,
-  collapsedHeight,
-  compactVisible,
-  expandedHeight,
-  prefersReducedMotion,
-}: HeaderState & {
+type HeaderStyleInput = CollapsibleRenderState & {
   collapsedHeight: number;
   expandedHeight: number;
   prefersReducedMotion: boolean;
-}) {
+};
+
+function getCompactHeaderStyleVariables({
+  compactVisible,
+  prefersReducedMotion,
+}: Pick<HeaderStyleInput, "compactVisible" | "prefersReducedMotion">) {
+  return {
+    "--collapsible-panel-compact-opacity": getBooleanCssValue(
+      compactVisible,
+      "1",
+      "0",
+    ),
+    "--collapsible-panel-compact-scrim-opacity": getBooleanCssValue(
+      compactVisible,
+      "0.86",
+      "0",
+    ),
+    "--collapsible-panel-title-y": getMotionSafeActiveCssValue({
+      active: compactVisible,
+      activeValue: "0px",
+      inactiveValue: "-8px",
+      prefersReducedMotion,
+    }),
+  };
+}
+
+function getCoverStyleVariables({
+  collapsed,
+  collapsedHeight,
+  expandedHeight,
+}: Pick<HeaderStyleInput, "collapsed" | "collapsedHeight" | "expandedHeight">) {
   const collapseRange = Math.max(expandedHeight - collapsedHeight, 1);
 
   return {
-    "--collapsible-panel-compact-opacity": compactVisible ? "1" : "0",
-    "--collapsible-panel-compact-scrim-opacity": compactVisible ? "0.86" : "0",
-    "--collapsible-panel-cover-y": collapsed ? `${-collapseRange}px` : "0px",
-    "--collapsible-panel-image-scale":
-      prefersReducedMotion || !collapsed ? "1" : "1.04",
-    "--collapsible-panel-image-y":
-      prefersReducedMotion || !collapsed ? "0px" : "-10px",
-    "--collapsible-panel-original-card-delay":
-      collapsed || prefersReducedMotion ? "0ms" : "160ms",
-    "--collapsible-panel-original-card-opacity": collapsed ? "0" : "1",
-    "--collapsible-panel-original-card-y":
-      collapsed && !prefersReducedMotion ? "-24px" : "0px",
-    "--collapsible-panel-original-pointer-events": collapsed ? "none" : "auto",
-    "--collapsible-panel-title-y":
-      compactVisible || prefersReducedMotion ? "0px" : "-8px",
+    "--collapsible-panel-cover-y": getCollapsedCssValue(
+      collapsed,
+      `${-collapseRange}px`,
+      "0px",
+    ),
+  };
+}
+
+function getImageStyleVariables({
+  collapsed,
+  prefersReducedMotion,
+}: Pick<HeaderStyleInput, "collapsed" | "prefersReducedMotion">) {
+  return {
+    "--collapsible-panel-image-scale": getMotionSafeCollapsedCssValue({
+      collapsed,
+      collapsedValue: "1.04",
+      expandedValue: "1",
+      prefersReducedMotion,
+    }),
+    "--collapsible-panel-image-y": getMotionSafeCollapsedCssValue({
+      collapsed,
+      collapsedValue: "-10px",
+      expandedValue: "0px",
+      prefersReducedMotion,
+    }),
+  };
+}
+
+function getOriginalCardStyleVariables({
+  collapsed,
+  prefersReducedMotion,
+}: Pick<HeaderStyleInput, "collapsed" | "prefersReducedMotion">) {
+  return {
+    "--collapsible-panel-original-card-delay": getMotionSafeRevealDelay({
+      collapsed,
+      expandedDelay: "160ms",
+      prefersReducedMotion,
+    }),
+    "--collapsible-panel-original-card-opacity": getCollapsedCssValue(
+      collapsed,
+      "0",
+      "1",
+    ),
+    "--collapsible-panel-original-card-y": getMotionSafeCollapsedCssValue({
+      collapsed,
+      collapsedValue: "-24px",
+      expandedValue: "0px",
+      prefersReducedMotion,
+    }),
+    "--collapsible-panel-original-pointer-events": getCollapsedCssValue(
+      collapsed,
+      "none",
+      "auto",
+    ),
+  };
+}
+
+function getHeaderStyleVariables(input: HeaderStyleInput) {
+  return {
+    ...getCompactHeaderStyleVariables(input),
+    ...getCoverStyleVariables(input),
+    ...getImageStyleVariables(input),
+    ...getOriginalCardStyleVariables(input),
   };
 }
 
@@ -82,18 +146,12 @@ export function useCollapsiblePanelHeader<TElement extends HTMLElement>({
   expandedHeight,
   ref,
 }: UseCollapsiblePanelHeaderOptions<TElement>) {
-  const frameRef = useRef<number | null>(null);
-  const isCollapsedRef = useRef(false);
-  const isCompactVisibleRef = useRef(false);
-  const compactRevealTimeoutRef = useRef<number | null>(null);
-  const [isCompactVisible, setIsCompactVisible] = useState(false);
-
   const applyHeaderState = useCallback(
-    ({ collapsed, compactVisible }: HeaderState) => {
+    ({ collapsed, compactVisible }: CollapsibleRenderState) => {
       const element = ref.current;
 
       if (!element) {
-        return;
+        return false;
       }
 
       applyHeaderStyleVariables(
@@ -107,119 +165,29 @@ export function useCollapsiblePanelHeader<TElement extends HTMLElement>({
         }),
       );
 
-      if (isCompactVisibleRef.current !== compactVisible) {
-        isCompactVisibleRef.current = compactVisible;
-        setIsCompactVisible(compactVisible);
-      }
+      return true;
     },
     [collapsedHeight, expandedHeight, ref],
   );
 
-  const clearCompactRevealTimeout = useCallback(() => {
-    if (compactRevealTimeoutRef.current === null || !hasBrowserWindow()) {
-      return;
-    }
-
-    window.clearTimeout(compactRevealTimeoutRef.current);
-    compactRevealTimeoutRef.current = null;
-  }, []);
-
-  const revealCompactHeader = useCallback(() => {
-    compactRevealTimeoutRef.current = null;
-    applyHeaderState({ collapsed: true, compactVisible: true });
-  }, [applyHeaderState]);
-
-  const applyScrollState = useCallback(
-    (scrollTop: number, { force = false }: { force?: boolean } = {}) => {
-      const nextCollapsed =
-        enabled &&
-        (isCollapsedRef.current
-          ? scrollTop > expandTrigger
-          : scrollTop >= collapseTrigger);
-
-      if (!force && isCollapsedRef.current === nextCollapsed) {
-        return;
-      }
-
-      clearCompactRevealTimeout();
-
-      if (nextCollapsed) {
-        isCollapsedRef.current = true;
-        applyHeaderState({ collapsed: true, compactVisible: false });
-
-        const prefersReducedMotion = getPrefersReducedMotion();
-
-        if (hasBrowserWindow() && !prefersReducedMotion) {
-          compactRevealTimeoutRef.current = window.setTimeout(
-            revealCompactHeader,
-            COMPACT_REVEAL_DELAY_MS,
-          );
-        } else {
-          revealCompactHeader();
-        }
-
-        return;
-      }
-
-      isCollapsedRef.current = false;
-      applyHeaderState({ collapsed: false, compactVisible: false });
-    },
-    [
-      applyHeaderState,
-      clearCompactRevealTimeout,
-      collapseTrigger,
-      enabled,
-      expandTrigger,
-      revealCompactHeader,
-    ],
+  const getPanelScrollPosition = useCallback(
+    () => ref.current?.scrollTop ?? 0,
+    [ref],
   );
-
-  const handleScroll = useCallback(() => {
-    if (!hasBrowserWindow()) {
-      return;
-    }
-
-    if (frameRef.current !== null) {
-      return;
-    }
-
-    frameRef.current = window.requestAnimationFrame(() => {
-      frameRef.current = null;
-      applyScrollState(ref.current?.scrollTop ?? 0);
-    });
-  }, [applyScrollState, ref]);
-
-  const resetHeader = useCallback(() => {
-    applyScrollState(0, { force: true });
-  }, [applyScrollState]);
-
-  useLayoutEffect(() => {
-    applyScrollState(ref.current?.scrollTop ?? 0, { force: true });
-  }, [applyScrollState, ref]);
-
-  useEffect(() => {
-    const element = ref.current;
-
-    if (!element) {
-      return undefined;
-    }
-
-    element.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      element.removeEventListener("scroll", handleScroll);
-    };
-  }, [handleScroll, ref]);
-
-  useEffect(() => {
-    return () => {
-      if (frameRef.current !== null && hasBrowserWindow()) {
-        window.cancelAnimationFrame(frameRef.current);
-      }
-
-      clearCompactRevealTimeout();
-    };
-  }, [clearCompactRevealTimeout]);
+  const getPanelScrollTarget = useCallback(() => ref.current, [ref]);
+  const {
+    handleScroll,
+    isCompactVisible,
+    resetScrollState: resetHeader,
+  } = useCollapsibleScrollState({
+    applyState: applyHeaderState,
+    collapseTrigger,
+    compactRevealDelayMs: COMPACT_REVEAL_DELAY_MS,
+    enabled,
+    expandTrigger,
+    getScrollPosition: getPanelScrollPosition,
+    getScrollTarget: getPanelScrollTarget,
+  });
 
   return {
     handleScroll,

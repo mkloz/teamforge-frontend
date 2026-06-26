@@ -6,7 +6,7 @@ import {
 import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 import type { User } from "@/shared/schemas";
 
-export const PROFILE_BASICS_FIELD_COUNT = 3;
+const PROFILE_BASICS_FIELD_COUNT = 3;
 
 export const PROFILE_BASICS_DEFAULT_VALUES: ProfileBasicsValues = {
   age: "",
@@ -23,13 +23,31 @@ export function getProfileBasicsValuesFromUser(
     return PROFILE_BASICS_DEFAULT_VALUES;
   }
 
+  return buildProfileBasicsValues(user);
+}
+
+function buildProfileBasicsValues(user: User): ProfileBasicsValues {
   return {
-    age: user.age ? String(user.age) : "",
-    gender: user.gender ?? "",
-    city: user.city ?? "",
-    locationLat: user.locationLat ?? null,
-    locationLng: user.locationLng ?? null,
+    age: toProfileBasicsAgeValue(user.age),
+    gender: toProfileBasicsTextValue(user.gender),
+    city: toProfileBasicsTextValue(user.city),
+    locationLat: toProfileBasicsLocationValue(user.locationLat),
+    locationLng: toProfileBasicsLocationValue(user.locationLng),
   };
+}
+
+function toProfileBasicsAgeValue(age: User["age"]) {
+  return age ? String(age) : "";
+}
+
+function toProfileBasicsTextValue<T extends string>(
+  value: T | null | undefined,
+): T | "" {
+  return value ?? "";
+}
+
+function toProfileBasicsLocationValue(value: number | null | undefined) {
+  return value ?? null;
 }
 
 export function getProfileBasicsProgress(values: Partial<ProfileBasicsValues>) {

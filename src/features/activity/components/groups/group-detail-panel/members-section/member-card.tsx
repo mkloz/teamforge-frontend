@@ -21,6 +21,14 @@ interface MemberCardProps {
   showFit?: boolean;
 }
 
+interface MemberMetricItem {
+  icon: LucideIcon;
+  key: "fit" | "trust";
+  label: string;
+  tone: "muted" | "teal";
+  value: string;
+}
+
 export function MemberCard({
   canRemove = false,
   isViewer = false,
@@ -111,28 +119,46 @@ function MemberAvatar({
         src={member.user?.avatar}
         media={member.user?.avatarMedia ?? null}
         name={member.user?.name}
-        className={cn(
-          "size-10 ring-1 ring-border/20 transition-all group-hover/member:ring-border/40",
-          viewState.isHighTrust
-            ? "ring-2 ring-forge-teal/30"
-            : "ring-border/40",
-        )}
+        className={getMemberAvatarClassName(viewState)}
         imageClassName="transition-transform duration-500 group-hover/member:scale-110"
       />
-      {viewState.onlineStatus && (
-        <AvatarStatus
-          status={viewState.onlineStatus}
-          borderClassName="border-canvas"
-        />
-      )}
-      {viewState.isAdmin && (
-        <AdminCrownBadge
-          aria-label="Group admin"
-          className="absolute -top-1 -left-1"
-          iconClassName="size-2.5"
-        />
-      )}
+      <MemberAvatarStatus viewState={viewState} />
+      <MemberAdminIndicator isAdmin={viewState.isAdmin} />
     </div>
+  );
+}
+
+function getMemberAvatarClassName(viewState: MemberCardViewState) {
+  return cn(
+    "size-10 ring-1 ring-border/20 transition-all group-hover/member:ring-border/40",
+    viewState.isHighTrust ? "ring-2 ring-forge-teal/30" : "ring-border/40",
+  );
+}
+
+function MemberAvatarStatus({ viewState }: { viewState: MemberCardViewState }) {
+  if (!viewState.onlineStatus) {
+    return null;
+  }
+
+  return (
+    <AvatarStatus
+      status={viewState.onlineStatus}
+      borderClassName="border-canvas"
+    />
+  );
+}
+
+function MemberAdminIndicator({ isAdmin }: { isAdmin: boolean }) {
+  if (!isAdmin) {
+    return null;
+  }
+
+  return (
+    <AdminCrownBadge
+      aria-label="Group admin"
+      className="absolute -top-1 -left-1"
+      iconClassName="size-2.5"
+    />
   );
 }
 
@@ -175,33 +201,89 @@ function MemberIdentityRow({
 }
 
 function MemberMetrics({ viewState }: { viewState: MemberCardViewState }) {
-  if (!viewState.hasMetrics) {
+  const metricItems = getMemberMetricItems(viewState);
+
+  if (!viewState.hasMetrics || metricItems.length === 0) {
     return null;
   }
 
   return (
     <div className="mt-1.5 flex min-w-0 items-center gap-1.5">
-      {typeof viewState.trustPercent === "number" ? (
-        <MemberMetric
-          icon={ShieldCheck}
-          label="Trust"
-          tone={viewState.isHighTrust ? "teal" : "muted"}
-          value={`${viewState.trustPercent}%`}
+      {metricItems.map((item, index) => (
+        <MetricWithSeparator
+          key={item.key}
+          item={item}
+          showSeparator={index > 0}
         />
-      ) : null}
-      {typeof viewState.trustPercent === "number" &&
-      typeof viewState.fitScore === "number" ? (
-        <MetricSeparator />
-      ) : null}
-      {typeof viewState.fitScore === "number" ? (
-        <MemberMetric
-          icon={Target}
-          label="Fit"
-          tone={viewState.isHighCompatibility ? "teal" : "muted"}
-          value={`${viewState.fitScore}%`}
-        />
-      ) : null}
+      ))}
     </div>
+  );
+}
+
+function getMemberMetricItems(
+  viewState: MemberCardViewState,
+): MemberMetricItem[] {
+  return [
+    getMemberMetricItem({
+      icon: ShieldCheck,
+      isHighlighted: viewState.isHighTrust,
+      key: "trust",
+      label: "Trust",
+      score: viewState.trustPercent,
+    }),
+    getMemberMetricItem({
+      icon: Target,
+      isHighlighted: viewState.isHighCompatibility,
+      key: "fit",
+      label: "Fit",
+      score: viewState.fitScore,
+    }),
+  ].filter((item): item is MemberMetricItem => item !== null);
+}
+
+function getMemberMetricItem({
+  icon,
+  isHighlighted,
+  key,
+  label,
+  score,
+}: {
+  icon: LucideIcon;
+  isHighlighted: boolean;
+  key: MemberMetricItem["key"];
+  label: string;
+  score: number | null;
+}): MemberMetricItem | null {
+  if (typeof score !== "number") {
+    return null;
+  }
+
+  return {
+    icon,
+    key,
+    label,
+    tone: isHighlighted ? "teal" : "muted",
+    value: `${score}%`,
+  };
+}
+
+function MetricWithSeparator({
+  item,
+  showSeparator,
+}: {
+  item: MemberMetricItem;
+  showSeparator: boolean;
+}) {
+  return (
+    <>
+      {showSeparator ? <MetricSeparator /> : null}
+      <MemberMetric
+        icon={item.icon}
+        label={item.label}
+        tone={item.tone}
+        value={item.value}
+      />
+    </>
   );
 }
 

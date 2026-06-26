@@ -18,6 +18,8 @@ interface UseOutsideDismissOptions {
   refs?: RefObject<HTMLElement | null> | Array<RefObject<HTMLElement | null>>;
 }
 
+type DismissBoundaryRef = RefObject<HTMLElement | null>;
+
 export function useOutsideDismiss({
   enabled = true,
   eventType = "mousedown",
@@ -30,21 +32,13 @@ export function useOutsideDismiss({
       return;
     }
 
-    const target = event.target;
-
-    if (!(target instanceof Node)) {
+    if (!isNodeEventTarget(event.target)) {
       return;
     }
 
-    const boundaryRefs = [
-      ...(ref ? [ref] : []),
-      ...(Array.isArray(refs) ? refs : refs ? [refs] : []),
-    ];
-    const isInside = boundaryRefs.some((boundaryRef) =>
-      boundaryRef.current?.contains(target),
-    );
-
-    if (isInside) {
+    if (
+      isInsideDismissBoundary(event.target, getDismissBoundaryRefs(ref, refs))
+    ) {
       return;
     }
 
@@ -52,4 +46,34 @@ export function useOutsideDismiss({
   });
 
   useEventListener(eventType, handleOutside, undefined, { capture: true });
+}
+
+function isNodeEventTarget(target: EventTarget | null): target is Node {
+  return target instanceof Node;
+}
+
+function getDismissBoundaryRefs(
+  ref: UseOutsideDismissOptions["ref"],
+  refs: UseOutsideDismissOptions["refs"],
+): DismissBoundaryRef[] {
+  return [...(ref ? [ref] : []), ...normalizeDismissBoundaryRefs(refs)];
+}
+
+function normalizeDismissBoundaryRefs(
+  refs: UseOutsideDismissOptions["refs"],
+): DismissBoundaryRef[] {
+  if (!refs) {
+    return [];
+  }
+
+  return Array.isArray(refs) ? refs : [refs];
+}
+
+function isInsideDismissBoundary(
+  target: Node,
+  boundaryRefs: DismissBoundaryRef[],
+) {
+  return boundaryRefs.some((boundaryRef) =>
+    boundaryRef.current?.contains(target),
+  );
 }

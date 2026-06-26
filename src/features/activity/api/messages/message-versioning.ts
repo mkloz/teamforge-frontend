@@ -1,6 +1,8 @@
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import type { MessageApi } from "@/shared/schemas";
 
+const TEMP_MESSAGE_ID_PREFIX = "temp-message:";
+
 export function getMessageVersion(
   message:
     | Pick<MessageApi, "createdAt" | "updatedAt" | "version">
@@ -28,14 +30,11 @@ export function shouldReplaceMessage(
   incoming: UnifiedMessage,
   targetId: string,
 ) {
-  if (targetId.startsWith("temp-message:")) {
+  if (isTempMessageId(targetId)) {
     return true;
   }
 
-  if (
-    current.id.startsWith("temp-message:") &&
-    !incoming.id.startsWith("temp-message:")
-  ) {
+  if (shouldPromoteTempMessage(current.id, incoming.id)) {
     return true;
   }
 
@@ -47,14 +46,11 @@ export function shouldReplaceCachedMessage(
   incoming: MessageApi,
   targetId: string,
 ) {
-  if (targetId.startsWith("temp-message:")) {
+  if (isTempMessageId(targetId)) {
     return true;
   }
 
-  if (
-    current.id.startsWith("temp-message:") &&
-    !incoming.id.startsWith("temp-message:")
-  ) {
+  if (shouldPromoteTempMessage(current.id, incoming.id)) {
     return true;
   }
 
@@ -88,21 +84,46 @@ export function mergePinnedApiMessages(
     return current;
   }
 
-  const merged = new Map<string, MessageApi>();
-
-  for (const item of current) {
-    merged.set(item.id, item);
-  }
-
-  for (const item of incoming) {
-    const existing = merged.get(item.id);
-    merged.set(
-      item.id,
-      existing && !shouldReplaceApiMessage(existing, item) ? existing : item,
-    );
-  }
+  const merged = createPinnedMessageMap(current);
+  mergeIncomingPinnedMessages(merged, incoming);
 
   return [...merged.values()].sort(
     (left, right) => getMessageVersion(right) - getMessageVersion(left),
   );
+}
+
+function isTempMessageId(messageId: string) {
+  return messageId.startsWith(TEMP_MESSAGE_ID_PREFIX);
+}
+
+function shouldPromoteTempMessage(currentId: string, incomingId: string) {
+  return isTempMessageId(currentId) && !isTempMessageId(incomingId);
+}
+
+function createPinnedMessageMap(messages: MessageApi[]) {
+  const merged = new Map<string, MessageApi>();
+
+  for (const item of messages) {
+    merged.set(item.id, item);
+  }
+
+  return merged;
+}
+
+function mergeIncomingPinnedMessages(
+  merged: Map<string, MessageApi>,
+  incoming: MessageApi[],
+) {
+  for (const item of incoming) {
+    merged.set(item.id, getPinnedMessageMergeValue(merged.get(item.id), item));
+  }
+}
+
+function getPinnedMessageMergeValue(
+  existing: MessageApi | undefined,
+  incoming: MessageApi,
+) {
+  return existing && !shouldReplaceApiMessage(existing, incoming)
+    ? existing
+    : incoming;
 }

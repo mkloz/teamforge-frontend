@@ -11,7 +11,7 @@ function invalidateQueries(queryKeys: QueryKey[]) {
   return Promise.all(queryKeys.map((queryKey) => invalidateQuery(queryKey)));
 }
 
-export function invalidateActivityGroupSurfaces() {
+function invalidateActivityGroupSurfaces() {
   return invalidateQueries([
     APP_QUERY_KEYS.activity.groups,
     APP_QUERY_KEYS.activity.chats,

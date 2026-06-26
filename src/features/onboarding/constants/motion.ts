@@ -27,21 +27,6 @@ export const fadeUpItem: Variants = {
   },
 };
 
-/** Top-level transition between personality onboarding screens. */
-export const personalityScreenTransition: Variants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
-  },
-  exit: {
-    opacity: 0,
-    y: -8,
-    transition: { duration: 0.18, ease: [0.4, 0, 1, 1] },
-  },
-};
-
 /**
  * Variant used in the personality-results letter tiles.
  * Pops down from above with a slightly longer stagger.

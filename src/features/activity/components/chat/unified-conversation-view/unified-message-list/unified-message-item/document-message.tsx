@@ -16,9 +16,25 @@ interface DocumentMessageProps {
   isOwn?: boolean;
 }
 
+interface DocumentMessageViewState {
+  fileExt: string;
+  fileName: string;
+  fileSize: string;
+}
+
 const getFileIcon = (isOwn?: boolean) => (
   <FileText className={cn("size-5", isOwn ? "text-white" : "text-primary")} />
 );
+
+function getDocumentMessageViewState(
+  attachment: UnifiedAttachment,
+): DocumentMessageViewState {
+  return {
+    fileExt: attachment.name?.split(".").pop()?.toUpperCase() || "DOC",
+    fileName: attachment.name || "File",
+    fileSize: formatFileSize(attachment.size || 0),
+  };
+}
 
 /**
  * DocumentMessage - Renders a download card for file attachments.
@@ -27,7 +43,7 @@ export const DocumentMessage = memo(function DocumentMessage({
   attachment,
   isOwn,
 }: DocumentMessageProps) {
-  const fileExt = attachment.name?.split(".").pop()?.toUpperCase() || "DOC";
+  const viewState = getDocumentMessageViewState(attachment);
 
   return (
     <div
@@ -38,72 +54,109 @@ export const DocumentMessage = memo(function DocumentMessage({
           : "border-border/40 bg-muted/30 hover:bg-muted/50",
       )}
     >
-      <div
-        className={cn(
-          "flex size-10 shrink-0 items-center justify-center rounded-lg shadow-xs transition-transform group-hover/doc:scale-105",
-          isOwn
-            ? "bg-white/10"
-            : "border border-border/20 bg-white/60 dark:bg-canvas/10",
-        )}
-      >
-        {getFileIcon(isOwn)}
-      </div>
+      <DocumentMessageIcon isOwn={isOwn} />
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <p
-          className={cn(
-            "truncate font-bold text-sm tracking-tight",
-            isOwn ? "text-white" : "text-ink",
-          )}
-        >
-          {attachment.name || "File"}
-        </p>
-        <div className="flex items-center gap-1.5 opacity-60">
-          <span
-            className={cn(
-              "font-black text-nano uppercase tracking-wider",
-              isOwn ? "text-white/80" : "text-slate-muted",
-            )}
-          >
-            {formatFileSize(attachment.size || 0)}
-          </span>
-          <div
-            className={cn(
-              "size-0.5 rounded-full",
-              isOwn ? "bg-white/50" : "bg-slate-muted/50",
-            )}
-          />
-          <span
-            className={cn(
-              "font-black text-nano uppercase tracking-wider",
-              isOwn ? "text-white/80" : "text-slate-muted",
-            )}
-          >
-            {fileExt}
-          </span>
-        </div>
-      </div>
+      <DocumentMessageDetails isOwn={isOwn} viewState={viewState} />
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => openExternalUrl(attachment.url)}
-            className={cn(
-              "size-8 rounded-lg transition",
-              isOwn
-                ? "bg-white/10 text-white hover:bg-white/20"
-                : "bg-primary/5 text-primary hover:bg-primary/10",
-            )}
-            aria-label={`Download ${attachment.name || "file"}`}
-          >
-            <Download className="size-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Download file</TooltipContent>
-      </Tooltip>
+      <DocumentDownloadButton attachment={attachment} isOwn={isOwn} />
     </div>
   );
 });
+
+function DocumentMessageIcon({ isOwn }: { isOwn?: boolean }) {
+  return (
+    <div
+      className={cn(
+        "flex size-10 shrink-0 items-center justify-center rounded-lg shadow-xs transition-transform group-hover/doc:scale-105",
+        isOwn
+          ? "bg-white/10"
+          : "border border-border/20 bg-white/60 dark:bg-canvas/10",
+      )}
+    >
+      {getFileIcon(isOwn)}
+    </div>
+  );
+}
+
+function DocumentMessageDetails({
+  isOwn,
+  viewState,
+}: {
+  isOwn?: boolean;
+  viewState: DocumentMessageViewState;
+}) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-col">
+      <p
+        className={cn(
+          "truncate font-bold text-sm tracking-tight",
+          isOwn ? "text-white" : "text-ink",
+        )}
+      >
+        {viewState.fileName}
+      </p>
+      <div className="flex items-center gap-1.5 opacity-60">
+        <DocumentMetaValue isOwn={isOwn}>
+          {viewState.fileSize}
+        </DocumentMetaValue>
+        <div
+          className={cn(
+            "size-0.5 rounded-full",
+            isOwn ? "bg-white/50" : "bg-slate-muted/50",
+          )}
+        />
+        <DocumentMetaValue isOwn={isOwn}>{viewState.fileExt}</DocumentMetaValue>
+      </div>
+    </div>
+  );
+}
+
+function DocumentMetaValue({
+  children,
+  isOwn,
+}: {
+  children: string;
+  isOwn?: boolean;
+}) {
+  return (
+    <span
+      className={cn(
+        "font-black text-nano uppercase tracking-wider",
+        isOwn ? "text-white/80" : "text-slate-muted",
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+function DocumentDownloadButton({
+  attachment,
+  isOwn,
+}: {
+  attachment: UnifiedAttachment;
+  isOwn?: boolean;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          onClick={() => openExternalUrl(attachment.url)}
+          className={cn(
+            "size-8 rounded-lg transition",
+            isOwn
+              ? "bg-white/10 text-white hover:bg-white/20"
+              : "bg-primary/5 text-primary hover:bg-primary/10",
+          )}
+          aria-label={`Download ${attachment.name || "file"}`}
+        >
+          <Download className="size-4" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>Download file</TooltipContent>
+    </Tooltip>
+  );
+}

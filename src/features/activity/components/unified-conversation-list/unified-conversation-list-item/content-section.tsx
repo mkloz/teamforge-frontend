@@ -23,6 +23,7 @@ const UnifiedTypingIndicator = lazy(() =>
 );
 
 const titleCounterPillClassName = "min-w-5";
+const TYPING_DOT_FALLBACK_INDICES = [0, 1, 2] as const;
 
 interface ContentSectionProps {
   item: UnifiedConversation;
@@ -104,63 +105,109 @@ function ConversationTitleRow({
   viewState: ContentSectionViewState;
   onTogglePinned?: () => void;
 }) {
-  const titlePinButton =
-    viewState.showTitlePinButton && onTogglePinned ? (
-      <TitlePinButton onTogglePinned={onTogglePinned} />
-    ) : null;
+  const titlePinButton = getTitlePinButton(viewState, onTogglePinned);
 
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
-        <h3
-          className={cn(
-            "min-w-0 truncate font-bold tracking-tight transition-colors",
-            "text-sm",
-            isSelected ? "text-ink" : "text-ink/90 group-hover/item:text-ink",
-          )}
-        >
-          {viewState.title}
-        </h3>
-        {item.savedMessageCount &&
-        !isCompact &&
-        !viewState.shouldShowSavedCountInIndicatorRow &&
-        !viewState.showInlineGroupIndicators ? (
-          <StatusPill
-            icon={Bookmark}
-            iconClassName="fill-forge-teal/15"
-            tone="teal"
-            size="signature"
-            surface="soft"
-            className={titleCounterPillClassName}
-          >
-            {item.savedMessageCount}
-          </StatusPill>
-        ) : null}
-        {viewState.isNotes ? (
-          <StatusPill tone="amber" size="signature" surface="soft">
-            Private
-          </StatusPill>
-        ) : null}
-        {viewState.hasTitleUtilityCluster ? (
-          <ConversationTitleUtilities
-            item={item}
-            isReviewWaiting={isReviewWaiting}
-            titlePinButton={titlePinButton}
-            viewState={viewState}
-          />
-        ) : null}
+        <ConversationTitle isSelected={isSelected} title={viewState.title} />
+        <SavedMessageCountTitlePill
+          isCompact={isCompact}
+          savedMessageCount={item.savedMessageCount}
+          viewState={viewState}
+        />
+        <NotesPrivacyPill isVisible={viewState.isNotes} />
+        <ConversationTitleUtilitiesSlot
+          item={item}
+          isReviewWaiting={isReviewWaiting}
+          titlePinButton={titlePinButton}
+          viewState={viewState}
+        />
       </div>
       <div className="flex shrink-0 items-center gap-1">
-        <time
-          className={cn(
-            "shrink-0 font-medium text-micro text-slate-muted tabular-nums",
-            isCompact && "origin-right scale-90",
-          )}
-        >
-          {viewState.formattedTimestamp}
-        </time>
+        <ConversationTimestamp
+          formattedTimestamp={viewState.formattedTimestamp}
+          isCompact={isCompact}
+        />
       </div>
     </div>
+  );
+}
+
+function getTitlePinButton(
+  viewState: ContentSectionViewState,
+  onTogglePinned?: () => void,
+) {
+  return viewState.showTitlePinButton && onTogglePinned ? (
+    <TitlePinButton onTogglePinned={onTogglePinned} />
+  ) : null;
+}
+
+function ConversationTitle({
+  isSelected,
+  title,
+}: {
+  isSelected: boolean;
+  title: string;
+}) {
+  return (
+    <h3
+      className={cn(
+        "min-w-0 truncate font-bold tracking-tight transition-colors",
+        "text-sm",
+        getTitleTextClassName(isSelected),
+      )}
+    >
+      {title}
+    </h3>
+  );
+}
+
+function getTitleTextClassName(isSelected: boolean) {
+  return isSelected ? "text-ink" : "text-ink/90 group-hover/item:text-ink";
+}
+
+function ConversationTitleUtilitiesSlot({
+  item,
+  isReviewWaiting,
+  titlePinButton,
+  viewState,
+}: {
+  item: UnifiedConversation;
+  isReviewWaiting: boolean;
+  titlePinButton: React.ReactNode;
+  viewState: ContentSectionViewState;
+}) {
+  if (!viewState.hasTitleUtilityCluster) {
+    return null;
+  }
+
+  return (
+    <ConversationTitleUtilities
+      item={item}
+      isReviewWaiting={isReviewWaiting}
+      titlePinButton={titlePinButton}
+      viewState={viewState}
+    />
+  );
+}
+
+function ConversationTimestamp({
+  formattedTimestamp,
+  isCompact,
+}: {
+  formattedTimestamp: string;
+  isCompact: boolean;
+}) {
+  return (
+    <time
+      className={cn(
+        "shrink-0 font-medium text-micro text-slate-muted tabular-nums",
+        isCompact && "origin-right scale-90",
+      )}
+    >
+      {formattedTimestamp}
+    </time>
   );
 }
 
@@ -177,24 +224,91 @@ function ConversationTitleUtilities({
 }) {
   return (
     <span className="ml-auto flex shrink-0 items-center gap-1">
-      {!item.isPinned ? titlePinButton : null}
-      {viewState.showInlineGroupIndicators ? (
-        <GroupIndicators
-          countdown={viewState.countdown}
-          pendingProposalCount={viewState.pendingProposalCount}
-          planStatus={viewState.planStatus}
-          savedMessageCount={
-            viewState.hasSavedMessages ? item.savedMessageCount : undefined
-          }
-          isReviewWaiting={isReviewWaiting}
-          variant="inline"
-        />
-      ) : null}
-      {viewState.showInlineMutedIndicator ? <MutedIndicator /> : null}
-      {item.isPinned ? titlePinButton : null}
-      {viewState.showStaticPinnedIcon ? <StaticPinnedIcon /> : null}
+      <TitlePinButtonSlot
+        isPinned={item.isPinned}
+        placement="unpinned"
+        titlePinButton={titlePinButton}
+      />
+      <InlineGroupIndicatorsSlot
+        item={item}
+        isReviewWaiting={isReviewWaiting}
+        viewState={viewState}
+      />
+      <InlineMutedIndicatorSlot viewState={viewState} />
+      <TitlePinButtonSlot
+        isPinned={item.isPinned}
+        placement="pinned"
+        titlePinButton={titlePinButton}
+      />
+      <StaticPinnedIconSlot viewState={viewState} />
     </span>
   );
+}
+
+function TitlePinButtonSlot({
+  isPinned,
+  placement,
+  titlePinButton,
+}: {
+  isPinned: boolean | undefined;
+  placement: "pinned" | "unpinned";
+  titlePinButton: React.ReactNode;
+}) {
+  if (shouldShowTitlePinButtonInSlot(isPinned, placement)) {
+    return titlePinButton;
+  }
+
+  return null;
+}
+
+function shouldShowTitlePinButtonInSlot(
+  isPinned: boolean | undefined,
+  placement: "pinned" | "unpinned",
+) {
+  return placement === "pinned" ? Boolean(isPinned) : !isPinned;
+}
+
+function InlineGroupIndicatorsSlot({
+  item,
+  isReviewWaiting,
+  viewState,
+}: {
+  item: UnifiedConversation;
+  isReviewWaiting: boolean;
+  viewState: ContentSectionViewState;
+}) {
+  if (!viewState.showInlineGroupIndicators) {
+    return null;
+  }
+
+  return (
+    <GroupIndicators
+      countdown={viewState.countdown}
+      pendingProposalCount={viewState.pendingProposalCount}
+      planStatus={viewState.planStatus}
+      savedMessageCount={
+        viewState.hasSavedMessages ? item.savedMessageCount : undefined
+      }
+      isReviewWaiting={isReviewWaiting}
+      variant="inline"
+    />
+  );
+}
+
+function InlineMutedIndicatorSlot({
+  viewState,
+}: {
+  viewState: ContentSectionViewState;
+}) {
+  return viewState.showInlineMutedIndicator ? <MutedIndicator /> : null;
+}
+
+function StaticPinnedIconSlot({
+  viewState,
+}: {
+  viewState: ContentSectionViewState;
+}) {
+  return viewState.showStaticPinnedIcon ? <StaticPinnedIcon /> : null;
 }
 
 function ConversationSubtitleRow({
@@ -218,39 +332,23 @@ function ConversationSubtitleRow({
       )}
     >
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
-        <span className="shrink-0">
-          {!isGroup &&
-            viewState.latestMessage?.isOwn &&
-            viewState.latestMessage?.status && (
-              <MsgStatusIcon
-                status={viewState.latestMessage.status}
-                isCompact={isCompact}
-              />
-            )}
-        </span>
+        <MessageStatusSlot
+          isCompact={isCompact}
+          isGroup={isGroup}
+          viewState={viewState}
+        />
         <div className="flex min-w-0 items-center gap-1 overflow-hidden">
           <SubtitleIcon
             type={viewState.previewMessage?.type}
             isCompact={isCompact}
           />
 
-          {item.isTyping && !isSavedView ? (
-            <TypingPreview isCompact={isCompact} />
-          ) : (
-            <p
-              className={cn(
-                "truncate leading-tight",
-                "text-xs",
-                viewState.hasUnread
-                  ? "font-bold text-ink"
-                  : "text-slate-muted/80 group-hover/item:text-slate-muted",
-                viewState.previewMessage?.isSystem &&
-                  "text-slate-muted/60 italic",
-              )}
-            >
-              {viewState.subtitle}
-            </p>
-          )}
+          <ConversationSubtitlePreview
+            isCompact={isCompact}
+            isSavedView={isSavedView}
+            isTyping={item.isTyping}
+            viewState={viewState}
+          />
         </div>
       </div>
 
@@ -259,6 +357,147 @@ function ConversationSubtitleRow({
       </div>
     </div>
   );
+}
+
+function SavedMessageCountTitlePill({
+  isCompact,
+  savedMessageCount,
+  viewState,
+}: {
+  isCompact: boolean;
+  savedMessageCount: number | undefined;
+  viewState: ContentSectionViewState;
+}) {
+  if (
+    !shouldShowSavedMessageCountTitlePill({
+      isCompact,
+      savedMessageCount,
+      viewState,
+    })
+  ) {
+    return null;
+  }
+
+  return (
+    <StatusPill
+      icon={Bookmark}
+      iconClassName="fill-forge-teal/15"
+      tone="teal"
+      size="signature"
+      surface="soft"
+      className={titleCounterPillClassName}
+    >
+      {savedMessageCount}
+    </StatusPill>
+  );
+}
+
+function shouldShowSavedMessageCountTitlePill({
+  isCompact,
+  savedMessageCount,
+  viewState,
+}: {
+  isCompact: boolean;
+  savedMessageCount: number | undefined;
+  viewState: ContentSectionViewState;
+}) {
+  return (
+    Boolean(savedMessageCount) &&
+    !isCompact &&
+    !viewState.shouldShowSavedCountInIndicatorRow &&
+    !viewState.showInlineGroupIndicators
+  );
+}
+
+function NotesPrivacyPill({ isVisible }: { isVisible: boolean }) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <StatusPill tone="amber" size="signature" surface="soft">
+      Private
+    </StatusPill>
+  );
+}
+
+function MessageStatusSlot({
+  isCompact,
+  isGroup,
+  viewState,
+}: {
+  isCompact: boolean;
+  isGroup: boolean;
+  viewState: ContentSectionViewState;
+}) {
+  const status = getMessageStatusForSlot({ isGroup, viewState });
+
+  return (
+    <span className="shrink-0">
+      {status ? <MsgStatusIcon status={status} isCompact={isCompact} /> : null}
+    </span>
+  );
+}
+
+function getMessageStatusForSlot({
+  isGroup,
+  viewState,
+}: {
+  isGroup: boolean;
+  viewState: ContentSectionViewState;
+}) {
+  return isGroup ? null : getOwnLatestMessageStatus(viewState);
+}
+
+function getOwnLatestMessageStatus(viewState: ContentSectionViewState) {
+  return viewState.latestMessage?.isOwn
+    ? (viewState.latestMessage.status ?? null)
+    : null;
+}
+
+function ConversationSubtitlePreview({
+  isCompact,
+  isSavedView,
+  isTyping,
+  viewState,
+}: {
+  isCompact: boolean;
+  isSavedView: boolean;
+  isTyping: boolean | undefined;
+  viewState: ContentSectionViewState;
+}) {
+  if (shouldShowTypingPreview({ isSavedView, isTyping })) {
+    return <TypingPreview isCompact={isCompact} />;
+  }
+
+  return (
+    <p
+      className={cn(
+        "truncate leading-tight",
+        "text-xs",
+        getSubtitleTextClassName(viewState.hasUnread),
+        viewState.previewMessage?.isSystem && "text-slate-muted/60 italic",
+      )}
+    >
+      {viewState.subtitle}
+    </p>
+  );
+}
+
+function shouldShowTypingPreview({
+  isSavedView,
+  isTyping,
+}: {
+  isSavedView: boolean;
+  isTyping: boolean | undefined;
+}) {
+  return Boolean(isTyping) && !isSavedView;
+}
+
+function getSubtitleTextClassName(hasUnread: boolean) {
+  return hasUnread
+    ? "font-bold text-ink"
+    : "text-slate-muted/80 group-hover/item:text-slate-muted";
 }
 
 function TitlePinButton({ onTogglePinned }: { onTogglePinned: () => void }) {
@@ -344,7 +583,7 @@ function MutedIndicator() {
 function TypingDotsFallback({ className }: { className?: string }) {
   return (
     <span className={cn("flex items-end justify-start gap-1", className)}>
-      {[0, 1, 2].map((index) => (
+      {TYPING_DOT_FALLBACK_INDICES.map((index) => (
         <span
           key={index}
           className="mb-0.5 size-1 rounded-full bg-forge-teal/70 opacity-60"

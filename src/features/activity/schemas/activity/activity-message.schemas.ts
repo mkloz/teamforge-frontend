@@ -1,11 +1,15 @@
 import { z } from "zod";
 
 import {
-  attachmentTypeSchema,
-  messageStatusSchema,
-  messageTypeSchema,
+  type messageStatusSchema,
+  type messageTypeSchema,
   planProposalVoteSchema,
 } from "@/shared/schemas/enums";
+import {
+  messageAttachmentCoreFields,
+  messageContentFields,
+  messageThreadFields,
+} from "@/shared/schemas/message-fragments";
 import { planProposalSchema } from "@/shared/schemas/plan";
 
 import {
@@ -13,22 +17,14 @@ import {
   activityParticipantSchema,
 } from "./activity-participant.schemas";
 
-export const unifiedAttachmentSchema = z.object({
-  id: z.string(),
-  type: attachmentTypeSchema,
-  url: z.string(),
-  name: z.string().nullable(),
-  size: z.number().nullable(),
-  mimeType: z.string().nullable(),
-  thumbnailUrl: z.string().nullable(),
-  duration: z.number().nullable(),
-  waveform: z.array(z.number()),
+const unifiedAttachmentSchema = z.object({
+  ...messageAttachmentCoreFields,
   createdAt: z.string(),
 });
 
 export type UnifiedAttachment = z.infer<typeof unifiedAttachmentSchema>;
 
-export const unifiedReactionSchema = z.object({
+const unifiedReactionSchema = z.object({
   emoji: z.string(),
   createdAt: z.string(),
   messageId: z.string(),
@@ -38,7 +34,7 @@ export const unifiedReactionSchema = z.object({
 
 export type UnifiedReaction = z.infer<typeof unifiedReactionSchema>;
 
-export const messageReadByParticipantSchema = z.object({
+const messageReadByParticipantSchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar: z.string().nullable(),
@@ -90,24 +86,13 @@ export const unifiedMessageSchema: z.ZodType<{
   readByCount?: number;
 }> = z.lazy(() =>
   z.object({
-    id: z.string(),
-    type: messageTypeSchema,
-    content: z.string(),
-    status: messageStatusSchema,
-    isEdited: z.boolean(),
-    isPinned: z.boolean(),
+    ...messageContentFields,
     isSaved: z.boolean().optional(),
     createdAt: z.string(),
     updatedAt: z.string(),
     editedAt: z.string().nullable(),
     deletedAt: z.string().nullable(),
-    chatId: z.string(),
-    senderId: z.string(),
-    replyToId: z.string().nullable(),
-    forwardedFromMessageId: z.string().nullable().optional(),
-    forwardedFromChatId: z.string().nullable().optional(),
-    forwardedFromSenderId: z.string().nullable().optional(),
-    forwardedFromSenderName: z.string().nullable().optional(),
+    ...messageThreadFields,
     version: z.number(),
     pinnedInChatId: z.string().nullable().optional(),
     sender: activityParticipantSchema.optional(),

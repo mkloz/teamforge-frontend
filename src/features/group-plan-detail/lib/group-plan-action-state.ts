@@ -9,6 +9,11 @@ import {
 } from "lucide-react";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
+import {
+  type GroupPlanAccessMode,
+  type GroupPlanViewerAccess,
+  getGroupPlanViewerAccess,
+} from "@/features/group-plan-detail/lib/group-plan-access";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { formatStatusLabel } from "@/features/group-plan-detail/lib/group-plan-detail-formatters";
 import type { ExploreJoinResult } from "@/shared/schemas/explore";
@@ -17,12 +22,7 @@ type ActionHref =
   | ReturnType<typeof buildActivityGroupHubNavigation>
   | ReturnType<typeof buildExploreNavigation>;
 
-export type GroupPlanViewerMode =
-  | "member"
-  | "invited"
-  | "requested"
-  | "joinable"
-  | "blocked";
+export type GroupPlanViewerMode = GroupPlanAccessMode;
 
 export interface GroupPlanActionDescriptor {
   kind: "link" | "button" | "leave";
@@ -59,13 +59,17 @@ export interface GroupPlanActionControls {
   leaveGroup: () => void;
 }
 
-interface GroupPlanViewerAccess {
-  isInvited: boolean;
-  isMember: boolean;
-  isRequested: boolean;
-  joinedGroupId: string | null;
-  mode: GroupPlanViewerMode;
+interface ActionStateBuilderContext {
+  access: GroupPlanViewerAccess;
+  controls: GroupPlanActionControls;
+  detail: GroupPlanDetail;
+  summary: string;
 }
+
+type ActionStateBuilder = (
+  context: ActionStateBuilderContext,
+) => GroupPlanActionViewState;
+type JoinActionMode = "direct" | "request";
 
 export function buildGroupPlanActionViewState({
   controls,
@@ -82,59 +86,33 @@ export function buildGroupPlanActionViewState({
     isMember: access.isMember,
     mode: access.mode,
   });
+  const context = { access, controls, detail, summary };
 
-  if (access.isMember) {
-    return buildCurrentMemberState({ access, controls, detail, summary });
-  }
-
-  if (access.joinedGroupId) {
+  if (!access.isMember && access.joinedGroupId) {
     return buildJoinedMemberState(access.joinedGroupId);
   }
 
-  if (access.isInvited) {
-    return buildInvitedState({ access, controls, detail, summary });
-  }
-
-  if (access.isRequested) {
-    return buildRequestedState({ access, controls, summary });
-  }
-
-  if (access.mode === "joinable") {
-    return buildJoinableState({ access, controls, detail, summary });
-  }
-
-  return buildBlockedState({ access, detail, summary });
+  return ACTION_STATE_BUILDERS[access.mode](context);
 }
 
-export function getGroupPlanViewerAccess(
-  detail: GroupPlanDetail,
-  joinResult: ExploreJoinResult | null | undefined,
-): GroupPlanViewerAccess {
-  const joinedGroupId =
-    joinResult?.status === "JOINED" ? joinResult.groupId : null;
-  const isMember =
-    detail.viewer.relationship === "ADMIN" ||
-    detail.viewer.relationship === "MODERATOR" ||
-    detail.viewer.relationship === "MEMBER";
-  const isInvited = detail.viewer.relationship === "INVITED";
-  const isRequested =
-    detail.viewer.relationship === "REQUESTED" ||
-    joinResult?.status === "REQUESTED";
-
+function buildActionViewState({
+  access,
+  primary,
+  secondary,
+  summary,
+}: {
+  access: GroupPlanViewerAccess;
+  primary: GroupPlanActionDescriptor;
+  secondary: GroupPlanActionDescriptor | null;
+  summary: string;
+}): GroupPlanActionViewState {
   return {
-    isInvited,
-    isMember,
-    isRequested,
-    joinedGroupId,
-    mode: isMember
-      ? "member"
-      : isInvited
-        ? "invited"
-        : isRequested
-          ? "requested"
-          : detail.viewer.canJoin || detail.viewer.canRequestToJoin
-            ? "joinable"
-            : "blocked",
+    mode: access.mode,
+    isMember: access.isMember,
+    primary,
+    secondary,
+    summary,
+    joinedGroupId: access.joinedGroupId,
   };
 }
 
@@ -143,33 +121,15 @@ function buildCurrentMemberState({
   controls,
   detail,
   summary,
-}: {
-  access: GroupPlanViewerAccess;
-  controls: GroupPlanActionControls;
-  detail: GroupPlanDetail;
-  summary: string;
-}): GroupPlanActionViewState {
-  return {
-    mode: access.mode,
-    isMember: access.isMember,
+}: ActionStateBuilderContext): GroupPlanActionViewState {
+  return buildActionViewState({
+    access,
     primary: buildGroupChatAction(detail.group.id),
     secondary: detail.viewer.canLeaveGroup
-      ? {
-          kind: "leave",
-          label: controls.isLeaving ? "Leaving..." : "Leave group",
-          icon: X,
-          onClick: controls.leaveGroup,
-          loading: controls.isLeaving,
-          disabled: !controls.isOnline || controls.isLeaving,
-          title: controls.isOnline
-            ? undefined
-            : "Reconnect before leaving this group.",
-          destructive: true,
-        }
+      ? buildLeaveGroupAction(controls)
       : null,
     summary,
-    joinedGroupId: access.joinedGroupId,
-  };
+  });
 }
 
 function buildJoinedMemberState(
@@ -190,87 +150,28 @@ function buildInvitedState({
   controls,
   detail,
   summary,
-}: {
-  access: GroupPlanViewerAccess;
-  controls: GroupPlanActionControls;
-  detail: GroupPlanDetail;
-  summary: string;
-}): GroupPlanActionViewState {
+}: ActionStateBuilderContext): GroupPlanActionViewState {
   const pendingInviteId = detail.viewer.pendingInviteId;
 
-  return {
-    mode: access.mode,
-    isMember: access.isMember,
-    primary: {
-      kind: "button",
-      label: controls.isAcceptingInvite ? "Accepting..." : "Accept invite",
-      icon: Check,
-      onClick: () => {
-        if (pendingInviteId) {
-          controls.acceptInvite(pendingInviteId);
-        }
-      },
-      loading: controls.isAcceptingInvite,
-      disabled:
-        !controls.isOnline || !pendingInviteId || controls.isAcceptingInvite,
-      title: controls.isOnline
-        ? undefined
-        : "Reconnect before accepting this invite.",
-    },
-    secondary: {
-      kind: "button",
-      label: "Decline",
-      icon: X,
-      onClick: () => {
-        if (pendingInviteId) {
-          controls.declineInvite(pendingInviteId);
-        }
-      },
-      loading: controls.isDecliningInvite,
-      disabled:
-        !controls.isOnline || !pendingInviteId || controls.isDecliningInvite,
-      title: controls.isOnline
-        ? undefined
-        : "Reconnect before declining this invite.",
-    },
+  return buildActionViewState({
+    access,
+    primary: buildAcceptInviteAction({ controls, pendingInviteId }),
+    secondary: buildDeclineInviteAction({ controls, pendingInviteId }),
     summary,
-    joinedGroupId: access.joinedGroupId,
-  };
+  });
 }
 
 function buildRequestedState({
   access,
   controls,
   summary,
-}: {
-  access: GroupPlanViewerAccess;
-  controls: GroupPlanActionControls;
-  summary: string;
-}): GroupPlanActionViewState {
-  return {
-    mode: access.mode,
-    isMember: access.isMember,
-    primary: {
-      kind: "button",
-      label: "Request sent",
-      icon: CircleDashed,
-      onClick: () => undefined,
-      disabled: true,
-    },
-    secondary: {
-      kind: "button",
-      label: "Cancel request",
-      icon: X,
-      onClick: controls.cancelRequest,
-      loading: controls.isCancellingRequest,
-      disabled: !controls.isOnline || controls.isCancellingRequest,
-      title: controls.isOnline
-        ? undefined
-        : "Reconnect before changing your join request.",
-    },
+}: ActionStateBuilderContext): GroupPlanActionViewState {
+  return buildActionViewState({
+    access,
+    primary: buildDisabledAction("Request sent", CircleDashed),
+    secondary: buildCancelRequestAction(controls),
     summary,
-    joinedGroupId: access.joinedGroupId,
-  };
+  });
 }
 
 function buildJoinableState({
@@ -278,64 +179,151 @@ function buildJoinableState({
   controls,
   detail,
   summary,
-}: {
-  access: GroupPlanViewerAccess;
-  controls: GroupPlanActionControls;
-  detail: GroupPlanDetail;
-  summary: string;
-}): GroupPlanActionViewState {
-  const requesting = detail.viewer.canRequestToJoin;
-
-  return {
-    mode: access.mode,
-    isMember: access.isMember,
-    primary: {
-      kind: "button",
-      label: controls.isJoining
-        ? requesting
-          ? "Sending request..."
-          : "Joining..."
-        : requesting
-          ? "Request to join"
-          : "Join group",
-      icon: requesting ? Send : ArrowRight,
-      onClick: controls.joinGroup,
-      loading: controls.isJoining,
-      disabled: !controls.isOnline || controls.isJoining,
-      title: controls.isOnline
-        ? undefined
-        : "Reconnect before joining or requesting to join this group.",
-    },
+}: ActionStateBuilderContext): GroupPlanActionViewState {
+  return buildActionViewState({
+    access,
+    primary: buildJoinGroupAction({
+      controls,
+      mode: detail.viewer.canRequestToJoin ? "request" : "direct",
+    }),
     secondary: buildExploreAction(),
     summary,
-    joinedGroupId: access.joinedGroupId,
-  };
+  });
 }
 
 function buildBlockedState({
   access,
   detail,
   summary,
-}: {
-  access: GroupPlanViewerAccess;
-  detail: GroupPlanDetail;
-  summary: string;
-}): GroupPlanActionViewState {
-  return {
-    mode: access.mode,
-    isMember: access.isMember,
-    primary: {
-      kind: "button",
-      label: detail.viewer.joinDisabledReason
-        ? formatStatusLabel(detail.viewer.joinDisabledReason)
-        : "Unavailable",
-      icon: X,
-      onClick: () => undefined,
-      disabled: true,
-    },
+}: ActionStateBuilderContext): GroupPlanActionViewState {
+  return buildActionViewState({
+    access,
+    primary: buildDisabledAction(getBlockedActionLabel(detail), X),
     secondary: buildExploreAction(),
     summary,
-    joinedGroupId: access.joinedGroupId,
+  });
+}
+
+const ACTION_STATE_BUILDERS = {
+  blocked: buildBlockedState,
+  invited: buildInvitedState,
+  joinable: buildJoinableState,
+  member: buildCurrentMemberState,
+  requested: buildRequestedState,
+} satisfies Record<GroupPlanViewerMode, ActionStateBuilder>;
+
+function buildLeaveGroupAction(
+  controls: GroupPlanActionControls,
+): GroupPlanActionDescriptor {
+  return {
+    kind: "leave",
+    label: controls.isLeaving ? "Leaving..." : "Leave group",
+    icon: X,
+    onClick: controls.leaveGroup,
+    loading: controls.isLeaving,
+    disabled: !controls.isOnline || controls.isLeaving,
+    title: getOfflineTitle(
+      controls.isOnline,
+      "Reconnect before leaving this group.",
+    ),
+    destructive: true,
+  };
+}
+
+function buildAcceptInviteAction({
+  controls,
+  pendingInviteId,
+}: {
+  controls: GroupPlanActionControls;
+  pendingInviteId: string | null;
+}): GroupPlanActionDescriptor {
+  return {
+    kind: "button",
+    label: controls.isAcceptingInvite ? "Accepting..." : "Accept invite",
+    icon: Check,
+    onClick: runWithPendingInvite(pendingInviteId, controls.acceptInvite),
+    loading: controls.isAcceptingInvite,
+    disabled:
+      !controls.isOnline || !pendingInviteId || controls.isAcceptingInvite,
+    title: getOfflineTitle(
+      controls.isOnline,
+      "Reconnect before accepting this invite.",
+    ),
+  };
+}
+
+function buildDeclineInviteAction({
+  controls,
+  pendingInviteId,
+}: {
+  controls: GroupPlanActionControls;
+  pendingInviteId: string | null;
+}): GroupPlanActionDescriptor {
+  return {
+    kind: "button",
+    label: "Decline",
+    icon: X,
+    onClick: runWithPendingInvite(pendingInviteId, controls.declineInvite),
+    loading: controls.isDecliningInvite,
+    disabled:
+      !controls.isOnline || !pendingInviteId || controls.isDecliningInvite,
+    title: getOfflineTitle(
+      controls.isOnline,
+      "Reconnect before declining this invite.",
+    ),
+  };
+}
+
+function buildCancelRequestAction(
+  controls: GroupPlanActionControls,
+): GroupPlanActionDescriptor {
+  return {
+    kind: "button",
+    label: "Cancel request",
+    icon: X,
+    onClick: controls.cancelRequest,
+    loading: controls.isCancellingRequest,
+    disabled: !controls.isOnline || controls.isCancellingRequest,
+    title: getOfflineTitle(
+      controls.isOnline,
+      "Reconnect before changing your join request.",
+    ),
+  };
+}
+
+function buildJoinGroupAction({
+  controls,
+  mode,
+}: {
+  controls: GroupPlanActionControls;
+  mode: JoinActionMode;
+}): GroupPlanActionDescriptor {
+  const copy = JOIN_ACTION_COPY[mode];
+
+  return {
+    kind: "button",
+    label: controls.isJoining ? copy.loadingLabel : copy.label,
+    icon: copy.icon,
+    onClick: controls.joinGroup,
+    loading: controls.isJoining,
+    disabled: !controls.isOnline || controls.isJoining,
+    title: getOfflineTitle(
+      controls.isOnline,
+      "Reconnect before joining or requesting to join this group.",
+    ),
+  };
+}
+
+function buildDisabledAction(
+  label: string,
+  icon: LucideIcon,
+): GroupPlanActionDescriptor {
+  return {
+    kind: "button",
+    label,
+    icon,
+    onClick: noopAction,
+    disabled: true,
   };
 }
 
@@ -357,6 +345,86 @@ function buildExploreAction(): GroupPlanActionDescriptor {
   };
 }
 
+function getBlockedActionLabel(detail: GroupPlanDetail) {
+  return detail.viewer.joinDisabledReason
+    ? formatStatusLabel(detail.viewer.joinDisabledReason)
+    : "Unavailable";
+}
+
+function getOfflineTitle(isOnline: boolean, offlineTitle: string) {
+  return isOnline ? undefined : offlineTitle;
+}
+
+function runWithPendingInvite(
+  pendingInviteId: string | null,
+  action: (inviteId: string) => void,
+) {
+  return () => {
+    if (pendingInviteId) {
+      action(pendingInviteId);
+    }
+  };
+}
+
+function noopAction() {
+  return undefined;
+}
+
+type JoinDisabledReason = NonNullable<
+  GroupPlanDetail["viewer"]["joinDisabledReason"]
+>;
+
+const MEMBER_SUMMARY =
+  "You're in. Open the group workspace to keep the plan moving.";
+
+const JOIN_ACTION_COPY = {
+  direct: {
+    label: "Join group",
+    loadingLabel: "Joining...",
+    icon: ArrowRight,
+  },
+  request: {
+    label: "Request to join",
+    loadingLabel: "Sending request...",
+    icon: Send,
+  },
+} satisfies Record<
+  JoinActionMode,
+  {
+    label: string;
+    loadingLabel: string;
+    icon: LucideIcon;
+  }
+>;
+
+const MODE_SUMMARIES: Partial<Record<GroupPlanViewerMode, string>> = {
+  invited: "You have a pending invite to review.",
+  requested: "Your request is with the group managers.",
+};
+
+const JOIN_DISABLED_REASON_SUMMARIES: Partial<
+  Record<JoinDisabledReason, string>
+> = {
+  ALREADY_MEMBER: "You are already part of this group.",
+  COMPLETED: "This plan has already wrapped.",
+  DISBANDED: "This group has disbanded.",
+  FULL: "The group is full right now.",
+};
+
+const JOIN_AVAILABLE_SUMMARIES = [
+  {
+    isAvailable: (detail: GroupPlanDetail) => detail.viewer.canJoin,
+    summary: "This group is open, so you can join directly.",
+  },
+  {
+    isAvailable: (detail: GroupPlanDetail) => detail.viewer.canRequestToJoin,
+    summary: "Send a request and the group can bring you in.",
+  },
+] as const;
+
+const DEFAULT_JOIN_UNAVAILABLE_SUMMARY =
+  "This group is not taking new people right now.";
+
 function getSummary({
   detail,
   mode,
@@ -367,40 +435,33 @@ function getSummary({
   isMember: boolean;
 }): string {
   if (isMember) {
-    return "You're in. Open the group workspace to keep the plan moving.";
+    return MEMBER_SUMMARY;
   }
 
-  if (mode === "invited") {
-    return "You have a pending invite to review.";
+  const modeSummary = MODE_SUMMARIES[mode];
+  if (modeSummary) {
+    return modeSummary;
   }
 
-  if (mode === "requested") {
-    return "Your request is with the group managers.";
-  }
+  return getJoinAvailabilitySummary(detail);
+}
 
-  if (detail.viewer.canJoin) {
-    return "This group is open, so you can join directly.";
-  }
+function getJoinAvailabilitySummary(detail: GroupPlanDetail) {
+  const availability = JOIN_AVAILABLE_SUMMARIES.find(({ isAvailable }) =>
+    isAvailable(detail),
+  );
 
-  if (detail.viewer.canRequestToJoin) {
-    return "Send a request and the group can bring you in.";
-  }
+  return (
+    availability?.summary ??
+    getJoinDisabledReasonSummary(detail.viewer.joinDisabledReason)
+  );
+}
 
-  if (detail.viewer.joinDisabledReason === "FULL") {
-    return "The group is full right now.";
-  }
-
-  if (detail.viewer.joinDisabledReason === "ALREADY_MEMBER") {
-    return "You are already part of this group.";
-  }
-
-  if (detail.viewer.joinDisabledReason === "DISBANDED") {
-    return "This group has disbanded.";
-  }
-
-  if (detail.viewer.joinDisabledReason === "COMPLETED") {
-    return "This plan has already wrapped.";
-  }
-
-  return "This group is not taking new people right now.";
+function getJoinDisabledReasonSummary(
+  reason: GroupPlanDetail["viewer"]["joinDisabledReason"],
+) {
+  return reason
+    ? (JOIN_DISABLED_REASON_SUMMARIES[reason] ??
+        DEFAULT_JOIN_UNAVAILABLE_SUMMARY)
+    : DEFAULT_JOIN_UNAVAILABLE_SUMMARY;
 }

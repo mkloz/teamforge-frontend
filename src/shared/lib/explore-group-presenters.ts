@@ -1,11 +1,15 @@
 import type { ExploreGroup } from "@/shared/schemas";
 
-export type ExploreReasonTone = "primary" | "warm" | "muted";
+type CompatibilityCue =
+  | "interestOverlap"
+  | "personalityCompatibility"
+  | "friendshipProximity"
+  | "ageAlignment"
+  | "cityAlignment";
 
-export interface ExploreReasonTag {
-  label: string;
-  tone: ExploreReasonTone;
-}
+type ExplorePlanLocationMode = NonNullable<
+  ExploreGroup["plan"]
+>["locationMode"];
 
 const DEMO_GROUP_NAME_PATTERN = /^Benchmark Group \d+$/i;
 const DEMO_PLAN_TITLE_PATTERN = /^Benchmark Plan \d+$/i;
@@ -24,6 +28,44 @@ const CATEGORY_LABELS: Record<string, string> = {
   TRAVEL: "Travel",
   WELLNESS: "Wellness",
 };
+
+const COMPATIBILITY_CUE_KEYS = [
+  "interestOverlap",
+  "personalityCompatibility",
+  "friendshipProximity",
+  "ageAlignment",
+  "cityAlignment",
+] as const satisfies readonly CompatibilityCue[];
+
+const FIT_REASON_BY_CUE: Record<
+  CompatibilityCue,
+  (group: ExploreGroup) => string
+> = {
+  interestOverlap: (group) =>
+    `Good fit because ${getInterestLabel(group)} lines up with your interests.`,
+  personalityCompatibility: () =>
+    "The current members look likely to meet at your pace.",
+  friendshipProximity: () =>
+    "There is a familiar connection inside this group.",
+  ageAlignment: () => "The group is close to your stage of life.",
+  cityAlignment: (group) =>
+    `${getCityFitPlace(group)} keeps this practical to join.`,
+};
+
+const DISTANCE_LABEL_BY_LOCATION_MODE = {
+  IN_PERSON: getInPersonDistanceLabel,
+  ONLINE: () => "Online",
+  TBD: getTbdDistanceLabel,
+} as const satisfies Record<
+  ExplorePlanLocationMode,
+  (group: ExploreGroup) => string
+>;
+
+const CITY_FIT_FALLBACK_BY_LOCATION_MODE = {
+  IN_PERSON: "The location",
+  ONLINE: "The location",
+  TBD: "The area",
+} as const satisfies Record<ExplorePlanLocationMode, string>;
 
 export function getExploreGroupMatchScore(group: ExploreGroup) {
   const score = group.compatibility.total;
@@ -46,35 +88,19 @@ export function getExploreGroupDisplayName(group: ExploreGroup) {
 }
 
 export function getExploreGroupDisplayTitle(group: ExploreGroup) {
-  const title = group.plan?.title || group.activity.title;
+  const title = getExploreGroupRawTitle(group);
 
   if (!DEMO_PLAN_TITLE_PATTERN.test(title)) {
     return title;
   }
 
-  const category = getCategoryLabel(group);
-  const location =
-    group.plan?.locationMode === "ONLINE"
-      ? "online"
-      : group.activity.city
-        ? `in ${group.activity.city}`
-        : "nearby";
-
-  return category === "Group"
-    ? `Open plan ${location}`
-    : `${category} plan ${location}`;
+  return getExploreDemoPlanTitle(group);
 }
 
 export function getExploreGroupDistanceLabel(group: ExploreGroup) {
-  if (group.plan?.locationMode === "ONLINE") {
-    return "Online";
-  }
-
-  if (group.plan?.locationMode === "TBD") {
-    return group.activity.city || "Place TBD";
-  }
-
-  return group.activity.city || "Location pending";
+  return DISTANCE_LABEL_BY_LOCATION_MODE[getExplorePlanLocationMode(group)](
+    group,
+  );
 }
 
 export function isExploreGroupFull(group: ExploreGroup) {
@@ -85,29 +111,8 @@ export function getExploreGroupFitReason(group: ExploreGroup) {
   const strongest = getStrongestCompatibilityCue(group);
   const planLabel = getExploreGroupDisplayTitle(group);
 
-  if (strongest === "interestOverlap") {
-    return `Good fit because ${getInterestLabel(group)} lines up with your interests.`;
-  }
-
-  if (strongest === "personalityCompatibility") {
-    return "The current members look likely to meet at your pace.";
-  }
-
-  if (strongest === "friendshipProximity") {
-    return "There is a familiar connection inside this group.";
-  }
-
-  if (strongest === "ageAlignment") {
-    return "The group is close to your stage of life.";
-  }
-
-  if (strongest === "cityAlignment") {
-    const place =
-      group.plan?.locationMode === "TBD"
-        ? group.activity.city || "The area"
-        : group.activity.city || "The location";
-
-    return `${place} keeps this practical to join.`;
+  if (strongest) {
+    return FIT_REASON_BY_CUE[strongest](group);
   }
 
   if (group.access === "OPEN" && !isExploreGroupFull(group)) {
@@ -117,69 +122,69 @@ export function getExploreGroupFitReason(group: ExploreGroup) {
   return "A steady opening with enough context to inspect.";
 }
 
-export function getExploreGroupReasonTags(group: ExploreGroup) {
-  const tags: ExploreReasonTag[] = [];
-  const compatibility = group.compatibility;
-  const spotsLeft =
-    group.maxMembers > 0
-      ? Math.max(0, group.maxMembers - group.activeMembersCount)
-      : null;
-
-  if (compatibility.interestOverlap >= 0.34) {
-    tags.push({ label: "Shared interests", tone: "primary" });
-  }
-
-  if (compatibility.personalityCompatibility >= 0.65) {
-    tags.push({ label: "Social fit", tone: "primary" });
-  }
-
-  if (compatibility.friendshipProximity > 0) {
-    tags.push({ label: "Familiar faces", tone: "warm" });
-  }
-
-  if (compatibility.ageAlignment >= 0.72) {
-    tags.push({ label: "Similar stage", tone: "muted" });
-  }
-
-  if (compatibility.cityAlignment >= 0.8) {
-    tags.push({
-      label: group.plan?.locationMode === "ONLINE" ? "Online" : "Nearby",
-      tone: "muted",
-    });
-  }
-
-  if (group.access === "OPEN" && spotsLeft !== null && spotsLeft > 0) {
-    tags.push({
-      label: `${spotsLeft} open ${spotsLeft === 1 ? "seat" : "seats"}`,
-      tone: "warm",
-    });
-  }
-
-  if (group.access === "BY_REQUEST" && !isExploreGroupFull(group)) {
-    tags.push({ label: "Request needed", tone: "muted" });
-  }
-
-  if (tags.length === 0) {
-    tags.push({ label: "Worth a look", tone: "muted" });
-  }
-
-  return tags.slice(0, 3);
-}
-
 function getStrongestCompatibilityCue(group: ExploreGroup) {
-  const entries = [
-    ["interestOverlap", group.compatibility.interestOverlap],
-    ["personalityCompatibility", group.compatibility.personalityCompatibility],
-    ["friendshipProximity", group.compatibility.friendshipProximity],
-    ["ageAlignment", group.compatibility.ageAlignment],
-    ["cityAlignment", group.compatibility.cityAlignment],
-  ] as const;
+  const entries = COMPATIBILITY_CUE_KEYS.map((key) =>
+    getCompatibilityCueScore(group, key),
+  );
 
   const [key, score] = entries.reduce((best, current) =>
     current[1] > best[1] ? current : best,
   );
 
   return score > 0 ? key : null;
+}
+
+function getCompatibilityCueScore(
+  group: ExploreGroup,
+  cue: CompatibilityCue,
+): readonly [CompatibilityCue, number] {
+  return [cue, group.compatibility[cue]];
+}
+
+function getExploreGroupRawTitle(group: ExploreGroup) {
+  return group.plan?.title || group.activity.title;
+}
+
+function getExploreDemoPlanTitle(group: ExploreGroup) {
+  return formatExploreDemoPlanTitle(
+    getCategoryLabel(group),
+    getExplorePlanLocationLabel(group),
+  );
+}
+
+function formatExploreDemoPlanTitle(category: string, location: string) {
+  return category === "Group"
+    ? `Open plan ${location}`
+    : `${category} plan ${location}`;
+}
+
+function getExplorePlanLocationLabel(group: ExploreGroup) {
+  if (group.plan?.locationMode === "ONLINE") {
+    return "online";
+  }
+
+  return group.activity.city ? `in ${group.activity.city}` : "nearby";
+}
+
+function getExplorePlanLocationMode(
+  group: ExploreGroup,
+): ExplorePlanLocationMode {
+  return group.plan?.locationMode ?? "IN_PERSON";
+}
+
+function getInPersonDistanceLabel(group: ExploreGroup) {
+  return group.activity.city || "Location pending";
+}
+
+function getTbdDistanceLabel(group: ExploreGroup) {
+  return group.activity.city || "Place TBD";
+}
+
+function getCityFitPlace(group: ExploreGroup) {
+  return (
+    group.activity.city ||
+    CITY_FIT_FALLBACK_BY_LOCATION_MODE[getExplorePlanLocationMode(group)]
+  );
 }
 
 function getInterestLabel(group: ExploreGroup) {

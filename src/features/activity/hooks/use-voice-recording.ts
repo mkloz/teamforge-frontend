@@ -8,11 +8,7 @@ import type {
 } from "@/features/activity/hooks/voice-recording/voice-recording.types";
 import { formatRecordingTime } from "@/features/activity/hooks/voice-recording/voice-recording-result";
 
-export type {
-  RecordingError,
-  UseVoiceRecordingReturn,
-  VoiceRecordingResult,
-} from "@/features/activity/hooks/voice-recording/voice-recording.types";
+export type { UseVoiceRecordingReturn } from "@/features/activity/hooks/voice-recording/voice-recording.types";
 
 export function useVoiceRecording(): UseVoiceRecordingReturn {
   const [isRecording, setIsRecording] = useState(false);

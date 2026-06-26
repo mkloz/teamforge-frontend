@@ -46,7 +46,7 @@ export function getPersonalityResultViewModel(
   };
 }
 
-export function getDimensionScoresFromVector(
+function getDimensionScoresFromVector(
   result: PersonalityEvaluation,
   vector: OceanVectorWithMeta,
 ): DimensionScore[] {
@@ -90,14 +90,12 @@ export function getOceanScoresFromVector(
   };
 }
 
-export function getCompactText(value: string, maxSentences: number) {
+function getCompactText(value: string, maxSentences: number) {
   const sentences = value.match(/[^.!?]+[.!?]+/g) ?? [value];
 
   return sentences.slice(0, maxSentences).join(" ").trim();
 }
 
-export function getSixteenPersonalitiesUrl(
-  type: PersonalityEvaluation["type"],
-) {
+function getSixteenPersonalitiesUrl(type: PersonalityEvaluation["type"]) {
   return `https://www.16personalities.com/${SIXTEEN_PERSONALITIES_SLUGS[type]}-personality`;
 }

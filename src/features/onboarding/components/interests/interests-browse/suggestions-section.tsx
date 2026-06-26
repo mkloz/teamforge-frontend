@@ -4,7 +4,7 @@ import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
 
 import { CollapsibleInterestSection } from "./collapsible-interest-section";
-import { TagPill } from "./tag-pill";
+import { InterestTagPillList } from "./interest-tag-pill-list";
 
 interface SuggestionsSectionProps {
   personalityType: PersonalityType;
@@ -51,18 +51,14 @@ export function SuggestionsSection({
           From your profile. Keep only the ones you would actually choose.
         </p>
         <div className="flex flex-wrap gap-1 p-1 sm:gap-1.5 sm:p-1.5">
-          {suggestedTags.map((tag) => (
-            <TagPill
-              key={tag.id}
-              label={tag.name}
-              selected={selectedIds.has(tag.id)}
-              disabled={isAtMax}
-              onToggle={() => onToggle(tag.id)}
-              onReject={() => onReject(tag.id)}
-              aliases={tag.aliases}
-              animated
-            />
-          ))}
+          <InterestTagPillList
+            animated
+            disabled={isAtMax}
+            onReject={onReject}
+            onToggle={onToggle}
+            selectedIds={selectedIds}
+            tags={suggestedTags}
+          />
         </div>
       </div>
     </CollapsibleInterestSection>

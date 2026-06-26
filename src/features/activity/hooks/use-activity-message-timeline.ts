@@ -1,15 +1,25 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 
-import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import type {
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import type { ActivityKind } from "@/features/activity/lib/activity-route";
-import { warnInDevelopment } from "@/shared/lib/development-warning";
-import type { ChatApi } from "@/shared/schemas";
+import {
+  canLoadMessageTimeline,
+  getFirstUnreadMessageId,
+  getMessageTimelineQueryState,
+  getSelectedDirectMessages,
+  getSelectedGroupMessages,
+  getSelectedTimelineMessages,
+} from "./activity-message-timeline-state";
+import {
+  useFirstUnreadMessageId,
+  useMarkLatestMessageRead,
+  useTimelineResumeRefetch,
+} from "./use-activity-message-timeline-effects";
 
 interface UseActivityMessageTimelineInput {
   chatId: string | null;
@@ -19,8 +29,6 @@ interface UseActivityMessageTimelineInput {
   selectedParticipants: ActivityParticipant[];
 }
 
-const ACTIVITY_TIMELINE_RESUME_REFETCH_COOLDOWN_MS = 12_000;
-
 export function useActivityMessageTimeline({
   chatId,
   currentUserId,
@@ -29,23 +37,22 @@ export function useActivityMessageTimeline({
   selectedParticipants,
 }: UseActivityMessageTimelineInput) {
   const chatsQuery = useQuery(ActivityQueryFactory.chats());
+  const canLoadTimeline = canLoadMessageTimeline({
+    chatId,
+    currentUserId,
+    selectedParticipantCount: selectedParticipants.length,
+  });
   const messagesQuery = useInfiniteQuery({
     ...ActivityQueryFactory.conversationMessages(chatId ?? "__missing__"),
-    enabled:
-      !!chatId && selectedParticipants.length > 0 && currentUserId !== null,
+    enabled: canLoadTimeline,
   });
-  const isMessageTimelineLoading =
-    !!chatId &&
-    selectedParticipants.length > 0 &&
-    currentUserId !== null &&
-    messagesQuery.isLoading &&
-    !messagesQuery.data;
-  const isMessageTimelineError =
-    !!chatId &&
-    selectedParticipants.length > 0 &&
-    currentUserId !== null &&
-    messagesQuery.isError &&
-    !messagesQuery.data;
+  const { isMessageTimelineError, isMessageTimelineLoading } =
+    getMessageTimelineQueryState({
+      canLoadTimeline,
+      hasMessageData: Boolean(messagesQuery.data),
+      isError: messagesQuery.isError,
+      isLoading: messagesQuery.isLoading,
+    });
 
   const flattenedApiMessages = useMemo(
     () => ActivityQueryFactory.flattenMessagePages(messagesQuery.data),
@@ -60,36 +67,32 @@ export function useActivityMessageTimeline({
       ),
     [currentUserId, flattenedApiMessages, selectedParticipants],
   );
-  const selectedGroupMessages = useMemo(() => {
-    if (selectedKind !== "group") {
-      return [];
-    }
-
-    const reconciledTimeline = reconcileProposalMessagesWithChatMessages(
-      flattenedMessages,
-      proposalMessages,
-    );
-
-    return ActivityQueryFactory.buildConversationTimeline(
-      reconciledTimeline.messages,
-      reconciledTimeline.proposalMessages,
-    );
-  }, [flattenedMessages, proposalMessages, selectedKind]);
+  const selectedGroupMessages = useMemo(
+    () =>
+      getSelectedGroupMessages({
+        flattenedMessages,
+        proposalMessages,
+        selectedKind,
+      }),
+    [flattenedMessages, proposalMessages, selectedKind],
+  );
   const selectedDirectMessages = useMemo(
-    () => (selectedKind === "dm" ? flattenedMessages : []),
+    () =>
+      getSelectedDirectMessages({
+        flattenedMessages,
+        selectedKind,
+      }),
     [flattenedMessages, selectedKind],
   );
-  const selectedTimelineMessages = useMemo(() => {
-    if (selectedKind === "group") {
-      return selectedGroupMessages;
-    }
-
-    if (selectedKind === "dm") {
-      return selectedDirectMessages;
-    }
-
-    return [];
-  }, [selectedDirectMessages, selectedGroupMessages, selectedKind]);
+  const selectedTimelineMessages = useMemo(
+    () =>
+      getSelectedTimelineMessages(
+        selectedKind,
+        selectedGroupMessages,
+        selectedDirectMessages,
+      ),
+    [selectedDirectMessages, selectedGroupMessages, selectedKind],
+  );
   const chatSummary = useMemo(
     () => chatsQuery.data?.find((chat) => chat.id === chatId) ?? null,
     [chatId, chatsQuery.data],
@@ -103,148 +106,30 @@ export function useActivityMessageTimeline({
       }),
     [chatSummary, currentUserId, selectedTimelineMessages],
   );
-  const firstUnreadChatIdRef = useRef<string | null>(null);
-  const [firstUnreadMessageId, setFirstUnreadMessageId] = useState<
-    string | null
-  >(null);
 
   const latestReadableMessageId =
     flattenedMessages[flattenedMessages.length - 1]?.id ?? null;
-  const lastMarkedReadRef = useRef<string | null>(null);
-  const isFetchingMessagesRef = useRef(false);
-  const lastResumeRefetchAtRef = useRef(0);
-  const resumeRefetchInFlightRef = useRef<Promise<void> | null>(null);
-  const resumeRefetchRef = useRef(messagesQuery.refetch);
+  const firstUnreadMessageId = useFirstUnreadMessageId({
+    chatId,
+    computedFirstUnreadMessageId,
+  });
 
-  useEffect(() => {
-    isFetchingMessagesRef.current = messagesQuery.isFetching;
-  }, [messagesQuery.isFetching]);
+  useTimelineResumeRefetch({
+    canLoadTimeline,
+    isFetching: messagesQuery.isFetching,
+    refetch: messagesQuery.refetch,
+    resetKey: getTimelineResumeRefetchResetKey(
+      chatId,
+      currentUserId,
+      selectedParticipants.length,
+    ),
+  });
 
-  useEffect(() => {
-    resumeRefetchRef.current = messagesQuery.refetch;
-  }, [messagesQuery.refetch]);
-
-  useEffect(() => {
-    lastResumeRefetchAtRef.current = 0;
-    resumeRefetchInFlightRef.current = null;
-
-    if (
-      !chatId ||
-      selectedParticipants.length === 0 ||
-      currentUserId === null
-    ) {
-      return undefined;
-    }
-
-    function refetchTimelineAfterResume(reason: string) {
-      if (
-        document.visibilityState === "hidden" ||
-        !navigator.onLine ||
-        isFetchingMessagesRef.current ||
-        resumeRefetchInFlightRef.current
-      ) {
-        return;
-      }
-
-      const now = Date.now();
-
-      if (
-        now - lastResumeRefetchAtRef.current <
-        ACTIVITY_TIMELINE_RESUME_REFETCH_COOLDOWN_MS
-      ) {
-        return;
-      }
-
-      lastResumeRefetchAtRef.current = now;
-
-      const refetchPromise = resumeRefetchRef
-        .current()
-        .then(() => undefined)
-        .catch((error: unknown) => {
-          warnInDevelopment(
-            `Activity timeline resume refresh failed after ${reason}.`,
-            error,
-          );
-        });
-
-      resumeRefetchInFlightRef.current = refetchPromise;
-
-      void refetchPromise.finally(() => {
-        if (resumeRefetchInFlightRef.current === refetchPromise) {
-          resumeRefetchInFlightRef.current = null;
-        }
-      });
-    }
-
-    function handleFocus() {
-      refetchTimelineAfterResume("window focus");
-    }
-
-    function handleOnline() {
-      refetchTimelineAfterResume("network reconnect");
-    }
-
-    function handlePageShow(event: PageTransitionEvent) {
-      if (event.persisted) {
-        refetchTimelineAfterResume("page restore");
-      }
-    }
-
-    function handleVisibilityChange() {
-      if (document.visibilityState === "visible") {
-        refetchTimelineAfterResume("app foreground");
-      }
-    }
-
-    window.addEventListener("focus", handleFocus);
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("pageshow", handlePageShow);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("pageshow", handlePageShow);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [chatId, currentUserId, selectedParticipants.length]);
-
-  useEffect(() => {
-    if (firstUnreadChatIdRef.current !== chatId) {
-      firstUnreadChatIdRef.current = chatId;
-      setFirstUnreadMessageId(computedFirstUnreadMessageId);
-      return;
-    }
-
-    if (!firstUnreadMessageId && computedFirstUnreadMessageId) {
-      setFirstUnreadMessageId(computedFirstUnreadMessageId);
-    }
-  }, [chatId, computedFirstUnreadMessageId, firstUnreadMessageId]);
-
-  useEffect(() => {
-    if (!chatId || !latestReadableMessageId) {
-      return;
-    }
-
-    if (!chatSummary || getChatUnreadCount(chatSummary) === 0) {
-      return;
-    }
-
-    const markReadKey = `${chatId}:${latestReadableMessageId}`;
-
-    if (lastMarkedReadRef.current === markReadKey) {
-      return;
-    }
-
-    lastMarkedReadRef.current = markReadKey;
-    void ActivityCommands.markChatRead(chatId, latestReadableMessageId).catch(
-      () => {
-        if (lastMarkedReadRef.current === markReadKey) {
-          lastMarkedReadRef.current = null;
-        }
-      },
-    );
-  }, [chatId, chatSummary, latestReadableMessageId]);
+  useMarkLatestMessageRead({
+    chatId,
+    chatSummary,
+    latestReadableMessageId,
+  });
 
   async function loadOlderMessages() {
     if (messagesQuery.hasNextPage && !messagesQuery.isFetchingNextPage) {
@@ -259,10 +144,7 @@ export function useActivityMessageTimeline({
   return {
     selectedGroupMessages,
     selectedDirectMessages,
-    firstUnreadMessageId:
-      firstUnreadChatIdRef.current === chatId
-        ? (firstUnreadMessageId ?? computedFirstUnreadMessageId)
-        : computedFirstUnreadMessageId,
+    firstUnreadMessageId,
     hasOlderMessages: messagesQuery.hasNextPage,
     isMessageTimelineLoading,
     isMessageTimelineError,
@@ -272,234 +154,10 @@ export function useActivityMessageTimeline({
   };
 }
 
-function getFirstUnreadMessageId({
-  chatSummary,
-  currentUserId,
-  messages,
-}: {
-  chatSummary: ChatApi | null;
-  currentUserId: string | null;
-  messages: UnifiedMessage[];
-}) {
-  if (!chatSummary || !currentUserId) {
-    return null;
-  }
-
-  const unreadCount = getChatUnreadCount(chatSummary);
-
-  if (unreadCount === 0) {
-    return null;
-  }
-
-  const lastReadMessageId =
-    chatSummary.participants?.find(
-      (participant) => participant.userId === currentUserId,
-    )?.lastReadMessageId ?? null;
-
-  if (lastReadMessageId) {
-    const lastReadIndex = messages.findIndex(
-      (message) => message.id === lastReadMessageId,
-    );
-
-    if (lastReadIndex >= 0) {
-      const firstUnreadAfterLastRead = messages
-        .slice(lastReadIndex + 1)
-        .find(isUnreadMessageCandidate);
-
-      if (firstUnreadAfterLastRead) {
-        return firstUnreadAfterLastRead.id;
-      }
-    }
-  }
-
-  const unreadCandidateMessages = messages.filter(isUnreadMessageCandidate);
-  const firstUnreadIndex = Math.max(
-    0,
-    unreadCandidateMessages.length - unreadCount,
-  );
-
-  return unreadCandidateMessages[firstUnreadIndex]?.id ?? null;
-}
-
-function getChatUnreadCount(chat: ChatApi) {
-  return Math.max(0, chat.unreadCount ?? (chat.hasUnread ? 1 : 0));
-}
-
-function isUnreadMessageCandidate(message: UnifiedMessage) {
-  return !message.isOwn && !message.deletedAt;
-}
-
-function reconcileProposalMessagesWithChatMessages(
-  messages: UnifiedMessage[],
-  proposalMessages: UnifiedMessage[],
+function getTimelineResumeRefetchResetKey(
+  chatId: string | null,
+  currentUserId: string | null,
+  selectedParticipantCount: number,
 ) {
-  if (proposalMessages.length === 0 || messages.length === 0) {
-    return { messages, proposalMessages };
-  }
-
-  const remainingMessages = [...messages];
-  const reconciledProposalMessages = proposalMessages.map((proposalMessage) => {
-    const backingMessageIndex = remainingMessages.findIndex((message) =>
-      isProposalBackingMessage(message, proposalMessage),
-    );
-
-    if (backingMessageIndex < 0) {
-      return proposalMessage;
-    }
-
-    const backingMessage = remainingMessages[backingMessageIndex];
-
-    remainingMessages.splice(backingMessageIndex, 1);
-
-    return {
-      ...proposalMessage,
-      attachments: backingMessage.attachments,
-      chatId: backingMessage.chatId,
-      createdAt: backingMessage.createdAt,
-      deletedAt: backingMessage.deletedAt,
-      editedAt: backingMessage.editedAt,
-      forwardedFromChatId: backingMessage.forwardedFromChatId,
-      forwardedFromMessageId: backingMessage.forwardedFromMessageId,
-      forwardedFromSenderId: backingMessage.forwardedFromSenderId,
-      forwardedFromSenderName: backingMessage.forwardedFromSenderName,
-      id: backingMessage.id,
-      isEdited: backingMessage.isEdited,
-      isPinned: backingMessage.isPinned,
-      isSaved: backingMessage.isSaved,
-      reactions: backingMessage.reactions,
-      readBy: backingMessage.readBy,
-      readByCount: backingMessage.readByCount,
-      replyTo: backingMessage.replyTo,
-      replyToId: backingMessage.replyToId,
-      sender: backingMessage.sender,
-      status: backingMessage.status,
-      updatedAt: backingMessage.updatedAt,
-      version: backingMessage.version,
-    };
-  });
-
-  return {
-    messages: remainingMessages,
-    proposalMessages: reconciledProposalMessages,
-  };
-}
-
-function isProposalBackingMessage(
-  message: UnifiedMessage,
-  proposalMessage: UnifiedMessage,
-) {
-  const proposal = proposalMessage.proposal;
-
-  if (
-    (message.type !== "SYSTEM" && message.type !== "PLAN_UPDATE") ||
-    message.chatId !== proposalMessage.chatId ||
-    !proposal
-  ) {
-    return false;
-  }
-
-  if (!isNearProposalTimelineEvent(message.createdAt, proposalMessage)) {
-    return false;
-  }
-
-  const messageContent = normalizeTimelineContent(message.content);
-  const proposalContent = normalizeTimelineContent(proposalMessage.content);
-
-  return (
-    messageContent === proposalContent ||
-    isProposalStatusMessage(
-      messageContent,
-      proposal.field,
-      proposal.proposer.name,
-    )
-  );
-}
-
-function isNearProposalTimelineEvent(
-  messageCreatedAt: string,
-  proposalMessage: UnifiedMessage,
-) {
-  const messageTime = new Date(messageCreatedAt).getTime();
-
-  if (Number.isNaN(messageTime)) {
-    return false;
-  }
-
-  const proposalTimes = [
-    proposalMessage.createdAt,
-    proposalMessage.updatedAt,
-    proposalMessage.editedAt,
-  ]
-    .map((value) => (value ? new Date(value).getTime() : Number.NaN))
-    .filter((value) => !Number.isNaN(value));
-
-  return proposalTimes.some(
-    (proposalTime) => Math.abs(messageTime - proposalTime) <= 5 * 60 * 1000,
-  );
-}
-
-function normalizeTimelineContent(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[.!?]+$/u, "");
-}
-
-function isProposalStatusMessage(
-  normalizedContent: string,
-  field: NonNullable<UnifiedMessage["proposal"]>["field"],
-  proposerName: string,
-) {
-  return (
-    hasProposalLanguage(normalizedContent) &&
-    hasProposalActorLanguage(normalizedContent, proposerName) &&
-    hasProposalFieldLanguage(normalizedContent, field)
-  );
-}
-
-function hasProposalLanguage(normalizedContent: string) {
-  return (
-    normalizedContent.includes("proposal") ||
-    normalizedContent.includes("proposed")
-  );
-}
-
-function hasProposalActorLanguage(
-  normalizedContent: string,
-  proposerName: string,
-) {
-  const normalizedName = normalizeTimelineContent(proposerName);
-  const firstName = normalizedName.split(/\s+/)[0];
-
-  return (
-    normalizedContent.includes(normalizedName) ||
-    (firstName.length > 0 && normalizedContent.includes(firstName))
-  );
-}
-
-function hasProposalFieldLanguage(
-  normalizedContent: string,
-  field: NonNullable<UnifiedMessage["proposal"]>["field"],
-) {
-  switch (field) {
-    case "TITLE":
-      return normalizedContent.includes("title");
-    case "DESCRIPTION":
-      return normalizedContent.includes("description");
-    case "DATE_TIME":
-      return (
-        normalizedContent.includes("date") || normalizedContent.includes("time")
-      );
-    case "LOCATION":
-      return normalizedContent.includes("location");
-    case "COST":
-      return (
-        normalizedContent.includes("cost") ||
-        normalizedContent.includes("price")
-      );
-    case "CATEGORY":
-      return normalizedContent.includes("category");
-  }
-
-  return false;
+  return `${chatId ?? ""}:${currentUserId ?? ""}:${selectedParticipantCount}`;
 }

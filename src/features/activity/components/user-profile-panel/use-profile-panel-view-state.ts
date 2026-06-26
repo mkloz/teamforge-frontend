@@ -21,6 +21,23 @@ interface PanelHeaderTransitionInput {
   scrollTop: number;
 }
 
+interface PanelHeaderTransition {
+  nextCompactHeaderVisible: boolean;
+  nextPanelHeaderCollapsed: boolean;
+  shouldExpand: boolean;
+  shouldSnapCompact: boolean;
+  shouldUpdateCompactHeaderVisible: boolean;
+  shouldUpdatePanelHeaderCollapsed: boolean;
+}
+
+interface PanelHeaderTransitionDecision {
+  nextCompactHeaderVisible: boolean;
+  nextPanelHeaderCollapsed: boolean;
+  shouldExpand: boolean;
+  shouldShowCompactHeader: boolean;
+  shouldSnapCompact: boolean;
+}
+
 export function useProfilePanelViewState({
   resetEnabled,
   resetKey,
@@ -42,29 +59,18 @@ export function useProfilePanelViewState({
 
   const applyPanelHeaderState = useCallback(() => {
     const element = scrollRef.current;
-    const scrollTop = element?.scrollTop ?? 0;
-    const snapTarget = element
-      ? getProfilePanelCompactSnapTarget(element)
-      : PANEL_COMPACT_HEADER_SNAP_TARGET;
     const transition = getPanelHeaderTransition({
       compactRestingScrollTop: compactRestingScrollTopRef.current,
       isCompactHeaderVisible: isCompactHeaderVisibleRef.current,
       isPanelHeaderCollapsed: isPanelHeaderCollapsedRef.current,
-      scrollTop,
+      scrollTop: element?.scrollTop ?? 0,
     });
 
-    if (transition.shouldSnapCompact && element) {
-      element.scrollTo({
-        top: snapTarget,
-        behavior: "instant",
-      });
-      compactRestingScrollTopRef.current = snapTarget;
-    }
-
-    if (transition.shouldExpand && element) {
-      element.scrollTo({ top: 0, behavior: "instant" });
-      compactRestingScrollTopRef.current = 0;
-    }
+    compactRestingScrollTopRef.current = applyPanelHeaderScrollTransition({
+      compactRestingScrollTop: compactRestingScrollTopRef.current,
+      element,
+      transition,
+    });
 
     if (transition.shouldUpdatePanelHeaderCollapsed) {
       isPanelHeaderCollapsedRef.current = transition.nextPanelHeaderCollapsed;
@@ -73,9 +79,6 @@ export function useProfilePanelViewState({
 
     if (transition.shouldUpdateCompactHeaderVisible) {
       isCompactHeaderVisibleRef.current = transition.nextCompactHeaderVisible;
-      if (transition.shouldExpand) {
-        compactRestingScrollTopRef.current = 0;
-      }
       setIsCompactHeaderVisible(transition.nextCompactHeaderVisible);
     }
   }, []);
@@ -130,13 +133,43 @@ function getPanelHeaderTransition({
   isCompactHeaderVisible,
   isPanelHeaderCollapsed,
   scrollTop,
-}: PanelHeaderTransitionInput) {
-  const shouldExpand =
-    isCompactHeaderVisible &&
-    scrollTop <
-      Math.max(PANEL_EXPAND_SCROLL_TRIGGER, compactRestingScrollTop - 8);
-  const shouldSnapCompact =
-    !isCompactHeaderVisible && scrollTop >= PANEL_COLLAPSE_SCROLL_TRIGGER;
+}: PanelHeaderTransitionInput): PanelHeaderTransition {
+  const decision = getPanelHeaderTransitionDecision({
+    compactRestingScrollTop,
+    isCompactHeaderVisible,
+    scrollTop,
+    isPanelHeaderCollapsed,
+  });
+
+  return {
+    nextCompactHeaderVisible: decision.nextCompactHeaderVisible,
+    nextPanelHeaderCollapsed: decision.nextPanelHeaderCollapsed,
+    shouldExpand: decision.shouldExpand,
+    shouldSnapCompact: decision.shouldSnapCompact,
+    shouldUpdateCompactHeaderVisible:
+      isCompactHeaderVisible !== decision.shouldShowCompactHeader ||
+      decision.shouldExpand,
+    shouldUpdatePanelHeaderCollapsed:
+      isPanelHeaderCollapsed !== decision.nextPanelHeaderCollapsed ||
+      decision.shouldExpand,
+  };
+}
+
+function getPanelHeaderTransitionDecision({
+  compactRestingScrollTop,
+  isCompactHeaderVisible,
+  isPanelHeaderCollapsed,
+  scrollTop,
+}: PanelHeaderTransitionInput): PanelHeaderTransitionDecision {
+  const shouldExpand = shouldExpandPanelHeader({
+    compactRestingScrollTop,
+    isCompactHeaderVisible,
+    scrollTop,
+  });
+  const shouldSnapCompact = shouldSnapCompactPanelHeader({
+    isCompactHeaderVisible,
+    scrollTop,
+  });
   const shouldCollapse = isPanelHeaderCollapsed || shouldSnapCompact;
   const shouldShowCompactHeader = isCompactHeaderVisible || shouldSnapCompact;
 
@@ -144,12 +177,86 @@ function getPanelHeaderTransition({
     nextCompactHeaderVisible: shouldExpand ? false : shouldShowCompactHeader,
     nextPanelHeaderCollapsed: shouldExpand ? false : shouldCollapse,
     shouldExpand,
+    shouldShowCompactHeader,
     shouldSnapCompact,
-    shouldUpdateCompactHeaderVisible:
-      isCompactHeaderVisible !== shouldShowCompactHeader || shouldExpand,
-    shouldUpdatePanelHeaderCollapsed:
-      isPanelHeaderCollapsed !== shouldCollapse || shouldExpand,
   };
+}
+
+function shouldExpandPanelHeader({
+  compactRestingScrollTop,
+  isCompactHeaderVisible,
+  scrollTop,
+}: Pick<
+  PanelHeaderTransitionInput,
+  "compactRestingScrollTop" | "isCompactHeaderVisible" | "scrollTop"
+>) {
+  const expandBoundary = Math.max(
+    PANEL_EXPAND_SCROLL_TRIGGER,
+    compactRestingScrollTop - 8,
+  );
+
+  return isCompactHeaderVisible && scrollTop < expandBoundary;
+}
+
+function shouldSnapCompactPanelHeader({
+  isCompactHeaderVisible,
+  scrollTop,
+}: Pick<PanelHeaderTransitionInput, "isCompactHeaderVisible" | "scrollTop">) {
+  return !isCompactHeaderVisible && scrollTop >= PANEL_COLLAPSE_SCROLL_TRIGGER;
+}
+
+function applyPanelHeaderScrollTransition({
+  compactRestingScrollTop,
+  element,
+  transition,
+}: {
+  compactRestingScrollTop: number;
+  element: HTMLElement | null;
+  transition: PanelHeaderTransition;
+}) {
+  if (!element) {
+    return getMissingElementCompactRestingScrollTop({
+      compactRestingScrollTop,
+      shouldExpand: transition.shouldExpand,
+    });
+  }
+
+  if (transition.shouldSnapCompact) {
+    return snapPanelHeaderToCompact(element);
+  }
+
+  if (transition.shouldExpand) {
+    return expandPanelHeader(element);
+  }
+
+  return compactRestingScrollTop;
+}
+
+function getMissingElementCompactRestingScrollTop({
+  compactRestingScrollTop,
+  shouldExpand,
+}: {
+  compactRestingScrollTop: number;
+  shouldExpand: boolean;
+}) {
+  return shouldExpand ? 0 : compactRestingScrollTop;
+}
+
+function snapPanelHeaderToCompact(element: HTMLElement) {
+  const snapTarget = getProfilePanelCompactSnapTarget(element);
+
+  element.scrollTo({
+    top: snapTarget,
+    behavior: "instant",
+  });
+
+  return snapTarget;
+}
+
+function expandPanelHeader(element: HTMLElement) {
+  element.scrollTo({ top: 0, behavior: "instant" });
+
+  return 0;
 }
 
 function getProfilePanelCompactSnapTarget(element: HTMLElement) {

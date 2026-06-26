@@ -2,15 +2,13 @@ import { z } from "zod";
 
 import { groupStatusSchema, personalityTypeSchema } from "./enums";
 
-export const inviteTypeSchema = z.enum([
+const inviteTypeSchema = z.enum([
   "ALGORITHM_MATCH",
   "FRIEND_INVITE",
   "DIRECT_INVITE",
 ]);
 
-export type InviteType = z.infer<typeof inviteTypeSchema>;
-
-export const inviteStatusSchema = z.enum([
+const inviteStatusSchema = z.enum([
   "PENDING",
   "ACCEPTED",
   "DECLINED",
@@ -18,9 +16,14 @@ export const inviteStatusSchema = z.enum([
   "CANCELLED",
 ]);
 
-export type InviteStatus = z.infer<typeof inviteStatusSchema>;
+export const createInvitePayloadSchema = z.object({
+  groupId: z.string().min(1),
+  inviteeId: z.string().min(1),
+  type: z.enum(["FRIEND_INVITE", "DIRECT_INVITE"]).optional(),
+  message: z.string().trim().max(500).optional(),
+});
 
-export const inviteGroupSchema = z.object({
+const inviteGroupSchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar: z.string().nullable(),
@@ -29,17 +32,13 @@ export const inviteGroupSchema = z.object({
   activeMembersCount: z.number(),
 });
 
-export type InviteGroup = z.infer<typeof inviteGroupSchema>;
-
-export const inviteUserSchema = z.object({
+const inviteUserSchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar: z.string().nullable(),
   personalityType: personalityTypeSchema.nullable(),
   trustScore: z.number(),
 });
-
-export type InviteUser = z.infer<typeof inviteUserSchema>;
 
 export const inviteSchema = z
   .object({

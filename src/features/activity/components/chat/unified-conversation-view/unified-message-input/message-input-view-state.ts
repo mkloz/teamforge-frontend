@@ -20,32 +20,57 @@ export interface MessageInputViewState {
   recordingTimeLabel: string;
 }
 
+const RECORDING_ERROR_MESSAGES = {
+  "already-recording": "Recording failed. Please try again.",
+  "not-supported": "Voice recording isn't supported on this browser.",
+  "permission-denied": "Microphone access denied. Check your browser settings.",
+  unknown: "Recording failed. Please try again.",
+} as const satisfies Record<
+  NonNullable<MessageComposer["recordingError"]>,
+  string
+>;
+
 export function getMessageInputViewState({
   composer,
   errorMessage,
   placeholder,
 }: MessageInputViewStateInput): MessageInputViewState {
   return {
-    attachmentFiles: composer.pendingAttachments.map(
-      (attachment) => attachment.file,
-    ),
-    hasContextPanel: Boolean(
-      (!composer.isEditing && composer.replyingTo) ||
-        composer.isEditing ||
-        composer.pendingAttachments.length > 0 ||
-        !composer.isOnline ||
-        composer.attachmentNotice ||
-        composer.recordingError ||
-        errorMessage,
-    ),
+    attachmentFiles: getAttachmentFiles(composer),
+    hasContextPanel: hasMessageInputContextPanel(composer, errorMessage),
     inputPillClasses: getInputPillClasses(composer),
-    inputPlaceholder: composer.isEditing ? "Edit your message..." : placeholder,
-    isActionTargetDisabled: composer.isRecording
-      ? false
-      : composer.areNetworkActionsDisabled,
+    inputPlaceholder: getInputPlaceholder(composer, placeholder),
+    isActionTargetDisabled: isMessageInputActionTargetDisabled(composer),
     recordingErrorMessage: getRecordingErrorMessage(composer.recordingError),
     recordingTimeLabel: composer.formatRecordingTime(composer.recordingTime),
   };
+}
+
+function getAttachmentFiles(composer: MessageComposer) {
+  return composer.pendingAttachments.map((attachment) => attachment.file);
+}
+
+function hasMessageInputContextPanel(
+  composer: MessageComposer,
+  errorMessage: string | null,
+) {
+  return [
+    !composer.isEditing && composer.replyingTo,
+    composer.isEditing,
+    composer.pendingAttachments.length > 0,
+    !composer.isOnline,
+    composer.attachmentNotice,
+    composer.recordingError,
+    errorMessage,
+  ].some(Boolean);
+}
+
+function getInputPlaceholder(composer: MessageComposer, placeholder: string) {
+  return composer.isEditing ? "Edit your message..." : placeholder;
+}
+
+function isMessageInputActionTargetDisabled(composer: MessageComposer) {
+  return composer.isRecording ? false : composer.areNetworkActionsDisabled;
 }
 
 function getInputPillClasses(composer: MessageComposer) {
@@ -64,13 +89,5 @@ function getRecordingErrorMessage(error: MessageComposer["recordingError"]) {
     return null;
   }
 
-  if (error === "permission-denied") {
-    return "Microphone access denied. Check your browser settings.";
-  }
-
-  if (error === "not-supported") {
-    return "Voice recording isn't supported on this browser.";
-  }
-
-  return "Recording failed. Please try again.";
+  return RECORDING_ERROR_MESSAGES[error];
 }

@@ -4,7 +4,7 @@ import {
   toDisplayPercent,
 } from "@/features/onboarding/utils/score-calculator";
 
-export const CALCULATION_DIMENSIONS = ["O", "C", "E", "A", "N"] as const;
+const CALCULATION_DIMENSIONS = ["O", "C", "E", "A", "N"] as const;
 
 export const CALCULATION_MESSAGES = [
   "Analyzing responses...",

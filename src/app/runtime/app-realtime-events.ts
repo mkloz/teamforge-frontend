@@ -43,7 +43,7 @@ function handleGroupUpdatedPayload(payload: unknown) {
   ActivityRealtimeHandlers.applyGroupUpdate(currentUser.id, parsed.group);
 }
 
-export function syncRealtimeSession() {
+function syncRealtimeSession() {
   realtimeClient.syncSession(authSession.getAccessToken());
 }
 

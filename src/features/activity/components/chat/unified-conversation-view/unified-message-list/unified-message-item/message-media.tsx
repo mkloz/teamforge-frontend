@@ -21,6 +21,12 @@ interface MessageMediaProps {
   replyTo: UnifiedMessage["replyTo"];
 }
 
+interface MessageMediaAttachmentGroups {
+  audioAttachments: UnifiedAttachment[];
+  fileAttachments: UnifiedAttachment[];
+  visualAttachments: UnifiedAttachment[];
+}
+
 export const MessageMedia = memo(
   ({
     attachments,
@@ -35,6 +41,8 @@ export const MessageMedia = memo(
   }: MessageMediaProps) => {
     if (!attachments || attachments.length === 0) return null;
 
+    const attachmentGroups = getMessageMediaAttachmentGroups(attachments);
+
     return (
       <div
         className={cn(
@@ -43,49 +51,123 @@ export const MessageMedia = memo(
         )}
       >
         {/* Voice Notes */}
-        {attachments.some((a: UnifiedAttachment) => a.type === "AUDIO") && (
-          <div className="flex flex-col gap-1 p-1 px-1.5">
-            {attachments
-              .filter((a: UnifiedAttachment) => a.type === "AUDIO")
-              .map((voice: UnifiedAttachment) => (
-                <VoiceNote
-                  key={voice.id}
-                  url={voice.url}
-                  duration={voice.duration ?? undefined}
-                  isOwn={isOwn}
-                />
-              ))}
-          </div>
-        )}
+        <VoiceNoteAttachments
+          attachments={attachmentGroups.audioAttachments}
+          isOwn={isOwn}
+        />
 
         {/* Documents */}
-        {attachments.some((a: UnifiedAttachment) => a.type === "FILE") && (
-          <div className="flex w-full flex-col gap-1.5 text-left">
-            {attachments
-              .filter((a: UnifiedAttachment) => a.type === "FILE")
-              .map((file: UnifiedAttachment) => (
-                <DocumentMessage
-                  key={file.id}
-                  attachment={file}
-                  isOwn={isOwn}
-                />
-              ))}
-          </div>
-        )}
+        <DocumentAttachments
+          attachments={attachmentGroups.fileAttachments}
+          isOwn={isOwn}
+        />
 
         {/* Visual media / Gallery */}
-        {attachments.some(isVisualAttachment) && (
-          <MediaGallery
-            attachments={attachments.filter(isVisualAttachment)}
-            isOwn={isOwn}
-            rounding={galleryRounding}
-            isOnlyContent={!replyTo && !content && reactionGroupsLength === 0}
-            timestamp={createdAt}
-            status={status}
-            isReadByOthers={isReadByOthers}
-          />
-        )}
+        <VisualMediaAttachments
+          attachments={attachmentGroups.visualAttachments}
+          content={content}
+          createdAt={createdAt}
+          galleryRounding={galleryRounding}
+          isOwn={isOwn}
+          isReadByOthers={isReadByOthers}
+          reactionGroupsLength={reactionGroupsLength}
+          replyTo={replyTo}
+          status={status}
+        />
       </div>
     );
   },
 );
+
+function getMessageMediaAttachmentGroups(
+  attachments: UnifiedAttachment[],
+): MessageMediaAttachmentGroups {
+  return {
+    audioAttachments: attachments.filter(isAudioAttachment),
+    fileAttachments: attachments.filter(isFileAttachment),
+    visualAttachments: attachments.filter(isVisualAttachment),
+  };
+}
+
+function isAudioAttachment(attachment: UnifiedAttachment) {
+  return attachment.type === "AUDIO";
+}
+
+function isFileAttachment(attachment: UnifiedAttachment) {
+  return attachment.type === "FILE";
+}
+
+function VoiceNoteAttachments({
+  attachments,
+  isOwn,
+}: {
+  attachments: UnifiedAttachment[];
+  isOwn: boolean;
+}) {
+  if (attachments.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col gap-1 p-1 px-1.5">
+      {attachments.map((voice) => (
+        <VoiceNote
+          key={voice.id}
+          url={voice.url}
+          duration={voice.duration ?? undefined}
+          isOwn={isOwn}
+        />
+      ))}
+    </div>
+  );
+}
+
+function DocumentAttachments({
+  attachments,
+  isOwn,
+}: {
+  attachments: UnifiedAttachment[];
+  isOwn: boolean;
+}) {
+  if (attachments.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="flex w-full flex-col gap-1.5 text-left">
+      {attachments.map((file) => (
+        <DocumentMessage key={file.id} attachment={file} isOwn={isOwn} />
+      ))}
+    </div>
+  );
+}
+
+function VisualMediaAttachments({
+  attachments,
+  content,
+  createdAt,
+  galleryRounding,
+  isOwn,
+  isReadByOthers,
+  reactionGroupsLength,
+  replyTo,
+  status,
+}: Omit<MessageMediaProps, "attachments"> & {
+  attachments: UnifiedAttachment[];
+}) {
+  if (attachments.length === 0) {
+    return null;
+  }
+
+  return (
+    <MediaGallery
+      attachments={attachments}
+      isOwn={isOwn}
+      rounding={galleryRounding}
+      isOnlyContent={!replyTo && !content && reactionGroupsLength === 0}
+      timestamp={createdAt}
+      status={status}
+      isReadByOthers={isReadByOthers}
+    />
+  );
+}

@@ -36,12 +36,71 @@ function getFrameClassName(contained: boolean, hasSelection: boolean) {
   );
 }
 
+interface RealtimeSelectionIds {
+  activeChatId: string | null;
+  activeGroupId: string | null;
+  activePlanId: string | null;
+}
+
+interface RealtimeEntityWithId {
+  id: string;
+}
+
+const EMPTY_REALTIME_SELECTION_IDS: RealtimeSelectionIds = {
+  activeChatId: null,
+  activeGroupId: null,
+  activePlanId: null,
+};
+
+function getRealtimeEntityId(entity: RealtimeEntityWithId | null | undefined) {
+  return entity ? entity.id : null;
+}
+
+function getGroupRealtimeSelectionIds(
+  selectedGroup: ActivityWorkspace["selectedGroup"],
+): RealtimeSelectionIds {
+  if (!selectedGroup) {
+    return EMPTY_REALTIME_SELECTION_IDS;
+  }
+
+  return {
+    activeChatId: getRealtimeEntityId(selectedGroup.chat),
+    activeGroupId: selectedGroup.id,
+    activePlanId: getRealtimeEntityId(selectedGroup.plan),
+  };
+}
+
+function getDirectRealtimeSelectionIds(
+  selectedChat: ActivityWorkspace["selectedChat"],
+): RealtimeSelectionIds {
+  return {
+    ...EMPTY_REALTIME_SELECTION_IDS,
+    activeChatId: getRealtimeEntityId(selectedChat),
+  };
+}
+
+function getRealtimeSelectionIds(
+  activity: ActivityWorkspace,
+): RealtimeSelectionIds {
+  if (activity.selectedKind === "group") {
+    return getGroupRealtimeSelectionIds(activity.selectedGroup);
+  }
+
+  if (activity.selectedKind === "dm") {
+    return getDirectRealtimeSelectionIds(activity.selectedChat);
+  }
+
+  return EMPTY_REALTIME_SELECTION_IDS;
+}
+
 export function ActivityPageContent({
   activity,
   contained = false,
   isMobile,
   isOnline,
 }: ActivityPageContentProps) {
+  const realtimeSelectionIds = getRealtimeSelectionIds(activity);
+
   return (
     <div className={getFrameClassName(contained, activity.hasSelection)}>
       <h1 id="activity-heading" className="sr-only">
@@ -76,25 +135,7 @@ export function ActivityPageContent({
       </section>
 
       <Suspense fallback={null}>
-        <ActivityRealtimeSync
-          activeChatId={
-            activity.selectedKind === "group"
-              ? (activity.selectedGroup?.chat?.id ?? null)
-              : activity.selectedKind === "dm"
-                ? (activity.selectedChat?.id ?? null)
-                : null
-          }
-          activeGroupId={
-            activity.selectedKind === "group"
-              ? (activity.selectedGroup?.id ?? null)
-              : null
-          }
-          activePlanId={
-            activity.selectedKind === "group"
-              ? (activity.selectedGroup?.plan?.id ?? null)
-              : null
-          }
-        />
+        <ActivityRealtimeSync {...realtimeSelectionIds} />
       </Suspense>
     </div>
   );

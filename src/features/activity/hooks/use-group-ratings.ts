@@ -5,7 +5,21 @@ import { ActivityQueryFactory } from "@/features/activity/api/activity-query-fac
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import type { CreateRatingPayload } from "@/shared/schemas";
+import type { CreateRatingPayload, GroupReviewState } from "@/shared/schemas";
+
+interface RatingSummary {
+  planId: string | null;
+  rateeId: string;
+  raterId: string;
+}
+
+type RatingMutationResult = Awaited<
+  ReturnType<typeof ActivityCommands.createGroupRating>
+>;
+
+interface RefetchableQuery {
+  refetch: () => Promise<unknown>;
+}
 
 export function useGroupRatings(groupId: string) {
   const { data: currentUser } = useCurrentUserQuery();
@@ -13,8 +27,90 @@ export function useGroupRatings(groupId: string) {
   const reviewStateQuery = useQuery(
     ActivityQueryFactory.groupReviewState(groupId),
   );
+  const currentUserId = getCurrentUserId(currentUser);
+  const reviewState = reviewStateQuery.data;
+  const currentPlanId = getCurrentPlanId(reviewState);
+  const submittedRateeIds = getSubmittedRateeIds(reviewState);
+  const pendingRateeIds = getPendingRateeIds(reviewState);
 
-  const createRatingMutation = useMutation({
+  const createRatingMutation = useMutation(
+    getCreateRatingMutationOptions(groupId),
+  );
+  const deferReviewMutation = useMutation(
+    getDeferReviewMutationOptions(groupId),
+  );
+
+  const submittedRatings = useMemo(() => {
+    return getSubmittedRatings({
+      currentPlanId,
+      currentUserId,
+      ratings: ratingsQuery.data,
+    });
+  }, [currentPlanId, currentUserId, ratingsQuery.data]);
+  const ratedUserIds = useMemo(
+    () =>
+      getRatedUserIds({
+        submittedRateeIds,
+        submittedRatings,
+      }),
+    [submittedRateeIds, submittedRatings],
+  );
+  const pendingUserIds = useMemo(
+    () => getPendingUserIds(pendingRateeIds),
+    [pendingRateeIds],
+  );
+  const queryState = getGroupRatingsQueryState({
+    ratingsQuery,
+    reviewStateQuery,
+  });
+
+  return {
+    currentUserId,
+    deferReview: deferReviewMutation.mutateAsync,
+    isDeferring: deferReviewMutation.isPending,
+    submittedRatings,
+    ratedUserIds,
+    pendingUserIds,
+    reviewState: getReviewStateValue(reviewState),
+    shouldBlockReview: getShouldBlockReview(reviewState),
+    isLoading: queryState.isLoading,
+    isError: queryState.isError,
+    refetch: () =>
+      refetchGroupRatingData({
+        ratingsQuery,
+        reviewStateQuery,
+      }),
+    submitRating: createRatingMutation.mutateAsync,
+    isSubmitting: createRatingMutation.isPending,
+  };
+}
+
+function getCurrentUserId(currentUser: { id: string } | null | undefined) {
+  return currentUser?.id ?? null;
+}
+
+function getCurrentPlanId(reviewState: GroupReviewState | undefined) {
+  return reviewState?.currentPlan?.id;
+}
+
+function getSubmittedRateeIds(reviewState: GroupReviewState | undefined) {
+  return reviewState?.submittedRateeIds;
+}
+
+function getPendingRateeIds(reviewState: GroupReviewState | undefined) {
+  return reviewState?.pendingRateeIds;
+}
+
+function getReviewStateValue(reviewState: GroupReviewState | undefined) {
+  return reviewState ?? null;
+}
+
+function getShouldBlockReview(reviewState: GroupReviewState | undefined) {
+  return reviewState?.shouldBlockReview ?? false;
+}
+
+function getCreateRatingMutationOptions(groupId: string) {
+  return {
     meta: {
       errorToastConflictMessage:
         "You've already rated this person for this group.",
@@ -23,79 +119,107 @@ export function useGroupRatings(groupId: string) {
     },
     mutationFn: (payload: CreateRatingPayload) =>
       ActivityCommands.createGroupRating(groupId, payload),
-    onSuccess: (result, payload) => {
-      trackMutationOutcome(
-        trackedMutationNames.activityGroupRatingSubmit,
-        "success",
-        {
-          groupId,
-          score: payload.score,
-          requestId: result.requestId,
-          updatedTrustScore: result.data.updatedTrustScore,
-        },
-      );
+    onSuccess: (result: RatingMutationResult, payload: CreateRatingPayload) => {
+      trackRatingSubmitSuccess(groupId, payload, result);
     },
-    onError: (_error, payload) => {
-      trackMutationOutcome(
-        trackedMutationNames.activityGroupRatingSubmit,
-        "error",
-        {
-          groupId,
-          score: payload.score,
-        },
-      );
+    onError: (_error: unknown, payload: CreateRatingPayload) => {
+      trackRatingSubmitError(groupId, payload);
     },
-  });
-  const deferReviewMutation = useMutation({
+  };
+}
+
+function getDeferReviewMutationOptions(groupId: string) {
+  return {
     meta: {
       errorToastMessage: "We couldn't move that review prompt right now.",
     },
     mutationFn: ActivityCommands.deferGroupReview.bind(null, groupId),
-  });
-
-  const submittedRatings = useMemo(() => {
-    const currentPlanId = reviewStateQuery.data?.currentPlan?.id;
-
-    return (
-      ratingsQuery.data?.filter(
-        (rating) =>
-          rating.raterId === currentUser?.id &&
-          (!currentPlanId || rating.planId === currentPlanId),
-      ) ?? []
-    );
-  }, [
-    currentUser?.id,
-    ratingsQuery.data,
-    reviewStateQuery.data?.currentPlan?.id,
-  ]);
-  const ratedUserIds = useMemo(
-    () =>
-      new Set(
-        reviewStateQuery.data?.submittedRateeIds ??
-          submittedRatings.map((rating) => rating.rateeId),
-      ),
-    [reviewStateQuery.data?.submittedRateeIds, submittedRatings],
-  );
-  const pendingUserIds = useMemo(
-    () => new Set(reviewStateQuery.data?.pendingRateeIds ?? []),
-    [reviewStateQuery.data?.pendingRateeIds],
-  );
-
-  return {
-    currentUserId: currentUser?.id ?? null,
-    deferReview: deferReviewMutation.mutateAsync,
-    isDeferring: deferReviewMutation.isPending,
-    submittedRatings,
-    ratedUserIds,
-    pendingUserIds,
-    reviewState: reviewStateQuery.data ?? null,
-    shouldBlockReview: reviewStateQuery.data?.shouldBlockReview ?? false,
-    isLoading: ratingsQuery.isLoading || reviewStateQuery.isLoading,
-    isError: ratingsQuery.isError || reviewStateQuery.isError,
-    refetch: async () => {
-      await Promise.all([ratingsQuery.refetch(), reviewStateQuery.refetch()]);
-    },
-    submitRating: createRatingMutation.mutateAsync,
-    isSubmitting: createRatingMutation.isPending,
   };
+}
+
+function trackRatingSubmitSuccess(
+  groupId: string,
+  payload: CreateRatingPayload,
+  result: RatingMutationResult,
+) {
+  trackMutationOutcome(
+    trackedMutationNames.activityGroupRatingSubmit,
+    "success",
+    {
+      groupId,
+      score: payload.score,
+      requestId: result.requestId,
+      updatedTrustScore: result.data.updatedTrustScore,
+    },
+  );
+}
+
+function trackRatingSubmitError(groupId: string, payload: CreateRatingPayload) {
+  trackMutationOutcome(
+    trackedMutationNames.activityGroupRatingSubmit,
+    "error",
+    {
+      groupId,
+      score: payload.score,
+    },
+  );
+}
+
+function getSubmittedRatings({
+  currentPlanId,
+  currentUserId,
+  ratings,
+}: {
+  currentPlanId: string | undefined;
+  currentUserId: string | null;
+  ratings: RatingSummary[] | undefined;
+}) {
+  return (
+    ratings?.filter(
+      (rating) =>
+        rating.raterId === currentUserId &&
+        (!currentPlanId || rating.planId === currentPlanId),
+    ) ?? []
+  );
+}
+
+function getRatedUserIds({
+  submittedRateeIds,
+  submittedRatings,
+}: {
+  submittedRateeIds: GroupReviewState["submittedRateeIds"] | undefined;
+  submittedRatings: RatingSummary[];
+}) {
+  return new Set(
+    submittedRateeIds ?? submittedRatings.map((rating) => rating.rateeId),
+  );
+}
+
+function getPendingUserIds(
+  pendingRateeIds: GroupReviewState["pendingRateeIds"] | undefined,
+) {
+  return new Set(pendingRateeIds ?? []);
+}
+
+function getGroupRatingsQueryState({
+  ratingsQuery,
+  reviewStateQuery,
+}: {
+  ratingsQuery: { isError: boolean; isLoading: boolean };
+  reviewStateQuery: { isError: boolean; isLoading: boolean };
+}) {
+  return {
+    isError: ratingsQuery.isError || reviewStateQuery.isError,
+    isLoading: ratingsQuery.isLoading || reviewStateQuery.isLoading,
+  };
+}
+
+async function refetchGroupRatingData({
+  ratingsQuery,
+  reviewStateQuery,
+}: {
+  ratingsQuery: RefetchableQuery;
+  reviewStateQuery: RefetchableQuery;
+}) {
+  await Promise.all([ratingsQuery.refetch(), reviewStateQuery.refetch()]);
 }

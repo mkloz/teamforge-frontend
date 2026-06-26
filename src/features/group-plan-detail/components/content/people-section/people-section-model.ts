@@ -3,9 +3,9 @@ import type {
   GroupPlanDetailMember,
 } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 
-export const COMPACT_MEMBER_LIMIT = 6;
+const COMPACT_MEMBER_LIMIT = 6;
 
-export type VisiblePeopleSectionMember = GroupPlanDetailMember & {
+type VisiblePeopleSectionMember = GroupPlanDetailMember & {
   variant: "host" | "regular";
 };
 

@@ -27,6 +27,18 @@ interface ProfilePanelInfoProps {
   onCompactHeaderClick?: () => void;
 }
 
+interface ProfilePanelInfoViewState {
+  groupMode: string;
+  onlineStatus: OnlineStatus;
+  personalitySignals: ShowUpSignal[];
+  trustScore: number;
+  typeLabel: string;
+}
+
+type ProfileCompactMetaItem =
+  | { kind: "age"; value: string }
+  | { kind: "city"; value: string };
+
 function formatPercent(score: number | null | undefined): number {
   if (typeof score !== "number") {
     return 0;
@@ -44,113 +56,207 @@ export function ProfilePanelInfo({
   onBack,
   onCompactHeaderClick,
 }: ProfilePanelInfoProps) {
-  const onlineStatus = participant.onlineStatus || "OFFLINE";
-  const personalitySignals = buildShowUpSignals(participant);
-  const trustScore = formatPercent(participant.trustScore);
-  const typeLabel = participant.personalityType ?? "Open";
-  const groupMode = participant.personalityType
-    ? getArchetype(participant.personalityType).replace(/^The\s+/i, "")
-    : "Open";
+  const viewState = getProfilePanelInfoViewState(participant);
 
   return (
     <div className="relative flex w-full flex-col">
-      <div className="pointer-events-none sticky top-0 z-30 h-(--panel-cover-expanded-height) overflow-visible">
-        <PersonalityCoverArt
-          coverClassName="transform-[translate3d(0,var(--panel-cover-y,0px),0)] h-(--panel-cover-expanded-height) origin-[center_top] transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none"
-          personalityType={participant.personalityType}
-          watermarkClassName="text-7xl"
-          watermarkContainerClassName="h-(--panel-cover-expanded-height) px-4"
+      <ProfilePanelCover
+        compactHeaderVisible={compactHeaderVisible}
+        onlineStatus={viewState.onlineStatus}
+        onCompactHeaderClick={onCompactHeaderClick}
+        participant={participant}
+      />
+
+      <ProfilePanelBackButton onBack={onBack} />
+
+      <ProfilePanelOriginalCard
+        chatNavigation={chatNavigation}
+        groupMode={viewState.groupMode}
+        onlineStatus={viewState.onlineStatus}
+        participant={participant}
+        profileNavigation={profileNavigation}
+        trustScore={viewState.trustScore}
+        typeLabel={viewState.typeLabel}
+      />
+
+      <ProfilePanelAboutSection participant={participant} />
+
+      <ProfilePanelSignalsSection
+        isHydratingProfile={isHydratingProfile}
+        personalitySignals={viewState.personalitySignals}
+      />
+    </div>
+  );
+}
+
+function getProfilePanelInfoViewState(
+  participant: UserProfilePanelParticipant,
+): ProfilePanelInfoViewState {
+  const personalityType = participant.personalityType;
+
+  return {
+    groupMode: personalityType
+      ? getArchetype(personalityType).replace(/^The\s+/i, "")
+      : "Open",
+    onlineStatus: participant.onlineStatus || "OFFLINE",
+    personalitySignals: buildShowUpSignals(participant),
+    trustScore: formatPercent(participant.trustScore),
+    typeLabel: personalityType ?? "Open",
+  };
+}
+
+function ProfilePanelCover({
+  compactHeaderVisible,
+  onlineStatus,
+  onCompactHeaderClick,
+  participant,
+}: {
+  compactHeaderVisible: boolean;
+  onlineStatus: OnlineStatus;
+  onCompactHeaderClick?: () => void;
+  participant: UserProfilePanelParticipant;
+}) {
+  return (
+    <div className="pointer-events-none sticky top-0 z-30 h-(--panel-cover-expanded-height) overflow-visible">
+      <PersonalityCoverArt
+        coverClassName="transform-[translate3d(0,var(--panel-cover-y,0px),0)] h-(--panel-cover-expanded-height) origin-[center_top] transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none"
+        personalityType={participant.personalityType}
+        watermarkClassName="text-7xl"
+        watermarkContainerClassName="h-(--panel-cover-expanded-height) px-4"
+      />
+
+      <PanelCompactProfileHeader
+        participant={participant}
+        onlineStatus={onlineStatus}
+        onClick={onCompactHeaderClick}
+        visible={compactHeaderVisible}
+      />
+    </div>
+  );
+}
+
+function ProfilePanelBackButton({ onBack }: { onBack?: () => void }) {
+  if (!onBack) {
+    return null;
+  }
+
+  return (
+    <div className="absolute inset-x-4 top-3 z-40 flex items-center">
+      <Button
+        size="icon-sm"
+        variant="inverseGhost"
+        onClick={onBack}
+        aria-label="Go back"
+      >
+        <ChevronLeft size={18} />
+      </Button>
+    </div>
+  );
+}
+
+function ProfilePanelOriginalCard({
+  chatNavigation,
+  groupMode,
+  onlineStatus,
+  participant,
+  profileNavigation,
+  trustScore,
+  typeLabel,
+}: {
+  chatNavigation?: ReturnType<typeof buildActivityDmNavigation>;
+  groupMode: string;
+  onlineStatus: OnlineStatus;
+  participant: UserProfilePanelParticipant;
+  profileNavigation?: ProfileNavigation;
+  trustScore: number;
+  typeLabel: string;
+}) {
+  return (
+    <section
+      className="relative border-border/70 border-b bg-canvas opacity-(--profile-panel-original-opacity) transition-opacity duration-150 ease-out [pointer-events:var(--profile-panel-original-pointer-events,auto)] motion-reduce:transition-none"
+      data-profile-panel-original-card=""
+    >
+      <div className="relative z-10 flex min-w-0 flex-row items-start gap-3 px-4 pt-6 pb-3">
+        <PanelProfileAvatar
+          name={participant.name}
+          src={participant.avatar}
+          onlineStatus={onlineStatus}
         />
 
-        <PanelCompactProfileHeader
-          participant={participant}
-          onlineStatus={onlineStatus}
-          onClick={onCompactHeaderClick}
-          visible={compactHeaderVisible}
+        <div className="min-w-0 flex-1 pt-2 text-left">
+          <h3 className="truncate font-bold text-2xl text-foreground leading-tight tracking-tight">
+            {participant.name}
+          </h3>
+          <ProfileMetaRow participant={participant} />
+        </div>
+      </div>
+
+      <div className="px-4 pb-4">
+        <ProfileActionButtons
+          chatNavigation={chatNavigation}
+          profileNavigation={profileNavigation}
         />
       </div>
 
-      {onBack ? (
-        <div className="absolute inset-x-4 top-3 z-40 flex items-center">
-          <Button
-            size="icon-sm"
-            variant="inverseGhost"
-            onClick={onBack}
-            aria-label="Go back"
-          >
-            <ChevronLeft size={18} />
-          </Button>
+      <div className="border-border border-t px-4 py-3">
+        <PanelProfileSignals
+          groupMode={groupMode}
+          trustScore={trustScore}
+          typeLabel={typeLabel}
+        />
+      </div>
+    </section>
+  );
+}
+
+function ProfilePanelAboutSection({
+  participant,
+}: {
+  participant: UserProfilePanelParticipant;
+}) {
+  return (
+    <section className="border-border/70 border-b px-5 py-5">
+      <h4 className="font-bold text-slate-muted text-xs">About</h4>
+      {participant.bio ? (
+        <p className="mt-2 text-pretty text-ink/80 text-sm leading-relaxed">
+          {participant.bio}
+        </p>
+      ) : (
+        <p className="mt-2 text-slate-muted text-sm leading-relaxed">
+          {participant.name} has not added a profile note yet.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function ProfilePanelSignalsSection({
+  isHydratingProfile,
+  personalitySignals,
+}: {
+  isHydratingProfile: boolean;
+  personalitySignals: ShowUpSignal[];
+}) {
+  return (
+    <section className="px-5 py-5">
+      <h4 className="font-bold text-slate-muted text-xs">
+        How they tend to show up
+      </h4>
+
+      {personalitySignals.length > 0 ? (
+        <div className="mt-4 flex flex-col gap-4">
+          {personalitySignals.map((signal) => (
+            <PersonalitySignal key={signal.key} signal={signal} />
+          ))}
         </div>
-      ) : null}
-
-      <section
-        className="relative border-border/70 border-b bg-canvas opacity-(--profile-panel-original-opacity) transition-opacity duration-150 ease-out [pointer-events:var(--profile-panel-original-pointer-events,auto)] motion-reduce:transition-none"
-        data-profile-panel-original-card=""
-      >
-        <div className="relative z-10 flex min-w-0 flex-row items-start gap-3 px-4 pt-6 pb-3">
-          <PanelProfileAvatar
-            name={participant.name}
-            src={participant.avatar}
-            onlineStatus={onlineStatus}
-          />
-
-          <div className="min-w-0 flex-1 pt-2 text-left">
-            <h3 className="truncate font-bold text-2xl text-foreground leading-tight tracking-tight">
-              {participant.name}
-            </h3>
-            <ProfileMetaRow participant={participant} />
-          </div>
-        </div>
-
-        <div className="px-4 pb-4">
-          <ProfileActionButtons
-            chatNavigation={chatNavigation}
-            profileNavigation={profileNavigation}
-          />
-        </div>
-
-        <div className="border-border border-t px-4 py-3">
-          <PanelProfileSignals
-            groupMode={groupMode}
-            trustScore={trustScore}
-            typeLabel={typeLabel}
-          />
-        </div>
-      </section>
-
-      <section className="border-border/70 border-b px-5 py-5">
-        <h4 className="font-bold text-slate-muted text-xs">About</h4>
-        {participant.bio ? (
-          <p className="mt-2 text-pretty text-ink/80 text-sm leading-relaxed">
-            {participant.bio}
-          </p>
-        ) : (
-          <p className="mt-2 text-slate-muted text-sm leading-relaxed">
-            {participant.name} has not added a profile note yet.
-          </p>
-        )}
-      </section>
-
-      <section className="px-5 py-5">
-        <h4 className="font-bold text-slate-muted text-xs">
-          How they tend to show up
-        </h4>
-
-        {personalitySignals.length > 0 ? (
-          <div className="mt-4 flex flex-col gap-4">
-            {personalitySignals.map((signal) => (
-              <PersonalitySignal key={signal.key} signal={signal} />
-            ))}
-          </div>
-        ) : (
-          <p className="mt-2 font-medium text-slate-muted text-sm">
-            {isHydratingProfile
-              ? "Personality signals are loading."
-              : "Personality signals are not available yet."}
-          </p>
-        )}
-      </section>
-    </div>
+      ) : (
+        <p className="mt-2 font-medium text-slate-muted text-sm">
+          {isHydratingProfile
+            ? "Personality signals are loading."
+            : "Personality signals are not available yet."}
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -219,33 +325,66 @@ function ProfileActionButtons({
     return null;
   }
 
-  const hasBothActions = Boolean(chatNavigation && profileNavigation);
-
   return (
     <div
       className={cn(
         "grid min-w-0 gap-2",
-        hasBothActions ? "grid-cols-2" : "grid-cols-1",
+        hasBothProfileActions({ chatNavigation, profileNavigation })
+          ? "grid-cols-2"
+          : "grid-cols-1",
       )}
     >
-      {profileNavigation ? (
-        <Button asChild variant="outline" size="xs" className="min-w-0 flex-1">
-          <Link {...profileNavigation}>
-            <ExternalLink className="size-4" />
-            <span className="truncate">View profile</span>
-          </Link>
-        </Button>
-      ) : null}
-
-      {chatNavigation ? (
-        <Button asChild variant="primary" size="xs" className="min-w-0 flex-1">
-          <Link {...chatNavigation}>
-            <MessageSquareText className="size-4" />
-            <span className="truncate">Message</span>
-          </Link>
-        </Button>
-      ) : null}
+      <ProfileNavigationAction profileNavigation={profileNavigation} />
+      <ChatNavigationAction chatNavigation={chatNavigation} />
     </div>
+  );
+}
+
+function hasBothProfileActions({
+  chatNavigation,
+  profileNavigation,
+}: {
+  chatNavigation?: ReturnType<typeof buildActivityDmNavigation>;
+  profileNavigation?: ProfileNavigation;
+}) {
+  return Boolean(chatNavigation && profileNavigation);
+}
+
+function ProfileNavigationAction({
+  profileNavigation,
+}: {
+  profileNavigation?: ProfileNavigation;
+}) {
+  if (!profileNavigation) {
+    return null;
+  }
+
+  return (
+    <Button asChild variant="outline" size="xs" className="min-w-0 flex-1">
+      <Link {...profileNavigation}>
+        <ExternalLink className="size-4" />
+        <span className="truncate">View profile</span>
+      </Link>
+    </Button>
+  );
+}
+
+function ChatNavigationAction({
+  chatNavigation,
+}: {
+  chatNavigation?: ReturnType<typeof buildActivityDmNavigation>;
+}) {
+  if (!chatNavigation) {
+    return null;
+  }
+
+  return (
+    <Button asChild variant="primary" size="xs" className="min-w-0 flex-1">
+      <Link {...chatNavigation}>
+        <MessageSquareText className="size-4" />
+        <span className="truncate">Message</span>
+      </Link>
+    </Button>
   );
 }
 
@@ -357,29 +496,68 @@ function ProfileCompactMetaRow({
 }: {
   participant: UserProfilePanelParticipant;
 }) {
-  const hasAge = typeof participant.age === "number";
-  const hasCity = Boolean(participant.city);
+  const items = getProfileCompactMetaItems(participant);
 
-  if (!(hasAge || hasCity)) {
+  if (items.length === 0) {
     return null;
   }
 
   return (
     <div className="mt-1 flex min-w-0 items-center gap-1.5 font-semibold text-white/82 text-xs leading-4">
-      {hasAge ? <span className="shrink-0">{participant.age} yrs</span> : null}
-      {hasAge && hasCity ? (
+      {items.map((item, index) => (
+        <ProfileCompactMetaItemWithSeparator
+          key={item.kind}
+          item={item}
+          showSeparator={index > 0}
+        />
+      ))}
+    </div>
+  );
+}
+
+function getProfileCompactMetaItems(
+  participant: UserProfilePanelParticipant,
+): ProfileCompactMetaItem[] {
+  const items: ProfileCompactMetaItem[] = [];
+
+  if (typeof participant.age === "number") {
+    items.push({ kind: "age", value: `${participant.age} yrs` });
+  }
+
+  if (participant.city) {
+    items.push({ kind: "city", value: participant.city });
+  }
+
+  return items;
+}
+
+function ProfileCompactMetaItemWithSeparator({
+  item,
+  showSeparator,
+}: {
+  item: ProfileCompactMetaItem;
+  showSeparator: boolean;
+}) {
+  return (
+    <>
+      {showSeparator ? (
         <span className="size-1 rounded-full bg-white/45" />
       ) : null}
-      {hasCity ? (
-        <span className="flex min-w-0 items-center gap-1">
-          <MapPin
-            aria-hidden="true"
-            className="size-3 shrink-0 text-white/85"
-          />
-          <span className="truncate">{participant.city}</span>
-        </span>
-      ) : null}
-    </div>
+      <ProfileCompactMetaItem item={item} />
+    </>
+  );
+}
+
+function ProfileCompactMetaItem({ item }: { item: ProfileCompactMetaItem }) {
+  if (item.kind === "age") {
+    return <span className="shrink-0">{item.value}</span>;
+  }
+
+  return (
+    <span className="flex min-w-0 items-center gap-1">
+      <MapPin aria-hidden="true" className="size-3 shrink-0 text-white/85" />
+      <span className="truncate">{item.value}</span>
+    </span>
   );
 }
 

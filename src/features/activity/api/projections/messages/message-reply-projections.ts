@@ -10,32 +10,35 @@ import {
 
 const DELETED_REPLY_FALLBACK_DATE = new Date(0).toISOString();
 
+interface ReplyPreviewAvailability {
+  content: string;
+  deletedAt: string;
+  version: number;
+}
+
 export function mapReplyPreview(
   replyTo: MessageReplyPreview,
   participantsIndex: MessageParticipantsIndex,
   currentUserId: string | null,
 ): UnifiedMessage {
-  const deletedAt = replyTo.deletedAt ?? DELETED_REPLY_FALLBACK_DATE;
-  const sender =
-    participantsIndex.get(replyTo.senderId) ??
-    getSenderParticipantBySummaryId(participantsIndex, replyTo.sender?.id) ??
-    mapMessageSenderParticipant(replyTo.sender);
+  const availability = getReplyPreviewAvailability(replyTo);
+  const sender = getReplyPreviewSender(replyTo, participantsIndex);
 
   return {
     id: replyTo.id,
     type: replyTo.type,
-    content: replyTo.content ?? "Message unavailable",
+    content: availability.content,
     status: "SENT",
     isEdited: false,
     isPinned: false,
-    createdAt: deletedAt,
-    updatedAt: deletedAt,
+    createdAt: availability.deletedAt,
+    updatedAt: availability.deletedAt,
     editedAt: null,
     deletedAt: replyTo.deletedAt,
     chatId: "",
     senderId: replyTo.senderId,
     replyToId: null,
-    version: replyTo.deletedAt ? new Date(replyTo.deletedAt).getTime() : 0,
+    version: availability.version,
     sender,
     isOwn: isMessageFromCurrentUser(
       replyTo.senderId,
@@ -46,4 +49,27 @@ export function mapReplyPreview(
     reactions: [],
     attachments: [],
   };
+}
+
+function getReplyPreviewAvailability(
+  replyTo: MessageReplyPreview,
+): ReplyPreviewAvailability {
+  const deletedAt = replyTo.deletedAt ?? DELETED_REPLY_FALLBACK_DATE;
+
+  return {
+    content: replyTo.content ?? "Message unavailable",
+    deletedAt,
+    version: replyTo.deletedAt ? new Date(replyTo.deletedAt).getTime() : 0,
+  };
+}
+
+function getReplyPreviewSender(
+  replyTo: MessageReplyPreview,
+  participantsIndex: MessageParticipantsIndex,
+): UnifiedMessage["sender"] {
+  return (
+    participantsIndex.get(replyTo.senderId) ??
+    getSenderParticipantBySummaryId(participantsIndex, replyTo.sender?.id) ??
+    mapMessageSenderParticipant(replyTo.sender)
+  );
 }

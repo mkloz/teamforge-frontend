@@ -44,6 +44,26 @@ interface DiagnosticItem {
   value: string;
 }
 
+interface DiagnosticItemState {
+  detail: string;
+  tone: DiagnosticTone;
+  value: string;
+}
+
+interface DiagnosticItemRule<TInput> {
+  state: DiagnosticItemState;
+  shouldUse: (input: TInput) => boolean;
+}
+
+type PushDiagnosticsState = ReturnType<typeof useWebPushSubscription>;
+type ServiceWorkerDiagnosticsState = ReturnType<
+  typeof useServiceWorkerDiagnostics
+>;
+type NonActiveServiceWorkerStatus = Exclude<
+  ServiceWorkerDiagnosticsState["status"],
+  "active"
+>;
+
 const DIAGNOSTIC_ICON_TONES: Record<DiagnosticTone, IconTileTone> = {
   blocked: "destructive",
   neutral: "muted",
@@ -60,86 +80,202 @@ const DIAGNOSTIC_STATUS_TONES: Record<DiagnosticTone, StatusPillTone> = {
 
 const DIAGNOSTIC_CHECK_COUNT = 8;
 
-function getServiceWorkerItem(
-  serviceWorker: ReturnType<typeof useServiceWorkerDiagnostics>,
-): DiagnosticItem {
-  if (serviceWorker.status === "active") {
-    return {
-      detail: serviceWorker.isControlled
-        ? "This page is currently controlled by the TeamForge service worker."
-        : "The service worker is active. Reload once if this page is not controlled yet.",
-      icon: Wifi,
-      label: "Service worker",
-      tone: serviceWorker.isControlled ? "ready" : "warning",
-      value: serviceWorker.isControlled ? "Active" : "Ready after reload",
-    };
-  }
+const ACTIVE_SERVICE_WORKER_ITEM_STATES: Record<
+  "controlled" | "ready-after-reload",
+  DiagnosticItemState
+> = {
+  controlled: {
+    detail:
+      "This page is currently controlled by the TeamForge service worker.",
+    tone: "ready",
+    value: "Active",
+  },
+  "ready-after-reload": {
+    detail:
+      "The service worker is active. Reload once if this page is not controlled yet.",
+    tone: "warning",
+    value: "Ready after reload",
+  },
+};
 
-  if (serviceWorker.status === "waiting") {
-    return {
-      detail:
-        "A newer service worker is waiting. Use the update toast or reload after activation.",
-      icon: Wifi,
-      label: "Service worker",
-      tone: "warning",
-      value: "Update waiting",
-    };
-  }
-
-  if (serviceWorker.status === "installing") {
-    return {
-      detail:
-        "The browser is installing the service worker for offline launches.",
-      icon: Wifi,
-      label: "Service worker",
-      tone: "neutral",
-      value: "Installing",
-    };
-  }
-
-  if (serviceWorker.status === "not-registered") {
-    return {
-      detail: "No TeamForge service worker is registered for this origin yet.",
-      icon: Wifi,
-      label: "Service worker",
-      tone: "blocked",
-      value: "Not registered",
-    };
-  }
-
-  if (serviceWorker.status === "unsupported") {
-    return {
-      detail:
-        "This browser cannot run service workers, so install and offline support are limited.",
-      icon: Wifi,
-      label: "Service worker",
-      tone: "blocked",
-      value: "Unsupported",
-    };
-  }
-
-  if (serviceWorker.status === "error") {
-    return {
-      detail: "TeamForge could not read service-worker state for this origin.",
-      icon: Wifi,
-      label: "Service worker",
-      tone: "blocked",
-      value: "Check failed",
-    };
-  }
-
-  return {
+const SERVICE_WORKER_ITEM_STATES: Record<
+  NonActiveServiceWorkerStatus,
+  DiagnosticItemState
+> = {
+  checking: {
     detail: "TeamForge is checking the active service worker for this origin.",
-    icon: Wifi,
-    label: "Service worker",
     tone: "neutral",
     value: "Checking",
+  },
+  error: {
+    detail: "TeamForge could not read service-worker state for this origin.",
+    tone: "blocked",
+    value: "Check failed",
+  },
+  installing: {
+    detail:
+      "The browser is installing the service worker for offline launches.",
+    tone: "neutral",
+    value: "Installing",
+  },
+  "not-registered": {
+    detail: "No TeamForge service worker is registered for this origin yet.",
+    tone: "blocked",
+    value: "Not registered",
+  },
+  unsupported: {
+    detail:
+      "This browser cannot run service workers, so install and offline support are limited.",
+    tone: "blocked",
+    value: "Unsupported",
+  },
+  waiting: {
+    detail:
+      "A newer service worker is waiting. Use the update toast or reload after activation.",
+    tone: "warning",
+    value: "Update waiting",
+  },
+};
+
+const BACKEND_PUSH_ITEM_RULES: readonly DiagnosticItemRule<PushDiagnosticsState>[] =
+  [
+    {
+      shouldUse: (push) => !push.isOnline || push.isPublicKeyNetworkError,
+      state: {
+        detail: "Reconnect to check the backend public-key endpoint.",
+        tone: "warning",
+        value: "Offline",
+      },
+    },
+    {
+      shouldUse: (push) => push.isPublicKeyLoading,
+      state: {
+        detail: "Checking the backend public-key endpoint.",
+        tone: "neutral",
+        value: "Checking",
+      },
+    },
+    {
+      shouldUse: (push) => push.isPublicKeyError,
+      state: {
+        detail:
+          "The backend public-key endpoint could not be reached from this device.",
+        tone: "blocked",
+        value: "Unavailable",
+      },
+    },
+    {
+      shouldUse: (push) => push.isWebPushEnabled,
+      state: {
+        detail:
+          "The backend is returning a VAPID public key for this environment.",
+        tone: "ready",
+        value: "Enabled",
+      },
+    },
+  ];
+
+const BACKEND_PUSH_FALLBACK_ITEM_STATE: DiagnosticItemState = {
+  detail:
+    "The app can still install, but push delivery is disabled in this environment.",
+  tone: "warning",
+  value: "Disabled",
+};
+
+const SUBSCRIPTION_ITEM_RULES: readonly DiagnosticItemRule<PushDiagnosticsState>[] =
+  [
+    {
+      shouldUse: (push) => !push.isAuthenticated,
+      state: {
+        detail:
+          "Sign in on this device to check or create a push subscription.",
+        tone: "neutral",
+        value: "Sign in to check",
+      },
+    },
+    {
+      shouldUse: (push) => !push.isOnline,
+      state: {
+        detail:
+          "Reconnect to verify this browser's subscription against TeamForge.",
+        tone: "warning",
+        value: "Offline",
+      },
+    },
+    {
+      shouldUse: (push) => push.isCheckingBrowserSubscription,
+      state: {
+        detail: "Reading this browser's active push subscription.",
+        tone: "neutral",
+        value: "Checking",
+      },
+    },
+    {
+      shouldUse: (push) => push.isSubscribed,
+      state: {
+        detail:
+          "This browser subscription is active and linked to your account.",
+        tone: "ready",
+        value: "Linked",
+      },
+    },
+    {
+      shouldUse: (push) => Boolean(push.browserEndpoint),
+      state: {
+        detail:
+          "The browser has a subscription, but it is not active on the backend.",
+        tone: "warning",
+        value: "Browser only",
+      },
+    },
+  ];
+
+const SUBSCRIPTION_FALLBACK_ITEM_STATE: DiagnosticItemState = {
+  detail: "This browser is not subscribed to TeamForge push notifications.",
+  tone: "neutral",
+  value: "Not subscribed",
+};
+
+function createDiagnosticItem(
+  icon: LucideIcon,
+  label: string,
+  state: DiagnosticItemState,
+): DiagnosticItem {
+  return {
+    detail: state.detail,
+    icon,
+    label,
+    tone: state.tone,
+    value: state.value,
   };
 }
 
-function getPushSupportItem(
-  push: ReturnType<typeof useWebPushSubscription>,
+function getFirstDiagnosticItemState<TInput>(
+  rules: readonly DiagnosticItemRule<TInput>[],
+  input: TInput,
+  fallback: DiagnosticItemState,
+) {
+  return rules.find((rule) => rule.shouldUse(input))?.state ?? fallback;
+}
+
+function getServiceWorkerItem(
+  serviceWorker: ServiceWorkerDiagnosticsState,
 ): DiagnosticItem {
+  const state =
+    serviceWorker.status === "active"
+      ? getActiveServiceWorkerItemState(serviceWorker.isControlled)
+      : SERVICE_WORKER_ITEM_STATES[serviceWorker.status];
+
+  return createDiagnosticItem(Wifi, "Service worker", state);
+}
+
+function getActiveServiceWorkerItemState(isControlled: boolean) {
+  return ACTIVE_SERVICE_WORKER_ITEM_STATES[
+    isControlled ? "controlled" : "ready-after-reload"
+  ];
+}
+
+function getPushSupportItem(push: PushDiagnosticsState): DiagnosticItem {
   if (push.support.isSupported) {
     return {
       detail: "This browser supports service-worker push subscriptions.",
@@ -161,9 +297,7 @@ function getPushSupportItem(
   };
 }
 
-function getPermissionItem(
-  push: ReturnType<typeof useWebPushSubscription>,
-): DiagnosticItem {
+function getPermissionItem(push: PushDiagnosticsState): DiagnosticItem {
   if (push.permission === "granted") {
     return {
       detail: "The browser can show TeamForge system notifications.",
@@ -203,123 +337,28 @@ function getPermissionItem(
   };
 }
 
-function getBackendPushItem(
-  push: ReturnType<typeof useWebPushSubscription>,
-): DiagnosticItem {
-  if (!push.isOnline || push.isPublicKeyNetworkError) {
-    return {
-      detail: "Reconnect to check the backend public-key endpoint.",
-      icon: Server,
-      label: "Backend push",
-      tone: "warning",
-      value: "Offline",
-    };
-  }
-
-  if (push.isPublicKeyLoading) {
-    return {
-      detail: "Checking the backend public-key endpoint.",
-      icon: Server,
-      label: "Backend push",
-      tone: "neutral",
-      value: "Checking",
-    };
-  }
-
-  if (push.isPublicKeyError) {
-    return {
-      detail:
-        "The backend public-key endpoint could not be reached from this device.",
-      icon: Server,
-      label: "Backend push",
-      tone: "blocked",
-      value: "Unavailable",
-    };
-  }
-
-  if (push.isWebPushEnabled) {
-    return {
-      detail:
-        "The backend is returning a VAPID public key for this environment.",
-      icon: Server,
-      label: "Backend push",
-      tone: "ready",
-      value: "Enabled",
-    };
-  }
-
-  return {
-    detail:
-      "The app can still install, but push delivery is disabled in this environment.",
-    icon: Server,
-    label: "Backend push",
-    tone: "warning",
-    value: "Disabled",
-  };
+function getBackendPushItem(push: PushDiagnosticsState): DiagnosticItem {
+  return createDiagnosticItem(
+    Server,
+    "Backend push",
+    getFirstDiagnosticItemState(
+      BACKEND_PUSH_ITEM_RULES,
+      push,
+      BACKEND_PUSH_FALLBACK_ITEM_STATE,
+    ),
+  );
 }
 
-function getSubscriptionItem(
-  push: ReturnType<typeof useWebPushSubscription>,
-): DiagnosticItem {
-  if (!push.isAuthenticated) {
-    return {
-      detail: "Sign in on this device to check or create a push subscription.",
-      icon: Smartphone,
-      label: "This device",
-      tone: "neutral",
-      value: "Sign in to check",
-    };
-  }
-
-  if (!push.isOnline) {
-    return {
-      detail:
-        "Reconnect to verify this browser's subscription against TeamForge.",
-      icon: Smartphone,
-      label: "This device",
-      tone: "warning",
-      value: "Offline",
-    };
-  }
-
-  if (push.isCheckingBrowserSubscription) {
-    return {
-      detail: "Reading this browser's active push subscription.",
-      icon: Smartphone,
-      label: "This device",
-      tone: "neutral",
-      value: "Checking",
-    };
-  }
-
-  if (push.isSubscribed) {
-    return {
-      detail: "This browser subscription is active and linked to your account.",
-      icon: Smartphone,
-      label: "This device",
-      tone: "ready",
-      value: "Linked",
-    };
-  }
-
-  if (push.browserEndpoint) {
-    return {
-      detail:
-        "The browser has a subscription, but it is not active on the backend.",
-      icon: Smartphone,
-      label: "This device",
-      tone: "warning",
-      value: "Browser only",
-    };
-  }
-
-  return {
-    detail: "This browser is not subscribed to TeamForge push notifications.",
-    icon: Smartphone,
-    label: "This device",
-    tone: "neutral",
-    value: "Not subscribed",
-  };
+function getSubscriptionItem(push: PushDiagnosticsState): DiagnosticItem {
+  return createDiagnosticItem(
+    Smartphone,
+    "This device",
+    getFirstDiagnosticItemState(
+      SUBSCRIPTION_ITEM_RULES,
+      push,
+      SUBSCRIPTION_FALLBACK_ITEM_STATE,
+    ),
+  );
 }
 
 function getInstallPromptItem(
@@ -389,6 +428,75 @@ function getSecureContextItem(isSecureContext: boolean | null): DiagnosticItem {
   };
 }
 
+function getDisplayModeItem(isStandalone: boolean): DiagnosticItem {
+  return {
+    detail: isStandalone
+      ? "The app is running without browser chrome."
+      : "The app is running in a browser tab.",
+    icon: AppWindow,
+    label: "Display mode",
+    tone: isStandalone ? "ready" : "neutral",
+    value: isStandalone ? "Standalone" : "Browser",
+  };
+}
+
+function getDiagnosticItems({
+  canPromptInstall,
+  isSecureContext,
+  isStandalone,
+  push,
+  serviceWorker,
+}: {
+  canPromptInstall: boolean;
+  isSecureContext: boolean | null;
+  isStandalone: boolean;
+  push: ReturnType<typeof useWebPushSubscription>;
+  serviceWorker: ReturnType<typeof useServiceWorkerDiagnostics>;
+}): DiagnosticItem[] {
+  return [
+    getDisplayModeItem(isStandalone),
+    getInstallPromptItem(canPromptInstall, isStandalone),
+    getSecureContextItem(isSecureContext),
+    getServiceWorkerItem(serviceWorker),
+    getPushSupportItem(push),
+    getPermissionItem(push),
+    getBackendPushItem(push),
+    getSubscriptionItem(push),
+  ];
+}
+
+function getServiceWorkerRefreshTask({
+  push,
+  serviceWorker,
+}: {
+  push: ReturnType<typeof useWebPushSubscription>;
+  serviceWorker: ReturnType<typeof useServiceWorkerDiagnostics>;
+}) {
+  return push.isOnline
+    ? serviceWorker.checkForUpdate()
+    : serviceWorker.refresh();
+}
+
+function trackDiagnosticsRefreshStarted(
+  serviceWorker: ReturnType<typeof useServiceWorkerDiagnostics>,
+) {
+  trackPwaServiceWorkerUpdateCheck({
+    isControlled: serviceWorker.isControlled,
+    serviceWorkerStatus: serviceWorker.status,
+    source: "download-diagnostics",
+    status: "started",
+  });
+  recordPwaServiceWorkerUpdate("running", "manual update check");
+}
+
+function trackDiagnosticsRefreshError() {
+  recordPwaServiceWorkerUpdate("error", "manual update check");
+  trackPwaServiceWorkerUpdateCheck({
+    source: "download-diagnostics",
+    status: "error",
+  });
+}
+
 export function PwaDiagnosticsPanel() {
   const { isStandalone } = usePwaDisplayMode();
   const { canPromptInstall } = usePwaInstallPrompt();
@@ -401,24 +509,13 @@ export function PwaDiagnosticsPanel() {
     setIsSecureContext(window.isSecureContext);
   }, []);
 
-  const diagnostics: DiagnosticItem[] = [
-    {
-      detail: isStandalone
-        ? "The app is running without browser chrome."
-        : "The app is running in a browser tab.",
-      icon: AppWindow,
-      label: "Display mode",
-      tone: isStandalone ? "ready" : "neutral",
-      value: isStandalone ? "Standalone" : "Browser",
-    },
-    getInstallPromptItem(canPromptInstall, isStandalone),
-    getSecureContextItem(isSecureContext),
-    getServiceWorkerItem(serviceWorker),
-    getPushSupportItem(push),
-    getPermissionItem(push),
-    getBackendPushItem(push),
-    getSubscriptionItem(push),
-  ];
+  const diagnostics = getDiagnosticItems({
+    canPromptInstall,
+    isSecureContext,
+    isStandalone,
+    push,
+    serviceWorker,
+  });
 
   async function handleRefreshDiagnostics() {
     if (isRefreshing) {
@@ -427,29 +524,20 @@ export function PwaDiagnosticsPanel() {
 
     setIsRefreshing(true);
 
-    trackPwaServiceWorkerUpdateCheck({
-      isControlled: serviceWorker.isControlled,
-      serviceWorkerStatus: serviceWorker.status,
-      source: "download-diagnostics",
-      status: "started",
-    });
-    recordPwaServiceWorkerUpdate("running", "manual update check");
+    trackDiagnosticsRefreshStarted(serviceWorker);
 
     try {
-      const serviceWorkerRefresh = push.isOnline
-        ? serviceWorker.checkForUpdate()
-        : serviceWorker.refresh();
+      const serviceWorkerRefresh = getServiceWorkerRefreshTask({
+        push,
+        serviceWorker,
+      });
       const [serviceWorkerResult] = await Promise.allSettled([
         serviceWorkerRefresh,
         push.refreshBrowserSubscription(),
       ]);
 
       if (serviceWorkerResult.status !== "fulfilled") {
-        recordPwaServiceWorkerUpdate("error", "manual update check");
-        trackPwaServiceWorkerUpdateCheck({
-          source: "download-diagnostics",
-          status: "error",
-        });
+        trackDiagnosticsRefreshError();
         return;
       }
 
@@ -546,12 +634,28 @@ function getDiagnosticCellBorderClasses(index: number, total: number) {
   const isBeforeLastLgRow = isBeforeLastGridRow(index, total, 4);
 
   return cn(
-    index < total - 1 ? "border-b" : "border-b-0",
-    isBeforeLastGridColumn(index, total, 2) ? "sm:border-r" : "sm:border-r-0",
-    isBeforeLastSmRow ? "sm:border-b" : "sm:border-b-0",
-    isBeforeLastGridColumn(index, total, 4) ? "lg:border-r" : "lg:border-r-0",
-    isBeforeLastLgRow ? "lg:border-b" : "lg:border-b-0",
+    getConditionalClass(index < total - 1, "border-b", "border-b-0"),
+    getConditionalClass(
+      isBeforeLastGridColumn(index, total, 2),
+      "sm:border-r",
+      "sm:border-r-0",
+    ),
+    getConditionalClass(isBeforeLastSmRow, "sm:border-b", "sm:border-b-0"),
+    getConditionalClass(
+      isBeforeLastGridColumn(index, total, 4),
+      "lg:border-r",
+      "lg:border-r-0",
+    ),
+    getConditionalClass(isBeforeLastLgRow, "lg:border-b", "lg:border-b-0"),
   );
+}
+
+function getConditionalClass(
+  condition: boolean,
+  activeClass: string,
+  inactiveClass: string,
+) {
+  return condition ? activeClass : inactiveClass;
 }
 
 function isBeforeLastGridColumn(index: number, total: number, columns: number) {
@@ -582,7 +686,7 @@ function DiagnosticRow({
   return (
     <li
       className={cn(
-        "min-w-0 border-border/70 bg-transparent p-4 transition-colors duration-200 hover:bg-canvas/50 sm:p-5 dark:border-slate-muted/25 dark:hover:bg-background/40",
+        "min-w-0 border-border/70 bg-transparent p-4 transition-colors duration-200 hover:bg-canvas/50 sm:p-5 dark:border-slate-muted/25 hover:dark:bg-background/40",
         getDiagnosticCellBorderClasses(index, total),
       )}
     >

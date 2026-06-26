@@ -2,6 +2,7 @@ import {
   CheckCircle2,
   CircleDot,
   FileEdit,
+  type LucideIcon,
   MessageSquareDiff,
   XCircle,
 } from "lucide-react";
@@ -10,49 +11,39 @@ import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import type { PlanStatus } from "@/shared/schemas/enums";
 
+const PLAN_STATUS_ICONS = {
+  CANCELLED: XCircle,
+  COMPLETED: CheckCircle2,
+  CONFIRMED: CheckCircle2,
+  DRAFT: FileEdit,
+  IN_PROGRESS: CircleDot,
+  PROPOSED: MessageSquareDiff,
+} satisfies Record<PlanStatus, LucideIcon>;
+
+const PLAN_STATUS_CLASS_NAMES = {
+  CANCELLED: "border-border/60 text-muted-foreground",
+  COMPLETED: "border-border/60 text-muted-foreground",
+  CONFIRMED: "border-forge-teal/25 text-forge-teal",
+  DRAFT: "border-spark-amber/25 text-spark-amber",
+  IN_PROGRESS: "border-forge-teal/25 text-forge-teal",
+  PROPOSED: "border-spark-amber/25 text-spark-amber",
+} satisfies Record<PlanStatus, string>;
+
 export function PlanStatusPill({ status }: { status: PlanStatus }) {
   const label = formatStatusLabel(status);
-  const Icon = getPlanStatusIcon(status);
-  const isDraft = status === "DRAFT";
-  const isProposed = status === "PROPOSED";
-  const isInProgress = status === "IN_PROGRESS";
-  const isConfirmed = status === "CONFIRMED";
-  const isTerminal = status === "COMPLETED" || status === "CANCELLED";
 
   return (
     <StatusPill
-      icon={Icon}
+      icon={PLAN_STATUS_ICONS[status]}
       tone="none"
       size="xs"
       textCase="upper"
       className={cn(
         "type-signature-label border-transparent px-2 py-0.5 tracking-widest",
-        (isConfirmed || isInProgress) && "border-forge-teal/25 text-forge-teal",
-        (isDraft || isProposed) && "border-spark-amber/25 text-spark-amber",
-        isTerminal && "border-border/60 text-muted-foreground",
+        PLAN_STATUS_CLASS_NAMES[status],
       )}
     >
       {label}
     </StatusPill>
   );
-}
-
-function getPlanStatusIcon(status: PlanStatus) {
-  if (status === "DRAFT") {
-    return FileEdit;
-  }
-
-  if (status === "PROPOSED") {
-    return MessageSquareDiff;
-  }
-
-  if (status === "CONFIRMED" || status === "COMPLETED") {
-    return CheckCircle2;
-  }
-
-  if (status === "CANCELLED") {
-    return XCircle;
-  }
-
-  return CircleDot;
 }

@@ -10,11 +10,6 @@ import {
 } from "lucide-react";
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
-import type {
-  ExploreAccessMode,
-  ExploreLocationMode,
-  ExploreSortOption,
-} from "@/features/explore/schemas/explore-filters.schema";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
@@ -53,6 +48,64 @@ const QUICK_FILTERS = [
 ] as const;
 
 type QuickFilterId = (typeof QUICK_FILTERS)[number]["id"];
+type ExploreRouteState = ReturnType<typeof useExploreRouteState>;
+type QuickFilterState = Pick<
+  ExploreRouteState,
+  "access" | "distance" | "locationMode" | "sizeRange" | "sortBy"
+>;
+type QuickFilterActions = Pick<
+  ExploreRouteState,
+  "setAccess" | "setDistance" | "setLocationMode" | "setSizeRange" | "setSortBy"
+>;
+
+const QUICK_FILTER_ACTIVE_CHECKS: Record<
+  QuickFilterId,
+  (state: QuickFilterState) => boolean
+> = {
+  near: ({ distance, locationMode }) =>
+    locationMode === "IN_PERSON" && distance <= 5,
+  open: ({ access }) => access === "OPEN",
+  soonest: ({ sortBy }) => sortBy === "SOONEST",
+  newest: ({ sortBy }) => sortBy === "NEWEST",
+  small: ({ sizeRange }) => isSmallGroupRange(sizeRange),
+  online: ({ locationMode }) => locationMode === "ONLINE",
+};
+
+const QUICK_FILTER_TOGGLES: Record<
+  QuickFilterId,
+  (state: QuickFilterState, actions: QuickFilterActions) => void
+> = {
+  near: ({ distance, locationMode }, { setDistance, setLocationMode }) => {
+    if (locationMode === "IN_PERSON" && distance <= 5) {
+      setDistance(DEFAULT_FILTERS.distance);
+      setLocationMode(DEFAULT_FILTERS.locationMode);
+      return;
+    }
+
+    setLocationMode("IN_PERSON");
+    setDistance(5);
+  },
+  open: ({ access }, { setAccess }) => {
+    setAccess(access === "OPEN" ? DEFAULT_FILTERS.access : "OPEN");
+  },
+  soonest: ({ sortBy }, { setSortBy }) => {
+    setSortBy(sortBy === "SOONEST" ? DEFAULT_FILTERS.sortBy : "SOONEST");
+  },
+  newest: ({ sortBy }, { setSortBy }) => {
+    setSortBy(sortBy === "NEWEST" ? DEFAULT_FILTERS.sortBy : "NEWEST");
+  },
+  small: ({ sizeRange }, { setSizeRange }) => {
+    setSizeRange(
+      isSmallGroupRange(sizeRange) ? DEFAULT_FILTERS.sizeRange : [2, 4],
+    );
+  },
+  online: ({ locationMode }, { setDistance, setLocationMode }) => {
+    setDistance(DEFAULT_FILTERS.distance);
+    setLocationMode(
+      locationMode === "ONLINE" ? DEFAULT_FILTERS.locationMode : "ONLINE",
+    );
+  },
+};
 
 export function ExploreQuickFilters() {
   const {
@@ -67,61 +120,29 @@ export function ExploreQuickFilters() {
     sizeRange,
     sortBy,
   } = useExploreRouteState();
+  const quickFilterState: QuickFilterState = {
+    access,
+    distance,
+    locationMode,
+    sizeRange,
+    sortBy,
+  };
+  const quickFilterActions: QuickFilterActions = {
+    setAccess,
+    setDistance,
+    setLocationMode,
+    setSizeRange,
+    setSortBy,
+  };
 
-  const activeCount = QUICK_FILTERS.filter((filter) =>
-    getIsQuickFilterActive(filter.id, {
-      access,
-      distance,
-      locationMode,
-      sizeRange,
-      sortBy,
-    }),
-  ).length;
+  const activeCount = getActiveQuickFilterCount(quickFilterState);
 
   function toggleFilter(filterId: QuickFilterId) {
-    switch (filterId) {
-      case "near":
-        if (locationMode === "IN_PERSON" && distance <= 5) {
-          setDistance(DEFAULT_FILTERS.distance);
-          setLocationMode(DEFAULT_FILTERS.locationMode);
-          return;
-        }
-
-        setLocationMode("IN_PERSON");
-        setDistance(5);
-        return;
-      case "open":
-        setAccess(access === "OPEN" ? DEFAULT_FILTERS.access : "OPEN");
-        return;
-      case "soonest":
-        setSortBy(sortBy === "SOONEST" ? DEFAULT_FILTERS.sortBy : "SOONEST");
-        return;
-      case "newest":
-        setSortBy(sortBy === "NEWEST" ? DEFAULT_FILTERS.sortBy : "NEWEST");
-        return;
-      case "small":
-        if (sizeRange[0] === 2 && sizeRange[1] === 4) {
-          setSizeRange(DEFAULT_FILTERS.sizeRange);
-          return;
-        }
-
-        setSizeRange([2, 4]);
-        return;
-      case "online":
-        setDistance(DEFAULT_FILTERS.distance);
-        setLocationMode(
-          locationMode === "ONLINE" ? DEFAULT_FILTERS.locationMode : "ONLINE",
-        );
-        return;
-    }
+    QUICK_FILTER_TOGGLES[filterId](quickFilterState, quickFilterActions);
   }
 
   function clearQuickFilters() {
-    setAccess(DEFAULT_FILTERS.access);
-    setDistance(DEFAULT_FILTERS.distance);
-    setLocationMode(DEFAULT_FILTERS.locationMode);
-    setSizeRange(DEFAULT_FILTERS.sizeRange);
-    setSortBy(DEFAULT_FILTERS.sortBy);
+    resetQuickFilters(quickFilterActions);
   }
 
   return (
@@ -148,13 +169,7 @@ export function ExploreQuickFilters() {
       <fieldset className="flex flex-wrap gap-1.5">
         <legend className="sr-only">Quick filters</legend>
         {QUICK_FILTERS.map((filter) => {
-          const active = getIsQuickFilterActive(filter.id, {
-            access,
-            distance,
-            locationMode,
-            sizeRange,
-            sortBy,
-          });
+          const active = getIsQuickFilterActive(filter.id, quickFilterState);
           const Icon = filter.icon;
 
           return (
@@ -193,30 +208,33 @@ export function ExploreQuickFilters() {
   );
 }
 
+function getActiveQuickFilterCount(state: QuickFilterState) {
+  return QUICK_FILTERS.filter((filter) =>
+    getIsQuickFilterActive(filter.id, state),
+  ).length;
+}
+
 function getIsQuickFilterActive(
   filterId: QuickFilterId,
-  state: {
-    access: ExploreAccessMode;
-    distance: number;
-    locationMode: ExploreLocationMode;
-    sizeRange: [number, number];
-    sortBy: ExploreSortOption;
-  },
+  state: QuickFilterState,
 ) {
-  switch (filterId) {
-    case "near":
-      return state.locationMode === "IN_PERSON" && state.distance <= 5;
-    case "open":
-      return state.access === "OPEN";
-    case "soonest":
-      return state.sortBy === "SOONEST";
-    case "newest":
-      return state.sortBy === "NEWEST";
-    case "small":
-      return state.sizeRange[0] === 2 && state.sizeRange[1] === 4;
-    case "online":
-      return state.locationMode === "ONLINE";
-  }
+  return QUICK_FILTER_ACTIVE_CHECKS[filterId](state);
+}
 
-  return false;
+function resetQuickFilters({
+  setAccess,
+  setDistance,
+  setLocationMode,
+  setSizeRange,
+  setSortBy,
+}: QuickFilterActions) {
+  setAccess(DEFAULT_FILTERS.access);
+  setDistance(DEFAULT_FILTERS.distance);
+  setLocationMode(DEFAULT_FILTERS.locationMode);
+  setSizeRange(DEFAULT_FILTERS.sizeRange);
+  setSortBy(DEFAULT_FILTERS.sortBy);
+}
+
+function isSmallGroupRange(sizeRange: [number, number]) {
+  return sizeRange[0] === 2 && sizeRange[1] === 4;
 }

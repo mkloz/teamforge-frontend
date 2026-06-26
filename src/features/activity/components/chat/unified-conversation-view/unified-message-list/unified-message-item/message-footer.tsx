@@ -118,31 +118,85 @@ function getMessageFooterViewState({
   | "reactionPlaceholderEmojis"
   | "status"
 >): MessageFooterViewState {
-  const visibleReactionPlaceholderEmojis = (
-    reactionPlaceholderEmojis ?? []
-  ).filter(
-    (emoji) => !reactionGroups.some((reaction) => reaction.emoji === emoji),
+  const visibleReactionPlaceholderEmojis = getVisibleReactionPlaceholderEmojis(
+    reactionPlaceholderEmojis,
+    reactionGroups,
   );
-  const hasReactionContent =
-    reactionGroups.length > 0 || visibleReactionPlaceholderEmojis.length > 0;
+  const hasReactionContent = hasMessageFooterReactionContent(
+    reactionGroups,
+    visibleReactionPlaceholderEmojis,
+  );
   const isFailedOwnMessage = isOwn && status === "FAILED";
 
   return {
-    hasOnlyVisualMedia: Boolean(
-      attachments?.some(isVisualAttachment) && !content && !hasReactionContent,
-    ),
+    hasOnlyVisualMedia: hasOnlyVisualMediaMessage({
+      attachments,
+      content,
+      hasReactionContent,
+    }),
     hasReactionContent,
     isFailedOwnMessage,
-    shouldFloatMetadata: Boolean(
-      content &&
-        !hasReply &&
-        !isFailedOwnMessage &&
-        content.length < 50 &&
-        !content.includes(" ") &&
-        !hasReactionContent,
-    ),
+    shouldFloatMetadata: shouldFloatMessageFooterMetadata({
+      content,
+      hasReactionContent,
+      hasReply,
+      isFailedOwnMessage,
+    }),
     visibleReactionPlaceholderEmojis,
   };
+}
+
+function getVisibleReactionPlaceholderEmojis(
+  reactionPlaceholderEmojis: readonly string[] | undefined,
+  reactionGroups: ReactionGroup[],
+) {
+  return (reactionPlaceholderEmojis ?? []).filter(
+    (emoji) => !reactionGroups.some((reaction) => reaction.emoji === emoji),
+  );
+}
+
+function hasMessageFooterReactionContent(
+  reactionGroups: ReactionGroup[],
+  visibleReactionPlaceholderEmojis: string[],
+) {
+  return (
+    reactionGroups.length > 0 || visibleReactionPlaceholderEmojis.length > 0
+  );
+}
+
+function allConditionsPass(conditions: boolean[]) {
+  return conditions.every(Boolean);
+}
+
+function hasOnlyVisualMediaMessage({
+  attachments,
+  content,
+  hasReactionContent,
+}: Pick<MessageFooterProps, "attachments" | "content"> & {
+  hasReactionContent: boolean;
+}) {
+  return Boolean(
+    attachments?.some(isVisualAttachment) && !content && !hasReactionContent,
+  );
+}
+
+function shouldFloatMessageFooterMetadata({
+  content,
+  hasReactionContent,
+  hasReply,
+  isFailedOwnMessage,
+}: Pick<MessageFooterProps, "content" | "hasReply"> & {
+  hasReactionContent: boolean;
+  isFailedOwnMessage: boolean;
+}) {
+  return allConditionsPass([
+    Boolean(content),
+    !hasReply,
+    !isFailedOwnMessage,
+    Boolean(content && content.length < 50),
+    Boolean(content && !content.includes(" ")),
+    !hasReactionContent,
+  ]);
 }
 
 function MessageFooterReactions({

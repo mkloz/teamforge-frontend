@@ -1,15 +1,19 @@
 import { z } from "zod";
 
 import {
+  groupBaseFields,
+  userAvatarMediaField,
+  userIdentitySummaryFields,
+  userTrustScoreField,
+} from "./entity-fragments";
+import {
   activityAccessSchema,
   activityVisibilitySchema,
   costTypeSchema,
-  groupStatusSchema,
   locationModeSchema,
   personalityTypeSchema,
   planCategorySchema,
 } from "./enums";
-import { imageMediaSchema } from "./media";
 
 export const exploreInterestSchema = z.object({
   id: z.string(),
@@ -17,9 +21,7 @@ export const exploreInterestSchema = z.object({
   slug: z.string(),
 });
 
-export type ExploreInterest = z.infer<typeof exploreInterestSchema>;
-
-export const compatibilitySchema = z.object({
+const compatibilitySchema = z.object({
   interestOverlap: z.number(),
   personalityCompatibility: z.number(),
   cityAlignment: z.number(),
@@ -29,9 +31,7 @@ export const compatibilitySchema = z.object({
   total: z.number(),
 });
 
-export type Compatibility = z.infer<typeof compatibilitySchema>;
-
-export const exploreActivitySchema = z.object({
+const exploreActivitySchema = z.object({
   id: z.string(),
   title: z.string(),
   city: z.string().nullable(),
@@ -40,9 +40,7 @@ export const exploreActivitySchema = z.object({
   interests: z.array(exploreInterestSchema),
 });
 
-export type ExploreActivity = z.infer<typeof exploreActivitySchema>;
-
-export const explorePlanSchema = z.object({
+const explorePlanSchema = z.object({
   id: z.string(),
   title: z.string(),
   category: planCategorySchema,
@@ -51,27 +49,15 @@ export const explorePlanSchema = z.object({
   cost: costTypeSchema,
 });
 
-export type ExplorePlan = z.infer<typeof explorePlanSchema>;
-
-export const exploreMemberSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  avatar: z.string().nullable(),
-  avatarMedia: imageMediaSchema.nullable().optional(),
+const exploreMemberSchema = z.object({
+  ...userIdentitySummaryFields,
+  ...userAvatarMediaField,
   personalityType: personalityTypeSchema.nullable(),
-  trustScore: z.number(),
+  ...userTrustScoreField,
 });
 
-export type ExploreMember = z.infer<typeof exploreMemberSchema>;
-
 export const exploreGroupSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string().nullable(),
-  avatar: z.string().nullable(),
-  avatarMedia: imageMediaSchema.nullable().optional(),
-  status: groupStatusSchema,
-  maxMembers: z.number(),
+  ...groupBaseFields,
   updatedAt: z.string().datetime(),
   version: z.number(),
   activeMembersCount: z.number(),
@@ -105,7 +91,3 @@ export const exploreJoinRequestCancelResultSchema = z.object({
   groupId: z.string(),
   message: z.string(),
 });
-
-export type ExploreJoinRequestCancelResult = z.infer<
-  typeof exploreJoinRequestCancelResultSchema
->;

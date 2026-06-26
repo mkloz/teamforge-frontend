@@ -63,6 +63,64 @@ function getLoaderSizeClass(size: ButtonV2Props["size"]) {
   return "size-5";
 }
 
+function isButtonUnavailable({
+  disabled,
+  loading,
+}: Pick<ButtonV2Props, "disabled" | "loading">) {
+  return Boolean(disabled || loading);
+}
+
+function shouldRenderSweepEffect({
+  disabled,
+  loading,
+  variant,
+}: Pick<ButtonV2Props, "disabled" | "loading" | "variant">) {
+  return (
+    (variant === "primary" || variant === "secondary") &&
+    !isButtonUnavailable({ disabled, loading })
+  );
+}
+
+function getButtonClassName({
+  asChild,
+  children,
+  className,
+  disabled,
+  size,
+  variant,
+}: Pick<
+  ButtonV2Props,
+  "asChild" | "children" | "className" | "disabled" | "size" | "variant"
+>) {
+  const baseClasses = buttonVariants({
+    variant,
+    size,
+    disabled: !!disabled,
+    className,
+  });
+
+  return getSlottedButtonClasses(
+    baseClasses,
+    isSlottedLink(Boolean(asChild), children),
+  );
+}
+
+function getButtonContentClassName({
+  contentClassName,
+  finalClasses,
+  loading,
+}: Pick<ButtonV2Props, "contentClassName" | "loading"> & {
+  finalClasses: string;
+}) {
+  return cn(
+    "flex size-full items-center gap-2 transition-opacity duration-150",
+    "min-w-0 [&>span]:min-w-0",
+    loading ? "opacity-0" : "opacity-100",
+    getContentJustificationClass(finalClasses),
+    contentClassName,
+  );
+}
+
 /**
  * TeamForge Unified Button (V2)
  * High-fidelity, mechanical-first design system component.
@@ -81,26 +139,23 @@ function ButtonComponent({
   ...props
 }: ButtonV2Props) {
   const Comp = asChild ? Slot : "button";
-
-  const baseClasses = buttonVariants({
-    variant,
-    size,
-    disabled: !!disabled,
+  const isUnavailable = isButtonUnavailable({ disabled, loading });
+  const finalClasses = getButtonClassName({
+    asChild,
+    children,
     className,
+    disabled,
+    size,
+    variant,
   });
-
-  const finalClasses = getSlottedButtonClasses(
-    baseClasses,
-    isSlottedLink(asChild, children),
-  );
 
   return (
     <Comp
       ref={ref}
       type={type}
-      disabled={disabled || loading}
+      disabled={isUnavailable}
       data-loading={loading}
-      aria-disabled={disabled || loading}
+      aria-disabled={isUnavailable}
       aria-busy={loading}
       className={cn(finalClasses)}
       {...props}
@@ -110,12 +165,11 @@ function ButtonComponent({
       ) : (
         <>
           {/* Layer 1: Internal sweep effect on solid buttons */}
-          {(variant === "primary" || variant === "secondary") &&
-            !(disabled || loading) && (
-              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
-                <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-sweep" />
-              </div>
-            )}
+          {shouldRenderSweepEffect({ disabled, loading, variant }) ? (
+            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+              <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-sweep" />
+            </div>
+          ) : null}
 
           {/* Layer 2: Loading Overlay */}
           {loading && (
@@ -133,13 +187,11 @@ function ButtonComponent({
 
           {/* Layer 3: Content Container - Maintains layout width while loading */}
           <span
-            className={cn(
-              "flex size-full items-center gap-2 transition-opacity duration-150",
-              "min-w-0 [&>span]:min-w-0",
-              loading ? "opacity-0" : "opacity-100",
-              getContentJustificationClass(finalClasses),
+            className={getButtonContentClassName({
               contentClassName,
-            )}
+              finalClasses,
+              loading,
+            })}
           >
             {children}
           </span>

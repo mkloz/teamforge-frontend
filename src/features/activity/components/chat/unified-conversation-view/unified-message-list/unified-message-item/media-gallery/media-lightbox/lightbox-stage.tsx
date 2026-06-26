@@ -21,68 +21,92 @@ export const LightboxStage = memo(function LightboxStage({
   onNext,
   onPrev,
 }: LightboxStageProps) {
-  const shouldRenderVideo =
-    currentMedia?.type === "VIDEO" ||
-    (currentMedia ? isGifVideoAttachment(currentMedia) : false);
-
   return (
     <div className="pointer-events-auto relative flex flex-1 items-center justify-center overflow-hidden p-2 sm:p-10">
       <AnimatePresence mode="wait" initial={false}>
-        {currentMedia && (
-          <motion.div
-            key={currentMedia.id}
-            initial={{
-              opacity: 0,
-              scale: 0.9,
-              rotateY: 10,
-              filter: "blur(20px)",
-            }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              rotateY: 0,
-              filter: "blur(0px)",
-            }}
-            exit={{
-              opacity: 0,
-              scale: 1.1,
-              rotateY: -10,
-              filter: "blur(20px)",
-            }}
-            transition={{
-              duration: 0.45,
-              ease: [0.16, 1, 0.3, 1],
-              filter: { duration: 0.3 },
-            }}
-            className="relative flex size-full items-center justify-center"
-          >
-            {shouldRenderVideo ? (
-              <LightboxVideo media={currentMedia} />
-            ) : (
-              <LightboxImage media={currentMedia} />
-            )}
-          </motion.div>
-        )}
+        {renderAnimatedLightboxMedia(currentMedia)}
       </AnimatePresence>
 
-      {count > 1 && (
-        <div className="pointer-events-none absolute inset-x-0 inset-y-0 hidden items-center justify-between px-6 sm:flex lg:px-10">
-          <NavButton
-            onClick={onPrev}
-            label="Previous media"
-            icon={
-              <ChevronLeft className="size-8 sm:size-9" strokeWidth={2.75} />
-            }
-          />
-          <NavButton
-            onClick={onNext}
-            label="Next media"
-            icon={
-              <ChevronRight className="size-8 sm:size-9" strokeWidth={2.75} />
-            }
-          />
-        </div>
-      )}
+      <LightboxStageNavigation count={count} onNext={onNext} onPrev={onPrev} />
     </div>
   );
 });
+
+function renderAnimatedLightboxMedia(media: UnifiedAttachment | null) {
+  if (!media) {
+    return null;
+  }
+
+  return (
+    <motion.div
+      key={media.id}
+      initial={{
+        opacity: 0,
+        scale: 0.9,
+        rotateY: 10,
+        filter: "blur(20px)",
+      }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        rotateY: 0,
+        filter: "blur(0px)",
+      }}
+      exit={{
+        opacity: 0,
+        scale: 1.1,
+        rotateY: -10,
+        filter: "blur(20px)",
+      }}
+      transition={{
+        duration: 0.45,
+        ease: [0.16, 1, 0.3, 1],
+        filter: { duration: 0.3 },
+      }}
+      className="relative flex size-full items-center justify-center"
+    >
+      <LightboxMedia media={media} />
+    </motion.div>
+  );
+}
+
+function LightboxMedia({ media }: { media: UnifiedAttachment }) {
+  return shouldRenderLightboxVideo(media) ? (
+    <LightboxVideo media={media} />
+  ) : (
+    <LightboxImage media={media} />
+  );
+}
+
+function LightboxStageNavigation({
+  count,
+  onNext,
+  onPrev,
+}: {
+  count: number;
+  onNext: (event: MouseEvent) => void;
+  onPrev: (event: MouseEvent) => void;
+}) {
+  if (count <= 1) {
+    return null;
+  }
+
+  return (
+    <div className="pointer-events-none absolute inset-x-0 inset-y-0 hidden items-center justify-between px-6 sm:flex lg:px-10">
+      <NavButton
+        onClick={onPrev}
+        label="Previous media"
+        icon={<ChevronLeft className="size-8 sm:size-9" strokeWidth={2.75} />}
+      />
+      <NavButton
+        onClick={onNext}
+        label="Next media"
+        icon={<ChevronRight className="size-8 sm:size-9" strokeWidth={2.75} />}
+      />
+    </div>
+  );
+}
+
+function shouldRenderLightboxVideo(media: UnifiedAttachment) {
+  return media.type === "VIDEO" || isGifVideoAttachment(media);
+}

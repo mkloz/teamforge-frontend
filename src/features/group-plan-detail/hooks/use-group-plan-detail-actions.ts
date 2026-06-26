@@ -1,79 +1,21 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-plan-detail-commands";
+import type { GroupPlanViewerRelationship } from "@/features/group-plan-detail/lib/group-plan-access";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import {
+  getOptimisticJoinRelationship,
+  updateOptimisticViewerRelationship,
+} from "@/features/group-plan-detail/lib/group-plan-optimistic-relationship";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
-import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-
-type ViewerRelationship = GroupPlanDetail["viewer"]["relationship"];
-type ViewerJoinState = Pick<
-  GroupPlanDetail["viewer"],
-  "canCancelRequest" | "canJoin" | "canRequestToJoin" | "joinDisabledReason"
->;
+import {
+  type TrackedMutationName,
+  trackedMutationNames,
+} from "@/shared/lib/telemetry-contract";
 
 interface GroupPlanDetailMutationContext {
   previousDetail: GroupPlanDetail | undefined;
-}
-
-function getJoinableViewerState(detail: GroupPlanDetail): ViewerJoinState {
-  const canJoin = detail.group.access === "OPEN";
-  const canRequestToJoin = detail.group.access === "BY_REQUEST";
-
-  return {
-    canCancelRequest: false,
-    canJoin,
-    canRequestToJoin,
-    joinDisabledReason: canJoin || canRequestToJoin ? null : "PRIVATE",
-  };
-}
-
-function updateViewerRelationship(
-  detail: GroupPlanDetail,
-  relationship: ViewerRelationship,
-) {
-  const isMember =
-    relationship === "ADMIN" ||
-    relationship === "MODERATOR" ||
-    relationship === "MEMBER";
-  const isRequested = relationship === "REQUESTED";
-  const isInvited = relationship === "INVITED";
-  const lockedViewerState: ViewerJoinState = {
-    canCancelRequest: isRequested,
-    canJoin: false,
-    canRequestToJoin: false,
-    joinDisabledReason: isRequested ? "REQUEST_PENDING" : null,
-  };
-  const joinableState: ViewerJoinState =
-    relationship === "NOT_MEMBER" || relationship === "FORMER_MEMBER"
-      ? getJoinableViewerState(detail)
-      : lockedViewerState;
-
-  return {
-    ...detail,
-    group: {
-      ...detail.group,
-      activeMembersCount: isMember
-        ? detail.group.maxMembers > 0
-          ? Math.min(
-              detail.group.maxMembers,
-              detail.group.activeMembersCount + 1,
-            )
-          : detail.group.activeMembersCount + 1
-        : relationship === "FORMER_MEMBER"
-          ? Math.max(0, detail.group.activeMembersCount - 1)
-          : detail.group.activeMembersCount,
-    },
-    viewer: {
-      ...detail.viewer,
-      ...joinableState,
-      relationship,
-      canLeaveGroup: isMember,
-      canOpenActivity: isMember,
-      pendingInviteId: isInvited ? detail.viewer.pendingInviteId : null,
-      role: isMember ? (detail.viewer.role ?? "MEMBER") : null,
-    },
-  } satisfies GroupPlanDetail;
 }
 
 export function useGroupPlanDetailActions(groupId: string) {
@@ -86,7 +28,7 @@ export function useGroupPlanDetailActions(groupId: string) {
   }
 
   async function optimisticallySetRelationship(
-    relationship: ViewerRelationship,
+    relationship: GroupPlanViewerRelationship,
   ) {
     await queryClient.cancelQueries({ queryKey: detailQueryKey });
 
@@ -94,7 +36,9 @@ export function useGroupPlanDetailActions(groupId: string) {
       queryClient.getQueryData<GroupPlanDetail>(detailQueryKey);
 
     queryClient.setQueryData<GroupPlanDetail>(detailQueryKey, (current) =>
-      current ? updateViewerRelationship(current, relationship) : current,
+      current
+        ? updateOptimisticViewerRelationship(current, relationship)
+        : current,
     );
 
     return { previousDetail } satisfies GroupPlanDetailMutationContext;
@@ -102,6 +46,29 @@ export function useGroupPlanDetailActions(groupId: string) {
 
   function restoreDetail(context: GroupPlanDetailMutationContext | undefined) {
     queryClient.setQueryData(detailQueryKey, context?.previousDetail);
+  }
+
+  function runGuardedGroupAction(
+    id: string,
+    description: string,
+    action: () => void,
+  ) {
+    if (guardGroupAction(id, description)) {
+      return;
+    }
+
+    action();
+  }
+
+  function trackGroupPlanMutationSuccess(
+    mutationName: TrackedMutationName,
+    requestId: string | null | undefined,
+  ) {
+    trackMutationOutcome(mutationName, "success", { groupId, requestId });
+  }
+
+  function trackGroupPlanMutationError(mutationName: TrackedMutationName) {
+    trackMutationOutcome(mutationName, "error", { groupId });
   }
 
   const joinMutation = useMutation({
@@ -114,7 +81,7 @@ export function useGroupPlanDetailActions(groupId: string) {
     onMutate: async () => {
       const detail = queryClient.getQueryData<GroupPlanDetail>(detailQueryKey);
       return optimisticallySetRelationship(
-        detail?.viewer.canRequestToJoin ? "REQUESTED" : "MEMBER",
+        getOptimisticJoinRelationship(detail),
       );
     },
     onSuccess: (result) => {
@@ -125,9 +92,7 @@ export function useGroupPlanDetailActions(groupId: string) {
     },
     onError: (_error, _variables, context) => {
       restoreDetail(context);
-      trackMutationOutcome(trackedMutationNames.exploreJoinGroup, "error", {
-        groupId,
-      });
+      trackGroupPlanMutationError(trackedMutationNames.exploreJoinGroup);
     },
   });
 
@@ -140,23 +105,15 @@ export function useGroupPlanDetailActions(groupId: string) {
     mutationFn: () => GroupPlanDetailCommands.cancelJoinRequest(groupId),
     onMutate: () => optimisticallySetRelationship("NOT_MEMBER"),
     onSuccess: (result) => {
-      trackMutationOutcome(
+      trackGroupPlanMutationSuccess(
         trackedMutationNames.groupPlanCancelJoinRequest,
-        "success",
-        {
-          groupId,
-          requestId: result.requestId,
-        },
+        result.requestId,
       );
     },
     onError: (_error, _variables, context) => {
       restoreDetail(context);
-      trackMutationOutcome(
+      trackGroupPlanMutationError(
         trackedMutationNames.groupPlanCancelJoinRequest,
-        "error",
-        {
-          groupId,
-        },
       );
     },
   });
@@ -171,24 +128,14 @@ export function useGroupPlanDetailActions(groupId: string) {
       GroupPlanDetailCommands.acceptInvite(groupId, inviteId),
     onMutate: () => optimisticallySetRelationship("MEMBER"),
     onSuccess: (result) => {
-      trackMutationOutcome(
+      trackGroupPlanMutationSuccess(
         trackedMutationNames.groupPlanAcceptInvite,
-        "success",
-        {
-          groupId,
-          requestId: result.requestId,
-        },
+        result.requestId,
       );
     },
     onError: (_error, _variables, context) => {
       restoreDetail(context);
-      trackMutationOutcome(
-        trackedMutationNames.groupPlanAcceptInvite,
-        "error",
-        {
-          groupId,
-        },
-      );
+      trackGroupPlanMutationError(trackedMutationNames.groupPlanAcceptInvite);
     },
   });
 
@@ -202,24 +149,14 @@ export function useGroupPlanDetailActions(groupId: string) {
       GroupPlanDetailCommands.declineInvite(groupId, inviteId),
     onMutate: () => optimisticallySetRelationship("NOT_MEMBER"),
     onSuccess: (result) => {
-      trackMutationOutcome(
+      trackGroupPlanMutationSuccess(
         trackedMutationNames.groupPlanDeclineInvite,
-        "success",
-        {
-          groupId,
-          requestId: result.requestId,
-        },
+        result.requestId,
       );
     },
     onError: (_error, _variables, context) => {
       restoreDetail(context);
-      trackMutationOutcome(
-        trackedMutationNames.groupPlanDeclineInvite,
-        "error",
-        {
-          groupId,
-        },
-      );
+      trackGroupPlanMutationError(trackedMutationNames.groupPlanDeclineInvite);
     },
   });
 
@@ -232,55 +169,38 @@ export function useGroupPlanDetailActions(groupId: string) {
     mutationFn: () => GroupPlanDetailCommands.leaveGroup(groupId),
     onMutate: () => optimisticallySetRelationship("FORMER_MEMBER"),
     onSuccess: (result) => {
-      trackMutationOutcome(trackedMutationNames.activityGroupLeave, "success", {
-        groupId,
-        requestId: result.requestId,
-      });
+      trackGroupPlanMutationSuccess(
+        trackedMutationNames.activityGroupLeave,
+        result.requestId,
+      );
     },
     onError: (_error, _variables, context) => {
       restoreDetail(context);
-      trackMutationOutcome(trackedMutationNames.activityGroupLeave, "error", {
-        groupId,
-      });
+      trackGroupPlanMutationError(trackedMutationNames.activityGroupLeave);
     },
   });
 
   return {
     acceptInvite: (inviteId: string) => {
-      if (
-        guardGroupAction(
-          "group-plan-accept-invite-offline",
-          "Reconnect before accepting this invite.",
-        )
-      ) {
-        return;
-      }
-
-      acceptInviteMutation.mutate(inviteId);
+      runGuardedGroupAction(
+        "group-plan-accept-invite-offline",
+        "Reconnect before accepting this invite.",
+        () => acceptInviteMutation.mutate(inviteId),
+      );
     },
     cancelRequest: () => {
-      if (
-        guardGroupAction(
-          "group-plan-cancel-request-offline",
-          "Reconnect before changing your join request.",
-        )
-      ) {
-        return;
-      }
-
-      cancelRequestMutation.mutate();
+      runGuardedGroupAction(
+        "group-plan-cancel-request-offline",
+        "Reconnect before changing your join request.",
+        () => cancelRequestMutation.mutate(),
+      );
     },
     declineInvite: (inviteId: string) => {
-      if (
-        guardGroupAction(
-          "group-plan-decline-invite-offline",
-          "Reconnect before declining this invite.",
-        )
-      ) {
-        return;
-      }
-
-      declineInviteMutation.mutate(inviteId);
+      runGuardedGroupAction(
+        "group-plan-decline-invite-offline",
+        "Reconnect before declining this invite.",
+        () => declineInviteMutation.mutate(inviteId),
+      );
     },
     isAcceptingInvite: acceptInviteMutation.isPending,
     isCancellingRequest: cancelRequestMutation.isPending,
@@ -289,29 +209,19 @@ export function useGroupPlanDetailActions(groupId: string) {
     isLeaving: leaveMutation.isPending,
     isOnline,
     joinGroup: () => {
-      if (
-        guardGroupAction(
-          "group-plan-join-offline",
-          "Reconnect before joining or requesting to join this group.",
-        )
-      ) {
-        return;
-      }
-
-      joinMutation.mutate();
+      runGuardedGroupAction(
+        "group-plan-join-offline",
+        "Reconnect before joining or requesting to join this group.",
+        () => joinMutation.mutate(),
+      );
     },
     joinResult: joinMutation.data?.data,
     leaveGroup: () => {
-      if (
-        guardGroupAction(
-          "group-plan-leave-offline",
-          "Reconnect before leaving this group.",
-        )
-      ) {
-        return;
-      }
-
-      leaveMutation.mutate();
+      runGuardedGroupAction(
+        "group-plan-leave-offline",
+        "Reconnect before leaving this group.",
+        () => leaveMutation.mutate(),
+      );
     },
   };
 }

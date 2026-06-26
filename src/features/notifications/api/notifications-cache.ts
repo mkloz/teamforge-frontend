@@ -6,7 +6,7 @@ import {
 import { appQueryClient } from "@/shared/api/query-client";
 import type { Notification } from "@/shared/schemas";
 
-export interface NotificationsCacheSnapshot {
+interface NotificationsCacheSnapshot {
   previousItems: Notification[] | undefined;
   previousUnreadItems: Notification[] | undefined;
   previousCount: number | undefined;
@@ -75,6 +75,41 @@ function hasCachedUnreadNotification(id: string) {
       .getQueryData<Notification[] | undefined>(NOTIFICATIONS_UNREAD_QUERY_KEY)
       ?.some((item) => item.id === id && !item.isRead),
   );
+}
+
+function getUnreadTransitionDelta(
+  notification: Notification,
+  wasUnread: boolean,
+) {
+  if (notification.isRead === wasUnread) {
+    return wasUnread ? -1 : 1;
+  }
+
+  return 0;
+}
+
+function updateUnreadNotificationsQuery(notification: Notification) {
+  appQueryClient.setQueryData<Notification[] | undefined>(
+    NOTIFICATIONS_UNREAD_QUERY_KEY,
+    (current) => {
+      if (notification.isRead) {
+        return current?.filter((item) => item.id !== notification.id);
+      }
+
+      return mergeNotifications(current, notification);
+    },
+  );
+}
+
+function updateUnreadCountByDelta(delta: number) {
+  if (delta < 0) {
+    updateUnreadCountQuery((count) => Math.max(0, count + delta));
+    return;
+  }
+
+  if (delta > 0) {
+    updateUnreadCountQuery((count) => count + delta);
+  }
 }
 
 export const NotificationsCache = {
@@ -240,30 +275,13 @@ export const NotificationsCache = {
     const wasUnread =
       hasCachedUnreadNotification(notification.id) ||
       existingNotification?.isRead === false;
-    const didTransitionToRead = notification.isRead && wasUnread;
-    const didTransitionToUnread = !notification.isRead && !wasUnread;
+    const unreadDelta = getUnreadTransitionDelta(notification, wasUnread);
 
     updateNotificationsQuery((items) =>
       mergeNotifications(items, notification),
     );
 
-    appQueryClient.setQueryData<Notification[] | undefined>(
-      NOTIFICATIONS_UNREAD_QUERY_KEY,
-      (current) => {
-        if (notification.isRead) {
-          return current?.filter((item) => item.id !== notification.id);
-        }
-
-        return mergeNotifications(current, notification);
-      },
-    );
-
-    if (didTransitionToRead) {
-      updateUnreadCountQuery((count) => Math.max(0, count - 1));
-    }
-
-    if (didTransitionToUnread) {
-      updateUnreadCountQuery((count) => count + 1);
-    }
+    updateUnreadNotificationsQuery(notification);
+    updateUnreadCountByDelta(unreadDelta);
   },
 };

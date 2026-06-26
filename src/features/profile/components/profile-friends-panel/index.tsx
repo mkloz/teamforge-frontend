@@ -1,5 +1,5 @@
-import { Link2, QrCode, UserPlus, Users } from "lucide-react";
-import { useState } from "react";
+import { Link2, type LucideIcon, QrCode, UserPlus, Users } from "lucide-react";
+import { type ReactNode, useState } from "react";
 import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
 import { buildPublicProfilePath } from "@/features/profile/lib/profile-route";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
@@ -16,6 +16,52 @@ import { PublicFriendsList } from "./public-friends-list";
 
 type TabValue = "friends" | "requests" | "public_friends";
 
+interface FriendsPanelTabItem {
+  Icon: LucideIcon;
+  label: string;
+  value: TabValue;
+}
+
+const PUBLIC_FRIENDS_COPY: Record<
+  "friends" | "public_friends",
+  { description: string; title: string }
+> = {
+  friends: {
+    title: "Mutual Friends",
+    description: "People you both know.",
+  },
+  public_friends: {
+    title: "Friends",
+    description: "Their friends list.",
+  },
+};
+
+const PUBLIC_FRIENDS_TAB_ITEMS = [
+  {
+    Icon: Link2,
+    label: "Mutual Friends",
+    value: "friends",
+  },
+  {
+    Icon: Users,
+    label: "Friends",
+    value: "public_friends",
+  },
+] as const satisfies readonly FriendsPanelTabItem[];
+
+const SELF_FRIENDS_TAB_ITEMS = [
+  {
+    Icon: Users,
+    label: "My Friends",
+    value: "friends",
+  },
+  {
+    Icon: UserPlus,
+    label: "Requests",
+    value: "requests",
+  },
+] as const satisfies readonly FriendsPanelTabItem[];
+
 export function ProfileFriendsPanel({
   user,
   initialTab = "friends",
@@ -31,92 +77,204 @@ export function ProfileFriendsPanel({
     !isSelf ? user.id : undefined,
   );
 
-  const showPublicFriends = !isSelf && user.showFriendsListOnProfile;
-  const showMutualFriends = !isSelf && (commonFriends?.length ?? 0) > 0;
-  const profileQrUrl = `${getCurrentBrowserOrigin()}${buildPublicProfilePath(
-    user.id,
-    {
-      intent: "connect",
-    },
-  )}`;
-
-  const hasMultipleTabs = !isSelf
-    ? showPublicFriends && showMutualFriends
-    : true;
+  const publicPanelState = getPublicFriendsPanelState({
+    commonFriendCount: commonFriends?.length ?? 0,
+    isSelf,
+    showFriendsListOnProfile: user.showFriendsListOnProfile,
+  });
+  const profileQrUrl = getProfileQrUrl(user.id);
 
   if (!isSelf) {
     return (
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1.5">
-          <h2 className="font-black text-2xl text-foreground leading-tight tracking-tight">
-            {activeTab === "friends" ? "Mutual Friends" : "Friends"}
-          </h2>
-          <p className="font-medium text-muted-foreground text-sm leading-relaxed">
-            {activeTab === "friends"
-              ? "People you both know."
-              : "Their friends list."}
-          </p>
-        </div>
-
-        {hasMultipleTabs && (
-          <div className="flex gap-2 border-border border-b pb-1">
-            <TabButton
-              active={activeTab === "friends"}
-              onClick={() => setActiveTab("friends")}
-              icon={<Link2 className="size-4" />}
-              label="Mutual Friends"
-            />
-            <TabButton
-              active={activeTab === "public_friends"}
-              onClick={() => setActiveTab("public_friends")}
-              icon={<Users className="size-4" />}
-              label="Friends"
-            />
-          </div>
-        )}
-
-        <div className="min-h-64">
-          {activeTab === "friends" ? (
-            <MutualFriendsList userId={user.id} />
-          ) : (
-            <PublicFriendsList userId={user.id} />
-          )}
-        </div>
-      </div>
+      <PublicProfileFriendsPanel
+        activeTab={activeTab}
+        hasMultipleTabs={publicPanelState.hasMultipleTabs}
+        onTabChange={setActiveTab}
+        userId={user.id}
+      />
     );
   }
 
   return (
+    <SelfProfileFriendsPanel
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      profileQrUrl={profileQrUrl}
+      user={user}
+    />
+  );
+}
+
+function PublicProfileFriendsPanel({
+  activeTab,
+  hasMultipleTabs,
+  onTabChange,
+  userId,
+}: {
+  activeTab: TabValue;
+  hasMultipleTabs: boolean;
+  onTabChange: (tab: TabValue) => void;
+  userId: string;
+}) {
+  const copy = getPublicFriendsCopy(activeTab);
+
+  return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1.5">
-        <h2 className="font-black text-2xl text-foreground leading-tight tracking-tight">
-          Friends
-        </h2>
-        <p className="font-medium text-muted-foreground text-sm leading-relaxed">
-          Manage your connections and incoming requests.
-        </p>
-      </div>
+      <FriendsPanelHeader description={copy.description} title={copy.title} />
+
+      {hasMultipleTabs && (
+        <PublicFriendsTabs activeTab={activeTab} onTabChange={onTabChange} />
+      )}
+
+      <PublicFriendsPanelContent activeTab={activeTab} userId={userId} />
+    </div>
+  );
+}
+
+function SelfProfileFriendsPanel({
+  activeTab,
+  onTabChange,
+  profileQrUrl,
+  user,
+}: {
+  activeTab: TabValue;
+  onTabChange: (tab: TabValue) => void;
+  profileQrUrl: string;
+  user: User;
+}) {
+  return (
+    <div className="flex flex-col gap-6">
+      <FriendsPanelHeader
+        description="Manage your connections and incoming requests."
+        title="Friends"
+      />
 
       <MyCodeCard user={user} url={profileQrUrl} />
 
-      <div className="flex gap-2 border-border border-b pb-1">
-        <TabButton
-          active={activeTab === "friends"}
-          onClick={() => setActiveTab("friends")}
-          icon={<Users className="size-4" />}
-          label="My Friends"
-        />
-        <TabButton
-          active={activeTab === "requests"}
-          onClick={() => setActiveTab("requests")}
-          icon={<UserPlus className="size-4" />}
-          label="Requests"
-        />
-      </div>
+      <SelfFriendsTabs activeTab={activeTab} onTabChange={onTabChange} />
 
-      <div className="min-h-64">
-        {activeTab === "friends" ? <FriendsList /> : <FriendRequestsList />}
-      </div>
+      <SelfFriendsPanelContent activeTab={activeTab} />
+    </div>
+  );
+}
+
+function FriendsPanelHeader({
+  description,
+  title,
+}: {
+  description: string;
+  title: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <h2 className="font-black text-2xl text-foreground leading-tight tracking-tight">
+        {title}
+      </h2>
+      <p className="font-medium text-muted-foreground text-sm leading-relaxed">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function PublicFriendsTabs({
+  activeTab,
+  onTabChange,
+}: {
+  activeTab: TabValue;
+  onTabChange: (tab: TabValue) => void;
+}) {
+  return (
+    <FriendsTabs
+      activeTab={activeTab}
+      items={PUBLIC_FRIENDS_TAB_ITEMS}
+      onTabChange={onTabChange}
+    />
+  );
+}
+
+function SelfFriendsTabs({
+  activeTab,
+  onTabChange,
+}: {
+  activeTab: TabValue;
+  onTabChange: (tab: TabValue) => void;
+}) {
+  return (
+    <FriendsTabs
+      activeTab={activeTab}
+      items={SELF_FRIENDS_TAB_ITEMS}
+      onTabChange={onTabChange}
+    />
+  );
+}
+
+function FriendsTabs({
+  activeTab,
+  items,
+  onTabChange,
+}: {
+  activeTab: TabValue;
+  items: readonly FriendsPanelTabItem[];
+  onTabChange: (tab: TabValue) => void;
+}) {
+  return (
+    <div className="flex gap-2 border-border border-b pb-1">
+      {items.map((item) => (
+        <FriendsTabButton
+          key={item.value}
+          activeTab={activeTab}
+          item={item}
+          onTabChange={onTabChange}
+        />
+      ))}
+    </div>
+  );
+}
+
+function FriendsTabButton({
+  activeTab,
+  item,
+  onTabChange,
+}: {
+  activeTab: TabValue;
+  item: FriendsPanelTabItem;
+  onTabChange: (tab: TabValue) => void;
+}) {
+  const Icon = item.Icon;
+
+  return (
+    <TabButton
+      active={activeTab === item.value}
+      onClick={() => onTabChange(item.value)}
+      icon={<Icon className="size-4" />}
+      label={item.label}
+    />
+  );
+}
+
+function PublicFriendsPanelContent({
+  activeTab,
+  userId,
+}: {
+  activeTab: TabValue;
+  userId: string;
+}) {
+  const Content = getPublicFriendsPanelContent(activeTab);
+
+  return (
+    <div className="min-h-64">
+      <Content userId={userId} />
+    </div>
+  );
+}
+
+function SelfFriendsPanelContent({ activeTab }: { activeTab: TabValue }) {
+  const Content = getSelfFriendsPanelContent(activeTab);
+
+  return (
+    <div className="min-h-64">
+      <Content />
     </div>
   );
 }
@@ -147,7 +305,7 @@ function MyCodeCard({ url, user }: { url: string; user: User }) {
           title="My TeamForge Code"
           description="Scan to open this profile and connect in person."
           avatarSrc={user.avatar}
-          bottomText={`@${user.name.replace(/\s/g, "").toLowerCase()}`}
+          bottomText={getProfileQrHandle(user.name)}
           trigger={
             <Button
               variant="outline"
@@ -171,7 +329,7 @@ function TabButton({
   onClick,
 }: {
   active: boolean;
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   onClick: () => void;
 }) {
@@ -196,4 +354,46 @@ function TabButton({
       )}
     </button>
   );
+}
+
+function getPublicFriendsCopy(activeTab: TabValue) {
+  return activeTab === "friends"
+    ? PUBLIC_FRIENDS_COPY.friends
+    : PUBLIC_FRIENDS_COPY.public_friends;
+}
+
+function getPublicFriendsPanelContent(activeTab: TabValue) {
+  return activeTab === "friends" ? MutualFriendsList : PublicFriendsList;
+}
+
+function getSelfFriendsPanelContent(activeTab: TabValue) {
+  return activeTab === "friends" ? FriendsList : FriendRequestsList;
+}
+
+function getPublicFriendsPanelState({
+  commonFriendCount,
+  isSelf,
+  showFriendsListOnProfile,
+}: {
+  commonFriendCount: number;
+  isSelf: boolean;
+  showFriendsListOnProfile: boolean;
+}) {
+  if (isSelf) {
+    return { hasMultipleTabs: true };
+  }
+
+  return {
+    hasMultipleTabs: showFriendsListOnProfile && commonFriendCount > 0,
+  };
+}
+
+function getProfileQrUrl(userId: string) {
+  return `${getCurrentBrowserOrigin()}${buildPublicProfilePath(userId, {
+    intent: "connect",
+  })}`;
+}
+
+function getProfileQrHandle(name: User["name"]) {
+  return `@${name.replace(/\s/g, "").toLowerCase()}`;
 }

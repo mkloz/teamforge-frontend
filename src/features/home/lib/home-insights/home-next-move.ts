@@ -28,14 +28,37 @@ interface BuildHomeNextMoveInput {
   recommendations: ExploreGroup[];
 }
 
-export function buildHomeNextMove({
+type HomeNextMoveCandidateBuilder = (
+  input: BuildHomeNextMoveInput,
+) => HomeNextMove | null;
+
+const HOME_NEXT_MOVE_CANDIDATES: HomeNextMoveCandidateBuilder[] = [
+  buildProfileNextMove,
+  buildInvitationNextMove,
+  buildProposedPlanNextMove,
+  buildTodayOrPastPlanNextMove,
+  buildNextDatedPlanNextMove,
+  buildDraftPlanNextMove,
+  buildRecommendationNextMove,
+  buildFirstForgeNextMove,
+];
+
+export function buildHomeNextMove(input: BuildHomeNextMoveInput): HomeNextMove {
+  for (const buildCandidate of HOME_NEXT_MOVE_CANDIDATES) {
+    const candidate = buildCandidate(input);
+
+    if (candidate) {
+      return candidate;
+    }
+  }
+
+  return buildReturnForgeMove(input.groups.length);
+}
+
+function buildProfileNextMove({
   viewer,
   stats,
-  invitations,
-  plans,
-  groups,
-  recommendations,
-}: BuildHomeNextMoveInput): HomeNextMove {
+}: BuildHomeNextMoveInput): HomeNextMove | null {
   if (viewer.nextStep) {
     const copy = getProfileMoveCopy(viewer.nextStep, stats.profileCompleteness);
 
@@ -46,86 +69,158 @@ export function buildHomeNextMove({
     };
   }
 
+  return null;
+}
+
+function buildInvitationNextMove({
+  invitations,
+}: BuildHomeNextMoveInput): HomeNextMove | null {
   const pendingInvite = getPendingInvite(invitations);
 
   if (pendingInvite) {
     return buildInvitationMove(pendingInvite);
   }
 
-  const proposedPlan = sortPlansByUrgency(
-    plans.filter((group) => group.plan.status === "PROPOSED"),
-  )[0];
+  return null;
+}
+
+function buildProposedPlanNextMove({
+  plans,
+}: BuildHomeNextMoveInput): HomeNextMove | null {
+  const proposedPlan = getFirstProposedPlan(plans);
 
   if (proposedPlan) {
     return buildProposedPlanMove(proposedPlan);
   }
 
-  const todayOrPastPlan = sortPlansByUrgency(
-    plans.filter((group) => {
-      const meta = getDateMeta(group.plan.dateTime);
+  return null;
+}
 
-      return (
-        meta !== null &&
-        (meta.isPast || meta.isToday) &&
-        group.plan.status !== "DRAFT"
-      );
-    }),
-  )[0];
+function buildTodayOrPastPlanNextMove({
+  plans,
+}: BuildHomeNextMoveInput): HomeNextMove | null {
+  const todayOrPastPlan = getFirstTodayOrPastPlan(plans);
 
   if (todayOrPastPlan) {
     return buildTodayOrPastPlanMove(todayOrPastPlan);
   }
 
-  const nextDatedPlan = sortPlansByUrgency(
-    plans.filter((group) => {
-      const meta = getDateMeta(group.plan.dateTime);
+  return null;
+}
 
-      return meta !== null && !meta.isPast && !meta.isToday;
-    }),
-  )[0];
+function buildNextDatedPlanNextMove({
+  plans,
+}: BuildHomeNextMoveInput): HomeNextMove | null {
+  const nextDatedPlan = getFirstNextDatedPlan(plans);
 
   if (nextDatedPlan) {
     return buildNextDatedPlanMove(nextDatedPlan);
   }
 
-  const draftPlan = [...plans]
-    .filter((group) => group.plan.status === "DRAFT")
-    .sort(
-      (left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt),
-    )[0];
+  return null;
+}
+
+function buildDraftPlanNextMove({
+  plans,
+}: BuildHomeNextMoveInput): HomeNextMove | null {
+  const draftPlan = getMostRecentlyUpdatedDraftPlan(plans);
 
   if (draftPlan) {
     return buildDraftPlanMove(draftPlan);
   }
 
+  return null;
+}
+
+function buildRecommendationNextMove({
+  recommendations,
+}: BuildHomeNextMoveInput): HomeNextMove | null {
   const bestRecommendation = recommendations[0];
 
   if (bestRecommendation) {
     return buildRecommendationMove(bestRecommendation);
   }
 
+  return null;
+}
+
+function buildFirstForgeNextMove({
+  groups,
+}: BuildHomeNextMoveInput): HomeNextMove | null {
   if (groups.length === 0) {
     return buildFirstForgeMove();
   }
 
-  return buildReturnForgeMove(groups.length);
+  return null;
 }
 
 function getPendingInvite(invitations: Invite[]) {
   return [...invitations]
-    .filter((invite) => invite.status === "PENDING")
-    .sort((left, right) => {
-      const leftExpiry = left.expiresAt
-        ? Date.parse(left.expiresAt)
-        : Number.MAX_SAFE_INTEGER;
-      const rightExpiry = right.expiresAt
-        ? Date.parse(right.expiresAt)
-        : Number.MAX_SAFE_INTEGER;
+    .filter(isPendingInvite)
+    .sort(comparePendingInvites)[0];
+}
 
-      if (leftExpiry !== rightExpiry) {
-        return leftExpiry - rightExpiry;
-      }
+function isPendingInvite(invite: Invite) {
+  return invite.status === "PENDING";
+}
 
-      return Date.parse(right.createdAt) - Date.parse(left.createdAt);
-    })[0];
+function comparePendingInvites(left: Invite, right: Invite) {
+  const leftExpiry = getInviteExpiryTimestamp(left);
+  const rightExpiry = getInviteExpiryTimestamp(right);
+
+  if (leftExpiry !== rightExpiry) {
+    return leftExpiry - rightExpiry;
+  }
+
+  return Date.parse(right.createdAt) - Date.parse(left.createdAt);
+}
+
+function getInviteExpiryTimestamp(invite: Invite) {
+  return invite.expiresAt
+    ? Date.parse(invite.expiresAt)
+    : Number.MAX_SAFE_INTEGER;
+}
+
+function getFirstProposedPlan(plans: PlannedGroup[]) {
+  return sortPlansByUrgency(plans.filter(isProposedPlan))[0];
+}
+
+function isProposedPlan(group: PlannedGroup) {
+  return group.plan.status === "PROPOSED";
+}
+
+function getFirstTodayOrPastPlan(plans: PlannedGroup[]) {
+  return sortPlansByUrgency(plans.filter(isTodayOrPastActionablePlan))[0];
+}
+
+function isTodayOrPastActionablePlan(group: PlannedGroup) {
+  const meta = getDateMeta(group.plan.dateTime);
+
+  return (
+    meta !== null &&
+    (meta.isPast || meta.isToday) &&
+    group.plan.status !== "DRAFT"
+  );
+}
+
+function getFirstNextDatedPlan(plans: PlannedGroup[]) {
+  return sortPlansByUrgency(plans.filter(isFutureDatedPlan))[0];
+}
+
+function isFutureDatedPlan(group: PlannedGroup) {
+  const meta = getDateMeta(group.plan.dateTime);
+
+  return meta !== null && !meta.isPast && !meta.isToday;
+}
+
+function getMostRecentlyUpdatedDraftPlan(plans: PlannedGroup[]) {
+  return [...plans].filter(isDraftPlan).sort(compareRecentlyUpdatedPlans)[0];
+}
+
+function isDraftPlan(group: PlannedGroup) {
+  return group.plan.status === "DRAFT";
+}
+
+function compareRecentlyUpdatedPlans(left: PlannedGroup, right: PlannedGroup) {
+  return Date.parse(right.updatedAt) - Date.parse(left.updatedAt);
 }

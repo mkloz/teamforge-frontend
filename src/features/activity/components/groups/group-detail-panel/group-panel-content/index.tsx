@@ -22,6 +22,8 @@ interface GroupPanelContentProps {
   isMobile?: boolean;
 }
 
+type GroupPanelContentState = ReturnType<typeof useGroupPanelContent>;
+
 export function GroupPanelContent({
   group,
   focusedPlanId = null,
@@ -31,51 +33,75 @@ export function GroupPanelContent({
   onSelectedMemberIdChange,
   isMobile = false,
 }: GroupPanelContentProps) {
-  const {
-    currentUserId,
-    currentUserRole,
-    cancelPlan,
-    completePlan,
-    confirmPlan,
-    createNextGroupPlan,
-    createPlanFromHistory,
-    disbandGroup,
-    inviteCandidates,
-    inviteMember,
-    invitingMemberId,
-    isDisbanding,
-    isEditOpen,
-    isOnline,
-    isLeaving,
-    isPlanEditOpen,
-    leaveGroup,
-    memberChat,
-    memberCount,
-    members,
-    pendingPlanAction,
-    removeMember,
-    removingMemberId,
-    selectedMember,
-    setIsEditOpen,
-    setIsPlanEditOpen,
-    setSelectedMember,
-  } = useGroupPanelContent({
+  const panel = useGroupPanelContent({
     group,
     selectedMemberId,
     onSelectedMemberIdChange,
   });
 
-  if (selectedMember && memberChat) {
-    return (
-      <SelectedMemberProfile
-        isMobile={isMobile}
-        member={selectedMember}
-        memberChat={memberChat}
-        onBack={() => setSelectedMember(null)}
-      />
-    );
+  const selectedMemberPanel = getSelectedMemberPanel({
+    isMobile,
+    memberChat: panel.memberChat,
+    selectedMember: panel.selectedMember,
+    setSelectedMember: panel.setSelectedMember,
+  });
+
+  if (selectedMemberPanel) {
+    return selectedMemberPanel;
   }
 
+  return (
+    <GroupPanelShell
+      focusedPlanId={focusedPlanId}
+      focusedProposalId={focusedProposalId}
+      group={group}
+      isMobile={isMobile}
+      onClose={onClose}
+      panel={panel}
+    />
+  );
+}
+
+function getSelectedMemberPanel({
+  isMobile,
+  memberChat,
+  selectedMember,
+  setSelectedMember,
+}: {
+  isMobile: boolean;
+  memberChat: GroupPanelContentState["memberChat"];
+  selectedMember: GroupPanelContentState["selectedMember"];
+  setSelectedMember: GroupPanelContentState["setSelectedMember"];
+}) {
+  if (!selectedMember || !memberChat) {
+    return null;
+  }
+
+  return (
+    <SelectedMemberProfile
+      isMobile={isMobile}
+      member={selectedMember}
+      memberChat={memberChat}
+      onBack={() => setSelectedMember(null)}
+    />
+  );
+}
+
+function GroupPanelShell({
+  focusedPlanId,
+  focusedProposalId,
+  group,
+  isMobile,
+  onClose,
+  panel,
+}: {
+  focusedPlanId: string | null;
+  focusedProposalId: string | null;
+  group: Group;
+  isMobile: boolean;
+  onClose: () => void;
+  panel: GroupPanelContentState;
+}) {
   return (
     <div
       className={cn(
@@ -83,71 +109,135 @@ export function GroupPanelContent({
         isMobile && "flex-1",
       )}
     >
-      {!isMobile && (
-        <GroupPanelHeader
-          groupId={group.id}
-          groupName={group.name}
-          onClose={onClose}
-        />
-      )}
+      <GroupPanelDesktopHeader
+        groupId={group.id}
+        groupName={group.name}
+        isMobile={isMobile}
+        onClose={onClose}
+      />
 
-      <GroupPanelScrollArea isMobile={isMobile} resetKey={group.id}>
-        {({ isCompactVisible, scrollToTop }) => (
-          <>
-            <GroupCoverHeader
-              group={group}
-              isCompactVisible={isCompactVisible}
-              isMobile={isMobile}
-              onClose={onClose}
-              onCompactHeaderClick={scrollToTop}
-            />
+      <GroupPanelContentScrollArea
+        focusedPlanId={focusedPlanId}
+        focusedProposalId={focusedProposalId}
+        group={group}
+        isMobile={isMobile}
+        onClose={onClose}
+        panel={panel}
+      />
 
-            <GroupPanelMainSections
-              currentUserId={currentUserId}
-              currentUserRole={currentUserRole}
-              cancelPlan={cancelPlan}
-              completePlan={completePlan}
-              confirmPlan={confirmPlan}
-              createNextGroupPlan={createNextGroupPlan}
-              createPlanFromHistory={createPlanFromHistory}
-              disbandGroup={disbandGroup}
-              focusedPlanId={focusedPlanId}
-              focusedProposalId={focusedProposalId}
-              group={group}
-              inviteCandidates={inviteCandidates}
-              inviteMember={inviteMember}
-              invitingMemberId={invitingMemberId}
-              isDisbanding={isDisbanding}
-              isOnline={isOnline}
-              isLeaving={isLeaving}
-              leaveGroup={leaveGroup}
-              memberCount={memberCount}
-              members={members}
-              pendingPlanAction={pendingPlanAction}
-              onEditGroup={() => setIsEditOpen(true)}
-              onEditPlan={() => setIsPlanEditOpen(true)}
-              removeMember={removeMember}
-              removingMemberId={removingMemberId}
-              setSelectedMember={setSelectedMember}
-            />
-          </>
-        )}
-      </GroupPanelScrollArea>
+      <GroupPanelAdminDialogs group={group} panel={panel} />
+    </div>
+  );
+}
 
-      {currentUserRole === "ADMIN" && (
+function GroupPanelDesktopHeader({
+  groupId,
+  groupName,
+  isMobile,
+  onClose,
+}: {
+  groupId: string;
+  groupName: string;
+  isMobile: boolean;
+  onClose: () => void;
+}) {
+  if (isMobile) {
+    return null;
+  }
+
+  return (
+    <GroupPanelHeader
+      groupId={groupId}
+      groupName={groupName}
+      onClose={onClose}
+    />
+  );
+}
+
+function GroupPanelContentScrollArea({
+  focusedPlanId,
+  focusedProposalId,
+  group,
+  isMobile,
+  onClose,
+  panel,
+}: {
+  focusedPlanId: string | null;
+  focusedProposalId: string | null;
+  group: Group;
+  isMobile: boolean;
+  onClose: () => void;
+  panel: GroupPanelContentState;
+}) {
+  return (
+    <GroupPanelScrollArea isMobile={isMobile} resetKey={group.id}>
+      {({ isCompactVisible, scrollToTop }) => (
         <>
-          <EditGroupIdentityDialog
+          <GroupCoverHeader
             group={group}
-            open={isEditOpen}
-            onOpenChange={setIsEditOpen}
+            isCompactVisible={isCompactVisible}
+            isMobile={isMobile}
+            onClose={onClose}
+            onCompactHeaderClick={scrollToTop}
           />
-          <EditPlanDetailsDialog
+
+          <GroupPanelMainSections
+            currentUserId={panel.currentUserId}
+            currentUserRole={panel.currentUserRole}
+            cancelPlan={panel.cancelPlan}
+            completePlan={panel.completePlan}
+            confirmPlan={panel.confirmPlan}
+            createNextGroupPlan={panel.createNextGroupPlan}
+            createPlanFromHistory={panel.createPlanFromHistory}
+            disbandGroup={panel.disbandGroup}
+            focusedPlanId={focusedPlanId}
+            focusedProposalId={focusedProposalId}
             group={group}
-            open={isPlanEditOpen}
-            onOpenChange={setIsPlanEditOpen}
+            inviteCandidates={panel.inviteCandidates}
+            inviteMember={panel.inviteMember}
+            invitingMemberId={panel.invitingMemberId}
+            isDisbanding={panel.isDisbanding}
+            isOnline={panel.isOnline}
+            isLeaving={panel.isLeaving}
+            leaveGroup={panel.leaveGroup}
+            memberCount={panel.memberCount}
+            members={panel.members}
+            pendingPlanAction={panel.pendingPlanAction}
+            onEditGroup={() => panel.setIsEditOpen(true)}
+            onEditPlan={() => panel.setIsPlanEditOpen(true)}
+            removeMember={panel.removeMember}
+            removingMemberId={panel.removingMemberId}
+            setSelectedMember={panel.setSelectedMember}
           />
         </>
       )}
-    </div>
+    </GroupPanelScrollArea>
+  );
+}
+
+function GroupPanelAdminDialogs({
+  group,
+  panel,
+}: {
+  group: Group;
+  panel: GroupPanelContentState;
+}) {
+  if (panel.currentUserRole !== "ADMIN") {
+    return null;
+  }
+
+  return (
+    <>
+      <EditGroupIdentityDialog
+        group={group}
+        open={panel.isEditOpen}
+        onOpenChange={panel.setIsEditOpen}
+      />
+      <EditPlanDetailsDialog
+        group={group}
+        open={panel.isPlanEditOpen}
+        onOpenChange={panel.setIsPlanEditOpen}
+      />
+    </>
   );
 }

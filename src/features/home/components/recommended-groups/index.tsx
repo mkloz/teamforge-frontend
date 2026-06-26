@@ -36,7 +36,7 @@ interface RecommendedGroupsViewProps {
   recommendations: ExploreGroup[];
 }
 
-export function RecommendedGroupsView({
+function RecommendedGroupsView({
   isRecommendationsLoading = false,
   recommendations,
 }: RecommendedGroupsViewProps) {

@@ -22,8 +22,7 @@ export function ProfileIdentity({
   showMissingDetailsAction = true,
   onOpenFriends,
 }: ProfileIdentityProps) {
-  const hasAge = typeof user.age === "number";
-  const hasCity = Boolean(user.city);
+  const profileDetails = getProfileIdentityDetails(user);
 
   return (
     <div className="flex min-w-0 flex-1 flex-col items-start justify-center pt-0">
@@ -31,37 +30,11 @@ export function ProfileIdentity({
         {user.name}
       </h1>
 
-      <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1 font-medium text-white/80">
-        {hasAge ? (
-          <span className="font-semibold text-sm">{user.age} yrs</span>
-        ) : null}
-        {hasAge && hasCity ? (
-          <span className="size-1 rounded-full bg-white/40" />
-        ) : null}
-        {hasCity ? (
-          <div className="flex min-w-0 items-center gap-1 font-semibold text-sm leading-4">
-            <MapPin
-              aria-hidden="true"
-              className="size-3 shrink-0 -translate-y-px text-white/90"
-            />
-            <span className="truncate leading-4">{user.city}</span>
-          </div>
-        ) : null}
-        {!hasAge && !hasCity ? (
-          <div className="flex flex-col items-start gap-2">
-            <span className="text-sm text-white/80">
-              Profile details are still being filled in.
-            </span>
-            {showMissingDetailsAction ? (
-              <Button asChild variant="outline" size="sm">
-                <Link {...buildSettingsNavigation("account")}>
-                  Finish account details
-                </Link>
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
+      <ProfileIdentityDetails
+        details={profileDetails}
+        showMissingDetailsAction={showMissingDetailsAction}
+        user={user}
+      />
 
       {/* Universal Badges & Actions Row */}
       <div className="mt-2 flex w-full flex-col items-start justify-center gap-5 pb-1 sm:mt-5 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
@@ -74,4 +47,107 @@ export function ProfileIdentity({
       </div>
     </div>
   );
+}
+
+function ProfileIdentityDetails({
+  details,
+  showMissingDetailsAction,
+  user,
+}: {
+  details: ProfileIdentityDetailsState;
+  showMissingDetailsAction: boolean;
+  user: User;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1 font-medium text-white/80">
+      {details.hasAge ? <ProfileAge age={user.age} /> : null}
+      {shouldShowProfileIdentitySeparator(details) ? <ProfileDot /> : null}
+      {details.hasCity ? <ProfileCity city={user.city} /> : null}
+      {details.isMissingDetails ? (
+        <MissingProfileDetailsPrompt
+          showMissingDetailsAction={showMissingDetailsAction}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function ProfileAge({ age }: { age: number | null | undefined }) {
+  return <span className="font-semibold text-sm">{age} yrs</span>;
+}
+
+function ProfileDot() {
+  return <span className="size-1 rounded-full bg-white/40" />;
+}
+
+function ProfileCity({ city }: { city: string | null | undefined }) {
+  return (
+    <div className="flex min-w-0 items-center gap-1 font-semibold text-sm leading-4">
+      <MapPin
+        aria-hidden="true"
+        className="size-3 shrink-0 -translate-y-px text-white/90"
+      />
+      <span className="truncate leading-4">{city}</span>
+    </div>
+  );
+}
+
+function MissingProfileDetailsPrompt({
+  showMissingDetailsAction,
+}: {
+  showMissingDetailsAction: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <span className="text-sm text-white/80">
+        Profile details are still being filled in.
+      </span>
+      {showMissingDetailsAction ? (
+        <Button asChild variant="outline" size="sm">
+          <Link {...buildSettingsNavigation("account")}>
+            Finish account details
+          </Link>
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+interface ProfileIdentityDetailsState {
+  hasAge: boolean;
+  hasCity: boolean;
+  isMissingDetails: boolean;
+}
+
+function getProfileIdentityDetails(user: User): ProfileIdentityDetailsState {
+  const hasAge = hasProfileAge(user);
+  const hasCity = hasProfileCity(user);
+
+  return {
+    hasAge,
+    hasCity,
+    isMissingDetails: isMissingProfileIdentityDetails({ hasAge, hasCity }),
+  };
+}
+
+function hasProfileAge(user: User) {
+  return typeof user.age === "number";
+}
+
+function hasProfileCity(user: User) {
+  return Boolean(user.city);
+}
+
+function isMissingProfileIdentityDetails({
+  hasAge,
+  hasCity,
+}: Pick<ProfileIdentityDetailsState, "hasAge" | "hasCity">) {
+  return !hasAge && !hasCity;
+}
+
+function shouldShowProfileIdentitySeparator({
+  hasAge,
+  hasCity,
+}: Pick<ProfileIdentityDetailsState, "hasAge" | "hasCity">) {
+  return hasAge && hasCity;
 }

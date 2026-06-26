@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const imageMediaVariantsSchema = z.object({
+const imageMediaVariantsSchema = z.object({
   thumb64: z.string().nullable(),
   avatar128: z.string().nullable(),
   card384: z.string().nullable(),

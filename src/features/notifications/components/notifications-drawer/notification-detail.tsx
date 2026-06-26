@@ -28,6 +28,12 @@ interface NotificationDetailProps {
   onOpen: (item: Notification) => void;
 }
 
+interface NotificationDetailReadActionState {
+  icon: LucideIcon;
+  label: string;
+  title: string | undefined;
+}
+
 export function NotificationDetail({
   item,
   isTogglingRead,
@@ -39,8 +45,12 @@ export function NotificationDetail({
 }: NotificationDetailProps) {
   const config = getTypeConfig(item.type);
   const Icon = config.icon;
-  const isBusy = isTogglingRead || isOpening;
-  const ReadStateIcon = item.isRead ? Mail : Check;
+  const isBusy = isNotificationDetailBusy({ isOpening, isTogglingRead });
+  const readAction = getNotificationDetailReadActionState({
+    isRead: item.isRead,
+    isReadActionDisabled,
+  });
+  const ReadStateIcon = readAction.icon;
 
   return (
     <article className="flex min-h-full flex-col">
@@ -75,15 +85,7 @@ export function NotificationDetail({
               >
                 {relativeTime(item.createdAt)}
               </time>
-              {!item.isRead && (
-                <>
-                  <span
-                    className="size-2 rounded-full bg-forge-teal"
-                    aria-hidden="true"
-                  />
-                  <span className="sr-only">Unread notification</span>
-                </>
-              )}
+              <NotificationDetailUnreadMarker isRead={item.isRead} />
             </div>
             <h3 className="mt-1 text-balance font-bold text-ink text-xl leading-tight tracking-tight">
               {item.title}
@@ -115,16 +117,12 @@ export function NotificationDetail({
             onClick={() => onToggleRead(item)}
             disabled={isBusy || isReadActionDisabled}
             loading={isTogglingRead}
-            title={
-              isReadActionDisabled
-                ? "Reconnect to update read state"
-                : undefined
-            }
+            title={readAction.title}
             className="min-w-0 flex-1"
             contentClassName="gap-1.5"
           >
             <ReadStateIcon className="size-4 shrink-0" aria-hidden="true" />
-            {item.isRead ? "Mark unread" : "Mark read"}
+            {readAction.label}
           </Button>
           <Button
             variant="primary"
@@ -141,6 +139,55 @@ export function NotificationDetail({
         </div>
       </div>
     </article>
+  );
+}
+
+function isNotificationDetailBusy({
+  isOpening,
+  isTogglingRead,
+}: {
+  isOpening: boolean;
+  isTogglingRead: boolean;
+}) {
+  return isTogglingRead || isOpening;
+}
+
+function getNotificationDetailReadActionState({
+  isRead,
+  isReadActionDisabled,
+}: {
+  isRead: boolean;
+  isReadActionDisabled: boolean;
+}): NotificationDetailReadActionState {
+  if (isRead) {
+    return {
+      icon: Mail,
+      label: "Mark unread",
+      title: getNotificationDetailReadActionTitle(isReadActionDisabled),
+    };
+  }
+
+  return {
+    icon: Check,
+    label: "Mark read",
+    title: getNotificationDetailReadActionTitle(isReadActionDisabled),
+  };
+}
+
+function getNotificationDetailReadActionTitle(isReadActionDisabled: boolean) {
+  return isReadActionDisabled ? "Reconnect to update read state" : undefined;
+}
+
+function NotificationDetailUnreadMarker({ isRead }: { isRead: boolean }) {
+  if (isRead) {
+    return null;
+  }
+
+  return (
+    <>
+      <span className="size-2 rounded-full bg-forge-teal" aria-hidden="true" />
+      <span className="sr-only">Unread notification</span>
+    </>
   );
 }
 

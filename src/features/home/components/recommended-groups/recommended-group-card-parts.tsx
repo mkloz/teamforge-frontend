@@ -17,6 +17,7 @@ import type { ExploreGroup, ExploreJoinResult } from "@/shared/schemas";
 
 type JoinResultStatus = ExploreJoinResult["status"];
 type JoinMutationData = { data: ExploreJoinResult } | undefined;
+type RecommendedGroupAccess = ExploreGroup["access"];
 
 interface HomeRecommendedJoinMutation {
   data: JoinMutationData;
@@ -41,6 +42,43 @@ interface RecommendedGroupDetailsLinkProps {
   group: ExploreGroup;
 }
 
+interface RecommendedGroupActionChoiceInput {
+  group: ExploreGroup;
+  isFull: boolean;
+  isOfflineActionBlocked: boolean;
+  isPending: boolean;
+  joinResult: JoinResultStatus | undefined;
+}
+
+const JOIN_RESULT_ACTIONS: Record<
+  JoinResultStatus,
+  { icon: LucideIcon; label: string }
+> = {
+  JOINED: {
+    icon: Check,
+    label: "Joined",
+  },
+  REQUESTED: {
+    icon: CircleDashed,
+    label: "Requested",
+  },
+};
+
+const READY_ACTION_LABELS: Record<RecommendedGroupAccess, string> = {
+  BY_REQUEST: "Request",
+  OPEN: "Join",
+};
+
+const PENDING_ACTION_LABELS: Record<RecommendedGroupAccess, string> = {
+  BY_REQUEST: "Requesting...",
+  OPEN: "Joining...",
+};
+
+const READY_ACTION_ICONS: Record<RecommendedGroupAccess, LucideIcon> = {
+  BY_REQUEST: Send,
+  OPEN: ArrowRight,
+};
+
 function getJoinResult(
   group: ExploreGroup,
   joinMutation: HomeRecommendedJoinMutation,
@@ -53,40 +91,71 @@ function getJoinResult(
   );
 }
 
+function getJoinResultAction(joinResult: JoinResultStatus | undefined) {
+  return joinResult ? JOIN_RESULT_ACTIONS[joinResult] : null;
+}
+
+function getAccessActionLabel(
+  access: RecommendedGroupAccess,
+  isPending: boolean,
+) {
+  return isPending
+    ? PENDING_ACTION_LABELS[access]
+    : READY_ACTION_LABELS[access];
+}
+
+function getFullActionIcon(isFull: boolean) {
+  return isFull ? UsersRound : null;
+}
+
+function getBlockedActionIcon({
+  isOfflineActionBlocked,
+  isPending,
+}: Pick<
+  RecommendedGroupActionChoiceInput,
+  "isOfflineActionBlocked" | "isPending"
+>) {
+  return isPending || isOfflineActionBlocked ? CircleDashed : null;
+}
+
+function getJoinResultActionIcon(joinResult: JoinResultStatus | undefined) {
+  return getJoinResultAction(joinResult)?.icon ?? null;
+}
+
+function getReadyActionIcon(access: RecommendedGroupAccess) {
+  return READY_ACTION_ICONS[access] ?? ArrowRight;
+}
+
+function isActionIcon(icon: LucideIcon | null): icon is LucideIcon {
+  return Boolean(icon);
+}
+
+function getFirstActionIcon(icons: Array<LucideIcon | null>) {
+  return icons.find(isActionIcon) ?? ArrowRight;
+}
+
 function getActionLabel({
   group,
   isFull,
   isOfflineActionBlocked,
   isPending,
   joinResult,
-}: {
-  group: ExploreGroup;
-  isFull: boolean;
-  isOfflineActionBlocked: boolean;
-  isPending: boolean;
-  joinResult: JoinResultStatus | undefined;
-}) {
+}: RecommendedGroupActionChoiceInput) {
   if (isFull) {
     return "Full";
   }
 
-  if (joinResult === "JOINED") {
-    return "Joined";
-  }
+  const joinResultAction = getJoinResultAction(joinResult);
 
-  if (joinResult === "REQUESTED") {
-    return "Requested";
+  if (joinResultAction) {
+    return joinResultAction.label;
   }
 
   if (isOfflineActionBlocked) {
     return "Reconnect";
   }
 
-  if (isPending) {
-    return group.access === "BY_REQUEST" ? "Requesting..." : "Joining...";
-  }
-
-  return group.access === "BY_REQUEST" ? "Request" : "Join";
+  return getAccessActionLabel(group.access, isPending);
 }
 
 function getActionIcon({
@@ -95,26 +164,13 @@ function getActionIcon({
   isOfflineActionBlocked,
   isPending,
   joinResult,
-}: {
-  group: ExploreGroup;
-  isFull: boolean;
-  isOfflineActionBlocked: boolean;
-  isPending: boolean;
-  joinResult: JoinResultStatus | undefined;
-}): LucideIcon {
-  if (isFull) {
-    return UsersRound;
-  }
-
-  if (joinResult === "JOINED") {
-    return Check;
-  }
-
-  if (joinResult === "REQUESTED" || isPending || isOfflineActionBlocked) {
-    return CircleDashed;
-  }
-
-  return group.access === "BY_REQUEST" ? Send : ArrowRight;
+}: RecommendedGroupActionChoiceInput): LucideIcon {
+  return getFirstActionIcon([
+    getFullActionIcon(isFull),
+    getJoinResultActionIcon(joinResult),
+    getBlockedActionIcon({ isOfflineActionBlocked, isPending }),
+    getReadyActionIcon(group.access),
+  ]);
 }
 
 function getRecommendedGroupActionState({
@@ -145,6 +201,38 @@ function getRecommendedGroupActionState({
   };
 }
 
+function getJoinedGroupId(
+  actionState: Pick<RecommendedGroupActionState, "joinResult">,
+  joinMutation: HomeRecommendedJoinMutation,
+) {
+  return actionState.joinResult === "JOINED"
+    ? joinMutation.data?.data.groupId
+    : undefined;
+}
+
+function isRecommendedActionDisabled({
+  actionState,
+  isFull,
+  joinMutation,
+}: {
+  actionState: RecommendedGroupActionState;
+  isFull: boolean;
+  joinMutation: HomeRecommendedJoinMutation;
+}) {
+  return (
+    isFull ||
+    !joinMutation.isOnline ||
+    joinMutation.isPending ||
+    actionState.joinResult !== undefined
+  );
+}
+
+function getRecommendedActionTitle(isOnline: boolean) {
+  return isOnline
+    ? undefined
+    : "Reconnect before joining or requesting to join.";
+}
+
 export function RecommendedGroupAction({
   group,
   isFull,
@@ -155,10 +243,7 @@ export function RecommendedGroupAction({
     isFull,
     joinMutation,
   });
-  const joinedGroupId =
-    actionState.joinResult === "JOINED"
-      ? joinMutation.data?.data.groupId
-      : undefined;
+  const joinedGroupId = getJoinedGroupId(actionState, joinMutation);
 
   if (joinedGroupId) {
     return (
@@ -177,18 +262,13 @@ export function RecommendedGroupAction({
     <Button
       variant={isFull ? "outline" : "primary"}
       size="sm"
-      disabled={
-        isFull ||
-        !joinMutation.isOnline ||
-        joinMutation.isPending ||
-        actionState.joinResult !== undefined
-      }
+      disabled={isRecommendedActionDisabled({
+        actionState,
+        isFull,
+        joinMutation,
+      })}
       onClick={() => joinMutation.mutate()}
-      title={
-        joinMutation.isOnline
-          ? undefined
-          : "Reconnect before joining or requesting to join."
-      }
+      title={getRecommendedActionTitle(joinMutation.isOnline)}
       className={cn("shrink-0", isFull && "opacity-60")}
       contentClassName="whitespace-nowrap"
     >

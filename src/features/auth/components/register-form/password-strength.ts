@@ -1,4 +1,4 @@
-export const PASSWORD_STRENGTH_LEVELS = [
+const PASSWORD_STRENGTH_LEVELS = [
   { score: 0 as const, label: "", colorClassName: "" },
   {
     score: 1 as const,
@@ -17,15 +17,25 @@ export const PASSWORD_STRENGTH_LEVELS = [
   },
 ] as const;
 
+const PASSWORD_STRENGTH_RULES = [
+  (password: string) => password.length >= 8,
+  (password: string) => /[A-Z]/.test(password) && /[a-z]/.test(password),
+  (password: string) => /[0-9!@#$%^&*]/.test(password),
+] as const;
+
 export type PasswordStrength = (typeof PASSWORD_STRENGTH_LEVELS)[number];
 
 export function getPasswordStrength(password: string): PasswordStrength {
   if (!password) return PASSWORD_STRENGTH_LEVELS[0];
 
-  let score = 0;
-  if (password.length >= 8) score++;
-  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
-  if (/[0-9!@#$%^&*]/.test(password)) score++;
+  const score = getPasswordStrengthScore(password);
 
   return PASSWORD_STRENGTH_LEVELS[score];
+}
+
+function getPasswordStrengthScore(password: string) {
+  return PASSWORD_STRENGTH_RULES.reduce(
+    (score, rule) => score + (rule(password) ? 1 : 0),
+    0,
+  );
 }

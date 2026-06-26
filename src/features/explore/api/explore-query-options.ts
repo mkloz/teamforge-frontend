@@ -23,63 +23,19 @@ export type ExploreGroupsQueryData = {
   meta: PaginationMeta;
 };
 
+const EXPLORE_GROUPS_PAGE_SIZE = "24";
+
 export const ExploreQueryOptions = {
   groups(filters: ExploreFilters, searchQuery: string) {
     return infiniteQueryOptions({
       queryKey: APP_QUERY_KEYS.explore.groupsWithFilters(searchQuery, filters),
       initialPageParam: 1,
       queryFn: async ({ pageParam }): Promise<ExploreGroupsQueryData> => {
-        const searchParams = new URLSearchParams();
-        const serverCategory = getServerCategory(filters.selectedCategories);
-        const timeRange =
-          getCustomExploreTimeRange({
-            startsAfter: filters.startsAfter,
-            startsBefore: filters.startsBefore,
-          }) ?? getExploreTimeWindowRange(filters.timeWindow);
-        const categories = Array.from(
-          new Set(
-            filters.selectedCategories.filter((category) => category !== "ALL"),
-          ),
-        ).slice(0, EXPLORE_MAX_CATEGORY_FILTERS);
-
-        searchParams.set("page", String(pageParam));
-        searchParams.set("limit", "24");
-        searchParams.set("sortBy", filters.sortBy);
-        searchParams.set("minMembers", String(filters.sizeRange[0]));
-        searchParams.set("maxMembers", String(filters.sizeRange[1]));
-
-        if (serverCategory) {
-          searchParams.set("category", serverCategory);
-        } else if (categories.length > 0) {
-          searchParams.set("categories", categories.join(","));
-        }
-
-        if (filters.access !== "ALL") {
-          searchParams.set("access", filters.access);
-        }
-
-        if (filters.locationMode !== "ALL") {
-          searchParams.set("locationMode", filters.locationMode);
-        }
-
-        if (filters.locationMode !== "ONLINE") {
-          searchParams.set("maxDistanceKm", String(filters.distance));
-        }
-
-        if (timeRange) {
-          if (timeRange.start) {
-            searchParams.set("startsAfter", timeRange.start.toISOString());
-          }
-
-          if (timeRange.end) {
-            searchParams.set("startsBefore", timeRange.end.toISOString());
-          }
-        }
-
-        if (searchQuery.trim()) {
-          searchParams.set("search", searchQuery.trim());
-        }
-
+        const searchParams = buildExploreGroupsSearchParams(
+          filters,
+          searchQuery,
+          pageParam,
+        );
         const response = await ExploreApi.getGroups(searchParams);
 
         return {
@@ -98,3 +54,115 @@ export const ExploreQueryOptions = {
     });
   },
 };
+
+function buildExploreGroupsSearchParams(
+  filters: ExploreFilters,
+  searchQuery: string,
+  pageParam: number,
+) {
+  const searchParams = new URLSearchParams();
+
+  setPaginationParams(searchParams, pageParam);
+  setMemberRangeParams(searchParams, filters);
+  setCategoryParams(searchParams, filters);
+  setAccessParam(searchParams, filters);
+  setLocationParams(searchParams, filters);
+  setTimeRangeParams(searchParams, filters);
+  setSearchParam(searchParams, searchQuery);
+
+  return searchParams;
+}
+
+function setPaginationParams(searchParams: URLSearchParams, pageParam: number) {
+  searchParams.set("page", String(pageParam));
+  searchParams.set("limit", EXPLORE_GROUPS_PAGE_SIZE);
+}
+
+function setMemberRangeParams(
+  searchParams: URLSearchParams,
+  filters: ExploreFilters,
+) {
+  searchParams.set("sortBy", filters.sortBy);
+  searchParams.set("minMembers", String(filters.sizeRange[0]));
+  searchParams.set("maxMembers", String(filters.sizeRange[1]));
+}
+
+function setCategoryParams(
+  searchParams: URLSearchParams,
+  filters: ExploreFilters,
+) {
+  const serverCategory = getServerCategory(filters.selectedCategories);
+
+  if (serverCategory) {
+    searchParams.set("category", serverCategory);
+    return;
+  }
+
+  const categories = getSelectedServerCategories(filters);
+
+  if (categories.length > 0) {
+    searchParams.set("categories", categories.join(","));
+  }
+}
+
+function getSelectedServerCategories(filters: ExploreFilters) {
+  return Array.from(
+    new Set(
+      filters.selectedCategories.filter((category) => category !== "ALL"),
+    ),
+  ).slice(0, EXPLORE_MAX_CATEGORY_FILTERS);
+}
+
+function setAccessParam(
+  searchParams: URLSearchParams,
+  filters: ExploreFilters,
+) {
+  if (filters.access !== "ALL") {
+    searchParams.set("access", filters.access);
+  }
+}
+
+function setLocationParams(
+  searchParams: URLSearchParams,
+  filters: ExploreFilters,
+) {
+  if (filters.locationMode !== "ALL") {
+    searchParams.set("locationMode", filters.locationMode);
+  }
+
+  if (filters.locationMode !== "ONLINE") {
+    searchParams.set("maxDistanceKm", String(filters.distance));
+  }
+}
+
+function setTimeRangeParams(
+  searchParams: URLSearchParams,
+  filters: ExploreFilters,
+) {
+  const timeRange =
+    getCustomExploreTimeRange({
+      startsAfter: filters.startsAfter,
+      startsBefore: filters.startsBefore,
+    }) ?? getExploreTimeWindowRange(filters.timeWindow);
+
+  setOptionalDateParam(searchParams, "startsAfter", timeRange?.start);
+  setOptionalDateParam(searchParams, "startsBefore", timeRange?.end);
+}
+
+function setOptionalDateParam(
+  searchParams: URLSearchParams,
+  key: string,
+  date: Date | null | undefined,
+) {
+  if (date) {
+    searchParams.set(key, date.toISOString());
+  }
+}
+
+function setSearchParam(searchParams: URLSearchParams, searchQuery: string) {
+  const trimmedSearchQuery = searchQuery.trim();
+
+  if (trimmedSearchQuery) {
+    searchParams.set("search", trimmedSearchQuery);
+  }
+}

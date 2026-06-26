@@ -13,23 +13,31 @@ const timeFormatter = new Intl.DateTimeFormat("en-GB", {
 
 export function formatPlanDateTime(value: string | null | undefined) {
   if (!value) {
-    return {
-      date: "Date TBD",
-      time: "Time TBD",
-      full: "Date TBD",
-    };
+    return getPlanDateTimeFallback();
   }
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    return {
-      date: "Date TBD",
-      time: "Time TBD",
-      full: "Date TBD",
-    };
+  if (!isValidDate(date)) {
+    return getPlanDateTimeFallback();
   }
 
+  return formatValidPlanDateTime(date);
+}
+
+function getPlanDateTimeFallback() {
+  return {
+    date: "Date TBD",
+    time: "Time TBD",
+    full: "Date TBD",
+  };
+}
+
+function isValidDate(date: Date) {
+  return !Number.isNaN(date.getTime());
+}
+
+function formatValidPlanDateTime(date: Date) {
   const formattedDate = dateFormatter.format(date);
   const formattedTime = timeFormatter.format(date);
 
@@ -49,40 +57,52 @@ export function formatCost(plan: GroupPlanDetail["plan"]) {
     return "Free";
   }
 
-  if (typeof plan.costAmount === "number") {
-    return `About £${plan.costAmount.toFixed(0)}`;
-  }
+  return formatPaidCost(plan);
+}
 
-  return plan.costDetails ?? "Paid";
+function formatPaidCost(plan: NonNullable<GroupPlanDetail["plan"]>) {
+  return typeof plan.costAmount === "number"
+    ? `About £${plan.costAmount.toFixed(0)}`
+    : (plan.costDetails ?? "Paid");
 }
 
 export function formatLocation(detail: GroupPlanDetail) {
-  if (detail.plan?.locationMode === "ONLINE") {
+  if (isOnlinePlan(detail)) {
     return "Online";
   }
 
-  return detail.plan?.location ?? detail.activity.city ?? "Location TBD";
+  return getPlacePlanLocation(detail) ?? "Location TBD";
+}
+
+function isOnlinePlan(detail: GroupPlanDetail) {
+  return detail.plan?.locationMode === "ONLINE";
+}
+
+function getPlacePlanLocation(detail: GroupPlanDetail) {
+  return detail.plan?.location ?? detail.activity.city;
 }
 
 export function formatStatusLabel(value: string) {
-  return value
-    .split("_")
-    .map((part) => part.toLowerCase())
-    .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
-    .join(" ");
+  return value.split("_").map(formatStatusPart).join(" ");
+}
+
+function formatStatusPart(part: string) {
+  const lowercasePart = part.toLowerCase();
+  return `${lowercasePart[0]?.toUpperCase() ?? ""}${lowercasePart.slice(1)}`;
 }
 
 export function getSeatsLabel(detail: GroupPlanDetail) {
-  const seatsLeft = Math.max(
-    0,
-    detail.group.maxMembers - detail.group.activeMembersCount,
-  );
+  const seatsLeft = getSeatsLeft(detail);
 
   if (seatsLeft === 0) {
     return "No open spots";
   }
 
   return `${seatsLeft} ${seatsLeft === 1 ? "spot" : "spots"} open`;
+}
+
+function getSeatsLeft(detail: GroupPlanDetail) {
+  return Math.max(0, detail.group.maxMembers - detail.group.activeMembersCount);
 }
 
 export function getFitPercent(score: number | null | undefined) {

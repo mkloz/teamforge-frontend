@@ -35,20 +35,36 @@ interface GetSelectedConversationStatusInput {
   selectedKind: ActivitySelectionKind | null;
 }
 
+type AnySelectedConversationQuery =
+  | SelectedConversationQueryState<ActivityDirectSelectionData>
+  | SelectedConversationQueryState<ActivityGroupSelectionData>;
+type ConversationSelectionKind = Extract<ActivitySelectionKind, "dm" | "group">;
+type SelectedConversationChatIdResolver = (
+  input: GetSelectedConversationChatIdInput,
+) => string | null;
+
+const SELECTED_CONVERSATION_CHAT_ID_RESOLVERS: Record<
+  ConversationSelectionKind,
+  SelectedConversationChatIdResolver
+> = {
+  dm: ({ directSelection }) => directSelection?.chatId ?? null,
+  group: ({ groupSelection }) => groupSelection?.chatId ?? null,
+};
+
 export function getSelectedConversationChatId({
   directSelection,
   groupSelection,
   selectedKind,
 }: GetSelectedConversationChatIdInput) {
-  if (selectedKind === "group") {
-    return groupSelection?.chatId ?? null;
+  if (!isConversationSelectionKind(selectedKind)) {
+    return null;
   }
 
-  if (selectedKind === "dm") {
-    return directSelection?.chatId ?? null;
-  }
-
-  return null;
+  return SELECTED_CONVERSATION_CHAT_ID_RESOLVERS[selectedKind]({
+    directSelection,
+    groupSelection,
+    selectedKind,
+  });
 }
 
 export function findSelectedChatSummary(
@@ -79,28 +95,13 @@ export function getSelectedConversationStatus({
   selectedId,
   selectedKind,
 }: GetSelectedConversationStatusInput) {
-  if (selectedKind === "group") {
-    return {
-      isSelectedConversationError:
-        Boolean(selectedId) && groupQuery.isError && !groupQuery.data,
-      isSelectedConversationLoading:
-        Boolean(selectedId) && groupQuery.isLoading && !groupQuery.data,
-    };
-  }
+  const selectedQuery = getSelectedConversationQuery({
+    directQuery,
+    groupQuery,
+    selectedKind,
+  });
 
-  if (selectedKind === "dm") {
-    return {
-      isSelectedConversationError:
-        Boolean(selectedId) && directQuery.isError && !directQuery.data,
-      isSelectedConversationLoading:
-        Boolean(selectedId) && directQuery.isLoading && !directQuery.data,
-    };
-  }
-
-  return {
-    isSelectedConversationError: false,
-    isSelectedConversationLoading: false,
-  };
+  return getSelectedConversationQueryStatus(selectedQuery, selectedId);
 }
 
 export function getActiveTypingUsers(
@@ -108,6 +109,12 @@ export function getActiveTypingUsers(
   typingByChatId: Record<string, TypingParticipant[]>,
 ) {
   return chatId ? (typingByChatId[chatId] ?? []) : [];
+}
+
+function isConversationSelectionKind(
+  selectedKind: ActivitySelectionKind | null,
+): selectedKind is ConversationSelectionKind {
+  return selectedKind === "group" || selectedKind === "dm";
 }
 
 function getSelectedParticipants({
@@ -132,6 +139,43 @@ function getSelectedParticipants({
   }
 
   return [];
+}
+
+function getSelectedConversationQuery({
+  directQuery,
+  groupQuery,
+  selectedKind,
+}: Pick<
+  GetSelectedConversationStatusInput,
+  "directQuery" | "groupQuery" | "selectedKind"
+>): AnySelectedConversationQuery | null {
+  if (selectedKind === "group") {
+    return groupQuery;
+  }
+
+  if (selectedKind === "dm") {
+    return directQuery;
+  }
+
+  return null;
+}
+
+function getSelectedConversationQueryStatus(
+  selectedQuery: AnySelectedConversationQuery | null,
+  selectedId: string | null,
+) {
+  if (!selectedQuery || !selectedId) {
+    return {
+      isSelectedConversationError: false,
+      isSelectedConversationLoading: false,
+    };
+  }
+
+  return {
+    isSelectedConversationError: selectedQuery.isError && !selectedQuery.data,
+    isSelectedConversationLoading:
+      selectedQuery.isLoading && !selectedQuery.data,
+  };
 }
 
 function isActivityParticipant(

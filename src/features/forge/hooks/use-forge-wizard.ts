@@ -240,15 +240,12 @@ function createInitialForgeWizardStateForRoute(input: {
   routeMode: ForgeMode;
   routeStep: Step;
 }) {
-  const initialState = input.draft
-    ? cloneForgeWizardDraft(input.draft)
-    : createInitialForgeWizardState();
-  const hasLiveForgeState =
-    initialState.forgeResult !== "IDLE" || initialState.participants.length > 0;
+  const initialState = getInitialForgeWizardState(input.draft);
+  const hasLiveState = hasLiveForgeState(initialState);
   const baseState = {
     ...initialState,
     forgeMode: input.routeMode,
-    step: input.routeStep > 4 && !hasLiveForgeState ? 4 : input.routeStep,
+    step: getInitialRouteStep(input.routeStep, hasLiveState),
   };
 
   if (!input.routeIdea) {
@@ -260,4 +257,16 @@ function createInitialForgeWizardStateForRoute(input: {
     template: buildForgeIdeaTemplate(input.routeIdea),
     templateId: buildForgeIdeaTemplateId(input.routeIdea),
   });
+}
+
+function getInitialForgeWizardState(draft: ForgeWizardData | null) {
+  return draft ? cloneForgeWizardDraft(draft) : createInitialForgeWizardState();
+}
+
+function hasLiveForgeState(state: ForgeWizardData) {
+  return state.forgeResult !== "IDLE" || state.participants.length > 0;
+}
+
+function getInitialRouteStep(routeStep: Step, hasLiveState: boolean): Step {
+  return routeStep > 4 && !hasLiveState ? 4 : routeStep;
 }

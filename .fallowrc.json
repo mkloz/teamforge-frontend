@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "public/sw-push.js",
+    "src/main.tsx",
+    "src/router.tsx",
+    "vite.config.ts",
+    "scripts/**/*.js",
+    "scripts/**/*.mjs",
+    "scripts/**/*.ts"
+  ],
+  "ignorePatterns": ["src/shared/hooks/use-pwa-runtime-diagnostics.ts"],
+  "ignoreDependencies": ["babel-plugin-react-compiler"],
+  "ignoreExports": [
+    {
+      "file": "src/features/auth/lib/google-auth-flow.ts",
+      "exports": ["preloadGoogleIdentityScript", "requestGoogleAuthCode"]
+    },
+    {
+      "file": "src/features/legal/legal-page.tsx",
+      "exports": ["LegalPage"]
+    },
+    {
+      "file": "src/features/activity/api/activity-context.ts",
+      "exports": ["deriveActivityFeedData", "mergeActivityConversationTimeline"]
+    },
+    {
+      "file": "src/features/activity/api/context/activity-context-projections.ts",
+      "exports": ["deriveActivityFeedData", "mergeActivityConversationTimeline"]
+    },
+    {
+      "file": "src/shared/lib/pwa-runtime-diagnostics.ts",
+      "exports": [
+        "getPwaRuntimeDiagnosticsSnapshot",
+        "subscribePwaRuntimeDiagnostics"
+      ]
+    },
+    {
+      "file": "src/shared/schemas/social.ts",
+      "exports": ["friendshipSchema", "ratingSchema"]
+    }
+  ]
+}

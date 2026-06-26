@@ -2,17 +2,13 @@ import type { Group } from "@/features/activity/lib/activity-contract";
 import { getImageMediaVariant } from "@/shared/lib/image-media";
 
 export function getGroupAvatarUrl(group?: Group | null) {
-  const avatarUrl = getImageMediaVariant(
-    group?.avatarMedia,
-    "avatar128",
-    group?.avatar,
-  );
+  const avatarUrl = getGroupAvatarSource(group);
 
-  if (!avatarUrl) {
+  if (!avatarUrl || isGroupAvatarDuplicateCover(group)) {
     return null;
   }
 
-  return group?.avatar === group?.plan?.coverImage ? null : avatarUrl;
+  return avatarUrl;
 }
 
 export function getGroupCoverImage(group?: Group | null) {
@@ -21,4 +17,12 @@ export function getGroupCoverImage(group?: Group | null) {
     "cover800",
     group?.plan?.coverImage,
   );
+}
+
+function getGroupAvatarSource(group?: Group | null) {
+  return getImageMediaVariant(group?.avatarMedia, "avatar128", group?.avatar);
+}
+
+function isGroupAvatarDuplicateCover(group: Group | null | undefined) {
+  return group?.avatar === group?.plan?.coverImage;
 }

@@ -1,6 +1,7 @@
 type TelemetryValue = string | number | boolean | null | undefined;
 
 type TelemetryContext = Record<string, TelemetryValue | object>;
+type UnknownRecord = Record<PropertyKey, unknown>;
 
 interface SerializedError {
   name: string;
@@ -11,46 +12,73 @@ interface SerializedError {
 }
 
 const MAX_TELEMETRY_ERROR_MESSAGE_LENGTH = 255;
+const TELEMETRY_PRIMITIVE_TYPES = new Set(["boolean", "number", "string"]);
+
+function isObjectRecord(value: unknown): value is UnknownRecord {
+  return value !== null && typeof value === "object";
+}
+
+function readProperty(source: unknown, key: PropertyKey) {
+  return isObjectRecord(source) && key in source ? source[key] : undefined;
+}
+
+function readNumberProperty(source: unknown, key: PropertyKey) {
+  const value = readProperty(source, key);
+
+  return typeof value === "number" ? value : undefined;
+}
+
+function readStringProperty(source: unknown, key: PropertyKey) {
+  const value = readProperty(source, key);
+
+  return typeof value === "string" ? value : undefined;
+}
 
 function readApiException(error: Error) {
-  if (!("cause" in error)) {
-    return null;
-  }
+  const cause = readProperty(error, "cause");
 
-  const cause = error.cause;
-
-  if (!cause || typeof cause !== "object") {
+  if (!isObjectRecord(cause)) {
     return null;
   }
 
   return {
-    status:
-      "status" in cause && typeof cause.status === "number"
-        ? cause.status
-        : undefined,
-    requestId:
-      "requestId" in cause && typeof cause.requestId === "string"
-        ? cause.requestId
-        : undefined,
+    status: readNumberProperty(cause, "status"),
+    requestId: readStringProperty(cause, "requestId"),
   };
 }
 
-function toTelemetryValue(value: TelemetryContext[string]): TelemetryValue {
-  if (
-    value === null ||
-    value === undefined ||
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean"
-  ) {
-    return value;
+function readResponseStatus(error: Error) {
+  return readNumberProperty(readProperty(error, "response"), "status");
+}
+
+function getSerializedErrorMessage(error: unknown) {
+  return typeof error === "string"
+    ? error
+    : "An unknown client error occurred.";
+}
+
+function truncateTelemetryErrorMessage(message: string) {
+  if (message.length <= MAX_TELEMETRY_ERROR_MESSAGE_LENGTH) {
+    return message;
   }
 
+  return `${message.slice(0, MAX_TELEMETRY_ERROR_MESSAGE_LENGTH - 1)}…`;
+}
+
+function isTelemetryPrimitive(value: unknown): value is TelemetryValue {
+  return value == null || TELEMETRY_PRIMITIVE_TYPES.has(typeof value);
+}
+
+function serializeTelemetryObject(value: object) {
   try {
     return JSON.stringify(value);
   } catch {
     return "Unserializable telemetry value";
   }
+}
+
+function toTelemetryValue(value: TelemetryContext[string]): TelemetryValue {
+  return isTelemetryPrimitive(value) ? value : serializeTelemetryObject(value);
 }
 
 function sanitizeContext(context: TelemetryContext) {
@@ -62,35 +90,30 @@ function sanitizeContext(context: TelemetryContext) {
   );
 }
 
-export function serializeError(error: unknown): SerializedError {
-  if (error instanceof Error) {
-    const apiException = readApiException(error);
-    const status =
-      "response" in error &&
-      error.response &&
-      typeof error.response === "object" &&
-      "status" in error.response &&
-      typeof error.response.status === "number"
-        ? error.response.status
-        : apiException?.status;
-
-    return {
-      name: error.name,
-      message: error.message,
-      status,
-      requestId:
-        typeof apiException?.requestId === "string"
-          ? apiException.requestId
-          : undefined,
-      stack: error.stack,
-    };
-  }
-
+function serializeUnknownError(error: unknown): SerializedError {
   return {
     name: "UnknownError",
-    message:
-      typeof error === "string" ? error : "An unknown client error occurred.",
+    message: getSerializedErrorMessage(error),
   };
+}
+
+function serializeKnownError(error: Error): SerializedError {
+  const apiException = readApiException(error);
+  const status = readResponseStatus(error) ?? apiException?.status;
+
+  return {
+    name: error.name,
+    message: error.message,
+    status,
+    requestId: apiException?.requestId,
+    stack: error.stack,
+  };
+}
+
+function serializeError(error: unknown): SerializedError {
+  return error instanceof Error
+    ? serializeKnownError(error)
+    : serializeUnknownError(error);
 }
 
 export function trackEvent(name: string, context: TelemetryContext = {}) {
@@ -104,10 +127,7 @@ export function captureException(
   context: TelemetryContext = {},
 ) {
   const serialized = serializeError(error);
-  const errorMessage =
-    serialized.message.length > MAX_TELEMETRY_ERROR_MESSAGE_LENGTH
-      ? `${serialized.message.slice(0, MAX_TELEMETRY_ERROR_MESSAGE_LENGTH - 1)}…`
-      : serialized.message;
+  const errorMessage = truncateTelemetryErrorMessage(serialized.message);
   const details = {
     scope,
     ...sanitizeContext(context),

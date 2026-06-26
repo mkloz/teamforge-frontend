@@ -10,15 +10,13 @@ import {
   type CreateRatingPayload,
   chatApiSchema,
   costTypeSchema,
+  createInvitePayloadSchema,
   createPaginatedSchema,
   createRatingPayloadSchema,
-  type createRatingResultSchema,
   type DeferGroupReviewPayload,
   deferGroupReviewPayloadSchema,
   friendshipApiSchema,
   groupApiSchema,
-  type groupReviewStateSchema,
-  type inviteSchema,
   locationModeSchema,
   messageApiSchema,
   messageTypeSchema,
@@ -28,11 +26,11 @@ import {
   type planSchema,
   ratingEntitySchema,
   savedMessageApiSchema,
+  updateGroupPayloadSchema,
 } from "@/shared/schemas";
 import {
   chatAttachmentUrlSchema,
   managedAssetReferenceSchema,
-  managedUploadUrlSchema,
 } from "@/shared/validators/url.validator";
 
 export const DEFAULT_ACTIVITY_API_LIMIT = "100";
@@ -48,14 +46,12 @@ export const paginatedSavedMessagesSchema = createPaginatedSchema(
 );
 export const planProposalsSchema = z.array(planProposalSchema);
 export const paginatedRatingsSchema = createPaginatedSchema(ratingEntitySchema);
-export { createRatingPayloadSchema, deferGroupReviewPayloadSchema };
-
-export const createInvitePayloadSchema = z.object({
-  groupId: z.string().min(1),
-  inviteeId: z.string().min(1),
-  type: z.enum(["FRIEND_INVITE", "DIRECT_INVITE"]).optional(),
-  message: z.string().trim().max(500).optional(),
-});
+export {
+  createInvitePayloadSchema,
+  createRatingPayloadSchema,
+  deferGroupReviewPayloadSchema,
+  updateGroupPayloadSchema,
+};
 
 const sendMessageAttachmentSchema = z.object({
   type: attachmentTypeSchema,
@@ -99,69 +95,133 @@ export const forwardMessagePayloadSchema = z.object({
   targetChatId: z.string().trim().min(1).max(128),
 });
 
-export const updateGroupPayloadSchema = z.object({
-  name: z.string().trim().min(1).max(120).optional(),
+const updatePlanPayloadBaseSchema = z.object({
+  title: z.string().trim().min(1).max(120).optional(),
   description: z.string().trim().max(1000).nullable().optional(),
-  avatar: managedUploadUrlSchema.nullable().optional(),
+  category: planCategorySchema.optional(),
+  coverImage: managedAssetReferenceSchema.nullable().optional(),
+  dateTime: z.string().datetime().nullable().optional(),
+  locationMode: locationModeSchema.optional(),
+  location: z.string().trim().max(200).nullable().optional(),
+  locationLat: z.number().finite().min(-90).max(90).nullable().optional(),
+  locationLng: z.number().finite().min(-180).max(180).nullable().optional(),
+  cost: costTypeSchema.optional(),
+  costAmount: z.number().nonnegative().nullable().optional(),
+  costDetails: z.string().trim().max(500).nullable().optional(),
 });
 
-export const updatePlanPayloadSchema = z
-  .object({
-    title: z.string().trim().min(1).max(120).optional(),
-    description: z.string().trim().max(1000).nullable().optional(),
-    category: planCategorySchema.optional(),
-    coverImage: managedAssetReferenceSchema.nullable().optional(),
-    dateTime: z.string().datetime().nullable().optional(),
-    locationMode: locationModeSchema.optional(),
-    location: z.string().trim().max(200).nullable().optional(),
-    locationLat: z.number().finite().min(-90).max(90).nullable().optional(),
-    locationLng: z.number().finite().min(-180).max(180).nullable().optional(),
-    cost: costTypeSchema.optional(),
-    costAmount: z.number().nonnegative().nullable().optional(),
-    costDetails: z.string().trim().max(500).nullable().optional(),
-  })
-  .superRefine((input, context) => {
-    const hasLat =
-      input.locationLat !== undefined && input.locationLat !== null;
-    const hasLng =
-      input.locationLng !== undefined && input.locationLng !== null;
+type UpdatePlanPayloadInput = z.infer<typeof updatePlanPayloadBaseSchema>;
 
-    if (input.locationMode === "TBD" && input.location) {
-      context.addIssue({
-        code: "custom",
-        message: "TBD plans cannot include a location.",
-        path: ["location"],
-      });
-    }
+export const updatePlanPayloadSchema = updatePlanPayloadBaseSchema.superRefine(
+  validateUpdatePlanLocationFields,
+);
 
-    if (input.locationMode && input.locationMode !== "TBD" && !input.location) {
-      context.addIssue({
-        code: "custom",
-        message: "A location is required unless the plan is TBD.",
-        path: ["location"],
-      });
-    }
+function validateUpdatePlanLocationFields(
+  input: UpdatePlanPayloadInput,
+  context: z.RefinementCtx,
+) {
+  const coordinatePresence = getPlanCoordinatePresence(input);
 
-    if (
-      input.locationMode &&
-      input.locationMode !== "IN_PERSON" &&
-      (hasLat || hasLng)
-    ) {
-      context.addIssue({
-        code: "custom",
-        message: "Coordinates are only allowed for in-person plans.",
-        path: hasLat ? ["locationLat"] : ["locationLng"],
-      });
-    }
+  validateTbdPlanLocation(input, context);
+  validateResolvedPlanLocation(input, context);
+  validateCoordinateLocationMode(input, context, coordinatePresence);
+  validateCoordinatePair(context, coordinatePresence);
+}
 
-    if (hasLat !== hasLng) {
-      context.addIssue({
-        code: "custom",
-        message: "Latitude and longitude must be provided together.",
-        path: hasLat ? ["locationLng"] : ["locationLat"],
-      });
-    }
+function getPlanCoordinatePresence(input: UpdatePlanPayloadInput) {
+  return {
+    hasLat: hasPlanCoordinate(input.locationLat),
+    hasLng: hasPlanCoordinate(input.locationLng),
+  };
+}
+
+function hasPlanCoordinate(coordinate: number | null | undefined) {
+  return coordinate !== undefined && coordinate !== null;
+}
+
+function validateTbdPlanLocation(
+  input: UpdatePlanPayloadInput,
+  context: z.RefinementCtx,
+) {
+  if (input.locationMode !== "TBD" || !input.location) {
+    return;
+  }
+
+  context.addIssue({
+    code: "custom",
+    message: "TBD plans cannot include a location.",
+    path: ["location"],
   });
+}
+
+function validateResolvedPlanLocation(
+  input: UpdatePlanPayloadInput,
+  context: z.RefinementCtx,
+) {
+  if (!input.locationMode || input.locationMode === "TBD" || input.location) {
+    return;
+  }
+
+  context.addIssue({
+    code: "custom",
+    message: "A location is required unless the plan is TBD.",
+    path: ["location"],
+  });
+}
+
+function validateCoordinateLocationMode(
+  input: UpdatePlanPayloadInput,
+  context: z.RefinementCtx,
+  coordinatePresence: ReturnType<typeof getPlanCoordinatePresence>,
+) {
+  if (allowsPlanCoordinates(input.locationMode)) {
+    return;
+  }
+
+  if (!hasAnyPlanCoordinate(coordinatePresence)) {
+    return;
+  }
+
+  context.addIssue({
+    code: "custom",
+    message: "Coordinates are only allowed for in-person plans.",
+    path: getCoordinateLocationModeIssuePath(coordinatePresence),
+  });
+}
+
+function allowsPlanCoordinates(
+  locationMode: UpdatePlanPayloadInput["locationMode"],
+) {
+  return !locationMode || locationMode === "IN_PERSON";
+}
+
+function hasAnyPlanCoordinate({
+  hasLat,
+  hasLng,
+}: ReturnType<typeof getPlanCoordinatePresence>) {
+  return hasLat || hasLng;
+}
+
+function getCoordinateLocationModeIssuePath({
+  hasLat,
+}: ReturnType<typeof getPlanCoordinatePresence>) {
+  return hasLat ? ["locationLat"] : ["locationLng"];
+}
+
+function validateCoordinatePair(
+  context: z.RefinementCtx,
+  { hasLat, hasLng }: ReturnType<typeof getPlanCoordinatePresence>,
+) {
+  if (hasLat === hasLng) {
+    return;
+  }
+
+  context.addIssue({
+    code: "custom",
+    message: "Latitude and longitude must be provided together.",
+    path: hasLat ? ["locationLng"] : ["locationLat"],
+  });
+}
 
 export const createPlanProposalPayloadSchema = z.object({
   field: planProposalFieldSchema,
@@ -184,10 +244,6 @@ export interface SearchChatMessagesParams extends GetChatMessagesParams {
 export type SendMessagePayload = z.infer<typeof sendMessagePayloadSchema>;
 export type UpdateMessagePayload = z.infer<typeof updateMessagePayloadSchema>;
 export type ForwardMessagePayload = z.infer<typeof forwardMessagePayloadSchema>;
-export type PaginatedMessagesResponse = z.infer<typeof paginatedMessagesSchema>;
-export type PaginatedSavedMessagesResponse = z.infer<
-  typeof paginatedSavedMessagesSchema
->;
 export type CreateInvitePayload = z.infer<typeof createInvitePayloadSchema>;
 export type UpdateGroupPayload = z.infer<typeof updateGroupPayloadSchema>;
 export type UpdatePlanPayload = z.infer<typeof updatePlanPayloadSchema>;
@@ -197,23 +253,8 @@ export type CreatePlanProposalDto = z.infer<
 >;
 export type { CreateRatingPayload, DeferGroupReviewPayload };
 
-export type MessageMutationResult = ApiResponseWithRequestId<
-  z.infer<typeof messageApiSchema>
->;
-export type CreateRatingMutationResult = ApiResponseWithRequestId<
-  z.infer<typeof createRatingResultSchema>
->;
-export type DeferGroupReviewMutationResult = ApiResponseWithRequestId<
-  z.infer<typeof groupReviewStateSchema>
->;
 export type GroupMutationResult = ApiResponseWithRequestId<
   z.infer<typeof groupApiSchema>
->;
-export type InviteMutationResult = ApiResponseWithRequestId<
-  z.infer<typeof inviteSchema>
->;
-export type FriendshipMutationResult = ApiResponseWithRequestId<
-  z.infer<typeof friendshipApiSchema>
 >;
 export type PlanMutationResult = ApiResponseWithRequestId<
   z.infer<typeof planSchema>

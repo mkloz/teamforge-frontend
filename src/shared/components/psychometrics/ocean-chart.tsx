@@ -17,7 +17,7 @@ import type {
   OceanDiagramProps,
 } from "./psychometrics-types";
 
-export function OceanDiagram({
+function OceanDiagram({
   className,
   scores,
   onTraitSelect,

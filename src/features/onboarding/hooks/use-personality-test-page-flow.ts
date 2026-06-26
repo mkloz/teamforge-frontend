@@ -26,6 +26,11 @@ import {
 } from "../lib/personality-test-page-flow";
 import { usePersonalityTest } from "./use-personality-test";
 
+type PersonalityTestState = ReturnType<typeof usePersonalityTest>;
+type UpdatePersonalityPayload = Parameters<
+  typeof OnboardingCommands.updatePersonality
+>[0];
+
 export function usePersonalityTestPageFlow() {
   const [pendingLength, setPendingLength] = useState<TestLength | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -52,7 +57,9 @@ export function usePersonalityTestPageFlow() {
   });
 
   async function continueToInterests() {
-    if (testState.result && testState.vector) {
+    const personalityPayload = getPersonalityPersistPayload(testState);
+
+    if (personalityPayload) {
       if (
         guardOfflineAction({
           id: "onboarding-personality-save-offline",
@@ -62,53 +69,20 @@ export function usePersonalityTestPageFlow() {
         return;
       }
 
-      const oceanScores = getOceanScoresFromVector(testState.vector);
-
-      await persistPersonality({
-        personalityType: testState.result.type,
-        oceanO: oceanScores.openness,
-        oceanC: oceanScores.conscientiousness,
-        oceanE: oceanScores.extraversion,
-        oceanA: oceanScores.agreeableness,
-        oceanN: oceanScores.neuroticism,
-      });
+      await persistPersonality(personalityPayload);
     }
 
     if (isEditMode) {
-      testState.actions.reset();
-      await navigate(
-        resolvePersonalityExitNavigation({
-          returnTo,
-          returnSearch,
-          returnSection,
-        }),
-      );
+      await exitPersonalityEditMode();
       return;
     }
 
-    const nextSearch = buildPersonalityNextSearch({
-      mbti: testState.result?.type ?? null,
-      returnTo,
-      returnSearch,
-      returnSection,
-    });
-
-    await navigate({
-      to: "/onboarding/interests",
-      search: toOptionalOnboardingSearch(nextSearch),
-    });
+    await navigateToInterests();
   }
 
   async function goBack() {
     if (isEditMode) {
-      testState.actions.reset();
-      await navigate(
-        resolvePersonalityExitNavigation({
-          returnTo,
-          returnSearch,
-          returnSection,
-        }),
-      );
+      await exitPersonalityEditMode();
       return;
     }
 
@@ -121,6 +95,31 @@ export function usePersonalityTestPageFlow() {
     await navigate({
       to: "/onboarding/profile",
       search: toOptionalOnboardingSearch(previousSearch),
+    });
+  }
+
+  async function exitPersonalityEditMode() {
+    testState.actions.reset();
+    await navigate(
+      resolvePersonalityExitNavigation({
+        returnTo,
+        returnSearch,
+        returnSection,
+      }),
+    );
+  }
+
+  async function navigateToInterests() {
+    const nextSearch = buildPersonalityNextSearch({
+      mbti: testState.result?.type ?? null,
+      returnTo,
+      returnSearch,
+      returnSection,
+    });
+
+    await navigate({
+      to: "/onboarding/interests",
+      search: toOptionalOnboardingSearch(nextSearch),
     });
   }
 
@@ -163,5 +162,24 @@ export function usePersonalityTestPageFlow() {
     scrollContainerRef,
     setPendingLength,
     testState,
+  };
+}
+
+function getPersonalityPersistPayload(
+  testState: PersonalityTestState,
+): UpdatePersonalityPayload | null {
+  if (!testState.result || !testState.vector) {
+    return null;
+  }
+
+  const oceanScores = getOceanScoresFromVector(testState.vector);
+
+  return {
+    personalityType: testState.result.type,
+    oceanO: oceanScores.openness,
+    oceanC: oceanScores.conscientiousness,
+    oceanE: oceanScores.extraversion,
+    oceanA: oceanScores.agreeableness,
+    oceanN: oceanScores.neuroticism,
   };
 }

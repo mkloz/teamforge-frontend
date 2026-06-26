@@ -14,60 +14,69 @@ import {
   MY_NOTES_TITLE,
 } from "./my-notes-identity";
 
+type ConversationFilterPredicate = (item: UnifiedConversation) => boolean;
+type ConversationIdentityKind = "dm" | "group" | "notes";
+type ConversationIdentityResolver<T> = (item: UnifiedConversation) => T;
+
+const DEFAULT_MESSAGE_PREVIEW_TEXT = "No messages yet";
+
+const conversationFilterPredicates: Partial<
+  Record<string, ConversationFilterPredicate>
+> = {
+  direct: isDirectConversation,
+  dm: isDirectConversation,
+  groups: isGroupConversation,
+  pinned: isPinnedConversation,
+  saved: hasSavedMessages,
+  unread: hasUnreadMessages,
+};
+
+const messagePreviewByType: Partial<Record<UnifiedMessage["type"], string>> = {
+  FILE: "File",
+  IMAGE: "Photo",
+  VOICE: "Voice Note",
+};
+
+const conversationTitleResolvers = {
+  dm: getDirectConversationTitle,
+  group: getGroupConversationTitle,
+  notes: () => MY_NOTES_TITLE,
+} as const satisfies Record<
+  ConversationIdentityKind,
+  ConversationIdentityResolver<string>
+>;
+
+const conversationAvatarResolvers = {
+  dm: getDirectConversationAvatarUrl,
+  group: getGroupConversationAvatarUrl,
+  notes: () => MY_NOTES_AVATAR_URL,
+} as const satisfies Record<
+  ConversationIdentityKind,
+  ConversationIdentityResolver<string | null>
+>;
+
 export function getConversationIsNotes(item: UnifiedConversation) {
   return item.kind === "dm" && item.chat?.type === "NOTES";
 }
 
 export function getMessagePreviewText(message?: UnifiedMessage) {
   if (!message) {
-    return "No messages yet";
+    return DEFAULT_MESSAGE_PREVIEW_TEXT;
   }
 
   if (message.content) {
     return message.content;
   }
 
-  if (message.attachments?.some(isGifAttachment)) {
-    return "GIF";
-  }
-
-  if (message.type === "VOICE") {
-    return "Voice Note";
-  }
-
-  if (message.type === "IMAGE") {
-    return "Photo";
-  }
-
-  if (message.type === "FILE") {
-    return "File";
-  }
-
-  return "No messages yet";
+  return getAttachmentPreviewText(message) ?? getTypedMessagePreview(message);
 }
 
 export function getConversationTitle(item: UnifiedConversation) {
-  if (getConversationIsNotes(item)) {
-    return MY_NOTES_TITLE;
-  }
-
-  if (item.kind === "group") {
-    return item.group?.name ?? "";
-  }
-
-  return getOtherChatParticipant(item.chat)?.name ?? "Unknown User";
+  return conversationTitleResolvers[getConversationIdentityKind(item)](item);
 }
 
 export function getConversationAvatarUrl(item: UnifiedConversation) {
-  if (getConversationIsNotes(item)) {
-    return MY_NOTES_AVATAR_URL;
-  }
-
-  if (item.kind === "group") {
-    return getGroupAvatarUrl(item.group);
-  }
-
-  return getOtherChatParticipant(item.chat)?.avatar ?? null;
+  return conversationAvatarResolvers[getConversationIdentityKind(item)](item);
 }
 
 export function getConversationSecondaryAvatar(item: UnifiedConversation) {
@@ -104,47 +113,75 @@ export function getConversationSubtitle(item: UnifiedConversation) {
   }
 
   if (!item.latestMessage) {
-    if (getConversationIsNotes(item)) {
-      return MY_NOTES_SUBTITLE;
-    }
-
-    return "No messages yet";
+    return getEmptyConversationSubtitle(item);
   }
 
-  if (item.kind === "group") {
-    if (item.latestMessage.isSystem) {
-      return item.latestMessage.content;
-    }
+  return item.kind === "group"
+    ? getGroupMessageSubtitle(item.latestMessage)
+    : getMessagePreviewText(item.latestMessage);
+}
 
-    const senderPrefix = item.latestMessage.sender?.name
-      ? `${item.latestMessage.sender.name}: `
-      : "";
+function getAttachmentPreviewText(message: UnifiedMessage) {
+  return message.attachments?.some(isGifAttachment) ? "GIF" : null;
+}
 
-    return `${senderPrefix}${getMessagePreviewText(item.latestMessage)}`;
+function getConversationIdentityKind(
+  item: UnifiedConversation,
+): ConversationIdentityKind {
+  if (getConversationIsNotes(item)) {
+    return "notes";
   }
 
-  return getMessagePreviewText(item.latestMessage);
+  return item.kind;
 }
 
-export function getConversationPlanDateTime(item: UnifiedConversation) {
-  return item.kind === "group" ? (item.group?.plan?.dateTime ?? null) : null;
+function getGroupConversationTitle(item: UnifiedConversation) {
+  return item.kind === "group" ? (item.group?.name ?? "") : "";
 }
 
-export function getConversationPlanStatus(item: UnifiedConversation) {
-  return item.kind === "group" ? (item.group?.plan?.status ?? null) : null;
+function getDirectConversationTitle(item: UnifiedConversation) {
+  return item.kind === "dm"
+    ? (getOtherChatParticipant(item.chat)?.name ?? "Unknown User")
+    : "Unknown User";
+}
+
+function getGroupConversationAvatarUrl(item: UnifiedConversation) {
+  return item.kind === "group" ? getGroupAvatarUrl(item.group) : null;
+}
+
+function getDirectConversationAvatarUrl(item: UnifiedConversation) {
+  return item.kind === "dm"
+    ? (getOtherChatParticipant(item.chat)?.avatar ?? null)
+    : null;
+}
+
+function getTypedMessagePreview(message: UnifiedMessage) {
+  return messagePreviewByType[message.type] ?? DEFAULT_MESSAGE_PREVIEW_TEXT;
+}
+
+function getEmptyConversationSubtitle(item: UnifiedConversation) {
+  return getConversationIsNotes(item)
+    ? MY_NOTES_SUBTITLE
+    : DEFAULT_MESSAGE_PREVIEW_TEXT;
+}
+
+function getGroupMessageSubtitle(message: UnifiedMessage) {
+  if (message.isSystem) {
+    return message.content;
+  }
+
+  return `${getSenderPrefix(message)}${getMessagePreviewText(message)}`;
+}
+
+function getSenderPrefix(message: UnifiedMessage) {
+  return message.sender?.name ? `${message.sender.name}: ` : "";
 }
 
 /**
  * Maps a canonical Message to a UnifiedMessage (UI-ready)
  */
-export function sortByRecency(
-  items: UnifiedConversation[],
-): UnifiedConversation[] {
-  return [...items].sort((a, b) => {
-    const aTime = a.latestMessage?.createdAt || "0";
-    const bTime = b.latestMessage?.createdAt || "0";
-    return new Date(bTime).getTime() - new Date(aTime).getTime();
-  });
+function sortByRecency(items: UnifiedConversation[]): UnifiedConversation[] {
+  return [...items].sort(compareConversationsByRecency);
 }
 
 export function sortByPinnedThenRecency(
@@ -155,28 +192,9 @@ export function sortByPinnedThenRecency(
     pinnedConversationKeys.map((key, index) => [key, index]),
   );
 
-  return sortByRecency(items).sort((a, b) => {
-    const aPinnedIndex = pinnedOrder.get(
-      getActivityConversationKey(a.kind, a.id),
-    );
-    const bPinnedIndex = pinnedOrder.get(
-      getActivityConversationKey(b.kind, b.id),
-    );
-
-    if (aPinnedIndex === undefined && bPinnedIndex === undefined) {
-      return 0;
-    }
-
-    if (aPinnedIndex === undefined) {
-      return 1;
-    }
-
-    if (bPinnedIndex === undefined) {
-      return -1;
-    }
-
-    return aPinnedIndex - bPinnedIndex;
-  });
+  return sortByRecency(items).sort((a, b) =>
+    compareByPinnedOrder(a, b, pinnedOrder),
+  );
 }
 
 /**
@@ -187,37 +205,108 @@ export function applyFilter(
   filter: FilterChip,
   query: string,
 ): UnifiedConversation[] {
-  let result = items;
+  const filterPredicate = getConversationFilterPredicate(filter);
+  const filteredItems = filterPredicate ? items.filter(filterPredicate) : items;
+  const searchQuery = getNormalizedConversationSearchQuery(query);
 
-  // Normalize filter to handle potential casing or alias mismatches
-  const f = filter.toLowerCase();
+  return searchQuery
+    ? filteredItems.filter((item) =>
+        matchesConversationSearch(item, searchQuery),
+      )
+    : filteredItems;
+}
 
-  if (f === "groups") {
-    result = result.filter((i) => i.kind === "group");
-  } else if (f === "direct" || f === "dm") {
-    result = result.filter((i) => i.kind === "dm");
-  } else if (f === "unread") {
-    result = result.filter((i) => (i.unreadCount || 0) > 0);
-  } else if (f === "pinned") {
-    result = result.filter((i) => i.isPinned);
-  } else if (f === "saved") {
-    result = result.filter((i) => (i.savedMessageCount ?? 0) > 0);
+function getConversationFilterPredicate(filter: FilterChip) {
+  return conversationFilterPredicates[filter.toLowerCase()] ?? null;
+}
+
+function getNormalizedConversationSearchQuery(query: string) {
+  const trimmedQuery = query?.trim();
+
+  return trimmedQuery ? trimmedQuery.toLowerCase() : null;
+}
+
+function matchesConversationSearch(
+  item: UnifiedConversation,
+  searchQuery: string,
+) {
+  return (
+    getConversationTitle(item).toLowerCase().includes(searchQuery) ||
+    getConversationSubtitle(item).toLowerCase().includes(searchQuery) ||
+    savedMessagePreviewMatches(item, searchQuery)
+  );
+}
+
+function savedMessagePreviewMatches(
+  item: UnifiedConversation,
+  searchQuery: string,
+) {
+  return getSavedMessagePreviewText(item).includes(searchQuery);
+}
+
+function isDirectConversation(item: UnifiedConversation) {
+  return item.kind === "dm";
+}
+
+function isGroupConversation(item: UnifiedConversation) {
+  return item.kind === "group";
+}
+
+function isPinnedConversation(item: UnifiedConversation) {
+  return item.isPinned === true;
+}
+
+function hasSavedMessages(item: UnifiedConversation) {
+  return (item.savedMessageCount ?? 0) > 0;
+}
+
+function hasUnreadMessages(item: UnifiedConversation) {
+  return (item.unreadCount || 0) > 0;
+}
+
+function compareConversationsByRecency(
+  left: UnifiedConversation,
+  right: UnifiedConversation,
+) {
+  return getConversationSortTime(right) - getConversationSortTime(left);
+}
+
+function getConversationSortTime(item: UnifiedConversation) {
+  return new Date(item.latestMessage?.createdAt || "0").getTime();
+}
+
+function compareByPinnedOrder(
+  left: UnifiedConversation,
+  right: UnifiedConversation,
+  pinnedOrder: Map<string, number>,
+) {
+  const leftPinnedIndex = getPinnedConversationIndex(left, pinnedOrder);
+  const rightPinnedIndex = getPinnedConversationIndex(right, pinnedOrder);
+
+  if (leftPinnedIndex === undefined && rightPinnedIndex === undefined) {
+    return 0;
   }
 
-  // Search filtering
-  if (query?.trim()) {
-    const q = query.toLowerCase().trim();
-    result = result.filter(
-      (i) =>
-        getConversationTitle(i).toLowerCase().includes(q) ||
-        getConversationSubtitle(i).toLowerCase().includes(q) ||
-        (i.latestSavedMessage
-          ? getMessagePreviewText(i.latestSavedMessage)
-              .toLowerCase()
-              .includes(q)
-          : false),
-    );
+  if (leftPinnedIndex === undefined) {
+    return 1;
   }
 
-  return result;
+  if (rightPinnedIndex === undefined) {
+    return -1;
+  }
+
+  return leftPinnedIndex - rightPinnedIndex;
+}
+
+function getPinnedConversationIndex(
+  item: UnifiedConversation,
+  pinnedOrder: Map<string, number>,
+) {
+  return pinnedOrder.get(getActivityConversationKey(item.kind, item.id));
+}
+
+function getSavedMessagePreviewText(item: UnifiedConversation) {
+  return item.latestSavedMessage
+    ? getMessagePreviewText(item.latestSavedMessage).toLowerCase()
+    : "";
 }

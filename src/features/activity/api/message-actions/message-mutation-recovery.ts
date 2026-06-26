@@ -1,3 +1,4 @@
+import type { QueryKey } from "@tanstack/react-query";
 import {
   ACTIVITY_CHATS_QUERY_KEY,
   ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
@@ -13,6 +14,14 @@ interface RecoverMessageMutationCachesInput {
   targetChatId?: string | null;
 }
 
+interface RecoveryQueryKeysInput {
+  chatId: string;
+  includeSavedMessages: boolean;
+  kind: "dm" | "group" | null;
+  selectedId: string | null;
+  targetChatId: string | null;
+}
+
 export async function recoverMessageMutationCaches({
   chatId,
   includeSavedMessages = false,
@@ -20,46 +29,68 @@ export async function recoverMessageMutationCaches({
   selectedId = null,
   targetChatId = null,
 }: RecoverMessageMutationCachesInput) {
-  const invalidations = [
-    appQueryClient.invalidateQueries({
-      queryKey: ACTIVITY_CHATS_QUERY_KEY,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.messages(chatId),
-    }),
+  const invalidations = getRecoveryQueryKeys({
+    chatId,
+    includeSavedMessages,
+    kind,
+    selectedId,
+    targetChatId,
+  }).map((queryKey) => appQueryClient.invalidateQueries({ queryKey }));
+
+  await Promise.allSettled(invalidations);
+}
+
+function getRecoveryQueryKeys({
+  chatId,
+  includeSavedMessages,
+  kind,
+  selectedId,
+  targetChatId,
+}: RecoveryQueryKeysInput): QueryKey[] {
+  const queryKeys: QueryKey[] = [
+    ACTIVITY_CHATS_QUERY_KEY,
+    APP_QUERY_KEYS.activity.messages(chatId),
   ];
 
-  if (targetChatId && targetChatId !== chatId) {
-    invalidations.push(
-      appQueryClient.invalidateQueries({
-        queryKey: APP_QUERY_KEYS.activity.messages(targetChatId),
-      }),
-    );
+  const targetMessagesQueryKey = getTargetChatMessagesQueryKey(
+    chatId,
+    targetChatId,
+  );
+  const selectionQueryKey = getSelectionQueryKey(kind, selectedId);
+
+  if (targetMessagesQueryKey) {
+    queryKeys.push(targetMessagesQueryKey);
   }
 
   if (includeSavedMessages) {
-    invalidations.push(
-      appQueryClient.invalidateQueries({
-        queryKey: ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
-      }),
-    );
+    queryKeys.push(ACTIVITY_SAVED_MESSAGES_QUERY_KEY);
   }
 
-  if (kind === "group" && selectedId) {
-    invalidations.push(
-      appQueryClient.invalidateQueries({
-        queryKey: APP_QUERY_KEYS.activity.groupSelectionById(selectedId),
-      }),
-    );
+  if (selectionQueryKey) {
+    queryKeys.push(selectionQueryKey);
   }
 
-  if (kind === "dm" && selectedId) {
-    invalidations.push(
-      appQueryClient.invalidateQueries({
-        queryKey: APP_QUERY_KEYS.activity.directSelectionByChatId(selectedId),
-      }),
-    );
+  return queryKeys;
+}
+
+function getTargetChatMessagesQueryKey(
+  chatId: string,
+  targetChatId: string | null,
+) {
+  return targetChatId && targetChatId !== chatId
+    ? APP_QUERY_KEYS.activity.messages(targetChatId)
+    : null;
+}
+
+function getSelectionQueryKey(
+  kind: RecoverMessageMutationCachesInput["kind"],
+  selectedId: string | null,
+) {
+  if (!kind || !selectedId) {
+    return null;
   }
 
-  await Promise.allSettled(invalidations);
+  return kind === "group"
+    ? APP_QUERY_KEYS.activity.groupSelectionById(selectedId)
+    : APP_QUERY_KEYS.activity.directSelectionByChatId(selectedId);
 }

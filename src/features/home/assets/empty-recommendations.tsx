@@ -1,11 +1,11 @@
 import { useId } from "react";
-import { EmptyStateSvg } from "@/assets/empty-state/empty-state-svg";
 import {
   emptyVisualAmber,
   emptyVisualStroke,
   emptyVisualTeal,
 } from "@/assets/empty-state/tokens";
 import type { EmptyStateVisualBaseProps } from "@/assets/empty-state/types";
+import { SlicedMaskedEmptyStateSvg } from "@/shared/assets/empty-state/masked-svg-paths";
 
 const cutoutPaths = [
   {
@@ -79,59 +79,19 @@ const visiblePaths = [
   },
 ] as const;
 
-function getMaskId(prefix: string, pathId: string, cutoutStart: number) {
-  return `${prefix}-${pathId}-${cutoutStart}`;
-}
-
 export function EmptyRecommendationsVisual(props: EmptyStateVisualBaseProps) {
   const reactId = useId();
   const idPrefix = `empty-recommendations-${reactId.replaceAll(":", "")}`;
 
   return (
-    <EmptyStateSvg viewBox="476 219 1073 1074" {...props}>
-      <defs>
-        {visiblePaths.map((path) =>
-          path.cutoutStart < cutoutPaths.length ? (
-            <mask
-              key={getMaskId(idPrefix, path.id, path.cutoutStart)}
-              id={getMaskId(idPrefix, path.id, path.cutoutStart)}
-              x="0"
-              y="0"
-              width="2048"
-              height="1536"
-              maskUnits="userSpaceOnUse"
-            >
-              <rect width="2048" height="1536" fill="white" stroke="none" />
-              {cutoutPaths.slice(path.cutoutStart).map((cutoutPath) => (
-                <path
-                  key={cutoutPath.id}
-                  d={cutoutPath.d}
-                  fill="black"
-                  stroke="none"
-                />
-              ))}
-            </mask>
-          ) : null,
-        )}
-      </defs>
-
-      <g stroke="none">
-        {visiblePaths.map((path) => {
-          const maskId =
-            path.cutoutStart < cutoutPaths.length
-              ? getMaskId(idPrefix, path.id, path.cutoutStart)
-              : undefined;
-
-          return (
-            <path
-              key={path.id}
-              d={path.d}
-              fill={path.fill}
-              mask={maskId ? `url(#${maskId})` : undefined}
-            />
-          );
-        })}
-      </g>
-    </EmptyStateSvg>
+    <SlicedMaskedEmptyStateSvg
+      viewBox="476 219 1073 1074"
+      cutoutPaths={cutoutPaths}
+      idPrefix={idPrefix}
+      maskHeight="1536"
+      maskWidth="2048"
+      visiblePaths={visiblePaths}
+      {...props}
+    />
   );
 }

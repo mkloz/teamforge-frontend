@@ -28,10 +28,43 @@ interface MessageComposerAttachmentState {
   pendingAttachments: ActivityOutgoingAttachment[];
 }
 
+interface AttachableFilesResult {
+  attachableFiles: File[];
+  skippedNonImages: number;
+  skippedOversized: number;
+}
+
+interface AttachmentLimitNoticeState {
+  allIncomingAlreadyAttached: boolean;
+  isAtLimit: boolean;
+  newlyAddedCount: number;
+  skippedCount: number;
+}
+
+interface AttachmentLimitNoticeRule {
+  getText: (state: AttachmentLimitNoticeState) => string;
+  shouldShow: (state: AttachmentLimitNoticeState) => boolean;
+}
+
 const initialAttachmentState: MessageComposerAttachmentState = {
   attachmentNotice: null,
   pendingAttachments: [],
 };
+
+const ATTACHMENT_LIMIT_NOTICE_RULES = [
+  {
+    shouldShow: ({ isAtLimit }) => isAtLimit,
+    getText: getAttachmentLimitReachedNotice,
+  },
+  {
+    shouldShow: ({ skippedCount }) => skippedCount > 0,
+    getText: getAttachmentLimitSkippedNotice,
+  },
+  {
+    shouldShow: ({ allIncomingAlreadyAttached }) => allIncomingAlreadyAttached,
+    getText: getAlreadyAttachedNotice,
+  },
+] as const satisfies AttachmentLimitNoticeRule[];
 
 function pluralizeFile(count: number) {
   return count === 1 ? "file" : "files";
@@ -65,31 +98,67 @@ function getAttachableFiles(
   files: File[],
   selectionKind: MessageComposerAttachmentSelectionKind,
 ) {
-  const attachableFiles: File[] = [];
-  let skippedNonImages = 0;
-  let skippedOversized = 0;
-
-  for (const file of files) {
-    if (!isChatAttachmentWithinSizeLimit(file)) {
-      skippedOversized += 1;
-      continue;
-    }
-
-    if (selectionKind === "image" && !isImageAttachmentCandidate(file)) {
-      skippedNonImages += 1;
-      continue;
-    }
-
-    attachableFiles.push(file);
-  }
+  const result = getAttachableFilesResult(files, selectionKind);
 
   return {
-    attachableFiles,
+    attachableFiles: result.attachableFiles,
     skippedNotice: getSkippedAttachmentNotice({
-      skippedNonImages,
-      skippedOversized,
+      skippedNonImages: result.skippedNonImages,
+      skippedOversized: result.skippedOversized,
     }),
   };
+}
+
+function getAttachableFilesResult(
+  files: File[],
+  selectionKind: MessageComposerAttachmentSelectionKind,
+) {
+  const result: AttachableFilesResult = {
+    attachableFiles: [],
+    skippedNonImages: 0,
+    skippedOversized: 0,
+  };
+
+  for (const file of files) {
+    addAttachableFileResult(result, file, selectionKind);
+  }
+
+  return result;
+}
+
+function addAttachableFileResult(
+  result: AttachableFilesResult,
+  file: File,
+  selectionKind: MessageComposerAttachmentSelectionKind,
+) {
+  const disposition = getAttachmentFileDisposition(file, selectionKind);
+
+  if (disposition === "attach") {
+    result.attachableFiles.push(file);
+    return;
+  }
+
+  if (disposition === "oversized") {
+    result.skippedOversized += 1;
+    return;
+  }
+
+  result.skippedNonImages += 1;
+}
+
+function getAttachmentFileDisposition(
+  file: File,
+  selectionKind: MessageComposerAttachmentSelectionKind,
+) {
+  if (!isChatAttachmentWithinSizeLimit(file)) {
+    return "oversized";
+  }
+
+  if (selectionKind === "image" && !isImageAttachmentCandidate(file)) {
+    return "non-image";
+  }
+
+  return "attach";
 }
 
 function combineAttachmentNotices(...notices: Array<string | null>) {
@@ -107,6 +176,24 @@ function getAttachmentLimitNotice({
   incomingFiles: File[];
   nextAttachments: ActivityOutgoingAttachment[];
 }) {
+  const noticeState = getAttachmentLimitNoticeState({
+    currentAttachments,
+    incomingFiles,
+    nextAttachments,
+  });
+
+  return getAttachmentLimitNoticeText(noticeState);
+}
+
+function getAttachmentLimitNoticeState({
+  currentAttachments,
+  incomingFiles,
+  nextAttachments,
+}: {
+  currentAttachments: ActivityOutgoingAttachment[];
+  incomingFiles: File[];
+  nextAttachments: ActivityOutgoingAttachment[];
+}): AttachmentLimitNoticeState {
   const currentKeys = new Set(
     currentAttachments.map(({ file }) => getAttachmentFileKey(file)),
   );
@@ -119,22 +206,48 @@ function getAttachmentLimitNotice({
   const newlyAddedCount = nextAttachments.length - currentAttachments.length;
   const skippedCount = requestedNewCount - newlyAddedCount;
 
-  if (currentAttachments.length >= CHAT_MAX_ATTACHMENTS) {
-    return `Messages support up to ${CHAT_MAX_ATTACHMENTS} attachments. Remove one before adding more.`;
-  }
+  return {
+    allIncomingAlreadyAttached:
+      newlyAddedCount === 0 &&
+      [...incomingUniqueKeys].every((key) => currentKeys.has(key)),
+    isAtLimit: currentAttachments.length >= CHAT_MAX_ATTACHMENTS,
+    newlyAddedCount,
+    skippedCount,
+  };
+}
 
-  if (skippedCount > 0) {
-    return `Attached ${Math.max(newlyAddedCount, 0)} file${newlyAddedCount === 1 ? "" : "s"}. Messages support up to ${CHAT_MAX_ATTACHMENTS} attachments.`;
-  }
+function getAttachmentLimitNoticeText({
+  allIncomingAlreadyAttached,
+  isAtLimit,
+  newlyAddedCount,
+  skippedCount,
+}: AttachmentLimitNoticeState) {
+  const state = {
+    allIncomingAlreadyAttached,
+    isAtLimit,
+    newlyAddedCount,
+    skippedCount,
+  };
 
-  if (
-    newlyAddedCount === 0 &&
-    [...incomingUniqueKeys].every((key) => currentKeys.has(key))
-  ) {
-    return "Those files are already attached.";
-  }
+  return (
+    ATTACHMENT_LIMIT_NOTICE_RULES.find((rule) =>
+      rule.shouldShow(state),
+    )?.getText(state) ?? null
+  );
+}
 
-  return null;
+function getAttachmentLimitReachedNotice() {
+  return `Messages support up to ${CHAT_MAX_ATTACHMENTS} attachments. Remove one before adding more.`;
+}
+
+function getAttachmentLimitSkippedNotice({
+  newlyAddedCount,
+}: AttachmentLimitNoticeState) {
+  return `Attached ${Math.max(newlyAddedCount, 0)} file${newlyAddedCount === 1 ? "" : "s"}. Messages support up to ${CHAT_MAX_ATTACHMENTS} attachments.`;
+}
+
+function getAlreadyAttachedNotice() {
+  return "Those files are already attached.";
 }
 
 export function useMessageComposerAttachments({
@@ -224,12 +337,80 @@ interface UseMessageComposerDropzoneOptions {
   isEditing: boolean;
 }
 
+interface DropzoneAvailability {
+  isDisabled: boolean;
+  isEditing: boolean;
+}
+
 function hasDraggedFiles(event: DragEvent | ReactDragEvent<HTMLElement>) {
   return Array.from(event.dataTransfer?.types ?? []).includes("Files");
 }
 
 function getDroppedFiles(fileList: FileList | null) {
   return fileList ? Array.from(fileList) : [];
+}
+
+function isDropzoneBlocked({ isDisabled, isEditing }: DropzoneAvailability) {
+  return isDisabled || isEditing;
+}
+
+function getFileDropEffect(isBlocked: boolean) {
+  return isBlocked ? "none" : "copy";
+}
+
+function prepareFileDragEvent(
+  event: DragEvent | ReactDragEvent<HTMLElement>,
+  isBlocked: boolean,
+) {
+  event.preventDefault();
+
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = getFileDropEffect(isBlocked);
+  }
+}
+
+function shouldIgnoreRootDrop(event: DragEvent, resetDragState: () => void) {
+  if (!hasDraggedFiles(event)) {
+    return true;
+  }
+
+  if (event.defaultPrevented) {
+    resetDragState();
+    return true;
+  }
+
+  return false;
+}
+
+function getRootDroppedFiles(
+  event: DragEvent,
+  isBlocked: boolean,
+  resetDragState: () => void,
+) {
+  if (shouldIgnoreRootDrop(event, resetDragState)) {
+    return [];
+  }
+
+  event.preventDefault();
+  resetDragState();
+  return getEnabledDroppedFiles(event, isBlocked);
+}
+
+function getEnabledDroppedFiles(event: DragEvent, isBlocked: boolean) {
+  if (isBlocked) {
+    return [];
+  }
+
+  return getDroppedFiles(event.dataTransfer?.files ?? null);
+}
+
+function appendDroppedFiles(
+  files: File[],
+  appendAttachments: UseMessageComposerDropzoneOptions["appendAttachments"],
+) {
+  if (files.length > 0) {
+    appendAttachments(files);
+  }
 }
 
 export function useMessageComposerDropzone({
@@ -240,6 +421,7 @@ export function useMessageComposerDropzone({
 }: UseMessageComposerDropzoneOptions) {
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const dragDepthRef = useRef(0);
+  const isBlocked = isDropzoneBlocked({ isDisabled, isEditing });
 
   const resetDragState = useCallback(() => {
     dragDepthRef.current = 0;
@@ -251,10 +433,9 @@ export function useMessageComposerDropzone({
       return;
     }
 
-    event.preventDefault();
-    event.dataTransfer.dropEffect = isDisabled || isEditing ? "none" : "copy";
+    prepareFileDragEvent(event, isBlocked);
 
-    if (isDisabled || isEditing) {
+    if (isBlocked) {
       return;
     }
 
@@ -267,10 +448,9 @@ export function useMessageComposerDropzone({
       return;
     }
 
-    event.preventDefault();
-    event.dataTransfer.dropEffect = isDisabled || isEditing ? "none" : "copy";
+    prepareFileDragEvent(event, isBlocked);
 
-    if (!isDisabled && !isEditing) {
+    if (!isBlocked) {
       setIsDraggingFiles(true);
     }
   }
@@ -295,7 +475,7 @@ export function useMessageComposerDropzone({
     event.preventDefault();
     resetDragState();
 
-    if (isDisabled || isEditing) {
+    if (isBlocked) {
       return;
     }
 
@@ -313,14 +493,9 @@ export function useMessageComposerDropzone({
         return;
       }
 
-      event.preventDefault();
+      prepareFileDragEvent(event, isBlocked);
 
-      if (event.dataTransfer) {
-        event.dataTransfer.dropEffect =
-          isDisabled || isEditing ? "none" : "copy";
-      }
-
-      if (isDisabled || isEditing) {
+      if (isBlocked) {
         return;
       }
 
@@ -333,14 +508,9 @@ export function useMessageComposerDropzone({
         return;
       }
 
-      event.preventDefault();
+      prepareFileDragEvent(event, isBlocked);
 
-      if (event.dataTransfer) {
-        event.dataTransfer.dropEffect =
-          isDisabled || isEditing ? "none" : "copy";
-      }
-
-      if (!isDisabled && !isEditing) {
+      if (!isBlocked) {
         setIsDraggingFiles(true);
       }
     }
@@ -358,23 +528,10 @@ export function useMessageComposerDropzone({
     }
 
     function handleRootDrop(event: DragEvent) {
-      if (!hasDraggedFiles(event)) {
-        return;
-      }
-
-      if (event.defaultPrevented) {
-        resetDragState();
-        return;
-      }
-
-      event.preventDefault();
-      resetDragState();
-
-      if (isDisabled || isEditing) {
-        return;
-      }
-
-      appendAttachments(getDroppedFiles(event.dataTransfer?.files ?? null));
+      appendDroppedFiles(
+        getRootDroppedFiles(event, isBlocked, resetDragState),
+        appendAttachments,
+      );
     }
 
     dropzoneRoot.addEventListener("dragenter", handleRootDragEnter);
@@ -388,7 +545,7 @@ export function useMessageComposerDropzone({
       dropzoneRoot.removeEventListener("dragleave", handleRootDragLeave);
       dropzoneRoot.removeEventListener("drop", handleRootDrop);
     };
-  }, [appendAttachments, dropzoneRoot, isDisabled, isEditing, resetDragState]);
+  }, [appendAttachments, dropzoneRoot, isBlocked, resetDragState]);
 
   useEffect(() => {
     if (isDisabled || isEditing) {

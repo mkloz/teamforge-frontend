@@ -42,48 +42,47 @@ function shouldRetry(failureCount: number, error: unknown) {
 }
 
 function getMutationTelemetryName(mutationMeta: unknown) {
-  if (
-    mutationMeta &&
-    typeof mutationMeta === "object" &&
-    "telemetryName" in mutationMeta &&
-    typeof mutationMeta.telemetryName === "string"
-  ) {
-    return mutationMeta.telemetryName;
-  }
+  const meta = readObjectMeta(mutationMeta);
 
-  return undefined;
+  return meta ? readStringMetaValue(meta, "telemetryName") : undefined;
+}
+
+function isObjectMeta(meta: unknown): meta is Record<string, unknown> {
+  return Boolean(meta) && typeof meta === "object";
+}
+
+function readObjectMeta(meta: unknown) {
+  return isObjectMeta(meta) ? meta : null;
+}
+
+function readStringMetaValue(meta: Record<string, unknown>, key: string) {
+  const value = meta[key];
+
+  return typeof value === "string" ? value : undefined;
+}
+
+function readBooleanMetaValue(meta: Record<string, unknown>, key: string) {
+  const value = meta[key];
+
+  return typeof value === "boolean" ? value : undefined;
 }
 
 function readErrorToastMeta(meta: unknown): ErrorToastMeta {
-  if (!meta || typeof meta !== "object") {
+  const errorMeta = readObjectMeta(meta);
+
+  if (!errorMeta) {
     return {};
   }
 
-  const errorToastMeta: ErrorToastMeta = {};
-
-  if (
-    "errorToastConflictMessage" in meta &&
-    typeof meta.errorToastConflictMessage === "string"
-  ) {
-    errorToastMeta.errorToastConflictMessage = meta.errorToastConflictMessage;
-  }
-
-  if ("errorToast" in meta && typeof meta.errorToast === "boolean") {
-    errorToastMeta.errorToast = meta.errorToast;
-  }
-
-  if (
-    "errorToastMessage" in meta &&
-    typeof meta.errorToastMessage === "string"
-  ) {
-    errorToastMeta.errorToastMessage = meta.errorToastMessage;
-  }
-
-  if ("errorToastTitle" in meta && typeof meta.errorToastTitle === "string") {
-    errorToastMeta.errorToastTitle = meta.errorToastTitle;
-  }
-
-  return errorToastMeta;
+  return {
+    errorToastConflictMessage: readStringMetaValue(
+      errorMeta,
+      "errorToastConflictMessage",
+    ),
+    errorToast: readBooleanMetaValue(errorMeta, "errorToast"),
+    errorToastMessage: readStringMetaValue(errorMeta, "errorToastMessage"),
+    errorToastTitle: readStringMetaValue(errorMeta, "errorToastTitle"),
+  };
 }
 
 function getToastId(scope: string, key: unknown) {
@@ -138,7 +137,38 @@ async function showDeferredAppErrorToast(
   }
 }
 
-export function createAppQueryClient() {
+function getQueryErrorToastOptions(
+  errorToastMeta: ErrorToastMeta,
+  queryKey: unknown,
+): AppErrorToastOptions {
+  return {
+    fallbackMessage:
+      errorToastMeta.errorToastMessage ?? DEFAULT_QUERY_ERROR_TOAST_MESSAGE,
+    id: getToastId("query-error", queryKey),
+    messageOptions: {
+      conflictMessage: errorToastMeta.errorToastConflictMessage,
+    },
+    title: errorToastMeta.errorToastTitle ?? DEFAULT_QUERY_ERROR_TOAST_TITLE,
+  };
+}
+
+function getMutationErrorToastOptions(
+  errorToastMeta: ErrorToastMeta,
+  mutationKey: unknown,
+  mutationName: string | undefined,
+): AppErrorToastOptions {
+  return {
+    fallbackMessage:
+      errorToastMeta.errorToastMessage ?? DEFAULT_MUTATION_ERROR_TOAST_MESSAGE,
+    id: getToastId("mutation-error", mutationKey ?? mutationName ?? "unknown"),
+    messageOptions: {
+      conflictMessage: errorToastMeta.errorToastConflictMessage,
+    },
+    title: errorToastMeta.errorToastTitle,
+  };
+}
+
+function createAppQueryClient() {
   return new QueryClient({
     queryCache: new QueryCache({
       onError: (error, query) => {
@@ -162,17 +192,10 @@ export function createAppQueryClient() {
             errorToastMeta.errorToast,
           )
         ) {
-          void showDeferredAppErrorToast(error, {
-            fallbackMessage:
-              errorToastMeta.errorToastMessage ??
-              DEFAULT_QUERY_ERROR_TOAST_MESSAGE,
-            id: getToastId("query-error", query.queryKey),
-            messageOptions: {
-              conflictMessage: errorToastMeta.errorToastConflictMessage,
-            },
-            title:
-              errorToastMeta.errorToastTitle ?? DEFAULT_QUERY_ERROR_TOAST_TITLE,
-          });
+          void showDeferredAppErrorToast(
+            error,
+            getQueryErrorToastOptions(errorToastMeta, query.queryKey),
+          );
         }
       },
     }),
@@ -195,19 +218,14 @@ export function createAppQueryClient() {
         }
 
         if (errorToastMeta.errorToast !== false) {
-          void showDeferredAppErrorToast(error, {
-            fallbackMessage:
-              errorToastMeta.errorToastMessage ??
-              DEFAULT_MUTATION_ERROR_TOAST_MESSAGE,
-            id: getToastId(
-              "mutation-error",
-              mutation.options.mutationKey ?? mutationName ?? "unknown",
+          void showDeferredAppErrorToast(
+            error,
+            getMutationErrorToastOptions(
+              errorToastMeta,
+              mutation.options.mutationKey,
+              mutationName,
             ),
-            messageOptions: {
-              conflictMessage: errorToastMeta.errorToastConflictMessage,
-            },
-            title: errorToastMeta.errorToastTitle,
-          });
+          );
         }
       },
     }),

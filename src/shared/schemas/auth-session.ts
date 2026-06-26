@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const authSessionSchema = z.object({
+const authSessionSchema = z.object({
   id: z.string(),
   userAgent: z.string().nullable(),
   ipAddress: z.string().nullable(),
@@ -14,5 +14,3 @@ export type AuthSession = z.infer<typeof authSessionSchema>;
 export const authSessionListSchema = z.object({
   items: z.array(authSessionSchema),
 });
-
-export type AuthSessionList = z.infer<typeof authSessionListSchema>;

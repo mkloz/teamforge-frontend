@@ -15,9 +15,7 @@ export type {
   ActivityLaneEvidence,
   GroupFitInsight,
   MatchingSignal,
-  PortraitKey,
   ProfileInsightModel,
-  ProfilePortraitCandidate,
   ProfilePortraitInsight,
   UserGroupSignal,
 } from "./types";

@@ -9,6 +9,42 @@ import {
   buildForgeIdeaTemplateId,
 } from "@/features/forge/lib/forge-idea-template";
 
+type ForgeWizardState = ForgeWizardRouteSyncOptions["state"];
+type ForgeReadySnapshot = {
+  forgeResult: ForgeWizardState["forgeResult"];
+  participantsLength: number;
+};
+
+function getInitialConsumedIdeaTemplateId(appliedTemplateId: string | null) {
+  return appliedTemplateId?.startsWith("idea:") ? appliedTemplateId : null;
+}
+
+function getForgeReadySnapshot(
+  forgeResult: ForgeReadySnapshot["forgeResult"],
+  participantsLength: number,
+): ForgeReadySnapshot {
+  return {
+    forgeResult,
+    participantsLength,
+  };
+}
+
+function hasLiveForgeState(snapshot: ForgeReadySnapshot) {
+  return snapshot.forgeResult !== "IDLE" || snapshot.participantsLength > 0;
+}
+
+function getRouteStepSyncState(
+  routeStep: ForgeWizardRouteSyncOptions["routeStep"],
+  snapshot: ForgeReadySnapshot,
+) {
+  const shouldResetTargets = routeStep > 4 && !hasLiveForgeState(snapshot);
+
+  return {
+    nextStep: shouldResetTargets ? 4 : routeStep,
+    shouldResetTargets,
+  };
+}
+
 export function useForgeWizardRouteSync({
   dispatch,
   routeActivityId,
@@ -25,14 +61,11 @@ export function useForgeWizardRouteSync({
   const activityIdRef = useRef(state.activityId);
   const groupIdRef = useRef(state.groupId);
   const consumedIdeaTemplateIdRef = useRef(
-    state.appliedTemplateId?.startsWith("idea:")
-      ? state.appliedTemplateId
-      : null,
+    getInitialConsumedIdeaTemplateId(state.appliedTemplateId),
   );
-  const forgeReadyRef = useRef({
-    forgeResult: state.forgeResult,
-    participantsLength: state.participants.length,
-  });
+  const forgeReadyRef = useRef(
+    getForgeReadySnapshot(state.forgeResult, state.participants.length),
+  );
 
   useEffect(() => {
     stepRef.current = state.step;
@@ -51,10 +84,10 @@ export function useForgeWizardRouteSync({
   }, [state.groupId]);
 
   useEffect(() => {
-    forgeReadyRef.current = {
-      forgeResult: state.forgeResult,
-      participantsLength: state.participants.length,
-    };
+    forgeReadyRef.current = getForgeReadySnapshot(
+      state.forgeResult,
+      state.participants.length,
+    );
   }, [state.forgeResult, state.participants.length]);
 
   useEffect(() => {
@@ -88,12 +121,12 @@ export function useForgeWizardRouteSync({
   }, [dispatch, routeIdea]);
 
   useEffect(() => {
-    const hasLiveForgeState =
-      forgeReadyRef.current.forgeResult !== "IDLE" ||
-      forgeReadyRef.current.participantsLength > 0;
-    const nextStep = routeStep > 4 && !hasLiveForgeState ? 4 : routeStep;
+    const { nextStep, shouldResetTargets } = getRouteStepSyncState(
+      routeStep,
+      forgeReadyRef.current,
+    );
 
-    if (routeStep > 4 && !hasLiveForgeState) {
+    if (shouldResetTargets) {
       syncStep(4, { history: "replace" });
       syncTargets({
         activityId: null,

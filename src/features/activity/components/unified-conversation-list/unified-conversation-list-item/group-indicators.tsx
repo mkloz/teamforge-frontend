@@ -86,23 +86,58 @@ function getGroupIndicatorsViewState({
 >): GroupIndicatorsViewState {
   const hasPendingProposal = (pendingProposalCount ?? 0) > 0;
   const hasSavedMessages = (savedMessageCount ?? 0) > 0;
-  const planStatusConfig =
-    !countdown && planStatus ? PLAN_STATUS_CONFIG[planStatus] : null;
+  const planStatusConfig = getPlanStatusConfig({ countdown, planStatus });
 
   return {
-    hasAnything: !!(
-      countdown ||
-      planStatusConfig ||
-      hasPendingProposal ||
-      hasSavedMessages ||
-      isReviewWaiting ||
-      action
-    ),
+    hasAnything: hasVisibleGroupIndicator({
+      countdown,
+      planStatusConfig,
+      hasPendingProposal,
+      hasSavedMessages,
+      isReviewWaiting,
+      action,
+    }),
     hasPendingProposal,
     hasSavedMessages,
     pendingProposalLabel: getPendingProposalLabel(pendingProposalCount ?? 0),
     planStatusConfig,
   };
+}
+
+function getPlanStatusConfig({
+  countdown,
+  planStatus,
+}: {
+  countdown: string | null | undefined;
+  planStatus: Plan["status"] | null | undefined;
+}): GroupIndicatorsViewState["planStatusConfig"] {
+  if (countdown || !planStatus) {
+    return null;
+  }
+
+  return PLAN_STATUS_CONFIG[planStatus];
+}
+
+function hasVisibleGroupIndicator({
+  countdown,
+  planStatusConfig,
+  hasPendingProposal,
+  hasSavedMessages,
+  isReviewWaiting,
+  action,
+}: Pick<
+  GroupIndicatorsViewState,
+  "hasPendingProposal" | "hasSavedMessages" | "planStatusConfig"
+> &
+  Pick<GroupIndicatorsProps, "action" | "countdown" | "isReviewWaiting">) {
+  return [
+    countdown,
+    planStatusConfig,
+    hasPendingProposal,
+    hasSavedMessages,
+    isReviewWaiting,
+    action,
+  ].some(Boolean);
 }
 
 function GroupIndicatorPills({

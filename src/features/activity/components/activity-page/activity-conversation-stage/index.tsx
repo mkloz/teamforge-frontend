@@ -23,6 +23,18 @@ type ConversationStageState =
   | "missing"
   | "selected"
   | "selection-error";
+type ConversationDataKind = Extract<
+  NonNullable<ActivityWorkspace["selectedKind"]>,
+  "dm" | "group"
+>;
+
+const SELECTED_CONVERSATION_DATA_PRESENT: Record<
+  ConversationDataKind,
+  (activity: ActivityWorkspace) => boolean
+> = {
+  dm: (activity) => Boolean(activity.selectedChat),
+  group: (activity) => Boolean(activity.selectedGroup),
+};
 
 function getConversationStageState(
   activity: ActivityWorkspace,
@@ -61,13 +73,24 @@ function shouldShowSelectionError(
 }
 
 function isSelectedConversationMissing(activity: ActivityWorkspace) {
-  return (
-    activity.selectedKind &&
-    activity.selectedId &&
-    activity.selectedKind !== "saved" &&
-    ((activity.selectedKind === "group" && !activity.selectedGroup) ||
-      (activity.selectedKind === "dm" && !activity.selectedChat))
-  );
+  if (
+    !hasSelectedConversationReference(activity) ||
+    !isConversationDataKind(activity.selectedKind)
+  ) {
+    return false;
+  }
+
+  return !SELECTED_CONVERSATION_DATA_PRESENT[activity.selectedKind](activity);
+}
+
+function hasSelectedConversationReference(activity: ActivityWorkspace) {
+  return Boolean(activity.selectedKind && activity.selectedId);
+}
+
+function isConversationDataKind(
+  selectedKind: ActivityWorkspace["selectedKind"],
+): selectedKind is ConversationDataKind {
+  return selectedKind === "group" || selectedKind === "dm";
 }
 
 function ConversationStageFrame({

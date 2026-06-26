@@ -29,7 +29,38 @@ import { HomeHeroSignalMap } from "./home-hero-signal-map";
 
 const EMPTY_RECOMMENDATIONS: ExploreGroup[] = [];
 
+type HomeNextMove = ReturnType<typeof buildHomeNextMove>;
+
+interface HomeHeroData {
+  groups: HomeGroup[];
+  invitations: Invite[];
+  plans: PlannedGroup[];
+  recommendations: ExploreGroup[];
+  stats: UserStats;
+  viewer: HomeViewer;
+}
+
+interface HomeHeroLoadState {
+  heroData: HomeHeroData;
+  isLoading: boolean;
+}
+
+interface HomeHeroViewProps extends HomeHeroData {
+  compactNotificationButton?: ReactNode;
+  notificationButton?: ReactNode;
+}
+
 export function HomeHero() {
+  const { heroData, isLoading } = useHomeHeroData();
+
+  if (isLoading) {
+    return <HomeHeroSkeleton />;
+  }
+
+  return <HomeHeroView {...heroData} />;
+}
+
+function useHomeHeroData(): HomeHeroLoadState {
   const { viewer, isLoading: viewerLoading } = useHomeViewerState();
   const homeData = useHomeData({
     include: {
@@ -40,55 +71,78 @@ export function HomeHero() {
     },
   });
   const { stats, invitations, plans, groups } = homeData;
-  const isCoreHeroDataLoading =
-    homeData.isStatsLoading ||
-    homeData.isInvitationsLoading ||
-    homeData.isPlansLoading ||
-    homeData.isGroupsLoading;
-  const hasPriorityMove =
-    Boolean(viewer.nextStep) ||
-    invitations.length > 0 ||
-    plans.length > 0 ||
-    groups.length > 0;
-  const shouldLoadRecommendations =
-    !viewerLoading && !isCoreHeroDataLoading && !hasPriorityMove;
+  const isCoreHeroDataLoading = getIsCoreHeroDataLoading(homeData);
+  const shouldLoadRecommendations = shouldLoadHomeHeroRecommendations({
+    groups,
+    invitations,
+    isCoreHeroDataLoading,
+    plans,
+    viewer,
+    viewerLoading,
+  });
   const recommendationsQuery = useQuery({
     ...HomeQueryFactory.recommendations(),
     enabled: shouldLoadRecommendations,
   });
   const recommendations = recommendationsQuery.data ?? EMPTY_RECOMMENDATIONS;
-  const isHeroDataLoading =
-    isCoreHeroDataLoading ||
-    (shouldLoadRecommendations && recommendationsQuery.isLoading);
+  const isHeroDataLoading = getIsHomeHeroDataLoading({
+    isCoreHeroDataLoading,
+    isRecommendationsLoading: recommendationsQuery.isLoading,
+    shouldLoadRecommendations,
+  });
 
-  if (viewerLoading || isHeroDataLoading) {
-    return <HomeHeroSkeleton />;
+  return {
+    heroData: {
+      groups,
+      invitations,
+      plans,
+      recommendations,
+      stats,
+      viewer,
+    },
+    isLoading: viewerLoading || isHeroDataLoading,
+  };
+}
+
+function shouldLoadHomeHeroRecommendations({
+  groups,
+  invitations,
+  isCoreHeroDataLoading,
+  plans,
+  viewer,
+  viewerLoading,
+}: Pick<HomeHeroData, "groups" | "invitations" | "plans" | "viewer"> & {
+  isCoreHeroDataLoading: boolean;
+  viewerLoading: boolean;
+}) {
+  if (viewerLoading || isCoreHeroDataLoading) {
+    return false;
   }
 
+  return !hasPriorityHomeMove({
+    groups,
+    invitations,
+    plans,
+    viewer,
+  });
+}
+
+function getIsHomeHeroDataLoading({
+  isCoreHeroDataLoading,
+  isRecommendationsLoading,
+  shouldLoadRecommendations,
+}: {
+  isCoreHeroDataLoading: boolean;
+  isRecommendationsLoading: boolean;
+  shouldLoadRecommendations: boolean;
+}) {
   return (
-    <HomeHeroView
-      groups={groups}
-      invitations={invitations}
-      plans={plans}
-      recommendations={recommendations}
-      stats={stats}
-      viewer={viewer}
-    />
+    isCoreHeroDataLoading ||
+    (shouldLoadRecommendations && isRecommendationsLoading)
   );
 }
 
-interface HomeHeroViewProps {
-  compactNotificationButton?: ReactNode;
-  groups: HomeGroup[];
-  invitations: Invite[];
-  notificationButton?: ReactNode;
-  plans: PlannedGroup[];
-  recommendations: ExploreGroup[];
-  stats: UserStats;
-  viewer: HomeViewer;
-}
-
-export function HomeHeroView({
+function HomeHeroView({
   compactNotificationButton = <HomeHeroNotificationButton />,
   groups,
   invitations,
@@ -125,66 +179,94 @@ export function HomeHeroView({
       />
 
       <div className="flex w-full flex-col gap-5">
-        <div className="transform-[translate3d(0,var(--home-hero-original-y,0px),0)] flex items-start justify-between gap-3 opacity-(--home-hero-original-opacity,1) transition-[opacity,transform] duration-300 ease-out [transition-delay:var(--home-hero-original-delay,0ms)] motion-reduce:transition-none">
-          <div className="min-w-0 flex-1">
-            <h1
-              id="home-hero-heading"
-              className="font-extrabold text-foreground text-xl leading-tight tracking-tight sm:text-2xl md:text-3xl lg:text-4xl"
-            >
-              {greeting}
-            </h1>
-            <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed md:text-base">
-              {sub}
-            </p>
-          </div>
+        <HomeHeroPrimaryHeader
+          greeting={greeting}
+          notificationButton={notificationButton}
+          sub={sub}
+        />
 
-          {notificationButton}
-        </div>
-
-        <div className="relative grid gap-4 overflow-hidden rounded-xl px-4 py-4 sm:gap-6 sm:px-5 sm:py-5 lg:px-6 2xl:min-h-80 2xl:grid-cols-[minmax(0,1fr)_minmax(17rem,20rem)] 2xl:items-center 2xl:gap-10">
-          <div className="absolute inset-y-0 left-0 w-full [background:linear-gradient(112deg,color-mix(in_srgb,var(--color-forge-teal)_13%,transparent),color-mix(in_srgb,var(--color-forge-teal)_4%,transparent)_48%,transparent_76%)]" />
-          <div className="absolute inset-y-5 left-2 w-px rounded-full bg-forge-teal/55 sm:inset-y-6 sm:left-3" />
-
-          <div className="relative z-10 flex min-w-0 flex-col gap-4 pl-2 sm:gap-5 sm:pl-4">
-            <div className="flex items-start gap-3 sm:gap-4">
-              <IconTile
-                bordered
-                size="lg"
-                tone="teal"
-                className="size-10 shadow-sm sm:size-12 md:size-14"
-              >
-                <HomeHeroMoveIcon
-                  kind={nextMove.kind}
-                  className="size-5 sm:size-5.5 md:size-6"
-                />
-              </IconTile>
-
-              <div className="min-w-0 flex-1">
-                <p className="font-bold text-forge-teal text-xs">
-                  {nextMove.eyebrow}
-                </p>
-                <h2 className="mt-1 max-w-3xl font-extrabold text-foreground text-lg leading-tight tracking-tight sm:text-2xl lg:text-3xl">
-                  {nextMove.title}
-                </h2>
-              </div>
-            </div>
-
-            <p className="max-w-xl font-medium text-muted-foreground text-xs leading-relaxed lg:text-base">
-              {nextMove.body}
-            </p>
-
-            <div className="flex flex-row flex-wrap gap-2 sm:gap-3">
-              <PrimaryAction move={nextMove} />
-              <SecondaryAction move={nextMove} />
-            </div>
-
-            <HomeHeroQuickActions signal={nextMove.signal} />
-          </div>
-
-          <HomeHeroSignalMap />
-        </div>
+        <HomeHeroNextMovePanel nextMove={nextMove} />
       </div>
     </section>
+  );
+}
+
+function HomeHeroPrimaryHeader({
+  greeting,
+  notificationButton,
+  sub,
+}: {
+  greeting: string;
+  notificationButton: ReactNode;
+  sub: string;
+}) {
+  return (
+    <div className="transform-[translate3d(0,var(--home-hero-original-y,0px),0)] flex items-start justify-between gap-3 opacity-(--home-hero-original-opacity,1) transition-[opacity,transform] duration-300 ease-out [transition-delay:var(--home-hero-original-delay,0ms)] motion-reduce:transition-none">
+      <div className="min-w-0 flex-1">
+        <h1
+          id="home-hero-heading"
+          className="font-extrabold text-foreground text-xl leading-tight tracking-tight sm:text-2xl md:text-3xl lg:text-4xl"
+        >
+          {greeting}
+        </h1>
+        <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed md:text-base">
+          {sub}
+        </p>
+      </div>
+
+      {notificationButton}
+    </div>
+  );
+}
+
+function HomeHeroNextMovePanel({ nextMove }: { nextMove: HomeNextMove }) {
+  return (
+    <div className="relative grid gap-4 overflow-hidden rounded-xl px-4 py-4 sm:gap-6 sm:px-5 sm:py-5 lg:px-6 2xl:min-h-80 2xl:grid-cols-[minmax(0,1fr)_minmax(17rem,20rem)] 2xl:items-center 2xl:gap-10">
+      <div className="absolute inset-y-0 left-0 w-full [background:linear-gradient(112deg,color-mix(in_srgb,var(--color-forge-teal)_13%,transparent),color-mix(in_srgb,var(--color-forge-teal)_4%,transparent)_48%,transparent_76%)]" />
+      <div className="absolute inset-y-5 left-2 w-px rounded-full bg-forge-teal/55 sm:inset-y-6 sm:left-3" />
+
+      <div className="relative z-10 flex min-w-0 flex-col gap-4 pl-2 sm:gap-5 sm:pl-4">
+        <HomeHeroNextMoveHeader nextMove={nextMove} />
+
+        <p className="max-w-xl font-medium text-muted-foreground text-xs leading-relaxed lg:text-base">
+          {nextMove.body}
+        </p>
+
+        <div className="flex flex-row flex-wrap gap-2 sm:gap-3">
+          <PrimaryAction move={nextMove} />
+          <SecondaryAction move={nextMove} />
+        </div>
+
+        <HomeHeroQuickActions signal={nextMove.signal} />
+      </div>
+
+      <HomeHeroSignalMap />
+    </div>
+  );
+}
+
+function HomeHeroNextMoveHeader({ nextMove }: { nextMove: HomeNextMove }) {
+  return (
+    <div className="flex items-start gap-3 sm:gap-4">
+      <IconTile
+        bordered
+        size="lg"
+        tone="teal"
+        className="size-10 shadow-sm sm:size-12 md:size-14"
+      >
+        <HomeHeroMoveIcon
+          kind={nextMove.kind}
+          className="size-5 sm:size-5.5 md:size-6"
+        />
+      </IconTile>
+
+      <div className="min-w-0 flex-1">
+        <p className="font-bold text-forge-teal text-xs">{nextMove.eyebrow}</p>
+        <h2 className="mt-1 max-w-3xl font-extrabold text-foreground text-lg leading-tight tracking-tight sm:text-2xl lg:text-3xl">
+          {nextMove.title}
+        </h2>
+      </div>
+    </div>
   );
 }
 
@@ -236,5 +318,28 @@ function HomeHeroCompactHeader({
         </div>
       </div>
     </div>
+  );
+}
+
+function getIsCoreHeroDataLoading(homeData: ReturnType<typeof useHomeData>) {
+  return (
+    homeData.isStatsLoading ||
+    homeData.isInvitationsLoading ||
+    homeData.isPlansLoading ||
+    homeData.isGroupsLoading
+  );
+}
+
+function hasPriorityHomeMove({
+  groups,
+  invitations,
+  plans,
+  viewer,
+}: Pick<HomeHeroData, "groups" | "invitations" | "plans" | "viewer">) {
+  return (
+    Boolean(viewer.nextStep) ||
+    invitations.length > 0 ||
+    plans.length > 0 ||
+    groups.length > 0
   );
 }

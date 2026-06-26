@@ -74,13 +74,37 @@ export function getProfilePanelContentState({
   propMutualGroups,
 }: ProfilePanelContentStateInput): ProfilePanelContentState {
   return {
-    chatNavigation: chat?.id ? buildActivityDmNavigation(chat.id) : undefined,
-    isBlocked: propIsBlocked ?? chat?.isBlocked ?? false,
-    isMuted: propIsMuted ?? chat?.isMuted ?? false,
-    mutualGroups: propMutualGroups || chat?.mutualGroups || [],
-    profileNavigation:
-      profileNavigation ?? buildProfileNavigation(participant.id),
+    chatNavigation: getChatNavigation(chat),
+    isBlocked: getProfilePanelFlag(propIsBlocked, chat?.isBlocked),
+    isMuted: getProfilePanelFlag(propIsMuted, chat?.isMuted),
+    mutualGroups: getMutualGroups(propMutualGroups, chat),
+    profileNavigation: getProfileNavigation(profileNavigation, participant),
   };
+}
+
+function getChatNavigation(chat: UserProfilePanelChat | undefined) {
+  return chat?.id ? buildActivityDmNavigation(chat.id) : undefined;
+}
+
+function getProfilePanelFlag(
+  propValue: boolean | undefined,
+  chatValue: boolean | undefined,
+) {
+  return propValue ?? chatValue ?? false;
+}
+
+function getMutualGroups(
+  propMutualGroups: MutualGroup[] | undefined,
+  chat: UserProfilePanelChat | undefined,
+) {
+  return propMutualGroups || chat?.mutualGroups || [];
+}
+
+function getProfileNavigation(
+  profileNavigation: ProfileNavigation | undefined,
+  participant: UserProfilePanelParticipant,
+) {
+  return profileNavigation ?? buildProfileNavigation(participant.id);
 }
 
 export function getProfilePanelScrollContainerClassName({

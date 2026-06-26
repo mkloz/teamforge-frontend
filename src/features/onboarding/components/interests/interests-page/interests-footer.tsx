@@ -20,42 +20,89 @@ export function InterestsFooter({
   return (
     <div className="relative z-30 w-full shrink-0 border-slate-muted/10 border-t bg-canvas">
       <div className="mx-auto w-full max-w-xl px-4 sm:px-5 lg:px-0">
-        {state.screen === "browse" && (
-          <InterestsProgressBar
-            selectedCount={state.selectedCount}
-            canContinue={state.canContinue}
-            isAtMax={state.isAtMax}
-            onBack={onBack}
-            backLabel={backLabel}
-            onContinue={state.goToReview}
-          />
-        )}
-        {state.screen === "review" && state.saveErrorMessage && (
-          <Notice
-            role="alert"
-            tone="danger"
-            size="md"
-            icon={
-              <ErrorProfileSaveVisual className="h-6 w-auto text-foreground" />
-            }
-            className="mt-4 items-center gap-3"
-            iconClassName="mt-0"
-          >
-            {state.saveErrorMessage}
-          </Notice>
-        )}
-        {state.screen === "review" && (
-          <InterestsReviewFooter
-            onConfirm={state.finalize}
-            canConfirm={state.canContinue}
-            onBack={state.goToBrowse}
-            backLabel="Back to picks"
-            isOnline={state.isOnline}
-            isSaving={state.isSaving}
-            confirmLabel={isEditMode ? "Save Interests" : "Confirm & Finish"}
-          />
-        )}
+        <BrowseInterestsFooter
+          backLabel={backLabel}
+          onBack={onBack}
+          state={state}
+        />
+        <InterestsSaveErrorNotice state={state} />
+        <ReviewInterestsFooter isEditMode={isEditMode} state={state} />
       </div>
     </div>
   );
+}
+
+function BrowseInterestsFooter({
+  backLabel,
+  onBack,
+  state,
+}: Pick<InterestsFooterProps, "backLabel" | "onBack" | "state">) {
+  if (!shouldShowBrowseFooter(state)) {
+    return null;
+  }
+
+  return (
+    <InterestsProgressBar
+      selectedCount={state.selectedCount}
+      canContinue={state.canContinue}
+      isAtMax={state.isAtMax}
+      onBack={onBack}
+      backLabel={backLabel}
+      onContinue={state.goToReview}
+    />
+  );
+}
+
+function InterestsSaveErrorNotice({
+  state,
+}: Pick<InterestsFooterProps, "state">) {
+  if (!shouldShowReviewError(state)) {
+    return null;
+  }
+
+  return (
+    <Notice
+      role="alert"
+      tone="danger"
+      size="md"
+      icon={<ErrorProfileSaveVisual className="h-6 w-auto text-foreground" />}
+      className="mt-4 items-center gap-3"
+      iconClassName="mt-0"
+    >
+      {state.saveErrorMessage}
+    </Notice>
+  );
+}
+
+function ReviewInterestsFooter({
+  isEditMode,
+  state,
+}: Pick<InterestsFooterProps, "isEditMode" | "state">) {
+  if (!shouldShowReviewFooter(state)) {
+    return null;
+  }
+
+  return (
+    <InterestsReviewFooter
+      onConfirm={state.finalize}
+      canConfirm={state.canContinue}
+      onBack={state.goToBrowse}
+      backLabel="Back to picks"
+      isOnline={state.isOnline}
+      isSaving={state.isSaving}
+      confirmLabel={isEditMode ? "Save Interests" : "Confirm & Finish"}
+    />
+  );
+}
+
+function shouldShowBrowseFooter(state: UseInterestsReturn) {
+  return state.screen === "browse";
+}
+
+function shouldShowReviewFooter(state: UseInterestsReturn) {
+  return state.screen === "review";
+}
+
+function shouldShowReviewError(state: UseInterestsReturn) {
+  return shouldShowReviewFooter(state) && Boolean(state.saveErrorMessage);
 }

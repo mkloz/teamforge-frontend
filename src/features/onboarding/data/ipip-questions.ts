@@ -926,9 +926,6 @@ export const IPIP_QUESTIONS: IpipQuestion[] = [
   },
 ];
 
-/** Total items available per dimension */
-export const ITEMS_PER_DIMENSION = 30;
-
 export type TestLength = 30 | 50 | 150;
 
 export const TEST_LENGTH_CONFIG: Record<

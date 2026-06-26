@@ -15,18 +15,31 @@ type NumberInputProps = Omit<
   value?: number | string | null;
 };
 
+type StepDirection = 1 | -1;
+
+const EMPTY_NUMBER_INPUT_VALUES = new Set(["", "-", "."]);
+
+function getExponentialDecimalPlaces(valueString: string) {
+  if (!valueString.includes("e-")) {
+    return null;
+  }
+
+  return Number(valueString.split("e-")[1] ?? 0);
+}
+
+function getFractionDecimalPlaces(valueString: string) {
+  return valueString.split(".")[1]?.length ?? 0;
+}
+
 function getDecimalPlaces(value: number) {
   if (!Number.isFinite(value)) {
     return 0;
   }
 
   const valueString = String(value);
+  const exponentialPlaces = getExponentialDecimalPlaces(valueString);
 
-  if (valueString.includes("e-")) {
-    return Number(valueString.split("e-")[1] ?? 0);
-  }
-
-  return valueString.split(".")[1]?.length ?? 0;
+  return exponentialPlaces ?? getFractionDecimalPlaces(valueString);
 }
 
 function roundToScale(value: number, scale: number) {
@@ -82,6 +95,48 @@ function sanitizeValue(value: string, allowDecimal: boolean) {
     : `${sign}${normalizedInteger}`;
 }
 
+function parseNumberInputValue(value: string) {
+  if (EMPTY_NUMBER_INPUT_VALUES.has(value)) {
+    return undefined;
+  }
+
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function getBlurCommitValue({
+  max,
+  min,
+  precision,
+  step,
+  value,
+}: {
+  max?: number;
+  min?: number;
+  precision?: number;
+  step: number;
+  value: string;
+}) {
+  const parsed = parseNumberInputValue(value);
+
+  return parsed == null
+    ? null
+    : formatNumber(clampValue(parsed, min, max), precision, step);
+}
+
+function getStepDirection(key: string): StepDirection | null {
+  if (key === "ArrowUp") {
+    return 1;
+  }
+
+  if (key === "ArrowDown") {
+    return -1;
+  }
+
+  return null;
+}
+
 function NumberInput({
   allowDecimal = false,
   className,
@@ -103,14 +158,7 @@ function NumberInput({
 
   const commitValue = (nextValue: string) => {
     onValueChange?.(nextValue);
-
-    if (nextValue === "" || nextValue === "-" || nextValue === ".") {
-      onNumberChange?.(undefined);
-      return;
-    }
-
-    const parsed = Number(nextValue);
-    onNumberChange?.(Number.isFinite(parsed) ? parsed : undefined);
+    onNumberChange?.(parseNumberInputValue(nextValue));
   };
 
   const stepValue = (direction: 1 | -1) => {
@@ -137,13 +185,16 @@ function NumberInput({
         commitValue(sanitizeValue(event.target.value, allowDecimal));
       }}
       onBlur={(event) => {
-        if (stringValue !== "" && stringValue !== "-") {
-          const parsed = Number(stringValue);
-          if (Number.isFinite(parsed)) {
-            commitValue(
-              formatNumber(clampValue(parsed, min, max), precision, step),
-            );
-          }
+        const blurCommitValue = getBlurCommitValue({
+          max,
+          min,
+          precision,
+          step,
+          value: stringValue,
+        });
+
+        if (blurCommitValue !== null) {
+          commitValue(blurCommitValue);
         }
 
         onBlur?.(event);
@@ -155,14 +206,11 @@ function NumberInput({
           return;
         }
 
-        if (event.key === "ArrowUp") {
-          event.preventDefault();
-          stepValue(1);
-        }
+        const stepDirection = getStepDirection(event.key);
 
-        if (event.key === "ArrowDown") {
+        if (stepDirection !== null) {
           event.preventDefault();
-          stepValue(-1);
+          stepValue(stepDirection);
         }
       }}
     />

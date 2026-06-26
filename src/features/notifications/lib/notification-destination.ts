@@ -91,6 +91,88 @@ export type NotificationDestination =
     }
   | { to: "/settings"; search?: { section?: SettingsSection } };
 
+type CurrentRouteDestinationResolver = (
+  searchParams: URLSearchParams,
+) => NotificationDestination;
+
+type NotificationEntityResolver = (
+  notification: Notification,
+  entityId: string,
+) => Promise<NotificationDestination | null> | NotificationDestination | null;
+
+type NotificationFallbackResolver = (
+  notification: Notification,
+) => NotificationDestination;
+
+type LegacyDestinationResolver = (
+  linkContext: LegacyLinkContext,
+) => Promise<NotificationDestination | null> | NotificationDestination | null;
+
+const CURRENT_ROUTE_DESTINATION_RESOLVERS: Record<
+  string,
+  CurrentRouteDestinationResolver
+> = {
+  "/activity": (searchParams) =>
+    buildActivityNavigation(resolveActivitySearch(searchParams)),
+  "/explore": (searchParams) =>
+    buildExploreNavigation(resolveExploreSearch(searchParams)),
+  "/forge": (searchParams) =>
+    buildForgeNavigation(resolveForgeSearch(searchParams)),
+  "/home": (searchParams) =>
+    buildHomeNavigation(resolveHomeSearch(searchParams)),
+  "/profile": () => buildProfileNavigation(),
+  "/settings": (searchParams) =>
+    buildSettingsNavigation(
+      normalizeSettingsSection(searchParams.get("section")),
+    ),
+};
+
+const ENTITY_DESTINATION_RESOLVERS: Partial<
+  Record<NonNullable<Notification["entityType"]>, NotificationEntityResolver>
+> = {
+  ACTIVITY: (_notification, entityId) =>
+    buildForgeNavigation({
+      activityId: entityId,
+      open: true,
+    }),
+  GROUP: (_notification, entityId) =>
+    toGroupDestination(entityId, {
+      panel: "group",
+    }),
+  INVITE: (_notification, entityId) =>
+    buildHomeNavigation({
+      invite: entityId,
+      panel: "invitations",
+      view: "received",
+    }),
+  PLAN: resolvePlanEntityDestination,
+  USER: resolveUserEntityDestination,
+};
+
+const TYPE_FALLBACK_DESTINATION_RESOLVERS: Partial<
+  Record<Notification["type"], NotificationFallbackResolver>
+> = {
+  ACCOUNT_SECURITY: () => buildSettingsNavigation("security"),
+  FRIEND_ACCEPTED: () => buildProfileNavigation(),
+  FRIEND_REQUEST: (notification) =>
+    buildHomeNavigation({
+      panel: "friends",
+      request: notification.entityId ?? undefined,
+    }),
+  MESSAGE_MENTION: () => buildActivityNavigation({ filter: "unread" }),
+  NEW_MESSAGE: () => buildActivityNavigation({ filter: "unread" }),
+};
+
+const LEGACY_DESTINATION_RESOLVERS: LegacyDestinationResolver[] = [
+  resolveCurrentAppRouteDestination,
+  resolveLegacyGroupDestination,
+  resolveLegacyChatDestination,
+  resolveLegacyPlanDestination,
+  resolveLegacyRatingDestination,
+  resolveLegacyInviteDestination,
+  resolveLegacyFriendRequestDestination,
+];
+
 function toGroupDestination(
   groupId: string,
   options?: {
@@ -101,12 +183,30 @@ function toGroupDestination(
   },
 ): NotificationDestination {
   if (options?.message) {
-    return buildActivityGroupNavigation(groupId, {
-      panel: "group",
-      message: options.message,
-    });
+    return toGroupMessageDestination(groupId, options.message);
   }
 
+  return buildGroupPlanDestination(groupId, options);
+}
+
+function toGroupMessageDestination(
+  groupId: string,
+  message: string,
+): NotificationDestination {
+  return buildActivityGroupNavigation(groupId, {
+    panel: "group",
+    message,
+  });
+}
+
+function buildGroupPlanDestination(
+  groupId: string,
+  options?: {
+    panel?: "group";
+    plan?: string;
+    proposal?: string;
+  },
+): NotificationDestination {
   return buildGroupPlanDetailNavigation(groupId, {
     plan: options?.plan,
     proposal: options?.proposal,
@@ -119,6 +219,14 @@ function parseNotificationLink(link: string | null) {
     return null;
   }
 
+  return (
+    parseAbsoluteNotificationLink(link) ?? parseRelativeNotificationLink(link)
+  );
+}
+
+function parseAbsoluteNotificationLink(
+  link: string,
+): ParsedNotificationLink | null {
   try {
     const parsedUrl = new URL(link);
 
@@ -127,25 +235,52 @@ function parseNotificationLink(link: string | null) {
       searchParams: parsedUrl.searchParams,
     } satisfies ParsedNotificationLink;
   } catch {
-    if (!link.startsWith("/") || link.startsWith("//")) {
-      return null;
-    }
-
-    const hashIndex = link.indexOf("#");
-    const linkWithoutHash = hashIndex >= 0 ? link.slice(0, hashIndex) : link;
-    const searchIndex = linkWithoutHash.indexOf("?");
-    const pathname =
-      searchIndex >= 0
-        ? linkWithoutHash.slice(0, searchIndex)
-        : linkWithoutHash;
-    const search =
-      searchIndex >= 0 ? linkWithoutHash.slice(searchIndex + 1) : "";
-
-    return {
-      pathname: pathname || "/",
-      searchParams: new URLSearchParams(search),
-    } satisfies ParsedNotificationLink;
+    return null;
   }
+}
+
+function parseRelativeNotificationLink(
+  link: string,
+): ParsedNotificationLink | null {
+  if (!isRelativeAppLink(link)) {
+    return null;
+  }
+
+  const { pathname, search } = splitRelativeNotificationLink(link);
+
+  return {
+    pathname,
+    searchParams: new URLSearchParams(search),
+  } satisfies ParsedNotificationLink;
+}
+
+function isRelativeAppLink(link: string) {
+  return link.startsWith("/") && !link.startsWith("//");
+}
+
+function splitRelativeNotificationLink(link: string) {
+  const linkWithoutHash = stripNotificationLinkHash(link);
+  const { pathname, search } = splitNotificationPathAndSearch(linkWithoutHash);
+
+  return {
+    pathname: pathname || "/",
+    search,
+  };
+}
+
+function stripNotificationLinkHash(link: string) {
+  const hashIndex = link.indexOf("#");
+
+  return hashIndex >= 0 ? link.slice(0, hashIndex) : link;
+}
+
+function splitNotificationPathAndSearch(link: string) {
+  const searchIndex = link.indexOf("?");
+
+  return {
+    pathname: searchIndex >= 0 ? link.slice(0, searchIndex) : link,
+    search: searchIndex >= 0 ? link.slice(searchIndex + 1) : "",
+  };
 }
 
 function normalizeNotificationPathname(pathname: string) {
@@ -165,26 +300,19 @@ function extractProposalIdFromLink(link: string | null) {
 }
 
 function extractPlanId(searchParams: URLSearchParams) {
-  return (
-    searchParams.get("plan") ??
-    searchParams.get("planId") ??
-    searchParams.get("currentPlanId") ??
-    undefined
-  );
+  return getFirstSearchParam(searchParams, ["plan", "planId", "currentPlanId"]);
 }
 
 function extractMessageId(searchParams: URLSearchParams) {
-  return (
-    searchParams.get("message") ?? searchParams.get("messageId") ?? undefined
-  );
+  return getFirstSearchParam(searchParams, ["message", "messageId"]);
 }
 
 function extractChatId(searchParams: URLSearchParams) {
-  return searchParams.get("chat") ?? searchParams.get("chatId") ?? undefined;
+  return getFirstSearchParam(searchParams, ["chat", "chatId"]);
 }
 
 function extractGroupId(searchParams: URLSearchParams) {
-  return searchParams.get("group") ?? searchParams.get("groupId") ?? undefined;
+  return getFirstSearchParam(searchParams, ["group", "groupId"]);
 }
 
 function findLiteral<T extends readonly string[]>(
@@ -192,6 +320,21 @@ function findLiteral<T extends readonly string[]>(
   value: string | null,
 ): T[number] | undefined {
   return values.find((candidate) => candidate === value);
+}
+
+function getFirstSearchParam(
+  searchParams: URLSearchParams,
+  keys: readonly string[],
+) {
+  for (const key of keys) {
+    const value = searchParams.get(key);
+
+    if (value !== null) {
+      return value;
+    }
+  }
+
+  return undefined;
 }
 
 function toDirectMessageDestination(
@@ -222,25 +365,36 @@ async function toChatDestination(
 function resolveActivitySearch(
   searchParams: URLSearchParams,
 ): ActivityRouteSearch {
-  const filter = findLiteral(activityFilterValues, searchParams.get("filter"));
+  return {
+    density: resolveActivityDensity(searchParams),
+    filter: resolveActivityFilter(searchParams),
+    id: searchParams.get("id") ?? undefined,
+    kind: findLiteral(activityKindValues, searchParams.get("kind")),
+    message: extractMessageId(searchParams),
+    panel: findLiteral(activityPanelValues, searchParams.get("panel")),
+    plan: extractPlanId(searchParams),
+    proposal: getOptionalProposalId(searchParams),
+    q: searchParams.get("q") ?? undefined,
+  };
+}
+
+function resolveActivityDensity(searchParams: URLSearchParams) {
   const density = findLiteral(
     activityDensityValues,
     searchParams.get("density"),
   );
-  const kind = findLiteral(activityKindValues, searchParams.get("kind"));
-  const panel = findLiteral(activityPanelValues, searchParams.get("panel"));
 
-  return {
-    density: density === "default" ? undefined : density,
-    filter: filter === "all" ? undefined : filter,
-    id: searchParams.get("id") ?? undefined,
-    kind,
-    message: extractMessageId(searchParams),
-    panel,
-    plan: extractPlanId(searchParams),
-    proposal: extractProposalId(searchParams) ?? undefined,
-    q: searchParams.get("q") ?? undefined,
-  };
+  return density === "default" ? undefined : density;
+}
+
+function resolveActivityFilter(searchParams: URLSearchParams) {
+  const filter = findLiteral(activityFilterValues, searchParams.get("filter"));
+
+  return filter === "all" ? undefined : filter;
+}
+
+function getOptionalProposalId(searchParams: URLSearchParams) {
+  return extractProposalId(searchParams) ?? undefined;
 }
 
 function resolveHomeSearch(searchParams: URLSearchParams): HomeRouteSearch {
@@ -248,19 +402,51 @@ function resolveHomeSearch(searchParams: URLSearchParams): HomeRouteSearch {
   const genericId = searchParams.get("id");
 
   return {
-    invite:
-      searchParams.get("invite") ??
-      searchParams.get("inviteId") ??
-      (panel === "invitations" ? genericId : null) ??
-      undefined,
+    invite: getHomeSearchInviteId({ genericId, panel, searchParams }),
     panel,
-    request:
-      searchParams.get("request") ??
-      searchParams.get("requestId") ??
-      (panel === "friends" ? genericId : null) ??
-      undefined,
+    request: getHomeSearchRequestId({ genericId, panel, searchParams }),
     view: findLiteral(homeInvitationViewValues, searchParams.get("view")),
   };
+}
+
+function getHomeSearchInviteId({
+  genericId,
+  panel,
+  searchParams,
+}: {
+  genericId: string | null;
+  panel: HomeRouteSearch["panel"];
+  searchParams: URLSearchParams;
+}) {
+  return (
+    getFirstSearchParam(searchParams, ["invite", "inviteId"]) ??
+    getScopedGenericId(genericId, panel, "invitations") ??
+    undefined
+  );
+}
+
+function getHomeSearchRequestId({
+  genericId,
+  panel,
+  searchParams,
+}: {
+  genericId: string | null;
+  panel: HomeRouteSearch["panel"];
+  searchParams: URLSearchParams;
+}) {
+  return (
+    getFirstSearchParam(searchParams, ["request", "requestId"]) ??
+    getScopedGenericId(genericId, panel, "friends") ??
+    undefined
+  );
+}
+
+function getScopedGenericId(
+  genericId: string | null,
+  panel: HomeRouteSearch["panel"],
+  targetPanel: NonNullable<HomeRouteSearch["panel"]>,
+) {
+  return panel === targetPanel ? genericId : null;
 }
 
 function resolveExploreSearch(
@@ -270,7 +456,6 @@ function resolveExploreSearch(
 }
 
 function resolveForgeSearch(searchParams: URLSearchParams): ForgeRouteSearch {
-  const step = Number(searchParams.get("step"));
   const mode = searchParams.get("mode");
   const forgeMode = forgeSearchModeValues.find((value) => value === mode);
 
@@ -279,38 +464,24 @@ function resolveForgeSearch(searchParams: URLSearchParams): ForgeRouteSearch {
     groupId: searchParams.get("groupId") ?? undefined,
     mode: forgeMode,
     open: true,
-    step: Number.isInteger(step) && step > 0 ? step : undefined,
+    step: getValidForgeStep(searchParams),
   };
+}
+
+function getValidForgeStep(searchParams: URLSearchParams) {
+  const step = Number(searchParams.get("step"));
+
+  return Number.isInteger(step) && step > 0 ? step : undefined;
 }
 
 function resolveFromCurrentAppRoute(
   pathname: string,
   searchParams: URLSearchParams,
 ): NotificationDestination | null {
-  if (pathname === "/activity") {
-    return buildActivityNavigation(resolveActivitySearch(searchParams));
-  }
+  const routeResolver = CURRENT_ROUTE_DESTINATION_RESOLVERS[pathname];
 
-  if (pathname === "/home") {
-    return buildHomeNavigation(resolveHomeSearch(searchParams));
-  }
-
-  if (pathname === "/explore") {
-    return buildExploreNavigation(resolveExploreSearch(searchParams));
-  }
-
-  if (pathname === "/forge") {
-    return buildForgeNavigation(resolveForgeSearch(searchParams));
-  }
-
-  if (pathname === "/profile") {
-    return buildProfileNavigation();
-  }
-
-  if (pathname === "/settings") {
-    return buildSettingsNavigation(
-      normalizeSettingsSection(searchParams.get("section")),
-    );
+  if (routeResolver) {
+    return routeResolver(searchParams);
   }
 
   const userId = matchLegacyUserPath(pathname);
@@ -360,42 +531,77 @@ async function resolveGroupIdByChatId(chatId: string) {
 
 async function findGroupIdByPredicate(predicate: (group: GroupApi) => boolean) {
   try {
-    const firstPage = await getGroupLookupPage(1);
-    const firstPageGroupId = firstPage.items.find(predicate)?.id;
-
-    if (firstPageGroupId) {
-      return firstPageGroupId;
-    }
-
-    const totalPages = Math.min(
-      MAX_GROUP_LOOKUP_PAGES,
-      firstPage.meta.totalPages,
-    );
-
-    if (firstPage.items.length === 0 || totalPages <= 1) {
-      return null;
-    }
-
-    const remainingPages = Array.from(
-      { length: totalPages - 1 },
-      (_, index) => index + 2,
-    );
-    const remainingResults = await Promise.all(
-      remainingPages.map((page) => getGroupLookupPage(page)),
-    );
-
-    for (const result of remainingResults) {
-      const groupId = result.items.find(predicate)?.id;
-
-      if (groupId) {
-        return groupId;
-      }
-    }
+    return await findGroupIdAcrossLookupPages(predicate);
   } catch {
     return null;
   }
+}
+
+async function findGroupIdAcrossLookupPages(
+  predicate: (group: GroupApi) => boolean,
+) {
+  const firstPage = await getGroupLookupPage(1);
+  const firstPageGroupId = findGroupIdInLookupPage(firstPage.items, predicate);
+
+  if (firstPageGroupId) {
+    return firstPageGroupId;
+  }
+
+  return findGroupIdInRemainingLookupPages(firstPage, predicate);
+}
+
+async function findGroupIdInRemainingLookupPages(
+  firstPage: Awaited<ReturnType<typeof getGroupLookupPage>>,
+  predicate: (group: GroupApi) => boolean,
+) {
+  const totalPages = Math.min(
+    MAX_GROUP_LOOKUP_PAGES,
+    firstPage.meta.totalPages,
+  );
+
+  if (!shouldReadRemainingGroupLookupPages(firstPage, totalPages)) {
+    return null;
+  }
+
+  const remainingPages = getRemainingGroupLookupPages(totalPages);
+  const remainingResults = await Promise.all(
+    remainingPages.map((page) => getGroupLookupPage(page)),
+  );
+
+  return findGroupIdInLookupResults(remainingResults, predicate);
+}
+
+function shouldReadRemainingGroupLookupPages(
+  firstPage: Awaited<ReturnType<typeof getGroupLookupPage>>,
+  totalPages: number,
+) {
+  return firstPage.items.length > 0 && totalPages > 1;
+}
+
+function findGroupIdInLookupResults(
+  results: Awaited<ReturnType<typeof getGroupLookupPage>>[],
+  predicate: (group: GroupApi) => boolean,
+) {
+  for (const result of results) {
+    const groupId = findGroupIdInLookupPage(result.items, predicate);
+
+    if (groupId) {
+      return groupId;
+    }
+  }
 
   return null;
+}
+
+function findGroupIdInLookupPage(
+  groups: GroupApi[],
+  predicate: (group: GroupApi) => boolean,
+) {
+  return groups.find(predicate)?.id;
+}
+
+function getRemainingGroupLookupPages(totalPages: number) {
+  return Array.from({ length: totalPages - 1 }, (_, index) => index + 2);
 }
 
 async function getGroupLookupPage(page: number) {
@@ -420,55 +626,33 @@ async function resolveFromLegacyLink(
     return null;
   }
 
-  const currentAppRoute = resolveFromCurrentAppRoute(
-    linkContext.pathname,
-    linkContext.searchParams,
-  );
+  return resolveFirstLegacyDestination(linkContext);
+}
 
-  if (currentAppRoute) {
-    return currentAppRoute;
+async function resolveFirstLegacyDestination(linkContext: LegacyLinkContext) {
+  return resolveFirstLegacyDestinationAt(linkContext, 0);
+}
+
+async function resolveFirstLegacyDestinationAt(
+  linkContext: LegacyLinkContext,
+  index: number,
+): Promise<NotificationDestination | null> {
+  const resolveDestination = LEGACY_DESTINATION_RESOLVERS[index];
+
+  if (!resolveDestination) {
+    return null;
   }
 
-  const legacyGroupDestination = resolveLegacyGroupDestination(linkContext);
+  const destination = await resolveDestination(linkContext);
 
-  if (legacyGroupDestination) {
-    return legacyGroupDestination;
-  }
+  return destination ?? resolveFirstLegacyDestinationAt(linkContext, index + 1);
+}
 
-  const legacyChatDestination = await resolveLegacyChatDestination(linkContext);
-
-  if (legacyChatDestination) {
-    return legacyChatDestination;
-  }
-
-  const legacyPlanDestination = await resolveLegacyPlanDestination(linkContext);
-
-  if (legacyPlanDestination) {
-    return legacyPlanDestination;
-  }
-
-  const legacyRatingDestination = resolveLegacyRatingDestination(linkContext);
-
-  if (legacyRatingDestination) {
-    return legacyRatingDestination;
-  }
-
-  const legacyInviteDestination = resolveLegacyInviteDestination(linkContext);
-
-  if (legacyInviteDestination) {
-    return legacyInviteDestination;
-  }
-
-  const friendRequestIntent = resolveFriendRequestIntent(
-    linkContext.pathname,
-    linkContext.searchParams,
-  );
-
-  if (friendRequestIntent) {
-    return buildHomeNavigation(friendRequestIntent);
-  }
-
-  return null;
+function resolveCurrentAppRouteDestination({
+  pathname,
+  searchParams,
+}: LegacyLinkContext) {
+  return resolveFromCurrentAppRoute(pathname, searchParams);
 }
 
 function parseLegacyLinkContext(
@@ -500,20 +684,49 @@ function resolveLegacyGroupDestination({
   proposalId,
   searchParams,
 }: LegacyLinkContext) {
+  return (
+    resolveLegacyGroupPlanDestination({
+      pathname,
+      planIdFromSearch,
+      proposalId,
+    }) ??
+    resolveLegacyGroupPathDestination({
+      pathname,
+      planIdFromSearch,
+      proposalId,
+      searchParams,
+    })
+  );
+}
+
+function resolveLegacyGroupPlanDestination({
+  pathname,
+  planIdFromSearch,
+  proposalId,
+}: Pick<LegacyLinkContext, "pathname" | "planIdFromSearch" | "proposalId">) {
   const groupPlanMatch = matchLegacyGroupPlanPath(pathname);
 
-  if (groupPlanMatch) {
-    return toGroupDestination(groupPlanMatch.groupId, {
-      panel: "group",
-      plan: groupPlanMatch.planId ?? planIdFromSearch,
-      proposal: proposalId ?? undefined,
-    });
+  if (!groupPlanMatch) {
+    return null;
   }
 
-  const groupId =
-    extractGroupId(searchParams) ??
-    matchLegacyGroupPath(pathname) ??
-    matchLegacyExploreGroupPath(pathname);
+  return toGroupDestination(groupPlanMatch.groupId, {
+    panel: "group",
+    plan: groupPlanMatch.planId ?? planIdFromSearch,
+    proposal: proposalId ?? undefined,
+  });
+}
+
+function resolveLegacyGroupPathDestination({
+  pathname,
+  planIdFromSearch,
+  proposalId,
+  searchParams,
+}: Pick<
+  LegacyLinkContext,
+  "pathname" | "planIdFromSearch" | "proposalId" | "searchParams"
+>) {
+  const groupId = resolveLegacyGroupId({ pathname, searchParams });
 
   if (!groupId) {
     return null;
@@ -526,6 +739,17 @@ function resolveLegacyGroupDestination({
   });
 }
 
+function resolveLegacyGroupId({
+  pathname,
+  searchParams,
+}: Pick<LegacyLinkContext, "pathname" | "searchParams">) {
+  return (
+    extractGroupId(searchParams) ??
+    matchLegacyGroupPath(pathname) ??
+    matchLegacyExploreGroupPath(pathname)
+  );
+}
+
 async function resolveLegacyChatDestination({
   messageIdFromSearch,
   notification,
@@ -535,13 +759,10 @@ async function resolveLegacyChatDestination({
   const chatMessageMatch = matchLegacyChatMessagePath(pathname);
 
   if (chatMessageMatch) {
-    return toChatDestination(
-      chatMessageMatch.chatId,
-      chatMessageMatch.messageId,
-    );
+    return toChatMessageDestination(chatMessageMatch);
   }
 
-  const chatId = extractChatId(searchParams) ?? matchLegacyChatPath(pathname);
+  const chatId = getLegacyChatId({ pathname, searchParams });
 
   if (!chatId) {
     return null;
@@ -553,47 +774,73 @@ async function resolveLegacyChatDestination({
   );
 }
 
+function toChatMessageDestination({
+  chatId,
+  messageId,
+}: {
+  chatId: string;
+  messageId: string;
+}) {
+  return toChatDestination(chatId, messageId);
+}
+
+function getLegacyChatId({
+  pathname,
+  searchParams,
+}: Pick<LegacyLinkContext, "pathname" | "searchParams">) {
+  return extractChatId(searchParams) ?? matchLegacyChatPath(pathname);
+}
+
 async function resolveLegacyPlanDestination({
   notification,
   pathname,
   proposalId,
 }: LegacyLinkContext) {
+  return (
+    (await resolveLegacyPlanProposalDestination({ pathname, proposalId })) ??
+    resolveLegacyPlanPathDestination({ notification, pathname, proposalId })
+  );
+}
+
+async function resolveLegacyPlanProposalDestination({
+  pathname,
+  proposalId,
+}: Pick<LegacyLinkContext, "pathname" | "proposalId">) {
   const planProposalMatch = matchLegacyPlanProposalPath(pathname);
 
-  if (planProposalMatch) {
-    const planId = planProposalMatch.planId;
-    const proposalFromPath = planProposalMatch.proposalId ?? proposalId;
-    const resolvedGroupId = await resolveGroupIdByPlanId(planId);
-
-    if (resolvedGroupId) {
-      return toGroupDestination(resolvedGroupId, {
-        panel: "group",
-        plan: planId,
-        proposal: proposalFromPath ?? undefined,
-      });
-    }
+  if (!planProposalMatch) {
+    return null;
   }
 
+  const planId = planProposalMatch.planId;
+  return resolvePlanGroupDestination(planId, {
+    proposal: planProposalMatch.proposalId ?? proposalId ?? undefined,
+  });
+}
+
+async function resolveLegacyPlanPathDestination({
+  notification,
+  pathname,
+  proposalId,
+}: Pick<LegacyLinkContext, "notification" | "pathname" | "proposalId">) {
   const planId = matchLegacyPlanPath(pathname);
 
   if (!planId) {
     return null;
   }
 
-  const resolvedGroupId = await resolveGroupIdByPlanId(planId);
-
-  if (!resolvedGroupId) {
-    return null;
-  }
-
-  return toGroupDestination(resolvedGroupId, {
-    panel: "group",
-    plan: planId,
-    proposal:
-      notification.type === "PLAN_PROPOSAL"
-        ? (proposalId ?? undefined)
-        : undefined,
+  return resolvePlanGroupDestination(planId, {
+    proposal: getLegacyPlanPathProposalId(notification, proposalId),
   });
+}
+
+function getLegacyPlanPathProposalId(
+  notification: Notification,
+  proposalId: string | null,
+) {
+  return notification.type === "PLAN_PROPOSAL"
+    ? (proposalId ?? undefined)
+    : undefined;
 }
 
 function resolveLegacyRatingDestination({ pathname }: LegacyLinkContext) {
@@ -628,6 +875,18 @@ function resolveLegacyInviteDestination({
   return buildHomeNavigation(inviteIntent);
 }
 
+function resolveLegacyFriendRequestDestination({
+  pathname,
+  searchParams,
+}: LegacyLinkContext) {
+  const friendRequestIntent = resolveFriendRequestIntent(
+    pathname,
+    searchParams,
+  );
+
+  return friendRequestIntent ? buildHomeNavigation(friendRequestIntent) : null;
+}
+
 function getMessageEntityId(notification: Notification) {
   return notification.entityType === "MESSAGE"
     ? (notification.entityId ?? undefined)
@@ -637,77 +896,74 @@ function getMessageEntityId(notification: Notification) {
 async function resolveEntityDestination(
   notification: Notification,
 ): Promise<NotificationDestination | null> {
-  if (notification.entityType === "GROUP" && notification.entityId) {
-    return toGroupDestination(notification.entityId, {
-      panel: "group",
-    });
+  const { entityId, entityType } = notification;
+
+  if (!entityType || !entityId) {
+    return null;
   }
 
-  if (notification.entityType === "PLAN" && notification.entityId) {
-    const groupId = await resolveGroupIdByPlanId(notification.entityId);
+  const entityResolver = ENTITY_DESTINATION_RESOLVERS[entityType];
 
-    if (!groupId) {
-      return null;
-    }
-
-    return toGroupDestination(groupId, {
-      panel: "group",
-      plan: notification.entityId,
-      proposal:
-        notification.type === "PLAN_PROPOSAL"
-          ? extractProposalIdFromLink(notification.link)
-          : undefined,
-    });
+  if (!entityResolver) {
+    return null;
   }
 
-  if (notification.entityType === "ACTIVITY" && notification.entityId) {
-    return buildForgeNavigation({
-      activityId: notification.entityId,
-      open: true,
-    });
+  return entityResolver(notification, entityId);
+}
+
+async function resolvePlanEntityDestination(
+  notification: Notification,
+  planId: string,
+) {
+  return resolvePlanGroupDestination(planId, {
+    proposal: getPlanEntityProposalId(notification),
+  });
+}
+
+function getPlanEntityProposalId(notification: Notification) {
+  return notification.type === "PLAN_PROPOSAL"
+    ? extractProposalIdFromLink(notification.link)
+    : undefined;
+}
+
+async function resolvePlanGroupDestination(
+  planId: string,
+  options?: { proposal?: string },
+) {
+  const groupId = await resolveGroupIdByPlanId(planId);
+
+  if (!groupId) {
+    return null;
   }
 
-  if (notification.entityType === "INVITE" && notification.entityId) {
+  return toGroupDestination(groupId, {
+    panel: "group",
+    plan: planId,
+    proposal: options?.proposal,
+  });
+}
+
+function resolveUserEntityDestination(
+  notification: Notification,
+  userId: string,
+) {
+  if (notification.type === "FRIEND_REQUEST") {
     return buildHomeNavigation({
-      invite: notification.entityId,
-      panel: "invitations",
-      view: "received",
+      panel: "friends",
+      request: userId,
     });
   }
 
-  if (notification.entityType === "USER" && notification.entityId) {
-    if (notification.type === "FRIEND_REQUEST") {
-      return buildHomeNavigation({
-        panel: "friends",
-        request: notification.entityId,
-      });
-    }
-
-    return buildProfileNavigation(notification.entityId);
-  }
-
-  return null;
+  return buildProfileNavigation(userId);
 }
 
 function resolveTypeFallbackDestination(
   notification: Notification,
 ): NotificationDestination {
-  switch (notification.type) {
-    case "NEW_MESSAGE":
-    case "MESSAGE_MENTION":
-      return buildActivityNavigation({ filter: "unread" });
-    case "FRIEND_REQUEST":
-      return buildHomeNavigation({
-        panel: "friends",
-        request: notification.entityId ?? undefined,
-      });
-    case "FRIEND_ACCEPTED":
-      return buildProfileNavigation();
-    case "ACCOUNT_SECURITY":
-      return buildSettingsNavigation("security");
-    default:
-      return buildHomeNavigation();
-  }
+  return (
+    TYPE_FALLBACK_DESTINATION_RESOLVERS[notification.type]?.(notification) ??
+    buildHomeNavigation()
+  );
 }
 
 export async function resolveNotificationDestination(

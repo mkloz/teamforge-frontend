@@ -1,6 +1,6 @@
 import type { SettingsSection } from "@/features/settings/lib/settings-route";
 
-export const onboardingRoutePaths = [
+const onboardingRoutePaths = [
   "/onboarding/profile",
   "/onboarding/personality",
   "/onboarding/interests",
@@ -17,8 +17,7 @@ export const onboardingReturnTargets = [
   "/forge",
 ] as const;
 
-export type OnboardingRoutePath = (typeof onboardingRoutePaths)[number];
-export type OnboardingMode = (typeof onboardingModeValues)[number];
+type OnboardingRoutePath = (typeof onboardingRoutePaths)[number];
 export type OnboardingReturnTarget = (typeof onboardingReturnTargets)[number];
 
 interface OnboardingEditOptions {
@@ -28,7 +27,7 @@ interface OnboardingEditOptions {
   mbti?: string | null;
 }
 
-export function buildOnboardingEditSearch({
+function buildOnboardingEditSearch({
   returnTo,
   returnSearch,
   returnSection,
@@ -43,7 +42,7 @@ export function buildOnboardingEditSearch({
   };
 }
 
-export function buildOnboardingEditNavigation(
+function buildOnboardingEditNavigation(
   to: OnboardingRoutePath,
   options: OnboardingEditOptions,
 ) {

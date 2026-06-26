@@ -1,2 +1,2 @@
-export type { Group, GroupMember } from "./activity-group-plan";
-export { groupMemberSchema, groupSchema } from "./activity-group-plan";
+export type { Group } from "./activity-group-plan";
+export { groupSchema } from "./activity-group-plan";

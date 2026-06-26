@@ -9,34 +9,79 @@ interface FitSectionProps {
   detail: GroupPlanDetail;
 }
 
-export function FitSection({ detail }: FitSectionProps) {
-  const fit = detail.fit;
-  const percent = getFitPercent(fit?.totalScore);
-  const sortedSignals = sortFitSignalsByStrength(fit?.signals ?? []);
+type Fit = NonNullable<GroupPlanDetail["fit"]>;
+type SortedFitSignals = ReturnType<typeof sortFitSignalsByStrength>;
 
-  if (!fit || sortedSignals.length === 0) {
-    return (
-      <Section
-        heading="Fit signals are still settling"
-        description="Once a few more interactions land you'll see compatibility signals here."
-        headingId="fit-section-heading"
-      >
-        <p className="text-muted-foreground text-sm leading-relaxed">
-          For now, judge the group from the plan and the people already in.
-        </p>
-      </Section>
-    );
+type FitSectionState =
+  | { kind: "empty" }
+  | {
+      fit: Fit;
+      kind: "signals";
+      percent: number | null;
+      sortedSignals: SortedFitSignals;
+    };
+
+export function FitSection({ detail }: FitSectionProps) {
+  const state = getFitSectionState(detail);
+
+  if (state.kind === "empty") {
+    return <EmptyFitSection />;
   }
 
+  return <FitSignalsSection state={state} />;
+}
+
+function getFitSectionState(detail: GroupPlanDetail): FitSectionState {
+  const fit = detail.fit;
+
+  if (!fit) {
+    return { kind: "empty" };
+  }
+
+  const sortedSignals = sortFitSignalsByStrength(fit.signals);
+
+  if (sortedSignals.length === 0) {
+    return { kind: "empty" };
+  }
+
+  return {
+    fit,
+    kind: "signals",
+    percent: getFitPercent(fit.totalScore),
+    sortedSignals,
+  };
+}
+
+function EmptyFitSection() {
   return (
     <Section
-      heading={getFitVerdict(percent)}
-      description={fit.summary}
+      heading="Fit signals are still settling"
+      description="Once a few more interactions land you'll see compatibility signals here."
       headingId="fit-section-heading"
-      trailing={percent !== null ? <FitScore percent={percent} /> : null}
+    >
+      <p className="text-muted-foreground text-sm leading-relaxed">
+        For now, judge the group from the plan and the people already in.
+      </p>
+    </Section>
+  );
+}
+
+function FitSignalsSection({
+  state,
+}: {
+  state: Extract<FitSectionState, { kind: "signals" }>;
+}) {
+  return (
+    <Section
+      heading={getFitVerdict(state.percent)}
+      description={state.fit.summary}
+      headingId="fit-section-heading"
+      trailing={
+        state.percent !== null ? <FitScore percent={state.percent} /> : null
+      }
     >
       <div className="grid gap-1 sm:grid-cols-2">
-        {sortedSignals.map((signal) => (
+        {state.sortedSignals.map((signal) => (
           <SignalRow key={signal.key} signal={signal} />
         ))}
       </div>

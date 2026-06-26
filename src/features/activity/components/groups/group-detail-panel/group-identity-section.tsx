@@ -28,6 +28,7 @@ import { cn } from "@/shared/lib/utils";
 import type { ImageMedia } from "@/shared/schemas/media";
 import { formatPanelToken } from "./lib/constants";
 import { PlanChangeDialog } from "./plan-section/plan-change-dialog";
+import { stripPanelStatusPrefix } from "./status-prefix";
 
 interface GroupIdentitySectionProps {
   activity?: Group["activity"];
@@ -48,6 +49,21 @@ interface GroupIdentitySectionProps {
   status: GroupStatus;
 }
 
+interface GroupIdentityViewState {
+  activityTitle: string | null;
+  avatarSrc: string | null;
+  canEditGroup: boolean;
+  createdLabel: string;
+  displayDescription: string | null;
+  displayName: string;
+  groupLink: string;
+}
+
+interface CapacityDisplayState {
+  capacitySegments: string[];
+  filledCapacitySegments: number;
+}
+
 export function GroupIdentitySection({
   activity,
   avatar,
@@ -66,53 +82,35 @@ export function GroupIdentitySection({
   plan,
   status,
 }: GroupIdentitySectionProps) {
-  const canEditGroup = currentUserRole === "ADMIN" && !isReadOnly;
-  const createdLabel = dayjs(createdAt).isValid()
-    ? `Created ${dayjs(createdAt).format("MMM D, YYYY")}`
-    : "Created recently";
-  const statusLabel = formatPanelToken(status);
-  const displayName = stripStatusPrefix(name, statusLabel);
-  const activityTitle = activity?.title
-    ? stripStatusPrefix(activity.title, statusLabel)
-    : null;
-  const avatarSrc = avatar && avatar !== coverImage ? avatar : null;
-  const displayDescription = getDisplayDescription(
-    description,
+  const {
+    activityTitle,
+    avatarSrc,
+    canEditGroup,
+    createdLabel,
+    displayDescription,
     displayName,
+    groupLink,
+  } = getGroupIdentityViewState({
+    activity,
+    avatar,
+    coverImage,
+    createdAt,
+    currentUserRole,
+    description,
+    groupId,
     isReadOnly,
-  );
-  const groupLink = buildAppUrl(`/groups/${encodeURIComponent(groupId)}`);
+    name,
+    status,
+  });
 
   return (
     <section className="relative flex flex-col gap-4 pt-5">
-      <div
-        className="transform-[translate3d(0,var(--collapsible-panel-original-card-y,0px),0)] flex items-center gap-4 opacity-(--collapsible-panel-original-card-opacity,1) transition-[opacity,transform] duration-300 ease-out [pointer-events:var(--collapsible-panel-original-pointer-events,auto)] [transition-delay:var(--collapsible-panel-original-card-delay,0ms)] motion-reduce:transition-none"
-        data-collapsible-panel-original-card=""
-      >
-        <div className="group pointer-events-auto shrink-0">
-          <Avatar
-            src={avatarSrc}
-            media={avatarSrc ? avatarMedia : null}
-            name={displayName}
-            alt={`${displayName} avatar`}
-            shape="rounded"
-            className="size-16 rounded-xl bg-muted ring-1 ring-border/70"
-            imageClassName="transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <h2 className="wrap-break-word line-clamp-2 font-bold text-ink text-xl leading-tight tracking-tight">
-            {displayName}
-          </h2>
-
-          {activityTitle ? (
-            <p className="wrap-break-word mt-2 line-clamp-2 font-semibold text-forge-teal text-xs leading-snug">
-              {activityTitle}
-            </p>
-          ) : null}
-        </div>
-      </div>
+      <GroupIdentityHeaderCard
+        activityTitle={activityTitle}
+        avatarMedia={avatarMedia}
+        avatarSrc={avatarSrc}
+        displayName={displayName}
+      />
 
       {displayDescription && (
         <p className="wrap-break-word text-pretty text-ink/75 text-sm leading-relaxed">
@@ -128,87 +126,298 @@ export function GroupIdentitySection({
         maxMembers={maxMembers}
       />
 
-      <div className="flex flex-wrap gap-2">
+      <GroupIdentityActions
+        avatarSrc={avatarSrc}
+        canEditGroup={canEditGroup}
+        displayName={displayName}
+        groupId={groupId}
+        groupLink={groupLink}
+        isOnline={isOnline}
+        isReadOnly={isReadOnly}
+        plan={plan}
+        onEditGroup={onEditGroup}
+      />
+    </section>
+  );
+}
+
+function getGroupIdentityViewState({
+  activity,
+  avatar,
+  coverImage,
+  createdAt,
+  currentUserRole,
+  description,
+  groupId,
+  isReadOnly = false,
+  name,
+  status,
+}: Pick<
+  GroupIdentitySectionProps,
+  | "activity"
+  | "avatar"
+  | "coverImage"
+  | "createdAt"
+  | "currentUserRole"
+  | "description"
+  | "groupId"
+  | "isReadOnly"
+  | "name"
+  | "status"
+>): GroupIdentityViewState {
+  const statusLabel = formatPanelToken(status);
+  const displayName = stripPanelStatusPrefix(name, statusLabel);
+  const displayDescription = getDisplayDescription(
+    description,
+    displayName,
+    isReadOnly,
+  );
+  const groupLink = buildAppUrl(`/groups/${encodeURIComponent(groupId)}`);
+
+  return {
+    activityTitle: getDisplayActivityTitle(activity, statusLabel),
+    avatarSrc: getDisplayAvatarSrc(avatar, coverImage),
+    canEditGroup: canEditGroupDetails(currentUserRole, isReadOnly),
+    createdLabel: getCreatedLabel(createdAt),
+    displayDescription,
+    displayName,
+    groupLink,
+  };
+}
+
+function canEditGroupDetails(currentUserRole: MemberRole, isReadOnly: boolean) {
+  return currentUserRole === "ADMIN" && !isReadOnly;
+}
+
+function getCreatedLabel(createdAt: string) {
+  const createdDate = dayjs(createdAt);
+
+  return createdDate.isValid()
+    ? `Created ${createdDate.format("MMM D, YYYY")}`
+    : "Created recently";
+}
+
+function getDisplayActivityTitle(
+  activity: Group["activity"] | undefined,
+  statusLabel: string,
+) {
+  return activity?.title
+    ? stripPanelStatusPrefix(activity.title, statusLabel)
+    : null;
+}
+
+function getDisplayAvatarSrc(
+  avatar: string | null | undefined,
+  coverImage: string | null | undefined,
+) {
+  return avatar && avatar !== coverImage ? avatar : null;
+}
+
+function GroupIdentityHeaderCard({
+  activityTitle,
+  avatarMedia,
+  avatarSrc,
+  displayName,
+}: {
+  activityTitle: string | null;
+  avatarMedia?: ImageMedia | null;
+  avatarSrc: string | null;
+  displayName: string;
+}) {
+  return (
+    <div
+      className="transform-[translate3d(0,var(--collapsible-panel-original-card-y,0px),0)] flex items-center gap-4 opacity-(--collapsible-panel-original-card-opacity,1) transition-[opacity,transform] duration-300 ease-out [pointer-events:var(--collapsible-panel-original-pointer-events,auto)] [transition-delay:var(--collapsible-panel-original-card-delay,0ms)] motion-reduce:transition-none"
+      data-collapsible-panel-original-card=""
+    >
+      <div className="group pointer-events-auto shrink-0">
+        <Avatar
+          src={avatarSrc}
+          media={avatarSrc ? avatarMedia : null}
+          name={displayName}
+          alt={`${displayName} avatar`}
+          shape="rounded"
+          className="size-16 rounded-xl bg-muted ring-1 ring-border/70"
+          imageClassName="transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <h2 className="wrap-break-word line-clamp-2 font-bold text-ink text-xl leading-tight tracking-tight">
+          {displayName}
+        </h2>
+
+        {activityTitle ? (
+          <p className="wrap-break-word mt-2 line-clamp-2 font-semibold text-forge-teal text-xs leading-snug">
+            {activityTitle}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function GroupIdentityActions({
+  avatarSrc,
+  canEditGroup,
+  displayName,
+  groupId,
+  groupLink,
+  isOnline,
+  isReadOnly,
+  plan,
+  onEditGroup,
+}: {
+  avatarSrc: string | null;
+  canEditGroup: boolean;
+  displayName: string;
+  groupId: string;
+  groupLink: string;
+  isOnline: boolean;
+  isReadOnly: boolean;
+  plan?: Group["plan"];
+  onEditGroup: () => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Button
+        asChild
+        variant="outline"
+        size="xs"
+        className="min-w-0 flex-1 basis-32"
+        contentClassName="gap-1.5"
+      >
+        <Link
+          {...buildGroupPlanDetailNavigation(groupId, { source: "activity" })}
+          aria-label={`View ${displayName} group details`}
+        >
+          <span className="truncate">View more</span>
+          <ArrowRight className="size-3.5" />
+        </Link>
+      </Button>
+
+      <QrShareDialog
+        url={groupLink}
+        title="Group link"
+        description="Scan to open this group in TeamForge. Only members can access it."
+        avatarSrc={avatarSrc}
+        bottomText={displayName}
+        trigger={
+          <Button
+            variant="outline"
+            size="xs"
+            className="min-w-0 flex-1 basis-32"
+            contentClassName="gap-1.5"
+            aria-label={`Show ${displayName} group link QR code`}
+          >
+            <QrCode className="size-3.5" aria-hidden="true" />
+            <span className="truncate">Group link</span>
+          </Button>
+        }
+      />
+
+      <GroupMutableAction
+        canEditGroup={canEditGroup}
+        isOnline={isOnline}
+        isReadOnly={isReadOnly}
+        plan={plan}
+        onEditGroup={onEditGroup}
+      />
+    </div>
+  );
+}
+
+function GroupMutableAction({
+  canEditGroup,
+  isOnline,
+  isReadOnly,
+  plan,
+  onEditGroup,
+}: {
+  canEditGroup: boolean;
+  isOnline: boolean;
+  isReadOnly: boolean;
+  plan?: Group["plan"];
+  onEditGroup: () => void;
+}) {
+  const actionKind = getGroupMutableActionKind({
+    canEditGroup,
+    hasPlan: Boolean(plan),
+    isReadOnly,
+  });
+
+  if (actionKind === "hidden") {
+    return null;
+  }
+
+  if (actionKind === "edit") {
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        size="xs"
+        className="min-w-0 flex-1 basis-32"
+        contentClassName="gap-1.5"
+        disabled={!isOnline}
+        onClick={onEditGroup}
+        title={getGroupEditDisabledTitle(isOnline)}
+      >
+        <Pencil className="size-3.5" />
+        <span className="truncate">Edit details</span>
+      </Button>
+    );
+  }
+
+  if (!plan) {
+    return null;
+  }
+
+  return (
+    <PlanChangeDialog
+      plan={plan}
+      className="min-w-0 flex-1 basis-32"
+      trigger={
         <Button
-          asChild
-          variant="outline"
+          variant="primary"
           size="xs"
           className="min-w-0 flex-1 basis-32"
           contentClassName="gap-1.5"
+          disabled={!isOnline}
+          title={getPlanSuggestionDisabledTitle(isOnline)}
         >
-          <Link
-            {...buildGroupPlanDetailNavigation(groupId, { source: "activity" })}
-            aria-label={`View ${displayName} group details`}
-          >
-            <span className="truncate">View more</span>
-            <ArrowRight className="size-3.5" />
-          </Link>
+          <Pencil className="size-3.5" aria-hidden="true" />
+          <span className="truncate">Suggest</span>
         </Button>
-
-        <QrShareDialog
-          url={groupLink}
-          title="Group link"
-          description="Scan to open this group in TeamForge. Only members can access it."
-          avatarSrc={avatarSrc}
-          bottomText={displayName}
-          trigger={
-            <Button
-              variant="outline"
-              size="xs"
-              className="min-w-0 flex-1 basis-32"
-              contentClassName="gap-1.5"
-              aria-label={`Show ${displayName} group link QR code`}
-            >
-              <QrCode className="size-3.5" aria-hidden="true" />
-              <span className="truncate">Group link</span>
-            </Button>
-          }
-        />
-
-        {!isReadOnly ? (
-          canEditGroup ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="xs"
-              className="min-w-0 flex-1 basis-32"
-              contentClassName="gap-1.5"
-              disabled={!isOnline}
-              onClick={onEditGroup}
-              title={
-                isOnline ? undefined : "Reconnect before editing group details."
-              }
-            >
-              <Pencil className="size-3.5" />
-              <span className="truncate">Edit details</span>
-            </Button>
-          ) : plan ? (
-            <PlanChangeDialog
-              plan={plan}
-              className="min-w-0 flex-1 basis-32"
-              trigger={
-                <Button
-                  variant="primary"
-                  size="xs"
-                  className="min-w-0 flex-1 basis-32"
-                  contentClassName="gap-1.5"
-                  disabled={!isOnline}
-                  title={
-                    isOnline
-                      ? undefined
-                      : "Reconnect before suggesting plan changes."
-                  }
-                >
-                  <Pencil className="size-3.5" aria-hidden="true" />
-                  <span className="truncate">Suggest</span>
-                </Button>
-              }
-            />
-          ) : null
-        ) : null}
-      </div>
-    </section>
+      }
+    />
   );
+}
+
+function getGroupMutableActionKind({
+  canEditGroup,
+  hasPlan,
+  isReadOnly,
+}: {
+  canEditGroup: boolean;
+  hasPlan: boolean;
+  isReadOnly: boolean;
+}) {
+  if (isReadOnly) {
+    return "hidden";
+  }
+
+  if (canEditGroup) {
+    return "edit";
+  }
+
+  return hasPlan ? "suggest" : "hidden";
+}
+
+function getGroupEditDisabledTitle(isOnline: boolean) {
+  return isOnline ? undefined : "Reconnect before editing group details.";
+}
+
+function getPlanSuggestionDisabledTitle(isOnline: boolean) {
+  return isOnline ? undefined : "Reconnect before suggesting plan changes.";
 }
 
 function GroupFactList({
@@ -225,12 +434,53 @@ function GroupFactList({
   maxMembers: number;
 }) {
   const access = activity ? getAccessDisplay(activity) : null;
-  const visibleCapacitySegments = Math.max(1, Math.min(maxMembers, 8));
-  const filledCapacitySegments = Math.min(memberCount, visibleCapacitySegments);
-  const capacitySegments = CAPACITY_SEGMENT_KEYS.slice(
-    0,
-    visibleCapacitySegments,
+  const facts = getGroupFacts({
+    access,
+    activity,
+    createdLabel,
+    maxMembers,
+    memberCount,
+  });
+  const capacityState = getCapacityDisplayState(memberCount, maxMembers);
+
+  return (
+    <div className="flex flex-col gap-3 border-border/70 border-y py-3">
+      <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
+        {facts.map((fact) => (
+          <FactItem
+            key={fact.label}
+            icon={fact.icon}
+            iconTone={fact.tone}
+            label={fact.label}
+            value={fact.value}
+          />
+        ))}
+      </dl>
+
+      {!isReadOnly ? (
+        <GroupCapacityMeter
+          capacityState={capacityState}
+          maxMembers={maxMembers}
+          memberCount={memberCount}
+        />
+      ) : null}
+    </div>
   );
+}
+
+function getGroupFacts({
+  access,
+  activity,
+  createdLabel,
+  maxMembers,
+  memberCount,
+}: {
+  access: ReturnType<typeof getAccessDisplay> | null;
+  activity?: Group["activity"];
+  createdLabel: string;
+  maxMembers: number;
+  memberCount: number;
+}) {
   const facts: GroupFactProps[] = [
     {
       icon: UsersRound,
@@ -264,51 +514,67 @@ function GroupFactList({
     });
   }
 
+  return facts;
+}
+
+function getCapacityDisplayState(
+  memberCount: number,
+  maxMembers: number,
+): CapacityDisplayState {
+  const visibleCapacitySegments = Math.max(1, Math.min(maxMembers, 8));
+
+  return {
+    capacitySegments: CAPACITY_SEGMENT_KEYS.slice(0, visibleCapacitySegments),
+    filledCapacitySegments: Math.min(memberCount, visibleCapacitySegments),
+  };
+}
+
+function GroupCapacityMeter({
+  capacityState,
+  maxMembers,
+  memberCount,
+}: {
+  capacityState: CapacityDisplayState;
+  maxMembers: number;
+  memberCount: number;
+}) {
   return (
-    <div className="flex flex-col gap-3 border-border/70 border-y py-3">
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
-        {facts.map((fact) => (
-          <FactItem
-            key={fact.label}
-            icon={fact.icon}
-            iconTone={fact.tone}
-            label={fact.label}
-            value={fact.value}
+    <div className="flex items-center gap-2">
+      <meter className="sr-only" max={maxMembers} min={0} value={memberCount}>
+        {memberCount} of {maxMembers} seats filled
+      </meter>
+      <span className="shrink-0 text-slate-muted text-xs">Capacity</span>
+      <div className="flex min-w-0 flex-1 gap-1">
+        {capacityState.capacitySegments.map((segment) => (
+          <CapacitySegment
+            key={segment}
+            filledCapacitySegments={capacityState.filledCapacitySegments}
+            segment={segment}
           />
         ))}
-      </dl>
-
-      {!isReadOnly ? (
-        <div className="flex items-center gap-2">
-          <meter
-            className="sr-only"
-            max={maxMembers}
-            min={0}
-            value={memberCount}
-          >
-            {memberCount} of {maxMembers} seats filled
-          </meter>
-          <span className="shrink-0 text-slate-muted text-xs">Capacity</span>
-          <div className="flex min-w-0 flex-1 gap-1">
-            {capacitySegments.map((segment) => {
-              const segmentNumber = Number(segment);
-
-              return (
-                <span
-                  key={segment}
-                  className={cn(
-                    "h-1.5 min-w-0 flex-1 rounded-full transition-colors duration-300",
-                    segmentNumber <= filledCapacitySegments
-                      ? "bg-forge-teal"
-                      : "bg-slate-muted/20",
-                  )}
-                />
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
+      </div>
     </div>
+  );
+}
+
+function CapacitySegment({
+  filledCapacitySegments,
+  segment,
+}: {
+  filledCapacitySegments: number;
+  segment: string;
+}) {
+  const segmentNumber = Number(segment);
+
+  return (
+    <span
+      className={cn(
+        "h-1.5 min-w-0 flex-1 rounded-full transition-colors duration-300",
+        segmentNumber <= filledCapacitySegments
+          ? "bg-forge-teal"
+          : "bg-slate-muted/20",
+      )}
+    />
   );
 }
 
@@ -342,17 +608,6 @@ function getAccessDisplay(activity: NonNullable<Group["activity"]>) {
     icon: Lock,
     label: visibility,
   };
-}
-
-function stripStatusPrefix(value: string, statusLabel: string) {
-  const prefix = `${statusLabel} `;
-
-  if (!value.toLowerCase().startsWith(prefix.toLowerCase())) {
-    return value;
-  }
-
-  const strippedValue = value.slice(prefix.length).trim();
-  return strippedValue || value;
 }
 
 function getDisplayDescription(

@@ -1,13 +1,11 @@
 import { z } from "zod";
 
 export const authProviderSchema = z.enum(["EMAIL", "GOOGLE"]);
-export type AuthProvider = z.infer<typeof authProviderSchema>;
 
 export const genderSchema = z.enum(["MALE", "FEMALE", "NON_BINARY", "OTHER"]);
 export type Gender = z.infer<typeof genderSchema>;
 
 export const searchStatusSchema = z.enum(["IDLE", "SEARCHING"]);
-export type SearchStatus = z.infer<typeof searchStatusSchema>;
 
 export const onlineStatusSchema = z.enum(["ONLINE", "AWAY", "OFFLINE"]);
 export type OnlineStatus = z.infer<typeof onlineStatusSchema>;
@@ -32,7 +30,6 @@ export const activityStatusSchema = z.enum([
   "CLOSED",
   "CANCELLED",
 ]);
-export type ActivityStatus = z.infer<typeof activityStatusSchema>;
 
 export const groupStatusSchema = z.enum([
   "FORMING",
@@ -93,7 +90,6 @@ export const planProposalStatusSchema = z.enum([
 export type PlanProposalStatus = z.infer<typeof planProposalStatusSchema>;
 
 export const planProposalVoteSchema = z.enum(["APPROVE", "REJECT"]);
-export type PlanProposalVote = z.infer<typeof planProposalVoteSchema>;
 
 export const locationModeSchema = z.enum(["IN_PERSON", "ONLINE", "TBD"]);
 export type LocationMode = z.infer<typeof locationModeSchema>;
@@ -102,7 +98,6 @@ export const costTypeSchema = z.enum(["FREE", "PAID"]);
 export type CostType = z.infer<typeof costTypeSchema>;
 
 export const chatTypeSchema = z.enum(["GROUP", "PRIVATE", "NOTES"]);
-export type ChatType = z.infer<typeof chatTypeSchema>;
 
 export const messageTypeSchema = z.enum([
   "TEXT",
@@ -138,7 +133,6 @@ export const friendshipStatusSchema = z.enum([
   "DECLINED",
   "BLOCKED",
 ]);
-export type FriendshipStatus = z.infer<typeof friendshipStatusSchema>;
 
 export const notificationTypeSchema = z.enum([
   "FRIEND_REQUEST",
@@ -163,7 +157,6 @@ export const notificationTypeSchema = z.enum([
   "SYSTEM_ANNOUNCEMENT",
   "ACCOUNT_SECURITY",
 ]);
-export type NotificationType = z.infer<typeof notificationTypeSchema>;
 
 export const entityTypeSchema = z.enum([
   "USER",
@@ -173,7 +166,6 @@ export const entityTypeSchema = z.enum([
   "MESSAGE",
   "INVITE",
 ]);
-export type EntityType = z.infer<typeof entityTypeSchema>;
 
 export const personalityTypeSchema = z.enum([
   "INTJ",

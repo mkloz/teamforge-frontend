@@ -26,6 +26,42 @@ interface FilterHeaderProps {
   onDensityChange?: (d: "default" | "compact") => void;
 }
 
+type ConversationFilterCounts = FilterHeaderProps["counts"];
+type ConversationListDensity = NonNullable<FilterHeaderProps["density"]>;
+
+const FILTER_BADGE_COUNT_SELECTORS = {
+  all: (counts) => counts.allUnreadMessageCount,
+  direct: (counts) => counts.dmUnreadMessageCount,
+  groups: (counts) => counts.groupUnreadMessageCount,
+  pinned: (counts) => counts.pinnedUnreadMessageCount,
+  saved: () => 0,
+  unread: (counts) => counts.allUnreadMessageCount,
+} as const satisfies Record<
+  FilterChip,
+  (counts: ConversationFilterCounts) => number
+>;
+
+const FILTER_MOBILE_ORDER_CLASSES = {
+  all: "order-1 md:order-none",
+  groups: "order-2 md:order-none",
+  direct: "order-3 md:order-none",
+  unread: "order-4 md:order-none",
+  pinned: "order-5 md:order-none",
+  saved: "order-6 md:order-none",
+} as const satisfies Partial<Record<FilterChip, string>>;
+
+const FILTER_DEFAULT_MOBILE_ORDER_CLASS = "order-6 md:order-none";
+
+const DENSITY_LABELS = {
+  compact: "Default view",
+  default: "Compact view",
+} as const satisfies Record<ConversationListDensity, string>;
+
+const NEXT_DENSITY = {
+  compact: "default",
+  default: "compact",
+} as const satisfies Record<ConversationListDensity, ConversationListDensity>;
+
 export const FilterHeader = memo(function FilterHeader({
   filters,
   activeFilter,
@@ -38,7 +74,7 @@ export const FilterHeader = memo(function FilterHeader({
     (f) =>
       f.key !== "pinned" || counts.pinnedCount > 0 || activeFilter === "pinned",
   );
-  const densityLabel = density === "default" ? "Compact view" : "Default view";
+  const densityLabel = DENSITY_LABELS[density];
   const handleFilterChange = (value: string) => {
     const selectedFilter = filters.find((filter) => filter.key === value);
 
@@ -84,9 +120,7 @@ export const FilterHeader = memo(function FilterHeader({
               variant="accentGhost"
               size="icon"
               className="size-8 rounded-full border border-border/55 bg-card/55 text-slate-muted hover:enabled:border-forge-teal/30 hover:enabled:bg-forge-teal/8 hover:enabled:text-forge-teal"
-              onClick={() =>
-                onDensityChange?.(density === "default" ? "compact" : "default")
-              }
+              onClick={() => onDensityChange?.(NEXT_DENSITY[density])}
               aria-label={densityLabel}
             >
               {density === "default" ? (
@@ -105,20 +139,9 @@ export const FilterHeader = memo(function FilterHeader({
 
 function getBadgeCount(
   key: FilterChip,
-  counts: {
-    pinnedCount: number;
-    allUnreadMessageCount: number;
-    groupUnreadMessageCount: number;
-    dmUnreadMessageCount: number;
-    pinnedUnreadMessageCount: number;
-  },
+  counts: ConversationFilterCounts,
 ): number | null {
-  if (key === "all") return counts.allUnreadMessageCount;
-  if (key === "groups") return counts.groupUnreadMessageCount;
-  if (key === "direct") return counts.dmUnreadMessageCount;
-  if (key === "unread") return counts.allUnreadMessageCount;
-  if (key === "pinned") return counts.pinnedUnreadMessageCount;
-  return null;
+  return FILTER_BADGE_COUNT_SELECTORS[key]?.(counts) ?? null;
 }
 
 function getFilterAriaLabel(label: string, count: number | null) {
@@ -130,11 +153,5 @@ function getFilterAriaLabel(label: string, count: number | null) {
 }
 
 function getMobileFilterOrderClass(key: FilterChip) {
-  if (key === "all") return "order-1 md:order-none";
-  if (key === "groups") return "order-2 md:order-none";
-  if (key === "direct") return "order-3 md:order-none";
-  if (key === "unread") return "order-4 md:order-none";
-  if (key === "pinned") return "order-5 md:order-none";
-  if (key === "saved") return "order-6 md:order-none";
-  return "order-6 md:order-none";
+  return FILTER_MOBILE_ORDER_CLASSES[key] ?? FILTER_DEFAULT_MOBILE_ORDER_CLASS;
 }

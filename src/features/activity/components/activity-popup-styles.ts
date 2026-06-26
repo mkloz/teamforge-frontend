@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 
-export const ACTIVITY_POPUP_SHADOW_CLASS =
+const ACTIVITY_POPUP_SHADOW_CLASS =
   "shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]";
 
 export const ACTIVITY_MENU_ITEM_CLASS =

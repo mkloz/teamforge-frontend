@@ -39,19 +39,28 @@ export const planStatusConfig: Record<
   },
 };
 
-export function getPlanCalendarParts(plan: PlannedGroup["plan"]) {
-  const date = plan.dateTime ? new Date(plan.dateTime) : null;
-  const hasValidDate = date ? !Number.isNaN(date.getTime()) : false;
+const EMPTY_PLAN_CALENDAR_PARTS = {
+  dayName: "Open",
+  dayNum: "--",
+  month: "TBD",
+};
 
+export function getPlanCalendarParts(plan: PlannedGroup["plan"]) {
+  const date = getValidPlanDate(plan.dateTime);
+
+  return date ? getDatedPlanCalendarParts(date) : EMPTY_PLAN_CALENDAR_PARTS;
+}
+
+function getValidPlanDate(dateTime: string | null | undefined) {
+  const date = dateTime ? new Date(dateTime) : null;
+
+  return date && !Number.isNaN(date.getTime()) ? date : null;
+}
+
+function getDatedPlanCalendarParts(date: Date) {
   return {
-    dayName:
-      date && hasValidDate
-        ? date.toLocaleString("en-US", { weekday: "short" })
-        : "Open",
-    dayNum: date && hasValidDate ? date.getDate().toString() : "--",
-    month:
-      date && hasValidDate
-        ? date.toLocaleString("en-US", { month: "short" })
-        : "TBD",
+    dayName: date.toLocaleString("en-US", { weekday: "short" }),
+    dayNum: date.getDate().toString(),
+    month: date.toLocaleString("en-US", { month: "short" }),
   };
 }

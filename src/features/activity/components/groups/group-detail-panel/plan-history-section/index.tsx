@@ -16,6 +16,60 @@ interface PlanHistorySectionProps {
   onUseAsTemplate?: (item: PlanHistoryItem) => Promise<void> | void;
 }
 
+interface HistoryTemplateActionStateInput {
+  isOnline: boolean;
+  isTemplateActionDisabled: boolean;
+  isTemplateActionPending: boolean;
+  itemId: string;
+  pendingTemplateId: string | null;
+}
+
+function getVisibleHistoryItems(
+  history: PlanHistoryItem[],
+  isExpanded: boolean,
+) {
+  return isExpanded ? history : history.slice(0, 2);
+}
+
+function getFocusedHistoryIndex(
+  history: PlanHistoryItem[],
+  focusedPlanId: string | null,
+) {
+  return history.findIndex((item) => item.id === focusedPlanId);
+}
+
+function shouldExpandHistoryForFocusedItem(focusedHistoryIndex: number) {
+  return focusedHistoryIndex > 1;
+}
+
+function getExpandedPlanIdAfterListCollapse(
+  history: PlanHistoryItem[],
+  currentItemId: string | null,
+) {
+  return history.slice(0, 2).some((item) => item.id === currentItemId)
+    ? currentItemId
+    : null;
+}
+
+function getHistoryTemplateActionState({
+  isOnline,
+  isTemplateActionDisabled,
+  isTemplateActionPending,
+  itemId,
+  pendingTemplateId,
+}: HistoryTemplateActionStateInput) {
+  const hasLocalTemplateAction = pendingTemplateId !== null;
+
+  return {
+    disabled:
+      !isOnline ||
+      isTemplateActionDisabled ||
+      ((isTemplateActionPending || hasLocalTemplateAction) &&
+        pendingTemplateId !== itemId),
+    loading: pendingTemplateId === itemId,
+  };
+}
+
 export function PlanHistorySection({
   focusedPlanId = null,
   history,
@@ -31,14 +85,11 @@ export function PlanHistorySection({
   const [expandedPlanId, setExpandedPlanId] = useState<string | null>(
     focusedPlanId,
   );
-  const visibleHistory = isExpanded ? history : history.slice(0, 2);
+  const visibleHistory = getVisibleHistoryItems(history, isExpanded);
   const historyCount = history.length;
-  const hasLocalTemplateAction = pendingTemplateId !== null;
 
   useEffect(() => {
-    const focusedHistoryIndex = history.findIndex(
-      (item) => item.id === focusedPlanId,
-    );
+    const focusedHistoryIndex = getFocusedHistoryIndex(history, focusedPlanId);
 
     if (focusedHistoryIndex === -1) {
       return;
@@ -46,7 +97,7 @@ export function PlanHistorySection({
 
     setExpandedPlanId(focusedPlanId);
 
-    if (focusedHistoryIndex > 1) {
+    if (shouldExpandHistoryForFocusedItem(focusedHistoryIndex)) {
       setIsExpanded(true);
     }
   }, [focusedPlanId, history]);
@@ -90,9 +141,7 @@ export function PlanHistorySection({
 
       if (!nextIsExpanded) {
         setExpandedPlanId((currentItemId) =>
-          history.slice(0, 2).some((item) => item.id === currentItemId)
-            ? currentItemId
-            : null,
+          getExpandedPlanIdAfterListCollapse(history, currentItemId),
         );
       }
 
@@ -123,28 +172,33 @@ export function PlanHistorySection({
       </div>
 
       <div className="divide-y divide-border/70 border-border/70 border-y">
-        {visibleHistory.map((item) => (
-          <HistoryCard
-            key={item.id}
-            isExpanded={expandedPlanId === item.id}
-            item={item}
-            isUseAsTemplateDisabled={
-              !isOnline ||
-              isTemplateActionDisabled ||
-              ((isTemplateActionPending || hasLocalTemplateAction) &&
-                pendingTemplateId !== item.id)
-            }
-            isUseAsTemplateLoading={pendingTemplateId === item.id}
-            onUseAsTemplate={
-              onUseAsTemplate
-                ? () => {
-                    void handleUseAsTemplate(item);
-                  }
-                : undefined
-            }
-            onToggle={() => handleToggleHistoryItem(item.id)}
-          />
-        ))}
+        {visibleHistory.map((item) => {
+          const templateAction = getHistoryTemplateActionState({
+            isOnline,
+            isTemplateActionDisabled,
+            isTemplateActionPending,
+            itemId: item.id,
+            pendingTemplateId,
+          });
+
+          return (
+            <HistoryCard
+              key={item.id}
+              isExpanded={expandedPlanId === item.id}
+              item={item}
+              isUseAsTemplateDisabled={templateAction.disabled}
+              isUseAsTemplateLoading={templateAction.loading}
+              onUseAsTemplate={
+                onUseAsTemplate
+                  ? () => {
+                      void handleUseAsTemplate(item);
+                    }
+                  : undefined
+              }
+              onToggle={() => handleToggleHistoryItem(item.id)}
+            />
+          );
+        })}
 
         {historyCount > 2 && (
           <Button

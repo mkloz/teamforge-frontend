@@ -1,12 +1,18 @@
+import { type RefObject, useCallback } from "react";
 import {
-  type RefObject,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+  type CollapsibleRenderState,
+  useCollapsibleScrollState,
+} from "@/shared/hooks/use-collapsible-scroll-state";
 import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+import {
+  type CssPropertyPair,
+  getCollapsedCssValue,
+  getCssCollapseRange,
+  getMotionSafeCollapsedCssValue,
+  getMotionSafeRevealDelay,
+  getPrefersReducedMotion,
+  setCssPropertyPairs,
+} from "@/shared/lib/collapsible-motion";
 
 interface UseProfileCollapsibleHeaderOptions<TElement extends HTMLElement> {
   ref: RefObject<TElement | null>;
@@ -18,196 +24,128 @@ const PROFILE_COLLAPSE_TRIGGER = 36;
 const PROFILE_EXPAND_TRIGGER = 8;
 const PROFILE_COMPACT_REVEAL_DELAY_MS = 280;
 
+interface ProfileHeaderStyleState {
+  coverPhaseOffset: string;
+  coverScale: string;
+  coverY: string;
+  heroOriginalDelay: string;
+  heroOriginalOpacity: string;
+  heroOriginalY: string;
+  heroZIndex: string;
+  typeOpacity: string;
+  typeScale: string;
+  typeY: string;
+}
+
 export function useProfileCollapsibleHeader<TElement extends HTMLElement>({
   ref,
 }: UseProfileCollapsibleHeaderOptions<TElement>) {
-  const frameRef = useRef<number | null>(null);
-  const compactRevealTimeoutRef = useRef<number | null>(null);
-  const isCollapsedRef = useRef(false);
-  const isCompactVisibleRef = useRef(false);
-  const [isPinned, setIsPinned] = useState(false);
-
   const applyHeaderState = useCallback(
-    ({
-      collapsed,
-      compactVisible,
-    }: {
-      collapsed: boolean;
-      compactVisible: boolean;
-    }) => {
+    ({ collapsed }: CollapsibleRenderState) => {
       const element = ref.current;
 
       if (!element || !hasBrowserWindow()) {
-        return;
+        return false;
       }
 
-      const styles = window.getComputedStyle(element);
-      const expandedHeight = getCssPixelValue(
-        styles,
-        "--profile-cover-expanded-height",
-        DEFAULT_COVER_EXPANDED_HEIGHT,
-      );
-      const collapsedHeight = getCssPixelValue(
-        styles,
-        "--profile-cover-collapsed-height",
-        DEFAULT_COVER_COLLAPSED_HEIGHT,
-      );
-      const collapseRange = Math.max(expandedHeight - collapsedHeight, 1);
-      const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
+      const collapseRange = getCoverCollapseRange(element);
+      const styleState = getProfileHeaderStyleState({
+        collapsed,
+        collapseRange,
+        prefersReducedMotion: getPrefersReducedMotion(),
+      });
 
-      element.style.setProperty(
-        "--profile-cover-y",
-        collapsed ? `${-collapseRange}px` : "0px",
-      );
-      element.style.setProperty("--profile-cover-scale", "1");
-      element.style.setProperty(
-        "--personality-cover-type-scale",
-        collapsed ? "0.48" : "1",
-      );
-      element.style.setProperty(
-        "--personality-cover-type-y",
-        collapsed ? `${-collapseRange / 2}px` : "0px",
-      );
-      element.style.setProperty(
-        "--personality-cover-type-opacity",
-        collapsed ? "0.22" : "0.82",
-      );
-      element.style.setProperty("--profile-cover-phase-offset", "0px");
-      element.style.setProperty(
-        "--profile-hero-z-index",
-        collapsed ? "10" : "40",
-      );
-      element.style.setProperty(
-        "--profile-hero-original-opacity",
-        collapsed ? "0" : "1",
-      );
-      element.style.setProperty(
-        "--profile-hero-original-y",
-        collapsed && !prefersReducedMotion ? "-48px" : "0px",
-      );
-      element.style.setProperty(
-        "--profile-hero-original-delay",
-        collapsed || prefersReducedMotion ? "0ms" : "140ms",
-      );
+      applyProfileHeaderStyleState(element, styleState);
 
-      if (isCompactVisibleRef.current !== compactVisible) {
-        isCompactVisibleRef.current = compactVisible;
-        setIsPinned(compactVisible);
-      }
+      return true;
     },
     [ref],
   );
 
-  const clearCompactRevealTimeout = useCallback(() => {
-    if (compactRevealTimeoutRef.current === null || !hasBrowserWindow()) {
-      return;
-    }
-
-    window.clearTimeout(compactRevealTimeoutRef.current);
-    compactRevealTimeoutRef.current = null;
-  }, []);
-
-  const revealCompactHeader = useCallback(() => {
-    compactRevealTimeoutRef.current = null;
-    applyHeaderState({ collapsed: true, compactVisible: true });
-  }, [applyHeaderState]);
-
-  const applyScrollState = useCallback(
-    ({ force = false }: { force?: boolean } = {}) => {
-      if (!hasBrowserWindow()) {
-        return;
-      }
-
-      const scrollTarget = getScrollTarget(ref.current);
-      const scrollTop = getScrollTop(scrollTarget);
-      const nextCollapsed = isCollapsedRef.current
-        ? scrollTop > PROFILE_EXPAND_TRIGGER
-        : scrollTop >= PROFILE_COLLAPSE_TRIGGER;
-
-      if (!force && isCollapsedRef.current === nextCollapsed) {
-        return;
-      }
-
-      clearCompactRevealTimeout();
-
-      if (nextCollapsed) {
-        isCollapsedRef.current = true;
-        applyHeaderState({ collapsed: true, compactVisible: false });
-
-        const prefersReducedMotion = window.matchMedia(
-          "(prefers-reduced-motion: reduce)",
-        ).matches;
-
-        if (prefersReducedMotion) {
-          revealCompactHeader();
-          return;
-        }
-
-        compactRevealTimeoutRef.current = window.setTimeout(
-          revealCompactHeader,
-          PROFILE_COMPACT_REVEAL_DELAY_MS,
-        );
-        return;
-      }
-
-      isCollapsedRef.current = false;
-      applyHeaderState({ collapsed: false, compactVisible: false });
-    },
-    [applyHeaderState, clearCompactRevealTimeout, ref, revealCompactHeader],
+  const getHeaderScrollTarget = useCallback(
+    () => getScrollTarget(ref.current),
+    [ref],
   );
-
-  const handleViewportChange = useCallback(() => {
-    if (!hasBrowserWindow() || frameRef.current !== null) {
-      return;
-    }
-
-    frameRef.current = window.requestAnimationFrame(() => {
-      frameRef.current = null;
-      applyScrollState();
-    });
-  }, [applyScrollState]);
-
-  useLayoutEffect(() => {
-    applyScrollState({ force: true });
-  }, [applyScrollState]);
-
-  useEffect(() => {
-    if (!hasBrowserWindow()) {
-      return undefined;
-    }
-
-    const scrollTarget = getScrollTarget(ref.current);
-
-    scrollTarget.addEventListener("scroll", handleViewportChange, {
-      passive: true,
-    });
-    window.addEventListener("resize", handleViewportChange);
-
-    return () => {
-      scrollTarget.removeEventListener("scroll", handleViewportChange);
-      window.removeEventListener("resize", handleViewportChange);
-
-      if (frameRef.current !== null) {
-        window.cancelAnimationFrame(frameRef.current);
-      }
-
-      clearCompactRevealTimeout();
-    };
-  }, [clearCompactRevealTimeout, handleViewportChange, ref]);
+  const getHeaderScrollPosition = useCallback(
+    () => getScrollTop(getHeaderScrollTarget()),
+    [getHeaderScrollTarget],
+  );
+  const { isCompactVisible: isPinned } = useCollapsibleScrollState({
+    applyState: applyHeaderState,
+    collapseTrigger: PROFILE_COLLAPSE_TRIGGER,
+    compactRevealDelayMs: PROFILE_COMPACT_REVEAL_DELAY_MS,
+    expandTrigger: PROFILE_EXPAND_TRIGGER,
+    getScrollPosition: getHeaderScrollPosition,
+    getScrollTarget: getHeaderScrollTarget,
+    listenForResize: true,
+  });
 
   return { isPinned };
 }
 
-function getCssPixelValue(
-  styles: CSSStyleDeclaration,
-  property: string,
-  fallback: number,
-) {
-  const value = Number.parseFloat(styles.getPropertyValue(property));
+function getCoverCollapseRange(element: HTMLElement) {
+  return getCssCollapseRange(element, {
+    collapsedFallback: DEFAULT_COVER_COLLAPSED_HEIGHT,
+    collapsedProperty: "--profile-cover-collapsed-height",
+    expandedFallback: DEFAULT_COVER_EXPANDED_HEIGHT,
+    expandedProperty: "--profile-cover-expanded-height",
+  });
+}
 
-  return Number.isFinite(value) ? value : fallback;
+function getProfileHeaderStyleState({
+  collapsed,
+  collapseRange,
+  prefersReducedMotion,
+}: {
+  collapsed: boolean;
+  collapseRange: number;
+  prefersReducedMotion: boolean;
+}): ProfileHeaderStyleState {
+  return {
+    coverPhaseOffset: "0px",
+    coverScale: "1",
+    coverY: getCollapsedCssValue(collapsed, `${-collapseRange}px`, "0px"),
+    heroOriginalDelay: getMotionSafeRevealDelay({
+      collapsed,
+      expandedDelay: "140ms",
+      prefersReducedMotion,
+    }),
+    heroOriginalOpacity: getCollapsedCssValue(collapsed, "0", "1"),
+    heroOriginalY: getMotionSafeCollapsedCssValue({
+      collapsed,
+      collapsedValue: "-48px",
+      expandedValue: "0px",
+      prefersReducedMotion,
+    }),
+    heroZIndex: getCollapsedCssValue(collapsed, "10", "40"),
+    typeOpacity: getCollapsedCssValue(collapsed, "0.22", "0.82"),
+    typeScale: getCollapsedCssValue(collapsed, "0.48", "1"),
+    typeY: getCollapsedCssValue(collapsed, `${-collapseRange / 2}px`, "0px"),
+  };
+}
+
+function applyProfileHeaderStyleState(
+  element: HTMLElement,
+  styleState: ProfileHeaderStyleState,
+) {
+  setCssPropertyPairs(element, getProfileHeaderStyleProperties(styleState));
+}
+
+function getProfileHeaderStyleProperties(
+  styleState: ProfileHeaderStyleState,
+): CssPropertyPair[] {
+  return [
+    ["--profile-cover-y", styleState.coverY],
+    ["--profile-cover-scale", styleState.coverScale],
+    ["--personality-cover-type-scale", styleState.typeScale],
+    ["--personality-cover-type-y", styleState.typeY],
+    ["--personality-cover-type-opacity", styleState.typeOpacity],
+    ["--profile-cover-phase-offset", styleState.coverPhaseOffset],
+    ["--profile-hero-z-index", styleState.heroZIndex],
+    ["--profile-hero-original-opacity", styleState.heroOriginalOpacity],
+    ["--profile-hero-original-y", styleState.heroOriginalY],
+    ["--profile-hero-original-delay", styleState.heroOriginalDelay],
+  ];
 }
 
 function getScrollTarget(element: HTMLElement | null) {
@@ -231,21 +169,29 @@ function getScrollTop(scrollTarget: HTMLElement | Window) {
 }
 
 function getScrollContainer(element: HTMLElement) {
-  if (!isViewportElement(element) && isScrollable(element)) {
+  if (isElementScrollContainer(element)) {
     return element;
   }
 
-  let parent = element.parentElement;
+  return getScrollableAncestor(element.parentElement);
+}
 
-  while (parent) {
-    if (!isViewportElement(parent) && isScrollable(parent)) {
-      return parent;
+function getScrollableAncestor(element: HTMLElement | null) {
+  let currentElement = element;
+
+  while (currentElement) {
+    if (isElementScrollContainer(currentElement)) {
+      return currentElement;
     }
 
-    parent = parent.parentElement;
+    currentElement = currentElement.parentElement;
   }
 
   return null;
+}
+
+function isElementScrollContainer(element: HTMLElement) {
+  return !isViewportElement(element) && isScrollable(element);
 }
 
 function isScrollable(element: HTMLElement) {

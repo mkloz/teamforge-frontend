@@ -1,5 +1,6 @@
 import { CalendarClock, MessageCircle, MousePointer2 } from "lucide-react";
 import planToGroupVisual from "@/features/landing/assets/plan-to-group-visual-ai-cutout.png";
+import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 
 const SECTION_NOTES = [
@@ -69,32 +70,12 @@ export function PlanToGroupSection() {
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6">
-        <ul className="grid border-white/10 border-b md:grid-cols-3 md:border-t">
-          {SECTION_NOTES.map(({ detail, icon: Icon, title }) => (
-            <li
-              key={title}
-              className="border-white/10 border-t py-6 md:border-t-0 md:border-r md:px-8 md:last:border-r-0 md:last:pr-0 md:first:pl-0"
-            >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
-                    <Icon
-                      className="size-3.5"
-                      aria-hidden="true"
-                      strokeWidth={2}
-                    />
-                  </span>
-                  <h3 className="font-black text-base text-white leading-snug">
-                    {title}
-                  </h3>
-                </div>
-                <p className="mt-2 max-w-sm font-medium text-sm text-text-dark-secondary leading-relaxed">
-                  {detail}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <LandingFeaturePointList
+          points={SECTION_NOTES}
+          listClassName="grid border-white/10 border-b md:grid-cols-3 md:border-t"
+          itemClassName="border-white/10 border-t py-6 md:border-t-0 md:border-r md:px-8 md:last:border-r-0 md:last:pr-0 md:first:pl-0"
+          detailClassName="mt-2 max-w-sm font-medium text-sm text-text-dark-secondary leading-relaxed"
+        />
       </div>
     </section>
   );

@@ -20,27 +20,77 @@ export function PitchSection({ detail }: PitchSectionProps) {
 }
 
 function getPitch(detail: GroupPlanDetail, isMember: boolean): string {
+  const context = getPitchContext(detail);
+
+  return isMember ? getMemberPitch(context) : getVisitorPitch(context);
+}
+
+type PitchContext = {
+  activityTitle: string;
+  citySuffix: string;
+  memberCount: number;
+  planStatus: NonNullable<GroupPlanDetail["plan"]>["status"] | null;
+  planStatusLabel: string | null;
+  seatsLeft: number;
+};
+
+function getPitchContext(detail: GroupPlanDetail): PitchContext {
   const memberCount = detail.group.activeMembersCount;
-  const seatsLeft = Math.max(0, detail.group.maxMembers - memberCount);
-  const city = detail.activity.city;
 
-  if (isMember) {
-    if (detail.plan?.status === "CONFIRMED") {
-      return `The plan is confirmed and ${memberCount} ${memberCount === 1 ? "person is" : "people are"} in.`;
-    }
-    if (detail.plan?.status === "IN_PROGRESS") {
-      return "The plan is underway, keep the group moving in the workspace.";
-    }
-    return `${memberCount} ${memberCount === 1 ? "person is" : "people are"} in. ${seatsLeft > 0 ? `${seatsLeft} ${seatsLeft === 1 ? "spot" : "spots"} still open if you want to bring someone.` : "The group is full."}`;
+  return {
+    activityTitle: detail.activity.title,
+    citySuffix: formatCitySuffix(detail.activity.city),
+    memberCount,
+    planStatus: detail.plan?.status ?? null,
+    planStatusLabel: detail.plan
+      ? formatStatusLabel(detail.plan.status).toLowerCase()
+      : null,
+    seatsLeft: Math.max(0, detail.group.maxMembers - memberCount),
+  };
+}
+
+function getMemberPitch(context: PitchContext) {
+  if (context.planStatus === "CONFIRMED") {
+    return `The plan is confirmed and ${formatPeopleIn(context.memberCount)} in.`;
   }
 
-  if (!detail.plan) {
-    return `A group is forming around ${detail.activity.title}${city ? ` in ${city}` : ""}. Join early to help shape the plan.`;
+  if (context.planStatus === "IN_PROGRESS") {
+    return "The plan is underway, keep the group moving in the workspace.";
   }
 
-  if (seatsLeft === 0) {
-    return `${memberCount} people are committed to this ${formatStatusLabel(detail.plan.status).toLowerCase()} plan${city ? ` in ${city}` : ""}. You can still see whether the group feels right.`;
+  return `${formatPeopleIn(context.memberCount)} in. ${getMemberSeatPrompt(context.seatsLeft)}`;
+}
+
+function getVisitorPitch(context: PitchContext) {
+  if (!context.planStatusLabel) {
+    return `A group is forming around ${context.activityTitle}${context.citySuffix}. Join early to help shape the plan.`;
   }
 
-  return `${memberCount} ${memberCount === 1 ? "person has" : "people have"} committed to this ${formatStatusLabel(detail.plan.status).toLowerCase()} plan${city ? ` in ${city}` : ""}. ${seatsLeft === 1 ? "One spot is" : `${seatsLeft} spots are`} still open.`;
+  if (context.seatsLeft === 0) {
+    return `${context.memberCount} people are committed to this ${context.planStatusLabel} plan${context.citySuffix}. You can still see whether the group feels right.`;
+  }
+
+  return `${formatPeopleCommitted(context.memberCount)} committed to this ${context.planStatusLabel} plan${context.citySuffix}. ${formatVisitorSeatPrompt(context.seatsLeft)} still open.`;
+}
+
+function formatPeopleIn(memberCount: number) {
+  return `${memberCount} ${memberCount === 1 ? "person is" : "people are"}`;
+}
+
+function formatPeopleCommitted(memberCount: number) {
+  return `${memberCount} ${memberCount === 1 ? "person has" : "people have"}`;
+}
+
+function getMemberSeatPrompt(seatsLeft: number) {
+  return seatsLeft > 0
+    ? `${seatsLeft} ${seatsLeft === 1 ? "spot" : "spots"} still open if you want to bring someone.`
+    : "The group is full.";
+}
+
+function formatVisitorSeatPrompt(seatsLeft: number) {
+  return seatsLeft === 1 ? "One spot is" : `${seatsLeft} spots are`;
+}
+
+function formatCitySuffix(city: string | null) {
+  return city ? ` in ${city}` : "";
 }

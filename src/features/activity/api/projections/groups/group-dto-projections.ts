@@ -1,4 +1,5 @@
 import { mapGroupMember } from "@/features/activity/api/projections/activity-participant-projections";
+import { getDefinedActivityParticipants } from "@/features/activity/api/projections/participants/participant-collection-projections";
 
 import type {
   ActivityParticipant,
@@ -24,15 +25,9 @@ export function mapGroup(
   const members = group.members.map((member) =>
     mapGroupMember(member, group.id),
   );
-  const participants = members
-    .map((member) => member.user)
-    .filter(
-      (participant): participant is ActivityParticipant =>
-        participant !== undefined,
-    );
-  const chat = chatSummary ?? group.chat ?? null;
-  const pinnedMessages =
-    chatSummary?.pinnedMessages ?? group.chat?.pinnedMessages;
+  const participants = getDefinedActivityParticipants(
+    members.map((member) => member.user),
+  );
 
   return {
     id: group.id,
@@ -50,34 +45,8 @@ export function mapGroup(
     activity: mapGroupActivitySummary(group),
     plan: group.plan ? mapGroupPlan(group, proposals) : null,
     members,
-    chat: chat
-      ? {
-          id: chat.id,
-          isMuted: getChatIsMutedForUser(chat, currentUserId),
-          pinnedMessages: mapGroupPinnedMessages(
-            {
-              pinnedMessages,
-            },
-            participants,
-            currentUserId,
-          ),
-        }
-      : undefined,
-    planHistory:
-      group.planHistory?.map((plan) => ({
-        id: plan.id,
-        title: plan.title,
-        category: plan.category,
-        dateTime: plan.dateTime,
-        coverImage: plan.coverImage ?? null,
-        coverImageMedia: plan.coverImageMedia ?? null,
-        status: plan.status,
-        locationMode: plan.locationMode,
-        location: plan.location,
-        locationLat: plan.locationLat,
-        locationLng: plan.locationLng,
-        cost: plan.cost,
-      })) ?? [],
+    chat: mapGroupChat(group, chatSummary, participants, currentUserId),
+    planHistory: mapGroupPlanHistory(group),
   };
 }
 
@@ -126,5 +95,69 @@ function mapGroupPlan(
     version: group.version,
     groupId: group.id,
     proposals,
+  };
+}
+
+function mapGroupChat(
+  group: GroupApi,
+  chatSummary: GroupChatSummary | null | undefined,
+  participants: ActivityParticipant[],
+  currentUserId: string | null,
+): Group["chat"] {
+  const chat = getGroupChat(group, chatSummary);
+
+  if (!chat) {
+    return undefined;
+  }
+
+  return {
+    id: chat.id,
+    isMuted: getChatIsMutedForUser(chat, currentUserId),
+    pinnedMessages: mapGroupPinnedMessages(
+      {
+        pinnedMessages: getGroupPinnedMessages(group, chatSummary),
+      },
+      participants,
+      currentUserId,
+    ),
+  };
+}
+
+function getGroupChat(
+  group: GroupApi,
+  chatSummary: GroupChatSummary | null | undefined,
+) {
+  return chatSummary ?? group.chat ?? null;
+}
+
+function getGroupPinnedMessages(
+  group: GroupApi,
+  chatSummary: GroupChatSummary | null | undefined,
+) {
+  return chatSummary?.pinnedMessages ?? group.chat?.pinnedMessages;
+}
+
+function mapGroupPlanHistory(
+  group: GroupApi,
+): NonNullable<Group["planHistory"]> {
+  return group.planHistory?.map(mapGroupPlanHistoryItem) ?? [];
+}
+
+function mapGroupPlanHistoryItem(
+  plan: NonNullable<GroupApi["planHistory"]>[number],
+): NonNullable<Group["planHistory"]>[number] {
+  return {
+    id: plan.id,
+    title: plan.title,
+    category: plan.category,
+    dateTime: plan.dateTime,
+    coverImage: plan.coverImage ?? null,
+    coverImageMedia: plan.coverImageMedia ?? null,
+    status: plan.status,
+    locationMode: plan.locationMode,
+    location: plan.location,
+    locationLat: plan.locationLat,
+    locationLng: plan.locationLng,
+    cost: plan.cost,
   };
 }

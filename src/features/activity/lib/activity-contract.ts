@@ -1,8 +1,6 @@
 import type { GroupRole } from "@/shared/schemas/enums";
 
 export type {
-  ActivityChatParticipant,
-  ActivityMutualGroup,
   ActivityParticipant,
   DirectChat,
   Group,
@@ -14,25 +12,15 @@ export type {
   UnifiedReaction as UnifiedMessageReaction,
 } from "@/features/activity/schemas/activity.schemas";
 export type {
-  ActivityAccess,
-  ActivityStatus,
-  ActivityVisibility,
-  ChatType,
   CostType,
-  ForgeMode,
   GroupRole,
   GroupStatus,
   LocationMode,
   MessageStatus,
-  MessageType,
   OnlineStatus,
   PlanCategory,
   PlanStatus,
 } from "@/shared/schemas/enums";
-export type { PlanProposal } from "@/shared/schemas/plan";
-
-export type UnifiedParticipant =
-  import("../schemas/activity.schemas").ActivityParticipant;
 export type MemberRole = GroupRole;
 export type FilterChip =
   | "all"

@@ -1,6 +1,11 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { useFormContext, useWatch } from "react-hook-form";
+import {
+  type ControllerRenderProps,
+  type UseFormStateReturn,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -17,8 +22,20 @@ import {
   authFormMessageClassName,
 } from "../auth-form-styles";
 
-import { getPasswordStrength } from "./password-strength";
+import {
+  getPasswordStrength,
+  type PasswordStrength,
+} from "./password-strength";
 import { PasswordStrengthMeter } from "./password-strength-meter";
+
+interface PasswordFieldControlProps {
+  field: ControllerRenderProps<RegisterValues, "password">;
+  formState: UseFormStateReturn<RegisterValues>;
+  onTogglePassword: () => void;
+  passwordValue: string;
+  showPassword: boolean;
+  strength: PasswordStrength;
+}
 
 export function RegisterPasswordField() {
   const { control } = useFormContext<RegisterValues>();
@@ -27,42 +44,79 @@ export function RegisterPasswordField() {
     control,
     name: "password",
   });
-  const strength = getPasswordStrength(passwordValue || "");
+  const password = passwordValue || "";
+  const strength = getPasswordStrength(password);
 
   return (
     <FormField
       control={control}
       name="password"
       render={({ field, formState }) => (
-        <FormItem className={authFormItemClassName}>
-          <FormLabel className={authFormLabelClassName}>Password</FormLabel>
-          <FormControl>
-            <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              autoComplete="new-password"
-              aria-invalid={!!formState.errors.password}
-              rightIcon={
-                <Button
-                  variant="accentGhost"
-                  size="icon-sm"
-                  type="button"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  onClick={() => setShowPassword((value) => !value)}
-                  className="size-8 rounded-md"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </Button>
-              }
-              {...field}
-            />
-          </FormControl>
-          {passwordValue?.length > 0 && (
-            <PasswordStrengthMeter strength={strength} />
-          )}
-          <FormMessage className={authFormMessageClassName} />
-        </FormItem>
+        <PasswordFieldControl
+          field={field}
+          formState={formState}
+          onTogglePassword={() => setShowPassword((value) => !value)}
+          passwordValue={password}
+          showPassword={showPassword}
+          strength={strength}
+        />
       )}
     />
   );
+}
+
+function PasswordFieldControl({
+  field,
+  formState,
+  onTogglePassword,
+  passwordValue,
+  showPassword,
+  strength,
+}: PasswordFieldControlProps) {
+  return (
+    <FormItem className={authFormItemClassName}>
+      <FormLabel className={authFormLabelClassName}>Password</FormLabel>
+      <FormControl>
+        <Input
+          type={showPassword ? "text" : "password"}
+          placeholder="••••••••"
+          autoComplete="new-password"
+          aria-invalid={!!formState.errors.password}
+          rightIcon={
+            <PasswordVisibilityButton
+              onTogglePassword={onTogglePassword}
+              showPassword={showPassword}
+            />
+          }
+          {...field}
+        />
+      </FormControl>
+      {shouldShowPasswordStrength(passwordValue) && (
+        <PasswordStrengthMeter strength={strength} />
+      )}
+      <FormMessage className={authFormMessageClassName} />
+    </FormItem>
+  );
+}
+
+function PasswordVisibilityButton({
+  onTogglePassword,
+  showPassword,
+}: Pick<PasswordFieldControlProps, "onTogglePassword" | "showPassword">) {
+  return (
+    <Button
+      variant="accentGhost"
+      size="icon-sm"
+      type="button"
+      aria-label={showPassword ? "Hide password" : "Show password"}
+      onClick={onTogglePassword}
+      className="size-8 rounded-md"
+    >
+      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+    </Button>
+  );
+}
+
+function shouldShowPasswordStrength(passwordValue: string) {
+  return passwordValue.length > 0;
 }

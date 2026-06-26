@@ -1,34 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
-import { ActivityApi } from "@/features/activity/api/activity.api";
-import { ActivityCommands } from "@/features/activity/api/activity-commands";
-import {
-  getActivityMutationKey,
-  runExclusiveActivityMutation,
-} from "@/features/activity/api/activity-mutation-lock";
-import type { ActivityDirectSelectionData } from "@/features/activity/api/activity-query-data";
-import { ACTIVITY_CHATS_QUERY_KEY } from "@/features/activity/api/activity-query-keys";
 import type { DirectChat } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
-import { trackMutationOutcome } from "@/shared/lib/telemetry";
-import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import type { ChatApi } from "@/shared/schemas";
+import {
+  DIRECT_CHAT_MUTE_ACTION_GUARD,
+  DIRECT_CHAT_SAFETY_ACTION_GUARD,
+  getDirectChatSafetyTargetUser,
+  getNextDirectChatSafetyAction,
+  invalidateDirectChatMuteQueries,
+  optimisticallyToggleDirectChatMute,
+  restoreDirectChatMuteSnapshot,
+  runDirectChatMuteMutation,
+  runDirectChatSafetyMutation,
+  shouldClearSelectionAfterSafetyAction,
+  shouldSkipDirectChatMuteAction,
+  shouldSkipDirectChatSafetyAction,
+  syncDirectChatMuteResult,
+  trackDirectChatSafetyMutation,
+} from "./direct-chat-safety-action-state";
 import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
-
-type DirectChatSafetyAction = "block" | "unblock";
-
-interface DirectChatSafetyMutationInput {
-  action: DirectChatSafetyAction;
-  targetUserId: string;
-}
-
-function getSafetyMutationName(action: DirectChatSafetyAction) {
-  return action === "block"
-    ? trackedMutationNames.activityBlockUser
-    : trackedMutationNames.activityUnblockUser;
-}
 
 export function useDirectChatSafetyActions(chat: DirectChat) {
   const queryClient = useQueryClient();
@@ -38,158 +29,75 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
   const clearRouteSelection = useClearActivityRouteSelection();
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
-  const targetUser = currentUserQuery.data
-    ? (chat.participants?.find(
-        (participant) => participant.userId !== currentUserQuery.data.id,
-      )?.user ?? null)
-    : null;
+  const targetUser = getDirectChatSafetyTargetUser(
+    chat,
+    currentUserQuery.data?.id,
+  );
 
   const mutation = useMutation({
     meta: {
       errorToastMessage: "We couldn't update that safety setting right now.",
     },
-    mutationFn: ({ action, targetUserId }: DirectChatSafetyMutationInput) =>
-      runExclusiveActivityMutation(
-        getActivityMutationKey("friendship", targetUserId, "safety"),
-        () =>
-          action === "block"
-            ? ActivityCommands.blockUser(targetUserId)
-            : ActivityCommands.unblockUser(targetUserId),
-      ),
+    mutationFn: runDirectChatSafetyMutation,
     onSuccess: async (result, { action }) => {
-      trackMutationOutcome(getSafetyMutationName(action), "success", {
-        chatId: chat.id,
-        requestId: result.requestId,
-      });
+      trackDirectChatSafetyMutation(
+        action,
+        "success",
+        chat.id,
+        result.requestId,
+      );
 
-      if (action === "unblock") {
+      if (shouldClearSelectionAfterSafetyAction(action)) {
         await clearRouteSelection();
       }
     },
     onError: (_error, { action }) => {
-      trackMutationOutcome(getSafetyMutationName(action), "error", {
-        chatId: chat.id,
-      });
+      trackDirectChatSafetyMutation(action, "error", chat.id);
     },
   });
   const muteMutation = useMutation({
     meta: {
       errorToastMessage: "We couldn't update notifications for this chat.",
     },
-    mutationFn: () =>
-      runExclusiveActivityMutation(
-        getActivityMutationKey("chat", chat.id, "muted"),
-        () =>
-          chat.isMuted
-            ? ActivityApi.unmuteChat(chat.id)
-            : ActivityApi.muteChat(chat.id),
-      ),
-    onMutate: async () => {
-      await Promise.all([
-        queryClient.cancelQueries({ queryKey: ACTIVITY_CHATS_QUERY_KEY }),
-        queryClient.cancelQueries({
-          queryKey: APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
-        }),
-      ]);
-
-      const previousChats = queryClient.getQueryData<ChatApi[]>(
-        ACTIVITY_CHATS_QUERY_KEY,
-      );
-      const previousSelection =
-        queryClient.getQueryData<ActivityDirectSelectionData>(
-          APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
-        );
-      const optimisticChat = { ...chat, isMuted: !chat.isMuted };
-
-      queryClient.setQueryData<ChatApi[]>(
-        ACTIVITY_CHATS_QUERY_KEY,
-        (current) =>
-          current?.map((item) =>
-            item.id === optimisticChat.id
-              ? { ...item, isMuted: optimisticChat.isMuted }
-              : item,
-          ) ?? current,
-      );
-      queryClient.setQueryData<ActivityDirectSelectionData>(
-        APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
-        (current) =>
-          current?.chat
-            ? {
-                ...current,
-                chat: {
-                  ...current.chat,
-                  isMuted: optimisticChat.isMuted,
-                },
-              }
-            : current,
-      );
-
-      return { previousChats, previousSelection };
-    },
+    mutationFn: () => runDirectChatMuteMutation(chat),
+    onMutate: () => optimisticallyToggleDirectChatMute(queryClient, chat),
     onSuccess: (updatedChat) => {
-      queryClient.setQueryData<ChatApi[]>(
-        ACTIVITY_CHATS_QUERY_KEY,
-        (current) =>
-          current?.map((item) =>
-            item.id === updatedChat.id ? { ...item, ...updatedChat } : item,
-          ) ?? current,
-      );
-      queryClient.setQueryData<ActivityDirectSelectionData>(
-        APP_QUERY_KEYS.activity.directSelectionByChatId(updatedChat.id),
-        (current) =>
-          current?.chat
-            ? {
-                ...current,
-                chat: {
-                  ...current.chat,
-                  hasUnread: updatedChat.hasUnread,
-                  isPinned: updatedChat.isPinned,
-                  isMuted: updatedChat.isMuted,
-                  unreadCount: updatedChat.unreadCount,
-                },
-              }
-            : current,
-      );
+      syncDirectChatMuteResult(queryClient, updatedChat);
     },
     onError: async (_error, _variables, context) => {
-      queryClient.setQueryData(
-        ACTIVITY_CHATS_QUERY_KEY,
-        context?.previousChats,
-      );
-      queryClient.setQueryData(
-        APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
-        context?.previousSelection,
-      );
+      restoreDirectChatMuteSnapshot(queryClient, chat.id, context);
     },
     onSettled: async () => {
-      await Promise.allSettled([
-        queryClient.invalidateQueries({ queryKey: ACTIVITY_CHATS_QUERY_KEY }),
-        queryClient.invalidateQueries({
-          queryKey: APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
-        }),
-      ]);
+      await invalidateDirectChatMuteQueries(queryClient, chat.id);
     },
   });
 
   function toggleBlock() {
-    if (!targetUser || mutation.isPending || blockSubmitPendingRef.current) {
-      return;
-    }
-
     if (
-      guardOfflineAction({
-        id: "activity-direct-chat-safety-offline",
-        description: "Reconnect before changing safety settings.",
+      shouldSkipDirectChatSafetyAction({
+        isPending: mutation.isPending,
+        isSubmitPending: blockSubmitPendingRef.current,
+        targetUser,
       })
     ) {
       return;
     }
 
+    if (!targetUser) {
+      return;
+    }
+
+    if (guardOfflineAction(DIRECT_CHAT_SAFETY_ACTION_GUARD)) {
+      return;
+    }
+
+    const safetyTargetUser = targetUser;
+
     blockSubmitPendingRef.current = true;
     mutation.mutate(
       {
-        action: chat.isBlocked ? "unblock" : "block",
-        targetUserId: targetUser.id,
+        action: getNextDirectChatSafetyAction(chat),
+        targetUserId: safetyTargetUser.id,
       },
       {
         onSettled: () => {
@@ -200,16 +108,16 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
   }
 
   function toggleMute() {
-    if (muteMutation.isPending || muteSubmitPendingRef.current) {
+    if (
+      shouldSkipDirectChatMuteAction({
+        isPending: muteMutation.isPending,
+        isSubmitPending: muteSubmitPendingRef.current,
+      })
+    ) {
       return;
     }
 
-    if (
-      guardOfflineAction({
-        id: "activity-direct-chat-mute-offline",
-        description: "Reconnect before changing chat notifications.",
-      })
-    ) {
+    if (guardOfflineAction(DIRECT_CHAT_MUTE_ACTION_GUARD)) {
       return;
     }
 

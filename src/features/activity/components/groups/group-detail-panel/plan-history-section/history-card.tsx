@@ -53,76 +53,159 @@ export function HistoryCard({
           "rounded-xl bg-forge-teal/8 px-3 ring-1 ring-forge-teal/20",
       )}
     >
-      <button
-        type="button"
-        aria-controls={detailPanelId}
-        aria-expanded={isExpanded}
-        className="min-w-0 rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        onClick={onToggle}
-      >
-        <div className="flex min-w-0 items-start gap-3.5">
-          <div className="relative size-12 shrink-0 overflow-hidden rounded-lg shadow-xs">
-            <PlanCover
-              value={item.coverImage}
-              media={item.coverImageMedia ?? null}
-              alt={item.title}
-              imageClassName="transition-transform duration-500 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-ink/5 transition-colors group-hover:bg-transparent" />
-          </div>
+      <HistoryCardSummaryButton
+        detailPanelId={detailPanelId}
+        isExpanded={isExpanded}
+        item={item}
+        statusLabel={statusLabel}
+        onToggle={onToggle}
+      />
 
-          <div className="min-w-0 flex-1 self-center pr-1">
-            <div className="flex min-w-0 items-start gap-2">
-              <h4 className="truncate font-semibold text-ink text-sm transition-colors group-hover:text-forge-teal">
-                {item.title}
-              </h4>
-              {item.rating ? (
-                <StatusPill
-                  icon={Star}
-                  iconClassName="size-3 fill-spark-amber"
-                  tone="none"
-                  className="rounded-md border-0 bg-spark-amber/10 px-1.5 text-spark-amber text-xs"
-                >
-                  {item.rating}
-                </StatusPill>
-              ) : null}
-            </div>
+      <HistoryTemplateButton
+        isDisabled={isUseAsTemplateDisabled}
+        isLoading={isUseAsTemplateLoading}
+        item={item}
+        onUseAsTemplate={onUseAsTemplate}
+      />
 
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-              <StatusPill tone="none" className={categoryColors[item.category]}>
-                {formatPanelToken(item.category)}
-              </StatusPill>
-              <StatusPill tone="none" className={statusColors[item.status]}>
-                {statusLabel}
-              </StatusPill>
-            </div>
-          </div>
-        </div>
-      </button>
-
-      {onUseAsTemplate ? (
-        <Button
-          type="button"
-          variant="secondary"
-          size="xs"
-          className="mt-1 shrink-0 px-2.5"
-          contentClassName="gap-1.5"
-          disabled={isUseAsTemplateDisabled}
-          loading={isUseAsTemplateLoading}
-          onClick={(event) => {
-            event.stopPropagation();
-            onUseAsTemplate();
-          }}
-          aria-label={`Use ${item.title} as a template for a new plan`}
-        >
-          <RotateCcw className="size-3.5 shrink-0" />
-          <span>Retry</span>
-        </Button>
-      ) : null}
-
-      {isExpanded ? (
-        <HistoryDetailPanel id={detailPanelId} item={item} />
-      ) : null}
+      <HistoryDetailPanelSlot
+        detailPanelId={detailPanelId}
+        isExpanded={isExpanded}
+        item={item}
+      />
     </article>
   );
+}
+
+function HistoryCardSummaryButton({
+  detailPanelId,
+  isExpanded,
+  item,
+  onToggle,
+  statusLabel,
+}: {
+  detailPanelId: string;
+  isExpanded: boolean;
+  item: PlanHistoryItem;
+  onToggle: () => void;
+  statusLabel: string;
+}) {
+  return (
+    <button
+      type="button"
+      aria-controls={detailPanelId}
+      aria-expanded={isExpanded}
+      className="min-w-0 rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      onClick={onToggle}
+    >
+      <div className="flex min-w-0 items-start gap-3.5">
+        <HistoryCardCover item={item} />
+
+        <div className="min-w-0 flex-1 self-center pr-1">
+          <HistoryCardTitleRow item={item} />
+
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            <StatusPill tone="none" className={categoryColors[item.category]}>
+              {formatPanelToken(item.category)}
+            </StatusPill>
+            <StatusPill tone="none" className={statusColors[item.status]}>
+              {statusLabel}
+            </StatusPill>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function HistoryCardCover({ item }: { item: PlanHistoryItem }) {
+  return (
+    <div className="relative size-12 shrink-0 overflow-hidden rounded-lg shadow-xs">
+      <PlanCover
+        value={item.coverImage}
+        media={item.coverImageMedia ?? null}
+        alt={item.title}
+        imageClassName="transition-transform duration-500 group-hover:scale-110"
+      />
+      <div className="absolute inset-0 bg-ink/5 transition-colors group-hover:bg-transparent" />
+    </div>
+  );
+}
+
+function HistoryCardTitleRow({ item }: { item: PlanHistoryItem }) {
+  return (
+    <div className="flex min-w-0 items-start gap-2">
+      <h4 className="truncate font-semibold text-ink text-sm transition-colors group-hover:text-forge-teal">
+        {item.title}
+      </h4>
+      <HistoryRatingPill rating={item.rating} />
+    </div>
+  );
+}
+
+function HistoryRatingPill({ rating }: { rating: PlanHistoryItem["rating"] }) {
+  if (!rating) {
+    return null;
+  }
+
+  return (
+    <StatusPill
+      icon={Star}
+      iconClassName="size-3 fill-spark-amber"
+      tone="none"
+      className="rounded-md border-0 bg-spark-amber/10 px-1.5 text-spark-amber text-xs"
+    >
+      {rating}
+    </StatusPill>
+  );
+}
+
+function HistoryTemplateButton({
+  isDisabled,
+  isLoading,
+  item,
+  onUseAsTemplate,
+}: {
+  isDisabled: boolean;
+  isLoading: boolean;
+  item: PlanHistoryItem;
+  onUseAsTemplate?: () => void;
+}) {
+  if (!onUseAsTemplate) {
+    return null;
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="secondary"
+      size="xs"
+      className="mt-1 shrink-0 px-2.5"
+      contentClassName="gap-1.5"
+      disabled={isDisabled}
+      loading={isLoading}
+      onClick={(event) => {
+        event.stopPropagation();
+        onUseAsTemplate();
+      }}
+      aria-label={`Use ${item.title} as a template for a new plan`}
+    >
+      <RotateCcw className="size-3.5 shrink-0" />
+      <span>Retry</span>
+    </Button>
+  );
+}
+
+function HistoryDetailPanelSlot({
+  detailPanelId,
+  isExpanded,
+  item,
+}: {
+  detailPanelId: string;
+  isExpanded: boolean;
+  item: PlanHistoryItem;
+}) {
+  return isExpanded ? (
+    <HistoryDetailPanel id={detailPanelId} item={item} />
+  ) : null;
 }

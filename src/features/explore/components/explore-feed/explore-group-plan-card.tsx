@@ -80,18 +80,47 @@ function ExploreGroupPlanCardAction({
   onJoin,
   viewState,
 }: ExploreGroupPlanCardActionProps) {
-  const ActionIcon = actionIconByState[viewState.actionIcon];
-
-  if (viewState.joinResult === "JOINED" && viewState.joinedGroupId) {
+  if (shouldRenderJoinedGroupAction(viewState)) {
     return (
-      <Button asChild variant="primary" size={isCompact ? "sm" : "default"}>
-        <Link {...buildActivityGroupHubNavigation(viewState.joinedGroupId)}>
-          <MessageCircle className="size-4" aria-hidden="true" />
-          Open group
-        </Link>
-      </Button>
+      <JoinedGroupActionButton
+        isCompact={isCompact}
+        joinedGroupId={viewState.joinedGroupId}
+      />
     );
   }
+
+  return (
+    <JoinGroupActionButton
+      isCompact={isCompact}
+      onJoin={onJoin}
+      viewState={viewState}
+    />
+  );
+}
+
+function JoinedGroupActionButton({
+  isCompact,
+  joinedGroupId,
+}: {
+  isCompact: boolean;
+  joinedGroupId: string;
+}) {
+  return (
+    <Button asChild variant="primary" size={isCompact ? "sm" : "default"}>
+      <Link {...buildActivityGroupHubNavigation(joinedGroupId)}>
+        <MessageCircle className="size-4" aria-hidden="true" />
+        Open group
+      </Link>
+    </Button>
+  );
+}
+
+function JoinGroupActionButton({
+  isCompact,
+  onJoin,
+  viewState,
+}: ExploreGroupPlanCardActionProps) {
+  const ActionIcon = actionIconByState[viewState.actionIcon];
 
   return (
     <Button
@@ -109,6 +138,12 @@ function ExploreGroupPlanCardAction({
       {viewState.actionLabel}
     </Button>
   );
+}
+
+function shouldRenderJoinedGroupAction(
+  viewState: ExploreGroupPlanCardViewState,
+): viewState is ExploreGroupPlanCardViewState & { joinedGroupId: string } {
+  return viewState.joinResult === "JOINED" && Boolean(viewState.joinedGroupId);
 }
 
 function ExploreGroupDetailsLink({ group }: { group: ExploreGroup }) {

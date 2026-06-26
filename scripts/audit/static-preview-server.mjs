@@ -1,3 +1,5 @@
+// @ts-check
+
 import { Buffer } from "node:buffer";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import {
@@ -49,8 +51,86 @@ import {
  * @property {string[]} paragraphs Crawlable static fallback copy.
  * @property {string} publishedAt Page publication date.
  * @property {string} title Document title.
+ *
+ * @typedef {import("node:http").IncomingMessage | import("node:http2").Http2ServerRequest} PreviewRequest
+ * @typedef {import("node:http").ServerResponse | import("node:http2").Http2ServerResponse} PreviewResponse
+ * @typedef {(request: PreviewRequest, response: PreviewResponse) => void} PreviewRequestListener
+ * @typedef {import("node:http").Server | import("node:http2").Http2SecureServer} PreviewServer
+ *
+ * @typedef {object} HttpsPreviewServerOptions
+ * @property {true} allowHTTP1 Allows regular HTTP/1 clients on the HTTPS server.
+ * @property {Buffer} cert TLS certificate contents.
+ * @property {Buffer} key TLS private-key contents.
+ *
+ * @typedef {object} StaticFileTarget
+ * @property {string} filePath Static file path to serve.
+ * @property {number} status HTTP status code.
+ *
+ * @typedef {object} EncodedResponseBody
+ * @property {Buffer} body Encoded response body.
+ * @property {boolean} gzipped Whether the body was gzipped.
+ *
+ * @typedef {object} ResponseBodyEncodingOptions
+ * @property {Buffer} bodyBuffer Original response body.
+ * @property {PreviewRequest} request HTTP request.
+ * @property {PreviewResponse} response HTTP response.
+ *
+ * @typedef {object} EndResponseBodyOptions
+ * @property {PreviewRequest} request HTTP request.
+ * @property {PreviewResponse} response HTTP response.
+ * @property {Buffer} responseBody Encoded response body.
+ *
+ * @typedef {object} SendResponseBodyOptions
+ * @property {Uint8Array | string} body Response body.
+ * @property {PreviewRequest} request HTTP request.
+ * @property {PreviewResponse} response HTTP response.
+ *
+ * @typedef {object} PreviewRequestContext
+ * @property {Map<string, VercelHeader>} headers Headers matching the request path.
+ * @property {string} origin Request origin.
+ * @property {string} pathname Decoded request pathname.
+ * @property {SyntheticAuditAsset | null} routeHtmlAsset Route-specific shell asset.
+ * @property {SyntheticAuditAsset | null} syntheticAsset Synthetic audit asset.
+ *
+ * @typedef {object} PreviewRequestContextOptions
+ * @property {VercelHeaderRule[]} headerRules Vercel header rules.
+ * @property {StaticPreviewOptions} options Server options.
+ * @property {PreviewRequest} request HTTP request.
+ *
+ * @typedef {object} SendSyntheticPreviewAssetOptions
+ * @property {SyntheticAuditAsset} asset Synthetic asset.
+ * @property {Map<string, VercelHeader>} headers Headers matching the request path.
+ * @property {StaticPreviewOptions} options Server options.
+ * @property {string} pathname Decoded request pathname.
+ * @property {PreviewRequest} request HTTP request.
+ * @property {PreviewResponse} response HTTP response.
+ *
+ * @typedef {object} SendRouteHtmlPreviewAssetOptions
+ * @property {SyntheticAuditAsset} asset Route HTML asset.
+ * @property {Map<string, VercelHeader>} headers Headers matching the request path.
+ * @property {StaticPreviewOptions} options Server options.
+ * @property {PreviewRequest} request HTTP request.
+ * @property {PreviewResponse} response HTTP response.
+ *
+ * @typedef {object} SendStaticPreviewFileOptions
+ * @property {Map<string, VercelHeader>} headers Headers matching the request path.
+ * @property {StaticPreviewOptions} options Server options.
+ * @property {string} pathname Decoded request pathname.
+ * @property {PreviewRequest} request HTTP request.
+ * @property {PreviewResponse} response HTTP response.
+ *
+ * @typedef {object} HandlePreviewRequestOptions
+ * @property {VercelHeaderRule[]} headerRules Vercel header rules.
+ * @property {StaticPreviewOptions} options Server options.
+ * @property {PreviewRequest} request HTTP request.
+ * @property {PreviewResponse} response HTTP response.
+ *
+ * @typedef {(origin: string) => SyntheticAuditAsset} SyntheticAuditAssetFactory
+ * @typedef {(options: StaticPreviewOptions, value: string) => void} StaticPreviewValueHandler
+ * @typedef {(options: StaticPreviewOptions) => void} StaticPreviewFlagHandler
  */
 
+/** @type {StaticPreviewOptions} */
 const defaultOptions = {
   apiProxyPath: process.env.AUDIT_API_PROXY_PATH ?? "/__audit_api",
   apiProxyTarget:
@@ -69,6 +149,7 @@ const defaultOptions = {
   root: path.join(cwd, "dist"),
   useHttps: resolveAuditPreviewHttps(),
 };
+/** @type {Map<string, string>} */
 const contentTypes = new Map([
   [".css", "text/css; charset=utf-8"],
   [".html", "text/html; charset=utf-8"],
@@ -84,6 +165,7 @@ const contentTypes = new Map([
   [".xml", "application/xml; charset=utf-8"],
 ]);
 const compressionMinimumBytes = 1024;
+/** @type {Set<string>} */
 const hopByHopHeaders = new Set([
   "connection",
   "keep-alive",
@@ -94,6 +176,7 @@ const hopByHopHeaders = new Set([
   "transfer-encoding",
   "upgrade",
 ]);
+/** @type {Set<string>} */
 const compressibleContentTypes = new Set([
   "application/javascript",
   "application/json",
@@ -122,7 +205,9 @@ const vercelConfigSchema = z
     headers: z.array(vercelHeaderRuleSchema).optional(),
   })
   .passthrough();
+/** @type {string[]} */
 const auditSitemapRoutes = ["/", "/download", "/privacy", "/terms"];
+/** @type {Map<string, AuditRoutePage>} */
 const auditRoutePages = new Map([
   [
     "/",
@@ -205,6 +290,50 @@ const auditRoutePages = new Map([
     },
   ],
 ]);
+/** @type {Map<string, StaticPreviewValueHandler>} */
+const staticPreviewValueHandlers = new Map([
+  [
+    "--host",
+    (options, value) => setStaticPreviewOption(options, "host", value),
+  ],
+  [
+    "--cert",
+    (options, value) =>
+      setStaticPreviewOption(options, "certPath", path.resolve(cwd, value)),
+  ],
+  [
+    "--api-proxy-path",
+    (options, value) =>
+      setStaticPreviewOption(
+        options,
+        "apiProxyPath",
+        normalizeApiProxyPath(value),
+      ),
+  ],
+  [
+    "--api-proxy-target",
+    (options, value) =>
+      setStaticPreviewOption(options, "apiProxyTarget", value),
+  ],
+  [
+    "--key",
+    (options, value) =>
+      setStaticPreviewOption(options, "keyPath", path.resolve(cwd, value)),
+  ],
+  [
+    "--port",
+    (options, value) => setStaticPreviewOption(options, "port", Number(value)),
+  ],
+  [
+    "--root",
+    (options, value) =>
+      setStaticPreviewOption(options, "root", path.resolve(cwd, value)),
+  ],
+]);
+/** @type {Map<string, StaticPreviewFlagHandler>} */
+const staticPreviewFlagHandlers = new Map([
+  ["--https", (options) => setStaticPreviewOption(options, "useHttps", true)],
+]);
 
 /**
  * Parses command-line arguments for the static preview server.
@@ -216,54 +345,7 @@ function parseArgs(args) {
   const options = { ...defaultOptions };
 
   for (let index = 0; index < args.length; index += 1) {
-    const arg = args[index];
-    const nextValue = args[index + 1];
-
-    if (arg === "--host" && nextValue) {
-      options.host = nextValue;
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--https") {
-      options.useHttps = true;
-      continue;
-    }
-
-    if (arg === "--cert" && nextValue) {
-      options.certPath = path.resolve(cwd, nextValue);
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--api-proxy-path" && nextValue) {
-      options.apiProxyPath = normalizeApiProxyPath(nextValue);
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--api-proxy-target" && nextValue) {
-      options.apiProxyTarget = nextValue;
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--key" && nextValue) {
-      options.keyPath = path.resolve(cwd, nextValue);
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--port" && nextValue) {
-      options.port = Number(nextValue);
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--root" && nextValue) {
-      options.root = path.resolve(cwd, nextValue);
-      index += 1;
-    }
+    index = applyStaticPreviewArgument(options, args, index);
   }
 
   return {
@@ -273,38 +355,110 @@ function parseArgs(args) {
 }
 
 /**
+ * Assigns a parsed static preview option value.
+ *
+ * @template {keyof StaticPreviewOptions} K
+ * @param {StaticPreviewOptions} options Parsed options.
+ * @param {K} key Option key.
+ * @param {StaticPreviewOptions[K]} value Option value.
+ */
+function setStaticPreviewOption(options, key, value) {
+  options[key] = value;
+}
+
+/**
+ * Applies one CLI argument to the static preview options object.
+ *
+ * @param {StaticPreviewOptions} options Parsed options.
+ * @param {string[]} args Raw process arguments.
+ * @param {number} index Current argument index.
+ * @returns {number} Next index to continue parsing from.
+ */
+function applyStaticPreviewArgument(options, args, index) {
+  const arg = args[index];
+  const flagHandler = staticPreviewFlagHandlers.get(arg);
+
+  if (flagHandler) {
+    flagHandler(options);
+    return index;
+  }
+
+  const valueHandler = staticPreviewValueHandlers.get(arg);
+  const nextValue = args[index + 1];
+
+  if (valueHandler && nextValue) {
+    valueHandler(options, nextValue);
+    return index + 1;
+  }
+
+  return index;
+}
+
+/**
  * Creates the local preview server for HTTP or HTTPS audit runs.
  *
  * @param {StaticPreviewOptions} options Server options.
- * @param {import("node:http").RequestListener} requestListener Request handler.
+ * @param {PreviewRequestListener} requestListener Request handler.
+ * @returns {PreviewServer} Preview server.
  */
 function createPreviewServer(options, requestListener) {
   if (!options.useHttps) {
     return createHttpServer(requestListener);
   }
 
+  return createSecureServer(
+    getHttpsPreviewServerOptions(options),
+    requestListener,
+  );
+}
+
+/**
+ * Builds HTTPS server options from configured certificate files.
+ *
+ * @param {StaticPreviewOptions} options Server options.
+ * @returns {HttpsPreviewServerOptions} HTTPS server options.
+ */
+function getHttpsPreviewServerOptions(options) {
+  assertHttpsPreviewCertificatePaths(options);
+  assertHttpsPreviewFileExists(
+    options.certPath,
+    `HTTPS certificate not found: ${options.certPath}`,
+  );
+  assertHttpsPreviewFileExists(
+    options.keyPath,
+    `HTTPS private key not found: ${options.keyPath}`,
+  );
+
+  return {
+    allowHTTP1: true,
+    cert: readFileSync(options.certPath),
+    key: readFileSync(options.keyPath),
+  };
+}
+
+/**
+ * Throws when HTTPS is enabled without certificate and key paths.
+ *
+ * @param {StaticPreviewOptions} options Server options.
+ */
+function assertHttpsPreviewCertificatePaths(options) {
   if (!options.certPath || !options.keyPath) {
     throw new Error(
       "HTTPS audit preview requires --cert and --key, or AUDIT_PREVIEW_CERT_PATH and AUDIT_PREVIEW_KEY_PATH.",
     );
   }
+}
 
-  if (!existsSync(options.certPath)) {
-    throw new Error(`HTTPS certificate not found: ${options.certPath}`);
+/**
+ * Throws when a required HTTPS file is missing.
+ *
+ * @param {string | undefined} filePath File path.
+ * @param {string} message Error message.
+ */
+function assertHttpsPreviewFileExists(filePath, message) {
+  if (!existsSync(filePath)) {
+    throw new Error(message);
   }
-
-  if (!existsSync(options.keyPath)) {
-    throw new Error(`HTTPS private key not found: ${options.keyPath}`);
-  }
-
-  return createSecureServer(
-    {
-      allowHTTP1: true,
-      cert: readFileSync(options.certPath),
-      key: readFileSync(options.keyPath),
-    },
-    requestListener,
-  );
 }
 
 /**
@@ -368,6 +522,43 @@ function getSourcePattern(source) {
 }
 
 /**
+ * Returns whether a Vercel header rule applies to a request pathname.
+ *
+ * @param {VercelHeaderRule} rule Vercel header rule.
+ * @param {string} pathname Request pathname.
+ * @returns {boolean} Whether the rule matches.
+ */
+function headerRuleMatchesPathname(rule, pathname) {
+  return getSourcePattern(rule.source).test(pathname);
+}
+
+/**
+ * Returns whether a parsed Vercel header is usable.
+ *
+ * @param {VercelHeader} header Header candidate.
+ * @returns {boolean} Whether the header has string fields.
+ */
+function isPreviewHeader(header) {
+  return typeof header?.key === "string" && typeof header.value === "string";
+}
+
+/**
+ * Adds headers from a matching Vercel rule to the accumulated header map.
+ *
+ * @param {Map<string, VercelHeader>} headers Accumulated headers.
+ * @param {VercelHeaderRule} rule Matching header rule.
+ */
+function addPreviewHeadersForRule(headers, rule) {
+  for (const header of rule.headers) {
+    if (!isPreviewHeader(header)) {
+      continue;
+    }
+
+    headers.set(header.key.toLowerCase(), header);
+  }
+}
+
+/**
  * Resolves headers that match a request pathname.
  *
  * @param {VercelHeaderRule[]} rules Vercel header rules.
@@ -378,17 +569,11 @@ function getHeadersForPathname(rules, pathname) {
   const headers = new Map();
 
   for (const rule of rules) {
-    if (!getSourcePattern(rule.source).test(pathname)) {
+    if (!headerRuleMatchesPathname(rule, pathname)) {
       continue;
     }
 
-    for (const header of rule.headers) {
-      if (typeof header?.key !== "string" || typeof header.value !== "string") {
-        continue;
-      }
-
-      headers.set(header.key.toLowerCase(), header);
-    }
+    addPreviewHeadersForRule(headers, rule);
   }
 
   return headers;
@@ -427,7 +612,7 @@ function isApiProxyRequest(pathname, options) {
 /**
  * Builds the backend URL for an audit API proxy request.
  *
- * @param {import("node:http").IncomingMessage} request HTTP request.
+ * @param {PreviewRequest} request HTTP request.
  * @param {string} pathname Decoded request pathname.
  * @param {StaticPreviewOptions} options Server options.
  * @returns {URL} Backend request URL.
@@ -449,29 +634,51 @@ function getApiProxyTargetUrl(request, pathname, options) {
 }
 
 /**
- * Returns request headers safe to forward through the audit API proxy.
+ * Returns whether an incoming request header can be forwarded to the backend.
  *
- * @param {import("node:http").IncomingMessage} request HTTP request.
- * @param {URL} targetUrl Backend request URL.
- * @returns {Record<string, string | string[]>} Proxy request headers.
+ * @param {string} key Header name.
+ * @param {string | string[] | undefined} value Header value.
+ * @returns {boolean} Whether the header is safe to forward.
  */
-function getApiProxyRequestHeaders(request, targetUrl) {
+function shouldForwardApiProxyRequestHeader(key, value) {
+  const lowerKey = key.toLowerCase();
+
+  return (
+    !lowerKey.startsWith(":") &&
+    !hopByHopHeaders.has(lowerKey) &&
+    value !== undefined
+  );
+}
+
+/**
+ * Copies forwardable incoming headers into a proxy header object.
+ *
+ * @param {PreviewRequest} request HTTP request.
+ * @returns {Record<string, string | string[]>} Headers to forward.
+ */
+function getForwardedApiProxyRequestHeaders(request) {
+  /** @type {Record<string, string | string[]>} */
   const headers = {};
 
   for (const [key, value] of Object.entries(request.headers)) {
-    const lowerKey = key.toLowerCase();
-
-    if (
-      lowerKey.startsWith(":") ||
-      hopByHopHeaders.has(lowerKey) ||
-      value === undefined
-    ) {
+    if (!shouldForwardApiProxyRequestHeader(key, value)) {
       continue;
     }
 
     headers[key] = value;
   }
 
+  return headers;
+}
+
+/**
+ * Rewrites origin-sensitive request headers for the backend target.
+ *
+ * @param {Record<string, string | string[]>} headers Headers to mutate.
+ * @param {URL} targetUrl Backend request URL.
+ * @returns {Record<string, string | string[]>} Rewritten headers.
+ */
+function applyApiProxyTargetHeaders(headers, targetUrl) {
   headers.host = targetUrl.host;
 
   if (typeof headers.origin === "string") {
@@ -489,10 +696,24 @@ function getApiProxyRequestHeaders(request, targetUrl) {
 }
 
 /**
+ * Returns request headers safe to forward through the audit API proxy.
+ *
+ * @param {PreviewRequest} request HTTP request.
+ * @param {URL} targetUrl Backend request URL.
+ * @returns {Record<string, string | string[]>} Proxy request headers.
+ */
+function getApiProxyRequestHeaders(request, targetUrl) {
+  return applyApiProxyTargetHeaders(
+    getForwardedApiProxyRequestHeaders(request),
+    targetUrl,
+  );
+}
+
+/**
  * Forwards backend response headers while removing connection-specific values.
  *
- * @param {import("node:http").ServerResponse} response HTTP response.
- * @param {import("node:http").IncomingMessage} proxyResponse Backend response.
+ * @param {PreviewResponse} response HTTP response.
+ * @param {PreviewRequest} proxyResponse Backend response.
  */
 function setApiProxyResponseHeaders(response, proxyResponse) {
   for (const [key, value] of Object.entries(proxyResponse.headers)) {
@@ -507,8 +728,8 @@ function setApiProxyResponseHeaders(response, proxyResponse) {
 /**
  * Proxies same-origin audit API requests to the configured backend API URL.
  *
- * @param {import("node:http").IncomingMessage} request HTTP request.
- * @param {import("node:http").ServerResponse} response HTTP response.
+ * @param {PreviewRequest} request HTTP request.
+ * @param {PreviewResponse} response HTTP response.
  * @param {StaticPreviewOptions} options Server options.
  * @param {string} pathname Decoded request pathname.
  */
@@ -802,7 +1023,7 @@ function getRouteHtmlAsset(root, pathname, origin) {
 /**
  * Returns whether a request advertises gzip support.
  *
- * @param {import("node:http").IncomingMessage} request HTTP request.
+ * @param {PreviewRequest} request HTTP request.
  * @returns {boolean} Whether gzip can be used.
  */
 function requestAcceptsGzip(request) {
@@ -818,24 +1039,72 @@ function requestAcceptsGzip(request) {
 }
 
 /**
+ * Splits a comma-delimited Vary header string the same way the previous
+ * in-place logic handled a scalar header value.
+ *
+ * @param {string} value Header value.
+ * @returns {string[]} Header tokens.
+ */
+function getTrimmedVaryHeaderValues(value) {
+  return value.split(",").map((headerValue) => headerValue.trim());
+}
+
+/**
+ * Splits a comma-delimited Vary header array entry without normalizing spaces.
+ *
+ * @param {string} value Header value.
+ * @returns {string[]} Header tokens.
+ */
+function getRawVaryHeaderValues(value) {
+  return value.split(",");
+}
+
+/**
+ * Reads the Vary header into the exact token list used for append checks.
+ *
+ * @param {PreviewResponse} response HTTP response.
+ * @returns {string[]} Existing Vary tokens.
+ */
+function getVaryHeaderValues(response) {
+  const currentVary = response.getHeader("Vary");
+
+  if (typeof currentVary === "string") {
+    return getTrimmedVaryHeaderValues(currentVary);
+  }
+
+  if (Array.isArray(currentVary)) {
+    return currentVary.flatMap(getRawVaryHeaderValues);
+  }
+
+  return [];
+}
+
+/**
+ * Returns whether a Vary token list already blocks appending a token.
+ *
+ * @param {string[]} values Existing Vary tokens.
+ * @param {string} token Vary token to append.
+ * @returns {boolean} Whether the token should not be appended.
+ */
+function hasExistingVaryToken(values, token) {
+  const normalizedToken = token.toLowerCase();
+
+  return (
+    values.some((value) => value.toLowerCase() === normalizedToken) ||
+    values.some((value) => value === "*")
+  );
+}
+
+/**
  * Adds a token to the Vary header without dropping existing values.
  *
- * @param {import("node:http").ServerResponse} response HTTP response.
+ * @param {PreviewResponse} response HTTP response.
  * @param {string} token Vary token to append.
  */
 function appendVaryHeader(response, token) {
-  const currentVary = response.getHeader("Vary");
-  const values =
-    typeof currentVary === "string"
-      ? currentVary.split(",").map((value) => value.trim())
-      : Array.isArray(currentVary)
-        ? currentVary.flatMap((value) => value.split(","))
-        : [];
+  const values = getVaryHeaderValues(response);
 
-  if (
-    values.some((value) => value.toLowerCase() === token.toLowerCase()) ||
-    values.some((value) => value === "*")
-  ) {
+  if (hasExistingVaryToken(values, token)) {
     return;
   }
 
@@ -843,18 +1112,48 @@ function appendVaryHeader(response, token) {
 }
 
 /**
+ * Returns the normalized MIME type currently assigned to a response.
+ *
+ * @param {PreviewResponse} response HTTP response.
+ * @returns {string} Normalized MIME type.
+ */
+function getResponseContentType(response) {
+  return String(response.getHeader("Content-Type") ?? "")
+    .split(";")[0]
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * Returns whether the response body is large enough to compress.
+ *
+ * @param {Buffer} body Response body.
+ * @returns {boolean} Whether compression size threshold is met.
+ */
+function meetsCompressionMinimum(body) {
+  return body.byteLength >= compressionMinimumBytes;
+}
+
+/**
+ * Returns whether the response content type is worth gzipping.
+ *
+ * @param {PreviewResponse} response HTTP response.
+ * @returns {boolean} Whether response MIME type is compressible.
+ */
+function hasCompressibleContentType(response) {
+  return compressibleContentTypes.has(getResponseContentType(response));
+}
+
+/**
  * Returns whether a response body is safe and useful to gzip.
  *
- * @param {import("node:http").IncomingMessage} request HTTP request.
- * @param {import("node:http").ServerResponse} response HTTP response.
+ * @param {PreviewRequest} request HTTP request.
+ * @param {PreviewResponse} response HTTP response.
  * @param {Buffer} body Response body.
  * @returns {boolean} Whether the response should be gzipped.
  */
 function shouldGzipResponse(request, response, body) {
-  if (
-    !requestAcceptsGzip(request) ||
-    body.byteLength < compressionMinimumBytes
-  ) {
+  if (!requestAcceptsGzip(request) || !meetsCompressionMinimum(body)) {
     return false;
   }
 
@@ -862,35 +1161,61 @@ function shouldGzipResponse(request, response, body) {
     return false;
   }
 
-  const contentType = String(response.getHeader("Content-Type") ?? "")
-    .split(";")[0]
-    .trim()
-    .toLowerCase();
-
-  return compressibleContentTypes.has(contentType);
+  return hasCompressibleContentType(response);
 }
 
 /**
- * Sends a response body with gzip when the client supports it.
+ * Converts supported response body inputs to the buffer form sent by Node.
  *
- * @param {object} options Send options.
- * @param {Uint8Array | string} options.body Response body.
- * @param {import("node:http").IncomingMessage} options.request HTTP request.
- * @param {import("node:http").ServerResponse} options.response HTTP response.
+ * @param {Uint8Array | string} body Response body.
+ * @returns {Buffer} Body buffer.
  */
-function sendResponseBody({ body, request, response }) {
-  const bodyBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body, "utf8");
-  const responseBody = shouldGzipResponse(request, response, bodyBuffer)
-    ? gzipSync(bodyBuffer)
-    : bodyBuffer;
-
-  if (responseBody !== bodyBuffer) {
-    response.setHeader("Content-Encoding", "gzip");
-    appendVaryHeader(response, "Accept-Encoding");
+function getResponseBodyBuffer(body) {
+  if (Buffer.isBuffer(body)) {
+    return body;
   }
 
-  response.setHeader("Content-Length", responseBody.byteLength);
+  return typeof body === "string"
+    ? Buffer.from(body, "utf8")
+    : Buffer.from(body);
+}
 
+/**
+ * Returns the body that should be written to the response.
+ *
+ * @param {ResponseBodyEncodingOptions} options Encoding options.
+ * @returns {EncodedResponseBody} Encoded response body.
+ */
+function getEncodedResponseBody({ bodyBuffer, request, response }) {
+  if (!shouldGzipResponse(request, response, bodyBuffer)) {
+    return {
+      body: bodyBuffer,
+      gzipped: false,
+    };
+  }
+
+  return {
+    body: gzipSync(bodyBuffer),
+    gzipped: true,
+  };
+}
+
+/**
+ * Sets gzip response headers after the body has been compressed.
+ *
+ * @param {PreviewResponse} response HTTP response.
+ */
+function setGzipResponseHeaders(response) {
+  response.setHeader("Content-Encoding", "gzip");
+  appendVaryHeader(response, "Accept-Encoding");
+}
+
+/**
+ * Ends the response without sending a body for HEAD requests.
+ *
+ * @param {EndResponseBodyOptions} options End options.
+ */
+function endResponseBody({ request, response, responseBody }) {
   if (request.method === "HEAD") {
     response.end();
     return;
@@ -900,22 +1225,88 @@ function sendResponseBody({ body, request, response }) {
 }
 
 /**
+ * Sends a response body with gzip when the client supports it.
+ *
+ * @param {SendResponseBodyOptions} options Send options.
+ */
+function sendResponseBody({ body, request, response }) {
+  const bodyBuffer = getResponseBodyBuffer(body);
+  const { body: responseBody, gzipped } = getEncodedResponseBody({
+    bodyBuffer,
+    request,
+    response,
+  });
+
+  if (gzipped) {
+    setGzipResponseHeaders(response);
+  }
+
+  response.setHeader("Content-Length", responseBody.byteLength);
+  endResponseBody({ request, response, responseBody });
+}
+
+/**
+ * Returns the host header or local preview bind address fallback.
+ *
+ * @param {PreviewRequest} request HTTP request.
+ * @param {StaticPreviewOptions} options Server options.
+ * @returns {string} Request host value.
+ */
+function getRequestHost(request, options) {
+  return request.headers.host ?? `${options.host}:${options.port}`;
+}
+
+/**
+ * Returns the first forwarded protocol value, if the request supplied one.
+ *
+ * @param {PreviewRequest} request HTTP request.
+ * @returns {string | null} Forwarded protocol.
+ */
+function getForwardedRequestProtocol(request) {
+  const forwardedProto = request.headers["x-forwarded-proto"];
+
+  if (typeof forwardedProto === "string" && forwardedProto.trim()) {
+    return forwardedProto.split(",")[0].trim();
+  }
+
+  return null;
+}
+
+/**
+ * Returns the protocol implied by the socket and server configuration.
+ *
+ * @param {PreviewRequest} request HTTP request.
+ * @param {StaticPreviewOptions} options Server options.
+ * @returns {"http" | "https"} Request protocol.
+ */
+function getLocalRequestProtocol(request, options) {
+  return isEncryptedSocket(request.socket) || options.useHttps
+    ? "https"
+    : "http";
+}
+
+/**
+ * Checks whether a Node socket exposes TLS encryption state.
+ *
+ * @param {import("node:net").Socket | undefined} socket Request socket.
+ * @returns {boolean} Whether the socket is encrypted.
+ */
+function isEncryptedSocket(socket) {
+  return Boolean(socket && "encrypted" in socket && socket.encrypted);
+}
+
+/**
  * Returns a normalized origin for the current request.
  *
- * @param {import("node:http").IncomingMessage} request HTTP request.
+ * @param {PreviewRequest} request HTTP request.
  * @param {StaticPreviewOptions} options Server options.
  * @returns {string} Request origin.
  */
 function getRequestOrigin(request, options) {
-  const host = request.headers.host ?? `${options.host}:${options.port}`;
-  const forwardedProto = request.headers["x-forwarded-proto"];
-  const encrypted = Boolean(request.socket?.encrypted);
+  const host = getRequestHost(request, options);
   const protocol =
-    typeof forwardedProto === "string" && forwardedProto.trim()
-      ? forwardedProto.split(",")[0].trim()
-      : encrypted || options.useHttps
-        ? "https"
-        : "http";
+    getForwardedRequestProtocol(request) ??
+    getLocalRequestProtocol(request, options);
 
   return `${protocol}://${host}`;
 }
@@ -964,6 +1355,43 @@ Sitemap: ${sitemapUrl.href}
 `;
 }
 
+/** @type {Map<string, SyntheticAuditAssetFactory>} */
+const syntheticAuditAssetFactories = new Map([
+  [
+    "/robots.txt",
+    (origin) => ({
+      body: buildAuditRobots(origin),
+      contentType: "text/plain; charset=utf-8",
+    }),
+  ],
+  [
+    "/sitemap.xml",
+    (origin) => ({
+      body: buildAuditSitemap(origin),
+      contentType: "application/xml; charset=utf-8",
+    }),
+  ],
+]);
+
+/**
+ * Returns the audit auth token asset fallback when no built asset exists.
+ *
+ * @param {string} root Static root directory.
+ * @returns {SyntheticAuditAsset | null} Synthetic response, if any.
+ */
+function getAuditAuthTokenAsset(root) {
+  const tokenFilePath = path.join(root, "audit-auth-tokens.json");
+
+  if (existsSync(tokenFilePath)) {
+    return null;
+  }
+
+  return {
+    body: "{}\n",
+    contentType: "application/json; charset=utf-8",
+  };
+}
+
 /**
  * Returns synthetic audit assets that should be origin-aware locally.
  *
@@ -974,55 +1402,43 @@ Sitemap: ${sitemapUrl.href}
  */
 function getSyntheticAuditAsset(pathname, root, origin) {
   if (pathname === "/audit-auth-tokens.json") {
-    const tokenFilePath = path.join(root, "audit-auth-tokens.json");
-
-    if (existsSync(tokenFilePath)) {
-      return null;
-    }
-
-    return {
-      body: "{}\n",
-      contentType: "application/json; charset=utf-8",
-    };
+    return getAuditAuthTokenAsset(root);
   }
 
-  if (pathname === "/robots.txt") {
-    return {
-      body: buildAuditRobots(origin),
-      contentType: "text/plain; charset=utf-8",
-    };
-  }
-
-  if (pathname === "/sitemap.xml") {
-    return {
-      body: buildAuditSitemap(origin),
-      contentType: "application/xml; charset=utf-8",
-    };
-  }
-
-  return null;
+  return syntheticAuditAssetFactories.get(pathname)?.(origin) ?? null;
 }
 
 /**
- * Safely resolves a request path to a file inside the static root.
+ * Returns the resolved static file candidate for a request path.
  *
  * @param {string} root Static root directory.
  * @param {string} pathname Request pathname.
- * @returns {{ filePath: string; status: number }} File response target.
+ * @returns {string} Candidate file path.
  */
-function resolveStaticFile(root, pathname) {
+function getStaticCandidatePath(root, pathname) {
   const relativePath = pathname.replace(/^\/+/u, "");
-  const candidatePath = path.resolve(root, relativePath);
-  const normalizedRoot = path.resolve(root);
-  const hasExtension = Boolean(path.extname(pathname));
 
-  if (!candidatePath.startsWith(normalizedRoot)) {
-    return {
-      filePath: path.join(root, "index.html"),
-      status: 403,
-    };
-  }
+  return path.resolve(root, relativePath);
+}
 
+/**
+ * Returns whether the candidate path passes the static root boundary check.
+ *
+ * @param {string} candidatePath Candidate file path.
+ * @param {string} normalizedRoot Resolved static root.
+ * @returns {boolean} Whether candidate is inside the static root.
+ */
+function isStaticCandidateInsideRoot(candidatePath, normalizedRoot) {
+  return candidatePath.startsWith(normalizedRoot);
+}
+
+/**
+ * Returns a direct file target if the candidate is an existing file.
+ *
+ * @param {string} candidatePath Candidate file path.
+ * @returns {StaticFileTarget | null} File response target.
+ */
+function getExistingStaticFileTarget(candidatePath) {
   if (existsSync(candidatePath) && statSync(candidatePath).isFile()) {
     return {
       filePath: candidatePath,
@@ -1030,16 +1446,41 @@ function resolveStaticFile(root, pathname) {
     };
   }
 
-  if (existsSync(candidatePath) && statSync(candidatePath).isDirectory()) {
-    const directoryIndex = path.join(candidatePath, "index.html");
+  return null;
+}
 
-    if (existsSync(directoryIndex)) {
-      return {
-        filePath: directoryIndex,
-        status: 200,
-      };
-    }
+/**
+ * Returns a directory index target if the candidate directory has one.
+ *
+ * @param {string} candidatePath Candidate directory path.
+ * @returns {StaticFileTarget | null} File response target.
+ */
+function getDirectoryIndexTarget(candidatePath) {
+  if (!existsSync(candidatePath) || !statSync(candidatePath).isDirectory()) {
+    return null;
   }
+
+  const directoryIndex = path.join(candidatePath, "index.html");
+
+  if (!existsSync(directoryIndex)) {
+    return null;
+  }
+
+  return {
+    filePath: directoryIndex,
+    status: 200,
+  };
+}
+
+/**
+ * Returns the SPA or 404 fallback target for a request path.
+ *
+ * @param {string} root Static root directory.
+ * @param {string} pathname Request pathname.
+ * @returns {StaticFileTarget} Fallback response target.
+ */
+function getStaticFallbackTarget(root, pathname) {
+  const hasExtension = Boolean(path.extname(pathname));
 
   return {
     filePath: path.join(root, hasExtension ? "404.html" : "index.html"),
@@ -1048,9 +1489,39 @@ function resolveStaticFile(root, pathname) {
 }
 
 /**
+ * Safely resolves a request path to a file inside the static root.
+ *
+ * @param {string} root Static root directory.
+ * @param {string} pathname Request pathname.
+ * @returns {StaticFileTarget} File response target.
+ */
+function resolveStaticFile(root, pathname) {
+  const candidatePath = getStaticCandidatePath(root, pathname);
+  const normalizedRoot = path.resolve(root);
+
+  if (!isStaticCandidateInsideRoot(candidatePath, normalizedRoot)) {
+    return {
+      filePath: path.join(root, "index.html"),
+      status: 403,
+    };
+  }
+
+  const existingFileTarget = getExistingStaticFileTarget(candidatePath);
+
+  if (existingFileTarget) {
+    return existingFileTarget;
+  }
+
+  return (
+    getDirectoryIndexTarget(candidatePath) ??
+    getStaticFallbackTarget(root, pathname)
+  );
+}
+
+/**
  * Applies headers and content type to a response.
  *
- * @param {import("node:http").ServerResponse} response HTTP response.
+ * @param {PreviewResponse} response HTTP response.
  * @param {Map<string, VercelHeader>} headers Headers to send.
  * @param {string} filePath Response file.
  * @param {StaticPreviewOptions} options Server options.
@@ -1092,6 +1563,160 @@ function getPreviewHeaderValue(key, value, options) {
 }
 
 /**
+ * Builds all derived request state used by the preview handler.
+ *
+ * @param {PreviewRequestContextOptions} options Context options.
+ * @returns {PreviewRequestContext} Request context.
+ */
+function getPreviewRequestContext({ headerRules, options, request }) {
+  const pathname = getRequestPathname(request.url);
+  const origin = getRequestOrigin(request, options);
+
+  return {
+    headers: getHeadersForPathname(headerRules, pathname),
+    origin,
+    pathname,
+    routeHtmlAsset: getRouteHtmlAsset(options.root, pathname, origin),
+    syntheticAsset: getSyntheticAuditAsset(pathname, options.root, origin),
+  };
+}
+
+/**
+ * Sends a synthetic audit asset such as robots.txt or sitemap.xml.
+ *
+ * @param {SendSyntheticPreviewAssetOptions} options Asset send options.
+ */
+function sendSyntheticPreviewAsset({
+  asset,
+  headers,
+  options,
+  pathname,
+  request,
+  response,
+}) {
+  setResponseHeaders(response, headers, pathname, options);
+  response.setHeader("Content-Type", asset.contentType);
+  response.statusCode = 200;
+  sendResponseBody({
+    body: asset.body,
+    request,
+    response,
+  });
+}
+
+/**
+ * Sends route-specific static HTML shell content.
+ *
+ * @param {SendRouteHtmlPreviewAssetOptions} options Route asset send options.
+ */
+function sendRouteHtmlPreviewAsset({
+  asset,
+  headers,
+  options,
+  request,
+  response,
+}) {
+  setResponseHeaders(response, headers, "index.html", options);
+  response.setHeader("Content-Type", asset.contentType);
+  response.statusCode = 200;
+  sendResponseBody({
+    body: asset.body,
+    request,
+    response,
+  });
+}
+
+/**
+ * Returns the actual file path used for a static response.
+ *
+ * @param {string} filePath Candidate file path.
+ * @param {string} root Static root directory.
+ * @returns {string} Existing file path or index fallback.
+ */
+function getStaticResponseFilePath(filePath, root) {
+  return existsSync(filePath) ? filePath : path.join(root, "index.html");
+}
+
+/**
+ * Returns the status for a static response.
+ *
+ * @param {string} filePath Candidate file path.
+ * @param {number} status Candidate status.
+ * @returns {number} Status to send.
+ */
+function getStaticResponseStatus(filePath, status) {
+  return existsSync(filePath) ? status : 404;
+}
+
+/**
+ * Sends a static file from the preview root.
+ *
+ * @param {SendStaticPreviewFileOptions} options Static file send options.
+ */
+function sendStaticPreviewFile({
+  headers,
+  options,
+  pathname,
+  request,
+  response,
+}) {
+  const { filePath, status } = resolveStaticFile(options.root, pathname);
+  const responseFilePath = getStaticResponseFilePath(filePath, options.root);
+
+  setResponseHeaders(response, headers, responseFilePath, options);
+  response.statusCode = getStaticResponseStatus(filePath, status);
+  sendResponseBody({
+    body: readFileSync(responseFilePath),
+    request,
+    response,
+  });
+}
+
+/**
+ * Handles one preview request across proxy, synthetic, route shell, and static branches.
+ *
+ * @param {HandlePreviewRequestOptions} options Preview request options.
+ */
+function handlePreviewRequest({ headerRules, options, request, response }) {
+  const { headers, pathname, routeHtmlAsset, syntheticAsset } =
+    getPreviewRequestContext({
+      headerRules,
+      options,
+      request,
+    });
+
+  if (isApiProxyRequest(pathname, options)) {
+    proxyApiRequest(request, response, options, pathname);
+    return;
+  }
+
+  if (syntheticAsset) {
+    sendSyntheticPreviewAsset({
+      asset: syntheticAsset,
+      headers,
+      options,
+      pathname,
+      request,
+      response,
+    });
+    return;
+  }
+
+  if (routeHtmlAsset) {
+    sendRouteHtmlPreviewAsset({
+      asset: routeHtmlAsset,
+      headers,
+      options,
+      request,
+      response,
+    });
+    return;
+  }
+
+  sendStaticPreviewFile({ headers, options, pathname, request, response });
+}
+
+/**
  * Starts the local static preview server.
  *
  * @param {StaticPreviewOptions} options Server options.
@@ -1104,54 +1729,9 @@ function startServer(options) {
   }
 
   const server = createPreviewServer(options, (request, response) => {
-    const pathname = getRequestPathname(request.url);
-    const origin = getRequestOrigin(request, options);
-    const syntheticAsset = getSyntheticAuditAsset(
-      pathname,
-      options.root,
-      origin,
-    );
-    const routeHtmlAsset = getRouteHtmlAsset(options.root, pathname, origin);
-    const headers = getHeadersForPathname(headerRules, pathname);
-
-    if (isApiProxyRequest(pathname, options)) {
-      proxyApiRequest(request, response, options, pathname);
-      return;
-    }
-
-    if (syntheticAsset) {
-      setResponseHeaders(response, headers, pathname, options);
-      response.setHeader("Content-Type", syntheticAsset.contentType);
-      response.statusCode = 200;
-      sendResponseBody({
-        body: syntheticAsset.body,
-        request,
-        response,
-      });
-      return;
-    }
-
-    if (routeHtmlAsset) {
-      setResponseHeaders(response, headers, "index.html", options);
-      response.setHeader("Content-Type", routeHtmlAsset.contentType);
-      response.statusCode = 200;
-      sendResponseBody({
-        body: routeHtmlAsset.body,
-        request,
-        response,
-      });
-      return;
-    }
-
-    const { filePath, status } = resolveStaticFile(options.root, pathname);
-    const responseFilePath = existsSync(filePath)
-      ? filePath
-      : path.join(options.root, "index.html");
-
-    setResponseHeaders(response, headers, responseFilePath, options);
-    response.statusCode = existsSync(filePath) ? status : 404;
-    sendResponseBody({
-      body: readFileSync(responseFilePath),
+    handlePreviewRequest({
+      headerRules,
+      options,
       request,
       response,
     });

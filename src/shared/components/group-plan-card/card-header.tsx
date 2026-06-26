@@ -15,6 +15,14 @@ interface CardHeaderProps {
   variant?: GroupPlanCardVariant;
 }
 
+interface CardHeaderViewState {
+  avatarClassName: string;
+  groupNameClassName: string;
+  isCompact: boolean;
+  shouldShowRequestPill: boolean;
+  statusPillClassName: string;
+}
+
 export function CardHeader({
   access,
   groupName,
@@ -22,50 +30,54 @@ export function CardHeader({
   imageSrc,
   variant = "default",
 }: CardHeaderProps) {
-  const isCompact = variant === "compact";
+  const viewState = getCardHeaderViewState({ access, variant });
 
   return (
-    <div
-      className={cn(
-        "flex items-start justify-between gap-4",
-        isCompact ? "mb-3" : "mb-3",
-      )}
-    >
+    <div className="mb-3 flex items-start justify-between gap-4">
       <div className="flex min-w-0 flex-1 items-center gap-2.5">
         <Avatar
           src={imageSrc}
           media={imageMedia}
           name={groupName}
           imageSize={64}
-          className={cn(
-            "border border-border bg-muted",
-            isCompact ? "size-7" : "size-6",
-          )}
+          className={viewState.avatarClassName}
           fallbackClassName="text-xs"
         />
-        <span
-          className={cn(
-            "truncate font-semibold text-muted-foreground tracking-tight transition-colors group-hover:text-foreground",
-            isCompact ? "text-xs" : "text-xs",
-          )}
-        >
-          {groupName}
-        </span>
+        <span className={viewState.groupNameClassName}>{groupName}</span>
       </div>
 
-      {access === "BY_REQUEST" ? (
+      {viewState.shouldShowRequestPill ? (
         <StatusPill
           icon={Handshake}
           size="xs"
           tone="neutral"
-          className={cn(
-            "border-border/80 bg-background/50 py-0.5 text-xs",
-            isCompact ? "px-1.5" : "px-2",
-          )}
+          className={viewState.statusPillClassName}
         >
-          <span className={cn(isCompact && "sr-only")}>Request</span>
+          <span className={cn(viewState.isCompact && "sr-only")}>Request</span>
         </StatusPill>
       ) : null}
     </div>
   );
+}
+
+function getCardHeaderViewState({
+  access,
+  variant,
+}: Pick<CardHeaderProps, "access" | "variant">): CardHeaderViewState {
+  const isCompact = variant === "compact";
+
+  return {
+    avatarClassName: cn(
+      "border border-border bg-muted",
+      isCompact ? "size-7" : "size-6",
+    ),
+    groupNameClassName:
+      "truncate font-semibold text-muted-foreground text-xs tracking-tight transition-colors group-hover:text-foreground",
+    isCompact,
+    shouldShowRequestPill: access === "BY_REQUEST",
+    statusPillClassName: cn(
+      "border-border/80 bg-background/50 py-0.5 text-xs",
+      isCompact ? "px-1.5" : "px-2",
+    ),
+  };
 }

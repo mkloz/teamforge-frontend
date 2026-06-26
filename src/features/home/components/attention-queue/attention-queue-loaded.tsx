@@ -8,7 +8,10 @@ import type {
 import { StatusPill } from "@/shared/components/ui/status-pill";
 
 import { ActionErrorBanner } from "./action-error-banner";
-import { formatQueueCount } from "./attention-queue-formatters";
+import {
+  type AttentionQueueRenderItem,
+  getAttentionQueueRenderState,
+} from "./attention-queue-render-state";
 import { EmptyQueueItem } from "./empty-queue-item";
 import { FriendRequestQueueItem } from "./friend-request-queue-item";
 import { InvitationQueueItem } from "./invitation-queue-item";
@@ -101,21 +104,16 @@ function AttentionQueueView({
     visibleInvitations,
     visibleRequests,
   } = state;
-  const renderedInvitations = visibleInvitations.slice(0, 2);
-  const renderedRequests = visibleRequests.slice(0, 2);
-  const renderedPlans = proposedPlans.slice(0, 2);
-  const collapsedQueueSize =
-    Math.min(visibleInvitations.length, 2) +
-    Math.min(visibleRequests.length, 2) +
-    Math.min(proposedPlans.length, 2) +
-    (viewer.nextStep ? 1 : 0);
-  const hiddenItemCount = Math.max(queueSize - collapsedQueueSize, 0);
-  const queueSummary = [
-    formatQueueCount(visibleInvitations.length, "invite"),
-    formatQueueCount(visibleRequests.length, "request"),
-    formatQueueCount(proposedPlans.length, "plan"),
-    viewer.nextStep ? "1 setup" : null,
-  ].filter(Boolean);
+  const { queueItems, queueSummary, shouldShowEmptyQueue } =
+    getAttentionQueueRenderState({
+      proposedPlans,
+      queueSize,
+      shouldShowSkeleton,
+      viewer,
+      visibleInvitations,
+      visibleRequests,
+    });
+  const queueSummaryAction = renderQueueSummaryAction(queueSummary);
 
   useAttentionQueueFocus({
     focusedInviteId,
@@ -141,23 +139,7 @@ function AttentionQueueView({
         eyebrow="Right now"
         title="Action queue"
         description="Invites, requests, and plan details waiting on a clear decision."
-        action={
-          queueSummary.length > 0 ? (
-            <div className="flex max-w-72 flex-wrap justify-end gap-1.5">
-              {queueSummary.map((item) => (
-                <StatusPill
-                  key={item}
-                  size="sm"
-                  tone="teal"
-                  surface="soft"
-                  className="px-2 font-black"
-                >
-                  {item}
-                </StatusPill>
-              ))}
-            </div>
-          ) : null
-        }
+        action={queueSummaryAction}
       />
 
       <ul
@@ -166,56 +148,122 @@ function AttentionQueueView({
       >
         {actionError ? <ActionErrorBanner error={actionError} /> : null}
         {shouldShowSkeleton ? <HomeAttentionQueueRowsSkeleton /> : null}
-        {!shouldShowSkeleton && queueSize === 0 ? <EmptyQueueItem /> : null}
-
-        {!shouldShowSkeleton
-          ? renderedInvitations.map((invite) => (
-              <InvitationQueueItem
-                key={invite.id}
-                invite={invite}
-                isFocused={focusedInviteId === invite.id}
-                acceptingInviteId={acceptingInviteId}
-                decliningInviteId={decliningInviteId}
-                isAccepting={isAcceptingInvite}
-                isDeclining={isDecliningInvite}
-                isOnline={isInviteActionOnline}
-                onAccept={acceptVisibleInvite}
-                onDecline={declineVisibleInvite}
-              />
-            ))
-          : null}
-
-        {!shouldShowSkeleton
-          ? renderedRequests.map((request) => (
-              <FriendRequestQueueItem
-                key={request.requesterId}
-                request={request}
-                isFocused={focusedRequestId === request.requesterId}
-                acceptingRequestId={acceptingRequestId}
-                decliningRequestId={decliningRequestId}
-                isAccepting={isAccepting}
-                isDeclining={isDeclining}
-                isOnline={isFriendRequestOnline}
-                onAccept={acceptVisibleRequest}
-                onDecline={declineVisibleRequest}
-              />
-            ))
-          : null}
-
-        {!shouldShowSkeleton
-          ? renderedPlans.map((group) => (
-              <ProposedPlanQueueItem key={group.plan.id} group={group} />
-            ))
-          : null}
-
-        {!shouldShowSkeleton && viewer.nextStep ? (
-          <ProfileStepQueueItem nextStep={viewer.nextStep} />
-        ) : null}
-
-        {!shouldShowSkeleton && hiddenItemCount > 0 ? (
-          <SeeRestButton hiddenItemCount={hiddenItemCount} />
-        ) : null}
+        {shouldShowEmptyQueue ? <EmptyQueueItem /> : null}
+        {queueItems.map((item) =>
+          renderAttentionQueueItem(item, {
+            acceptingInviteId,
+            acceptingRequestId,
+            acceptVisibleInvite,
+            acceptVisibleRequest,
+            declineVisibleInvite,
+            declineVisibleRequest,
+            decliningInviteId,
+            decliningRequestId,
+            focusedInviteId,
+            focusedRequestId,
+            isAccepting,
+            isAcceptingInvite,
+            isDeclining,
+            isDecliningInvite,
+            isFriendRequestOnline,
+            isInviteActionOnline,
+          }),
+        )}
       </ul>
     </section>
+  );
+}
+
+function renderQueueSummaryAction(queueSummary: string[]) {
+  if (queueSummary.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="flex max-w-72 flex-wrap justify-end gap-1.5">
+      {queueSummary.map((item) => (
+        <StatusPill
+          key={item}
+          size="sm"
+          tone="teal"
+          surface="soft"
+          className="px-2 font-black"
+        >
+          {item}
+        </StatusPill>
+      ))}
+    </div>
+  );
+}
+
+interface AttentionQueueItemRenderContext {
+  acceptingInviteId: string | null;
+  acceptingRequestId: string | null;
+  acceptVisibleInvite: (inviteId: string) => Promise<void>;
+  acceptVisibleRequest: (requesterId: string) => Promise<void>;
+  declineVisibleInvite: (inviteId: string) => Promise<void>;
+  declineVisibleRequest: (requesterId: string) => Promise<void>;
+  decliningInviteId: string | null;
+  decliningRequestId: string | null;
+  focusedInviteId: string | null;
+  focusedRequestId: string | null;
+  isAccepting: boolean;
+  isAcceptingInvite: boolean;
+  isDeclining: boolean;
+  isDecliningInvite: boolean;
+  isFriendRequestOnline: boolean;
+  isInviteActionOnline: boolean;
+}
+
+function renderAttentionQueueItem(
+  item: AttentionQueueRenderItem,
+  context: AttentionQueueItemRenderContext,
+) {
+  if (item.kind === "invitation") {
+    return (
+      <InvitationQueueItem
+        key={item.invite.id}
+        invite={item.invite}
+        isFocused={context.focusedInviteId === item.invite.id}
+        acceptingInviteId={context.acceptingInviteId}
+        decliningInviteId={context.decliningInviteId}
+        isAccepting={context.isAcceptingInvite}
+        isDeclining={context.isDecliningInvite}
+        isOnline={context.isInviteActionOnline}
+        onAccept={context.acceptVisibleInvite}
+        onDecline={context.declineVisibleInvite}
+      />
+    );
+  }
+
+  if (item.kind === "request") {
+    return (
+      <FriendRequestQueueItem
+        key={item.request.requesterId}
+        request={item.request}
+        isFocused={context.focusedRequestId === item.request.requesterId}
+        acceptingRequestId={context.acceptingRequestId}
+        decliningRequestId={context.decliningRequestId}
+        isAccepting={context.isAccepting}
+        isDeclining={context.isDeclining}
+        isOnline={context.isFriendRequestOnline}
+        onAccept={context.acceptVisibleRequest}
+        onDecline={context.declineVisibleRequest}
+      />
+    );
+  }
+
+  if (item.kind === "plan") {
+    return (
+      <ProposedPlanQueueItem key={item.group.plan.id} group={item.group} />
+    );
+  }
+
+  if (item.kind === "profile") {
+    return <ProfileStepQueueItem key="profile-step" nextStep={item.nextStep} />;
+  }
+
+  return (
+    <SeeRestButton key="see-rest" hiddenItemCount={item.hiddenItemCount} />
   );
 }

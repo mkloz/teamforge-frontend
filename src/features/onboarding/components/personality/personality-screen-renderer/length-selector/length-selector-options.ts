@@ -28,7 +28,7 @@ const LENGTH_SELECTOR_CONTENT: Record<
   },
 };
 
-export function getLengthConfig(length: TestLength) {
+function getLengthConfig(length: TestLength) {
   return TEST_LENGTH_CONFIG[length];
 }
 
@@ -47,7 +47,7 @@ export function getLengthSelectorActionLabel(
   return isSelectedComplete ? "Complete & View Results" : "Confirm & Continue";
 }
 
-export function countAnsweredQuestions(
+function countAnsweredQuestions(
   length: TestLength,
   answers: Record<number, number>,
 ) {
@@ -71,7 +71,7 @@ export function getLengthProgress(
   };
 }
 
-export function getResolutionSegmentCount(length: TestLength) {
+function getResolutionSegmentCount(length: TestLength) {
   if (length === 30) {
     return 2;
   }

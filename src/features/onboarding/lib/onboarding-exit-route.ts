@@ -4,7 +4,7 @@ import {
   type SettingsSection,
 } from "@/features/settings/lib/settings-route";
 
-export function buildOnboardingReturnNavigation(
+function buildOnboardingReturnNavigation(
   returnTo: OnboardingReturnTarget | null,
   returnSearch: string | null,
   returnSection: SettingsSection | null,
@@ -13,18 +13,43 @@ export function buildOnboardingReturnNavigation(
     return null;
   }
 
-  const normalizedSearch =
-    returnSearch ??
-    (returnTo === "/settings" && returnSection
-      ? new URLSearchParams({ section: returnSection }).toString()
-      : null);
+  const normalizedSearch = getOnboardingReturnSearch({
+    returnSearch,
+    returnSection,
+    returnTo,
+  });
 
   return {
     to: returnTo,
-    search: normalizedSearch
-      ? Object.fromEntries(new URLSearchParams(normalizedSearch).entries())
-      : undefined,
+    search: getOnboardingReturnSearchObject(normalizedSearch),
   } as const;
+}
+
+function getOnboardingReturnSearch({
+  returnSearch,
+  returnSection,
+  returnTo,
+}: {
+  returnSearch: string | null;
+  returnSection: SettingsSection | null;
+  returnTo: OnboardingReturnTarget;
+}) {
+  return returnSearch ?? getSettingsReturnSearch(returnTo, returnSection);
+}
+
+function getSettingsReturnSearch(
+  returnTo: OnboardingReturnTarget,
+  returnSection: SettingsSection | null,
+) {
+  return returnTo === "/settings" && returnSection
+    ? new URLSearchParams({ section: returnSection }).toString()
+    : null;
+}
+
+function getOnboardingReturnSearchObject(normalizedSearch: string | null) {
+  return normalizedSearch
+    ? Object.fromEntries(new URLSearchParams(normalizedSearch).entries())
+    : undefined;
 }
 
 export function resolveOnboardingExitNavigation(
@@ -35,8 +60,15 @@ export function resolveOnboardingExitNavigation(
 ) {
   return (
     buildOnboardingReturnNavigation(returnTo, returnSearch, returnSection) ??
-    (fallback === "home"
-      ? ({ to: "/home" } as const)
-      : buildSettingsNavigation(returnSection))
+    getOnboardingFallbackNavigation(fallback, returnSection)
   );
+}
+
+function getOnboardingFallbackNavigation(
+  fallback: "home" | "settings",
+  returnSection: SettingsSection | null,
+) {
+  return fallback === "home"
+    ? ({ to: "/home" } as const)
+    : buildSettingsNavigation(returnSection);
 }

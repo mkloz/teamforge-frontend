@@ -1,34 +1,30 @@
 import { z } from "zod";
 
 import {
+  userIdentitySummaryFields,
+  userPersonalityScoreFields,
+  userPresenceFields,
+  userProfileSummaryFields,
+  userTrustScoreField,
+} from "./entity-fragments";
+import {
   chatTypeSchema,
   friendshipStatusSchema,
-  genderSchema,
-  onlineStatusSchema,
   personalityTypeSchema,
 } from "./enums";
 
-export const friendshipUserApiSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  avatar: z.string().nullable(),
-  bio: z.string().nullable().optional(),
-  age: z.number().nullable().optional(),
-  gender: genderSchema.nullable().optional(),
-  city: z.string().nullable().optional(),
+const friendshipUserApiSchema = z.object({
+  ...userIdentitySummaryFields,
+  ...userProfileSummaryFields,
   personalityType: personalityTypeSchema.nullable(),
-  oceanO: z.number().nullable().optional(),
-  oceanC: z.number().nullable().optional(),
-  oceanE: z.number().nullable().optional(),
-  oceanA: z.number().nullable().optional(),
-  oceanN: z.number().nullable().optional(),
-  trustScore: z.number(),
-  onlineStatus: onlineStatusSchema.optional(),
+  ...userPersonalityScoreFields,
+  ...userTrustScoreField,
+  ...userPresenceFields,
 });
 
 export type FriendshipUserApi = z.infer<typeof friendshipUserApiSchema>;
 
-export const friendshipPrivateChatApiSchema = z.object({
+const friendshipPrivateChatApiSchema = z.object({
   id: z.string(),
   type: chatTypeSchema,
   createdAt: z.string().datetime(),

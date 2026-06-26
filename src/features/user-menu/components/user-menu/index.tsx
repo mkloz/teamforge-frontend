@@ -25,6 +25,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import type { User } from "@/shared/schemas";
 
 import { AppearanceSwitch } from "./appearance-switch";
 import { MenuLinkItem, MenuLinkItemContent } from "./menu-link-item";
@@ -38,13 +39,7 @@ interface UserMenuProps {
 
 export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
   const { data: currentUser } = useCurrentUserQuery();
-  const profileNavigation = currentUser?.id
-    ? buildProfileNavigation(currentUser.id)
-    : buildProfileNavigation();
-  const profileLabel = currentUser?.id ? "View public profile" : "Profile";
-  const profileDescription = currentUser?.id
-    ? "How others see you"
-    : "Your profile";
+  const profileLink = getUserMenuProfileLink(currentUser);
 
   return (
     <Sheet>
@@ -87,18 +82,14 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
           <nav className="flex flex-col gap-0.5 px-4 py-2">
             <SheetClose asChild>
               <Link
-                {...profileNavigation}
+                {...profileLink.navigation}
                 className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2 text-foreground transition-colors duration-150 hover:bg-muted/55"
-                aria-label={
-                  currentUser?.id
-                    ? "View your public profile"
-                    : "Open your profile"
-                }
+                aria-label={profileLink.ariaLabel}
               >
                 <MenuLinkItemContent
                   icon={UserRound}
-                  label={profileLabel}
-                  description={profileDescription}
+                  label={profileLink.label}
+                  description={profileLink.description}
                 />
               </Link>
             </SheetClose>
@@ -150,4 +141,22 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
       </SheetContent>
     </Sheet>
   );
+}
+
+function getUserMenuProfileLink(currentUser: User | undefined) {
+  if (currentUser?.id) {
+    return {
+      navigation: buildProfileNavigation(currentUser.id),
+      label: "View public profile",
+      description: "How others see you",
+      ariaLabel: "View your public profile",
+    };
+  }
+
+  return {
+    navigation: buildProfileNavigation(),
+    label: "Profile",
+    description: "Your profile",
+    ariaLabel: "Open your profile",
+  };
 }

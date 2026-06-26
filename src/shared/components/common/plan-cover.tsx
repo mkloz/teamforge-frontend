@@ -8,6 +8,17 @@ function isImageSource(value?: string | null) {
   return Boolean(value?.match(/^(https?:\/\/|data:image\/|blob:|\/)/i));
 }
 
+type PlanCoverRenderState =
+  | {
+      kind: "gradient";
+      gradient: string;
+    }
+  | {
+      kind: "image";
+      src?: string;
+    };
+type PlanCoverPresetResult = ReturnType<typeof getPlanCoverPreset>;
+
 interface PlanCoverProps {
   value?: string | null;
   alt: string;
@@ -20,6 +31,61 @@ interface PlanCoverProps {
   loadingComponent?: ReactNode;
   noImageComponent?: ReactNode;
   showNoImage?: boolean;
+}
+
+function getMediaCoverSrc(media?: ImageMedia | null) {
+  return media?.variants.cover800 ?? null;
+}
+
+function getFallbackImageSrc(
+  value: string | null | undefined,
+  mediaSrc: string | null,
+) {
+  return mediaSrc ?? (isImageSource(value) ? (value ?? undefined) : undefined);
+}
+
+function getGradientPresetRenderState(
+  preset: PlanCoverPresetResult,
+): PlanCoverRenderState | null {
+  if (preset?.kind !== "gradient") {
+    return null;
+  }
+
+  return {
+    kind: "gradient",
+    gradient: preset.gradient,
+  };
+}
+
+function getPresetImageSrc(
+  preset: PlanCoverPresetResult,
+  mediaSrc: string | null,
+) {
+  if (preset?.kind !== "image") {
+    return null;
+  }
+
+  return mediaSrc ?? preset.src;
+}
+
+function getPlanCoverRenderState({
+  media,
+  value,
+}: Pick<PlanCoverProps, "media" | "value">): PlanCoverRenderState {
+  const preset = getPlanCoverPreset(value);
+  const mediaSrc = getMediaCoverSrc(media);
+  const gradientState = getGradientPresetRenderState(preset);
+
+  if (gradientState) {
+    return gradientState;
+  }
+
+  return {
+    kind: "image",
+    src:
+      getPresetImageSrc(preset, mediaSrc) ??
+      getFallbackImageSrc(value, mediaSrc),
+  };
 }
 
 export function PlanCover({
@@ -35,33 +101,15 @@ export function PlanCover({
   noImageComponent,
   showNoImage,
 }: PlanCoverProps) {
-  const preset = getPlanCoverPreset(value);
-  const mediaSrc = media?.variants.cover800 ?? null;
+  const renderState = getPlanCoverRenderState({ media, value });
 
-  if (preset?.kind === "image") {
-    return (
-      <Image
-        src={mediaSrc ?? preset.src}
-        alt={alt}
-        loading={loading}
-        wrapperClassName={className}
-        className={imageClassName}
-        fallbackComponent={fallbackComponent}
-        loadingClassName={loadingClassName}
-        loadingComponent={loadingComponent}
-        noImageComponent={noImageComponent}
-        showNoImage={showNoImage}
-      />
-    );
-  }
-
-  if (preset?.kind === "gradient") {
+  if (renderState.kind === "gradient") {
     return (
       <div
         aria-label={alt}
         className={cn(
           "size-full bg-linear-to-br transition-transform duration-500",
-          preset.gradient,
+          renderState.gradient,
           className,
           imageClassName,
         )}
@@ -72,9 +120,7 @@ export function PlanCover({
 
   return (
     <Image
-      src={
-        mediaSrc ?? (isImageSource(value) ? (value ?? undefined) : undefined)
-      }
+      src={renderState.src}
       alt={alt}
       loading={loading}
       wrapperClassName={className}

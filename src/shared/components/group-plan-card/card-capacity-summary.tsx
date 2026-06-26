@@ -9,6 +9,12 @@ interface CardCapacitySummaryProps {
   variant?: GroupPlanCardVariant;
 }
 
+interface CapacitySummaryLine {
+  className: string;
+  key: string;
+  text: string;
+}
+
 export function CardCapacitySummary({
   capacity,
   currentSize,
@@ -17,6 +23,12 @@ export function CardCapacitySummary({
   variant = "default",
 }: CardCapacitySummaryProps) {
   const isCompact = variant === "compact";
+  const lines = getCapacitySummaryLines({
+    capacity,
+    currentSize,
+    isFull,
+    spotsLeft,
+  });
 
   return (
     <div
@@ -25,16 +37,63 @@ export function CardCapacitySummary({
         isCompact ? "text-xs" : "text-xs",
       )}
     >
-      <span className="font-extrabold text-foreground">
-        {capacity > 0 ? `${currentSize}/${capacity}` : `${currentSize} joined`}
-      </span>
-      {spotsLeft !== null && !isFull ? (
-        <span className="font-bold text-accent">{spotsLeft} left</span>
-      ) : null}
-      {spotsLeft === null ? (
-        <span className="font-bold text-slate-muted">Flexible size</span>
-      ) : null}
-      {isFull ? <span className="font-bold text-destructive">Full</span> : null}
+      {lines.map((line) => (
+        <span key={line.key} className={line.className}>
+          {line.text}
+        </span>
+      ))}
     </div>
   );
+}
+
+function getCapacitySummaryLines({
+  capacity,
+  currentSize,
+  isFull,
+  spotsLeft,
+}: Omit<CardCapacitySummaryProps, "variant">): CapacitySummaryLine[] {
+  return [
+    {
+      className: "font-extrabold text-foreground",
+      key: "count",
+      text:
+        capacity > 0 ? `${currentSize}/${capacity}` : `${currentSize} joined`,
+    },
+    getSpotsLeftLine({ isFull, spotsLeft }),
+    getFlexibleSizeLine(spotsLeft),
+    getFullLine(isFull),
+  ].filter((line): line is CapacitySummaryLine => line !== null);
+}
+
+function getSpotsLeftLine({
+  isFull,
+  spotsLeft,
+}: Pick<CardCapacitySummaryProps, "isFull" | "spotsLeft">) {
+  return spotsLeft !== null && !isFull
+    ? {
+        className: "font-bold text-accent",
+        key: "spots-left",
+        text: `${spotsLeft} left`,
+      }
+    : null;
+}
+
+function getFlexibleSizeLine(spotsLeft: number | null) {
+  return spotsLeft === null
+    ? {
+        className: "font-bold text-slate-muted",
+        key: "flexible-size",
+        text: "Flexible size",
+      }
+    : null;
+}
+
+function getFullLine(isFull: boolean) {
+  return isFull
+    ? {
+        className: "font-bold text-destructive",
+        key: "full",
+        text: "Full",
+      }
+    : null;
 }

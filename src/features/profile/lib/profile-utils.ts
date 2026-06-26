@@ -1,83 +1,72 @@
 import { getArchetype } from "@/features/profile/lib/archetypes";
-import type {
-  DimensionScore,
-  OceanScores,
-} from "@/features/profile/lib/profile-contract";
-import {
-  getUserOceanScores as getSharedUserOceanScores,
-  normalizeTrustScore as normalizeSharedTrustScore,
-} from "@/shared/lib/user-psychometrics";
+import type { DimensionScore } from "@/features/profile/lib/profile-contract";
+import { getUserOceanScores } from "@/shared/lib/user-psychometrics";
 import type { User } from "@/shared/schemas";
+
+type DimensionKey = "EI" | "SN" | "TF" | "JP";
+
+interface DimensionScoreConfig {
+  dimension: DimensionKey;
+  score: number;
+}
+
+const DIMENSION_LETTER_PAIRS: Record<DimensionKey, [string, string]> = {
+  EI: ["E", "I"],
+  SN: ["S", "N"],
+  TF: ["T", "F"],
+  JP: ["J", "P"],
+};
 
 /**
  * Determines the MBTI letter from a score (0-100)
  * 0-50 = first letter, 51-100 = second letter
  */
-export function getLetterFromScore(dimension: string, score: number): string {
-  const pairs: Record<string, [string, string]> = {
-    EI: ["E", "I"],
-    SN: ["S", "N"],
-    TF: ["T", "F"],
-    JP: ["J", "P"],
-  };
-  const [first, second] = pairs[dimension];
+function getLetterFromScore(dimension: DimensionKey, score: number): string {
+  const [first, second] = DIMENSION_LETTER_PAIRS[dimension];
+
   return score <= 50 ? first : second;
 }
 
 /**
  * Checks if a score is borderline (between 45 and 55)
  */
-export function isBorderline(score: number): boolean {
+function isBorderline(score: number): boolean {
   return score >= 45 && score <= 55;
 }
 
 /**
  * Creates an array of DimensionScore objects from individual scores
  */
-export function createDimensionScores(
+function createDimensionScores(
   ei: number,
   sn: number,
   tf: number,
   jp: number,
 ): DimensionScore[] {
-  return [
-    {
-      dimension: "EI",
-      score: ei,
-      letter: getLetterFromScore("EI", ei),
-      isBorderline: isBorderline(ei),
-    },
-    {
-      dimension: "SN",
-      score: sn,
-      letter: getLetterFromScore("SN", sn),
-      isBorderline: isBorderline(sn),
-    },
-    {
-      dimension: "TF",
-      score: tf,
-      letter: getLetterFromScore("TF", tf),
-      isBorderline: isBorderline(tf),
-    },
-    {
-      dimension: "JP",
-      score: jp,
-      letter: getLetterFromScore("JP", jp),
-      isBorderline: isBorderline(jp),
-    },
+  const dimensionScores: DimensionScoreConfig[] = [
+    { dimension: "EI", score: ei },
+    { dimension: "SN", score: sn },
+    { dimension: "TF", score: tf },
+    { dimension: "JP", score: jp },
   ];
+
+  return dimensionScores.map(createDimensionScore);
 }
 
-export function normalizeTrustScore(score: number): number {
-  return normalizeSharedTrustScore(score);
-}
-
-export function getUserOceanScores(user: User): OceanScores | null {
-  return getSharedUserOceanScores(user);
+function createDimensionScore({
+  dimension,
+  score,
+}: DimensionScoreConfig): DimensionScore {
+  return {
+    dimension,
+    score,
+    letter: getLetterFromScore(dimension, score),
+    isBorderline: isBorderline(score),
+  };
 }
 
 export function getUserDimensionScores(user: User): DimensionScore[] | null {
-  const oceanScores = getSharedUserOceanScores(user);
+  const oceanScores = getUserOceanScores(user);
 
   if (!oceanScores) {
     return null;

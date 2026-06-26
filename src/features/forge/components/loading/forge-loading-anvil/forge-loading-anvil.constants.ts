@@ -2,7 +2,7 @@ import type { Transition } from "framer-motion";
 
 export const ANVIL_ANIMATION_TIMING = [0, 0.28, 0.5, 0.54, 0.64, 1];
 export const ANVIL_ANIMATION_DURATION = 1.45;
-export const ANVIL_SPARK_TIMING = [0, 0.5, 0.53, 0.75, 1];
+const ANVIL_SPARK_TIMING = [0, 0.5, 0.53, 0.75, 1];
 
 export const ANVIL_LOOP_TRANSITION: Transition = {
   duration: ANVIL_ANIMATION_DURATION,
@@ -26,7 +26,7 @@ export const FORGE_LOADING_LABELS = [
   "Almost ready...",
 ];
 
-export const ANVIL_SPARKS = [
+const ANVIL_SPARKS = [
   { id: 1, dx: -22, dy: -5, size: 4 },
   { id: 2, dx: 18, dy: -8, size: 3.5 },
   { id: 3, dx: -12, dy: 6, size: 4.5 },

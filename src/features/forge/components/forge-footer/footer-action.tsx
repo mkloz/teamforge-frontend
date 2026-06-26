@@ -1,3 +1,5 @@
+import type { ComponentType } from "react";
+
 import {
   Step1FooterAction,
   Step2FooterAction,
@@ -9,6 +11,17 @@ import {
   Step7FooterAction,
 } from "./footer-step-actions";
 import type { ForgeFooterChildProps } from "./types";
+
+type FooterActionComponent = ComponentType<ForgeFooterChildProps>;
+type ForgeFooterStep = ForgeFooterChildProps["fw"]["step"];
+
+const FOOTER_ACTION_BY_STEP = new Map<ForgeFooterStep, FooterActionComponent>([
+  [2, Step2FooterAction],
+  [3, Step3FooterAction],
+  [4, Step4FooterAction],
+  [6, Step6FooterAction],
+  [7, Step7FooterAction],
+]);
 
 interface FooterActionProps extends ForgeFooterChildProps {
   continuePulse: boolean;
@@ -30,33 +43,33 @@ export function FooterAction({
     );
   }
 
-  if (fw.step === 2) {
-    return <Step2FooterAction fw={fw} />;
+  if (fw.step === 5) {
+    return renderStep5FooterAction(fw);
   }
 
-  if (fw.step === 3) {
-    return <Step3FooterAction fw={fw} />;
-  }
+  const StepFooterAction = getStepFooterAction(fw.step);
 
-  if (fw.step === 4) {
-    return <Step4FooterAction fw={fw} />;
-  }
-
-  if (fw.step === 5 && fw.forgeResult === "SUCCESS") {
-    return <Step5SuccessFooterAction fw={fw} />;
-  }
-
-  if (fw.step === 5 && fw.forgeResult === "FAILED") {
-    return <Step5FailedFooterAction fw={fw} />;
-  }
-
-  if (fw.step === 6) {
-    return <Step6FooterAction fw={fw} />;
-  }
-
-  if (fw.step === 7) {
-    return <Step7FooterAction fw={fw} />;
+  if (StepFooterAction) {
+    return <StepFooterAction fw={fw} />;
   }
 
   return null;
+}
+
+function renderStep5FooterAction(fw: ForgeFooterChildProps["fw"]) {
+  if (fw.forgeResult === "SUCCESS") {
+    return <Step5SuccessFooterAction fw={fw} />;
+  }
+
+  if (fw.forgeResult === "FAILED") {
+    return <Step5FailedFooterAction fw={fw} />;
+  }
+
+  return null;
+}
+
+function getStepFooterAction(
+  step: ForgeFooterStep,
+): FooterActionComponent | null {
+  return FOOTER_ACTION_BY_STEP.get(step) ?? null;
 }

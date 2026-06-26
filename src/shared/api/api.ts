@@ -16,12 +16,7 @@ export {
   type ApiResponseWithRequestId,
   getResponseRequestId,
   parseJsonWithRequestId,
-  REQUEST_ID_HEADER,
 } from "@/shared/api/api-errors";
-export type {
-  ApiAuthMode,
-  ApiRequestContext,
-} from "@/shared/api/api-request-context";
 
 const AUTH_REFRESH_PATH = "auth/refresh";
 const AUTH_LOGOUT_PATH = "auth/logout";
@@ -75,6 +70,53 @@ function buildRetryOptions(
       retryOnUnauthorized: false,
     },
   };
+}
+
+function shouldHandleUnauthorizedWithoutRetry(
+  request: Request,
+  options: Options,
+) {
+  const { auth, retryOnUnauthorized } = readApiRequestContext(options);
+
+  return (
+    !retryOnUnauthorized || auth === "refresh" || isAuthRefreshRequest(request)
+  );
+}
+
+async function refreshTokensForUnauthorizedResponse() {
+  try {
+    return await refreshTokens({ allowCookieRefresh: true });
+  } catch (error) {
+    if (isApiNetworkError(error)) {
+      throw error;
+    }
+  }
+
+  return null;
+}
+
+async function handleUnauthorizedResponse(
+  request: Request,
+  options: Options,
+  response: Response,
+) {
+  if (response.status !== 401) {
+    return response;
+  }
+
+  if (shouldHandleUnauthorizedWithoutRetry(request, options)) {
+    authSession.handleUnauthorized();
+    return response;
+  }
+
+  const nextTokens = await refreshTokensForUnauthorizedResponse();
+
+  if (!nextTokens) {
+    authSession.handleUnauthorized();
+    return response;
+  }
+
+  return apiClient(request, buildRetryOptions(request, options, nextTokens));
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -200,43 +242,6 @@ export const apiClient = ky.create({
   timeout: 15_000,
   hooks: {
     ...sharedHooks,
-    afterResponse: [
-      async (request, options, response) => {
-        if (response.status !== 401) {
-          return response;
-        }
-
-        const { auth, retryOnUnauthorized } = readApiRequestContext(options);
-
-        if (
-          !retryOnUnauthorized ||
-          auth === "refresh" ||
-          isAuthRefreshRequest(request)
-        ) {
-          authSession.handleUnauthorized();
-          return response;
-        }
-
-        let nextTokens: AuthTokens | null = null;
-
-        try {
-          nextTokens = await refreshTokens({ allowCookieRefresh: true });
-        } catch (error) {
-          if (isApiNetworkError(error)) {
-            throw error;
-          }
-        }
-
-        if (!nextTokens) {
-          authSession.handleUnauthorized();
-          return response;
-        }
-
-        return apiClient(
-          request,
-          buildRetryOptions(request, options, nextTokens),
-        );
-      },
-    ],
+    afterResponse: [handleUnauthorizedResponse],
   },
 });

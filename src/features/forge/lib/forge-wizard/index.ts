@@ -6,6 +6,5 @@ export type {
   ForgeWizardData,
   ForgeWizardField,
   ForgeWizardSetFieldAction,
-  NavDirection,
   Step,
 } from "./types";

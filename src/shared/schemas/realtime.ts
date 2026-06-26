@@ -6,7 +6,7 @@ import { groupApiSchema } from "./group-api";
 import { notificationSchema } from "./notification";
 import { planProposalSchema, planSchema } from "./plan";
 
-export const realtimeEventSchema = z.enum([
+const realtimeEventSchema = z.enum([
   "realtime.ready",
   "chat.subscribe",
   "chat.unsubscribe",
@@ -22,7 +22,7 @@ export const realtimeEventSchema = z.enum([
   "chat.read",
 ]);
 
-export const planUpdateKindSchema = z.enum([
+const planUpdateKindSchema = z.enum([
   "updated",
   "confirmed",
   "completed",
@@ -34,18 +34,14 @@ export const planUpdateKindSchema = z.enum([
   "proposal_withdrawn",
 ]);
 
-export const groupUpdateReasonSchema = z.enum([
+const groupUpdateReasonSchema = z.enum([
   "updated",
   "member_left",
   "member_removed",
   "disbanded",
 ]);
 
-export const realtimeReadyPayloadSchema = z.object({
-  userId: z.string(),
-});
-
-export const realtimeEventMetaSchema = z.object({
+const realtimeEventMetaSchema = z.object({
   entityKey: z.string().nullable(),
   entityVersion: z.number().nullable(),
   eventId: z.string(),
@@ -105,27 +101,10 @@ export const realtimeGroupUpdatedPayloadSchema = realtimeEventMetaSchema.extend(
 
 export type RealtimeEventName = z.infer<typeof realtimeEventSchema>;
 export type PlanUpdateKind = z.infer<typeof planUpdateKindSchema>;
-export type GroupUpdateReason = z.infer<typeof groupUpdateReasonSchema>;
-export type RealtimeReadyPayload = z.infer<typeof realtimeReadyPayloadSchema>;
 export type RealtimeEventMeta = z.infer<typeof realtimeEventMetaSchema>;
 export type RealtimeMessagePayload = z.infer<
   typeof realtimeMessagePayloadSchema
 >;
 export type RealtimeChatTypingPayload = z.infer<
   typeof realtimeChatTypingPayloadSchema
->;
-export type RealtimePresenceChangedPayload = z.infer<
-  typeof realtimePresenceChangedPayloadSchema
->;
-export type RealtimeNotificationPayload = z.infer<
-  typeof realtimeNotificationPayloadSchema
->;
-export type RealtimeChatReadPayload = z.infer<
-  typeof realtimeChatReadPayloadSchema
->;
-export type RealtimePlanUpdatedPayload = z.infer<
-  typeof realtimePlanUpdatedPayloadSchema
->;
-export type RealtimeGroupUpdatedPayload = z.infer<
-  typeof realtimeGroupUpdatedPayloadSchema
 >;

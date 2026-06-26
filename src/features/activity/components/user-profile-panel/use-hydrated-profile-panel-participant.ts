@@ -11,19 +11,24 @@ const LEGACY_ACTIVITY_CURRENT_USER_IDS = new Set([
   "user-current",
 ]);
 
+const OCEAN_PROFILE_FIELDS = [
+  "oceanO",
+  "oceanC",
+  "oceanE",
+  "oceanA",
+  "oceanN",
+] satisfies readonly (keyof UserProfilePanelParticipant)[];
+
 export function useHydratedProfilePanelParticipant(
   participant: UserProfilePanelParticipant | undefined,
 ) {
   const currentUserQuery = useCurrentUserQuery();
   const currentUser = currentUserQuery.data;
-  const isCurrentUser =
-    participant !== undefined &&
-    currentUser !== undefined &&
-    participant.id === currentUser.id;
-  const canFetchPublicProfile =
-    participant !== undefined &&
-    !isCurrentUser &&
-    !LEGACY_ACTIVITY_CURRENT_USER_IDS.has(participant.id);
+  const isCurrentUser = isCurrentUserParticipant(participant, currentUser);
+  const canFetchPublicProfile = canFetchProfilePanelPublicProfile(
+    participant,
+    isCurrentUser,
+  );
 
   const publicProfileQuery = useQuery({
     ...activityParticipantProfileQueryOptions(participant?.id ?? ""),
@@ -38,6 +43,26 @@ export function useHydratedProfilePanelParticipant(
       publicProfileQuery.isLoading &&
       !hasCompleteOceanProfile(participant),
   };
+}
+
+function isCurrentUserParticipant(
+  participant: UserProfilePanelParticipant | undefined,
+  currentUser: User | undefined,
+) {
+  return Boolean(
+    participant && currentUser && participant.id === currentUser.id,
+  );
+}
+
+function canFetchProfilePanelPublicProfile(
+  participant: UserProfilePanelParticipant | undefined,
+  isCurrentUser: boolean,
+) {
+  return Boolean(
+    participant &&
+      !isCurrentUser &&
+      !LEGACY_ACTIVITY_CURRENT_USER_IDS.has(participant.id),
+  );
 }
 
 function mergeProfileParticipant(
@@ -72,10 +97,8 @@ function hasCompleteOceanProfile(
 ) {
   return Boolean(
     participant &&
-      typeof participant.oceanO === "number" &&
-      typeof participant.oceanC === "number" &&
-      typeof participant.oceanE === "number" &&
-      typeof participant.oceanA === "number" &&
-      typeof participant.oceanN === "number",
+      OCEAN_PROFILE_FIELDS.every(
+        (field) => typeof participant[field] === "number",
+      ),
   );
 }

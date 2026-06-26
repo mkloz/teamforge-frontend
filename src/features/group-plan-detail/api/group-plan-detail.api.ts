@@ -11,12 +11,12 @@ import {
 
 import { groupPlanDetailSchema } from "../schemas/group-plan-detail.schema";
 
-export const createGroupPlanProposalPayloadSchema = z.object({
+const createGroupPlanProposalPayloadSchema = z.object({
   field: planProposalFieldSchema,
   proposedValue: z.string().trim().min(1),
 });
 
-export const voteGroupPlanProposalPayloadSchema = z.object({
+const voteGroupPlanProposalPayloadSchema = z.object({
   vote: z.enum(["APPROVE", "REJECT"]),
 });
 

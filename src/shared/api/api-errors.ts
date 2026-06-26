@@ -1,52 +1,66 @@
 import type { HTTPError } from "ky";
 
-import { ApiExceptionSchema } from "@/shared/types/api-error";
+import {
+  type ApiException,
+  ApiExceptionSchema,
+} from "@/shared/types/api-error";
 
 export interface ApiResponseWithRequestId<T> {
   data: T;
   requestId: string | null;
 }
 
-export const REQUEST_ID_HEADER = "x-request-id";
+const REQUEST_ID_HEADER = "x-request-id";
 
-export async function parseApiError(error: HTTPError) {
-  let payload: Awaited<ReturnType<typeof ApiExceptionSchema.parse>> | null =
-    null;
-
+async function readApiErrorPayload(error: HTTPError) {
   try {
     const value: unknown = await error.response.clone().json();
     const parsed = ApiExceptionSchema.safeParse(value);
 
-    payload = parsed.success ? parsed.data : null;
+    return parsed.success ? parsed.data : null;
   } catch {
-    payload = null;
+    return null;
   }
+}
 
+function attachApiErrorCause(error: HTTPError, value: unknown) {
+  Object.defineProperty(error, "cause", {
+    value,
+    configurable: true,
+  });
+}
+
+function applyRequestIdToApiPayload(
+  payload: ApiException,
+  requestId: string | null,
+) {
+  if (requestId && !payload.requestId) {
+    payload.requestId = requestId;
+  }
+}
+
+function applyApiErrorMessage(error: HTTPError, message: string | undefined) {
+  if (message && message.trim().length > 0) {
+    error.message = message;
+  }
+}
+
+export async function parseApiError(error: HTTPError) {
+  const payload = await readApiErrorPayload(error);
   const requestId = error.response.headers.get(REQUEST_ID_HEADER);
 
   if (!payload) {
     if (requestId) {
-      Object.defineProperty(error, "cause", {
-        value: { requestId },
-        configurable: true,
-      });
+      attachApiErrorCause(error, { requestId });
     }
 
     return error;
   }
 
-  if (requestId && !payload.requestId) {
-    payload.requestId = requestId;
-  }
+  applyRequestIdToApiPayload(payload, requestId);
+  applyApiErrorMessage(error, payload.message);
 
-  if (payload.message && payload.message.trim().length > 0) {
-    error.message = payload.message;
-  }
-
-  Object.defineProperty(error, "cause", {
-    value: payload,
-    configurable: true,
-  });
+  attachApiErrorCause(error, payload);
 
   return error;
 }

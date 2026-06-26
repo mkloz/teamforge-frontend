@@ -10,6 +10,12 @@ export interface GroupActionButtonProps {
   variant?: "default" | "destructive" | "muted";
 }
 
+const BUTTON_VARIANTS = {
+  default: "subtle",
+  destructive: "destructive",
+  muted: "accentGhost",
+} as const;
+
 export function GroupActionButton({
   disabled = false,
   icon,
@@ -18,16 +24,9 @@ export function GroupActionButton({
   title,
   variant = "default",
 }: GroupActionButtonProps) {
-  const buttonVariant =
-    variant === "destructive"
-      ? "destructive"
-      : variant === "muted"
-        ? "accentGhost"
-        : "subtle";
-
   return (
     <Button
-      variant={buttonVariant}
+      variant={BUTTON_VARIANTS[variant]}
       disabled={disabled}
       onClick={onClick}
       title={title}

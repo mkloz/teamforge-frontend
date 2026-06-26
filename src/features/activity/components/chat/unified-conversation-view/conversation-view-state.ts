@@ -29,19 +29,16 @@ export interface ConversationViewState {
 export function getConversationViewState(
   input: ConversationInput,
 ): ConversationViewState {
-  const { kind, data } = input;
-  const isBlockedDirectChat = kind === "dm" && Boolean(data.isBlocked);
+  const isBlockedDirectChat = getIsBlockedDirectChat(input);
 
   return {
-    activePlan: kind === "group" ? (data.plan ?? null) : null,
+    activePlan: getConversationActivePlan(input),
     allPinnedMessages: getConversationPinnedMessages(input),
-    chatId: kind === "group" ? (data.chat?.id ?? null) : data.id,
-    conversationId: `${kind}:${data.id}`,
-    inputPlaceholder: isBlockedDirectChat
-      ? "Unblock this person to send messages"
-      : undefined,
+    chatId: getConversationChatId(input),
+    conversationId: getConversationId(input),
+    inputPlaceholder: getConversationInputPlaceholder(isBlockedDirectChat),
     isBlockedDirectChat,
-    isNotesChat: kind === "dm" && data.type === "NOTES",
+    isNotesChat: getIsNotesChat(input),
   };
 }
 
@@ -76,4 +73,30 @@ function getConversationPinnedMessages({
   return (pinnedMessages || []).map((message: UnifiedMessage) =>
     Object.assign({}, message, { isOwn: false }),
   );
+}
+
+function getConversationActivePlan(input: ConversationInput): Plan | null {
+  return input.kind === "group" ? (input.data.plan ?? null) : null;
+}
+
+function getConversationChatId(input: ConversationInput) {
+  return input.kind === "group" ? (input.data.chat?.id ?? null) : input.data.id;
+}
+
+function getConversationId({ kind, data }: ConversationInput) {
+  return `${kind}:${data.id}`;
+}
+
+function getConversationInputPlaceholder(isBlockedDirectChat: boolean) {
+  return isBlockedDirectChat
+    ? "Unblock this person to send messages"
+    : undefined;
+}
+
+function getIsBlockedDirectChat(input: ConversationInput) {
+  return input.kind === "dm" && Boolean(input.data.isBlocked);
+}
+
+function getIsNotesChat(input: ConversationInput) {
+  return input.kind === "dm" && input.data.type === "NOTES";
 }

@@ -6,19 +6,17 @@ import {
 } from "@/features/activity/lib/saved-message";
 import type { ChatApi, SavedMessageApi } from "@/shared/schemas";
 
-export type ActivityFeedData = ReturnType<
-  typeof ActivityQueryFactory.deriveFeedData
->;
+type ActivityFeedData = ReturnType<typeof ActivityQueryFactory.deriveFeedData>;
 export type ActivityFeedFilter = Parameters<
   typeof ActivityQueryFactory.deriveFeedData
 >[0];
-export type ActivityGroupsData = Parameters<
+type ActivityGroupsData = Parameters<
   typeof ActivityQueryFactory.deriveFeedData
 >[2];
-export type ActivityChatsData = Parameters<
+type ActivityChatsData = Parameters<
   typeof ActivityQueryFactory.deriveFeedData
 >[3];
-export type ActivityFriendshipsData = Parameters<
+type ActivityFriendshipsData = Parameters<
   typeof ActivityQueryFactory.deriveFeedData
 >[4];
 export type ActivityCurrentUserData = Parameters<
@@ -28,13 +26,13 @@ export type ActivityTypingByChatId = Parameters<
   typeof ActivityQueryFactory.deriveFeedData
 >[6];
 
-export type ActivityFeedStatusQueryState = {
+type ActivityFeedStatusQueryState = {
   isError: boolean;
   isFetching: boolean;
   isPending: boolean;
 };
 
-export type ActivityFeedSavedMessagesStatusQueryState =
+type ActivityFeedSavedMessagesStatusQueryState =
   ActivityFeedStatusQueryState & {
     data: unknown;
   };
@@ -71,6 +69,15 @@ type LoadedFeedDataOptions = {
   savedMessagesById: Record<string, SavedMessageSnapshot>;
   typingByChatId: ActivityTypingByChatId;
 };
+
+type LoadedFeedRequiredData = {
+  chats: ActivityChatsData;
+  currentUser: ActivityCurrentUserData;
+  friendships: ActivityFriendshipsData;
+  groups: ActivityGroupsData;
+};
+
+type LoadedFeedCoreData = Omit<LoadedFeedRequiredData, "friendships">;
 
 type ActivityFeedReturnStateOptions = {
   chats: ActivityChatsData | undefined;
@@ -124,28 +131,96 @@ export function deriveLoadedActivityFeedData({
   savedMessagesById,
   typingByChatId,
 }: LoadedFeedDataOptions) {
-  if (
-    !currentUser ||
-    !groups ||
-    !chats ||
-    (needsFriendshipData && !friendships)
-  ) {
+  const requiredData = getLoadedFeedRequiredData({
+    chats,
+    currentUser,
+    friendships,
+    groups,
+    needsFriendshipData,
+  });
+
+  if (!requiredData) {
     return null;
   }
 
   return ActivityQueryFactory.deriveFeedData(
     activeFilter,
     deferredSearchQuery,
-    groups,
-    chats,
-    friendships ?? [],
-    currentUser,
+    requiredData.groups,
+    requiredData.chats,
+    requiredData.friendships,
+    requiredData.currentUser,
     typingByChatId,
     {
       pinnedConversationKeys,
       savedMessagesById,
     },
   );
+}
+
+function getLoadedFeedRequiredData({
+  chats,
+  currentUser,
+  friendships,
+  groups,
+  needsFriendshipData,
+}: Pick<
+  LoadedFeedDataOptions,
+  "chats" | "currentUser" | "friendships" | "groups" | "needsFriendshipData"
+>): LoadedFeedRequiredData | null {
+  const coreData = getLoadedFeedCoreData({ chats, currentUser, groups });
+
+  if (!coreData) {
+    return null;
+  }
+
+  const loadedFriendships = getLoadedFriendships(
+    friendships,
+    needsFriendshipData,
+  );
+
+  if (!loadedFriendships) {
+    return null;
+  }
+
+  return {
+    ...coreData,
+    friendships: loadedFriendships,
+  };
+}
+
+function getLoadedFeedCoreData({
+  chats,
+  currentUser,
+  groups,
+}: Pick<
+  LoadedFeedDataOptions,
+  "chats" | "currentUser" | "groups"
+>): LoadedFeedCoreData | null {
+  if (!currentUser) {
+    return null;
+  }
+
+  if (!groups) {
+    return null;
+  }
+
+  if (!chats) {
+    return null;
+  }
+
+  return { chats, currentUser, groups };
+}
+
+function getLoadedFriendships(
+  friendships: ActivityFriendshipsData | undefined,
+  needsFriendshipData: boolean,
+) {
+  if (friendships) {
+    return friendships;
+  }
+
+  return needsFriendshipData ? null : [];
 }
 
 export function deriveActivityFeedStatus({
@@ -412,21 +487,9 @@ export function getPinnedConversationKeys(chats: ChatApi[]) {
   const notesKey = getNotesConversationKey(chats);
   const pinnedKeys = chats.flatMap(getPinnedConversationKey);
 
-  return [...pinnedKeys].sort((left, right) => {
-    if (!notesKey) {
-      return 0;
-    }
-
-    if (left === notesKey && right !== notesKey) {
-      return -1;
-    }
-
-    if (right === notesKey && left !== notesKey) {
-      return 1;
-    }
-
-    return 0;
-  });
+  return [...pinnedKeys].sort(
+    createNotesFirstPinnedConversationComparator(notesKey),
+  );
 }
 
 function getNotesConversationKey(chats: ChatApi[]) {
@@ -451,6 +514,20 @@ function getPinnedConversationKey(chat: ChatApi) {
   }
 
   return [getActivityConversationKey("dm", chat.id)];
+}
+
+function createNotesFirstPinnedConversationComparator(notesKey: string | null) {
+  if (!notesKey) {
+    return () => 0;
+  }
+
+  return (left: string, right: string) =>
+    getPinnedConversationSortRank(left, notesKey) -
+    getPinnedConversationSortRank(right, notesKey);
+}
+
+function getPinnedConversationSortRank(key: string, notesKey: string) {
+  return key === notesKey ? 0 : 1;
 }
 
 function mapSavedMessages(

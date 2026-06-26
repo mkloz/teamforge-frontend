@@ -26,12 +26,39 @@ interface ProposalMutationContext {
   previousDetail: GroupPlanDetail | undefined;
 }
 
+type ProposalUpdater = (proposal: PlanProposal) => PlanProposal;
+type OfflineActionGuard = ReturnType<
+  typeof useOfflineActionGuard
+>["guardOfflineAction"];
+type OfflineActionConfig = Parameters<OfflineActionGuard>[0];
+
+const CREATE_PROPOSAL_MISSING_PLAN_ERROR =
+  "This group does not have a plan to change yet.";
+const CREATE_PROPOSAL_OFFLINE_ERROR =
+  "You are offline. Reconnect before suggesting changes.";
+const PENDING_PROPOSAL_STATUS = "PENDING";
+
+const PROPOSAL_OFFLINE_ACTIONS = {
+  create: {
+    id: "group-plan-proposal-create-offline",
+    description: "Reconnect before suggesting plan changes.",
+  },
+  vote: {
+    id: "group-plan-proposal-vote-offline",
+    description: "Reconnect before voting on plan changes.",
+  },
+  withdraw: {
+    id: "group-plan-proposal-withdraw-offline",
+    description: "Reconnect before withdrawing this plan change.",
+  },
+} satisfies Record<"create" | "vote" | "withdraw", OfflineActionConfig>;
+
 function applyOptimisticProposalVote(
   proposal: PlanProposal,
   userId: string,
   vote: VoteGroupPlanProposalPayload["vote"],
 ) {
-  const now = new Date().toISOString();
+  const now = getOptimisticProposalTimestamp();
 
   return {
     ...proposal,
@@ -49,7 +76,7 @@ function applyOptimisticProposalVote(
 }
 
 function applyOptimisticProposalWithdraw(proposal: PlanProposal) {
-  const now = new Date().toISOString();
+  const now = getOptimisticProposalTimestamp();
 
   return {
     ...proposal,
@@ -58,6 +85,92 @@ function applyOptimisticProposalWithdraw(proposal: PlanProposal) {
     updatedAt: now,
     version: Date.parse(now),
   } satisfies PlanProposal;
+}
+
+function getOptimisticProposalTimestamp() {
+  return new Date().toISOString();
+}
+
+function getDetailWithUpdatedProposals(
+  current: GroupPlanDetail | undefined,
+  updater: ProposalUpdater,
+) {
+  if (!current) {
+    return current;
+  }
+
+  const proposals = current.planning.proposals.map(updater);
+
+  return {
+    ...current,
+    planning: {
+      ...current.planning,
+      pendingProposalCount: getPendingProposalCount(proposals),
+      proposals,
+    },
+  };
+}
+
+function getPendingProposalCount(proposals: PlanProposal[]) {
+  return proposals.filter(isPendingProposal).length;
+}
+
+function isPendingProposal(proposal: PlanProposal) {
+  return proposal.status === PENDING_PROPOSAL_STATUS;
+}
+
+function updateProposalVoteForUser({
+  currentUserId,
+  proposal,
+  proposalId,
+  vote,
+}: {
+  currentUserId: string | undefined;
+  proposal: PlanProposal;
+  proposalId: string;
+  vote: ProposalVoteInput["vote"];
+}) {
+  if (!currentUserId || !isProposalTarget(proposal, proposalId)) {
+    return proposal;
+  }
+
+  return applyOptimisticProposalVote(proposal, currentUserId, vote);
+}
+
+function updateWithdrawnProposal(proposal: PlanProposal, proposalId: string) {
+  return isProposalTarget(proposal, proposalId)
+    ? applyOptimisticProposalWithdraw(proposal)
+    : proposal;
+}
+
+function isProposalTarget(proposal: PlanProposal, proposalId: string) {
+  return proposal.id === proposalId;
+}
+
+function requirePlanId(planId: string | null) {
+  if (!planId) {
+    throw new Error(CREATE_PROPOSAL_MISSING_PLAN_ERROR);
+  }
+
+  return planId;
+}
+
+function assertCanCreateProposal(guardOfflineAction: OfflineActionGuard) {
+  if (guardOfflineAction(PROPOSAL_OFFLINE_ACTIONS.create)) {
+    throw new Error(CREATE_PROPOSAL_OFFLINE_ERROR);
+  }
+}
+
+function runGuardedProposalAction(
+  guardOfflineAction: OfflineActionGuard,
+  offlineAction: OfflineActionConfig,
+  action: () => void,
+) {
+  if (guardOfflineAction(offlineAction)) {
+    return;
+  }
+
+  action();
 }
 
 export function useGroupPlanProposalActions({
@@ -69,33 +182,15 @@ export function useGroupPlanProposalActions({
   const detailQueryKey = APP_QUERY_KEYS.groupPlanDetail.byId(groupId);
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
-  async function optimisticallyUpdateProposal(
-    updater: (proposal: PlanProposal) => PlanProposal,
-  ) {
+  async function optimisticallyUpdateProposal(updater: ProposalUpdater) {
     await queryClient.cancelQueries({ queryKey: detailQueryKey });
 
     const previousDetail =
       queryClient.getQueryData<GroupPlanDetail>(detailQueryKey);
 
-    queryClient.setQueryData<GroupPlanDetail>(detailQueryKey, (current) => {
-      if (!current) {
-        return current;
-      }
-
-      const nextProposals = current.planning.proposals.map(updater);
-      const pendingProposalCount = nextProposals.filter(
-        (proposal) => proposal.status === "PENDING",
-      ).length;
-
-      return {
-        ...current,
-        planning: {
-          ...current.planning,
-          pendingProposalCount,
-          proposals: nextProposals,
-        },
-      };
-    });
+    queryClient.setQueryData<GroupPlanDetail>(detailQueryKey, (current) =>
+      getDetailWithUpdatedProposals(current, updater),
+    );
 
     return { previousDetail } satisfies ProposalMutationContext;
   }
@@ -111,13 +206,9 @@ export function useGroupPlanProposalActions({
     },
     mutationKey: ["group-plan-detail", "proposal", "create", groupId, planId],
     mutationFn: (payload: CreateGroupPlanProposalPayload) => {
-      if (!planId) {
-        throw new Error("This group does not have a plan to change yet.");
-      }
-
       return GroupPlanDetailCommands.createPlanProposal(
         groupId,
-        planId,
+        requirePlanId(planId),
         payload,
       );
     },
@@ -155,13 +246,12 @@ export function useGroupPlanProposalActions({
       GroupPlanDetailCommands.votePlanProposal(groupId, proposalId, { vote }),
     onMutate: ({ proposalId, vote }) =>
       optimisticallyUpdateProposal((proposal) =>
-        proposal.id === proposalId && currentUserQuery.data?.id
-          ? applyOptimisticProposalVote(
-              proposal,
-              currentUserQuery.data.id,
-              vote,
-            )
-          : proposal,
+        updateProposalVoteForUser({
+          currentUserId: currentUserQuery.data?.id,
+          proposal,
+          proposalId,
+          vote,
+        }),
       ),
     onSuccess: (result, input) => {
       trackMutationOutcome(
@@ -197,9 +287,7 @@ export function useGroupPlanProposalActions({
       GroupPlanDetailCommands.withdrawPlanProposal(groupId, proposalId),
     onMutate: (proposalId) =>
       optimisticallyUpdateProposal((proposal) =>
-        proposal.id === proposalId
-          ? applyOptimisticProposalWithdraw(proposal)
-          : proposal,
+        updateWithdrawnProposal(proposal, proposalId),
       ),
     onSuccess: (result) => {
       trackMutationOutcome(
@@ -225,42 +313,25 @@ export function useGroupPlanProposalActions({
   });
 
   async function createProposal(payload: CreateGroupPlanProposalPayload) {
-    if (
-      guardOfflineAction({
-        id: "group-plan-proposal-create-offline",
-        description: "Reconnect before suggesting plan changes.",
-      })
-    ) {
-      throw new Error("You are offline. Reconnect before suggesting changes.");
-    }
+    assertCanCreateProposal(guardOfflineAction);
 
     return createMutation.mutateAsync(payload);
   }
 
   function submitVote(proposalId: string, vote: ProposalVoteInput["vote"]) {
-    if (
-      guardOfflineAction({
-        id: "group-plan-proposal-vote-offline",
-        description: "Reconnect before voting on plan changes.",
-      })
-    ) {
-      return;
-    }
-
-    voteMutation.mutate({ proposalId, vote });
+    runGuardedProposalAction(
+      guardOfflineAction,
+      PROPOSAL_OFFLINE_ACTIONS.vote,
+      () => voteMutation.mutate({ proposalId, vote }),
+    );
   }
 
   function withdrawProposal(proposalId: string) {
-    if (
-      guardOfflineAction({
-        id: "group-plan-proposal-withdraw-offline",
-        description: "Reconnect before withdrawing this plan change.",
-      })
-    ) {
-      return;
-    }
-
-    withdrawMutation.mutate(proposalId);
+    runGuardedProposalAction(
+      guardOfflineAction,
+      PROPOSAL_OFFLINE_ACTIONS.withdraw,
+      () => withdrawMutation.mutate(proposalId),
+    );
   }
 
   return {

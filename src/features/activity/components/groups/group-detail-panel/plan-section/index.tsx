@@ -31,6 +31,7 @@ import {
   formatTime,
   statusColors,
 } from "../lib/constants";
+import { stripPanelStatusPrefix } from "../status-prefix";
 import {
   getPlanLifecycleViewState,
   type PlanLifecycleViewState,
@@ -51,6 +52,35 @@ interface PlanSectionProps {
   pendingAction?: string | null;
 }
 
+interface PlanSectionViewState {
+  displayTitle: string;
+  formattedCost: string;
+  formattedDate: string;
+  formattedLocation: string;
+  formattedTime: string;
+  locationHref: string | null;
+  sectionLabel: string;
+  shouldShowStatusPill: boolean;
+}
+
+const PLAN_STATUS_PILL_ICON_BY_STATUS: Partial<
+  Record<Plan["status"], LucideIcon>
+> = {
+  CANCELLED: XCircle,
+  COMPLETED: CheckCircle2,
+  CONFIRMED: CheckCircle2,
+  DRAFT: Pencil,
+  IN_PROGRESS: CircleDot,
+  PROPOSED: MessageSquareDiff,
+};
+
+const READ_ONLY_PLAN_SECTION_LABEL_BY_STATUS: Partial<
+  Record<Plan["status"], string>
+> = {
+  CANCELLED: "Cancelled plan",
+  COMPLETED: "Final plan",
+};
+
 export function PlanSection({
   currentUserRole = "MEMBER",
   plan,
@@ -65,15 +95,7 @@ export function PlanSection({
   pendingAction = null,
 }: PlanSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const formattedDate = plan.dateTime ? formatDate(plan.dateTime) : "Date TBD";
-  const formattedTime = plan.dateTime ? formatTime(plan.dateTime) : "Time TBD";
-  const formattedLocation = formatPlanLocation(plan);
-  const displayTitle = stripStatusPrefix(
-    plan.title,
-    formatPanelToken(plan.status),
-  );
-  const sectionLabel = getPlanSectionLabel(plan.status, isReadOnly);
-  const shouldShowStatusPill = !(isReadOnly && plan.status === "COMPLETED");
+  const viewState = getPlanSectionViewState(plan, isReadOnly);
 
   useEffect(() => {
     if (!isFocused) {
@@ -98,10 +120,12 @@ export function PlanSection({
     >
       <div className="flex flex-col gap-3 border-border/70 border-b pb-4">
         <div className="flex items-start justify-between gap-3">
-          <p className="font-bold text-slate-muted text-xs">{sectionLabel}</p>
+          <p className="font-bold text-slate-muted text-xs">
+            {viewState.sectionLabel}
+          </p>
           <div className="flex flex-wrap justify-end gap-1.5">
             <PlanCategoryPill category={plan.category} />
-            {shouldShowStatusPill ? (
+            {viewState.shouldShowStatusPill ? (
               <PlanStatusPill status={plan.status} />
             ) : null}
           </div>
@@ -111,7 +135,7 @@ export function PlanSection({
           id="current-plan-title"
           className="text-balance font-bold text-ink text-xl leading-tight tracking-tight"
         >
-          {displayTitle}
+          {viewState.displayTitle}
         </h2>
       </div>
 
@@ -122,17 +146,11 @@ export function PlanSection({
       ) : null}
 
       <PlanFactList
-        cost={formatPlanCost(plan)}
-        date={formattedDate}
-        location={formattedLocation}
-        locationHref={
-          plan.locationMode === "IN_PERSON" &&
-          plan.locationLat !== null &&
-          plan.locationLng !== null
-            ? `https://maps.google.com/?q=${plan.locationLat},${plan.locationLng}`
-            : null
-        }
-        time={formattedTime}
+        cost={viewState.formattedCost}
+        date={viewState.formattedDate}
+        location={viewState.formattedLocation}
+        locationHref={viewState.locationHref}
+        time={viewState.formattedTime}
       />
 
       <PlanLifecycleActions
@@ -149,6 +167,42 @@ export function PlanSection({
       />
     </section>
   );
+}
+
+function getPlanSectionViewState(
+  plan: Plan,
+  isReadOnly: boolean,
+): PlanSectionViewState {
+  return {
+    displayTitle: getPlanDisplayTitle(plan),
+    formattedCost: formatPlanCost(plan),
+    formattedDate: plan.dateTime ? formatDate(plan.dateTime) : "Date TBD",
+    formattedLocation: formatPlanLocation(plan),
+    formattedTime: plan.dateTime ? formatTime(plan.dateTime) : "Time TBD",
+    locationHref: getPlanLocationHref(plan),
+    sectionLabel: getPlanSectionLabel(plan.status, isReadOnly),
+    shouldShowStatusPill: shouldShowPlanStatusPill(plan.status, isReadOnly),
+  };
+}
+
+function getPlanDisplayTitle(plan: Plan) {
+  return stripPanelStatusPrefix(plan.title, formatPanelToken(plan.status));
+}
+
+function getPlanLocationHref(plan: Plan) {
+  if (
+    plan.locationMode === "IN_PERSON" &&
+    plan.locationLat !== null &&
+    plan.locationLng !== null
+  ) {
+    return `https://maps.google.com/?q=${plan.locationLat},${plan.locationLng}`;
+  }
+
+  return null;
+}
+
+function shouldShowPlanStatusPill(status: Plan["status"], isReadOnly: boolean) {
+  return !(isReadOnly && status === "COMPLETED");
 }
 
 function PlanCategoryPill({ category }: { category: Plan["category"] }) {
@@ -171,27 +225,7 @@ function PlanStatusPill({ status }: { status: Plan["status"] }) {
 }
 
 function getPlanStatusPillIcon(status: Plan["status"]) {
-  if (status === "DRAFT") {
-    return Pencil;
-  }
-
-  if (status === "CONFIRMED" || status === "COMPLETED") {
-    return CheckCircle2;
-  }
-
-  if (status === "CANCELLED") {
-    return XCircle;
-  }
-
-  if (status === "IN_PROGRESS") {
-    return CircleDot;
-  }
-
-  if (status === "PROPOSED") {
-    return MessageSquareDiff;
-  }
-
-  return CircleDashed;
+  return PLAN_STATUS_PILL_ICON_BY_STATUS[status] ?? CircleDashed;
 }
 
 function PlanFactList({
@@ -305,45 +339,45 @@ function PlanLifecycleActions({
 
   return (
     <div className="mt-4 flex flex-wrap gap-2">
-      {viewState.hasOfflineBlock ? (
-        <OfflineNotice
-          withIcon={false}
-          tone="neutral"
-          size="xs"
-          className="basis-full rounded-lg border-border/70 bg-muted/30 text-slate-muted"
-        >
-          Reconnect before changing this plan.
-        </OfflineNotice>
-      ) : null}
+      <PlanLifecycleOfflineNotice visible={viewState.hasOfflineBlock} />
 
-      {viewState.showConfirmAction ? (
-        <ConfirmPlanAction
-          onConfirmPlan={onConfirmPlan}
-          plan={plan}
-          viewState={viewState}
-        />
-      ) : null}
+      <ConfirmPlanAction
+        onConfirmPlan={onConfirmPlan}
+        plan={plan}
+        viewState={viewState}
+      />
 
-      {viewState.showCompleteAction ? (
-        <CompletePlanAction
-          onCompletePlan={onCompletePlan}
-          viewState={viewState}
-        />
-      ) : null}
+      <CompletePlanAction
+        onCompletePlan={onCompletePlan}
+        viewState={viewState}
+      />
 
-      {viewState.showCancelAction ? (
-        <CancelPlanAction onCancelPlan={onCancelPlan} viewState={viewState} />
-      ) : null}
+      <CancelPlanAction onCancelPlan={onCancelPlan} viewState={viewState} />
 
-      {viewState.showCreateNextAction ? (
-        <CreateNextPlanAction
-          onCreateNextPlan={onCreateNextPlan}
-          viewState={viewState}
-        />
-      ) : null}
+      <CreateNextPlanAction
+        onCreateNextPlan={onCreateNextPlan}
+        viewState={viewState}
+      />
 
       <EditPlanAction onEditPlan={onEditPlan} viewState={viewState} />
     </div>
+  );
+}
+
+function PlanLifecycleOfflineNotice({ visible }: { visible: boolean }) {
+  if (!visible) {
+    return null;
+  }
+
+  return (
+    <OfflineNotice
+      withIcon={false}
+      tone="neutral"
+      size="xs"
+      className="basis-full rounded-lg border-border/70 bg-muted/30 text-slate-muted"
+    >
+      Reconnect before changing this plan.
+    </OfflineNotice>
   );
 }
 
@@ -357,6 +391,10 @@ function ConfirmPlanAction({
   viewState: PlanLifecycleViewState;
 }) {
   const action = viewState.confirm;
+
+  if (!viewState.showConfirmAction) {
+    return null;
+  }
 
   return (
     <ActionDialog
@@ -399,6 +437,10 @@ function CompletePlanAction({
 }) {
   const action = viewState.complete;
 
+  if (!viewState.showCompleteAction) {
+    return null;
+  }
+
   return (
     <ActionDialog
       cancelLabel="Not yet"
@@ -439,6 +481,10 @@ function CancelPlanAction({
   viewState: PlanLifecycleViewState;
 }) {
   const action = viewState.cancel;
+
+  if (!viewState.showCancelAction) {
+    return null;
+  }
 
   return (
     <ActionDialog
@@ -481,6 +527,10 @@ function CreateNextPlanAction({
   viewState: PlanLifecycleViewState;
 }) {
   const action = viewState.createNext;
+
+  if (!viewState.showCreateNextAction) {
+    return null;
+  }
 
   return (
     <Button
@@ -540,36 +590,23 @@ function getPlanSectionLabel(planStatus: Plan["status"], isReadOnly: boolean) {
     return "Current plan";
   }
 
-  if (planStatus === "COMPLETED") {
-    return "Final plan";
-  }
-
-  if (planStatus === "CANCELLED") {
-    return "Cancelled plan";
-  }
-
-  return "Plan";
-}
-
-function stripStatusPrefix(value: string, statusLabel: string) {
-  const prefix = `${statusLabel} `;
-
-  if (!value.toLowerCase().startsWith(prefix.toLowerCase())) {
-    return value;
-  }
-
-  const strippedValue = value.slice(prefix.length).trim();
-  return strippedValue || value;
+  return READ_ONLY_PLAN_SECTION_LABEL_BY_STATUS[planStatus] ?? "Plan";
 }
 
 function formatPlanCost(plan: Plan) {
   if (plan.cost === "FREE") {
-    return plan.costDetails ? `Free · ${plan.costDetails}` : "Free";
+    return formatFreePlanCost(plan.costDetails);
   }
 
-  if (typeof plan.costAmount === "number") {
-    return `About £${plan.costAmount.toFixed(0)}`;
-  }
+  return formatPaidPlanCost(plan);
+}
 
-  return plan.costDetails ?? "Paid";
+function formatFreePlanCost(costDetails: Plan["costDetails"]) {
+  return costDetails ? `Free · ${costDetails}` : "Free";
+}
+
+function formatPaidPlanCost({ costAmount, costDetails }: Plan) {
+  return typeof costAmount === "number"
+    ? `About £${costAmount.toFixed(0)}`
+    : (costDetails ?? "Paid");
 }

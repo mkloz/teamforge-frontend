@@ -88,66 +88,114 @@ export function GalleryItemMedia({
 }: GalleryItemMediaProps) {
   if (isVideoBackedGif) {
     return (
-      <video
-        src={media.url}
-        poster={media.thumbnailUrl || undefined}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        onLoadedMetadata={(event) => {
-          cacheMediaIntrinsicSize(
-            media.id,
-            event.currentTarget.videoWidth,
-            event.currentTarget.videoHeight,
-          );
-          onGifLoaded();
-        }}
-        onError={onGifError}
-        className={cn(
-          "absolute inset-0 size-full object-cover transition-all duration-700 ease-out will-change-transform group-hover/gallery-item:scale-105",
-          isGif && "object-contain",
-          hasGifLoaded ? "opacity-100" : "opacity-0",
-        )}
-      >
-        <track
-          kind="captions"
-          src="data:text/vtt,WEBVTT"
-          srcLang="en"
-          label="No captions available"
-        />
-      </video>
+      <VideoBackedGifMedia
+        hasGifLoaded={hasGifLoaded}
+        isGif={isGif}
+        media={media}
+        onGifError={onGifError}
+        onGifLoaded={onGifLoaded}
+      />
     );
   }
 
   if (shouldLoadImage) {
     return (
-      <Image
-        src={media.thumbnailUrl || media.url}
-        alt={media.name || `Attachment ${index + 1}`}
-        onLoad={(event) => {
-          cacheMediaIntrinsicSize(
-            media.id,
-            event.currentTarget.naturalWidth,
-            event.currentTarget.naturalHeight,
-          );
-          onImageLoaded();
-        }}
-        onError={onImageError}
-        wrapperClassName="absolute inset-0"
-        className={cn(
-          "transition-all duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
-          isGif && "object-contain",
-          imageState === "loaded" ? "opacity-100" : "opacity-0",
-        )}
-        loadingComponent={null}
-        fallbackComponent={null}
-        showNoImage={false}
+      <GalleryImageMedia
+        imageState={imageState}
+        index={index}
+        isGif={isGif}
+        media={media}
+        onImageError={onImageError}
+        onImageLoaded={onImageLoaded}
       />
     );
   }
 
+  return <VideoPlaceholderMedia />;
+}
+
+function VideoBackedGifMedia({
+  hasGifLoaded,
+  isGif,
+  media,
+  onGifError,
+  onGifLoaded,
+}: Pick<
+  GalleryItemMediaProps,
+  "hasGifLoaded" | "isGif" | "media" | "onGifError" | "onGifLoaded"
+>) {
+  return (
+    <video
+      src={media.url}
+      poster={media.thumbnailUrl || undefined}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="metadata"
+      onLoadedMetadata={(event) => {
+        cacheMediaIntrinsicSize(
+          media.id,
+          event.currentTarget.videoWidth,
+          event.currentTarget.videoHeight,
+        );
+        onGifLoaded();
+      }}
+      onError={onGifError}
+      className={cn(
+        "absolute inset-0 size-full object-cover transition-all duration-700 ease-out will-change-transform group-hover/gallery-item:scale-105",
+        isGif && "object-contain",
+        hasGifLoaded ? "opacity-100" : "opacity-0",
+      )}
+    >
+      <track
+        kind="captions"
+        src="data:text/vtt,WEBVTT"
+        srcLang="en"
+        label="No captions available"
+      />
+    </video>
+  );
+}
+
+function GalleryImageMedia({
+  imageState,
+  index,
+  isGif,
+  media,
+  onImageError,
+  onImageLoaded,
+}: Pick<
+  GalleryItemMediaProps,
+  "imageState" | "index" | "isGif" | "media" | "onImageError" | "onImageLoaded"
+>) {
+  return (
+    <Image
+      src={media.thumbnailUrl || media.url}
+      alt={media.name || `Attachment ${index + 1}`}
+      onLoad={(event) => {
+        cacheMediaIntrinsicSize(
+          media.id,
+          event.currentTarget.naturalWidth,
+          event.currentTarget.naturalHeight,
+        );
+        onImageLoaded();
+      }}
+      onError={onImageError}
+      wrapperClassName="absolute inset-0"
+      className={cn(
+        "transition-all duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
+        isGif && "object-contain",
+        imageState === "loaded" ? "opacity-100" : "opacity-0",
+      )}
+      loadingComponent={null}
+      fallbackComponent={null}
+      showNoImage={false}
+    />
+  );
+}
+
+function VideoPlaceholderMedia() {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-muted/70 text-slate-muted">
       <span className="flex size-11 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary">

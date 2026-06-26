@@ -1,11 +1,6 @@
 import { z } from "zod";
-import {
-  authProviderSchema,
-  genderSchema,
-  onlineStatusSchema,
-  personalityTypeSchema,
-  searchStatusSchema,
-} from "./enums";
+
+import { userCoreFields } from "./entity-fragments";
 
 const interestData = {
   id: z.string(),
@@ -32,41 +27,12 @@ export const interestSchema: z.ZodSchema<Interest> = z.lazy(() =>
   }),
 );
 
-const userData = {
-  id: z.string(),
-  email: z.string().email(),
-  name: z.string(),
-  avatar: z.string().nullable(),
-  bio: z.string().nullable(),
-  authProvider: authProviderSchema,
-  googleId: z.string().nullable().optional(),
-  emailVerified: z.boolean(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  age: z.number().nullable(),
-  gender: genderSchema.nullable(),
-  city: z.string().nullable(),
-  locationLat: z.number().nullable().optional(),
-  locationLng: z.number().nullable().optional(),
-  personalityType: personalityTypeSchema.nullable(),
-  oceanO: z.number().nullable(),
-  oceanC: z.number().nullable(),
-  oceanE: z.number().nullable(),
-  oceanA: z.number().nullable(),
-  oceanN: z.number().nullable(),
-  searchStatus: searchStatusSchema,
-  onlineStatus: onlineStatusSchema.optional(),
-  trustScore: z.number(),
-  profileComplete: z.boolean(),
-  showFriendsListOnProfile: z.boolean().default(true),
-};
-
-export type User = z.infer<z.ZodObject<typeof userData>> & {
+export type User = z.infer<z.ZodObject<typeof userCoreFields>> & {
   interests?: Interest[];
 };
 
 export const userSchema: z.ZodSchema<User> = z.lazy(() =>
-  z.object(userData).extend({
+  z.object(userCoreFields).extend({
     interests: z.array(interestSchema).optional(),
   }),
 );

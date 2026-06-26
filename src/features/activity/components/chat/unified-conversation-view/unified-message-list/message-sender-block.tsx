@@ -10,6 +10,11 @@ import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { DateSeparator } from "./date-separator";
 import { MessageRenderer } from "./message-renderer";
+import {
+  getMessageBlockPositionStyle,
+  getMessageRowRenderState,
+  getMessageSenderBlockRenderState,
+} from "./message-row-render-state";
 import { NewMessagesSeparator } from "./new-messages-separator";
 import {
   getParticipantDisplayName,
@@ -37,6 +42,96 @@ const spacingAfterClassName = {
   related: "mb-1.5",
   "system-boundary": "mb-4",
 } satisfies Record<VirtualizedMessageBlock["spacingAfter"], string>;
+const senderAvatarTriggerClassName =
+  "inline-flex size-8 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+type MessageRowRenderState = ReturnType<typeof getMessageRowRenderState>;
+type MessageSenderBlockRenderState = ReturnType<
+  typeof getMessageSenderBlockRenderState
+>;
+type MessageSenderBlockKind = MessageSenderBlockProps["kind"];
+type MessageRefGetter = MessageSenderBlockProps["getMessageRef"];
+
+interface MessageSenderBlockFrameProps {
+  block: VirtualizedMessageBlock;
+  blockRef: MessageSenderBlockProps["blockRef"];
+  getMessageRef: MessageRefGetter;
+  highlightedMessageId: string | null;
+  onShowParticipantProfile: MessageSenderBlockProps["onShowParticipantProfile"];
+  rendererProps: MessageSenderBlockRendererProps;
+  renderState: MessageSenderBlockRenderState;
+  selectionState: MessageSenderBlockSelectionState;
+}
+
+interface MessageSenderBlockRendererProps {
+  kind: MessageSenderBlockKind;
+  onActivateReplyTarget: MessageSenderBlockProps["onActivateReplyTarget"];
+  onStartSelection: MessageSenderBlockProps["onStartSelection"];
+  onToggleSelected: MessageSenderBlockProps["onToggleSelected"];
+  searchQuery: string;
+}
+
+interface MessageSenderBlockSelectionState {
+  isSelectionMode: boolean;
+  selectedMessageIds: MessageSenderBlockProps["selectedMessageIds"];
+}
+
+interface SenderAvatarSlotProps {
+  onShowParticipantProfile: MessageSenderBlockProps["onShowParticipantProfile"];
+  sender: ActivityParticipant | null | undefined;
+  shouldShowSenderAvatar: boolean;
+}
+
+interface SenderProfileTriggerProps {
+  onShowParticipantProfile: MessageSenderBlockProps["onShowParticipantProfile"];
+  sender: ActivityParticipant;
+}
+
+interface MessageSenderBlockRowsProps {
+  block: VirtualizedMessageBlock;
+  getMessageRef: MessageRefGetter;
+  highlightedMessageId: string | null;
+  isSystemBlock: boolean;
+  rendererProps: MessageSenderBlockRendererProps;
+  selectionState: MessageSenderBlockSelectionState;
+}
+
+interface MessageSenderBlockRowProps extends MessageSenderBlockRowsProps {
+  message: UnifiedMessage;
+  messageIndex: number;
+}
+
+interface MessageRowSeparatorProps {
+  block: VirtualizedMessageBlock;
+  isSystemBlock: boolean;
+  rowState: Pick<MessageRowRenderState, "hasNewMessagesSeparator">;
+}
+
+interface MessageRowContentProps {
+  message: UnifiedMessage;
+  rendererProps: MessageSenderBlockRendererProps;
+  rowState: MessageRowRenderState;
+  selectionState: Pick<MessageSenderBlockSelectionState, "isSelectionMode">;
+}
+
+interface MessageSelectionToggleProps {
+  isSelected: boolean;
+  onToggle: () => void;
+}
+
+interface MessageBlockDateSeparatorProps {
+  block: Pick<VirtualizedMessageBlock, "date" | "showDateSeparator">;
+}
+
+interface SenderGroupClassNameInput {
+  block: Pick<VirtualizedMessageBlock, "isOwn" | "spacingAfter">;
+  isSystemBlock: boolean;
+}
+
+type MessageRowsClassNameInput = Pick<
+  MessageSenderBlockRenderState,
+  "hasHighlightedMessage" | "isSystemBlock"
+>;
 
 export function MessageSenderBlock({
   block,
@@ -52,136 +147,325 @@ export function MessageSenderBlock({
   onShowParticipantProfile,
   searchQuery,
 }: MessageSenderBlockProps) {
-  const isSystemBlock = block.senderGroup.items.every(
-    (message) => message.type === "SYSTEM",
+  const renderState = getMessageSenderBlockRenderState({
+    block,
+    highlightedMessageId,
+  });
+  const rendererProps = getMessageSenderBlockRendererProps({
+    kind,
+    onActivateReplyTarget,
+    onStartSelection,
+    onToggleSelected,
+    searchQuery,
+  });
+  const selectionState = getMessageSenderBlockSelectionState({
+    isSelectionMode,
+    selectedMessageIds,
+  });
+
+  return (
+    <MessageSenderBlockFrame
+      block={block}
+      blockRef={blockRef}
+      getMessageRef={getMessageRef}
+      highlightedMessageId={highlightedMessageId}
+      onShowParticipantProfile={onShowParticipantProfile}
+      rendererProps={rendererProps}
+      renderState={renderState}
+      selectionState={selectionState}
+    />
   );
-  const sender = block.senderGroup.sender;
-  const hasHighlightedMessage = block.senderGroup.items.some(
-    (message) => highlightedMessageId === message.id,
-  );
+}
+
+function getMessageSenderBlockRendererProps({
+  kind,
+  onActivateReplyTarget,
+  onStartSelection,
+  onToggleSelected,
+  searchQuery,
+}: Pick<
+  MessageSenderBlockProps,
+  | "kind"
+  | "onActivateReplyTarget"
+  | "onStartSelection"
+  | "onToggleSelected"
+  | "searchQuery"
+>): MessageSenderBlockRendererProps {
+  return {
+    kind,
+    onActivateReplyTarget,
+    onStartSelection,
+    onToggleSelected,
+    searchQuery,
+  };
+}
+
+function getMessageSenderBlockSelectionState({
+  isSelectionMode,
+  selectedMessageIds,
+}: Pick<Required<MessageSenderBlockProps>, "isSelectionMode"> &
+  Pick<MessageSenderBlockProps, "selectedMessageIds">) {
+  return {
+    isSelectionMode,
+    selectedMessageIds,
+  } satisfies MessageSenderBlockSelectionState;
+}
+
+function MessageSenderBlockFrame({
+  block,
+  blockRef,
+  getMessageRef,
+  highlightedMessageId,
+  onShowParticipantProfile,
+  rendererProps,
+  renderState,
+  selectionState,
+}: MessageSenderBlockFrameProps) {
+  const {
+    hasHighlightedMessage,
+    isSystemBlock,
+    sender,
+    shouldShowSenderAvatar,
+  } = renderState;
 
   return (
     <div
       ref={blockRef}
       data-message-block-key={block.key}
       className="absolute right-0 left-0 flex min-w-0 max-w-full flex-col gap-0"
-      style={{
-        minHeight:
-          block.measuredHeight === null ? `${block.height}px` : undefined,
-        top: `${block.start}px`,
-      }}
+      style={getMessageBlockPositionStyle(block)}
     >
-      {block.showDateSeparator && <DateSeparator date={block.date} />}
+      <MessageBlockDateSeparator block={block} />
 
       <div
-        className={cn(
-          "group/sender relative flex w-full min-w-0 max-w-full items-stretch",
-          isSystemBlock ? "gap-0" : "gap-3",
-          spacingAfterClassName[block.spacingAfter],
-          block.isOwn ? "flex-row-reverse" : "flex-row",
-        )}
+        className={getSenderGroupClassName({
+          block,
+          isSystemBlock,
+        })}
       >
-        {!isSystemBlock &&
-          !block.isOwn &&
-          block.senderGroup.senderId !== "system" &&
-          sender && (
-            <div className="flex w-8 shrink-0 flex-col justify-end">
-              <div className="sticky bottom-2 flex flex-col items-center">
-                {onShowParticipantProfile ? (
-                  <button
-                    type="button"
-                    className="inline-flex size-8 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    aria-label={`Open ${getParticipantDisplayName(sender)} details`}
-                    onClick={() => onShowParticipantProfile(sender)}
-                  >
-                    <SenderAvatar sender={sender} />
-                  </button>
-                ) : (
-                  <Link
-                    {...buildProfileNavigation(sender.id)}
-                    className="inline-flex size-8 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    aria-label={`View ${getParticipantDisplayName(sender)}'s profile`}
-                  >
-                    <SenderAvatar sender={sender} />
-                  </Link>
-                )}
-              </div>
-            </div>
-          )}
+        <SenderAvatarSlot
+          onShowParticipantProfile={onShowParticipantProfile}
+          sender={sender}
+          shouldShowSenderAvatar={shouldShowSenderAvatar}
+        />
 
         <div
-          className={cn(
-            "flex min-w-0 flex-1 flex-col gap-1.5",
-            hasHighlightedMessage ? "overflow-visible" : "overflow-x-hidden",
-            isSystemBlock ? "items-center" : "items-stretch",
-          )}
-        >
-          {block.senderGroup.items.map((message, msgIdx) => {
-            const isFirstInGroup = msgIdx === 0;
-            const isHighlighted = highlightedMessageId === message.id;
-            const isSystemMessage = message.type === "SYSTEM";
-            const isSelectable = !isSystemMessage;
-            const isSelected = selectedMessageIds?.has(message.id) ?? false;
-            const hasNewMessagesSeparator =
-              block.newMessagesSeparatorBeforeId === message.id;
-
-            return (
-              <div
-                key={message.id}
-                ref={getMessageRef(message.id)}
-                className="flex min-w-0 flex-col"
-              >
-                {hasNewMessagesSeparator ? (
-                  <div
-                    className={cn(!isSystemBlock && !block.isOwn && "-ml-11")}
-                  >
-                    <NewMessagesSeparator />
-                  </div>
-                ) : null}
-                <div
-                  className={cn(
-                    "relative flex w-full min-w-0 max-w-full",
-                    isSelectionMode && isSelectable && "pl-9",
-                    isSystemMessage
-                      ? "justify-center"
-                      : message.isOwn
-                        ? "justify-end"
-                        : "justify-start",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "w-full min-w-0 max-w-full",
-                      message.isOwn && !isSystemMessage && "ml-auto",
-                      !message.isOwn && !isSystemMessage && "mr-auto",
-                    )}
-                  >
-                    <MessageRenderer
-                      message={message}
-                      showSender={isFirstInGroup}
-                      isHighlighted={isHighlighted}
-                      isSelectable={isSelectable}
-                      isSelected={isSelected}
-                      isSelectionMode={isSelectionMode}
-                      kind={kind}
-                      onActivateReplyTarget={onActivateReplyTarget}
-                      onStartSelection={onStartSelection}
-                      onToggleSelected={onToggleSelected}
-                      searchQuery={searchQuery}
-                    />
-                  </div>
-                  {isSelectionMode && isSelectable ? (
-                    <MessageSelectionToggle
-                      isSelected={isSelected}
-                      onToggle={() => onToggleSelected?.(message)}
-                    />
-                  ) : null}
-                </div>
-              </div>
-            );
+          className={getMessageRowsClassName({
+            hasHighlightedMessage,
+            isSystemBlock,
           })}
+        >
+          <MessageSenderBlockRows
+            block={block}
+            getMessageRef={getMessageRef}
+            highlightedMessageId={highlightedMessageId}
+            isSystemBlock={isSystemBlock}
+            rendererProps={rendererProps}
+            selectionState={selectionState}
+          />
         </div>
       </div>
+    </div>
+  );
+}
+
+function MessageBlockDateSeparator({ block }: MessageBlockDateSeparatorProps) {
+  if (!block.showDateSeparator) {
+    return null;
+  }
+
+  return <DateSeparator date={block.date} />;
+}
+
+function getSenderGroupClassName({
+  block,
+  isSystemBlock,
+}: SenderGroupClassNameInput) {
+  return cn(
+    "group/sender relative flex w-full min-w-0 max-w-full items-stretch",
+    isSystemBlock ? "gap-0" : "gap-3",
+    spacingAfterClassName[block.spacingAfter],
+    block.isOwn ? "flex-row-reverse" : "flex-row",
+  );
+}
+
+function getMessageRowsClassName({
+  hasHighlightedMessage,
+  isSystemBlock,
+}: MessageRowsClassNameInput) {
+  return cn(
+    "flex min-w-0 flex-1 flex-col gap-1.5",
+    hasHighlightedMessage ? "overflow-visible" : "overflow-x-hidden",
+    isSystemBlock ? "items-center" : "items-stretch",
+  );
+}
+
+function SenderAvatarSlot({
+  onShowParticipantProfile,
+  sender,
+  shouldShowSenderAvatar,
+}: SenderAvatarSlotProps) {
+  if (!shouldShowSenderAvatar || !sender) {
+    return null;
+  }
+
+  return (
+    <div className="flex w-8 shrink-0 flex-col justify-end">
+      <div className="sticky bottom-2 flex flex-col items-center">
+        <SenderProfileTrigger
+          onShowParticipantProfile={onShowParticipantProfile}
+          sender={sender}
+        />
+      </div>
+    </div>
+  );
+}
+
+function SenderProfileTrigger({
+  onShowParticipantProfile,
+  sender,
+}: SenderProfileTriggerProps) {
+  const displayName = getParticipantDisplayName(sender);
+
+  if (onShowParticipantProfile) {
+    return (
+      <button
+        type="button"
+        className={senderAvatarTriggerClassName}
+        aria-label={`Open ${displayName} details`}
+        onClick={() => onShowParticipantProfile(sender)}
+      >
+        <SenderAvatar sender={sender} />
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      {...buildProfileNavigation(sender.id)}
+      className={senderAvatarTriggerClassName}
+      aria-label={`View ${displayName}'s profile`}
+    >
+      <SenderAvatar sender={sender} />
+    </Link>
+  );
+}
+
+function MessageSenderBlockRows({
+  block,
+  getMessageRef,
+  highlightedMessageId,
+  isSystemBlock,
+  rendererProps,
+  selectionState,
+}: MessageSenderBlockRowsProps) {
+  return block.senderGroup.items.map((message, messageIndex) => (
+    <MessageSenderBlockRow
+      block={block}
+      getMessageRef={getMessageRef}
+      highlightedMessageId={highlightedMessageId}
+      isSystemBlock={isSystemBlock}
+      key={message.id}
+      message={message}
+      messageIndex={messageIndex}
+      rendererProps={rendererProps}
+      selectionState={selectionState}
+    />
+  ));
+}
+
+function MessageSenderBlockRow({
+  block,
+  getMessageRef,
+  highlightedMessageId,
+  isSystemBlock,
+  message,
+  messageIndex,
+  rendererProps,
+  selectionState,
+}: MessageSenderBlockRowProps) {
+  const rowState = getMessageRowRenderState({
+    block,
+    highlightedMessageId,
+    isSelectionMode: selectionState.isSelectionMode,
+    message,
+    messageIndex,
+    selectedMessageIds: selectionState.selectedMessageIds,
+  });
+
+  return (
+    <div ref={getMessageRef(message.id)} className="flex min-w-0 flex-col">
+      <MessageRowSeparator
+        block={block}
+        isSystemBlock={isSystemBlock}
+        rowState={rowState}
+      />
+      <MessageRowContent
+        message={message}
+        rendererProps={rendererProps}
+        rowState={rowState}
+        selectionState={selectionState}
+      />
+    </div>
+  );
+}
+
+function MessageRowSeparator({
+  block,
+  isSystemBlock,
+  rowState,
+}: MessageRowSeparatorProps) {
+  if (!rowState.hasNewMessagesSeparator) {
+    return null;
+  }
+
+  return (
+    <div className={cn(!isSystemBlock && !block.isOwn && "-ml-11")}>
+      <NewMessagesSeparator />
+    </div>
+  );
+}
+
+function MessageRowContent({
+  message,
+  rendererProps,
+  rowState,
+  selectionState,
+}: MessageRowContentProps) {
+  return (
+    <div
+      className={cn(
+        "relative flex w-full min-w-0 max-w-full",
+        rowState.shouldIndentForSelection && "pl-9",
+        rowState.messageAlignmentClassName,
+      )}
+    >
+      <div
+        className={cn(
+          "w-full min-w-0 max-w-full",
+          rowState.contentOwnershipClassName,
+        )}
+      >
+        <MessageRenderer
+          message={message}
+          showSender={rowState.isFirstInGroup}
+          isHighlighted={rowState.isHighlighted}
+          isSelectable={rowState.isSelectable}
+          isSelected={rowState.isSelected}
+          isSelectionMode={selectionState.isSelectionMode}
+          kind={rendererProps.kind}
+          onActivateReplyTarget={rendererProps.onActivateReplyTarget}
+          onStartSelection={rendererProps.onStartSelection}
+          onToggleSelected={rendererProps.onToggleSelected}
+          searchQuery={rendererProps.searchQuery}
+        />
+      </div>
+      {rowState.shouldShowSelectionToggle ? (
+        <MessageSelectionToggle
+          isSelected={rowState.isSelected}
+          onToggle={() => rendererProps.onToggleSelected?.(message)}
+        />
+      ) : null}
     </div>
   );
 }
@@ -189,10 +473,7 @@ export function MessageSenderBlock({
 function MessageSelectionToggle({
   isSelected,
   onToggle,
-}: {
-  isSelected: boolean;
-  onToggle: () => void;
-}) {
+}: MessageSelectionToggleProps) {
   return (
     <button
       type="button"

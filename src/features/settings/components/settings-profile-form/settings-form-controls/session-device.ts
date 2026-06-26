@@ -1,52 +1,46 @@
 import { LaptopMinimal, type LucideIcon, Smartphone } from "lucide-react";
 import type { AuthSession } from "@/shared/schemas";
 
+interface UserAgentLabelRule {
+  label: string;
+  matches: (userAgent: string) => boolean;
+}
+
+const BROWSER_LABEL_RULES: UserAgentLabelRule[] = [
+  { label: "Microsoft Edge", matches: includesAny("edg/") },
+  { label: "Opera", matches: includesAny("opr/", "opera") },
+  { label: "Firefox", matches: includesAny("firefox/") },
+  { label: "Chrome", matches: includesAny("chrome/", "crios/") },
+  { label: "Safari", matches: includesAny("safari/") },
+];
+
+const PLATFORM_LABEL_RULES: UserAgentLabelRule[] = [
+  { label: "Windows", matches: includesAny("windows") },
+  { label: "macOS", matches: includesAny("mac os", "macintosh") },
+  { label: "iOS", matches: includesAny("iphone", "ipad") },
+  { label: "Android", matches: includesAny("android") },
+  { label: "Linux", matches: includesAny("linux") },
+];
+
+function includesAny(...needles: string[]) {
+  return (userAgent: string) =>
+    needles.some((needle) => userAgent.includes(needle));
+}
+
+function getUserAgentLabel(
+  userAgent: string,
+  rules: UserAgentLabelRule[],
+  fallback: string,
+) {
+  return rules.find((rule) => rule.matches(userAgent))?.label ?? fallback;
+}
+
 function getBrowserName(userAgent: string) {
-  if (userAgent.includes("edg/")) {
-    return "Microsoft Edge";
-  }
-
-  if (userAgent.includes("opr/") || userAgent.includes("opera")) {
-    return "Opera";
-  }
-
-  if (userAgent.includes("firefox/")) {
-    return "Firefox";
-  }
-
-  if (userAgent.includes("chrome/") || userAgent.includes("crios/")) {
-    return "Chrome";
-  }
-
-  if (userAgent.includes("safari/")) {
-    return "Safari";
-  }
-
-  return "Browser";
+  return getUserAgentLabel(userAgent, BROWSER_LABEL_RULES, "Browser");
 }
 
 function getPlatformName(userAgent: string) {
-  if (userAgent.includes("windows")) {
-    return "Windows";
-  }
-
-  if (userAgent.includes("mac os") || userAgent.includes("macintosh")) {
-    return "macOS";
-  }
-
-  if (userAgent.includes("iphone") || userAgent.includes("ipad")) {
-    return "iOS";
-  }
-
-  if (userAgent.includes("android")) {
-    return "Android";
-  }
-
-  if (userAgent.includes("linux")) {
-    return "Linux";
-  }
-
-  return "Unknown device";
+  return getUserAgentLabel(userAgent, PLATFORM_LABEL_RULES, "Unknown device");
 }
 
 export function describeSessionDevice(session: AuthSession): {

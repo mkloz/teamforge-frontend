@@ -53,43 +53,28 @@ export function useActivityRouteSync({
   sidebarDensity,
 }: UseActivityRouteSyncInput) {
   useEffect(() => {
-    if (searchQuery !== route.searchQuery) {
-      setSearchQuery(route.searchQuery);
-    }
+    syncRouteValue(searchQuery, route.searchQuery, setSearchQuery);
   }, [route.searchQuery, searchQuery, setSearchQuery]);
 
   useEffect(() => {
-    if (activeFilter !== route.filter) {
-      setActiveFilter(route.filter);
-    }
+    syncRouteValue(activeFilter, route.filter, setActiveFilter);
   }, [activeFilter, route.filter, setActiveFilter]);
 
   useEffect(() => {
-    if (sidebarDensity !== route.density) {
-      setSidebarDensity(route.density);
-    }
+    syncRouteValue(sidebarDensity, route.density, setSidebarDensity);
   }, [route.density, setSidebarDensity, sidebarDensity]);
 
   useEffect(() => {
-    if (!route.kind || !route.id) {
-      if (selectedId || selectedKind) {
-        resetSelection();
-      }
-
-      if (route.kind || route.id || route.panel) {
-        void setRouteState(CLEAR_ACTIVITY_SELECTION_ROUTE, {
-          history: "replace",
-        });
-      }
-
-      return;
-    }
-
-    if (selectedId !== route.id || selectedKind !== route.kind) {
-      selectConversation(route.id, route.kind, {
-        shouldOpenSidePanel: false,
-      });
-    }
+    syncRouteSelection({
+      resetSelection,
+      routeId: route.id,
+      routeKind: route.kind,
+      routePanel: route.panel,
+      selectConversation,
+      selectedId,
+      selectedKind,
+      setRouteState,
+    });
   }, [
     resetSelection,
     route.id,
@@ -102,10 +87,8 @@ export function useActivityRouteSync({
   ]);
 
   useEffect(() => {
-    const shouldShowGroupPanel =
-      route.kind === "group" && route.id !== null && route.panel === "group";
-    const shouldShowProfilePanel =
-      route.kind === "dm" && route.id !== null && route.panel === "profile";
+    const { shouldShowGroupPanel, shouldShowProfilePanel } =
+      getRoutePanelVisibility(route.id, route.kind, route.panel);
 
     if (isGroupDetailOpen !== shouldShowGroupPanel) {
       setGroupDetailOpen(shouldShowGroupPanel);
@@ -123,4 +106,142 @@ export function useActivityRouteSync({
     setGroupDetailOpen,
     setProfilePanelOpen,
   ]);
+}
+
+function syncRouteValue<T>(
+  currentValue: T,
+  nextValue: T,
+  setValue: (value: T) => void,
+) {
+  if (currentValue !== nextValue) {
+    setValue(nextValue);
+  }
+}
+
+function syncRouteSelection(input: {
+  resetSelection: () => void;
+  routeId: ResolvedActivityRouteState["id"];
+  routeKind: ResolvedActivityRouteState["kind"];
+  routePanel: ResolvedActivityRouteState["panel"];
+  selectConversation: UseActivityRouteSyncInput["selectConversation"];
+  selectedId: string | null;
+  selectedKind: ActivityKind | null;
+  setRouteState: SetActivityRouteState;
+}) {
+  if (!hasRouteSelection(input.routeId, input.routeKind)) {
+    syncMissingRouteSelection(input);
+    return;
+  }
+
+  syncSelectedRouteConversation(input);
+}
+
+function syncMissingRouteSelection({
+  resetSelection,
+  routeId,
+  routeKind,
+  routePanel,
+  selectedId,
+  selectedKind,
+  setRouteState,
+}: {
+  resetSelection: () => void;
+  routeId: ResolvedActivityRouteState["id"];
+  routeKind: ResolvedActivityRouteState["kind"];
+  routePanel: ResolvedActivityRouteState["panel"];
+  selectedId: string | null;
+  selectedKind: ActivityKind | null;
+  setRouteState: SetActivityRouteState;
+}) {
+  if (shouldResetActivitySelection(selectedId, selectedKind)) {
+    resetSelection();
+  }
+
+  if (shouldClearSelectionRoute(routeId, routeKind, routePanel)) {
+    void setRouteState(CLEAR_ACTIVITY_SELECTION_ROUTE, {
+      history: "replace",
+    });
+  }
+}
+
+function syncSelectedRouteConversation({
+  routeId,
+  routeKind,
+  selectConversation,
+  selectedId,
+  selectedKind,
+}: {
+  routeId: ResolvedActivityRouteState["id"];
+  routeKind: ResolvedActivityRouteState["kind"];
+  selectConversation: UseActivityRouteSyncInput["selectConversation"];
+  selectedId: string | null;
+  selectedKind: ActivityKind | null;
+}) {
+  if (
+    routeId &&
+    routeKind &&
+    shouldSelectRouteConversation(routeId, routeKind, selectedId, selectedKind)
+  ) {
+    selectConversation(routeId, routeKind, {
+      shouldOpenSidePanel: false,
+    });
+  }
+}
+
+function hasRouteSelection(
+  routeId: ResolvedActivityRouteState["id"],
+  routeKind: ResolvedActivityRouteState["kind"],
+) {
+  return Boolean(routeKind && routeId);
+}
+
+function shouldResetActivitySelection(
+  selectedId: string | null,
+  selectedKind: ActivityKind | null,
+) {
+  return Boolean(selectedId || selectedKind);
+}
+
+function shouldClearSelectionRoute(
+  routeId: ResolvedActivityRouteState["id"],
+  routeKind: ResolvedActivityRouteState["kind"],
+  routePanel: ResolvedActivityRouteState["panel"],
+) {
+  return Boolean(routeKind || routeId || routePanel);
+}
+
+function shouldSelectRouteConversation(
+  routeId: string,
+  routeKind: ActivityKind,
+  selectedId: string | null,
+  selectedKind: ActivityKind | null,
+) {
+  return selectedId !== routeId || selectedKind !== routeKind;
+}
+
+function getRoutePanelVisibility(
+  routeId: ResolvedActivityRouteState["id"],
+  routeKind: ResolvedActivityRouteState["kind"],
+  routePanel: ResolvedActivityRouteState["panel"],
+) {
+  return {
+    shouldShowGroupPanel: isGroupPanelRoute(routeId, routeKind, routePanel),
+    shouldShowProfilePanel: isProfilePanelRoute(routeId, routeKind, routePanel),
+  };
+}
+
+function isGroupPanelRoute(
+  routeId: ResolvedActivityRouteState["id"],
+  routeKind: ResolvedActivityRouteState["kind"],
+  routePanel: ResolvedActivityRouteState["panel"],
+) {
+  return routeKind === "group" && routeId !== null && routePanel === "group";
+}
+
+function isProfilePanelRoute(
+  routeId: ResolvedActivityRouteState["id"],
+  routeKind: ResolvedActivityRouteState["kind"],
+  routePanel: ResolvedActivityRouteState["panel"],
+) {
+  return routeKind === "dm" && routeId !== null && routePanel === "profile";
 }

@@ -1,7 +1,10 @@
 import { Trash2, Upload, X } from "lucide-react";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
-import { formatAvatarFileSize } from "./account-formatters";
+import {
+  type AvatarActionState,
+  getAvatarActionState,
+} from "./avatar-action-state";
 
 interface AvatarActionsProps {
   selectedAvatarFile: File | null;
@@ -24,58 +27,43 @@ export function AvatarActions({
   onUploadSelectedAvatar,
   onDeleteOrReset,
 }: AvatarActionsProps) {
-  const avatarActionLabel = selectedAvatarFile
-    ? "Reset to saved avatar"
-    : "Delete avatar";
-  const deleteOrResetButton = (
-    <Button
-      type="button"
-      variant={selectedAvatarFile ? "outline" : "destructive"}
-      size="compact"
-      className="min-w-0"
-      disabled={
-        isAvatarBusy ||
-        (!selectedAvatarFile && (!canDeleteSavedAvatar || !isOnline))
-      }
-      onClick={selectedAvatarFile ? onDeleteOrReset : undefined}
-    >
-      {selectedAvatarFile ? <X size={14} /> : <Trash2 size={14} />}
-      {selectedAvatarFile
-        ? avatarActionLabel
-        : isDeletingAvatar
-          ? "Deleting..."
-          : avatarActionLabel}
-    </Button>
-  );
+  const actionState = getAvatarActionState({
+    canDeleteSavedAvatar,
+    isAvatarBusy,
+    isDeletingAvatar,
+    isOnline,
+    isUploadingAvatar,
+    selectedAvatarFile,
+  });
+  const deleteOrResetButton = renderDeleteOrResetButton({
+    actionState,
+    onDeleteOrReset,
+  });
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="min-h-5 text-slate-muted text-sm">
-        {selectedAvatarFile
-          ? `${selectedAvatarFile.name} - ${formatAvatarFileSize(selectedAvatarFile)}`
-          : "Choose an image first, then upload when it looks right."}
-      </p>
+      <p className="min-h-5 text-slate-muted text-sm">{actionState.hintText}</p>
       <div className="responsive-action-grid grid gap-3">
         <Button
           type="button"
           variant="primary"
           size="compact"
           className="min-w-0"
-          disabled={!selectedAvatarFile || isAvatarBusy || !isOnline}
+          disabled={actionState.uploadDisabled}
           onClick={onUploadSelectedAvatar}
         >
           <Upload size={14} />
-          {isUploadingAvatar ? "Uploading..." : "Upload selected"}
+          {actionState.uploadLabel}
         </Button>
-        {selectedAvatarFile ? (
+        {actionState.hasSelectedAvatarFile ? (
           deleteOrResetButton
         ) : (
           <ActionDialog
             cancelLabel="Keep avatar"
-            confirmLabel={isDeletingAvatar ? "Deleting..." : "Delete avatar"}
+            confirmLabel={actionState.deleteDialogConfirmLabel}
             description="This removes your saved profile photo from TeamForge."
             details={["You can upload a new avatar whenever you want."]}
-            disabled={isAvatarBusy || !canDeleteSavedAvatar || !isOnline}
+            disabled={actionState.deleteDialogDisabled}
             loading={isDeletingAvatar}
             onConfirm={onDeleteOrReset}
             title="Delete your avatar?"
@@ -85,5 +73,31 @@ export function AvatarActions({
         )}
       </div>
     </div>
+  );
+}
+
+function renderDeleteOrResetButton({
+  actionState,
+  onDeleteOrReset,
+}: {
+  actionState: AvatarActionState;
+  onDeleteOrReset: () => void;
+}) {
+  return (
+    <Button
+      type="button"
+      variant={actionState.deleteOrResetVariant}
+      size="compact"
+      className="min-w-0"
+      disabled={actionState.deleteOrResetDisabled}
+      onClick={actionState.hasSelectedAvatarFile ? onDeleteOrReset : undefined}
+    >
+      {actionState.hasSelectedAvatarFile ? (
+        <X size={14} />
+      ) : (
+        <Trash2 size={14} />
+      )}
+      {actionState.deleteOrResetLabel}
+    </Button>
   );
 }

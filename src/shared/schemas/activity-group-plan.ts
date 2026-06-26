@@ -63,7 +63,7 @@ export type GroupMember = z.infer<z.ZodObject<typeof groupMemberData>> & {
   group?: Group;
 };
 
-export const groupMemberSchema: z.ZodSchema<GroupMember> = z.lazy(() =>
+const groupMemberSchema: z.ZodSchema<GroupMember> = z.lazy(() =>
   z.object(groupMemberData).extend({
     user: userSchema.optional(),
     group: groupSchema.optional(),

@@ -21,6 +21,59 @@ interface UseEditGroupIdentityOptions {
   onSaved?: () => void;
 }
 
+interface GroupIdentitySaveAvailabilityInput {
+  hasChanges: boolean;
+  hasGroupDetailsChanges: boolean;
+  hasPlanDetailsChanges: boolean;
+  isAvatarUploading: boolean;
+  isBusy: boolean;
+  isCoverUploading: boolean;
+  isNameValid: boolean;
+  isOnline: boolean;
+  isPlanValid: boolean;
+}
+
+function allConditionsPass(conditions: boolean[]) {
+  return conditions.every(Boolean);
+}
+
+function getGroupIdentitySaveAvailability({
+  hasChanges,
+  hasGroupDetailsChanges,
+  hasPlanDetailsChanges,
+  isAvatarUploading,
+  isBusy,
+  isCoverUploading,
+  isNameValid,
+  isOnline,
+  isPlanValid,
+}: GroupIdentitySaveAvailabilityInput) {
+  const canUseNetwork = isOnline && !isBusy;
+
+  return {
+    canSave: allConditionsPass([
+      hasChanges,
+      isNameValid,
+      isPlanValid,
+      canUseNetwork,
+      !isAvatarUploading,
+      !isCoverUploading,
+    ]),
+    canSaveGroupDetails: allConditionsPass([
+      isNameValid,
+      hasGroupDetailsChanges,
+      canUseNetwork,
+      !isAvatarUploading,
+    ]),
+    canSavePlanDetails: allConditionsPass([
+      isPlanValid,
+      hasPlanDetailsChanges,
+      canUseNetwork,
+      !isCoverUploading,
+    ]),
+  };
+}
+
 export function useEditGroupIdentity(
   group: Group,
   { onSaved }: UseEditGroupIdentityOptions = {},
@@ -104,26 +157,18 @@ export function useEditGroupIdentity(
   const hasGroupDetailsChanges = hasGroupIdentityDetailsChanges(group, values);
   const hasPlanDetailsChanges = hasGroupPlanDetailsChanges(group, values);
   const isBusy = mutation.isPending;
-  const canSaveGroupDetails =
-    isNameValid &&
-    hasGroupDetailsChanges &&
-    isOnline &&
-    !isBusy &&
-    !avatarUpload.isUploading;
-  const canSavePlanDetails =
-    isPlanValid &&
-    hasPlanDetailsChanges &&
-    isOnline &&
-    !isBusy &&
-    !coverUpload.isUploading;
-  const canSave =
-    hasChanges &&
-    isNameValid &&
-    isPlanValid &&
-    isOnline &&
-    !isBusy &&
-    !avatarUpload.isUploading &&
-    !coverUpload.isUploading;
+  const { canSave, canSaveGroupDetails, canSavePlanDetails } =
+    getGroupIdentitySaveAvailability({
+      hasChanges,
+      hasGroupDetailsChanges,
+      hasPlanDetailsChanges,
+      isAvatarUploading: avatarUpload.isUploading,
+      isBusy,
+      isCoverUploading: coverUpload.isUploading,
+      isNameValid,
+      isOnline,
+      isPlanValid,
+    });
 
   function save() {
     setError(null);

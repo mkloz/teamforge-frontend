@@ -15,12 +15,75 @@ import type { LandingNavLinkId, NavbarProps } from "./navbar-types";
 import { useActiveLandingSection } from "./use-active-landing-section";
 import { useMobileNavDialog } from "./use-mobile-nav-dialog";
 
+interface LandingAuthActionConfig {
+  primaryLabel: string;
+  returnTo: string | null;
+  secondaryLabel: string;
+}
+
 function normalizePathname(pathname: string) {
   if (pathname === "/") {
     return pathname;
   }
 
   return pathname.replace(/\/+$/, "");
+}
+
+function getLandingAuthActionConfig(
+  actionSet: NavbarProps["actionSet"],
+): LandingAuthActionConfig {
+  if (actionSet === "download") {
+    return {
+      primaryLabel: "Get started",
+      returnTo: "/download",
+      secondaryLabel: "Sign in",
+    };
+  }
+
+  return {
+    primaryLabel: "Get Started",
+    returnTo: null,
+    secondaryLabel: "Log In",
+  };
+}
+
+function getNavbarHeaderClassName({
+  isSolid,
+  staticPublicTheme,
+}: {
+  isSolid: boolean;
+  staticPublicTheme: boolean;
+}) {
+  return cn(
+    "dark fixed top-0 right-0 left-0 z-50 transition-all duration-150",
+    staticPublicTheme && "public-forge-theme",
+    isSolid
+      ? "border-white/5 border-b bg-hero-bg/95 backdrop-blur-md"
+      : "bg-transparent",
+  );
+}
+
+function getMobileNavigationClassName({
+  menuOpen,
+  staticPublicTheme,
+}: {
+  menuOpen: boolean;
+  staticPublicTheme: boolean;
+}) {
+  return cn(
+    "dark fixed inset-0 z-40 overflow-y-auto bg-hero-bg/55 pt-16 backdrop-blur-sm transition-opacity duration-150 lg:hidden",
+    staticPublicTheme && "public-forge-theme",
+    menuOpen
+      ? "pointer-events-auto opacity-100"
+      : "pointer-events-none opacity-0",
+  );
+}
+
+function getDownloadInstallAction({
+  actionSet,
+  installAction,
+}: Pick<NavbarProps, "actionSet" | "installAction">) {
+  return actionSet === "download" ? installAction : undefined;
 }
 
 export function Navbar({
@@ -30,6 +93,7 @@ export function Navbar({
   staticPublicTheme = false,
 }: NavbarProps) {
   const scrolled = useWindowScrollThreshold(60);
+  const authActionConfig = getLandingAuthActionConfig(actionSet);
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
@@ -44,14 +108,16 @@ export function Navbar({
     primaryAction,
     secondaryAction,
   } = useLandingAuthActions(
-    actionSet === "download" ? "Get started" : "Get Started",
-    actionSet === "download" ? "Sign in" : "Log In",
-    actionSet === "download" ? "/download" : null,
+    authActionConfig.primaryLabel,
+    authActionConfig.secondaryLabel,
+    authActionConfig.returnTo,
   );
   const showLandingSectionLinks = actionSet === "landing";
   const isSolid = forceSolid || scrolled;
-  const downloadInstallAction =
-    actionSet === "download" ? installAction : undefined;
+  const downloadInstallAction = getDownloadInstallAction({
+    actionSet,
+    installAction,
+  });
 
   function handleNavClick(
     event: MouseEvent<HTMLAnchorElement>,
@@ -75,23 +141,15 @@ export function Navbar({
       );
 
       await logoutCurrentSession();
+    } finally {
       setIsSigningOut(false);
-    } catch (error) {
-      setIsSigningOut(false);
-      throw error;
     }
   }
 
   return (
     <>
       <header
-        className={cn(
-          "dark fixed top-0 right-0 left-0 z-50 transition-all duration-150",
-          staticPublicTheme && "public-forge-theme",
-          isSolid
-            ? "border-white/5 border-b bg-hero-bg/95 backdrop-blur-md"
-            : "bg-transparent",
-        )}
+        className={getNavbarHeaderClassName({ isSolid, staticPublicTheme })}
       >
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <NavbarBrand isLandingPage={isLandingPage} />
@@ -141,13 +199,10 @@ export function Navbar({
       <div
         id="landing-mobile-navigation"
         ref={menuRef}
-        className={cn(
-          "dark fixed inset-0 z-40 overflow-y-auto bg-hero-bg/55 pt-16 backdrop-blur-sm transition-opacity duration-150 lg:hidden",
-          staticPublicTheme && "public-forge-theme",
-          menuOpen
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0",
-        )}
+        className={getMobileNavigationClassName({
+          menuOpen,
+          staticPublicTheme,
+        })}
         aria-hidden={!menuOpen}
         inert={!menuOpen}
         role="dialog"

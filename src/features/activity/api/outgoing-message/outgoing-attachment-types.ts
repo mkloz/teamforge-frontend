@@ -1,6 +1,14 @@
 import type { SendMessagePayload } from "@/features/activity/api/activity.api";
 import type { AttachmentType, MessageType } from "@/shared/schemas";
 
+const OUTGOING_MESSAGE_TYPE_BY_ATTACHMENT_TYPE = {
+  AUDIO: "VOICE",
+  FILE: "FILE",
+  GIF: "IMAGE",
+  IMAGE: "IMAGE",
+  VIDEO: "IMAGE",
+} as const satisfies Record<AttachmentType, MessageType>;
+
 export function inferOutgoingAttachmentType(file: File): AttachmentType {
   if (file.type.startsWith("image/")) {
     return "IMAGE";
@@ -16,23 +24,23 @@ export function inferOutgoingAttachmentType(file: File): AttachmentType {
 export function inferOutgoingMessageType(
   attachments: SendMessagePayload["attachments"],
 ): MessageType | undefined {
-  const firstAttachment = attachments?.[0];
+  const firstAttachmentType = getFirstOutgoingAttachmentType(attachments);
 
-  if (!firstAttachment) {
+  if (!firstAttachmentType) {
     return undefined;
   }
 
-  if (
-    firstAttachment.type === "IMAGE" ||
-    firstAttachment.type === "VIDEO" ||
-    firstAttachment.type === "GIF"
-  ) {
-    return "IMAGE";
-  }
+  return getOutgoingMessageTypeForAttachmentType(firstAttachmentType);
+}
 
-  if (firstAttachment.type === "AUDIO") {
-    return "VOICE";
-  }
+function getFirstOutgoingAttachmentType(
+  attachments: SendMessagePayload["attachments"],
+) {
+  return attachments?.[0]?.type;
+}
 
-  return "FILE";
+function getOutgoingMessageTypeForAttachmentType(
+  attachmentType: AttachmentType,
+): MessageType {
+  return OUTGOING_MESSAGE_TYPE_BY_ATTACHMENT_TYPE[attachmentType];
 }

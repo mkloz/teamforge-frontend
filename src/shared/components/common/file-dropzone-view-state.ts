@@ -92,6 +92,13 @@ const FILE_DROPZONE_VARIANT_STYLES: Record<
   },
 };
 
+const MULTIPLE_FILE_DROP_HINT_BY_VARIANT: Partial<
+  Record<FileDropzoneVariant, string>
+> = {
+  compact: "Multiple files",
+  inline: "Multiple files",
+};
+
 export function getFileDropzoneViewState({
   disabled,
   dropzoneClassName,
@@ -105,7 +112,7 @@ export function getFileDropzoneViewState({
 }: FileDropzoneViewStateInput): FileDropzoneViewState {
   const variantStyle = getVariantStyle(variant, multiple);
   const isCover = isCoverVariant(variant);
-  const isInactive = disabled || isUploading;
+  const isInactive = isFileDropzoneInactive({ disabled, isUploading });
 
   return {
     actionPillClassName: getActionPillClassName({ isCover, isDragging }),
@@ -126,7 +133,7 @@ export function getFileDropzoneViewState({
       "type-signature-label px-2 py-0.5 font-semibold tracking-wide",
       variantStyle.dropPillClassName,
     ),
-    fileLimit: maxFiles ?? (multiple ? 10 : 1),
+    fileLimit: getFileLimit({ maxFiles, multiple }),
     helperPillClassName: cn(
       "min-w-0 max-w-full truncate font-medium",
       variantStyle.helperPillClassName,
@@ -136,16 +143,13 @@ export function getFileDropzoneViewState({
       isDragging,
     }),
     isInactive,
-    rootButtonClassName: cn(
-      "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border border-border/55 border-dashed bg-card p-0 text-left transition-all duration-200 focus-visible:ring-forge-teal/35",
-      variantStyle.rootVariantClassName,
-      isDragging
-        ? "border-forge-teal/60 bg-forge-teal/5 ring-2 ring-forge-teal/15"
-        : "hover:border-forge-teal/40 hover:bg-forge-teal/3 hover:ring-1 hover:ring-forge-teal/10",
-      error && "border-destructive/45 bg-destructive/4",
-      isInactive && "cursor-not-allowed opacity-60",
+    rootButtonClassName: getRootButtonClassName({
       dropzoneClassName,
-    ),
+      error,
+      isDragging,
+      isInactive,
+      variantStyle,
+    }),
     titleClassName: cn(
       "min-w-0 truncate font-semibold text-sm leading-tight tracking-tight",
       variantStyle.titleClassName,
@@ -166,25 +170,61 @@ function getVariantStyle(
   variant: FileDropzoneVariant,
   multiple: boolean,
 ): FileDropzoneVariantStyle {
-  if (variant === "compact" && multiple) {
-    return {
-      ...FILE_DROPZONE_VARIANT_STYLES.compact,
-      dropHint: "Multiple files",
-    };
-  }
+  const variantStyle = FILE_DROPZONE_VARIANT_STYLES[variant];
+  const multipleDropHint = multiple
+    ? MULTIPLE_FILE_DROP_HINT_BY_VARIANT[variant]
+    : undefined;
 
-  if (variant === "inline" && multiple) {
-    return {
-      ...FILE_DROPZONE_VARIANT_STYLES.inline,
-      dropHint: "Multiple files",
-    };
-  }
-
-  return FILE_DROPZONE_VARIANT_STYLES[variant];
+  return multipleDropHint
+    ? { ...variantStyle, dropHint: multipleDropHint }
+    : variantStyle;
 }
 
 function isCoverVariant(variant: FileDropzoneVariant) {
   return variant === "cover";
+}
+
+function isFileDropzoneInactive({
+  disabled,
+  isUploading,
+}: Pick<FileDropzoneViewStateInput, "disabled" | "isUploading">) {
+  return disabled || isUploading;
+}
+
+function getFileLimit({
+  maxFiles,
+  multiple,
+}: Pick<FileDropzoneViewStateInput, "maxFiles" | "multiple">) {
+  return maxFiles ?? (multiple ? 10 : 1);
+}
+
+function getRootInteractionClassName(isDragging: boolean) {
+  return isDragging
+    ? "border-forge-teal/60 bg-forge-teal/5 ring-2 ring-forge-teal/15"
+    : "hover:border-forge-teal/40 hover:bg-forge-teal/3 hover:ring-1 hover:ring-forge-teal/10";
+}
+
+function getRootButtonClassName({
+  dropzoneClassName,
+  error,
+  isDragging,
+  isInactive,
+  variantStyle,
+}: {
+  dropzoneClassName?: string;
+  error: string | null;
+  isDragging: boolean;
+  isInactive: boolean;
+  variantStyle: FileDropzoneVariantStyle;
+}) {
+  return cn(
+    "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border border-border/55 border-dashed bg-card p-0 text-left transition-all duration-200 focus-visible:ring-forge-teal/35",
+    variantStyle.rootVariantClassName,
+    getRootInteractionClassName(isDragging),
+    error && "border-destructive/45 bg-destructive/4",
+    isInactive && "cursor-not-allowed opacity-60",
+    dropzoneClassName,
+  );
 }
 
 function getIconTileClassName(

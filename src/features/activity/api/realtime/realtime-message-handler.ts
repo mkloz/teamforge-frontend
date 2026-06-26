@@ -6,9 +6,19 @@ import type {
   ActivityRealtimeContext,
   ApplyRealtimeMessageOptions,
 } from "@/features/activity/api/realtime/activity-realtime-types";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { ChatApi, MessageApi, User } from "@/shared/schemas";
+
+interface RealtimeMessageState {
+  alreadyExists: boolean;
+  chat: ChatApi;
+  isActiveChat: boolean;
+  isOwnMessage: boolean;
+  mappedMessage: UnifiedMessage;
+  optimisticMatch: UnifiedMessage | undefined;
+}
 
 export async function applyRealtimeMessage(
   context: ActivityRealtimeContext,
@@ -16,26 +26,37 @@ export async function applyRealtimeMessage(
   message: MessageApi,
   options: ApplyRealtimeMessageOptions = {},
 ) {
-  const currentUser = appQueryClient.getQueryData<User>(
-    APP_QUERY_KEYS.auth.currentUser,
+  const realtimeState = getRealtimeMessageState(
+    context,
+    chatId,
+    message,
+    options,
   );
 
-  if (!currentUser) {
-    await appQueryClient.invalidateQueries({
-      queryKey: ACTIVITY_CHATS_QUERY_KEY,
-    });
+  if (!realtimeState) {
+    await invalidateActivityChats();
     return;
   }
 
-  const chats =
-    appQueryClient.getQueryData<ChatApi[]>(ACTIVITY_CHATS_QUERY_KEY) ?? [];
-  const chat = chats.find((item) => item.id === chatId);
-
-  if (!chat) {
-    await appQueryClient.invalidateQueries({
-      queryKey: ACTIVITY_CHATS_QUERY_KEY,
-    });
+  if (message.deletedAt) {
+    await handleDeletedRealtimeMessage(context, chatId, realtimeState);
     return;
+  }
+
+  applyRealtimeMessageToCache(context, chatId, message, realtimeState);
+}
+
+function getRealtimeMessageState(
+  context: ActivityRealtimeContext,
+  chatId: string,
+  message: MessageApi,
+  options: ApplyRealtimeMessageOptions,
+): RealtimeMessageState | null {
+  const currentUser = getCurrentUser();
+  const chat = currentUser ? getCachedChat(chatId) : null;
+
+  if (!currentUser || !chat) {
+    return null;
   }
 
   const participants = context.buildParticipantsFromChatSummary(
@@ -48,25 +69,52 @@ export async function applyRealtimeMessage(
     currentUser.id,
   )[0];
   const existingMessages = ActivityMessageCache.getMessages(chatId);
-  const alreadyExists = existingMessages.some(
-    (item) => item.id === mappedMessage.id,
-  );
   const optimisticMatch = findMatchingOptimisticMessage(
     existingMessages,
     mappedMessage,
   );
-  const isActiveChat = options.activeChatId === chatId;
-  const isOwnMessage = mappedMessage.isOwn;
 
-  if (message.deletedAt) {
-    ActivityMessageCache.remove(chatId, mappedMessage.id);
-    context.removePinnedMessage(chatId, mappedMessage.id);
-    ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
-    await appQueryClient.invalidateQueries({
-      queryKey: ACTIVITY_CHATS_QUERY_KEY,
-    });
-    return;
-  }
+  return {
+    alreadyExists: existingMessages.some(
+      (item) => item.id === mappedMessage.id,
+    ),
+    chat,
+    isActiveChat: options.activeChatId === chatId,
+    isOwnMessage: mappedMessage.isOwn,
+    mappedMessage,
+    optimisticMatch,
+  };
+}
+
+function getCurrentUser() {
+  return appQueryClient.getQueryData<User>(APP_QUERY_KEYS.auth.currentUser);
+}
+
+function getCachedChat(chatId: string) {
+  const chats =
+    appQueryClient.getQueryData<ChatApi[]>(ACTIVITY_CHATS_QUERY_KEY) ?? [];
+
+  return chats.find((item) => item.id === chatId) ?? null;
+}
+
+async function handleDeletedRealtimeMessage(
+  context: ActivityRealtimeContext,
+  chatId: string,
+  { mappedMessage }: RealtimeMessageState,
+) {
+  ActivityMessageCache.remove(chatId, mappedMessage.id);
+  context.removePinnedMessage(chatId, mappedMessage.id);
+  ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+  await invalidateActivityChats();
+}
+
+function applyRealtimeMessageToCache(
+  context: ActivityRealtimeContext,
+  chatId: string,
+  message: MessageApi,
+  realtimeState: RealtimeMessageState,
+) {
+  const { alreadyExists, mappedMessage, optimisticMatch } = realtimeState;
 
   if (optimisticMatch) {
     ActivityActions.releaseOptimisticMessageResources(optimisticMatch);
@@ -80,19 +128,57 @@ export async function applyRealtimeMessage(
 
   context.syncPinnedMessage(chatId, mappedMessage);
 
-  if (optimisticMatch || alreadyExists) {
+  if (shouldOnlySyncLastMessage(realtimeState)) {
     ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
     return;
   }
 
-  context.updateChatSummaryCache({
+  context.updateChatSummaryCache(
+    buildRealtimeChatSummary(message, realtimeState),
+  );
+}
+
+function shouldOnlySyncLastMessage({
+  alreadyExists,
+  optimisticMatch,
+}: RealtimeMessageState) {
+  return Boolean(optimisticMatch || alreadyExists);
+}
+
+function buildRealtimeChatSummary(
+  message: MessageApi,
+  { chat, isActiveChat, isOwnMessage }: RealtimeMessageState,
+) {
+  return {
     ...chat,
-    hasUnread: isOwnMessage ? (chat.hasUnread ?? false) : !isActiveChat,
+    hasUnread: getRealtimeHasUnread(chat, isActiveChat, isOwnMessage),
     lastMessage: message,
-    unreadCount: isOwnMessage
-      ? (chat.unreadCount ?? 0)
-      : isActiveChat
-        ? 0
-        : (chat.unreadCount ?? 0) + 1,
+    unreadCount: getRealtimeUnreadCount(chat, isActiveChat, isOwnMessage),
+  };
+}
+
+function getRealtimeHasUnread(
+  chat: ChatApi,
+  isActiveChat: boolean,
+  isOwnMessage: boolean,
+) {
+  return isOwnMessage ? (chat.hasUnread ?? false) : !isActiveChat;
+}
+
+function getRealtimeUnreadCount(
+  chat: ChatApi,
+  isActiveChat: boolean,
+  isOwnMessage: boolean,
+) {
+  if (isOwnMessage) {
+    return chat.unreadCount ?? 0;
+  }
+
+  return isActiveChat ? 0 : (chat.unreadCount ?? 0) + 1;
+}
+
+function invalidateActivityChats() {
+  return appQueryClient.invalidateQueries({
+    queryKey: ACTIVITY_CHATS_QUERY_KEY,
   });
 }

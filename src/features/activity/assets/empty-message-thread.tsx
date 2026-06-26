@@ -1,11 +1,6 @@
 import { useId } from "react";
-import { EmptyStateSvg } from "@/assets/empty-state/empty-state-svg";
-import {
-  emptyVisualAmber,
-  emptyVisualStroke,
-  emptyVisualTeal,
-} from "@/assets/empty-state/tokens";
 import type { EmptyStateVisualBaseProps } from "@/assets/empty-state/types";
+import { SlicedMaskedEmptyStateSvg } from "@/shared/assets/empty-state/masked-svg-paths";
 
 const cutoutPaths = [
   {
@@ -22,100 +17,60 @@ const visiblePaths = [
   {
     id: "visible-1",
     d: `M 305.221 497.371 C 307.591 496.934 315.9 496.659 318.592 496.664 C 356.942 496.725 395.338 496.779 433.683 496.787 L 671.808 496.768 L 776.127 496.684 C 798.624 496.65 824.187 495.357 845.994 498.865 C 884.688 505.088 919.622 534.592 933.673 570.912 C 940.298 587.415 942.841 605.038 942.732 622.801 C 942.356 684.112 942.166 745.439 942.251 806.754 C 942.278 826.614 943.346 847.758 939 867.146 C 933.768 891.354 921.703 913.553 904.234 931.111 C 866.808 968.616 828.084 966.776 779.989 966.761 L 714.75 966.698 L 412.021 966.767 C 386.032 1009.02 348.52 1045.26 297.34 1052.88 C 286.98 1054.85 274.907 1052.25 268.412 1043.2 C 258.707 1029.67 273.229 1012.14 279.223 999.552 C 285.25 986.897 288.996 977.529 291.726 963.618 C 273.426 961.078 251.937 950.212 237.481 938.994 C 211.779 918.635 195.165 888.944 191.259 856.39 C 189.543 842.287 190.129 823.484 190.148 808.764 L 190.286 734.514 L 190.244 657.584 C 190.228 645.396 190.297 633.328 190.523 621.157 C 191.753 554.889 240.427 505.119 305.221 497.371 z`,
-    fill: emptyVisualStroke,
+    fill: "stroke",
     cutoutStart: 0,
   },
   {
     id: "visible-2",
     d: `M 1345.8 891.979 C 1330.66 862.639 1331.72 849.912 1331.75 818.092 L 1331.85 765.275 C 1331.89 740.817 1330.4 696.238 1332.02 673.126 C 1332.55 665.128 1334.07 657.227 1336.54 649.603 C 1344.27 625.629 1361.32 605.774 1383.86 594.516 C 1411.91 580.256 1440 583.852 1470.52 583.841 L 1567.33 583.828 L 1698.68 583.858 C 1721.77 583.867 1744.81 583.775 1767.89 584.134 C 1800.31 584.639 1830.04 605.18 1844.18 634.026 C 1848.91 643.478 1851.98 653.675 1853.24 664.169 C 1855.52 683.278 1854.58 733.894 1854.33 755.288 C 1854.03 780.346 1855.72 825.067 1853.8 848.769 C 1853.1 856.545 1851.43 864.204 1848.84 871.568 C 1836.36 907.756 1809.25 930.754 1771.63 936.929 C 1774.6 953.781 1778.66 965.807 1787.49 980.632 C 1798.26 998.71 1827.19 1013.53 1808.05 1036.41 C 1804.88 1047.25 1802.33 1049.42 1793.06 1055.02 C 1764.28 1057.15 1738.27 1048.49 1715.98 1029.89 C 1698.93 1015.66 1677.83 992.075 1669.02 971.644 C 1612.93 970.435 1555.31 972.23 1499.06 971.508 C 1474.56 970.565 1448.19 973.331 1423.96 970.235 C 1385 965.259 1352.23 929.44 1345.8 891.979 z`,
-    fill: emptyVisualStroke,
+    fill: "stroke",
     cutoutStart: 1,
   },
   {
     id: "visible-3",
     d: `M 1345.8 891.979 C 1382.28 940.735 1409.4 936.347 1464.57 936.326 L 1581.65 936.254 C 1599.12 936.243 1630.75 935.257 1646.82 937.46 C 1678.9 988.657 1714.68 1025.48 1776.18 1040.49 C 1786.35 1042.97 1797.45 1043.39 1806.56 1037.44 C 1807.06 1037.11 1807.56 1036.77 1808.05 1036.41 C 1804.88 1047.25 1802.33 1049.42 1793.06 1055.02 C 1764.28 1057.15 1738.27 1048.49 1715.98 1029.89 C 1698.93 1015.66 1677.83 992.075 1669.02 971.644 C 1612.93 970.435 1555.31 972.23 1499.06 971.508 C 1474.56 970.565 1448.19 973.331 1423.96 970.235 C 1385 965.259 1352.23 929.44 1345.8 891.979 z`,
-    fill: emptyVisualTeal,
+    fill: "teal",
     cutoutStart: 1,
   },
   {
     id: "visible-4",
     d: `M 1125.23 721.463 C 1139.41 718.732 1153.96 723.831 1163.33 734.814 C 1172.71 745.798 1175.45 760.97 1170.52 774.541 C 1165.59 788.112 1153.75 797.986 1139.51 800.395 C 1117.85 804.062 1097.26 789.613 1093.35 767.989 C 1089.44 746.365 1103.66 725.62 1125.23 721.463 z`,
-    fill: emptyVisualStroke,
+    fill: "stroke",
     cutoutStart: 2,
   },
   {
     id: "visible-5",
     d: `M 1126.69 738.513 C 1134.8 736.379 1143.42 738.794 1149.25 744.828 C 1155.07 750.862 1157.17 759.572 1154.75 767.599 C 1152.33 775.626 1145.76 781.716 1137.57 783.521 C 1125.26 786.235 1113.04 778.603 1110.07 766.349 C 1107.11 754.095 1114.5 741.723 1126.69 738.513 z`,
-    fill: emptyVisualAmber,
+    fill: "amber",
     cutoutStart: 2,
   },
   {
     id: "visible-6",
     d: `M 1056.96 752.345 C 1058.15 752.236 1059.34 752.179 1060.54 752.176 C 1072.88 752.094 1076.29 764.357 1065.85 773.413 C 1031.5 778.029 1006.12 784.653 974.219 797.178 C 961.965 799.908 956.729 786.481 961.814 781.73 C 979.986 764.751 1035.42 755.75 1056.96 752.345 z`,
-    fill: emptyVisualTeal,
+    fill: "teal",
     cutoutStart: 2,
   },
   {
     id: "visible-7",
     d: `M 1201.77 752.127 C 1204.41 752.117 1207.05 752.249 1209.67 752.522 C 1221.45 753.73 1336.06 772.246 1296.2 797.818 C 1290.55 798.198 1268.93 788.81 1261.89 786.442 C 1251.31 782.956 1240.54 780.071 1229.64 777.801 C 1221.68 776.065 1207.47 775.831 1201.37 773.597 C 1188.96 769.047 1193.45 757.827 1201.77 752.127 z`,
-    fill: emptyVisualTeal,
+    fill: "teal",
     cutoutStart: 2,
   },
 ] as const;
-
-function getMaskId(prefix: string, pathId: string, cutoutStart: number) {
-  return `${prefix}-${pathId}-${cutoutStart}`;
-}
 
 export function EmptyMessageThreadVisual(props: EmptyStateVisualBaseProps) {
   const reactId = useId();
   const idPrefix = `empty-message-thread-${reactId.replaceAll(":", "")}`;
 
   return (
-    <EmptyStateSvg viewBox="142 448 1761 655" {...props}>
-      <defs>
-        {visiblePaths.map((path) =>
-          path.cutoutStart < cutoutPaths.length ? (
-            <mask
-              key={getMaskId(idPrefix, path.id, path.cutoutStart)}
-              id={getMaskId(idPrefix, path.id, path.cutoutStart)}
-              x="0"
-              y="0"
-              width="2048"
-              height="1536"
-              maskUnits="userSpaceOnUse"
-            >
-              <rect width="2048" height="1536" fill="white" stroke="none" />
-              {cutoutPaths.slice(path.cutoutStart).map((cutoutPath) => (
-                <path
-                  key={cutoutPath.id}
-                  d={cutoutPath.d}
-                  fill="black"
-                  stroke="none"
-                />
-              ))}
-            </mask>
-          ) : null,
-        )}
-      </defs>
-
-      <g stroke="none">
-        {visiblePaths.map((path) => {
-          const maskId =
-            path.cutoutStart < cutoutPaths.length
-              ? getMaskId(idPrefix, path.id, path.cutoutStart)
-              : undefined;
-
-          return (
-            <path
-              key={path.id}
-              d={path.d}
-              fill={path.fill}
-              mask={maskId ? `url(#${maskId})` : undefined}
-            />
-          );
-        })}
-      </g>
-    </EmptyStateSvg>
+    <SlicedMaskedEmptyStateSvg
+      viewBox="142 448 1761 655"
+      cutoutPaths={cutoutPaths}
+      idPrefix={idPrefix}
+      maskHeight="1536"
+      maskWidth="2048"
+      visiblePaths={visiblePaths}
+      {...props}
+    />
   );
 }

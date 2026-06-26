@@ -116,7 +116,6 @@ const ALL_PLAN_COVER_PRESETS = [
   ...LEGACY_PLAN_COVER_PRESETS,
 ] as const satisfies readonly PlanCoverPreset[];
 
-export type PlanCoverPresetId = (typeof ALL_PLAN_COVER_PRESETS)[number]["id"];
 export const PLAN_COVER_PRESET_IDS = ALL_PLAN_COVER_PRESETS.map(
   (preset) => preset.id,
 );

@@ -15,24 +15,13 @@ export const LightboxImage = memo(function LightboxImage({
   media: UnifiedAttachment;
 }) {
   const { state, onLoad, onError } = useImageState();
+  const viewState = getLightboxImageViewState(state);
 
   return (
     <div className="relative flex size-full items-center justify-center">
-      {state === "loading" && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2
-            strokeWidth={1.5}
-            className="size-9 animate-spin text-white/40"
-          />
-        </div>
-      )}
+      <LightboxLoadingIndicator isVisible={viewState.shouldShowLoading} />
 
-      {state === "error" && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <ErrorMediaImageUnavailableVisual className="h-32 w-auto text-white" />
-          <p className="font-medium text-white/40 text-xs">Image unavailable</p>
-        </div>
-      )}
+      <LightboxImageUnavailable isVisible={viewState.shouldShowError} />
 
       <Image
         src={media.url}
@@ -51,7 +40,7 @@ export const LightboxImage = memo(function LightboxImage({
           "max-h-full max-w-full select-none object-contain",
           "shadow-2xl ring-1 ring-white/5",
           "transition-opacity duration-300",
-          state === "loaded" ? "opacity-100" : "opacity-0",
+          viewState.mediaOpacityClassName,
         )}
         loading="eager"
         loadingComponent={null}
@@ -69,35 +58,28 @@ export const LightboxVideo = memo(function LightboxVideo({
 }) {
   const [hasMetadata, setHasMetadata] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const isGif = isGifAttachment(media);
+  const viewState = getLightboxVideoViewState({
+    hasError,
+    hasMetadata,
+    isGif: isGifAttachment(media),
+  });
 
   return (
     <div className="relative flex size-full items-center justify-center">
-      {!hasMetadata && !hasError && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2
-            strokeWidth={1.5}
-            className="size-9 animate-spin text-white/40"
-          />
-        </div>
-      )}
+      <LightboxLoadingIndicator isVisible={viewState.shouldShowLoading} />
 
-      {hasError && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <ErrorMediaVideoUnavailableVisual className="h-32 w-auto text-white" />
-          <p className="font-medium text-white/40 text-xs">
-            {isGif ? "GIF unavailable" : "Video unavailable"}
-          </p>
-        </div>
-      )}
+      <LightboxVideoUnavailable
+        isVisible={viewState.shouldShowError}
+        label={viewState.errorLabel}
+      />
 
       <video
         src={media.url}
         poster={media.thumbnailUrl || undefined}
-        autoPlay={isGif}
-        controls={!isGif}
-        loop={isGif}
-        muted={isGif}
+        autoPlay={viewState.isGif}
+        controls={!viewState.isGif}
+        loop={viewState.isGif}
+        muted={viewState.isGif}
         playsInline
         preload="metadata"
         onLoadedMetadata={(event) => {
@@ -113,7 +95,7 @@ export const LightboxVideo = memo(function LightboxVideo({
           "max-h-full max-w-full select-none",
           "shadow-2xl ring-1 ring-white/5",
           "transition-opacity duration-300",
-          hasMetadata ? "opacity-100" : "opacity-0",
+          viewState.mediaOpacityClassName,
         )}
       >
         <track
@@ -126,3 +108,82 @@ export const LightboxVideo = memo(function LightboxVideo({
     </div>
   );
 });
+
+type ImageLoadState = ReturnType<typeof useImageState>["state"];
+
+function getLightboxImageViewState(state: ImageLoadState) {
+  return {
+    mediaOpacityClassName: getMediaOpacityClassName(state === "loaded"),
+    shouldShowError: state === "error",
+    shouldShowLoading: state === "loading",
+  };
+}
+
+function getLightboxVideoViewState({
+  hasError,
+  hasMetadata,
+  isGif,
+}: {
+  hasError: boolean;
+  hasMetadata: boolean;
+  isGif: boolean;
+}) {
+  return {
+    errorLabel: isGif ? "GIF unavailable" : "Video unavailable",
+    isGif,
+    mediaOpacityClassName: getMediaOpacityClassName(hasMetadata),
+    shouldShowError: hasError,
+    shouldShowLoading: !hasMetadata && !hasError,
+  };
+}
+
+function getMediaOpacityClassName(isVisible: boolean) {
+  return isVisible ? "opacity-100" : "opacity-0";
+}
+
+function LightboxLoadingIndicator({ isVisible }: { isVisible: boolean }) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <Loader2
+        strokeWidth={1.5}
+        className="size-9 animate-spin text-white/40"
+      />
+    </div>
+  );
+}
+
+function LightboxImageUnavailable({ isVisible }: { isVisible: boolean }) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+      <ErrorMediaImageUnavailableVisual className="h-32 w-auto text-white" />
+      <p className="font-medium text-white/40 text-xs">Image unavailable</p>
+    </div>
+  );
+}
+
+function LightboxVideoUnavailable({
+  isVisible,
+  label,
+}: {
+  isVisible: boolean;
+  label: string;
+}) {
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+      <ErrorMediaVideoUnavailableVisual className="h-32 w-auto text-white" />
+      <p className="font-medium text-white/40 text-xs">{label}</p>
+    </div>
+  );
+}

@@ -22,6 +22,9 @@ interface NotificationsDrawerProps {
   onClose: () => void;
 }
 
+type PendingDetailAction = "mark-read" | "mark-unread" | "open";
+type NotificationReadMutation = (id: string) => Promise<unknown>;
+
 export function NotificationsDrawer({
   open,
   onClose,
@@ -45,17 +48,18 @@ export function NotificationsDrawer({
   const [pendingNotificationId, setPendingNotificationId] = useState<
     string | null
   >(null);
-  const [pendingDetailAction, setPendingDetailAction] = useState<
-    "mark-read" | "mark-unread" | "open" | null
-  >(null);
+  const [pendingDetailAction, setPendingDetailAction] =
+    useState<PendingDetailAction | null>(null);
   const [pendingReadToggleNotificationId, setPendingReadToggleNotificationId] =
     useState<string | null>(null);
   const [selectedNotificationId, setSelectedNotificationId] = useState<
     string | null
   >(null);
   const [markAllReadDialogOpen, setMarkAllReadDialogOpen] = useState(false);
-  const selectedNotification =
-    items.find((item) => item.id === selectedNotificationId) ?? null;
+  const selectedNotification = getSelectedNotification(
+    items,
+    selectedNotificationId,
+  );
 
   useResetScrollOnChange({
     enabled: open,
@@ -65,11 +69,13 @@ export function NotificationsDrawer({
 
   useEffect(() => {
     if (!open) {
-      setPendingNotificationId(null);
-      setPendingDetailAction(null);
-      setPendingReadToggleNotificationId(null);
-      setSelectedNotificationId(null);
-      setMarkAllReadDialogOpen(false);
+      resetNotificationsDrawerState({
+        setMarkAllReadDialogOpen,
+        setPendingDetailAction,
+        setPendingNotificationId,
+        setPendingReadToggleNotificationId,
+        setSelectedNotificationId,
+      });
     }
   }, [open]);
 
@@ -82,9 +88,11 @@ export function NotificationsDrawer({
     setPendingDetailAction("open");
 
     try {
-      if (!notification.isRead && isOnline) {
-        await markReadAsync(notification.id);
-      }
+      await markNotificationReadBeforeOpen(
+        notification,
+        isOnline,
+        markReadAsync,
+      );
 
       const destination = await resolveNotificationDestination(notification);
 
@@ -103,11 +111,11 @@ export function NotificationsDrawer({
     setPendingReadToggleNotificationId(notification.id);
 
     try {
-      if (notification.isRead) {
-        await markUnreadAsync(notification.id);
-      } else {
-        await markReadAsync(notification.id);
-      }
+      await toggleNotificationRead(
+        notification,
+        markReadAsync,
+        markUnreadAsync,
+      );
     } finally {
       setPendingReadToggleNotificationId(null);
     }
@@ -117,14 +125,14 @@ export function NotificationsDrawer({
     notification: Notification,
   ) {
     setPendingNotificationId(notification.id);
-    setPendingDetailAction(notification.isRead ? "mark-unread" : "mark-read");
+    setPendingDetailAction(getNotificationReadToggleAction(notification));
 
     try {
-      if (notification.isRead) {
-        await markUnreadAsync(notification.id);
-      } else {
-        await markReadAsync(notification.id);
-      }
+      await toggleNotificationRead(
+        notification,
+        markReadAsync,
+        markUnreadAsync,
+      );
     } finally {
       setPendingNotificationId(null);
       setPendingDetailAction(null);
@@ -192,4 +200,59 @@ export function NotificationsDrawer({
       </DrawerContent>
     </Drawer>
   );
+}
+
+function getSelectedNotification(
+  items: Notification[],
+  selectedNotificationId: string | null,
+) {
+  return items.find((item) => item.id === selectedNotificationId) ?? null;
+}
+
+function getNotificationReadToggleAction(
+  notification: Notification,
+): PendingDetailAction {
+  return notification.isRead ? "mark-unread" : "mark-read";
+}
+
+async function markNotificationReadBeforeOpen(
+  notification: Notification,
+  isOnline: boolean,
+  markReadAsync: NotificationReadMutation,
+) {
+  if (notification.isRead || !isOnline) {
+    return;
+  }
+
+  await markReadAsync(notification.id);
+}
+
+async function toggleNotificationRead(
+  notification: Notification,
+  markReadAsync: NotificationReadMutation,
+  markUnreadAsync: NotificationReadMutation,
+) {
+  const mutation = notification.isRead ? markUnreadAsync : markReadAsync;
+
+  await mutation(notification.id);
+}
+
+function resetNotificationsDrawerState({
+  setMarkAllReadDialogOpen,
+  setPendingDetailAction,
+  setPendingNotificationId,
+  setPendingReadToggleNotificationId,
+  setSelectedNotificationId,
+}: {
+  setMarkAllReadDialogOpen: (open: boolean) => void;
+  setPendingDetailAction: (action: PendingDetailAction | null) => void;
+  setPendingNotificationId: (id: string | null) => void;
+  setPendingReadToggleNotificationId: (id: string | null) => void;
+  setSelectedNotificationId: (id: string | null) => void;
+}) {
+  setPendingNotificationId(null);
+  setPendingDetailAction(null);
+  setPendingReadToggleNotificationId(null);
+  setSelectedNotificationId(null);
+  setMarkAllReadDialogOpen(false);
 }

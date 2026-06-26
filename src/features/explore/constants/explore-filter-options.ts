@@ -4,15 +4,11 @@ import {
   CalendarDays,
   Clock,
   Globe,
-  Handshake,
   Laptop,
   MapPin,
   Target,
-  Unlock,
-  Users,
 } from "lucide-react";
 import type {
-  ExploreAccessMode,
   ExploreLocationMode,
   ExploreSortOption,
   ExploreTimeWindow,
@@ -36,16 +32,6 @@ export const LOCATION_FILTER_OPTIONS: {
   { id: "ALL", label: "Any", icon: Globe },
   { id: "IN_PERSON", label: "Local", icon: MapPin },
   { id: "ONLINE", label: "Online", icon: Laptop },
-];
-
-export const ACCESS_FILTER_OPTIONS: {
-  id: ExploreAccessMode;
-  label: string;
-  icon: LucideIcon;
-}[] = [
-  { id: "ALL", label: "Any", icon: Users },
-  { id: "OPEN", label: "Open", icon: Unlock },
-  { id: "BY_REQUEST", label: "Request", icon: Handshake },
 ];
 
 export const TIME_FILTER_OPTIONS: {

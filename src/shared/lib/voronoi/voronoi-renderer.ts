@@ -2,6 +2,8 @@ import type { Voronoi } from "d3-delaunay";
 import { ANIMATION_CONFIG, COLORS } from "@/shared/constants/voronoi.constants";
 import type { Point } from "./voronoi-contract";
 
+type VoronoiCell = ReturnType<Voronoi<Float64Array>["cellPolygon"]>;
+
 export function drawParticleCells(
   ctx: CanvasRenderingContext2D,
   points: Point[],
@@ -17,47 +19,99 @@ export function drawParticleCells(
     const cell = voronoi.cellPolygon(i);
     if (!cell) continue;
 
-    ctx.beginPath();
-    for (let j = 0; j < cell.length; j++) {
-      if (j === 0) ctx.moveTo(cell[j][0], cell[j][1]);
-      else ctx.lineTo(cell[j][0], cell[j][1]);
-    }
-    ctx.closePath();
+    traceVoronoiCell(ctx, cell);
 
     const baseOpacity = p.opacity + typingPulse * 0.02;
     const drawX = flatPoints[i * 2];
     const drawY = flatPoints[i * 2 + 1];
-    const hDistX = drawX - canvasMouseX;
-    const hDistY = drawY - canvasMouseY;
-    const hoverDist = Math.sqrt(hDistX * hDistX + hDistY * hDistY);
 
-    if (hoverDist < ANIMATION_CONFIG.hoverRadius && mouseActive) {
-      const hoverIntensity = 1 - hoverDist / ANIMATION_CONFIG.hoverRadius;
-      ctx.fillStyle = `rgba(13, 148, 136, ${Math.min(1, baseOpacity + 0.4 * hoverIntensity)})`;
+    const hoverState = getCellHoverState({
+      canvasMouseX,
+      canvasMouseY,
+      drawX,
+      drawY,
+      mouseActive,
+    });
 
-      ctx.beginPath();
-      for (let j = 0; j < cell.length; j++) {
-        if (j === 0) ctx.moveTo(cell[j][0], cell[j][1]);
-        else ctx.lineTo(cell[j][0], cell[j][1]);
-      }
-      ctx.closePath();
-      ctx.strokeStyle = `rgba(13, 148, 136, ${0.4 * hoverIntensity})`;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
+    if (hoverState.isHovered) {
+      drawCellHoverOverlay({
+        baseOpacity,
+        ctx,
+        hoverIntensity: hoverState.intensity,
+      });
     } else {
       ctx.fillStyle = `rgba(13, 148, 136, ${baseOpacity})`;
     }
 
     ctx.fill();
 
-    ctx.strokeStyle = "rgba(13, 148, 136, 0.15)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.strokeStyle = "rgba(13, 148, 136, 0.05)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    strokeParticleCellEdges(ctx);
   }
+}
+
+function traceVoronoiCell(ctx: CanvasRenderingContext2D, cell: VoronoiCell) {
+  ctx.beginPath();
+  for (let j = 0; j < cell.length; j++) {
+    if (j === 0) ctx.moveTo(cell[j][0], cell[j][1]);
+    else ctx.lineTo(cell[j][0], cell[j][1]);
+  }
+  ctx.closePath();
+}
+
+function getCellHoverState({
+  canvasMouseX,
+  canvasMouseY,
+  drawX,
+  drawY,
+  mouseActive,
+}: {
+  canvasMouseX: number;
+  canvasMouseY: number;
+  drawX: number;
+  drawY: number;
+  mouseActive: boolean;
+}) {
+  const hDistX = drawX - canvasMouseX;
+  const hDistY = drawY - canvasMouseY;
+  const hoverDist = Math.sqrt(hDistX * hDistX + hDistY * hDistY);
+
+  if (hoverDist < ANIMATION_CONFIG.hoverRadius && mouseActive) {
+    return {
+      intensity: 1 - hoverDist / ANIMATION_CONFIG.hoverRadius,
+      isHovered: true,
+    };
+  }
+
+  return {
+    intensity: 0,
+    isHovered: false,
+  };
+}
+
+function drawCellHoverOverlay({
+  baseOpacity,
+  ctx,
+  hoverIntensity,
+}: {
+  baseOpacity: number;
+  ctx: CanvasRenderingContext2D;
+  hoverIntensity: number;
+}) {
+  ctx.fillStyle = `rgba(13, 148, 136, ${Math.min(1, baseOpacity + 0.4 * hoverIntensity)})`;
+
+  ctx.strokeStyle = `rgba(13, 148, 136, ${0.4 * hoverIntensity})`;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+function strokeParticleCellEdges(ctx: CanvasRenderingContext2D) {
+  ctx.strokeStyle = "rgba(13, 148, 136, 0.15)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(13, 148, 136, 0.05)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 }
 
 export function drawCatalystCore(

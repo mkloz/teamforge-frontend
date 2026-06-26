@@ -17,26 +17,39 @@ function pruneSeenEventIds() {
 }
 
 export function shouldApplyRealtimeEvent(event: RealtimeEventMeta) {
-  if (seenEventIds.has(event.eventId)) {
+  if (!rememberRealtimeEventId(event.eventId)) {
     return false;
   }
-
-  seenEventIds.set(event.eventId, Date.now());
-  pruneSeenEventIds();
 
   if (event.entityKey === null || event.entityVersion === null) {
     return true;
   }
 
-  const latestVersion = latestEntityVersions.get(event.entityKey);
+  return shouldApplyEntityVersion(event.entityKey, event.entityVersion);
+}
 
-  if (
-    typeof latestVersion === "number" &&
-    latestVersion >= event.entityVersion
-  ) {
+function rememberRealtimeEventId(eventId: string) {
+  if (seenEventIds.has(eventId)) {
     return false;
   }
 
-  latestEntityVersions.set(event.entityKey, event.entityVersion);
+  seenEventIds.set(eventId, Date.now());
+  pruneSeenEventIds();
+
   return true;
+}
+
+function shouldApplyEntityVersion(entityKey: string, entityVersion: number) {
+  if (hasSeenNewerEntityVersion(entityKey, entityVersion)) {
+    return false;
+  }
+
+  latestEntityVersions.set(entityKey, entityVersion);
+  return true;
+}
+
+function hasSeenNewerEntityVersion(entityKey: string, entityVersion: number) {
+  const latestVersion = latestEntityVersions.get(entityKey);
+
+  return typeof latestVersion === "number" && latestVersion >= entityVersion;
 }

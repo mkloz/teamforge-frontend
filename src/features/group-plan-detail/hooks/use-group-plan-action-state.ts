@@ -3,11 +3,8 @@ import {
   buildGroupPlanActionViewState,
   type GroupPlanActionDescriptor,
   type GroupPlanActionViewState,
-  type GroupPlanViewerMode,
 } from "@/features/group-plan-detail/lib/group-plan-action-state";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
-
-export type { GroupPlanViewerMode };
 
 export interface GroupPlanActionState extends GroupPlanActionViewState {
   primary: GroupPlanActionDescriptor;

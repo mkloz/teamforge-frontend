@@ -16,6 +16,30 @@ interface GetGalleryItemViewStateInput {
   media: UnifiedAttachment;
 }
 
+interface GalleryItemMediaFlags {
+  hasVideoPoster: boolean;
+  isGif: boolean;
+  isVideo: boolean;
+  isVideoBackedGif: boolean;
+  shouldLoadImage: boolean;
+}
+
+interface VisibleMediaStateInput {
+  hasGifError: boolean;
+  hasGifLoaded: boolean;
+  imageState: ImageLoadState;
+  isVideoBackedGif: boolean;
+  shouldLoadImage: boolean;
+}
+
+const GALLERY_ATTACHMENT_LABELS: Partial<
+  Record<UnifiedAttachment["type"], string>
+> = {
+  GIF: "GIF",
+  IMAGE: "image",
+  VIDEO: "video",
+};
+
 export function getGalleryItemViewState({
   cachedSize,
   count,
@@ -25,39 +49,86 @@ export function getGalleryItemViewState({
   index,
   media,
 }: GetGalleryItemViewStateInput) {
-  const isVideo = media.type === "VIDEO";
-  const isGif = isGifAttachment(media);
-  const isVideoBackedGif = isGifVideoAttachment(media);
-  const hasVideoPoster = Boolean(media.thumbnailUrl);
-  const shouldLoadImage =
-    !isVideoBackedGif &&
-    (media.type === "IMAGE" || media.type === "GIF" || hasVideoPoster);
+  const mediaFlags = getGalleryItemMediaFlags(media);
   const visibleState = getVisibleMediaState({
     hasGifError,
     hasGifLoaded,
     imageState,
-    isVideoBackedGif,
-    shouldLoadImage,
+    isVideoBackedGif: mediaFlags.isVideoBackedGif,
+    shouldLoadImage: mediaFlags.shouldLoadImage,
   });
-  const singleAspectRatioStyle =
-    count === 1 && cachedSize
-      ? {
-          aspectRatio: `${cachedSize.width} / ${cachedSize.height}`,
-        }
-      : undefined;
 
   return {
-    ariaLabel: `Open ${
-      isGif ? "GIF" : media.type === "VIDEO" ? "video" : "image"
-    } attachment ${index + 1}`,
-    isGif,
+    ariaLabel: getGalleryItemAriaLabel(media, mediaFlags, index),
+    isGif: mediaFlags.isGif,
     isLastVisible: index === 3 && count > 4,
-    isVideo,
-    isVideoBackedGif,
-    shouldLoadImage,
-    singleAspectRatioStyle,
+    isVideo: mediaFlags.isVideo,
+    isVideoBackedGif: mediaFlags.isVideoBackedGif,
+    shouldLoadImage: mediaFlags.shouldLoadImage,
+    singleAspectRatioStyle: getSingleAspectRatioStyle(count, cachedSize),
     visibleState,
   };
+}
+
+function getGalleryItemMediaFlags(
+  media: UnifiedAttachment,
+): GalleryItemMediaFlags {
+  const isVideoBackedGif = isGifVideoAttachment(media);
+  const hasVideoPoster = Boolean(media.thumbnailUrl);
+
+  return {
+    hasVideoPoster,
+    isGif: isGifAttachment(media),
+    isVideo: media.type === "VIDEO",
+    isVideoBackedGif,
+    shouldLoadImage: shouldLoadGalleryItemImage(media, {
+      hasVideoPoster,
+      isVideoBackedGif,
+    }),
+  };
+}
+
+function shouldLoadGalleryItemImage(
+  media: UnifiedAttachment,
+  {
+    hasVideoPoster,
+    isVideoBackedGif,
+  }: Pick<GalleryItemMediaFlags, "hasVideoPoster" | "isVideoBackedGif">,
+) {
+  return (
+    !isVideoBackedGif &&
+    (media.type === "IMAGE" || media.type === "GIF" || hasVideoPoster)
+  );
+}
+
+function getGalleryItemAriaLabel(
+  media: UnifiedAttachment,
+  mediaFlags: GalleryItemMediaFlags,
+  index: number,
+) {
+  return `Open ${getGalleryItemAttachmentLabel(media, mediaFlags)} attachment ${
+    index + 1
+  }`;
+}
+
+function getGalleryItemAttachmentLabel(
+  media: UnifiedAttachment,
+  mediaFlags: GalleryItemMediaFlags,
+) {
+  return mediaFlags.isGif
+    ? "GIF"
+    : (GALLERY_ATTACHMENT_LABELS[media.type] ?? "image");
+}
+
+function getSingleAspectRatioStyle(
+  count: number,
+  cachedSize: MediaIntrinsicSize | null,
+) {
+  return count === 1 && cachedSize
+    ? {
+        aspectRatio: `${cachedSize.width} / ${cachedSize.height}`,
+      }
+    : undefined;
 }
 
 function getVisibleMediaState({
@@ -66,20 +137,24 @@ function getVisibleMediaState({
   imageState,
   isVideoBackedGif,
   shouldLoadImage,
-}: {
-  hasGifError: boolean;
-  hasGifLoaded: boolean;
-  imageState: ImageLoadState;
-  isVideoBackedGif: boolean;
-  shouldLoadImage: boolean;
-}): ImageLoadState {
+}: VisibleMediaStateInput): ImageLoadState {
   if (isVideoBackedGif) {
-    if (hasGifError) {
-      return "error";
-    }
-
-    return hasGifLoaded ? "loaded" : "loading";
+    return getVideoBackedGifVisibleState({ hasGifError, hasGifLoaded });
   }
 
   return shouldLoadImage ? imageState : "loaded";
+}
+
+function getVideoBackedGifVisibleState({
+  hasGifError,
+  hasGifLoaded,
+}: Pick<
+  VisibleMediaStateInput,
+  "hasGifError" | "hasGifLoaded"
+>): ImageLoadState {
+  if (hasGifError) {
+    return "error";
+  }
+
+  return hasGifLoaded ? "loaded" : "loading";
 }

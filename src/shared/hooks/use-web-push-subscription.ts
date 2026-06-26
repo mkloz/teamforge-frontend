@@ -1,5 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import {
+  type QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import {
@@ -35,6 +46,71 @@ import type {
 interface WebPushActionVariables {
   source?: PwaTelemetrySource;
 }
+
+interface WebPushPublicKeyState {
+  enabled: boolean;
+  publicKey: string;
+}
+
+interface BrowserPushSubscriptionState {
+  browserEndpoint: string | null;
+  isCheckingBrowserSubscription: boolean;
+  permission: BrowserNotificationPermission;
+  refreshBrowserSubscription: () => Promise<void>;
+  setBrowserEndpoint: (endpoint: string | null) => void;
+  setPermission: (permission: BrowserNotificationPermission) => void;
+  support: WebPushSupport;
+}
+
+interface WebPushMutationSharedContext {
+  queryClient: QueryClient;
+  refreshBrowserSubscription: () => Promise<void>;
+  setLastTestResult: Dispatch<SetStateAction<WebPushTestDispatch | null>>;
+}
+
+interface SubscribeWebPushMutationContext extends WebPushMutationSharedContext {
+  browserEndpoint: string | null;
+  getPublicKeyState: () => Promise<WebPushPublicKeyState>;
+  setBrowserEndpoint: (endpoint: string | null) => void;
+  setPermission: (permission: BrowserNotificationPermission) => void;
+}
+
+interface UnsubscribeWebPushMutationContext
+  extends WebPushMutationSharedContext {
+  browserEndpoint: string | null;
+  setBrowserEndpoint: (endpoint: string | null) => void;
+  setPermission: (permission: BrowserNotificationPermission) => void;
+}
+
+interface WebPushDerivedStateInput {
+  browserEndpoint: string | null;
+  isAuthenticated: boolean;
+  isOnline: boolean;
+  permission: BrowserNotificationPermission;
+  publicKeyError: unknown;
+  publicKeyIsError: boolean;
+  publicKeyIsLoading: boolean;
+  publicKeyState: WebPushPublicKeyState | undefined;
+  serverSubscriptions: WebPushSubscription[];
+  support: WebPushSupport;
+}
+
+const WEB_PUSH_TEST_FAILURE_DESCRIPTIONS: Partial<
+  Record<NonNullable<WebPushTestDispatch["issue"]>, string>
+> = {
+  "certificate-error":
+    "The backend could not verify the push service certificate. Check local CA or proxy settings before trying again.",
+  "network-error":
+    "The backend could not reach the push service. Check the server network connection.",
+  "push-service-error":
+    "The push service rejected the test notification. Try again, then check backend logs if it repeats.",
+  "subscription-expired":
+    "The browser subscription is no longer valid, so TeamForge disabled it. Turn push off and back on for this device.",
+  "unknown-error":
+    "The backend hit an unknown delivery error. Check backend logs for the safe request ID.",
+  "vapid-auth-error":
+    "The push service rejected the VAPID credentials. Check the backend push key configuration.",
+};
 
 function upsertSubscriptionInList(
   subscriptions: WebPushSubscription[] | undefined,
@@ -78,7 +154,7 @@ function getTelemetryErrorCode(error: unknown) {
   return undefined;
 }
 
-export function getWebPushTestStatus(result: WebPushTestDispatch) {
+function getWebPushTestStatus(result: WebPushTestDispatch) {
   if (!result.enabled) {
     return "disabled";
   }
@@ -90,33 +166,52 @@ export function getWebPushTestStatus(result: WebPushTestDispatch) {
   return "not-delivered";
 }
 
-export function getWebPushTestFailureDescription(result: WebPushTestDispatch) {
-  switch (result.issue) {
-    case "certificate-error":
-      return "The backend could not verify the push service certificate. Check local CA or proxy settings before trying again.";
-    case "network-error":
-      return "The backend could not reach the push service. Check the server network connection.";
-    case "push-service-error":
-      return "The push service rejected the test notification. Try again, then check backend logs if it repeats.";
-    case "subscription-expired":
-      return "The browser subscription is no longer valid, so TeamForge disabled it. Turn push off and back on for this device.";
-    case "unknown-error":
-      return "The backend hit an unknown delivery error. Check backend logs for the safe request ID.";
-    case "vapid-auth-error":
-      return "The push service rejected the VAPID credentials. Check the backend push key configuration.";
-    default:
-      if (result.disabledCount > 0) {
-        return "The browser subscription was no longer valid, so TeamForge disabled it.";
-      }
+function getWebPushTestFailureDescription(result: WebPushTestDispatch) {
+  const issueDescription = result.issue
+    ? WEB_PUSH_TEST_FAILURE_DESCRIPTIONS[result.issue]
+    : undefined;
 
-      return "Try turning push off and back on for this device.";
+  if (issueDescription) {
+    return issueDescription;
   }
+
+  if (result.disabledCount > 0) {
+    return "The browser subscription was no longer valid, so TeamForge disabled it.";
+  }
+
+  return "Try turning push off and back on for this device.";
 }
 
-export function useWebPushSubscription() {
-  const queryClient = useQueryClient();
-  const { isAuthenticated } = useAuthSessionState();
-  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
+function showWebPushTestResultToast(result: WebPushTestDispatch) {
+  if (!result.enabled) {
+    showAppInfoToast("Push delivery is not enabled for this environment.", {
+      id: "web-push-test-disabled",
+    });
+    return;
+  }
+
+  if (result.sentCount > 0) {
+    showAppSuccessToast("Test push sent to this device.", {
+      id: "web-push-test-sent",
+      description: "Check your system notifications.",
+    });
+    return;
+  }
+
+  if (result.subscriptionCount === 0) {
+    showAppInfoToast("Turn on push notifications before sending a test.", {
+      id: "web-push-test-no-subscription",
+    });
+    return;
+  }
+
+  showAppErrorMessageToast("The test push could not be delivered.", {
+    id: "web-push-test-failed",
+    description: getWebPushTestFailureDescription(result),
+  });
+}
+
+function useBrowserPushSubscriptionState(): BrowserPushSubscriptionState {
   const [support, setSupport] = useState<WebPushSupport>(() =>
     getWebPushSupport(),
   );
@@ -124,19 +219,8 @@ export function useWebPushSubscription() {
     () => getBrowserNotificationPermission(),
   );
   const [browserEndpoint, setBrowserEndpoint] = useState<string | null>(null);
-  const [lastTestResult, setLastTestResult] =
-    useState<WebPushTestDispatch | null>(null);
   const [isCheckingBrowserSubscription, setIsCheckingBrowserSubscription] =
     useState(false);
-
-  const publicKeyQuery = useQuery({
-    ...WebPushQueryOptions.publicKeyState(),
-    enabled: isOnline,
-  });
-  const subscriptionsQuery = useQuery({
-    ...WebPushQueryOptions.subscriptions(),
-    enabled: isAuthenticated && isOnline,
-  });
 
   const refreshBrowserSubscription = useCallback(async () => {
     const nextSupport = getWebPushSupport();
@@ -188,12 +272,154 @@ export function useWebPushSubscription() {
     };
   }, [refreshBrowserSubscription]);
 
-  const subscribeMutation = useMutation({
+  return {
+    browserEndpoint,
+    isCheckingBrowserSubscription,
+    permission,
+    refreshBrowserSubscription,
+    setBrowserEndpoint,
+    setPermission,
+    support,
+  };
+}
+
+function shouldSkipOfflinePushAction(
+  guardOfflineAction: ReturnType<
+    typeof useOfflineActionGuard
+  >["guardOfflineAction"],
+  description: string,
+  id: string,
+) {
+  return guardOfflineAction({ description, id });
+}
+
+async function getCachedOrFetchedPublicKeyState(
+  cachedPublicKeyState: WebPushPublicKeyState | undefined,
+  queryClient: QueryClient,
+) {
+  return (
+    cachedPublicKeyState ??
+    (await queryClient.fetchQuery(WebPushQueryOptions.publicKeyState()))
+  );
+}
+
+function getActiveServerSubscription(
+  browserEndpoint: string | null,
+  serverSubscriptions: WebPushSubscription[],
+) {
+  return browserEndpoint
+    ? serverSubscriptions.find(
+        (subscription) =>
+          subscription.endpoint === browserEndpoint && !subscription.disabledAt,
+      )
+    : undefined;
+}
+
+function getIsWebPushEnabled(
+  isOnline: boolean,
+  publicKeyState: WebPushPublicKeyState | undefined,
+) {
+  return [isOnline, publicKeyState?.enabled === true].every(Boolean);
+}
+
+function getCanRequestPermission({
+  isAuthenticated,
+  isWebPushEnabled,
+  permission,
+  support,
+}: Pick<
+  WebPushDerivedStateInput,
+  "isAuthenticated" | "permission" | "support"
+> & {
+  isWebPushEnabled: boolean;
+}) {
+  return [
+    support.isSupported,
+    isAuthenticated,
+    isWebPushEnabled,
+    permission !== "denied",
+  ].every(Boolean);
+}
+
+function getIsPublicKeyError({
+  isOnline,
+  isPublicKeyNetworkError,
+  publicKeyIsError,
+}: Pick<WebPushDerivedStateInput, "isOnline" | "publicKeyIsError"> & {
+  isPublicKeyNetworkError: boolean;
+}) {
+  return [isOnline, publicKeyIsError, !isPublicKeyNetworkError].every(Boolean);
+}
+
+function getIsPublicKeyLoading(isOnline: boolean, publicKeyIsLoading: boolean) {
+  return [isOnline, publicKeyIsLoading].every(Boolean);
+}
+
+function getWebPushDerivedState({
+  browserEndpoint,
+  isAuthenticated,
+  isOnline,
+  permission,
+  publicKeyError,
+  publicKeyIsError,
+  publicKeyIsLoading,
+  publicKeyState,
+  serverSubscriptions,
+  support,
+}: WebPushDerivedStateInput) {
+  const activeServerSubscription = getActiveServerSubscription(
+    browserEndpoint,
+    serverSubscriptions,
+  );
+  const isPublicKeyNetworkError = isApiNetworkError(publicKeyError);
+  const isWebPushEnabled = getIsWebPushEnabled(isOnline, publicKeyState);
+
+  return {
+    activeServerSubscription,
+    canRequestPermission: getCanRequestPermission({
+      isAuthenticated,
+      isWebPushEnabled,
+      permission,
+      support,
+    }),
+    isPublicKeyError: getIsPublicKeyError({
+      isOnline,
+      isPublicKeyNetworkError,
+      publicKeyIsError,
+    }),
+    isPublicKeyLoading: getIsPublicKeyLoading(isOnline, publicKeyIsLoading),
+    isPublicKeyNetworkError,
+    isSubscribed: [browserEndpoint, activeServerSubscription].every(Boolean),
+    isWebPushEnabled,
+  };
+}
+
+async function refreshWebPushSubscriptionQueries({
+  queryClient,
+  refreshBrowserSubscription,
+}: Pick<
+  WebPushMutationSharedContext,
+  "queryClient" | "refreshBrowserSubscription"
+>) {
+  await refreshBrowserSubscription();
+  await queryClient.invalidateQueries({
+    queryKey: WEB_PUSH_SUBSCRIPTIONS_QUERY_KEY,
+  });
+}
+
+function useSubscribeWebPushMutation({
+  browserEndpoint,
+  getPublicKeyState,
+  queryClient,
+  refreshBrowserSubscription,
+  setBrowserEndpoint,
+  setLastTestResult,
+  setPermission,
+}: SubscribeWebPushMutationContext) {
+  return useMutation({
     mutationKey: ["web-push", "subscribe"],
     mutationFn: async (_variables: WebPushActionVariables = {}) => {
-      const publicKeyState =
-        publicKeyQuery.data ??
-        (await queryClient.fetchQuery(WebPushQueryOptions.publicKeyState()));
+      const publicKeyState = await getPublicKeyState();
 
       if (!publicKeyState.enabled || !publicKeyState.publicKey) {
         throw new Error("TeamForge push notifications are not enabled.");
@@ -238,15 +464,23 @@ export function useWebPushSubscription() {
         status: "error",
       });
     },
-    onSettled: async () => {
-      await refreshBrowserSubscription();
-      await queryClient.invalidateQueries({
-        queryKey: WEB_PUSH_SUBSCRIPTIONS_QUERY_KEY,
-      });
-    },
+    onSettled: () =>
+      refreshWebPushSubscriptionQueries({
+        queryClient,
+        refreshBrowserSubscription,
+      }),
   });
+}
 
-  const unsubscribeMutation = useMutation({
+function useUnsubscribeWebPushMutation({
+  browserEndpoint,
+  queryClient,
+  refreshBrowserSubscription,
+  setBrowserEndpoint,
+  setLastTestResult,
+  setPermission,
+}: UnsubscribeWebPushMutationContext) {
+  return useMutation({
     mutationKey: ["web-push", "unsubscribe"],
     mutationFn: async (_variables: WebPushActionVariables = {}) => {
       const browserSubscription = await getBrowserPushSubscription();
@@ -298,15 +532,20 @@ export function useWebPushSubscription() {
         status: "error",
       });
     },
-    onSettled: async () => {
-      await refreshBrowserSubscription();
-      await queryClient.invalidateQueries({
-        queryKey: WEB_PUSH_SUBSCRIPTIONS_QUERY_KEY,
-      });
-    },
+    onSettled: () =>
+      refreshWebPushSubscriptionQueries({
+        queryClient,
+        refreshBrowserSubscription,
+      }),
   });
+}
 
-  const testMutation = useMutation({
+function useTestWebPushMutation({
+  queryClient,
+  refreshBrowserSubscription,
+  setLastTestResult,
+}: WebPushMutationSharedContext) {
+  return useMutation({
     mutationKey: ["web-push", "test"],
     mutationFn: (_variables: WebPushActionVariables = {}) =>
       WebPushCommands.sendTestNotification(),
@@ -324,33 +563,7 @@ export function useWebPushSubscription() {
         status: getWebPushTestStatus(result),
         subscriptionCount: result.subscriptionCount,
       });
-
-      if (!result.enabled) {
-        showAppInfoToast("Push delivery is not enabled for this environment.", {
-          id: "web-push-test-disabled",
-        });
-        return;
-      }
-
-      if (result.sentCount > 0) {
-        showAppSuccessToast("Test push sent to this device.", {
-          id: "web-push-test-sent",
-          description: "Check your system notifications.",
-        });
-        return;
-      }
-
-      if (result.subscriptionCount === 0) {
-        showAppInfoToast("Turn on push notifications before sending a test.", {
-          id: "web-push-test-no-subscription",
-        });
-        return;
-      }
-
-      showAppErrorMessageToast("The test push could not be delivered.", {
-        id: "web-push-test-failed",
-        description: getWebPushTestFailureDescription(result),
-      });
+      showWebPushTestResultToast(result);
     },
     onError: (error, variables) => {
       setLastTestResult(null);
@@ -360,39 +573,98 @@ export function useWebPushSubscription() {
         status: "api-error",
       });
     },
-    onSettled: async () => {
-      await refreshBrowserSubscription();
-      await queryClient.invalidateQueries({
-        queryKey: WEB_PUSH_SUBSCRIPTIONS_QUERY_KEY,
-      });
-    },
+    onSettled: () =>
+      refreshWebPushSubscriptionQueries({
+        queryClient,
+        refreshBrowserSubscription,
+      }),
+  });
+}
+
+export function useWebPushSubscription() {
+  const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuthSessionState();
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
+  const {
+    browserEndpoint,
+    isCheckingBrowserSubscription,
+    permission,
+    refreshBrowserSubscription,
+    setBrowserEndpoint,
+    setPermission,
+    support,
+  } = useBrowserPushSubscriptionState();
+  const [lastTestResult, setLastTestResult] =
+    useState<WebPushTestDispatch | null>(null);
+
+  const publicKeyQuery = useQuery({
+    ...WebPushQueryOptions.publicKeyState(),
+    enabled: isOnline,
+  });
+  const subscriptionsQuery = useQuery({
+    ...WebPushQueryOptions.subscriptions(),
+    enabled: isAuthenticated && isOnline,
+  });
+
+  const getPublicKeyState = async () => {
+    return getCachedOrFetchedPublicKeyState(publicKeyQuery.data, queryClient);
+  };
+
+  const subscribeMutation = useSubscribeWebPushMutation({
+    browserEndpoint,
+    getPublicKeyState,
+    queryClient,
+    refreshBrowserSubscription,
+    setBrowserEndpoint,
+    setLastTestResult,
+    setPermission,
+  });
+
+  const unsubscribeMutation = useUnsubscribeWebPushMutation({
+    browserEndpoint,
+    queryClient,
+    refreshBrowserSubscription,
+    setBrowserEndpoint,
+    setLastTestResult,
+    setPermission,
+  });
+
+  const testMutation = useTestWebPushMutation({
+    queryClient,
+    refreshBrowserSubscription,
+    setLastTestResult,
   });
 
   const publicKeyState = publicKeyQuery.data;
   const serverSubscriptions = subscriptionsQuery.data ?? [];
-  const activeServerSubscription = browserEndpoint
-    ? serverSubscriptions.find(
-        (subscription) =>
-          subscription.endpoint === browserEndpoint && !subscription.disabledAt,
-      )
-    : undefined;
-  const isSubscribed = Boolean(browserEndpoint && activeServerSubscription);
-  const isPublicKeyNetworkError = isApiNetworkError(publicKeyQuery.error);
-  const isWebPushEnabled = isOnline
-    ? (publicKeyState?.enabled ?? false)
-    : false;
-  const canRequestPermission =
-    support.isSupported &&
-    isAuthenticated &&
-    isWebPushEnabled &&
-    permission !== "denied";
+  const {
+    activeServerSubscription,
+    canRequestPermission,
+    isPublicKeyError,
+    isPublicKeyLoading,
+    isPublicKeyNetworkError,
+    isSubscribed,
+    isWebPushEnabled,
+  } = getWebPushDerivedState({
+    browserEndpoint,
+    isAuthenticated,
+    isOnline,
+    permission,
+    publicKeyError: publicKeyQuery.error,
+    publicKeyIsError: publicKeyQuery.isError,
+    publicKeyIsLoading: publicKeyQuery.isLoading,
+    publicKeyState,
+    serverSubscriptions,
+    support,
+  });
 
   async function sendTest(source: PwaTelemetrySource = "unknown") {
     if (
-      guardOfflineAction({
-        id: "web-push-test-offline",
-        description: "Reconnect before sending a test push notification.",
-      })
+      shouldSkipOfflinePushAction(
+        guardOfflineAction,
+        "Reconnect before sending a test push notification.",
+        "web-push-test-offline",
+      )
     ) {
       return;
     }
@@ -402,10 +674,11 @@ export function useWebPushSubscription() {
 
   async function turnOff(source: PwaTelemetrySource = "unknown") {
     if (
-      guardOfflineAction({
-        id: "web-push-subscription-offline",
-        description: "Reconnect before changing push notifications.",
-      })
+      shouldSkipOfflinePushAction(
+        guardOfflineAction,
+        "Reconnect before changing push notifications.",
+        "web-push-subscription-offline",
+      )
     ) {
       return;
     }
@@ -415,10 +688,11 @@ export function useWebPushSubscription() {
 
   async function turnOn(source: PwaTelemetrySource = "unknown") {
     if (
-      guardOfflineAction({
-        id: "web-push-subscription-offline",
-        description: "Reconnect before changing push notifications.",
-      })
+      shouldSkipOfflinePushAction(
+        guardOfflineAction,
+        "Reconnect before changing push notifications.",
+        "web-push-subscription-offline",
+      )
     ) {
       return;
     }
@@ -433,9 +707,8 @@ export function useWebPushSubscription() {
     isAuthenticated,
     isCheckingBrowserSubscription,
     isOnline,
-    isPublicKeyError:
-      isOnline && publicKeyQuery.isError && !isPublicKeyNetworkError,
-    isPublicKeyLoading: isOnline && publicKeyQuery.isLoading,
+    isPublicKeyError,
+    isPublicKeyLoading,
     isPublicKeyNetworkError,
     isSubscribed,
     isSendingTest: testMutation.isPending,

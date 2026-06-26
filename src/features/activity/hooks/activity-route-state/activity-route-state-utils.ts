@@ -23,15 +23,15 @@ export function resolveActivityRouteState(
   routeState: ActivityRouteState,
 ): ResolvedActivityRouteState {
   return {
-    density: routeState.density ?? "default",
-    filter: routeState.filter ?? "all",
-    id: routeState.id ?? null,
-    kind: routeState.kind ?? null,
-    message: routeState.message ?? null,
-    panel: routeState.panel ?? null,
-    plan: routeState.plan ?? null,
-    proposal: routeState.proposal ?? null,
-    searchQuery: routeState.q ?? "",
+    density: resolveRouteValue(routeState.density, "default"),
+    filter: resolveRouteValue(routeState.filter, "all"),
+    id: resolveRouteValue(routeState.id, null),
+    kind: resolveRouteValue(routeState.kind, null),
+    message: resolveRouteValue(routeState.message, null),
+    panel: resolveRouteValue(routeState.panel, null),
+    plan: resolveRouteValue(routeState.plan, null),
+    proposal: resolveRouteValue(routeState.proposal, null),
+    searchQuery: resolveRouteValue(routeState.q, ""),
   };
 }
 
@@ -39,15 +39,7 @@ export function getPreferredActivityPanel(
   isDesktop: boolean,
   kind: ActivityKind,
 ): ActivityPanel | null {
-  if (!isDesktop) {
-    return null;
-  }
-
-  if (kind === "group") {
-    return "group";
-  }
-
-  return kind === "dm" ? "profile" : null;
+  return isDesktop ? PREFERRED_DESKTOP_PANEL_BY_KIND[kind] : null;
 }
 
 export function getSearchRoutePatch(nextQuery: string) {
@@ -89,3 +81,16 @@ export function getPanelRoutePatch(panel: ActivityPanel | null) {
     panel,
   };
 }
+
+function resolveRouteValue<T>(value: T | null | undefined, fallback: T) {
+  return value ?? fallback;
+}
+
+const PREFERRED_DESKTOP_PANEL_BY_KIND: Record<
+  ActivityKind,
+  ActivityPanel | null
+> = {
+  dm: "profile",
+  group: "group",
+  saved: null,
+};

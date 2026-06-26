@@ -1,6 +1,7 @@
 import type { GroupMember } from "@/features/activity/lib/activity-contract";
 
 type MemberUser = NonNullable<GroupMember["user"]>;
+const HIGH_MEMBER_SCORE_PERCENT = 80;
 
 export interface MemberCardViewState {
   fitScore: number | null;
@@ -17,23 +18,41 @@ export function getMemberCardViewState(
   member: GroupMember,
   showFit: boolean,
 ): MemberCardViewState {
-  const trustPercent = formatPercent(member.user?.trustScore ?? null);
-  const fitScore =
-    showFit && typeof member.compatibilityScore === "number"
-      ? formatPercent(member.compatibilityScore)
-      : null;
+  const trustPercent = getTrustPercent(member);
+  const fitScore = getFitScore(member, showFit);
 
   return {
     fitScore,
-    hasMetrics:
-      typeof trustPercent === "number" || typeof fitScore === "number",
+    hasMetrics: hasMetricScores(trustPercent, fitScore),
     isAdmin: member.role === "ADMIN",
-    isHighCompatibility: typeof fitScore === "number" && fitScore >= 80,
-    isHighTrust: typeof trustPercent === "number" && trustPercent >= 80,
-    memberName: member.user?.name ?? "Member",
+    isHighCompatibility: isHighMemberScore(fitScore),
+    isHighTrust: isHighMemberScore(trustPercent),
+    memberName: getMemberName(member),
     onlineStatus: member.user?.onlineStatus,
     trustPercent,
   };
+}
+
+function getTrustPercent(member: GroupMember) {
+  return formatPercent(member.user?.trustScore ?? null);
+}
+
+function getFitScore(member: GroupMember, showFit: boolean) {
+  return showFit && typeof member.compatibilityScore === "number"
+    ? formatPercent(member.compatibilityScore)
+    : null;
+}
+
+function hasMetricScores(...scores: Array<number | null>) {
+  return scores.some((score) => typeof score === "number");
+}
+
+function isHighMemberScore(score: number | null) {
+  return typeof score === "number" && score >= HIGH_MEMBER_SCORE_PERCENT;
+}
+
+function getMemberName(member: GroupMember) {
+  return member.user?.name ?? "Member";
 }
 
 function formatPercent(score: number | null) {

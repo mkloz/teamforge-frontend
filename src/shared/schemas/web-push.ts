@@ -5,8 +5,6 @@ export const webPushPublicKeyStateSchema = z.object({
   publicKey: z.string(),
 });
 
-export type WebPushPublicKeyState = z.infer<typeof webPushPublicKeyStateSchema>;
-
 export const webPushSubscriptionSchema = z.object({
   id: z.string(),
   endpoint: z.string(),
@@ -23,7 +21,7 @@ export type WebPushSubscription = z.infer<typeof webPushSubscriptionSchema>;
 
 export const webPushSubscriptionListSchema = z.array(webPushSubscriptionSchema);
 
-export const webPushTestIssueCodeSchema = z.enum([
+const webPushTestIssueCodeSchema = z.enum([
   "certificate-error",
   "network-error",
   "no-subscriptions",

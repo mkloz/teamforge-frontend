@@ -9,6 +9,13 @@ interface NextActionsProps {
   isManual: boolean;
 }
 
+interface NextCardState {
+  bordered: boolean;
+  iconClassName: string;
+  iconTone: "amber" | "neutral" | "none";
+  titleClassName: string;
+}
+
 export function NextActions({ isManual }: NextActionsProps) {
   const actions = getNextActions(isManual);
 
@@ -59,30 +66,22 @@ function NextCard({
   title,
   tone = "teal",
 }: NextActionItem) {
-  const isAmber = tone === "amber";
+  const cardState = getNextCardState({ active, tone });
 
   return (
     <div className="min-w-0 lg:flex lg:gap-3">
       <IconTile
         icon={icon}
-        tone={active ? (isAmber ? "amber" : "none") : "neutral"}
+        tone={cardState.iconTone}
         size="md"
-        bordered={active && isAmber}
-        className={cn(
-          "mb-2 lg:mb-0",
-          active && isAmber && "bg-spark-amber/12",
-          active && !isAmber && "bg-forge-teal text-primary-foreground",
-        )}
+        bordered={cardState.bordered}
+        className={cn("mb-2 lg:mb-0", cardState.iconClassName)}
       />
       <div className="min-w-0">
         <p
           className={cn(
             "font-semibold text-sm leading-tight",
-            active
-              ? isAmber
-                ? "text-spark-amber"
-                : "text-forge-teal"
-              : "text-foreground",
+            cardState.titleClassName,
           )}
         >
           {title}
@@ -93,4 +92,48 @@ function NextCard({
       </div>
     </div>
   );
+}
+
+function getNextCardState({
+  active,
+  tone,
+}: Pick<NextActionItem, "active" | "tone">): NextCardState {
+  const isActive = Boolean(active);
+  const isAmber = tone === "amber";
+
+  return {
+    bordered: isActive && isAmber,
+    iconTone: getNextCardIconTone(isActive, isAmber),
+    iconClassName: getNextCardIconClassName(isActive, isAmber),
+    titleClassName: getNextCardTitleClassName(isActive, isAmber),
+  };
+}
+
+function getNextCardIconTone(
+  isActive: boolean,
+  isAmber: boolean,
+): NextCardState["iconTone"] {
+  if (!isActive) {
+    return "neutral";
+  }
+
+  return isAmber ? "amber" : "none";
+}
+
+function getNextCardIconClassName(isActive: boolean, isAmber: boolean) {
+  if (!isActive) {
+    return "";
+  }
+
+  return isAmber
+    ? "bg-spark-amber/12"
+    : "bg-forge-teal text-primary-foreground";
+}
+
+function getNextCardTitleClassName(isActive: boolean, isAmber: boolean) {
+  if (!isActive) {
+    return "text-foreground";
+  }
+
+  return isAmber ? "text-spark-amber" : "text-forge-teal";
 }

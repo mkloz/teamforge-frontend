@@ -1,22 +1,11 @@
 import { memo } from "react";
-import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import type {
+  MessageRendererProps,
+  SharedMessageRendererProps,
+} from "./message-renderer-props";
 import { ProposalMessage } from "./proposal-message";
 import { SystemMessage } from "./system-message";
 import { UnifiedMessageItem } from "./unified-message-item";
-
-interface MessageRendererProps {
-  message: UnifiedMessage;
-  showSender: boolean;
-  isHighlighted: boolean;
-  isSelectable?: boolean;
-  isSelected?: boolean;
-  isSelectionMode?: boolean;
-  kind: "dm" | "group";
-  onActivateReplyTarget: (messageId: string) => void;
-  onStartSelection?: (message: UnifiedMessage) => void;
-  onToggleSelected?: (message: UnifiedMessage) => void;
-  searchQuery: string;
-}
 
 export const MessageRenderer = memo(
   ({
@@ -35,36 +24,25 @@ export const MessageRenderer = memo(
     if (message.type === "SYSTEM") {
       return <SystemMessage message={message} isHighlighted={isHighlighted} />;
     }
+
+    const sharedMessageProps = {
+      message,
+      showSender,
+      isHighlighted,
+      isSelectable,
+      isSelected,
+      isSelectionMode,
+      kind,
+      onActivateReplyTarget,
+      onStartSelection,
+      onToggleSelected,
+    } satisfies SharedMessageRendererProps;
+
     if (message.type === "PLAN_UPDATE" && message.proposal) {
-      return (
-        <ProposalMessage
-          message={message}
-          showSender={showSender}
-          isHighlighted={isHighlighted}
-          isSelectable={isSelectable}
-          isSelected={isSelected}
-          isSelectionMode={isSelectionMode}
-          kind={kind}
-          onActivateReplyTarget={onActivateReplyTarget}
-          onStartSelection={onStartSelection}
-          onToggleSelected={onToggleSelected}
-        />
-      );
+      return <ProposalMessage {...sharedMessageProps} />;
     }
     return (
-      <UnifiedMessageItem
-        message={message}
-        showSender={showSender}
-        isHighlighted={isHighlighted}
-        isSelectable={isSelectable}
-        isSelected={isSelected}
-        isSelectionMode={isSelectionMode}
-        kind={kind}
-        onActivateReplyTarget={onActivateReplyTarget}
-        onStartSelection={onStartSelection}
-        onToggleSelected={onToggleSelected}
-        searchQuery={searchQuery}
-      />
+      <UnifiedMessageItem {...sharedMessageProps} searchQuery={searchQuery} />
     );
   },
 );

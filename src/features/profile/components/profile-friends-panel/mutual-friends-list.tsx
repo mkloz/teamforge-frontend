@@ -7,6 +7,10 @@ interface MutualFriendsListProps {
   userId: string;
 }
 
+type MutualFriendship = ReturnType<
+  typeof useProfileCommonFriends
+>["commonFriends"][number];
+
 export function MutualFriendsList({ userId }: MutualFriendsListProps) {
   const { commonFriends, isLoading, isError } = useProfileCommonFriends(userId);
 
@@ -42,27 +46,27 @@ export function MutualFriendsList({ userId }: MutualFriendsListProps) {
 
   return (
     <div className="flex flex-col gap-1">
-      {commonFriends.map((friendship) => {
-        const user = friendship.counterpart;
-        const messageChatId =
-          friendship.privateChat?.id ?? friendship.privateChatId;
-
-        return (
-          <FriendCard
-            key={user.id}
-            user={{
-              id: user.id,
-              name: user.name,
-              avatar: user.avatar,
-              personalityType: user.personalityType,
-              city: user.city,
-              trustScore: user.trustScore,
-              onlineStatus: user.onlineStatus,
-            }}
-            actions={<FriendMessageAction chatId={messageChatId} />}
-          />
-        );
-      })}
+      {commonFriends.map((friendship) => (
+        <MutualFriendCard
+          key={friendship.counterpart.id}
+          friendship={friendship}
+        />
+      ))}
     </div>
   );
+}
+
+function MutualFriendCard({ friendship }: { friendship: MutualFriendship }) {
+  const messageChatId = getMutualFriendshipMessageChatId(friendship);
+
+  return (
+    <FriendCard
+      user={friendship.counterpart}
+      actions={<FriendMessageAction chatId={messageChatId} />}
+    />
+  );
+}
+
+function getMutualFriendshipMessageChatId(friendship: MutualFriendship) {
+  return friendship.privateChat?.id ?? friendship.privateChatId;
 }

@@ -4,20 +4,18 @@ import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import type { HomeViewer } from "@/features/home/lib/home-contract";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 
-import { getProfileStepMeta } from "./attention-queue-formatters";
 import {
   AttentionQueueMeta,
   AttentionQueueTypeLabel,
 } from "./attention-queue-meta";
-import { getProfileStepNavigation } from "./profile-step-action";
+import { getProfileStepQueueItemRenderState } from "./profile-step-queue-item-render-state";
 
 export function ProfileStepQueueItem({
   nextStep,
 }: {
   nextStep: NonNullable<HomeViewer["nextStep"]>;
 }) {
-  const navigation = getProfileStepNavigation(nextStep);
-  const stepMeta = getProfileStepMeta(nextStep);
+  const { navigation, stepMeta } = getProfileStepQueueItemRenderState(nextStep);
 
   return (
     <li className="group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 hover:bg-forge-teal/5 sm:px-3">

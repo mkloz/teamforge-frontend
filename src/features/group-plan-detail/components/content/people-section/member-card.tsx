@@ -16,6 +16,13 @@ interface MemberCardProps {
   variant: "host" | "regular";
 }
 
+interface MemberMetricViewModel {
+  icon: LucideIcon;
+  label: string;
+  tone: "muted" | "teal";
+  value: string;
+}
+
 export function MemberCard({
   member,
   isMember,
@@ -45,7 +52,7 @@ export function MemberCard({
         <MemberMeta member={member} />
       </div>
 
-      {isMember && !isViewer && !member.knownConnection ? (
+      {shouldShowMemberAction({ isMember, isViewer, member }) ? (
         <div className="relative z-20">
           <MemberAction member={member} />
         </div>
@@ -123,30 +130,13 @@ function MemberIdentity({
 }
 
 function MemberMeta({ member }: { member: GroupPlanDetailMember }) {
-  const trustPercent = formatPercent(member.trustScore);
-  const compatibilityPercent = formatPercent(member.compatibilityScore);
-  const isHighTrust = typeof trustPercent === "number" && trustPercent >= 80;
-  const isHighCompatibility =
-    typeof compatibilityPercent === "number" && compatibilityPercent >= 80;
+  const metrics = getMemberMetrics(member);
 
   return (
     <div className="mt-1.5 flex min-w-0 items-center gap-1.5">
-      {typeof trustPercent === "number" ? (
-        <MemberMetric
-          icon={ShieldCheck}
-          label="Trust"
-          tone={isHighTrust ? "teal" : "muted"}
-          value={`${trustPercent}%`}
-        />
-      ) : null}
-      {typeof compatibilityPercent === "number" ? (
-        <MemberMetric
-          icon={Target}
-          label="Fit"
-          tone={isHighCompatibility ? "teal" : "muted"}
-          value={`${compatibilityPercent}%`}
-        />
-      ) : null}
+      {metrics.map((metric) => (
+        <MemberMetric key={metric.label} {...metric} />
+      ))}
       {member.knownConnection ? (
         <KnownConnectionIndicator label={member.knownConnection} />
       ) : null}
@@ -154,14 +144,12 @@ function MemberMeta({ member }: { member: GroupPlanDetailMember }) {
   );
 }
 
-interface MemberMetricProps {
-  icon: LucideIcon;
-  label: string;
-  tone: "muted" | "teal";
-  value: string;
-}
-
-function MemberMetric({ icon: Icon, label, tone, value }: MemberMetricProps) {
+function MemberMetric({
+  icon: Icon,
+  label,
+  tone,
+  value,
+}: MemberMetricViewModel) {
   return (
     <StatusPill
       icon={Icon}
@@ -175,6 +163,64 @@ function MemberMetric({ icon: Icon, label, tone, value }: MemberMetricProps) {
       <span>{value}</span>
     </StatusPill>
   );
+}
+
+function getMemberMetrics(member: GroupPlanDetailMember) {
+  return [
+    getMemberMetric({
+      icon: ShieldCheck,
+      label: "Trust",
+      score: member.trustScore,
+    }),
+    getMemberMetric({
+      icon: Target,
+      label: "Fit",
+      score: member.compatibilityScore,
+    }),
+  ].filter(isMemberMetric);
+}
+
+function getMemberMetric({
+  icon,
+  label,
+  score,
+}: {
+  icon: LucideIcon;
+  label: string;
+  score: number | null;
+}): MemberMetricViewModel | null {
+  const percent = formatPercent(score);
+
+  return typeof percent === "number"
+    ? {
+        icon,
+        label,
+        tone: getMemberMetricTone(percent),
+        value: `${percent}%`,
+      }
+    : null;
+}
+
+function isMemberMetric(
+  metric: MemberMetricViewModel | null,
+): metric is MemberMetricViewModel {
+  return metric !== null;
+}
+
+function getMemberMetricTone(percent: number) {
+  return percent >= 80 ? "teal" : "muted";
+}
+
+function shouldShowMemberAction({
+  isMember,
+  isViewer,
+  member,
+}: {
+  isMember: boolean;
+  isViewer: boolean;
+  member: GroupPlanDetailMember;
+}) {
+  return isMember && !isViewer && !member.knownConnection;
 }
 
 function KnownConnectionIndicator({ label }: { label: string }) {

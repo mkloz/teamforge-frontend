@@ -27,6 +27,24 @@ interface RealtimeGroupUpdateOptions {
   ) => Group;
 }
 
+type GroupVersionSource =
+  | Pick<GroupApi, "updatedAt" | "version">
+  | Pick<Group, "updatedAt" | "version">;
+
+type ActivityGroupSelectionWithGroup = ActivityGroupSelectionData & {
+  group: Group;
+};
+
+interface UpdateGroupSelectionCacheInput {
+  current: ActivityGroupSelectionData | undefined;
+  currentUserId: string;
+  getGroupVersion: (group: GroupVersionSource) => number;
+  group: GroupApi;
+  isStillMember: boolean;
+  mapApiGroupFromSelection: RealtimeGroupUpdateOptions["mapApiGroupFromSelection"];
+  mapGroup: RealtimeGroupUpdateOptions["mapGroup"];
+}
+
 export const ActivityGroupCache = {
   applyRealtimeGroupUpdate({
     currentUserId,
@@ -35,95 +53,236 @@ export const ActivityGroupCache = {
     mapApiGroupFromSelection,
     mapGroup,
   }: RealtimeGroupUpdateOptions) {
-    const isStillMember = group.members.some(
-      (member) => member.userId === currentUserId && member.leftAt === null,
-    );
+    const isStillMember = isActiveGroupMember(group, currentUserId);
 
     appQueryClient.setQueryData<GroupApi[]>(
       ACTIVITY_GROUPS_QUERY_KEY,
-      (current) => {
-        const currentGroup = current?.find((item) => item.id === group.id);
-        const nextGroup =
-          currentGroup && getGroupVersion(currentGroup) > getGroupVersion(group)
-            ? currentGroup
-            : group;
-        const withoutExisting =
-          current?.filter((item) => item.id !== group.id) ?? [];
-
-        if (!isStillMember) {
-          return withoutExisting;
-        }
-
-        return [nextGroup, ...withoutExisting].sort(
-          (left, right) => getGroupVersion(right) - getGroupVersion(left),
-        );
-      },
+      (current) =>
+        updateActivityGroupsCache({
+          current,
+          getGroupVersion,
+          group,
+          isStillMember,
+        }),
     );
 
     appQueryClient.setQueryData<ChatApi[]>(
       ACTIVITY_CHATS_QUERY_KEY,
-      (current) => {
-        if (!current) {
-          return current;
-        }
-
-        if (!isStillMember) {
-          return current.filter((chat) => chat.groupId !== group.id);
-        }
-
-        return current.map((chat) =>
-          chat.groupId === group.id && chat.group
-            ? {
-                ...chat,
-                group: {
-                  ...chat.group,
-                  avatar: group.avatar,
-                  name: group.name,
-                  status: group.status,
-                },
-              }
-            : chat,
-        );
-      },
+      (current) =>
+        updateActivityChatsCache({
+          current,
+          group,
+          isStillMember,
+        }),
     );
 
     appQueryClient.setQueryData<ActivityGroupSelectionData | undefined>(
       APP_QUERY_KEYS.activity.groupSelectionById(group.id),
-      (current) => {
-        if (!current?.group) {
-          return current;
-        }
-
-        if (!isStillMember) {
-          return {
-            ...current,
-            group: null,
-            proposalMessages: [],
-          };
-        }
-
-        return {
-          ...current,
-          group: mapGroup(
-            getGroupVersion(current.group) > getGroupVersion(group)
-              ? mapApiGroupFromSelection(current.group)
-              : group,
-            currentUserId,
-            current.group?.plan?.proposals ?? [],
-            current.chatId
-              ? ({
-                  id: current.chatId,
-                  isMuted: current.group?.chat?.isMuted ?? false,
-                  pinnedMessages: current.group?.chat?.pinnedMessages?.map(
-                    (message) => toMessageApi(message),
-                  ),
-                } satisfies Pick<ChatApi, "id" | "isMuted" | "pinnedMessages">)
-              : null,
-          ),
-        };
-      },
+      (current) =>
+        updateGroupSelectionCache({
+          current,
+          currentUserId,
+          getGroupVersion,
+          group,
+          isStillMember,
+          mapApiGroupFromSelection,
+          mapGroup,
+        }),
     );
 
     void invalidateHomeGroupSurfaces();
   },
 };
+
+function isActiveGroupMember(group: GroupApi, currentUserId: string) {
+  return group.members.some(
+    (member) => member.userId === currentUserId && member.leftAt === null,
+  );
+}
+
+function updateActivityGroupsCache({
+  current,
+  getGroupVersion,
+  group,
+  isStillMember,
+}: {
+  current: GroupApi[] | undefined;
+  getGroupVersion: (group: GroupVersionSource) => number;
+  group: GroupApi;
+  isStillMember: boolean;
+}) {
+  const currentGroup = current?.find((item) => item.id === group.id);
+  const nextGroup = getNewestGroup({
+    currentGroup,
+    getGroupVersion,
+    incomingGroup: group,
+  });
+  const withoutExisting = removeGroupFromList(current, group.id);
+
+  if (!isStillMember) {
+    return withoutExisting;
+  }
+
+  return [nextGroup, ...withoutExisting].sort(
+    (left, right) => getGroupVersion(right) - getGroupVersion(left),
+  );
+}
+
+function getNewestGroup({
+  currentGroup,
+  getGroupVersion,
+  incomingGroup,
+}: {
+  currentGroup: GroupApi | undefined;
+  getGroupVersion: (group: GroupVersionSource) => number;
+  incomingGroup: GroupApi;
+}) {
+  return currentGroup &&
+    getGroupVersion(currentGroup) > getGroupVersion(incomingGroup)
+    ? currentGroup
+    : incomingGroup;
+}
+
+function removeGroupFromList(current: GroupApi[] | undefined, groupId: string) {
+  return current?.filter((item) => item.id !== groupId) ?? [];
+}
+
+function updateActivityChatsCache({
+  current,
+  group,
+  isStillMember,
+}: {
+  current: ChatApi[] | undefined;
+  group: GroupApi;
+  isStillMember: boolean;
+}) {
+  if (!current) {
+    return current;
+  }
+
+  if (!isStillMember) {
+    return current.filter((chat) => chat.groupId !== group.id);
+  }
+
+  return current.map((chat) => updateChatGroupSummary(chat, group));
+}
+
+function updateChatGroupSummary(chat: ChatApi, group: GroupApi) {
+  if (chat.groupId !== group.id || !chat.group) {
+    return chat;
+  }
+
+  return {
+    ...chat,
+    group: {
+      ...chat.group,
+      avatar: group.avatar,
+      name: group.name,
+      status: group.status,
+    },
+  };
+}
+
+function updateGroupSelectionCache({
+  current,
+  currentUserId,
+  getGroupVersion,
+  group,
+  isStillMember,
+  mapApiGroupFromSelection,
+  mapGroup,
+}: UpdateGroupSelectionCacheInput) {
+  if (!hasActiveGroupSelection(current)) {
+    return current;
+  }
+
+  if (!isStillMember) {
+    return clearInactiveGroupSelection(current);
+  }
+
+  return updateActiveGroupSelection({
+    current,
+    currentUserId,
+    getGroupVersion,
+    incomingGroup: group,
+    mapApiGroupFromSelection,
+    mapGroup,
+  });
+}
+
+function hasActiveGroupSelection(
+  current: ActivityGroupSelectionData | undefined,
+): current is ActivityGroupSelectionWithGroup {
+  return Boolean(current?.group);
+}
+
+function clearInactiveGroupSelection(current: ActivityGroupSelectionData) {
+  return {
+    ...current,
+    group: null,
+    proposalMessages: [],
+  };
+}
+
+function updateActiveGroupSelection({
+  current,
+  currentUserId,
+  getGroupVersion,
+  incomingGroup,
+  mapApiGroupFromSelection,
+  mapGroup,
+}: {
+  current: ActivityGroupSelectionWithGroup;
+  currentUserId: string;
+  getGroupVersion: (group: GroupVersionSource) => number;
+  incomingGroup: GroupApi;
+  mapApiGroupFromSelection: RealtimeGroupUpdateOptions["mapApiGroupFromSelection"];
+  mapGroup: RealtimeGroupUpdateOptions["mapGroup"];
+}) {
+  return {
+    ...current,
+    group: mapGroup(
+      getNewestGroupForSelection({
+        currentGroup: current.group,
+        getGroupVersion,
+        incomingGroup,
+        mapApiGroupFromSelection,
+      }),
+      currentUserId,
+      current.group.plan?.proposals ?? [],
+      getGroupSelectionChatSummary(current),
+    ),
+  };
+}
+
+function getNewestGroupForSelection({
+  currentGroup,
+  getGroupVersion,
+  incomingGroup,
+  mapApiGroupFromSelection,
+}: {
+  currentGroup: Group;
+  getGroupVersion: (group: GroupVersionSource) => number;
+  incomingGroup: GroupApi;
+  mapApiGroupFromSelection: RealtimeGroupUpdateOptions["mapApiGroupFromSelection"];
+}) {
+  return getGroupVersion(currentGroup) > getGroupVersion(incomingGroup)
+    ? mapApiGroupFromSelection(currentGroup)
+    : incomingGroup;
+}
+
+function getGroupSelectionChatSummary(
+  current: ActivityGroupSelectionData,
+): Pick<ChatApi, "id" | "isMuted" | "pinnedMessages"> | null {
+  if (!current.chatId) {
+    return null;
+  }
+
+  return {
+    id: current.chatId,
+    isMuted: current.group?.chat?.isMuted ?? false,
+    pinnedMessages: current.group?.chat?.pinnedMessages?.map((message) =>
+      toMessageApi(message),
+    ),
+  };
+}

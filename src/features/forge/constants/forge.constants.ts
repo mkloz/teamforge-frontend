@@ -1,17 +1,4 @@
-import type {
-  FixedGroupSize,
-  PlanCategory,
-} from "@/features/forge/lib/forge-contract";
-
-export const ALGORITHM_GROUP_SIZES: {
-  value: FixedGroupSize;
-  label: string;
-  note: string;
-}[] = [
-  { value: 4, label: "4", note: "Tight-knit" },
-  { value: 6, label: "6", note: "Balanced" },
-  { value: 8, label: "8", note: "Expansive" },
-];
+import type { PlanCategory } from "@/features/forge/lib/forge-contract";
 
 export interface ActivityOption {
   id: PlanCategory;

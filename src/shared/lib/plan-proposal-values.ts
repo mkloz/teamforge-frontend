@@ -30,6 +30,8 @@ const planLocationPayloadSchema = z.object({
   locationMode: z.enum(["IN_PERSON", "ONLINE", "TBD"]),
 });
 
+type PlanLocationPayload = z.infer<typeof planLocationPayloadSchema>;
+
 export function cleanPlanProposalText(value: string | null | undefined) {
   const trimmed = value?.trim() ?? "";
   return trimmed.length > 0 ? trimmed : null;
@@ -39,27 +41,59 @@ export function isPlanLocationMode(value: string): value is LocationMode {
   return Object.keys(PLAN_LOCATION_MODE_LABELS).some((mode) => mode === value);
 }
 
-export function normalizePlanLocationValue(
-  value: Partial<PlanLocationValue> & { locationMode: LocationMode },
-  options: NormalizePlanLocationValueOptions = {},
-): PlanLocationValue {
-  if (value.locationMode === "TBD") {
-    return orderPlanLocationValue(
-      {
-        location: null,
-        locationLat: null,
-        locationLng: null,
-        locationMode: "TBD",
-      },
-      options,
-    );
-  }
+function createTbdPlanLocationValue(): PlanLocationValue {
+  return {
+    location: null,
+    locationLat: null,
+    locationLng: null,
+    locationMode: "TBD",
+  };
+}
 
+function getRequiredPlanLocation(
+  value: Partial<PlanLocationValue>,
+  options: NormalizePlanLocationValueOptions,
+) {
   const location = cleanPlanProposalText(value.location);
 
   if (!location) {
     throw new Error(options.missingLocationMessage ?? "Location is required.");
   }
+
+  return location;
+}
+
+function getPlanCoordinatePair(value: Partial<PlanLocationValue>) {
+  return {
+    locationLat: value.locationLat ?? null,
+    locationLng: value.locationLng ?? null,
+  };
+}
+
+function assertPlanCoordinatePair(
+  coordinatePair: Pick<PlanLocationValue, "locationLat" | "locationLng">,
+  options: NormalizePlanLocationValueOptions,
+) {
+  if (
+    options.requireCoordinatePair &&
+    (coordinatePair.locationLat === null) !==
+      (coordinatePair.locationLng === null)
+  ) {
+    throw new Error(
+      options.coordinatePairMessage ?? "Coordinates must be provided together.",
+    );
+  }
+}
+
+function normalizePlanLocationValue(
+  value: Partial<PlanLocationValue> & { locationMode: LocationMode },
+  options: NormalizePlanLocationValueOptions = {},
+): PlanLocationValue {
+  if (value.locationMode === "TBD") {
+    return orderPlanLocationValue(createTbdPlanLocationValue(), options);
+  }
+
+  const location = getRequiredPlanLocation(value, options);
 
   if (value.locationMode === "ONLINE") {
     return orderPlanLocationValue(
@@ -73,23 +107,13 @@ export function normalizePlanLocationValue(
     );
   }
 
-  const locationLat = value.locationLat ?? null;
-  const locationLng = value.locationLng ?? null;
-
-  if (
-    options.requireCoordinatePair &&
-    (locationLat === null) !== (locationLng === null)
-  ) {
-    throw new Error(
-      options.coordinatePairMessage ?? "Coordinates must be provided together.",
-    );
-  }
+  const coordinatePair = getPlanCoordinatePair(value);
+  assertPlanCoordinatePair(coordinatePair, options);
 
   return orderPlanLocationValue(
     {
       location,
-      locationLat,
-      locationLng,
+      ...coordinatePair,
       locationMode: "IN_PERSON",
     },
     options,
@@ -105,6 +129,36 @@ export function serializePlanLocationValue(
   );
 }
 
+function normalizePlanLocationPayload(
+  payload: PlanLocationPayload,
+  options: NormalizePlanLocationValueOptions,
+) {
+  return normalizePlanLocationValue(
+    {
+      location: payload.location ?? null,
+      locationLat: payload.locationLat ?? null,
+      locationLng: payload.locationLng ?? null,
+      locationMode: payload.locationMode,
+    },
+    options,
+  );
+}
+
+function parseSerializedPlanLocationValue(
+  value: string,
+  options: NormalizePlanLocationValueOptions,
+) {
+  try {
+    const parsed = planLocationPayloadSchema.safeParse(JSON.parse(value));
+
+    return parsed.success
+      ? normalizePlanLocationPayload(parsed.data, options)
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export function parsePlanLocationValue(
   value: string | null,
   options: NormalizePlanLocationValueOptions = {},
@@ -115,25 +169,7 @@ export function parsePlanLocationValue(
     return null;
   }
 
-  try {
-    const parsed = planLocationPayloadSchema.safeParse(JSON.parse(trimmed));
-
-    if (!parsed.success) {
-      return null;
-    }
-
-    return normalizePlanLocationValue(
-      {
-        location: parsed.data.location ?? null,
-        locationLat: parsed.data.locationLat ?? null,
-        locationLng: parsed.data.locationLng ?? null,
-        locationMode: parsed.data.locationMode,
-      },
-      options,
-    );
-  } catch {
-    return null;
-  }
+  return parseSerializedPlanLocationValue(trimmed, options);
 }
 
 export function formatPlanLocationValue(value: PlanLocationValue) {

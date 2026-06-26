@@ -11,7 +11,7 @@ export function GroupPlanDetailPageLoading(_props: PageLoadingProps = {}) {
   return <GroupPlanDetailPageLoadingFixture />;
 }
 
-export function GroupPlanDetailPageLoadingFixture() {
+function GroupPlanDetailPageLoadingFixture() {
   return (
     <div
       aria-busy="true"

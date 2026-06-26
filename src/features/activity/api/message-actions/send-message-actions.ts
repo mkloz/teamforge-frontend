@@ -117,15 +117,38 @@ function getSendMessageMutationKey(
   chatId: string,
   input: SendActivityMessageInput,
 ) {
-  return getActivityMutationKey(
+  return getActivityMutationKey(...getSendMessageMutationParts(chatId, input));
+}
+
+function getSendMessageMutationParts(
+  chatId: string,
+  input: SendActivityMessageInput,
+) {
+  return [
     "message",
     chatId,
     "send",
-    input.content.trim(),
-    input.replyToId ?? input.replyTo?.id ?? null,
-    input.gif?.providerId ?? input.gif?.url ?? null,
-    input.attachments?.map(getAttachmentMutationPart).join("|") ?? null,
-  );
+    getContentMutationPart(input),
+    getReplyMutationPart(input),
+    getGifMutationPart(input),
+    getAttachmentsMutationPart(input),
+  ] as const;
+}
+
+function getContentMutationPart(input: SendActivityMessageInput) {
+  return input.content.trim();
+}
+
+function getReplyMutationPart(input: SendActivityMessageInput) {
+  return input.replyToId ?? input.replyTo?.id ?? null;
+}
+
+function getGifMutationPart(input: SendActivityMessageInput) {
+  return input.gif?.providerId ?? input.gif?.url ?? null;
+}
+
+function getAttachmentsMutationPart(input: SendActivityMessageInput) {
+  return input.attachments?.map(getAttachmentMutationPart).join("|") ?? null;
 }
 
 function getAttachmentMutationPart(attachment: ActivityOutgoingAttachment) {

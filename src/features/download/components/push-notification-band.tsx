@@ -10,6 +10,21 @@ const DOWNLOAD_AUTH_RETURN_TO = "/download";
 
 type PushState = ReturnType<typeof useWebPushSubscription>;
 
+interface PushCopy {
+  body: string;
+  title: string;
+}
+
+type PushCopyRule = {
+  copy: PushCopy;
+  shouldUse: (push: PushState) => boolean;
+};
+
+interface PushDeniedHelpRule {
+  message: string;
+  shouldUse: (userAgent: string) => boolean;
+}
+
 interface PushReadinessState {
   canTurnOn: boolean;
   iconTone: IconTileTone;
@@ -18,107 +33,203 @@ interface PushReadinessState {
   isDenied: boolean;
 }
 
+type PushNotificationCtaState =
+  | { kind: "sign-in" }
+  | { isDisabled: boolean; isLoading: boolean; kind: "turn-off" }
+  | {
+      isDisabled: boolean;
+      isLoading: boolean;
+      kind: "turn-on";
+      label: string;
+    };
+
+type PushNotificationCtaRule = {
+  getState: (
+    push: PushState,
+    readiness: PushReadinessState,
+  ) => PushNotificationCtaState;
+  shouldUse: (push: PushState) => boolean;
+};
+
+const PUSH_COPY_RULES: readonly PushCopyRule[] = [
+  {
+    shouldUse: (push) => !push.support.isSupported,
+    copy: {
+      title: "Alerts unavailable here",
+      body: "This browser can still install TeamForge, but it cannot receive push notifications.",
+    },
+  },
+  {
+    shouldUse: (push) => !push.isOnline || push.isPublicKeyNetworkError,
+    copy: {
+      title: "Reconnect to manage alerts",
+      body: "Push settings need the network. Existing device alerts stay as they are until you are back online.",
+    },
+  },
+  {
+    shouldUse: (push) => !push.isAuthenticated,
+    copy: {
+      title: "Unlock mobile alerts",
+      body: "Sign in on this device to turn on group invites, messages, and plan updates.",
+    },
+  },
+  {
+    shouldUse: (push) => push.isPublicKeyLoading,
+    copy: {
+      title: "Checking alert capability",
+      body: "TeamForge is checking whether this environment can send mobile alerts.",
+    },
+  },
+  {
+    shouldUse: (push) => !push.isWebPushEnabled,
+    copy: {
+      title: "Alerts not enabled yet",
+      body: "Installation works now. Push delivery can be turned on when this environment is configured.",
+    },
+  },
+  {
+    shouldUse: (push) => push.permission === "denied",
+    copy: {
+      title: "Alerts are blocked in this browser",
+      body: "Notifications are blocked. Re-enable them in your site settings to receive group and plan updates.",
+    },
+  },
+  {
+    shouldUse: (push) => push.isSubscribed,
+    copy: {
+      title: "Alerts are on",
+      body: "This device will show TeamForge updates even when the app is closed.",
+    },
+  },
+] as const;
+
+const DEFAULT_PUSH_COPY: PushCopy = {
+  title: "Turn on mobile alerts",
+  body: "Allow this device to show group invites, messages, and plan reminders.",
+};
+
+const DEFAULT_PUSH_DENIED_HELP =
+  "Click the lock icon in your address bar -> Notifications -> Allow.";
+
+const PUSH_DENIED_HELP_RULES: readonly PushDeniedHelpRule[] = [
+  {
+    shouldUse: (userAgent) =>
+      /safari/i.test(userAgent) && !/chrome|chromium/i.test(userAgent),
+    message:
+      "Go to Safari -> Settings for this Website -> Notifications -> Allow.",
+  },
+  {
+    shouldUse: (userAgent) => /firefox/i.test(userAgent),
+    message:
+      "Click the shield icon in your address bar and disable notification blocking.",
+  },
+  {
+    shouldUse: (userAgent) => /edg\//i.test(userAgent),
+    message:
+      "Click the lock icon in your address bar -> Permissions -> Notifications -> Allow.",
+  },
+] as const;
+
+const PUSH_NOTIFICATION_CTA_RULES: readonly PushNotificationCtaRule[] = [
+  {
+    shouldUse: (push) => !push.isAuthenticated,
+    getState: () => ({ kind: "sign-in" }),
+  },
+  {
+    shouldUse: (push) => push.isSubscribed,
+    getState: (push, readiness) => ({
+      kind: "turn-off",
+      isDisabled: !push.isOnline || readiness.isBusy,
+      isLoading: push.isTurningOff,
+    }),
+  },
+] as const;
+
 function getPushDeniedHelp(): string {
   if (typeof navigator === "undefined") {
     return "Open your browser's site settings and allow notifications for TeamForge.";
   }
 
-  const ua = navigator.userAgent;
+  return getBrowserPushDeniedHelp(navigator.userAgent);
+}
 
-  if (/safari/i.test(ua) && !/chrome|chromium/i.test(ua)) {
-    return "Go to Safari -> Settings for this Website -> Notifications -> Allow.";
-  }
-
-  if (/firefox/i.test(ua)) {
-    return "Click the shield icon in your address bar and disable notification blocking.";
-  }
-
-  if (/edg\//i.test(ua)) {
-    return "Click the lock icon in your address bar -> Permissions -> Notifications -> Allow.";
-  }
-
-  return "Click the lock icon in your address bar -> Notifications -> Allow.";
+function getBrowserPushDeniedHelp(userAgent: string) {
+  return (
+    PUSH_DENIED_HELP_RULES.find((rule) => rule.shouldUse(userAgent))?.message ??
+    DEFAULT_PUSH_DENIED_HELP
+  );
 }
 
 function getPushCopy(push: PushState) {
-  if (!push.support.isSupported) {
-    return {
-      title: "Alerts unavailable here",
-      body: "This browser can still install TeamForge, but it cannot receive push notifications.",
-    };
-  }
-
-  if (!push.isOnline || push.isPublicKeyNetworkError) {
-    return {
-      title: "Reconnect to manage alerts",
-      body: "Push settings need the network. Existing device alerts stay as they are until you are back online.",
-    };
-  }
-
-  if (!push.isAuthenticated) {
-    return {
-      title: "Unlock mobile alerts",
-      body: "Sign in on this device to turn on group invites, messages, and plan updates.",
-    };
-  }
-
-  if (push.isPublicKeyLoading) {
-    return {
-      title: "Checking alert capability",
-      body: "TeamForge is checking whether this environment can send mobile alerts.",
-    };
-  }
-
-  if (!push.isWebPushEnabled) {
-    return {
-      title: "Alerts not enabled yet",
-      body: "Installation works now. Push delivery can be turned on when this environment is configured.",
-    };
-  }
-
-  if (push.permission === "denied") {
-    return {
-      title: "Alerts are blocked in this browser",
-      body: "Notifications are blocked. Re-enable them in your site settings to receive group and plan updates.",
-    };
-  }
-
-  if (push.isSubscribed) {
-    return {
-      title: "Alerts are on",
-      body: "This device will show TeamForge updates even when the app is closed.",
-    };
-  }
-
-  return {
-    title: "Turn on mobile alerts",
-    body: "Allow this device to show group invites, messages, and plan reminders.",
-  };
+  return (
+    PUSH_COPY_RULES.find((rule) => rule.shouldUse(push))?.copy ??
+    DEFAULT_PUSH_COPY
+  );
 }
 
 function getPushReadiness(push: PushState): PushReadinessState {
-  const isBusy =
-    push.isTurningOn || push.isTurningOff || push.isCheckingBrowserSubscription;
-  const canTurnOn =
-    push.canRequestPermission && !push.isSubscribed && !push.isPublicKeyLoading;
-  const isActionDisabled =
-    !push.isOnline ||
-    isBusy ||
-    push.isPublicKeyLoading ||
-    (!push.isSubscribed && !push.canRequestPermission);
   const isDenied = push.permission === "denied";
-  const iconTone: IconTileTone = push.isSubscribed
-    ? "teal"
-    : isDenied
-      ? "amber"
-      : "muted";
+  const isBusy = isPushBusy(push);
 
   return {
-    canTurnOn,
-    iconTone,
-    isActionDisabled,
+    canTurnOn: canTurnOnPush(push),
+    iconTone: getPushIconTone(push, isDenied),
+    isActionDisabled: isPushActionDisabled(push, isBusy),
     isBusy,
     isDenied,
+  };
+}
+
+function isPushBusy(push: PushState) {
+  return (
+    push.isTurningOn || push.isTurningOff || push.isCheckingBrowserSubscription
+  );
+}
+
+function canTurnOnPush(push: PushState) {
+  return (
+    push.canRequestPermission && !push.isSubscribed && !push.isPublicKeyLoading
+  );
+}
+
+function isPushActionDisabled(push: PushState, isBusy: boolean) {
+  return [
+    !push.isOnline,
+    isBusy,
+    push.isPublicKeyLoading,
+    !push.isSubscribed && !push.canRequestPermission,
+  ].some(Boolean);
+}
+
+function getPushIconTone(push: PushState, isDenied: boolean): IconTileTone {
+  if (push.isSubscribed) {
+    return "teal";
+  }
+
+  return isDenied ? "amber" : "muted";
+}
+
+function getPushNotificationCtaState(
+  push: PushState,
+  readiness: PushReadinessState,
+): PushNotificationCtaState {
+  return (
+    PUSH_NOTIFICATION_CTA_RULES.find((rule) => rule.shouldUse(push))?.getState(
+      push,
+      readiness,
+    ) ?? getTurnOnPushCtaState(push, readiness)
+  );
+}
+
+function getTurnOnPushCtaState(
+  push: PushState,
+  readiness: PushReadinessState,
+): PushNotificationCtaState {
+  return {
+    kind: "turn-on",
+    isDisabled: !readiness.canTurnOn || readiness.isActionDisabled,
+    isLoading: push.isTurningOn,
+    label: readiness.isDenied ? "Blocked in browser" : "Turn on alerts",
   };
 }
 
@@ -181,7 +292,9 @@ function PushNotificationCta({
   push: PushState;
   readiness: PushReadinessState;
 }) {
-  if (!push.isAuthenticated) {
+  const cta = getPushNotificationCtaState(push, readiness);
+
+  if (cta.kind === "sign-in") {
     return (
       <Button
         variant="outline"
@@ -198,14 +311,14 @@ function PushNotificationCta({
     );
   }
 
-  if (push.isSubscribed) {
+  if (cta.kind === "turn-off") {
     return (
       <Button
         variant="outline"
         size="sm"
         className="min-h-11 lg:min-h-9"
-        disabled={!push.isOnline || readiness.isBusy}
-        loading={push.isTurningOff}
+        disabled={cta.isDisabled}
+        loading={cta.isLoading}
         onClick={() => {
           void push.turnOff("download");
         }}
@@ -220,14 +333,14 @@ function PushNotificationCta({
     <Button
       size="sm"
       className="min-h-11 text-white lg:min-h-9"
-      disabled={!readiness.canTurnOn || readiness.isActionDisabled}
-      loading={push.isTurningOn}
+      disabled={cta.isDisabled}
+      loading={cta.isLoading}
       onClick={() => {
         void push.turnOn("download");
       }}
     >
       <BellRing size={15} strokeWidth={2} aria-hidden="true" />
-      {readiness.isDenied ? "Blocked in browser" : "Turn on alerts"}
+      {cta.label}
     </Button>
   );
 }

@@ -55,6 +55,15 @@ function isRegisterProfileGender(
   return Object.hasOwn(REGISTER_PROFILE_GENDER_MAP, gender);
 }
 
+function createEmptyAuthMutationResult(
+  response: Response,
+): AuthMutationResult<null> {
+  return {
+    data: null,
+    requestId: getResponseRequestId(response),
+  };
+}
+
 export class AuthApi {
   static async loginWithEmail(values: Pick<LoginValues, "email" | "password">) {
     const response = await apiClient.post("auth/login", {
@@ -88,10 +97,7 @@ export class AuthApi {
       },
     });
 
-    return {
-      data: null,
-      requestId: getResponseRequestId(response),
-    } satisfies AuthMutationResult<null>;
+    return createEmptyAuthMutationResult(response);
   }
 
   static async verifyEmailOtp(values: Pick<RegisterValues, "email" | "otp">) {
@@ -122,10 +128,7 @@ export class AuthApi {
       },
     });
 
-    return {
-      data: null,
-      requestId: getResponseRequestId(response),
-    } satisfies AuthMutationResult<null>;
+    return createEmptyAuthMutationResult(response);
   }
 
   static async activateAccount(token: string) {
@@ -150,10 +153,7 @@ export class AuthApi {
       },
     });
 
-    return {
-      data: null,
-      requestId: getResponseRequestId(response),
-    } satisfies AuthMutationResult<null>;
+    return createEmptyAuthMutationResult(response);
   }
 
   static async resetPassword(token: string, password: string) {
@@ -165,10 +165,7 @@ export class AuthApi {
       },
     });
 
-    return {
-      data: null,
-      requestId: getResponseRequestId(response),
-    } satisfies AuthMutationResult<null>;
+    return createEmptyAuthMutationResult(response);
   }
 
   static async loginWithGoogle(code: string, intent: GoogleAuthIntent) {

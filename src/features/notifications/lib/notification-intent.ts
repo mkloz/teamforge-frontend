@@ -1,5 +1,4 @@
 import type { HomeRouteSearch } from "@/features/home/lib/home-route";
-import type { Notification } from "@/shared/schemas";
 
 const INVITE_ROOT_PATHS = new Set([
   "/invites",
@@ -8,6 +7,15 @@ const INVITE_ROOT_PATHS = new Set([
   "/invites/sent",
 ]);
 const INVITE_VIEW_SEGMENTS = new Set(["received", "sent"]);
+const FRIEND_REQUEST_PATHS = new Set([
+  "/friends",
+  "/friends/requests",
+  "/friends/requests/incoming",
+]);
+const LEGACY_USER_PATH_PATTERNS = [
+  /^\/users\/([^/?#]+)/,
+  /^\/profile\/([^/?#]+)/,
+] as const;
 
 interface InvitePathIntent {
   inviteIdFromPath: string | undefined;
@@ -20,20 +28,6 @@ function decodePathSegment(value: string) {
   } catch {
     return value;
   }
-}
-
-export function shouldOpenGroupPanelForNotificationType(
-  type: Notification["type"],
-) {
-  return (
-    type.startsWith("PLAN_") ||
-    type === "GROUP_FORMED" ||
-    type === "GROUP_JOIN_APPROVED" ||
-    type === "GROUP_MEMBER_LEFT" ||
-    type === "GROUP_DISBANDED" ||
-    type === "RATING_REQUEST" ||
-    type === "RATING_RECEIVED"
-  );
 }
 
 export function extractProposalId(searchParams: URLSearchParams) {
@@ -89,9 +83,10 @@ export function matchLegacyChatMessagePath(pathname: string) {
 }
 
 export function matchLegacyUserPath(pathname: string) {
-  const userId =
-    pathname.match(/^\/users\/([^/?#]+)/)?.[1] ??
-    pathname.match(/^\/profile\/([^/?#]+)/)?.[1];
+  const userId = matchFirstLegacyPathSegment(
+    pathname,
+    LEGACY_USER_PATH_PATTERNS,
+  );
 
   return userId ? decodePathSegment(userId) : null;
 }
@@ -141,22 +136,46 @@ export function resolveInviteIntent(
 }
 
 function getInvitePathIntent(pathname: string): InvitePathIntent | null {
-  const inviteViewMatch = pathname.match(
+  return (
+    matchInviteViewPath(pathname) ??
+    matchInviteIdPath(pathname) ??
+    getInviteRootPathIntent(pathname)
+  );
+}
+
+function matchInviteViewPath(pathname: string): InvitePathIntent | null {
+  const match = pathname.match(
     /^\/(?:invites|invitations)\/(received|sent)(?:\/([^/?#]+))?$/,
   );
-  const inviteIdMatch = pathname.match(
-    /^\/(?:invites|invitations)\/([^/?#]+)$/,
-  );
 
-  if (!INVITE_ROOT_PATHS.has(pathname) && !inviteViewMatch && !inviteIdMatch) {
+  if (!match) {
     return null;
   }
 
   return {
-    inviteIdFromPath:
-      inviteViewMatch?.[2] ?? getStandaloneInviteId(inviteIdMatch?.[1]),
-    viewFromPath: inviteViewMatch?.[1],
+    inviteIdFromPath: match[2],
+    viewFromPath: match[1],
   };
+}
+
+function matchInviteIdPath(pathname: string): InvitePathIntent | null {
+  const match = pathname.match(/^\/(?:invites|invitations)\/([^/?#]+)$/);
+  const inviteIdFromPath = getStandaloneInviteId(match?.[1]);
+
+  if (!inviteIdFromPath) {
+    return null;
+  }
+
+  return {
+    inviteIdFromPath,
+    viewFromPath: undefined,
+  };
+}
+
+function getInviteRootPathIntent(pathname: string): InvitePathIntent | null {
+  return INVITE_ROOT_PATHS.has(pathname)
+    ? { inviteIdFromPath: undefined, viewFromPath: undefined }
+    : null;
 }
 
 function getStandaloneInviteId(segment: string | undefined) {
@@ -168,32 +187,58 @@ function getInviteId(
   inviteIdFromPath: string | undefined,
 ) {
   return (
-    searchParams.get("invite") ??
-    searchParams.get("inviteId") ??
-    searchParams.get("id") ??
+    getFirstSearchParam(searchParams, ["invite", "inviteId", "id"]) ??
     (inviteIdFromPath ? decodePathSegment(inviteIdFromPath) : undefined) ??
     undefined
   );
+}
+
+function getFirstSearchParam(
+  searchParams: URLSearchParams,
+  keys: readonly string[],
+) {
+  for (const key of keys) {
+    const value = searchParams.get(key);
+
+    if (value !== null) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+function matchFirstLegacyPathSegment(
+  pathname: string,
+  patterns: readonly RegExp[],
+) {
+  for (const pattern of patterns) {
+    const match = pathname.match(pattern)?.[1];
+
+    if (match) {
+      return match;
+    }
+  }
+
+  return undefined;
 }
 
 function getInviteView(
   pathname: string,
   viewFromPath: string | undefined,
 ): HomeRouteSearch["view"] {
-  return pathname === "/invites/sent" || viewFromPath === "sent"
-    ? "sent"
-    : "received";
+  return isSentInviteView(pathname, viewFromPath) ? "sent" : "received";
+}
+
+function isSentInviteView(pathname: string, viewFromPath: string | undefined) {
+  return pathname === "/invites/sent" || viewFromPath === "sent";
 }
 
 export function resolveFriendRequestIntent(
   pathname: string,
   searchParams: URLSearchParams,
 ): HomeRouteSearch | null {
-  if (
-    pathname !== "/friends" &&
-    pathname !== "/friends/requests" &&
-    pathname !== "/friends/requests/incoming"
-  ) {
+  if (!FRIEND_REQUEST_PATHS.has(pathname)) {
     return null;
   }
 

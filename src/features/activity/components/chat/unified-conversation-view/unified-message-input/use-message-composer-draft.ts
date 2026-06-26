@@ -13,15 +13,16 @@ interface MessageComposerDraftValue {
   value: string;
 }
 
+type DraftSourceMessage = { content: string; id: string } | null | undefined;
+
 export function useMessageComposerDraft({
   errorMessage,
   onClearAttachments,
   onClearError,
 }: UseMessageComposerDraftOptions) {
-  const [draftValue, setDraftValue] = useState<MessageComposerDraftValue>({
-    editingMessageId: null,
-    value: "",
-  });
+  const [draftValue, setDraftValue] = useState<MessageComposerDraftValue>(
+    createEmptyDraftValue,
+  );
   const previousEditingMessageIdRef = useRef<string | null>(null);
 
   const replyingTo = useActivityStore((state) => state.replyingTo);
@@ -32,13 +33,7 @@ export function useMessageComposerDraft({
   );
 
   const editingMessageId = editingMessage?.id ?? null;
-  const value = editingMessage
-    ? draftValue.editingMessageId === editingMessage.id
-      ? draftValue.value
-      : editingMessage.content
-    : draftValue.editingMessageId === null
-      ? draftValue.value
-      : "";
+  const value = resolveDraftValue(draftValue, editingMessage);
 
   const clearAttachmentsForEditingMessage = useEffectEvent(() => {
     onClearAttachments();
@@ -60,7 +55,7 @@ export function useMessageComposerDraft({
   }, [editingMessageId]);
 
   function clearComposer() {
-    setDraftValue({ editingMessageId: null, value: "" });
+    setDraftValue(createEmptyDraftValue());
     onClearAttachments();
     setReplyingTo(null);
     setEditingMessage(null);
@@ -72,7 +67,7 @@ export function useMessageComposerDraft({
 
   function cancelEditing() {
     setEditingMessage(null);
-    setDraftValue({ editingMessageId: null, value: "" });
+    setDraftValue(createEmptyDraftValue());
   }
 
   function handleValueChange(nextValue: string) {
@@ -95,4 +90,21 @@ export function useMessageComposerDraft({
     replyingTo,
     value,
   };
+}
+
+function createEmptyDraftValue(): MessageComposerDraftValue {
+  return { editingMessageId: null, value: "" };
+}
+
+function resolveDraftValue(
+  draftValue: MessageComposerDraftValue,
+  editingMessage: DraftSourceMessage,
+) {
+  if (editingMessage) {
+    return draftValue.editingMessageId === editingMessage.id
+      ? draftValue.value
+      : editingMessage.content;
+  }
+
+  return draftValue.editingMessageId === null ? draftValue.value : "";
 }

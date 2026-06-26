@@ -5,6 +5,14 @@ import { useProfileOutgoingFriendRequests } from "@/features/profile/hooks/use-p
 import { Button } from "@/shared/components/ui/button";
 import { FriendCard } from "./friend-card";
 
+type IncomingFriendRequest = ReturnType<
+  typeof useProfileFriendRequests
+>["requests"][number];
+type OutgoingFriendRequest = ReturnType<
+  typeof useProfileOutgoingFriendRequests
+>["requests"][number];
+type FriendRequestsStatus = "loading" | "error" | "empty" | "ready";
+
 export function FriendRequestsList() {
   const {
     requests: incomingRequests,
@@ -25,10 +33,19 @@ export function FriendRequestsList() {
 
   const { removeFriend, removingFriendId } = useProfileFriends();
 
-  const isLoading = isIncomingLoading || isOutgoingLoading;
-  const isError = isIncomingError || isOutgoingError;
+  const status = getFriendRequestsStatus({
+    hasPendingRequests: hasPendingFriendRequests({
+      incomingCount: incomingRequests.length,
+      outgoingCount: outgoingRequests.length,
+    }),
+    isError: hasFriendRequestsError({ isIncomingError, isOutgoingError }),
+    isLoading: hasFriendRequestsLoading({
+      isIncomingLoading,
+      isOutgoingLoading,
+    }),
+  });
 
-  if (isLoading) {
+  if (status === "loading") {
     return (
       <div className="flex justify-center py-12">
         <Loader2 className="size-6 animate-spin text-muted-foreground" />
@@ -36,7 +53,7 @@ export function FriendRequestsList() {
     );
   }
 
-  if (isError) {
+  if (status === "error") {
     return (
       <div className="flex justify-center py-12 text-center text-muted-foreground text-sm">
         We couldn't load your friend requests right now.
@@ -44,10 +61,7 @@ export function FriendRequestsList() {
     );
   }
 
-  const hasIncoming = incomingRequests.length > 0;
-  const hasOutgoing = outgoingRequests.length > 0;
-
-  if (!hasIncoming && !hasOutgoing) {
+  if (status === "empty") {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border border-border border-dashed py-16 text-center">
         <div className="rounded-full bg-muted/50 p-3">
@@ -62,6 +76,45 @@ export function FriendRequestsList() {
   }
 
   return (
+    <PendingFriendRequestsGroups
+      acceptingRequestId={acceptingRequestId}
+      acceptRequest={acceptRequest}
+      declineRequest={declineRequest}
+      decliningRequestId={decliningRequestId}
+      incomingRequests={incomingRequests}
+      isOnline={isOnline}
+      onCancelRequest={removeFriend}
+      outgoingRequests={outgoingRequests}
+      removingFriendId={removingFriendId}
+    />
+  );
+}
+
+function PendingFriendRequestsGroups({
+  acceptingRequestId,
+  acceptRequest,
+  declineRequest,
+  decliningRequestId,
+  incomingRequests,
+  isOnline,
+  onCancelRequest,
+  outgoingRequests,
+  removingFriendId,
+}: {
+  acceptingRequestId: string | null;
+  acceptRequest: (userId: string) => unknown;
+  declineRequest: (userId: string) => unknown;
+  decliningRequestId: string | null;
+  incomingRequests: IncomingFriendRequest[];
+  isOnline: boolean;
+  onCancelRequest: (userId: string) => unknown;
+  outgoingRequests: OutgoingFriendRequest[];
+  removingFriendId: string | null;
+}) {
+  const hasIncoming = incomingRequests.length > 0;
+  const hasOutgoing = outgoingRequests.length > 0;
+
+  return (
     <div className="flex flex-col gap-8">
       {hasIncoming && (
         <section className="flex flex-col gap-3">
@@ -69,63 +122,17 @@ export function FriendRequestsList() {
             Incoming Requests
           </h3>
           <div className="flex flex-col gap-1">
-            {incomingRequests.map((request) => {
-              const user = request.counterpart;
-              const isAccepting = acceptingRequestId === user.id;
-              const isDeclining = decliningRequestId === user.id;
-              const isActionPending = isAccepting || isDeclining;
-
-              return (
-                <FriendCard
-                  key={user.id}
-                  user={{
-                    id: user.id,
-                    name: user.name,
-                    avatar: user.avatar,
-                    personalityType: user.personalityType,
-                    city: user.city,
-                    trustScore: user.trustScore,
-                    onlineStatus: user.onlineStatus,
-                  }}
-                  actions={
-                    <>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        disabled={!isOnline || isActionPending}
-                        onClick={() => declineRequest(user.id)}
-                        aria-label="Decline request"
-                        title="Decline"
-                        className="size-8 text-muted-foreground hover:text-destructive"
-                      >
-                        {isDeclining ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <X className="size-4" />
-                        )}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        disabled={!isOnline || isActionPending}
-                        onClick={() => acceptRequest(user.id)}
-                        aria-label="Accept request"
-                        title="Accept"
-                        className="size-8 text-muted-foreground hover:text-forge-teal"
-                      >
-                        {isAccepting ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <Check className="size-4" />
-                        )}
-                      </Button>
-                    </>
-                  }
-                />
-              );
-            })}
+            {incomingRequests.map((request) => (
+              <IncomingFriendRequestCard
+                key={request.counterpart.id}
+                acceptingRequestId={acceptingRequestId}
+                acceptRequest={acceptRequest}
+                declineRequest={declineRequest}
+                decliningRequestId={decliningRequestId}
+                isOnline={isOnline}
+                request={request}
+              />
+            ))}
           </div>
         </section>
       )}
@@ -136,47 +143,224 @@ export function FriendRequestsList() {
             Outgoing Requests
           </h3>
           <div className="flex flex-col gap-1">
-            {outgoingRequests.map((request) => {
-              const user = request.counterpart;
-              const isRemoving = removingFriendId === user.id;
-
-              return (
-                <FriendCard
-                  key={user.id}
-                  user={{
-                    id: user.id,
-                    name: user.name,
-                    avatar: user.avatar,
-                    personalityType: user.personalityType,
-                    city: user.city,
-                    trustScore: user.trustScore,
-                    onlineStatus: user.onlineStatus,
-                  }}
-                  subtitle="Waiting for response"
-                  actions={
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      disabled={!isOnline || isRemoving}
-                      onClick={() => removeFriend(user.id)}
-                      aria-label="Cancel request"
-                      title="Cancel request"
-                      className="size-8 text-muted-foreground hover:text-destructive"
-                    >
-                      {isRemoving ? (
-                        <Loader2 className="size-4 animate-spin" />
-                      ) : (
-                        <X className="size-4" />
-                      )}
-                    </Button>
-                  }
-                />
-              );
-            })}
+            {outgoingRequests.map((request) => (
+              <OutgoingFriendRequestCard
+                key={request.counterpart.id}
+                isOnline={isOnline}
+                onCancelRequest={onCancelRequest}
+                removingFriendId={removingFriendId}
+                request={request}
+              />
+            ))}
           </div>
         </section>
       )}
     </div>
   );
+}
+
+function IncomingFriendRequestCard({
+  acceptingRequestId,
+  acceptRequest,
+  declineRequest,
+  decliningRequestId,
+  isOnline,
+  request,
+}: {
+  acceptingRequestId: string | null;
+  acceptRequest: (userId: string) => unknown;
+  declineRequest: (userId: string) => unknown;
+  decliningRequestId: string | null;
+  isOnline: boolean;
+  request: IncomingFriendRequest;
+}) {
+  const user = request.counterpart;
+  const actionState = getIncomingRequestActionState({
+    acceptingRequestId,
+    decliningRequestId,
+    userId: user.id,
+  });
+
+  return (
+    <FriendCard
+      user={user}
+      actions={
+        <IncomingRequestActions
+          acceptRequest={acceptRequest}
+          declineRequest={declineRequest}
+          isOnline={isOnline}
+          userId={user.id}
+          {...actionState}
+        />
+      }
+    />
+  );
+}
+
+function IncomingRequestActions({
+  acceptRequest,
+  declineRequest,
+  isAccepting,
+  isActionPending,
+  isDeclining,
+  isOnline,
+  userId,
+}: {
+  acceptRequest: (userId: string) => unknown;
+  declineRequest: (userId: string) => unknown;
+  isAccepting: boolean;
+  isActionPending: boolean;
+  isDeclining: boolean;
+  isOnline: boolean;
+  userId: string;
+}) {
+  return (
+    <>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        disabled={!isOnline || isActionPending}
+        onClick={() => declineRequest(userId)}
+        aria-label="Decline request"
+        title="Decline"
+        className="size-8 text-muted-foreground hover:text-destructive"
+      >
+        {isDeclining ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <X className="size-4" />
+        )}
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        disabled={!isOnline || isActionPending}
+        onClick={() => acceptRequest(userId)}
+        aria-label="Accept request"
+        title="Accept"
+        className="size-8 text-muted-foreground hover:text-forge-teal"
+      >
+        {isAccepting ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <Check className="size-4" />
+        )}
+      </Button>
+    </>
+  );
+}
+
+function OutgoingFriendRequestCard({
+  isOnline,
+  onCancelRequest,
+  removingFriendId,
+  request,
+}: {
+  isOnline: boolean;
+  onCancelRequest: (userId: string) => unknown;
+  removingFriendId: string | null;
+  request: OutgoingFriendRequest;
+}) {
+  const user = request.counterpart;
+  const isRemoving = removingFriendId === user.id;
+
+  return (
+    <FriendCard
+      user={user}
+      subtitle="Waiting for response"
+      actions={
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          disabled={!isOnline || isRemoving}
+          onClick={() => onCancelRequest(user.id)}
+          aria-label="Cancel request"
+          title="Cancel request"
+          className="size-8 text-muted-foreground hover:text-destructive"
+        >
+          {isRemoving ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <X className="size-4" />
+          )}
+        </Button>
+      }
+    />
+  );
+}
+
+function getIncomingRequestActionState({
+  acceptingRequestId,
+  decliningRequestId,
+  userId,
+}: {
+  acceptingRequestId: string | null;
+  decliningRequestId: string | null;
+  userId: string;
+}) {
+  const isAccepting = acceptingRequestId === userId;
+  const isDeclining = decliningRequestId === userId;
+
+  return {
+    isAccepting,
+    isDeclining,
+    isActionPending: isAccepting || isDeclining,
+  };
+}
+
+function getFriendRequestsStatus({
+  hasPendingRequests,
+  isError,
+  isLoading,
+}: {
+  hasPendingRequests: boolean;
+  isError: boolean;
+  isLoading: boolean;
+}): FriendRequestsStatus {
+  if (isLoading) {
+    return "loading";
+  }
+
+  if (isError) {
+    return "error";
+  }
+
+  if (!hasPendingRequests) {
+    return "empty";
+  }
+
+  return "ready";
+}
+
+function hasFriendRequestsLoading({
+  isIncomingLoading,
+  isOutgoingLoading,
+}: {
+  isIncomingLoading: boolean;
+  isOutgoingLoading: boolean;
+}) {
+  return isIncomingLoading || isOutgoingLoading;
+}
+
+function hasFriendRequestsError({
+  isIncomingError,
+  isOutgoingError,
+}: {
+  isIncomingError: boolean;
+  isOutgoingError: boolean;
+}) {
+  return isIncomingError || isOutgoingError;
+}
+
+function hasPendingFriendRequests({
+  incomingCount,
+  outgoingCount,
+}: {
+  incomingCount: number;
+  outgoingCount: number;
+}) {
+  return incomingCount > 0 || outgoingCount > 0;
 }

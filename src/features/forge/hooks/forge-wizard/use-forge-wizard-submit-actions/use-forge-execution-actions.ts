@@ -51,6 +51,25 @@ interface UseForgeExecutionActionsOptions
   markSearchKept: (activityId: string) => void;
 }
 
+type ForgeExecutionValidation = ReturnType<typeof getForgeExecutionValidation>;
+type ForgeExecutionResult = Parameters<typeof applyForgeExecutionResult>[0];
+type ForgeMutationName = ReturnType<typeof getForgeMutationName>;
+
+interface ForgeExecutionErrorContext
+  extends Pick<
+    UseForgeExecutionActionsOptions,
+    "dispatch" | "state" | "syncStep" | "syncTargets"
+  > {
+  mutationName: ForgeMutationName;
+}
+
+interface ForgeAnimationExecutionContext
+  extends ForgeExecutionErrorContext,
+    Pick<UseForgeExecutionActionsOptions, "markSearchKept"> {
+  mode: ForgeExecutionMode;
+  validation: ForgeExecutionValidation | null;
+}
+
 const FORGE_PLAN_VALIDATION_TOAST_TITLE = "Finish the plan first";
 
 function getZodIssueMessage(error: ZodError) {
@@ -79,89 +98,27 @@ export function useForgeExecutionActions({
       }
 
       const mutationName = getForgeMutationName(mode);
-      const canReusePendingActivity =
-        mode === "AUTO" && Boolean(state.activityId);
-      const validation = canReusePendingActivity
-        ? null
-        : getForgeExecutionValidation(state);
+      const validation = getForgeExecutionValidationForMode(mode, state);
 
       if (validation && !validation.canSubmit) {
-        const message =
-          validation.message ??
-          "Finish the plan details before forming the group.";
-
-        showAppErrorToast(new Error(message), {
-          fallbackMessage: message,
-          id: "forge-plan-validation",
-          title: FORGE_PLAN_VALIDATION_TOAST_TITLE,
+        handleForgePlanValidationBlock(validation, {
+          dispatch,
+          syncStep,
         });
-        dispatch({
-          type: "set-step",
-          step: 3,
-          navDirection: "back",
-        });
-        syncStep(3, { history: "push" });
         return;
       }
 
       runForgeAnimation(async () => {
-        const successStep = mode === "MANUAL" ? 6 : 5;
-        const result = await executeForgeCommand(
-          mode,
-          state,
-          validation?.input ?? null,
-        ).catch((error) => {
-          if (error instanceof MissingForgeInterestSignalsError) {
-            showAppErrorToast(error, {
-              fallbackMessage:
-                "Add at least one interest first. It gives TeamForge enough signal to form a group.",
-              id: "forge-missing-interest-signals",
-              title: "Interests needed",
-            });
-            return null;
-          }
-
-          if (error instanceof ZodError) {
-            const message = getZodIssueMessage(error);
-
-            showAppErrorToast(error, {
-              fallbackMessage: message,
-              id: "forge-plan-validation",
-              title: FORGE_PLAN_VALIDATION_TOAST_TITLE,
-            });
-            dispatch({
-              type: "set-step",
-              step: 3,
-              navDirection: "back",
-            });
-            syncStep(3, { history: "push" });
-            return null;
-          }
-
-          applyForgeExecutionFailure(error, state, {
-            dispatch,
-            mutationName,
-            syncStep,
-            syncTargets,
-          });
-          return null;
-        });
-
-        if (!result) {
-          return;
-        }
-
-        applyForgeExecutionResult(result, {
+        await runForgeExecution({
           dispatch,
+          markSearchKept,
+          mode,
           mutationName,
-          successStep,
+          state,
           syncStep,
           syncTargets,
+          validation,
         });
-
-        if (result.activityId && result.searchKept) {
-          markSearchKept(result.activityId);
-        }
       });
     },
     [
@@ -193,4 +150,130 @@ function getForgeMutationName(mode: ForgeExecutionMode) {
   return mode === "AUTO"
     ? trackedMutationNames.forgeAuto
     : trackedMutationNames.forgeManual;
+}
+
+function getForgeExecutionValidationForMode(
+  mode: ForgeExecutionMode,
+  state: UseForgeWizardSubmitActionsOptions["state"],
+) {
+  return canReusePendingAutoForge(mode, state)
+    ? null
+    : getForgeExecutionValidation(state);
+}
+
+function canReusePendingAutoForge(
+  mode: ForgeExecutionMode,
+  state: UseForgeWizardSubmitActionsOptions["state"],
+) {
+  return mode === "AUTO" && Boolean(state.activityId);
+}
+
+function handleForgePlanValidationBlock(
+  validation: ForgeExecutionValidation,
+  {
+    dispatch,
+    syncStep,
+  }: Pick<UseForgeExecutionActionsOptions, "dispatch" | "syncStep">,
+) {
+  const message =
+    validation.message ?? "Finish the plan details before forming the group.";
+
+  showForgePlanValidationToast(new Error(message), message);
+  returnToForgePlanStep({ dispatch, syncStep });
+}
+
+function handleForgeExecutionError(
+  error: unknown,
+  context: ForgeExecutionErrorContext,
+) {
+  if (error instanceof MissingForgeInterestSignalsError) {
+    showAppErrorToast(error, {
+      fallbackMessage:
+        "Add at least one interest first. It gives TeamForge enough signal to form a group.",
+      id: "forge-missing-interest-signals",
+      title: "Interests needed",
+    });
+    return null;
+  }
+
+  if (error instanceof ZodError) {
+    handleForgeZodExecutionError(error, context);
+    return null;
+  }
+
+  applyForgeExecutionFailure(error, context.state, {
+    dispatch: context.dispatch,
+    mutationName: context.mutationName,
+    syncStep: context.syncStep,
+    syncTargets: context.syncTargets,
+  });
+  return null;
+}
+
+async function runForgeExecution(context: ForgeAnimationExecutionContext) {
+  const result = await executeForgeCommand(
+    context.mode,
+    context.state,
+    context.validation?.input ?? null,
+  ).catch((error) => handleForgeExecutionError(error, context));
+
+  if (!result) {
+    return;
+  }
+
+  handleForgeExecutionSuccess(result, context);
+}
+
+function handleForgeExecutionSuccess(
+  result: ForgeExecutionResult,
+  context: ForgeAnimationExecutionContext,
+) {
+  applyForgeExecutionResult(result, {
+    dispatch: context.dispatch,
+    mutationName: context.mutationName,
+    successStep: getForgeSuccessStep(context.mode),
+    syncStep: context.syncStep,
+    syncTargets: context.syncTargets,
+  });
+
+  if (result.activityId && result.searchKept) {
+    context.markSearchKept(result.activityId);
+  }
+}
+
+function handleForgeZodExecutionError(
+  error: ZodError,
+  {
+    dispatch,
+    syncStep,
+  }: Pick<ForgeExecutionErrorContext, "dispatch" | "syncStep">,
+) {
+  const message = getZodIssueMessage(error);
+
+  showForgePlanValidationToast(error, message);
+  returnToForgePlanStep({ dispatch, syncStep });
+}
+
+function showForgePlanValidationToast(error: Error, message: string) {
+  showAppErrorToast(error, {
+    fallbackMessage: message,
+    id: "forge-plan-validation",
+    title: FORGE_PLAN_VALIDATION_TOAST_TITLE,
+  });
+}
+
+function returnToForgePlanStep({
+  dispatch,
+  syncStep,
+}: Pick<UseForgeExecutionActionsOptions, "dispatch" | "syncStep">) {
+  dispatch({
+    type: "set-step",
+    step: 3,
+    navDirection: "back",
+  });
+  syncStep(3, { history: "push" });
+}
+
+function getForgeSuccessStep(mode: ForgeExecutionMode) {
+  return mode === "MANUAL" ? 6 : 5;
 }

@@ -18,11 +18,11 @@ export interface WebPushSubscriptionPayload {
   };
 }
 
-export const WEB_PUSH_PUBLIC_KEY_QUERY_KEY = APP_QUERY_KEYS.webPush.publicKey;
+const WEB_PUSH_PUBLIC_KEY_QUERY_KEY = APP_QUERY_KEYS.webPush.publicKey;
 export const WEB_PUSH_SUBSCRIPTIONS_QUERY_KEY =
   APP_QUERY_KEYS.webPush.subscriptions;
 
-export class WebPushApi {
+class WebPushApi {
   static async getPublicKeyState() {
     const response = await apiClient
       .get("notifications/web-push/public-key", {

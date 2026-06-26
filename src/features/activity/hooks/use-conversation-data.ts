@@ -28,45 +28,80 @@ export type UseConversationDataProps =
   | (BaseProps & { kind: "dm"; data: DirectChat })
   | (BaseProps & { kind: "group"; data: Group });
 
+type ConversationParticipant = ReturnType<typeof getOtherChatParticipant>;
+type DirectConversationParticipant = NonNullable<ConversationParticipant>;
+
+interface ConversationHeaderProps {
+  avatarUrl: string | null;
+  detailsNavigation?: ConversationDetailsNavigation;
+  onlineStatus?: DirectConversationParticipant["onlineStatus"];
+  subtitle?: string;
+  title: string;
+}
+
+interface ConversationViewState {
+  chat: DirectChat | null;
+  group: Group | null;
+  isGroup: boolean;
+  kind: UseConversationDataProps["kind"];
+  participant: ConversationParticipant | null;
+}
+
 /**
  * useConversationData - Derives header props and active typing state based on conversation type.
  */
-export function useConversationData({
-  kind,
-  data,
-  isTyping,
-  typingUsers = [],
-}: UseConversationDataProps) {
-  const isGroup = kind === "group";
-  const group = isGroup ? data : null;
-  const chat = !isGroup ? data : null;
-
-  const participant = isGroup || !chat ? null : getOtherChatParticipant(chat);
-
+export function useConversationData(props: UseConversationDataProps) {
+  const { isTyping, typingUsers = [] } = props;
+  const conversation = getConversationViewState(props);
   const headerProps = getConversationHeaderProps({
-    chat,
-    group,
-    isGroup,
-    participant,
+    chat: conversation.chat,
+    group: conversation.group,
+    isGroup: conversation.isGroup,
+    participant: conversation.participant,
   });
-
   const activeTypingUsers = getActiveTypingUsers({
-    isGroup,
+    kind: conversation.kind,
     isTyping,
-    participant,
+    participant: conversation.participant,
     typingUsers,
   });
-  const typingText = formatTypingText(activeTypingUsers, isGroup);
+  const typingText = formatTypingText(activeTypingUsers, conversation.isGroup);
 
   return {
-    isGroup,
-    group,
-    chat,
+    isGroup: conversation.isGroup,
+    group: conversation.group,
+    chat: conversation.chat,
     headerProps,
     activeTypingUsers,
     typingText,
-    isCompleted: isGroup && group?.plan?.status === "COMPLETED",
+    isCompleted: isCompletedGroup(conversation.group),
   };
+}
+
+function getConversationViewState(
+  props: UseConversationDataProps,
+): ConversationViewState {
+  if (props.kind === "group") {
+    return {
+      chat: null,
+      group: props.data,
+      isGroup: true,
+      kind: props.kind,
+      participant: null,
+    };
+  }
+
+  return {
+    chat: props.data,
+    group: null,
+    isGroup: false,
+    kind: props.kind,
+    participant: getOtherChatParticipant(props.data),
+  };
+}
+
+function isCompletedGroup(group: Group | null) {
+  return group?.plan?.status === "COMPLETED";
 }
 
 interface ConversationHeaderPropsInput {
@@ -81,37 +116,73 @@ function getConversationHeaderProps({
   group,
   isGroup,
   participant,
-}: ConversationHeaderPropsInput) {
-  if (isGroup && group) {
-    return {
-      title: group.name,
-      subtitle: getGroupPresenceText(group),
-      avatarUrl: getGroupAvatarUrl(group),
-    };
+}: ConversationHeaderPropsInput): ConversationHeaderProps {
+  if (isGroupConversationHeader(isGroup, group)) {
+    return getGroupHeaderProps(group);
   }
 
-  if (chat?.type === "NOTES") {
-    return {
-      title: MY_NOTES_TITLE,
-      subtitle: MY_NOTES_SUBTITLE,
-      avatarUrl: MY_NOTES_AVATAR_URL,
-    };
+  if (isNotesHeader(chat)) {
+    return getNotesHeaderProps();
   }
 
-  if (chat && participant) {
-    return {
-      title: participant.name,
-      subtitle: getStatusText(
-        participant.onlineStatus || "OFFLINE",
-        undefined, // lastSeen not in schema yet
-      ),
-      avatarUrl: participant.avatar,
-      onlineStatus: participant.onlineStatus,
-      detailsNavigation: buildProfileNavigation(participant.id),
-    };
+  if (isDirectHeader(chat, participant)) {
+    return getDirectHeaderProps(participant);
   }
 
   return { title: "", avatarUrl: "" };
+}
+
+function isGroupConversationHeader(
+  isGroup: boolean,
+  group: Group | null,
+): group is Group {
+  return isGroup && group !== null;
+}
+
+function isNotesHeader(chat: DirectChat | null) {
+  return chat?.type === "NOTES";
+}
+
+function isDirectHeader(
+  chat: DirectChat | null,
+  participant: ReturnType<typeof getOtherChatParticipant> | null,
+): participant is NonNullable<ReturnType<typeof getOtherChatParticipant>> {
+  return chat !== null && participant !== null;
+}
+
+function getGroupHeaderProps(group: Group) {
+  return {
+    title: group.name,
+    subtitle: getGroupPresenceText(group),
+    avatarUrl: getGroupAvatarUrl(group),
+  };
+}
+
+function getNotesHeaderProps() {
+  return {
+    title: MY_NOTES_TITLE,
+    subtitle: MY_NOTES_SUBTITLE,
+    avatarUrl: MY_NOTES_AVATAR_URL,
+  };
+}
+
+function getDirectHeaderProps(
+  participant: DirectConversationParticipant,
+): ConversationHeaderProps {
+  return {
+    title: participant.name,
+    subtitle: getDirectPresenceText(participant),
+    avatarUrl: participant.avatar,
+    onlineStatus: participant.onlineStatus,
+    detailsNavigation: buildProfileNavigation(participant.id),
+  };
+}
+
+function getDirectPresenceText(participant: DirectConversationParticipant) {
+  return getStatusText(
+    participant.onlineStatus || "OFFLINE",
+    undefined, // lastSeen not in schema yet
+  );
 }
 
 function getGroupPresenceText(group: Group) {
@@ -130,21 +201,30 @@ function getGroupPresenceText(group: Group) {
 }
 
 interface ActiveTypingUsersInput {
-  isGroup: boolean;
   isTyping?: boolean;
-  participant: ReturnType<typeof getOtherChatParticipant> | null;
+  kind: UseConversationDataProps["kind"];
+  participant: ConversationParticipant | null;
   typingUsers: { name: string; avatar: string | null }[];
 }
 
 function getActiveTypingUsers({
-  isGroup,
   isTyping,
+  kind,
   participant,
   typingUsers,
 }: ActiveTypingUsersInput) {
-  if (isGroup) return typingUsers;
+  if (kind === "group") return typingUsers;
+
+  return getDirectActiveTypingUsers(isTyping, participant);
+}
+
+function getDirectActiveTypingUsers(
+  isTyping: boolean | undefined,
+  participant: ConversationParticipant | null,
+) {
   if (isTyping && participant) {
     return [{ name: participant.name, avatar: participant.avatar ?? null }];
   }
+
   return [];
 }

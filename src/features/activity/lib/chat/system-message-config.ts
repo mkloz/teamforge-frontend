@@ -1,5 +1,5 @@
-export type SystemMessageTone = "error" | "info" | "success" | "warning";
-export type SystemMessageKind =
+type SystemMessageTone = "error" | "info" | "success" | "warning";
+type SystemMessageKind =
   | "cancelled"
   | "confirmed"
   | "declined"
@@ -10,6 +10,11 @@ export type SystemMessageKind =
   | "rescheduled"
   | "time"
   | "default";
+
+interface SystemMessageConfig {
+  kind: SystemMessageKind;
+  tone: SystemMessageTone;
+}
 
 const ERROR_TERMS = [
   "cancelled",
@@ -42,62 +47,110 @@ const SUCCESS_TERMS = [
 ] as const;
 
 const USER_EVENT_TERMS = ["added", "invited"] as const;
+const DECLINED_ERROR_TERMS = ["declined", "rejected", "failed"] as const;
+const MEMBER_SUCCESS_TERMS = ["joined", "formed"] as const;
+
+const PLAN_KIND_RULES = [
+  {
+    kind: "rescheduled",
+    terms: ["rescheduled"],
+  },
+  {
+    kind: "location",
+    terms: ["location", "place", "venue", "where"],
+  },
+  {
+    kind: "time",
+    terms: ["date", "time", "when"],
+  },
+  {
+    kind: "details",
+    terms: ["detail", "proposal"],
+  },
+] satisfies readonly {
+  kind: SystemMessageKind;
+  terms: readonly string[];
+}[];
+
+const SYSTEM_MESSAGE_CONFIG_RULES = [
+  {
+    getConfig: getErrorSystemMessageConfig,
+    terms: ERROR_TERMS,
+  },
+  {
+    getConfig: (
+      _normalizedContent: string,
+      planKind: SystemMessageKind | null,
+    ) => getWarningSystemMessageConfig(planKind),
+    terms: WARNING_TERMS,
+  },
+  {
+    getConfig: getSuccessSystemMessageConfig,
+    terms: SUCCESS_TERMS,
+  },
+  {
+    getConfig: () => ({ tone: "info" as const, kind: "invite" as const }),
+    terms: USER_EVENT_TERMS,
+  },
+] satisfies readonly {
+  getConfig: (
+    normalizedContent: string,
+    planKind: SystemMessageKind | null,
+  ) => SystemMessageConfig;
+  terms: readonly string[];
+}[];
 
 export function getSystemMessageConfig(content: string) {
   const normalized = content.toLowerCase();
   const planKind = getPlanSystemKind(normalized);
+  const configRule = SYSTEM_MESSAGE_CONFIG_RULES.find(({ terms }) =>
+    matchesAnyTerm(normalized, terms),
+  );
 
-  if (matchesAnyTerm(normalized, ERROR_TERMS)) {
-    return {
-      tone: "error" as const,
-      kind: matchesAnyTerm(normalized, ["declined", "rejected", "failed"])
-        ? ("declined" as const)
-        : ("cancelled" as const),
-    };
-  }
-
-  if (matchesAnyTerm(normalized, WARNING_TERMS)) {
-    return { tone: "warning" as const, kind: planKind ?? "details" };
-  }
-
-  if (matchesAnyTerm(normalized, SUCCESS_TERMS)) {
-    return {
-      tone: "success" as const,
-      kind: matchesAnyTerm(normalized, ["joined", "formed"])
-        ? ("member" as const)
-        : (planKind ?? "confirmed"),
-    };
-  }
-
-  if (matchesAnyTerm(normalized, USER_EVENT_TERMS)) {
-    return { tone: "info" as const, kind: "invite" as const };
+  if (configRule) {
+    return configRule.getConfig(normalized, planKind);
   }
 
   return { tone: "info" as const, kind: planKind ?? "default" };
 }
 
+function getErrorSystemMessageConfig(
+  normalizedContent: string,
+): SystemMessageConfig {
+  return {
+    tone: "error",
+    kind: matchesAnyTerm(normalizedContent, DECLINED_ERROR_TERMS)
+      ? "declined"
+      : "cancelled",
+  };
+}
+
+function getWarningSystemMessageConfig(
+  planKind: SystemMessageKind | null,
+): SystemMessageConfig {
+  return { tone: "warning", kind: planKind ?? "details" };
+}
+
+function getSuccessSystemMessageConfig(
+  normalizedContent: string,
+  planKind: SystemMessageKind | null,
+): SystemMessageConfig {
+  return {
+    tone: "success",
+    kind: matchesAnyTerm(normalizedContent, MEMBER_SUCCESS_TERMS)
+      ? "member"
+      : (planKind ?? "confirmed"),
+  };
+}
+
 function getPlanSystemKind(
   normalizedContent: string,
 ): SystemMessageKind | null {
-  if (matchesAnyTerm(normalizedContent, ["rescheduled"])) {
-    return "rescheduled";
-  }
-
-  if (
-    matchesAnyTerm(normalizedContent, ["location", "place", "venue", "where"])
-  ) {
-    return "location";
-  }
-
-  if (matchesAnyTerm(normalizedContent, ["date", "time", "when"])) {
-    return "time";
-  }
-
-  if (matchesAnyTerm(normalizedContent, ["detail", "proposal"])) {
-    return "details";
-  }
-
-  return null;
+  return (
+    PLAN_KIND_RULES.find(({ terms }) =>
+      matchesAnyTerm(normalizedContent, terms),
+    )?.kind ?? null
+  );
 }
 
 function matchesAnyTerm(

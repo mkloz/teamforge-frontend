@@ -65,76 +65,21 @@ function ConnectMemberAction({ member }: { member: GroupPlanDetailMember }) {
   } = usePublicProfileActions({ id: member.userId });
   const canConnect = !connectDisabled && !connectLoading;
   const connectTooltip = getConnectTooltip(connectLabel, member.name);
+  const managedAction = getManagedConnectionAction({
+    connectLabel,
+    onUnfriend,
+    onWithdraw,
+    unfriendLoading,
+    withdrawLoading,
+  });
 
-  if (connectLabel === "Connected") {
+  if (managedAction) {
     return (
-      <DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-xs"
-                loading={unfriendLoading}
-                className={memberActionClassName}
-                aria-label="Manage connection"
-              >
-                <ConnectIcon label={connectLabel} />
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent side="top">{connectTooltip}</TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem
-            className="text-destructive focus:bg-destructive/10"
-            onClick={(e) => {
-              e.stopPropagation();
-              onUnfriend();
-            }}
-          >
-            <UserMinus className="mr-2 size-4" />
-            <span>Remove Connection</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
-
-  if (connectLabel === "Requested") {
-    return (
-      <DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-xs"
-                loading={withdrawLoading}
-                className={memberActionClassName}
-                aria-label="Manage connection request"
-              >
-                <ConnectIcon label={connectLabel} />
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent side="top">{connectTooltip}</TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem
-            className="text-destructive focus:bg-destructive/10"
-            onClick={(e) => {
-              e.stopPropagation();
-              onWithdraw();
-            }}
-          >
-            <UserMinus className="mr-2 size-4" />
-            <span>Cancel Request</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ManagedConnectionAction
+        {...managedAction}
+        connectLabel={connectLabel}
+        connectTooltip={connectTooltip}
+      />
     );
   }
 
@@ -166,6 +111,90 @@ function ConnectMemberAction({ member }: { member: GroupPlanDetailMember }) {
       </TooltipTrigger>
       <TooltipContent side="top">{connectTooltip}</TooltipContent>
     </Tooltip>
+  );
+}
+
+function getManagedConnectionAction({
+  connectLabel,
+  onUnfriend,
+  onWithdraw,
+  unfriendLoading,
+  withdrawLoading,
+}: {
+  connectLabel: string;
+  onUnfriend: () => void;
+  onWithdraw: () => void;
+  unfriendLoading: boolean;
+  withdrawLoading: boolean;
+}) {
+  if (connectLabel === "Connected") {
+    return {
+      buttonAriaLabel: "Manage connection",
+      itemLabel: "Remove Connection",
+      loading: unfriendLoading,
+      onSelect: onUnfriend,
+    };
+  }
+
+  if (connectLabel === "Requested") {
+    return {
+      buttonAriaLabel: "Manage connection request",
+      itemLabel: "Cancel Request",
+      loading: withdrawLoading,
+      onSelect: onWithdraw,
+    };
+  }
+
+  return null;
+}
+
+function ManagedConnectionAction({
+  buttonAriaLabel,
+  connectLabel,
+  connectTooltip,
+  itemLabel,
+  loading,
+  onSelect,
+}: {
+  buttonAriaLabel: string;
+  connectLabel: string;
+  connectTooltip: string;
+  itemLabel: string;
+  loading: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <DropdownMenu>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              loading={loading}
+              className={memberActionClassName}
+              aria-label={buttonAriaLabel}
+            >
+              <ConnectIcon label={connectLabel} />
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="top">{connectTooltip}</TooltipContent>
+      </Tooltip>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem
+          className="text-destructive focus:bg-destructive/10"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect();
+          }}
+        >
+          <UserMinus className="mr-2 size-4" />
+          <span>{itemLabel}</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

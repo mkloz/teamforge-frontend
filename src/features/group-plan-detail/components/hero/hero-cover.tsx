@@ -7,6 +7,7 @@ import {
 } from "@/shared/lib/image-media";
 import { getPlanCoverPreset } from "@/shared/lib/plan-cover";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
+import type { ImageMedia } from "@/shared/schemas/media";
 
 interface HeroCoverProps {
   detail: GroupPlanDetail;
@@ -14,11 +15,18 @@ interface HeroCoverProps {
   children: ReactNode;
 }
 
+type HeroCoverImageSource =
+  | { kind: "plan"; media: ImageMedia | null | undefined; src: string }
+  | { kind: "group"; media: ImageMedia | null | undefined; src: string }
+  | { kind: "member"; src: string }
+  | { kind: "none"; src: null };
+
 export function HeroCover({ detail, alt, children }: HeroCoverProps) {
   const category = getCategoryCover(detail.plan?.category);
   const CategoryIcon = category.icon;
-  const imageSrc = getHeroCoverImage(detail);
-  const imageSrcSet = getHeroCoverImageSrcSet(detail, imageSrc);
+  const imageSource = getHeroCoverImageSource(detail);
+  const imageSrc = imageSource.src;
+  const imageSrcSet = getHeroCoverImageSrcSet(imageSource);
 
   return (
     <div className="relative overflow-hidden rounded-t-3xl bg-canvas">
@@ -57,55 +65,81 @@ export function HeroCover({ detail, alt, children }: HeroCoverProps) {
 }
 
 export function getHeroCoverImage(detail: GroupPlanDetail) {
+  return getHeroCoverImageSource(detail).src;
+}
+
+function getHeroCoverImageSource(
+  detail: GroupPlanDetail,
+): HeroCoverImageSource {
+  const planSrc = getPlanHeroCoverImage(detail);
+
+  if (planSrc) {
+    return {
+      kind: "plan",
+      media: detail.plan?.coverImageMedia,
+      src: planSrc,
+    };
+  }
+
+  const groupSrc = getGroupHeroCoverImage(detail);
+
+  if (groupSrc) {
+    return {
+      kind: "group",
+      media: detail.group.avatarMedia,
+      src: groupSrc,
+    };
+  }
+
+  const memberSrc = getMemberHeroImage(detail);
+
+  return memberSrc
+    ? { kind: "member", src: memberSrc }
+    : { kind: "none", src: null };
+}
+
+function getHeroCoverImageSrcSet(source: HeroCoverImageSource) {
+  if (source.kind === "none") {
+    return undefined;
+  }
+
+  if (source.kind === "plan" || source.kind === "group") {
+    return getImageMediaSrcSet(source.media) ?? getSizedSrcSet(source.src);
+  }
+
+  return getSizedSrcSet(source.src);
+}
+
+function getPlanHeroCoverImage(detail: GroupPlanDetail) {
+  const coverImage = detail.plan?.coverImage;
+
   return (
-    getPlanHeroCoverImage(detail) ??
-    getImageMediaVariant(
-      detail.group.avatarMedia,
-      "cover800",
-      detail.group.avatar,
-    ) ??
-    getMemberHeroImage(detail) ??
-    null
+    getPlanCoverImageMediaSrc(detail) ??
+    getPlanCoverPresetImage(coverImage) ??
+    getPlanCoverDirectImage(coverImage)
   );
 }
 
-function getHeroCoverImageSrcSet(detail: GroupPlanDetail, src: string | null) {
-  const planSrc = getPlanHeroCoverImage(detail);
+function getPlanCoverImageMediaSrc(detail: GroupPlanDetail) {
+  return detail.plan?.coverImageMedia?.variants.cover800 ?? null;
+}
 
-  if (src && src === planSrc) {
-    return (
-      getImageMediaSrcSet(detail.plan?.coverImageMedia) ?? getSizedSrcSet(src)
-    );
-  }
+function getPlanCoverPresetImage(coverImage?: string | null) {
+  const preset = getPlanCoverPreset(coverImage);
 
-  const groupSrc = getImageMediaVariant(
+  return preset?.kind === "image" ? preset.src : null;
+}
+
+function getPlanCoverDirectImage(coverImage?: string | null) {
+  return isImageSource(coverImage) ? coverImage : null;
+}
+
+function getGroupHeroCoverImage(detail: GroupPlanDetail) {
+  return getImageMediaVariant(
     detail.group.avatarMedia,
     "cover800",
     detail.group.avatar,
   );
-
-  if (src && src === groupSrc) {
-    return getImageMediaSrcSet(detail.group.avatarMedia) ?? getSizedSrcSet(src);
-  }
-
-  return src ? getSizedSrcSet(src) : undefined;
-}
-
-function getPlanHeroCoverImage(detail: GroupPlanDetail) {
-  const variantUrl = detail.plan?.coverImageMedia?.variants.cover800;
-
-  if (variantUrl) {
-    return variantUrl;
-  }
-
-  const coverImage = detail.plan?.coverImage;
-  const preset = getPlanCoverPreset(coverImage);
-
-  if (preset?.kind === "image") {
-    return preset.src;
-  }
-
-  return isImageSource(coverImage) ? coverImage : null;
 }
 
 function isImageSource(value?: string | null) {

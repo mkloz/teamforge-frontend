@@ -2,8 +2,19 @@ import type { SendActivityMessageInput } from "@/features/activity/api/activity-
 import { inferOutgoingAttachmentType } from "@/features/activity/api/outgoing-message/outgoing-attachment-types";
 import type {
   ActivityParticipant,
+  UnifiedAttachment,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+
+type OptimisticAttachment = UnifiedAttachment;
+
+const OPTIMISTIC_MESSAGE_TYPE_BY_ATTACHMENT = {
+  AUDIO: "VOICE",
+  FILE: "FILE",
+  GIF: "IMAGE",
+  IMAGE: "IMAGE",
+  VIDEO: "IMAGE",
+} satisfies Record<UnifiedAttachment["type"], UnifiedMessage["type"]>;
 
 function buildOptimisticAttachments(
   attachments: SendActivityMessageInput["attachments"],
@@ -49,6 +60,18 @@ function buildOptimisticAttachments(
   ];
 }
 
+function buildOptimisticMessageType(
+  attachments: OptimisticAttachment[],
+): UnifiedMessage["type"] {
+  const firstAttachmentType = attachments[0]?.type;
+
+  if (!firstAttachmentType) {
+    return "TEXT";
+  }
+
+  return OPTIMISTIC_MESSAGE_TYPE_BY_ATTACHMENT[firstAttachmentType];
+}
+
 export function buildOptimisticMessage(
   currentUser: ActivityParticipant,
   chatId: string,
@@ -62,18 +85,7 @@ export function buildOptimisticMessage(
 
   return {
     id: `temp-message:${chatId}:${Date.now()}`,
-    type:
-      optimisticAttachments[0]?.type === "IMAGE"
-        ? "IMAGE"
-        : optimisticAttachments[0]?.type === "VIDEO"
-          ? "IMAGE"
-          : optimisticAttachments[0]?.type === "GIF"
-            ? "IMAGE"
-            : optimisticAttachments[0]?.type === "AUDIO"
-              ? "VOICE"
-              : optimisticAttachments.length > 0
-                ? "FILE"
-                : "TEXT",
+    type: buildOptimisticMessageType(optimisticAttachments),
     content: input.content,
     status: "SENDING",
     isEdited: false,

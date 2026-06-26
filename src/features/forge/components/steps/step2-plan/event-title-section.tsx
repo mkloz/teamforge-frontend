@@ -22,28 +22,14 @@ export function EventTitleSection({
   onPlanNameChange,
   planName,
 }: EventTitleSectionProps) {
-  const nameStatus =
-    planName.length > 0
-      ? isNameValid
-        ? "Looks good"
-        : `${charCount}/3 min`
-      : null;
+  const nameStatus = getPlanNameStatus({ charCount, isNameValid, planName });
 
   return (
     <SectionCard accent={isNameValid}>
       <SectionHeader
         title="Plan name"
         aside={
-          nameStatus ? (
-            <span
-              className={cn(
-                "text-micro text-muted-foreground/50",
-                isNameValid && "text-forge-teal",
-              )}
-            >
-              {nameStatus}
-            </span>
-          ) : null
+          <PlanNameStatusAside isNameValid={isNameValid} status={nameStatus} />
         }
       />
 
@@ -62,23 +48,64 @@ export function EventTitleSection({
           aria-required="true"
         />
 
-        {isNameError && (
-          <Notice
-            id="name-error"
-            role="alert"
-            tone="danger"
-            size="xs"
-            icon={
-              <AlertCircle size={13} className="shrink-0 text-destructive/60" />
-            }
-            iconClassName="mt-0"
-            className="fade-in slide-in-from-top-1 animate-in items-center rounded-lg border-destructive/15 duration-150"
-            contentClassName="font-medium text-destructive/70"
-          >
-            Use at least 3 characters for the plan name.
-          </Notice>
-        )}
+        <PlanNameErrorNotice isNameError={isNameError} />
       </div>
     </SectionCard>
+  );
+}
+
+function getPlanNameStatus({
+  charCount,
+  isNameValid,
+  planName,
+}: Pick<EventTitleSectionProps, "charCount" | "isNameValid" | "planName">) {
+  if (planName.length === 0) {
+    return null;
+  }
+
+  return isNameValid ? "Looks good" : `${charCount}/3 min`;
+}
+
+function PlanNameStatusAside({
+  isNameValid,
+  status,
+}: {
+  isNameValid: boolean;
+  status: string | null;
+}) {
+  if (!status) {
+    return null;
+  }
+
+  return (
+    <span
+      className={cn(
+        "text-micro text-muted-foreground/50",
+        isNameValid && "text-forge-teal",
+      )}
+    >
+      {status}
+    </span>
+  );
+}
+
+function PlanNameErrorNotice({ isNameError }: { isNameError: boolean }) {
+  if (!isNameError) {
+    return null;
+  }
+
+  return (
+    <Notice
+      id="name-error"
+      role="alert"
+      tone="danger"
+      size="xs"
+      icon={<AlertCircle size={13} className="shrink-0 text-destructive/60" />}
+      iconClassName="mt-0"
+      className="fade-in slide-in-from-top-1 animate-in items-center rounded-lg border-destructive/15 duration-150"
+      contentClassName="font-medium text-destructive/70"
+    >
+      Use at least 3 characters for the plan name.
+    </Notice>
   );
 }

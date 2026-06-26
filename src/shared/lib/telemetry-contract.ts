@@ -80,9 +80,5 @@ export const routeErrorScopes = {
 
 export type TrackedMutationName =
   (typeof trackedMutationNames)[keyof typeof trackedMutationNames];
-export type TrackedEventName =
-  (typeof trackedEventNames)[keyof typeof trackedEventNames];
-export type TelemetryErrorScope =
-  (typeof telemetryErrorScopes)[keyof typeof telemetryErrorScopes];
 export type RouteErrorScope =
   (typeof routeErrorScopes)[keyof typeof routeErrorScopes];

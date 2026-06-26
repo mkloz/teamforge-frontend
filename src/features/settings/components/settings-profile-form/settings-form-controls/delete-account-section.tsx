@@ -13,6 +13,75 @@ interface DeleteAccountSectionProps {
   onDelete: () => Promise<void>;
 }
 
+const DELETE_ACCOUNT_CONFIRMATION = "DELETE";
+const DELETE_ACCOUNT_DETAILS = [
+  "Your active sessions will be removed.",
+  "Automatic group forming will stop for this account.",
+  "Existing group history may remain where other members need context.",
+];
+
+function getDeleteAccountDescription(email?: string) {
+  return `This cannot be undone from the app. Type DELETE to confirm deletion for ${
+    email ?? "this account"
+  }.`;
+}
+
+function getDeleteAccountConfirmLabel(isDeleting: boolean) {
+  return isDeleting ? "Deleting..." : "Delete account";
+}
+
+function getCanDelete(isOnline: boolean, confirmation: string) {
+  return isOnline && confirmation === DELETE_ACCOUNT_CONFIRMATION;
+}
+
+function DeleteAccountError({ error }: { error: string | null }) {
+  return error ? (
+    <p className="mt-3 font-medium text-destructive text-sm">{error}</p>
+  ) : null;
+}
+
+function DeleteAccountTrigger({
+  isDeleting,
+  isOnline,
+}: {
+  isDeleting: boolean;
+  isOnline: boolean;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="destructive"
+      className="shrink-0"
+      disabled={!isOnline || isDeleting}
+    >
+      <Trash2 size={14} />
+      Delete account
+    </Button>
+  );
+}
+
+function DeleteAccountConfirmationInput({
+  confirmation,
+  isDeleting,
+  isOnline,
+  onConfirmationChange,
+}: {
+  confirmation: string;
+  isDeleting: boolean;
+  isOnline: boolean;
+  onConfirmationChange: (value: string) => void;
+}) {
+  return (
+    <Input
+      value={confirmation}
+      onChange={(event) => onConfirmationChange(event.target.value)}
+      disabled={!isOnline || isDeleting}
+      placeholder={DELETE_ACCOUNT_CONFIRMATION}
+      aria-label="Type DELETE to confirm account deletion"
+    />
+  );
+}
+
 export function DeleteAccountSection({
   currentUser,
   isOnline,
@@ -21,7 +90,13 @@ export function DeleteAccountSection({
   onDelete,
 }: DeleteAccountSectionProps) {
   const [confirmation, setConfirmation] = useState("");
-  const canDelete = isOnline && confirmation === "DELETE";
+  const canDelete = getCanDelete(isOnline, confirmation);
+
+  function handleDialogOpenChange(open: boolean) {
+    if (!open) {
+      setConfirmation("");
+    }
+  }
 
   return (
     <section className="border-destructive/30 border-t pt-7">
@@ -38,50 +113,29 @@ export function DeleteAccountSection({
             sessions, and anonymizes your sign-in identifiers. Existing group
             history may remain where other members need context.
           </p>
-          {error ? (
-            <p className="mt-3 font-medium text-destructive text-sm">{error}</p>
-          ) : null}
+          <DeleteAccountError error={error} />
         </div>
 
         <ActionDialog
           cancelLabel="Keep account"
-          confirmLabel={isDeleting ? "Deleting..." : "Delete account"}
-          description={`This cannot be undone from the app. Type DELETE to confirm deletion for ${
-            currentUser?.email ?? "this account"
-          }.`}
-          details={[
-            "Your active sessions will be removed.",
-            "Automatic group forming will stop for this account.",
-            "Existing group history may remain where other members need context.",
-          ]}
+          confirmLabel={getDeleteAccountConfirmLabel(isDeleting)}
+          description={getDeleteAccountDescription(currentUser?.email)}
+          details={DELETE_ACCOUNT_DETAILS}
           disabled={!canDelete || isDeleting}
           loading={isDeleting}
           onConfirm={onDelete}
-          onOpenChange={(open) => {
-            if (!open) {
-              setConfirmation("");
-            }
-          }}
+          onOpenChange={handleDialogOpenChange}
           title="Delete your TeamForge account?"
           tone="danger"
           trigger={
-            <Button
-              type="button"
-              variant="destructive"
-              className="shrink-0"
-              disabled={!isOnline || isDeleting}
-            >
-              <Trash2 size={14} />
-              Delete account
-            </Button>
+            <DeleteAccountTrigger isDeleting={isDeleting} isOnline={isOnline} />
           }
         >
-          <Input
-            value={confirmation}
-            onChange={(event) => setConfirmation(event.target.value)}
-            disabled={!isOnline || isDeleting}
-            placeholder="DELETE"
-            aria-label="Type DELETE to confirm account deletion"
+          <DeleteAccountConfirmationInput
+            confirmation={confirmation}
+            isDeleting={isDeleting}
+            isOnline={isOnline}
+            onConfirmationChange={setConfirmation}
           />
         </ActionDialog>
       </div>

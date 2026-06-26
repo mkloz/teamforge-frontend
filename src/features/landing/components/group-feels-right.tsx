@@ -5,6 +5,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import groupFeelsRightVisual from "@/features/landing/assets/group-feels-right-visual-ai-cutout.png";
+import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 
 const FIT_POINTS = [
@@ -78,32 +79,11 @@ export function GroupFeelsRightSection() {
           feels easy enough to try.
         </p>
 
-        <ul className="mt-10 grid border-white/10 border-y md:grid-cols-2 lg:grid-cols-4">
-          {FIT_POINTS.map(({ detail, icon: Icon, title }) => (
-            <li
-              key={title}
-              className="border-white/10 border-b py-6 last:border-b-0 md:px-6 md:odd:border-r lg:border-r lg:border-b-0 lg:px-7 lg:last:border-r-0 lg:last:pr-0 lg:first:pl-0"
-            >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
-                    <Icon
-                      className="size-3.5"
-                      aria-hidden="true"
-                      strokeWidth={2}
-                    />
-                  </span>
-                  <h3 className="font-black text-base text-white leading-snug">
-                    {title}
-                  </h3>
-                </div>
-                <p className="mt-2 font-medium text-sm text-text-dark-secondary leading-relaxed">
-                  {detail}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <LandingFeaturePointList
+          points={FIT_POINTS}
+          listClassName="mt-10 grid border-white/10 border-y md:grid-cols-2 lg:grid-cols-4"
+          itemClassName="border-white/10 border-b py-6 last:border-b-0 md:px-6 md:odd:border-r lg:border-r lg:border-b-0 lg:px-7 lg:last:border-r-0 lg:last:pr-0 lg:first:pl-0"
+        />
       </div>
     </section>
   );

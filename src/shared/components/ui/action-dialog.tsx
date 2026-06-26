@@ -92,6 +92,188 @@ const TONE_CONFIG = {
   }
 >;
 
+type ActionDialogToneConfig = (typeof TONE_CONFIG)[ActionDialogTone];
+
+function getActionDialogTitleLabel(title: ReactNode) {
+  return typeof title === "string" ? title : "Action dialog";
+}
+
+function hasActionDialogDetails(
+  details: ActionDialogProps["details"],
+): details is string[] {
+  return Boolean(details?.length);
+}
+
+function getActionDialogRenderState({
+  confirmVariant,
+  internalLoading,
+  loading,
+  tone,
+}: {
+  confirmVariant: ActionDialogProps["confirmVariant"];
+  internalLoading: boolean;
+  loading: boolean;
+  tone: ActionDialogTone;
+}) {
+  const config = TONE_CONFIG[tone];
+
+  return {
+    actionVariant: confirmVariant ?? config.confirmVariant,
+    config,
+    Icon: config.defaultIcon,
+    isBusy: loading || internalLoading,
+  };
+}
+
+interface ActionDialogConfirmState {
+  disabled: boolean;
+  isBusy: boolean;
+  onConfirm: ActionDialogProps["onConfirm"];
+}
+
+function canRunActionDialogConfirm(
+  state: ActionDialogConfirmState,
+): state is ActionDialogConfirmState & { onConfirm: () => unknown } {
+  return Boolean(state.onConfirm) && !state.disabled && !state.isBusy;
+}
+
+async function runActionDialogConfirm({
+  closeOnConfirm,
+  onConfirm,
+  setDialogOpen,
+}: {
+  closeOnConfirm: boolean;
+  onConfirm: () => unknown;
+  setDialogOpen: (open: boolean) => void;
+}) {
+  await onConfirm();
+
+  if (closeOnConfirm) {
+    setDialogOpen(false);
+  }
+}
+
+function ActionDialogHeading({
+  config,
+  description,
+  eyebrow,
+  icon,
+  Icon,
+  title,
+}: {
+  config: ActionDialogToneConfig;
+  description: ReactNode;
+  eyebrow: string | undefined;
+  icon: ReactNode;
+  Icon: LucideIcon;
+  title: ReactNode;
+}) {
+  return (
+    <div className="px-6 pt-6 pb-4">
+      <AlertDialogHeader className="relative pr-9 text-left">
+        <span className="flex min-w-0 items-center gap-2">
+          <span
+            className={cn("shrink-0", config.iconClassName)}
+            aria-hidden="true"
+          >
+            {icon ?? <Icon className="size-4" strokeWidth={1.8} />}
+          </span>
+          <span className="block font-semibold text-slate-muted text-xs">
+            {eyebrow ?? config.defaultEyebrow}
+          </span>
+          <span
+            className={cn("h-px min-w-8 flex-1 border-t", config.ruleClassName)}
+            aria-hidden="true"
+          />
+        </span>
+        <AlertDialogTitle className="mt-3 max-w-80 text-balance font-black text-ink text-xl leading-tight">
+          {title}
+        </AlertDialogTitle>
+        <AlertDialogDescription className="mt-2 max-w-88 text-sm leading-relaxed">
+          {description}
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+    </div>
+  );
+}
+
+function ActionDialogDetails({
+  config,
+  details,
+}: {
+  config: ActionDialogToneConfig;
+  details: ActionDialogProps["details"];
+}) {
+  if (!hasActionDialogDetails(details)) {
+    return null;
+  }
+
+  return (
+    <div className="mx-6 mb-4 border-border/60 border-t pt-4">
+      <p className={cn("font-semibold text-xs", config.iconClassName)}>
+        {config.detailLabel}
+      </p>
+      <ul className="mt-2 grid gap-1.5">
+        {details.map((detail) => (
+          <li key={detail} className="text-slate-muted text-sm leading-relaxed">
+            {detail}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ActionDialogChildren({ children }: { children: ReactNode }) {
+  return children ? <div className="px-6 pb-4">{children}</div> : null;
+}
+
+function ActionDialogActions({
+  actionVariant,
+  cancelLabel,
+  closeLabel,
+  confirmLabel,
+  disabled,
+  isBusy,
+  onClose,
+  onConfirm,
+}: {
+  actionVariant: ButtonV2Props["variant"];
+  cancelLabel: string;
+  closeLabel: string;
+  confirmLabel: string;
+  disabled: boolean;
+  isBusy: boolean;
+  onClose: () => void;
+  onConfirm?: () => void;
+}) {
+  if (!onConfirm) {
+    return (
+      <Button type="button" variant="primary" onClick={onClose}>
+        {closeLabel}
+      </Button>
+    );
+  }
+
+  return (
+    <>
+      <AlertDialogCancel disabled={isBusy} className="rounded-md">
+        {cancelLabel}
+      </AlertDialogCancel>
+      <Button
+        type="button"
+        variant={actionVariant}
+        loading={isBusy}
+        disabled={disabled || isBusy}
+        className="rounded-md"
+        onClick={onConfirm}
+      >
+        {confirmLabel}
+      </Button>
+    </>
+  );
+}
+
 export function ActionDialog({
   cancelLabel = "Keep working",
   children,
@@ -116,12 +298,14 @@ export function ActionDialog({
 }: ActionDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [internalLoading, setInternalLoading] = useState(false);
+  const { actionVariant, config, Icon, isBusy } = getActionDialogRenderState({
+    confirmVariant,
+    internalLoading,
+    loading,
+    tone,
+  });
   const isControlled = open !== undefined;
   const dialogOpen = open ?? internalOpen;
-  const config = TONE_CONFIG[tone];
-  const Icon = config.defaultIcon;
-  const isBusy = loading || internalLoading;
-  const actionVariant = confirmVariant ?? config.confirmVariant;
 
   function setDialogOpen(nextOpen: boolean) {
     if (!isControlled) {
@@ -132,21 +316,23 @@ export function ActionDialog({
   }
 
   async function handleConfirm() {
-    if (!onConfirm || disabled || isBusy) {
+    const confirmState = { disabled, isBusy, onConfirm };
+
+    if (!canRunActionDialogConfirm(confirmState)) {
       return;
     }
 
     setInternalLoading(true);
 
     try {
-      await onConfirm();
-
-      if (closeOnConfirm) {
-        setDialogOpen(false);
-      }
+      await runActionDialogConfirm({
+        closeOnConfirm,
+        onConfirm: confirmState.onConfirm,
+        setDialogOpen,
+      });
     } catch (error) {
       captureException("ui.action-dialog.confirm", error, {
-        title: typeof title === "string" ? title : "Action dialog",
+        title: getActionDialogTitleLabel(title),
       });
       showAppErrorToast(error);
     } finally {
@@ -166,83 +352,36 @@ export function ActionDialog({
           contentClassName,
         )}
       >
-        <div className="px-6 pt-6 pb-4">
-          <AlertDialogHeader className="relative pr-9 text-left">
-            <span className="flex min-w-0 items-center gap-2">
-              <span
-                className={cn("shrink-0", config.iconClassName)}
-                aria-hidden="true"
-              >
-                {icon ?? <Icon className="size-4" strokeWidth={1.8} />}
-              </span>
-              <span className="block font-semibold text-slate-muted text-xs">
-                {eyebrow ?? config.defaultEyebrow}
-              </span>
-              <span
-                className={cn(
-                  "h-px min-w-8 flex-1 border-t",
-                  config.ruleClassName,
-                )}
-                aria-hidden="true"
-              />
-            </span>
-            <AlertDialogTitle className="mt-3 max-w-80 text-balance font-black text-ink text-xl leading-tight">
-              {title}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="mt-2 max-w-88 text-sm leading-relaxed">
-              {description}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-        </div>
+        <ActionDialogHeading
+          config={config}
+          description={description}
+          eyebrow={eyebrow}
+          icon={icon}
+          Icon={Icon}
+          title={title}
+        />
 
-        {details?.length ? (
-          <div className="mx-6 mb-4 border-border/60 border-t pt-4">
-            <p className={cn("font-semibold text-xs", config.iconClassName)}>
-              {config.detailLabel}
-            </p>
-            <ul className="mt-2 grid gap-1.5">
-              {details.map((detail) => (
-                <li
-                  key={detail}
-                  className="text-slate-muted text-sm leading-relaxed"
-                >
-                  {detail}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+        <ActionDialogDetails config={config} details={details} />
 
-        {children ? <div className="px-6 pb-4">{children}</div> : null}
+        <ActionDialogChildren>{children}</ActionDialogChildren>
 
         <AlertDialogFooter className="bg-transparent px-6 pt-2 pb-6 sm:justify-between">
-          {onConfirm ? (
-            <>
-              <AlertDialogCancel disabled={isBusy} className="rounded-md">
-                {cancelLabel}
-              </AlertDialogCancel>
-              <Button
-                type="button"
-                variant={actionVariant}
-                loading={isBusy}
-                disabled={disabled || isBusy}
-                className="rounded-md"
-                onClick={() => {
-                  void handleConfirm();
-                }}
-              >
-                {confirmLabel}
-              </Button>
-            </>
-          ) : (
-            <Button
-              type="button"
-              variant="primary"
-              onClick={() => setDialogOpen(false)}
-            >
-              {closeLabel}
-            </Button>
-          )}
+          <ActionDialogActions
+            actionVariant={actionVariant}
+            cancelLabel={cancelLabel}
+            closeLabel={closeLabel}
+            confirmLabel={confirmLabel}
+            disabled={disabled}
+            isBusy={isBusy}
+            onClose={() => setDialogOpen(false)}
+            onConfirm={
+              onConfirm
+                ? () => {
+                    void handleConfirm();
+                  }
+                : undefined
+            }
+          />
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

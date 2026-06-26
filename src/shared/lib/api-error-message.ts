@@ -12,47 +12,102 @@ export interface ApiErrorMessageOptions {
 const DEFAULT_SERVER_ERROR_MESSAGE =
   "TeamForge is having trouble right now. Please try again in a moment.";
 
-function readStringProperty(value: object, key: string) {
-  const property = Object.entries(value).find(
+const STATUS_MESSAGE_OPTIONS = new Map<number, keyof ApiErrorMessageOptions>([
+  [400, "badRequestMessage"],
+  [401, "unauthorizedMessage"],
+  [403, "forbiddenMessage"],
+  [404, "notFoundMessage"],
+  [409, "conflictMessage"],
+]);
+
+type ErrorWithResponse = Error & { response: object };
+
+interface ApiExceptionContext {
+  cause: object;
+  status: number;
+}
+
+function isObjectValue(value: unknown): value is object {
+  return value !== null && typeof value === "object";
+}
+
+function readOwnProperty(value: object, key: string) {
+  return Object.entries(value).find(
     ([propertyKey]) => propertyKey === key,
   )?.[1];
+}
+
+function readStringProperty(value: object, key: string) {
+  const property = readOwnProperty(value, key);
 
   return typeof property === "string" ? property : undefined;
 }
 
-export function getHttpErrorStatus(error: unknown) {
-  if (
-    !(error instanceof Error) ||
-    !("response" in error) ||
-    !error.response ||
-    typeof error.response !== "object" ||
-    !("status" in error.response) ||
-    typeof error.response.status !== "number"
-  ) {
-    return null;
+function readNumberProperty(value: object, key: string) {
+  if (!(key in value)) {
+    return undefined;
   }
 
-  return error.response.status;
+  const property: unknown = Reflect.get(value, key);
+
+  return typeof property === "number" ? property : undefined;
 }
 
-export function readApiException(error: unknown): Partial<ApiException> | null {
-  const status = getHttpErrorStatus(error);
+function hasErrorResponse(error: unknown): error is ErrorWithResponse {
+  return (
+    error instanceof Error &&
+    "response" in error &&
+    isObjectValue(error.response)
+  );
+}
 
-  if (status === null || !(error instanceof Error)) {
+function getErrorResponse(error: unknown) {
+  if (!hasErrorResponse(error)) {
     return null;
   }
 
+  return error.response;
+}
+
+export function getHttpErrorStatus(error: unknown) {
+  const response = getErrorResponse(error);
+
+  if (!response) {
+    return null;
+  }
+
+  return readNumberProperty(response, "status") ?? null;
+}
+
+function getApiExceptionContext(error: unknown): ApiExceptionContext | null {
+  if (!(error instanceof Error)) {
+    return null;
+  }
+
+  const status = getHttpErrorStatus(error);
   const cause = error.cause;
 
-  if (!cause || typeof cause !== "object") {
+  if (status === null || !isObjectValue(cause)) {
     return null;
   }
 
   return {
-    status:
-      "status" in cause && typeof cause.status === "number"
-        ? cause.status
-        : status,
+    cause,
+    status,
+  };
+}
+
+function readApiException(error: unknown): Partial<ApiException> | null {
+  const context = getApiExceptionContext(error);
+
+  if (!context) {
+    return null;
+  }
+
+  const { cause, status } = context;
+
+  return {
+    status: readNumberProperty(cause, "status") ?? status,
     message: readStringProperty(cause, "message"),
     timestamp: readStringProperty(cause, "timestamp"),
     method: readStringProperty(cause, "method"),
@@ -61,15 +116,65 @@ export function readApiException(error: unknown): Partial<ApiException> | null {
   };
 }
 
+function getMappedStatusFallbackMessage(
+  status: number,
+  fallbackMessage: string,
+  options: ApiErrorMessageOptions,
+) {
+  const optionKey = STATUS_MESSAGE_OPTIONS.get(status);
+
+  if (!optionKey) {
+    return null;
+  }
+
+  return options[optionKey] ?? fallbackMessage;
+}
+
+function isServerErrorStatus(status: number) {
+  return status >= 500;
+}
+
+function getStatusFallbackMessage(
+  status: number,
+  fallbackMessage: string,
+  options: ApiErrorMessageOptions,
+) {
+  const mappedStatusMessage = getMappedStatusFallbackMessage(
+    status,
+    fallbackMessage,
+    options,
+  );
+
+  if (mappedStatusMessage !== null) {
+    return mappedStatusMessage;
+  }
+
+  if (isServerErrorStatus(status)) {
+    return options.serverMessage ?? DEFAULT_SERVER_ERROR_MESSAGE;
+  }
+
+  return fallbackMessage;
+}
+
+function isNonBlankString(value: string | undefined): value is string {
+  return value !== undefined && value.trim().length > 0;
+}
+
+function getApiExceptionMessage(error: unknown) {
+  const apiException = readApiException(error);
+
+  return isNonBlankString(apiException?.message) ? apiException.message : null;
+}
+
 export function getApiErrorMessage(
   error: unknown,
   fallbackMessage: string,
   options: ApiErrorMessageOptions = {},
 ) {
-  const apiException = readApiException(error);
+  const apiExceptionMessage = getApiExceptionMessage(error);
 
-  if (apiException?.message && apiException.message.trim().length > 0) {
-    return apiException.message;
+  if (apiExceptionMessage !== null) {
+    return apiExceptionMessage;
   }
 
   const status = getHttpErrorStatus(error);
@@ -78,22 +183,5 @@ export function getApiErrorMessage(
     return fallbackMessage;
   }
 
-  switch (status) {
-    case 400:
-      return options.badRequestMessage ?? fallbackMessage;
-    case 401:
-      return options.unauthorizedMessage ?? fallbackMessage;
-    case 403:
-      return options.forbiddenMessage ?? fallbackMessage;
-    case 404:
-      return options.notFoundMessage ?? fallbackMessage;
-    case 409:
-      return options.conflictMessage ?? fallbackMessage;
-    default:
-      if (status >= 500) {
-        return options.serverMessage ?? DEFAULT_SERVER_ERROR_MESSAGE;
-      }
-
-      return fallbackMessage;
-  }
+  return getStatusFallbackMessage(status, fallbackMessage, options);
 }

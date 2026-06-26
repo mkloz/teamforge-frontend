@@ -20,6 +20,13 @@ interface CoverChoice {
   value: string;
 }
 
+interface CoverChoiceButtonProps {
+  choice: CoverChoice;
+  isOnline: boolean;
+  selected: boolean;
+  onCoverImageChange: (url: string | null) => void;
+}
+
 function getCoverChoices(templateCoverImage?: string | null): CoverChoice[] {
   const presetChoices = PLAN_COVER_PRESETS.map((preset) => ({
     key: preset.id,
@@ -46,6 +53,123 @@ function getCoverChoices(templateCoverImage?: string | null): CoverChoice[] {
     },
     ...presetChoices.slice(0, MAX_VISIBLE_COVER_OPTIONS - 1),
   ];
+}
+
+function PlanPhotoPreview({
+  activePreset,
+  coverImage,
+}: Pick<PlanPhotoSectionProps, "activePreset" | "coverImage">) {
+  if (coverImage) {
+    return <UploadedPlanPhotoPreview coverImage={coverImage} />;
+  }
+
+  return <PresetPlanPhotoPreview activePreset={activePreset} />;
+}
+
+function UploadedPlanPhotoPreview({ coverImage }: { coverImage: string }) {
+  return (
+    <PlanCover
+      value={coverImage}
+      alt=""
+      className="transition-transform duration-700 ease-out group-hover:scale-105"
+      imageClassName="transition-transform duration-700 ease-out group-hover:scale-105"
+    />
+  );
+}
+
+function PresetPlanPhotoPreview({
+  activePreset,
+}: Pick<PlanPhotoSectionProps, "activePreset">) {
+  return (
+    <div
+      className={cn(
+        "size-full bg-linear-to-br",
+        getPresetGradient(activePreset),
+      )}
+    />
+  );
+}
+
+function getPresetGradient(
+  activePreset: PlanPhotoSectionProps["activePreset"],
+) {
+  if (activePreset?.kind === "gradient") {
+    return activePreset.gradient;
+  }
+
+  if (!activePreset) {
+    return "from-forge-teal/18 via-canvas to-spark-amber/18";
+  }
+
+  return null;
+}
+
+function getCoverChoiceButtonClassName(selected: boolean) {
+  return cn(
+    "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 font-bold text-foreground text-xs shadow-none transition-all duration-200 active:scale-95",
+    selected
+      ? "border-forge-teal/75 bg-forge-teal/8 text-forge-teal ring-1 ring-forge-teal/20"
+      : "border-border/45 hover:border-forge-teal/35 hover:bg-forge-teal/5",
+  );
+}
+
+function getCoverChoiceTitle(isOnline: boolean) {
+  return isOnline ? undefined : "Reconnect before changing group images.";
+}
+
+function CoverChoiceButton({
+  choice,
+  isOnline,
+  selected,
+  onCoverImageChange,
+}: CoverChoiceButtonProps) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={() => onCoverImageChange(selected ? null : choice.value)}
+      aria-pressed={selected}
+      disabled={!isOnline}
+      title={getCoverChoiceTitle(isOnline)}
+      className={getCoverChoiceButtonClassName(selected)}
+    >
+      <div
+        className="relative flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md ring-1 ring-white/15"
+        aria-hidden="true"
+      >
+        <img
+          src={choice.thumbnailSrc}
+          alt=""
+          className="absolute inset-0 size-full object-cover"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-linear-to-b from-white/15 to-black/20" />
+        <CoverChoiceSelectionIcon selected={selected} />
+      </div>
+      <span className="truncate">{choice.label}</span>
+      <div
+        className={cn(
+          "ml-auto size-1.5 rounded-full transition-colors duration-150",
+          selected ? "bg-forge-teal" : "bg-border/70",
+        )}
+      />
+    </Button>
+  );
+}
+
+function CoverChoiceSelectionIcon({ selected }: { selected: boolean }) {
+  if (selected) {
+    return (
+      <Check size={11} className="relative z-10 text-white" strokeWidth={3} />
+    );
+  }
+
+  return (
+    <Palette
+      size={10}
+      className="relative z-10 text-white/85 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+    />
+  );
 }
 
 export function PlanPhotoSection({
@@ -88,25 +212,10 @@ export function PlanPhotoSection({
           error={coverUploadError}
           onFiles={onCoverFiles}
           preview={
-            coverImage ? (
-              <PlanCover
-                value={coverImage}
-                alt=""
-                className="transition-transform duration-700 ease-out group-hover:scale-105"
-                imageClassName="transition-transform duration-700 ease-out group-hover:scale-105"
-              />
-            ) : (
-              <div
-                className={cn(
-                  "size-full bg-linear-to-br",
-                  activePreset?.kind === "gradient"
-                    ? activePreset.gradient
-                    : null,
-                  !activePreset &&
-                    "from-forge-teal/18 via-canvas to-spark-amber/18",
-                )}
-              />
-            )
+            <PlanPhotoPreview
+              activePreset={activePreset}
+              coverImage={coverImage}
+            />
           }
         />
         {coverImage && (
@@ -118,9 +227,7 @@ export function PlanPhotoSection({
             onClick={() => onCoverImageChange(null)}
             className="absolute top-2 right-2 z-20 size-7 rounded-full bg-black/45 text-white hover:bg-black/65"
             aria-label="Remove cover"
-            title={
-              isOnline ? undefined : "Reconnect before changing group images."
-            }
+            title={getCoverChoiceTitle(isOnline)}
           >
             <X size={13} />
           </Button>
@@ -128,62 +235,15 @@ export function PlanPhotoSection({
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {coverChoices.map((choice) => {
-          const selected = coverImage === choice.value;
-
-          return (
-            <Button
-              key={choice.key}
-              type="button"
-              variant="ghost"
-              onClick={() => onCoverImageChange(selected ? null : choice.value)}
-              aria-pressed={selected}
-              disabled={!isOnline}
-              title={
-                isOnline ? undefined : "Reconnect before changing group images."
-              }
-              className={cn(
-                "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 font-bold text-foreground text-xs shadow-none transition-all duration-200 active:scale-95",
-                selected
-                  ? "border-forge-teal/75 bg-forge-teal/8 text-forge-teal ring-1 ring-forge-teal/20"
-                  : "border-border/45 hover:border-forge-teal/35 hover:bg-forge-teal/5",
-              )}
-            >
-              <div
-                className="relative flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md ring-1 ring-white/15"
-                aria-hidden="true"
-              >
-                <img
-                  src={choice.thumbnailSrc}
-                  alt=""
-                  className="absolute inset-0 size-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-linear-to-b from-white/15 to-black/20" />
-                {!selected && (
-                  <Palette
-                    size={10}
-                    className="relative z-10 text-white/85 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-                  />
-                )}
-                {selected && (
-                  <Check
-                    size={11}
-                    className="relative z-10 text-white"
-                    strokeWidth={3}
-                  />
-                )}
-              </div>
-              <span className="truncate">{choice.label}</span>
-              <div
-                className={cn(
-                  "ml-auto size-1.5 rounded-full transition-colors duration-150",
-                  selected ? "bg-forge-teal" : "bg-border/70",
-                )}
-              />
-            </Button>
-          );
-        })}
+        {coverChoices.map((choice) => (
+          <CoverChoiceButton
+            key={choice.key}
+            choice={choice}
+            isOnline={isOnline}
+            selected={coverImage === choice.value}
+            onCoverImageChange={onCoverImageChange}
+          />
+        ))}
       </div>
     </div>
   );

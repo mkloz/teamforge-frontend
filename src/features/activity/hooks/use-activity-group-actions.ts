@@ -1,133 +1,58 @@
-import {
-  type QueryClient,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import type { CreateGroupPlanPayload } from "@/features/activity/api/activity.api";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
-import type { ActivityGroupSelectionData } from "@/features/activity/api/activity-query-data";
 import type {
   Group,
   Plan,
   PlanHistoryItem,
 } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
-import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
+import {
+  ACTIVITY_GROUP_ACTION_GUARDS,
+  type ActivityGroupMembershipAction,
+  type ActivityGroupPlanAction,
+  buildCreateHistoryTemplatePayload,
+  buildCreateNextPlanPayload,
+  getMembershipMutationName,
+  optimisticallyUpdateSelectedGroup,
+  type PendingActivityGroupAction,
+  removeMemberFromGroup,
+  restoreGroupSelection,
+  trackActivityGroupMutation,
+  updateGroupPlanStatus,
+} from "./activity-group-action-state";
 import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
-
-type PendingAction =
-  | "cancel-plan"
-  | "complete-plan"
-  | "confirm-plan"
-  | "create-next-plan"
-  | "disband"
-  | "leave"
-  | null;
-
-function trackGroupAction(
-  mutation: string,
-  status: "success" | "error",
-  groupId: string,
-  requestId?: string | null,
-) {
-  trackMutationOutcome(mutation, status, { groupId, requestId });
-}
 
 export function useActivityGroupActions(groupId: string) {
   const queryClient = useQueryClient();
   const currentUserQuery = useQuery(currentUserQueryOptions());
-  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const [pendingAction, setPendingAction] =
+    useState<PendingActivityGroupAction>(null);
   const [invitingMemberId, setInvitingMemberId] = useState<string | null>(null);
   const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
   const clearRouteSelection = useClearActivityRouteSelection();
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
-  function guardGroupAction(id: string, description: string) {
-    return guardOfflineAction({ id, description });
+  function guardGroupAction(guard: Parameters<typeof guardOfflineAction>[0]) {
+    return guardOfflineAction(guard);
   }
 
   async function leaveGroup() {
-    if (!currentUserQuery.data) {
-      return;
-    }
-
-    if (
-      guardGroupAction(
-        "activity-group-leave-offline",
-        "Reconnect before leaving this group.",
-      )
-    ) {
-      return;
-    }
-
-    setPendingAction("leave");
-
-    try {
-      const result = await ActivityCommands.leaveGroup(
-        groupId,
-        currentUserQuery.data.id,
-      );
-      await clearRouteSelection();
-      trackGroupAction(
-        trackedMutationNames.activityGroupLeave,
-        "success",
-        groupId,
-        result.requestId,
-      );
-      setPendingAction(null);
-    } catch (error) {
-      trackGroupAction(
-        trackedMutationNames.activityGroupLeave,
-        "error",
-        groupId,
-      );
-      setPendingAction(null);
-      throw error;
-    }
+    await runMembershipAction(
+      "leave",
+      currentUserQuery.data?.id ?? null,
+      (currentUserId) => ActivityCommands.leaveGroup(groupId, currentUserId),
+    );
   }
 
   async function disbandGroup() {
-    if (!currentUserQuery.data) {
-      return;
-    }
-
-    if (
-      guardGroupAction(
-        "activity-group-disband-offline",
-        "Reconnect before disbanding this group.",
-      )
-    ) {
-      return;
-    }
-
-    setPendingAction("disband");
-
-    try {
-      const result = await ActivityCommands.disbandGroup(
-        groupId,
-        currentUserQuery.data.id,
-      );
-      await clearRouteSelection();
-      trackGroupAction(
-        trackedMutationNames.activityGroupDisband,
-        "success",
-        groupId,
-        result.requestId,
-      );
-      setPendingAction(null);
-    } catch (error) {
-      trackGroupAction(
-        trackedMutationNames.activityGroupDisband,
-        "error",
-        groupId,
-      );
-      setPendingAction(null);
-      throw error;
-    }
+    await runMembershipAction(
+      "disband",
+      currentUserQuery.data?.id ?? null,
+      (currentUserId) => ActivityCommands.disbandGroup(groupId, currentUserId),
+    );
   }
 
   async function removeMember(memberId: string) {
@@ -135,12 +60,7 @@ export function useActivityGroupActions(groupId: string) {
       return;
     }
 
-    if (
-      guardGroupAction(
-        "activity-group-remove-member-offline",
-        "Reconnect before removing a group member.",
-      )
-    ) {
+    if (guardGroupAction(ACTIVITY_GROUP_ACTION_GUARDS.removeMember)) {
       return;
     }
 
@@ -157,7 +77,7 @@ export function useActivityGroupActions(groupId: string) {
         memberId,
         currentUserQuery.data.id,
       );
-      trackMutationOutcome(
+      trackActivityGroupMutation(
         trackedMutationNames.activityGroupRemoveMember,
         "success",
         {
@@ -168,7 +88,7 @@ export function useActivityGroupActions(groupId: string) {
       setRemovingMemberId(null);
     } catch (error) {
       restoreGroupSelection(queryClient, groupId, snapshot);
-      trackMutationOutcome(
+      trackActivityGroupMutation(
         trackedMutationNames.activityGroupRemoveMember,
         "error",
         {
@@ -222,17 +142,43 @@ export function useActivityGroupActions(groupId: string) {
     );
   }
 
+  async function runMembershipAction(
+    action: ActivityGroupMembershipAction,
+    currentUserId: string | null,
+    execute: (currentUserId: string) => Promise<{ requestId?: string | null }>,
+  ) {
+    if (currentUserId === null) {
+      return;
+    }
+
+    if (guardGroupAction(ACTIVITY_GROUP_ACTION_GUARDS[action])) {
+      return;
+    }
+
+    const mutationName = getMembershipMutationName(action);
+    setPendingAction(action);
+
+    try {
+      const result = await execute(currentUserId);
+      await clearRouteSelection();
+      trackActivityGroupMutation(mutationName, "success", {
+        groupId,
+        requestId: result.requestId,
+      });
+      setPendingAction(null);
+    } catch (error) {
+      trackActivityGroupMutation(mutationName, "error", { groupId });
+      setPendingAction(null);
+      throw error;
+    }
+  }
+
   async function runPlanAction(
-    action: Exclude<PendingAction, "disband" | "leave" | null>,
+    action: ActivityGroupPlanAction,
     execute: () => Promise<unknown>,
     optimisticUpdate?: (group: Group) => Group,
   ) {
-    if (
-      guardGroupAction(
-        "activity-plan-action-offline",
-        "Reconnect before changing this plan.",
-      )
-    ) {
+    if (guardGroupAction(ACTIVITY_GROUP_ACTION_GUARDS.plan)) {
       return;
     }
 
@@ -256,12 +202,7 @@ export function useActivityGroupActions(groupId: string) {
   }
 
   async function inviteMember(inviteeId: string) {
-    if (
-      guardGroupAction(
-        "activity-group-invite-offline",
-        "Reconnect before inviting someone to this group.",
-      )
-    ) {
+    if (guardGroupAction(ACTIVITY_GROUP_ACTION_GUARDS.inviteMember)) {
       return;
     }
 
@@ -269,7 +210,7 @@ export function useActivityGroupActions(groupId: string) {
 
     try {
       const result = await ActivityCommands.sendGroupInvite(groupId, inviteeId);
-      trackMutationOutcome(
+      trackActivityGroupMutation(
         trackedMutationNames.activityGroupInvite,
         "success",
         {
@@ -279,9 +220,13 @@ export function useActivityGroupActions(groupId: string) {
       );
       setInvitingMemberId(null);
     } catch (error) {
-      trackMutationOutcome(trackedMutationNames.activityGroupInvite, "error", {
-        groupId,
-      });
+      trackActivityGroupMutation(
+        trackedMutationNames.activityGroupInvite,
+        "error",
+        {
+          groupId,
+        },
+      );
       setInvitingMemberId(null);
       throw error;
     }
@@ -304,142 +249,5 @@ export function useActivityGroupActions(groupId: string) {
     inviteMember,
     leaveGroup,
     removeMember,
-  };
-}
-
-type GroupSelectionSnapshot = ActivityGroupSelectionData | undefined;
-
-async function optimisticallyUpdateSelectedGroup(
-  queryClient: QueryClient,
-  groupId: string,
-  updateGroup: (group: Group) => Group,
-): Promise<GroupSelectionSnapshot> {
-  const queryKey = APP_QUERY_KEYS.activity.groupSelectionById(groupId);
-
-  await queryClient.cancelQueries({ queryKey });
-
-  const previousSelection =
-    queryClient.getQueryData<ActivityGroupSelectionData>(queryKey);
-
-  queryClient.setQueryData<ActivityGroupSelectionData>(queryKey, (current) =>
-    current?.group
-      ? {
-          ...current,
-          group: updateGroup(current.group),
-        }
-      : current,
-  );
-
-  return previousSelection;
-}
-
-function restoreGroupSelection(
-  queryClient: QueryClient,
-  groupId: string,
-  snapshot: GroupSelectionSnapshot,
-) {
-  if (snapshot === undefined) {
-    return;
-  }
-
-  queryClient.setQueryData(
-    APP_QUERY_KEYS.activity.groupSelectionById(groupId),
-    snapshot,
-  );
-}
-
-function removeMemberFromGroup(group: Group, memberId: string): Group {
-  return {
-    ...touchGroup(group),
-    members:
-      group.members?.filter((member) => member.userId !== memberId) ??
-      group.members,
-  };
-}
-
-function updateGroupPlanStatus(
-  group: Group,
-  planId: string,
-  status: Plan["status"],
-): Group {
-  if (!group.plan || group.plan.id !== planId) {
-    return group;
-  }
-
-  const now = new Date().toISOString();
-
-  return {
-    ...touchGroup(group, now),
-    plan: {
-      ...group.plan,
-      cancelledAt: status === "CANCELLED" ? now : group.plan.cancelledAt,
-      completedAt: status === "COMPLETED" ? now : group.plan.completedAt,
-      status,
-      updatedAt: now,
-      version: Date.parse(now),
-    },
-  };
-}
-
-function touchGroup(group: Group, now = new Date().toISOString()): Group {
-  return {
-    ...group,
-    updatedAt: now,
-    version: Date.parse(now),
-  };
-}
-
-function buildCreateHistoryTemplatePayload(
-  plan: PlanHistoryItem,
-): CreateGroupPlanPayload {
-  const location =
-    plan.locationMode === "TBD" ? null : plan.location?.trim() || null;
-  const payload: CreateGroupPlanPayload = {
-    category: plan.category,
-    coverImage: plan.coverImage,
-    dateTime: null,
-    location,
-    locationLat:
-      plan.locationMode === "IN_PERSON" && plan.locationLat !== null
-        ? plan.locationLat
-        : null,
-    locationLng:
-      plan.locationMode === "IN_PERSON" && plan.locationLng !== null
-        ? plan.locationLng
-        : null,
-    locationMode: location ? plan.locationMode : "TBD",
-    title: plan.title,
-  };
-
-  if (plan.cost === "FREE") {
-    payload.cost = "FREE";
-  }
-
-  return payload;
-}
-
-function buildCreateNextPlanPayload(plan: Plan): CreateGroupPlanPayload {
-  const hasPlace = Boolean(plan.location?.trim());
-  const locationMode = hasPlace ? plan.locationMode : "TBD";
-
-  return {
-    category: plan.category,
-    cost: plan.cost,
-    costAmount: plan.cost === "PAID" ? plan.costAmount : null,
-    costDetails: plan.costDetails,
-    coverImage: plan.coverImage,
-    dateTime: null,
-    description: plan.description,
-    location: locationMode === "TBD" ? null : plan.location,
-    locationLat:
-      locationMode === "IN_PERSON" && plan.locationLat !== null
-        ? plan.locationLat
-        : null,
-    locationLng:
-      locationMode === "IN_PERSON" && plan.locationLng !== null
-        ? plan.locationLng
-        : null,
-    locationMode,
-    title: plan.title,
   };
 }

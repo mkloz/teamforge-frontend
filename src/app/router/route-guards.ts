@@ -16,18 +16,22 @@ interface PublicAuthRouteLoadContext {
 export async function redirectAuthenticatedUser({
   location,
 }: PublicAuthRouteLoadContext) {
-  const routeGuards = await import("@/app/router/route-guards.impl");
+  const { routeGuardImplementations } = await import(
+    "@/app/router/route-guards.impl"
+  );
 
-  return routeGuards.redirectAuthenticatedUser({ location });
+  return routeGuardImplementations.redirectAuthenticatedUser({ location });
 }
 
 export async function requireCanonicalAppRoute(
   location: RouteLocationLike,
   options?: RequireAuthenticatedUserOptions,
 ) {
-  const routeGuards = await import("@/app/router/route-guards.impl");
+  const { routeGuardImplementations } = await import(
+    "@/app/router/route-guards.impl"
+  );
 
-  return routeGuards.requireCanonicalAppRoute(location, options);
+  return routeGuardImplementations.requireCanonicalAppRoute(location, options);
 }
 
 export async function requireCanonicalOnboardingRoute(
@@ -37,9 +41,11 @@ export async function requireCanonicalOnboardingRoute(
     | "/onboarding/personality"
     | "/onboarding/interests",
 ) {
-  const routeGuards = await import("@/app/router/route-guards.impl");
+  const { routeGuardImplementations } = await import(
+    "@/app/router/route-guards.impl"
+  );
 
-  return routeGuards.requireCanonicalOnboardingRoute(
+  return routeGuardImplementations.requireCanonicalOnboardingRoute(
     location,
     expectedDestination,
   );
@@ -49,9 +55,11 @@ export async function requireEditableOnboardingRoute(
   location: RouteLocationLike,
   expectedDestination: "/onboarding/personality" | "/onboarding/interests",
 ) {
-  const routeGuards = await import("@/app/router/route-guards.impl");
+  const { routeGuardImplementations } = await import(
+    "@/app/router/route-guards.impl"
+  );
 
-  return routeGuards.requireEditableOnboardingRoute(
+  return routeGuardImplementations.requireEditableOnboardingRoute(
     location,
     expectedDestination,
   );

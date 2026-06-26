@@ -11,7 +11,7 @@ export const LANDING_SECTION_IDS = {
 export type LandingSectionId =
   (typeof LANDING_SECTION_IDS)[keyof typeof LANDING_SECTION_IDS];
 
-export interface LandingSectionLink {
+interface LandingSectionLink {
   id: LandingSectionId;
   label: string;
 }

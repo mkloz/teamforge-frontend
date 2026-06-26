@@ -18,6 +18,8 @@ interface GetMessageItemViewStateInput {
   savedMessageIds: ReadonlySet<string>;
 }
 
+const INLINE_FOOTER_CONTENT_MAX_LENGTH = 50;
+
 export function getMessageItemViewState({
   editingMessageId,
   isContextMenuOpen,
@@ -58,21 +60,33 @@ export function getMessageItemViewState({
   };
 }
 
-export function isMessageSelectionKey(key: string) {
-  return key === "Enter" || key === " ";
-}
-
 function shouldUseInlineFooter(
   message: UnifiedMessage,
   reactionGroups: MessageInteractionReactionGroup[],
 ) {
   return (
-    message.content.trim().length > 0 &&
-    !message.replyTo &&
-    message.content.length < 50 &&
-    !message.content.includes(" ") &&
-    reactionGroups.length === 0
+    hasInlineFooterText(message) &&
+    hasCompactUnbrokenContent(message) &&
+    hasNoInlineFooterCompanions(message, reactionGroups)
   );
+}
+
+function hasInlineFooterText(message: UnifiedMessage) {
+  return message.content.trim().length > 0;
+}
+
+function hasCompactUnbrokenContent(message: UnifiedMessage) {
+  return (
+    message.content.length < INLINE_FOOTER_CONTENT_MAX_LENGTH &&
+    !message.content.includes(" ")
+  );
+}
+
+function hasNoInlineFooterCompanions(
+  message: UnifiedMessage,
+  reactionGroups: MessageInteractionReactionGroup[],
+) {
+  return !message.replyTo && reactionGroups.length === 0;
 }
 
 function getMessageSenderLabel(message: UnifiedMessage) {

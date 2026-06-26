@@ -46,6 +46,47 @@ export interface ContentSectionViewState {
   title: string;
 }
 
+interface ConversationContentState {
+  formattedTimestamp: string;
+  isNotes: boolean;
+  latestMessage: UnifiedMessage | undefined;
+  previewMessage: UnifiedMessage | undefined;
+  subtitle: string;
+  title: string;
+}
+
+interface GroupIndicatorState {
+  countdown: string | null;
+  hasIndicatorRow: boolean;
+  hasSavedMessages: boolean;
+  pendingProposalCount: number;
+  planStatus: Plan["status"] | null | undefined;
+  shouldShowSavedCountInIndicatorRow: boolean;
+  showInlineGroupIndicators: boolean;
+}
+
+interface GroupIndicatorVisibilityInput {
+  countdown: string | null;
+  hasSavedMessages: boolean;
+  isReviewWaiting: boolean;
+  pendingProposalCount: number;
+  plan: Plan | null | undefined;
+}
+
+interface GroupIndicatorChromeInput {
+  isCompact: boolean;
+  isGroup: boolean;
+  isMuted: boolean;
+  visibleGroupIndicatorCount: number;
+}
+
+interface TitleUtilityState {
+  hasTitleUtilityCluster: boolean;
+  showInlineMutedIndicator: boolean;
+  showStaticPinnedIcon: boolean;
+  showTitlePinButton: boolean;
+}
+
 export function getContentSectionViewState({
   hasTogglePinned,
   isCompact,
@@ -54,41 +95,54 @@ export function getContentSectionViewState({
   isSavedView,
   item,
 }: ContentSectionViewStateInput): ContentSectionViewState {
-  const previewMessage = getPreviewMessage(item, isSavedView);
-  const subtitle = getSubtitle(item, isSavedView);
-  const plan = getGroupPlan(item, isGroup);
-  const countdown = getCountdown(plan);
-  const pendingProposalCount =
-    item.activeProposalCount ?? getPendingProposalCount(item);
-  const hasSavedMessages = Boolean(item.savedMessageCount);
-  const visibleGroupIndicatorCount = getVisibleGroupIndicatorCount({
-    countdown,
-    hasSavedMessages,
-    isReviewWaiting,
-    pendingProposalCount,
-    plan,
-  });
   const isMuted = getConversationIsMuted(item);
-  const showInlineGroupIndicators = shouldShowInlineGroupIndicators({
+  const contentState = getConversationContentState({ isSavedView, item });
+  const groupIndicatorState = getGroupIndicatorState({
     isCompact,
     isGroup,
     isMuted,
-    visibleGroupIndicatorCount,
+    isReviewWaiting,
+    item,
   });
-  const hasIndicatorRow = shouldShowIndicatorRow({
-    isCompact,
-    isGroup,
-    isMuted,
-    visibleGroupIndicatorCount,
-  });
-  const showInlineMutedIndicator = isMuted;
-  const showTitlePinButton = shouldShowTitlePinButton({
+  const titleUtilityState = getTitleUtilityState({
     hasTogglePinned,
     isPinned: item.isPinned,
-    showInlineGroupIndicators,
-    showInlineMutedIndicator,
+    isMuted,
+    showInlineGroupIndicators: groupIndicatorState.showInlineGroupIndicators,
   });
-  const showStaticPinnedIcon = Boolean(item.isPinned);
+
+  return {
+    countdown: groupIndicatorState.countdown,
+    formattedTimestamp: contentState.formattedTimestamp,
+    hasIndicatorRow: groupIndicatorState.hasIndicatorRow,
+    hasSavedMessages: groupIndicatorState.hasSavedMessages,
+    hasTitleUtilityCluster: titleUtilityState.hasTitleUtilityCluster,
+    hasUnread: item.unreadCount > 0,
+    isMuted,
+    isNotes: contentState.isNotes,
+    latestMessage: contentState.latestMessage,
+    pendingProposalCount: groupIndicatorState.pendingProposalCount,
+    planStatus: groupIndicatorState.planStatus,
+    previewMessage: contentState.previewMessage,
+    shouldShowSavedCountInIndicatorRow:
+      groupIndicatorState.shouldShowSavedCountInIndicatorRow,
+    showInlineGroupIndicators: groupIndicatorState.showInlineGroupIndicators,
+    showInlineMutedIndicator: titleUtilityState.showInlineMutedIndicator,
+    showStaticPinnedIcon: titleUtilityState.showStaticPinnedIcon,
+    showTitlePinButton: titleUtilityState.showTitlePinButton,
+    subtitle: contentState.subtitle,
+    title: contentState.title,
+  };
+}
+
+function getConversationContentState({
+  isSavedView,
+  item,
+}: {
+  isSavedView: boolean;
+  item: UnifiedConversation;
+}): ConversationContentState {
+  const previewMessage = getPreviewMessage(item, isSavedView);
   const timestampMessage = getTimestampMessage({
     isSavedView,
     item,
@@ -96,31 +150,95 @@ export function getContentSectionViewState({
   });
 
   return {
-    countdown,
     formattedTimestamp: timestampMessage?.createdAt
       ? formatRelativeTime(timestampMessage.createdAt)
       : "",
-    hasIndicatorRow,
-    hasSavedMessages,
-    hasTitleUtilityCluster:
-      showInlineGroupIndicators ||
-      showInlineMutedIndicator ||
-      showTitlePinButton ||
-      showStaticPinnedIcon,
-    hasUnread: item.unreadCount > 0,
-    isMuted,
     isNotes: getConversationIsNotes(item),
     latestMessage: item.latestMessage,
+    previewMessage,
+    subtitle: getSubtitle(item, isSavedView),
+    title: getConversationTitle(item),
+  };
+}
+
+function getGroupIndicatorState({
+  isCompact,
+  isGroup,
+  isMuted,
+  isReviewWaiting,
+  item,
+}: {
+  isCompact: boolean;
+  isGroup: boolean;
+  isMuted: boolean;
+  isReviewWaiting: boolean;
+  item: UnifiedConversation;
+}): GroupIndicatorState {
+  const plan = getGroupPlan(item, isGroup);
+  const countdown = getCountdown(plan);
+  const pendingProposalCount =
+    item.activeProposalCount ?? getPendingProposalCount(item);
+  const hasSavedMessages = Boolean(item.savedMessageCount);
+  const visibilityInput = {
+    countdown,
+    hasSavedMessages,
+    isReviewWaiting,
+    pendingProposalCount,
+    plan,
+  };
+  const visibleGroupIndicatorCount =
+    getVisibleGroupIndicatorCount(visibilityInput);
+  const chromeInput = {
+    isCompact,
+    isGroup,
+    isMuted,
+    visibleGroupIndicatorCount,
+  };
+  const showInlineGroupIndicators =
+    shouldShowInlineGroupIndicators(chromeInput);
+  const hasIndicatorRow = shouldShowIndicatorRow(chromeInput);
+
+  return {
+    countdown,
+    hasIndicatorRow,
+    hasSavedMessages,
     pendingProposalCount,
     planStatus: countdown ? null : plan?.status,
-    previewMessage,
     shouldShowSavedCountInIndicatorRow: hasIndicatorRow && hasSavedMessages,
     showInlineGroupIndicators,
+  };
+}
+
+function getTitleUtilityState({
+  hasTogglePinned,
+  isPinned,
+  isMuted,
+  showInlineGroupIndicators,
+}: {
+  hasTogglePinned: boolean;
+  isPinned: boolean | undefined;
+  isMuted: boolean;
+  showInlineGroupIndicators: boolean;
+}): TitleUtilityState {
+  const showInlineMutedIndicator = isMuted;
+  const showStaticPinnedIcon = Boolean(isPinned);
+  const showTitlePinButton = shouldShowTitlePinButton({
+    hasTogglePinned,
+    isPinned,
+    showInlineGroupIndicators,
+    showInlineMutedIndicator,
+  });
+
+  return {
+    hasTitleUtilityCluster: [
+      showInlineGroupIndicators,
+      showInlineMutedIndicator,
+      showTitlePinButton,
+      showStaticPinnedIcon,
+    ].some(Boolean),
     showInlineMutedIndicator,
     showStaticPinnedIcon,
     showTitlePinButton,
-    subtitle,
-    title: getConversationTitle(item),
   };
 }
 
@@ -171,17 +289,39 @@ function getVisibleGroupIndicatorCount({
   pendingProposalCount: number;
   plan: Plan | null | undefined;
 }): number {
-  const hasCountdownIndicator = Boolean(countdown);
-  const hasPlanStatusIndicator = Boolean(!countdown && plan?.status);
-  const hasPendingProposal = pendingProposalCount > 0;
+  return getVisibleGroupIndicatorFlags({
+    countdown,
+    hasSavedMessages,
+    isReviewWaiting,
+    pendingProposalCount,
+    plan,
+  }).filter(Boolean).length;
+}
 
-  return (
-    Number(hasCountdownIndicator) +
-    Number(hasPlanStatusIndicator) +
-    Number(hasSavedMessages) +
-    Number(hasPendingProposal) +
-    Number(isReviewWaiting)
-  );
+function getVisibleGroupIndicatorFlags({
+  countdown,
+  hasSavedMessages,
+  isReviewWaiting,
+  pendingProposalCount,
+  plan,
+}: GroupIndicatorVisibilityInput) {
+  return [
+    Boolean(countdown),
+    Boolean(!countdown && plan?.status),
+    hasSavedMessages,
+    pendingProposalCount > 0,
+    isReviewWaiting,
+  ];
+}
+
+function canShowGroupIndicatorChrome({
+  isCompact,
+  isGroup,
+}: {
+  isCompact: boolean;
+  isGroup: boolean;
+}): boolean {
+  return isGroup && !isCompact;
 }
 
 function shouldShowInlineGroupIndicators({
@@ -189,13 +329,12 @@ function shouldShowInlineGroupIndicators({
   isGroup,
   isMuted,
   visibleGroupIndicatorCount,
-}: {
-  isCompact: boolean;
-  isGroup: boolean;
-  isMuted: boolean;
-  visibleGroupIndicatorCount: number;
-}): boolean {
-  return isGroup && !isCompact && !isMuted && visibleGroupIndicatorCount === 1;
+}: GroupIndicatorChromeInput): boolean {
+  return (
+    canShowGroupIndicatorChrome({ isCompact, isGroup }) &&
+    !isMuted &&
+    visibleGroupIndicatorCount === 1
+  );
 }
 
 function shouldShowIndicatorRow({
@@ -203,15 +342,9 @@ function shouldShowIndicatorRow({
   isGroup,
   isMuted,
   visibleGroupIndicatorCount,
-}: {
-  isCompact: boolean;
-  isGroup: boolean;
-  isMuted: boolean;
-  visibleGroupIndicatorCount: number;
-}): boolean {
+}: GroupIndicatorChromeInput): boolean {
   return (
-    isGroup &&
-    !isCompact &&
+    canShowGroupIndicatorChrome({ isCompact, isGroup }) &&
     (visibleGroupIndicatorCount > 1 ||
       (isMuted && visibleGroupIndicatorCount > 0))
   );
@@ -252,16 +385,26 @@ function getPendingProposalCount(item: UnifiedConversation): number {
     return 0;
   }
 
+  return getPendingProposalIds(item).size;
+}
+
+function getPendingProposalIds(item: UnifiedConversation): Set<string> {
   const pendingProposalIds = new Set(
     (item.group?.plan?.proposals ?? [])
       .filter((proposal) => proposal.status === "PENDING")
       .map((proposal) => proposal.id),
   );
-  const latestProposal = item.latestMessage?.proposal;
 
-  if (latestProposal?.status === "PENDING") {
-    pendingProposalIds.add(latestProposal.id);
+  addPendingProposalId(pendingProposalIds, item.latestMessage?.proposal);
+
+  return pendingProposalIds;
+}
+
+function addPendingProposalId(
+  pendingProposalIds: Set<string>,
+  proposal: UnifiedMessage["proposal"] | undefined,
+) {
+  if (proposal?.status === "PENDING") {
+    pendingProposalIds.add(proposal.id);
   }
-
-  return pendingProposalIds.size;
 }

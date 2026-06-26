@@ -1,4 +1,44 @@
+import { normalizeDisplayScore } from "@/shared/lib/user-psychometrics";
 import type { ExploreGroup } from "@/shared/schemas";
+
+type RecommendationCompatibility = ExploreGroup["compatibility"];
+type RecommendationFitSignal = {
+  label: string;
+  value: number;
+};
+
+const RECOMMENDATION_FIT_FALLBACK_LABELS = [
+  "profile fit",
+  "activity fit",
+] as const;
+
+const RECOMMENDATION_FIT_SIGNAL_CONFIG = [
+  {
+    label: "shared interests",
+    getValue: (compatibility: RecommendationCompatibility) =>
+      compatibility.interestOverlap,
+  },
+  {
+    label: "personality fit",
+    getValue: (compatibility: RecommendationCompatibility) =>
+      compatibility.personalityCompatibility,
+  },
+  {
+    label: "city fit",
+    getValue: (compatibility: RecommendationCompatibility) =>
+      compatibility.cityAlignment,
+  },
+  {
+    label: "age fit",
+    getValue: (compatibility: RecommendationCompatibility) =>
+      compatibility.ageAlignment,
+  },
+  {
+    label: "trust signal",
+    getValue: (compatibility: RecommendationCompatibility) =>
+      compatibility.trustScore,
+  },
+] as const;
 
 export function getRecommendationFitLine(group: ExploreGroup) {
   const compatibility = group.compatibility;
@@ -8,53 +48,57 @@ export function getRecommendationFitLine(group: ExploreGroup) {
     return "Close by and in your age range, but light on shared interests.";
   }
 
-  const strongest = [
-    {
-      label: "shared interests",
-      value: compatibility.interestOverlap,
-    },
-    {
-      label: "personality fit",
-      value: compatibility.personalityCompatibility,
-    },
-    {
-      label: "city fit",
-      value: compatibility.cityAlignment,
-    },
-    {
-      label: "age fit",
-      value: compatibility.ageAlignment,
-    },
-    {
-      label: "trust signal",
-      value: compatibility.trustScore,
-    },
-  ].sort((a, b) => normalizeScore(b.value) - normalizeScore(a.value));
-
-  const first = strongest[0]?.label ?? "profile fit";
-  const second = strongest[1]?.label ?? "activity fit";
+  const [first, second] = getTopRecommendationFitLabels(compatibility);
 
   return `Strong on ${first} and ${second}.`;
 }
 
-export function getRecommendationBadge(group: ExploreGroup) {
-  const score = normalizeScore(group.compatibility.total);
+export const normalizeScore = normalizeDisplayScore;
 
-  if (score >= 75) {
-    return `${score}% strong fit`;
-  }
+function getTopRecommendationFitLabels(
+  compatibility: RecommendationCompatibility,
+) {
+  const strongest = getSortedRecommendationFitSignals(compatibility);
 
-  if (score >= 60) {
-    return `${score}% worth a look`;
-  }
-
-  return "light fit";
+  return [
+    getRecommendationFitLabel(strongest, 0),
+    getRecommendationFitLabel(strongest, 1),
+  ] as const;
 }
 
-export function normalizeScore(value: number) {
-  if (value > 0 && value <= 1) {
-    return Math.round(value * 100);
+function getRecommendationFitLabel(
+  signals: RecommendationFitSignal[],
+  index: 0 | 1,
+) {
+  const signal = signals[index];
+
+  if (!signal) {
+    return RECOMMENDATION_FIT_FALLBACK_LABELS[index];
   }
 
-  return Math.round(value);
+  return signal.label;
+}
+
+function getSortedRecommendationFitSignals(
+  compatibility: RecommendationCompatibility,
+) {
+  return buildRecommendationFitSignals(compatibility).sort(
+    compareRecommendationFitSignals,
+  );
+}
+
+function buildRecommendationFitSignals(
+  compatibility: RecommendationCompatibility,
+): RecommendationFitSignal[] {
+  return RECOMMENDATION_FIT_SIGNAL_CONFIG.map((signal) => ({
+    label: signal.label,
+    value: signal.getValue(compatibility),
+  }));
+}
+
+function compareRecommendationFitSignals(
+  left: RecommendationFitSignal,
+  right: RecommendationFitSignal,
+) {
+  return normalizeScore(right.value) - normalizeScore(left.value);
 }

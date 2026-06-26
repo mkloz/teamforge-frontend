@@ -7,6 +7,10 @@ interface PublicFriendsListProps {
   userId: string;
 }
 
+type PublicFriendship = ReturnType<
+  typeof useProfilePublicFriends
+>["publicFriends"][number];
+
 export function PublicFriendsList({ userId }: PublicFriendsListProps) {
   const { publicFriends, isLoading, isError } = useProfilePublicFriends(userId);
 
@@ -42,27 +46,27 @@ export function PublicFriendsList({ userId }: PublicFriendsListProps) {
 
   return (
     <div className="flex flex-col gap-1">
-      {publicFriends.map((friendship) => {
-        const user = friendship.counterpart;
-        const messageChatId =
-          friendship.privateChat?.id ?? friendship.privateChatId;
-
-        return (
-          <FriendCard
-            key={user.id}
-            user={{
-              id: user.id,
-              name: user.name,
-              avatar: user.avatar,
-              personalityType: user.personalityType,
-              city: user.city,
-              trustScore: user.trustScore,
-              onlineStatus: user.onlineStatus,
-            }}
-            actions={<FriendMessageAction chatId={messageChatId} />}
-          />
-        );
-      })}
+      {publicFriends.map((friendship) => (
+        <PublicFriendCard
+          key={friendship.counterpart.id}
+          friendship={friendship}
+        />
+      ))}
     </div>
   );
+}
+
+function PublicFriendCard({ friendship }: { friendship: PublicFriendship }) {
+  const messageChatId = getPublicFriendshipMessageChatId(friendship);
+
+  return (
+    <FriendCard
+      user={friendship.counterpart}
+      actions={<FriendMessageAction chatId={messageChatId} />}
+    />
+  );
+}
+
+function getPublicFriendshipMessageChatId(friendship: PublicFriendship) {
+  return friendship.privateChat?.id ?? friendship.privateChatId;
 }

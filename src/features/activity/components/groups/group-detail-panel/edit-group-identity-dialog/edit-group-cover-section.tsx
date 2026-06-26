@@ -12,7 +12,10 @@ import {
 } from "@/shared/lib/plan-cover";
 import { cn } from "@/shared/lib/utils";
 
-import type { GroupIdentityUploadSectionProps } from "./edit-group-identity-dialog.types";
+import type {
+  GroupIdentityEditor,
+  GroupIdentityUploadSectionProps,
+} from "./edit-group-identity-dialog.types";
 
 interface EditGroupCoverSectionProps extends GroupIdentityUploadSectionProps {
   group: Group;
@@ -55,46 +58,70 @@ export function EditGroupCoverSection({
             </div>
           }
         />
-        {editor.coverImage && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            className="absolute top-2 right-2 z-20 rounded-full bg-ink/45 text-canvas hover:bg-ink/65"
-            disabled={!editor.isOnline}
-            title={
-              editor.isOnline
-                ? undefined
-                : "Reconnect before changing group images."
-            }
-            onClick={() => editor.setCoverImage(null)}
-            aria-label="Remove cover"
-          >
-            <X className="size-4" aria-hidden="true" />
-          </Button>
-        )}
+        <RemoveCoverButton editor={editor} />
       </div>
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-        {PLAN_COVER_PRESETS.map((preset) => (
-          <PlanCoverPresetButton
-            key={preset.id}
-            preset={preset}
-            selected={editor.coverImage === preset.id}
-            disabled={!editor.isOnline}
-            onToggle={() =>
-              editor.setCoverImage(
-                editor.coverImage === preset.id ? null : preset.id,
-              )
-            }
-          />
-        ))}
-      </div>
-      {activeCoverPreset && (
-        <p className="font-medium text-muted-foreground text-xs">
-          Selected: {activeCoverPreset.label}
-        </p>
-      )}
+      <PlanCoverPresetGrid editor={editor} />
+      <ActiveCoverPresetLabel activeCoverPreset={activeCoverPreset} />
     </div>
+  );
+}
+
+function RemoveCoverButton({ editor }: { editor: GroupIdentityEditor }) {
+  if (!editor.coverImage) {
+    return null;
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon-sm"
+      className="absolute top-2 right-2 z-20 rounded-full bg-ink/45 text-canvas hover:bg-ink/65"
+      disabled={!editor.isOnline}
+      title={
+        editor.isOnline ? undefined : "Reconnect before changing group images."
+      }
+      onClick={() => editor.setCoverImage(null)}
+      aria-label="Remove cover"
+    >
+      <X className="size-4" aria-hidden="true" />
+    </Button>
+  );
+}
+
+function PlanCoverPresetGrid({ editor }: { editor: GroupIdentityEditor }) {
+  return (
+    <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      {PLAN_COVER_PRESETS.map((preset) => (
+        <PlanCoverPresetButton
+          key={preset.id}
+          preset={preset}
+          selected={editor.coverImage === preset.id}
+          disabled={!editor.isOnline}
+          onToggle={() =>
+            editor.setCoverImage(
+              editor.coverImage === preset.id ? null : preset.id,
+            )
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
+function ActiveCoverPresetLabel({
+  activeCoverPreset,
+}: {
+  activeCoverPreset: PlanCoverPreset | null;
+}) {
+  if (!activeCoverPreset) {
+    return null;
+  }
+
+  return (
+    <p className="font-medium text-muted-foreground text-xs">
+      Selected: {activeCoverPreset.label}
+    </p>
   );
 }
 
@@ -119,36 +146,59 @@ function PlanCoverPresetButton({
       title={disabled ? "Reconnect before changing group images." : undefined}
       onClick={onToggle}
       aria-pressed={selected}
-      className={cn(
-        "group relative h-14 overflow-hidden rounded-lg border-2 p-0 transition duration-200",
-        preset.kind === "gradient" && `bg-linear-to-br ${preset.gradient}`,
-        selected
-          ? "border-forge-teal shadow-forge-teal/20 shadow-md"
-          : "border-transparent hover:scale-105 hover:shadow-sm",
-      )}
+      className={getPlanCoverPresetButtonClassName(preset, selected)}
     >
-      {preset.kind === "image" && (
-        <img
-          src={preset.src}
-          alt=""
-          className="absolute inset-0 size-full object-cover transition duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
-      )}
+      <PlanCoverPresetImage preset={preset} />
       <span className="absolute inset-0 bg-linear-to-b from-black/5 via-transparent to-black/55" />
       <span className="absolute bottom-1 left-1.5 font-bold text-white/85 text-xs drop-shadow-sm">
         {preset.label}
       </span>
-      {selected && (
-        <IconTile
-          icon={Check}
-          iconClassName="size-2.5"
-          size="xs"
-          shape="circle"
-          tone="none"
-          className="absolute top-1 right-1 bg-white/95 text-forge-teal shadow-sm"
-        />
-      )}
+      <SelectedPlanCoverPresetIcon selected={selected} />
     </Button>
+  );
+}
+
+function getPlanCoverPresetButtonClassName(
+  preset: PlanCoverPreset,
+  selected: boolean,
+) {
+  return cn(
+    "group relative h-14 overflow-hidden rounded-lg border-2 p-0 transition duration-200",
+    preset.kind === "gradient" && `bg-linear-to-br ${preset.gradient}`,
+    selected
+      ? "border-forge-teal shadow-forge-teal/20 shadow-md"
+      : "border-transparent hover:scale-105 hover:shadow-sm",
+  );
+}
+
+function PlanCoverPresetImage({ preset }: { preset: PlanCoverPreset }) {
+  if (preset.kind !== "image") {
+    return null;
+  }
+
+  return (
+    <img
+      src={preset.src}
+      alt=""
+      className="absolute inset-0 size-full object-cover transition duration-300 group-hover:scale-105"
+      loading="lazy"
+    />
+  );
+}
+
+function SelectedPlanCoverPresetIcon({ selected }: { selected: boolean }) {
+  if (!selected) {
+    return null;
+  }
+
+  return (
+    <IconTile
+      icon={Check}
+      iconClassName="size-2.5"
+      size="xs"
+      shape="circle"
+      tone="none"
+      className="absolute top-1 right-1 bg-white/95 text-forge-teal shadow-sm"
+    />
   );
 }

@@ -1,5 +1,6 @@
 import type { UserStats } from "@/features/home/lib/home-contract";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
+import { normalizeDisplayScore } from "@/shared/lib/user-psychometrics";
 import type { User } from "@/shared/schemas";
 
 export const EMPTY_HOME_STATS: UserStats = {
@@ -9,14 +10,6 @@ export const EMPTY_HOME_STATS: UserStats = {
   connections: 0,
   profileCompleteness: 0,
 };
-
-function normalizeScore(score: number) {
-  if (score > 0 && score <= 1) {
-    return Math.round(score * 100);
-  }
-
-  return Math.round(score);
-}
 
 function getProfileCompleteness(user: User) {
   const fields = [
@@ -47,7 +40,7 @@ function countUniqueConnections(groups: HomeGroup[], currentUserId: string) {
 
 export function buildHomeStats(user: User, groups: HomeGroup[]): UserStats {
   return {
-    trustScore: normalizeScore(user.trustScore),
+    trustScore: normalizeDisplayScore(user.trustScore),
     groupsJoined: groups.length,
     activitiesDone: groups.filter((group) => group.status === "COMPLETED")
       .length,

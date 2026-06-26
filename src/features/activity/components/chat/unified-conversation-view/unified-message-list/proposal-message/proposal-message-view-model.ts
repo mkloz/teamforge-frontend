@@ -4,6 +4,15 @@ export type ProposalMessageViewState = ReturnType<
   typeof getProposalMessageViewState
 >;
 
+type MessageProposal = NonNullable<UnifiedMessage["proposal"]>;
+type ProposalVote = MessageProposal["votes"][number];
+type ProposalVoteValue = ProposalVote["vote"];
+
+interface ProposalVoteCounts {
+  approveCount: number;
+  rejectCount: number;
+}
+
 export function getProposalMessageViewState(
   message: UnifiedMessage,
   currentUserId?: string,
@@ -14,38 +23,80 @@ export function getProposalMessageViewState(
     return null;
   }
 
-  const approveCount = proposal.votes.filter(
-    (vote) => vote.vote === "APPROVE",
-  ).length;
-  const rejectCount = proposal.votes.filter(
-    (vote) => vote.vote === "REJECT",
-  ).length;
+  const { approveCount, rejectCount } = getProposalVoteCounts(proposal.votes);
   const totalVotes = approveCount + rejectCount;
-  const hasVoted =
-    currentUserId !== undefined &&
-    proposal.votes.some((vote) => vote.userId === currentUserId);
+  const hasVoted = hasCurrentUserVoted(proposal.votes, currentUserId);
   const isPending = proposal.status === "PENDING";
   const isProposer = currentUserId === proposal.proposerId;
-  const eligibleVoterCount = Math.max(
-    message.proposalEligibleVoterCount ?? proposal.votes.length,
-    proposal.votes.length,
-    1,
-  );
+  const eligibleVoterCount = getEligibleVoterCount(message, proposal);
 
   return {
     approveCount,
-    canVote: isPending && Boolean(currentUserId) && !hasVoted,
+    canVote: canCurrentUserVote({ currentUserId, hasVoted, isPending }),
     eligibleVoterCount,
     hasVoted,
     isPending,
     isProposer,
     proposal,
-    proposalVoters: message.proposalVoters ?? [],
+    proposalVoters: getProposalVoters(message),
     rejectCount,
     totalVotes,
-    voteProgress: Math.min(
-      100,
-      Math.round((totalVotes / eligibleVoterCount) * 100),
-    ),
+    voteProgress: getVoteProgress(totalVotes, eligibleVoterCount),
   };
+}
+
+function getProposalVoteCounts(votes: ProposalVote[]): ProposalVoteCounts {
+  return {
+    approveCount: countProposalVotes(votes, "APPROVE"),
+    rejectCount: countProposalVotes(votes, "REJECT"),
+  };
+}
+
+function countProposalVotes(
+  votes: ProposalVote[],
+  voteValue: ProposalVoteValue,
+) {
+  return votes.filter((vote) => vote.vote === voteValue).length;
+}
+
+function hasCurrentUserVoted(
+  votes: ProposalVote[],
+  currentUserId: string | undefined,
+) {
+  if (currentUserId === undefined) {
+    return false;
+  }
+
+  return votes.some((vote) => vote.userId === currentUserId);
+}
+
+function canCurrentUserVote({
+  currentUserId,
+  hasVoted,
+  isPending,
+}: {
+  currentUserId: string | undefined;
+  hasVoted: boolean;
+  isPending: boolean;
+}) {
+  return isPending && Boolean(currentUserId) && !hasVoted;
+}
+
+function getEligibleVoterCount(
+  message: UnifiedMessage,
+  proposal: MessageProposal,
+) {
+  return Math.max(
+    message.proposalEligibleVoterCount ?? proposal.votes.length,
+    proposal.votes.length,
+    1,
+  );
+}
+
+function getProposalVoters(message: UnifiedMessage) {
+  return message.proposalVoters ?? [];
+}
+
+function getVoteProgress(totalVotes: number, eligibleVoterCount: number) {
+  return Math.min(100, Math.round((totalVotes / eligibleVoterCount) * 100));
 }

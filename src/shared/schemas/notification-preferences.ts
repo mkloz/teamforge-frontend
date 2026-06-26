@@ -5,9 +5,9 @@ import {
   themeStyleValues,
 } from "@/shared/constants/theme-preferences";
 
-export const themeAppearanceSchema = z.enum(themeAppearanceValues);
-export const themeStyleSchema = z.enum(themeStyleValues);
-export const themeColorSchema = z.enum(themeColorValues);
+const themeAppearanceSchema = z.enum(themeAppearanceValues);
+const themeStyleSchema = z.enum(themeStyleValues);
+const themeColorSchema = z.enum(themeColorValues);
 
 export const notificationPreferencesSchema = z.object({
   notifyFriendRequests: z.boolean(),

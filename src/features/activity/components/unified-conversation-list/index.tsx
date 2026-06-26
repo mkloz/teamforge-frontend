@@ -8,12 +8,14 @@ import type { ActivityKind } from "@/features/activity/lib/activity-route";
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 import { SAVED_MESSAGES_CONVERSATION_ID } from "@/features/activity/lib/saved-messages-identity";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
+import { ConversationListBody } from "./conversation-list-render-state";
 import {
-  ConversationListBody,
-  getConversationListEmptyState,
-  getConversationListLayout,
-  shouldShowSavedMessagesChat,
-} from "./conversation-list-render-state";
+  FULL_LIST_REVEAL_DELAY_MS,
+  getConversationListViewState,
+  getRenderedConversationItems,
+  getShouldPlacePinnedNotesSeparatorAfterSavedChat,
+  isSavedMessagesConversationSelected,
+} from "./conversation-list-view-state";
 import { FilterHeader } from "./filter-header";
 import { ConversationListOfflineBanner } from "./list-feedback-state";
 import { SavedMessagesChatListItem } from "./saved-messages-chat-list-item";
@@ -63,8 +65,6 @@ const FILTERS: { key: FilterChip; label: string }[] = [
 ];
 
 const SEARCH_H = 56;
-const INITIAL_CONVERSATION_RENDER_LIMIT = 24;
-const FULL_LIST_REVEAL_DELAY_MS = 900;
 
 export const UnifiedConversationList = memo(function UnifiedConversationList({
   items,
@@ -98,6 +98,25 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
       headerHeight: SEARCH_H,
     });
   const scrollResetKey = `${activeFilter}:${searchQuery}`;
+  const {
+    emptyState,
+    isSavedFilter,
+    latestSavedMessage,
+    layout,
+    searchPlaceholder,
+    shouldShowOfflineBanner,
+    shouldShowSavedChat,
+    shouldStageConversationItems,
+    visibleItemCount,
+  } = getConversationListViewState({
+    activeFilter,
+    isFeedError,
+    isOnline,
+    items,
+    savedMessages,
+    searchQuery,
+  });
+  const { notesIndex, savedChatIndex, shouldShowPinnedNotesSeparator } = layout;
 
   useResetScrollOnChange({
     resetKey: scrollResetKey,
@@ -105,38 +124,14 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
     onReset: resetFade,
   });
 
-  const isSavedFilter = activeFilter === "saved";
-  const latestSavedMessage = savedMessages[0];
-  const shouldShowSavedChat = shouldShowSavedMessagesChat({
-    activeFilter,
-    savedMessages,
-    searchQuery,
-  });
-  const visibleItemCount =
-    (isSavedFilter ? 0 : items.length) + (shouldShowSavedChat ? 1 : 0);
-  const emptyState = getConversationListEmptyState(activeFilter, searchQuery);
-  const shouldShowErrorState = isFeedError && visibleItemCount === 0;
-  const shouldShowOfflineBanner = !isOnline && !shouldShowErrorState;
-  const { notesIndex, savedChatIndex, shouldShowPinnedNotesSeparator } =
-    getConversationListLayout(items);
-  const searchPlaceholder =
-    activeFilter === "saved"
-      ? "Search saved messages..."
-      : activeFilter === "pinned"
-        ? "Search pinned chats..."
-        : "Search conversations...";
-  const shouldStageConversationItems =
-    !isSavedFilter &&
-    activeFilter === "all" &&
-    searchQuery.trim().length === 0 &&
-    items.length > INITIAL_CONVERSATION_RENDER_LIMIT;
   const [isFullListVisible, setIsFullListVisible] = useState(
     !shouldStageConversationItems,
   );
-  const renderedItems =
-    shouldStageConversationItems && !isFullListVisible
-      ? items.slice(0, INITIAL_CONVERSATION_RENDER_LIMIT)
-      : items;
+  const renderedItems = getRenderedConversationItems({
+    isFullListVisible,
+    items,
+    shouldStageConversationItems,
+  });
 
   useEffect(() => {
     let timeoutId: number | undefined;
@@ -170,10 +165,10 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
     <SavedMessagesChatListItem
       count={savedCount}
       density={sidebarDensity}
-      isSelected={
-        selectedKind === "saved" &&
-        selectedId === SAVED_MESSAGES_CONVERSATION_ID
-      }
+      isSelected={isSavedMessagesConversationSelected({
+        selectedId,
+        selectedKind,
+      })}
       latestSavedMessage={latestSavedMessage}
       onRemoveLatest={
         latestSavedMessage
@@ -184,9 +179,12 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
     />
   ) : null;
   const shouldPlacePinnedNotesSeparatorAfterSavedChat =
-    shouldShowPinnedNotesSeparator &&
-    Boolean(savedMessagesChatItem) &&
-    savedChatIndex === notesIndex + 1;
+    getShouldPlacePinnedNotesSeparatorAfterSavedChat({
+      hasSavedMessagesChatItem: Boolean(savedMessagesChatItem),
+      notesIndex,
+      savedChatIndex,
+      shouldShowPinnedNotesSeparator,
+    });
 
   return (
     <div className="flex h-full flex-col overflow-hidden">

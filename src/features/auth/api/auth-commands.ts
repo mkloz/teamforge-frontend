@@ -3,7 +3,6 @@ import type {
   RegisterValues,
 } from "@/features/auth/schemas/auth-schemas";
 import type { AuthTokens } from "@/shared/api/auth-session";
-import { logoutCurrentSession } from "@/shared/api/auth-session-commands";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 
 import { AuthApi } from "./auth.api";
@@ -55,10 +54,6 @@ export class AuthCommands {
     AuthCache.startAuthenticatedSession(result.data);
 
     return result;
-  }
-
-  static async logoutUser() {
-    await logoutCurrentSession();
   }
 
   private static startSessionFromResult<T extends AuthTokens>(result: {

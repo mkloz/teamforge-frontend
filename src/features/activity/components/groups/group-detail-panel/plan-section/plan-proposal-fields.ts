@@ -24,23 +24,19 @@ export function isProposalField(value: string): value is ProposalField {
   return PLAN_PROPOSAL_FIELD_OPTIONS.some((option) => option.value === value);
 }
 
-export function toDateTimeLocalValue(value: string | null) {
+function toDateTimeLocalValue(value: string | null) {
   return toSharedDateTimeLocalValue(value);
 }
 
-export function getCurrentProposalValue(plan: Plan, field: ProposalField) {
-  switch (field) {
-    case "TITLE":
-      return plan.title;
-    case "DESCRIPTION":
-      return plan.description ?? "";
-    case "DATE_TIME":
-      return toDateTimeLocalValue(plan.dateTime);
-    case "LOCATION":
-      return formatPlanLocation(plan);
-  }
+const CURRENT_PROPOSAL_VALUE_READERS = {
+  DATE_TIME: (plan) => toDateTimeLocalValue(plan.dateTime),
+  DESCRIPTION: (plan) => plan.description ?? "",
+  LOCATION: (plan) => formatPlanLocation(plan),
+  TITLE: (plan) => plan.title,
+} satisfies Record<ProposalField, (plan: Plan) => string>;
 
-  return "";
+export function getCurrentProposalValue(plan: Plan, field: ProposalField) {
+  return CURRENT_PROPOSAL_VALUE_READERS[field](plan);
 }
 
 export function normalizeProposedValue(field: ProposalField, value: string) {
@@ -51,7 +47,7 @@ export function normalizeProposedValue(field: ProposalField, value: string) {
   return value.trim();
 }
 
-export function getCurrentLocationProposalValue(plan: Plan): PlanLocationValue {
+function getCurrentLocationProposalValue(plan: Plan): PlanLocationValue {
   return {
     locationMode: plan.locationMode,
     location: plan.location,

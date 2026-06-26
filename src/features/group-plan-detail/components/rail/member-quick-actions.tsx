@@ -10,6 +10,30 @@ interface MemberQuickActionsProps {
   detail: GroupPlanDetail;
 }
 
+type MemberQuickActionCapabilities = ReturnType<
+  typeof getMemberQuickActionCapabilities
+>;
+
+const QUICK_ACTION_LINKS = [
+  {
+    capability: "canInviteMembers",
+    icon: UserPlus,
+    label: "Invite a friend",
+  },
+  {
+    capability: "canManageGroup",
+    icon: Settings,
+    label: "Manage group",
+  },
+] satisfies readonly {
+  capability: keyof Pick<
+    MemberQuickActionCapabilities,
+    "canInviteMembers" | "canManageGroup"
+  >;
+  icon: LucideIcon;
+  label: string;
+}[];
+
 const PlanChangeDialog = lazy(() =>
   import("@/features/group-plan-detail/components/plan-change-dialog").then(
     (module) => ({ default: module.PlanChangeDialog }),
@@ -37,38 +61,26 @@ export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
         Quick actions
       </h3>
       <div className="grid gap-1">
-        {capabilities.canSuggestPlanChange ? (
-          <DeferredPlanChangeDialog
-            detail={detail}
-            disabled={proposalActions.isSubmitting || !proposalActions.isOnline}
-            isCreating={proposalActions.isCreating}
-            isOnline={proposalActions.isOnline}
-            onCreate={proposalActions.createProposal}
-          />
-        ) : null}
-        {capabilities.canInviteMembers ? (
-          <QuickActionLink
+        <PlanChangeQuickAction
+          capabilities={capabilities}
+          detail={detail}
+          proposalActions={proposalActions}
+        />
+        {QUICK_ACTION_LINKS.map((action) => (
+          <MemberQuickActionLink
+            key={action.capability}
+            action={action}
+            capabilities={capabilities}
             groupId={detail.group.id}
-            icon={UserPlus}
-            label="Invite a friend"
           />
-        ) : null}
-        {capabilities.canManageGroup ? (
-          <QuickActionLink
-            groupId={detail.group.id}
-            icon={Settings}
-            label="Manage group"
-          />
-        ) : null}
+        ))}
       </div>
     </section>
   );
 }
 
 function getMemberQuickActionCapabilities(detail: GroupPlanDetail) {
-  const canSuggestPlanChange = Boolean(
-    detail.viewer.canSuggestPlanChange && detail.plan,
-  );
+  const canSuggestPlanChange = canViewerSuggestPlanChange(detail);
   const canInviteMembers = detail.viewer.canInviteMembers;
   const canManageGroup = detail.viewer.canManageGroup;
 
@@ -76,13 +88,49 @@ function getMemberQuickActionCapabilities(detail: GroupPlanDetail) {
     canInviteMembers,
     canManageGroup,
     canSuggestPlanChange,
-    hasAnyAction: canSuggestPlanChange || canInviteMembers || canManageGroup,
+    hasAnyAction: [canSuggestPlanChange, canInviteMembers, canManageGroup].some(
+      Boolean,
+    ),
   };
+}
+
+function canViewerSuggestPlanChange(detail: GroupPlanDetail) {
+  if (!detail.viewer.canSuggestPlanChange) {
+    return false;
+  }
+
+  return Boolean(detail.plan);
 }
 
 type CreateProposalAction = ReturnType<
   typeof useGroupPlanProposalActions
 >["createProposal"];
+
+type GroupPlanProposalActions = ReturnType<typeof useGroupPlanProposalActions>;
+
+function PlanChangeQuickAction({
+  capabilities,
+  detail,
+  proposalActions,
+}: {
+  capabilities: MemberQuickActionCapabilities;
+  detail: GroupPlanDetail;
+  proposalActions: GroupPlanProposalActions;
+}) {
+  if (!capabilities.canSuggestPlanChange) {
+    return null;
+  }
+
+  return (
+    <DeferredPlanChangeDialog
+      detail={detail}
+      disabled={proposalActions.isSubmitting || !proposalActions.isOnline}
+      isCreating={proposalActions.isCreating}
+      isOnline={proposalActions.isOnline}
+      onCreate={proposalActions.createProposal}
+    />
+  );
+}
 
 function DeferredPlanChangeDialog({
   detail,
@@ -144,6 +192,28 @@ interface QuickActionLinkProps {
   groupId: string;
   icon: LucideIcon;
   label: string;
+}
+
+function MemberQuickActionLink({
+  action,
+  capabilities,
+  groupId,
+}: {
+  action: (typeof QUICK_ACTION_LINKS)[number];
+  capabilities: MemberQuickActionCapabilities;
+  groupId: string;
+}) {
+  if (!capabilities[action.capability]) {
+    return null;
+  }
+
+  return (
+    <QuickActionLink
+      groupId={groupId}
+      icon={action.icon}
+      label={action.label}
+    />
+  );
 }
 
 function QuickActionLink({ groupId, icon: Icon, label }: QuickActionLinkProps) {

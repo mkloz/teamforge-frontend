@@ -27,9 +27,7 @@ export function useMessageLayout({ message, isOwn }: UseMessageLayoutProps) {
   return {
     reactionGroups,
     galleryRounding,
-    isReadByOthers:
-      (message.readByCount ?? message.readBy?.length ?? 0) > 0 ||
-      message.status === "READ",
+    isReadByOthers: isMessageReadByOthers(message),
   };
 }
 
@@ -41,14 +39,11 @@ function buildReactionGroups(
 
   const groups: Record<string, { count: number; isActive: boolean }> = {};
   reactions.forEach((reaction) => {
-    if (!groups[reaction.emoji]) {
-      groups[reaction.emoji] = { count: 0, isActive: false };
-    }
+    const group = getOrCreateReactionGroup(groups, reaction.emoji);
 
-    groups[reaction.emoji].count++;
-    if (currentUserId && reaction.userId === currentUserId) {
-      groups[reaction.emoji].isActive = true;
-    }
+    group.count++;
+    group.isActive =
+      group.isActive || isCurrentUserReaction(reaction.userId, currentUserId);
   });
 
   return Object.entries(groups).map(([emoji, data]) => ({
@@ -56,6 +51,30 @@ function buildReactionGroups(
     count: data.count,
     isActive: data.isActive,
   }));
+}
+
+function getOrCreateReactionGroup(
+  groups: Record<string, { count: number; isActive: boolean }>,
+  emoji: string,
+) {
+  groups[emoji] ??= { count: 0, isActive: false };
+
+  return groups[emoji];
+}
+
+function isCurrentUserReaction(
+  reactionUserId: string,
+  currentUserId: string | undefined,
+) {
+  return Boolean(currentUserId && reactionUserId === currentUserId);
+}
+
+function isMessageReadByOthers(message: UnifiedMessage) {
+  return getMessageReadByCount(message) > 0 || message.status === "READ";
+}
+
+function getMessageReadByCount(message: UnifiedMessage) {
+  return message.readByCount ?? message.readBy?.length ?? 0;
 }
 
 interface GalleryRoundingInput {
@@ -66,6 +85,17 @@ interface GalleryRoundingInput {
   replyTo: UnifiedMessage["replyTo"];
 }
 
+interface GalleryRoundingState {
+  hasAbove: boolean;
+  hasBelow: boolean;
+  isOnlyContent: boolean;
+}
+
+const ONLY_CONTENT_TAIL_ROUNDING = {
+  own: "rounded-br-none",
+  other: "rounded-bl-none",
+} as const;
+
 function getGalleryRounding({
   attachments,
   content,
@@ -73,21 +103,78 @@ function getGalleryRounding({
   reactionCount,
   replyTo,
 }: GalleryRoundingInput) {
-  if (!attachments?.some(isVisualAttachment)) {
+  const roundingState = getGalleryRoundingState({
+    attachments,
+    content,
+    reactionCount,
+    replyTo,
+  });
+
+  if (!roundingState) {
     return "";
   }
 
-  const hasAbove =
-    !!replyTo ||
-    attachments.some(
-      (attachment) => attachment.type === "FILE" || attachment.type === "AUDIO",
-    );
-  const hasBelow = !!content || reactionCount > 0;
-  const isOnlyContent = !hasAbove && !hasBelow;
-
   return cn(
-    !hasAbove ? "rounded-t-xl" : "rounded-t-none",
-    !hasBelow ? "rounded-b-xl" : "rounded-b-none",
-    isOnlyContent && (isOwn ? "rounded-br-none" : "rounded-bl-none"),
+    getGalleryTopRoundingClass(roundingState),
+    getGalleryBottomRoundingClass(roundingState),
+    getGalleryTailRoundingClass(roundingState, isOwn),
   );
+}
+
+function getGalleryRoundingState({
+  attachments,
+  content,
+  reactionCount,
+  replyTo,
+}: Omit<GalleryRoundingInput, "isOwn">): GalleryRoundingState | null {
+  if (!hasVisualAttachment(attachments)) {
+    return null;
+  }
+
+  const hasAbove = hasGalleryContentAbove({ attachments, replyTo });
+  const hasBelow = !!content || reactionCount > 0;
+
+  return {
+    hasAbove,
+    hasBelow,
+    isOnlyContent: !hasAbove && !hasBelow,
+  };
+}
+
+function getGalleryTopRoundingClass({ hasAbove }: GalleryRoundingState) {
+  return hasAbove ? "rounded-t-none" : "rounded-t-xl";
+}
+
+function getGalleryBottomRoundingClass({ hasBelow }: GalleryRoundingState) {
+  return hasBelow ? "rounded-b-none" : "rounded-b-xl";
+}
+
+function getGalleryTailRoundingClass(
+  { isOnlyContent }: GalleryRoundingState,
+  isOwn: boolean,
+) {
+  if (!isOnlyContent) {
+    return false;
+  }
+
+  return isOwn
+    ? ONLY_CONTENT_TAIL_ROUNDING.own
+    : ONLY_CONTENT_TAIL_ROUNDING.other;
+}
+
+function hasVisualAttachment(attachments: UnifiedMessage["attachments"]) {
+  return Boolean(attachments?.some(isVisualAttachment));
+}
+
+function hasGalleryContentAbove({
+  attachments,
+  replyTo,
+}: Pick<GalleryRoundingInput, "attachments" | "replyTo">) {
+  return Boolean(replyTo || attachments?.some(isFileOrAudioAttachment));
+}
+
+function isFileOrAudioAttachment(
+  attachment: NonNullable<UnifiedMessage["attachments"]>[number],
+) {
+  return attachment.type === "FILE" || attachment.type === "AUDIO";
 }

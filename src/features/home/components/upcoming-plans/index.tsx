@@ -42,7 +42,7 @@ interface UpcomingPlansViewProps {
   plans: PlannedGroup[];
 }
 
-export function UpcomingPlansView({
+function UpcomingPlansView({
   isPlansLoading = false,
   plans,
 }: UpcomingPlansViewProps) {

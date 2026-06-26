@@ -19,6 +19,15 @@ type NotificationGroup = ReturnType<
 >["notificationGroups"][number];
 
 type PendingDetailAction = "mark-read" | "mark-unread" | "open" | null;
+type ReadToggleDetailAction = Extract<
+  PendingDetailAction,
+  "mark-read" | "mark-unread"
+>;
+
+const READ_TOGGLE_DETAIL_ACTIONS = new Set<PendingDetailAction>([
+  "mark-read",
+  "mark-unread",
+]);
 
 interface NotificationsDrawerHeaderProps {
   count: number;
@@ -49,6 +58,27 @@ interface NotificationsDrawerBodyProps {
   onToggleSelectedNotificationRead: (notification: Notification) => void;
 }
 
+function getNotificationsDrawerHeaderState({
+  count,
+  selectedNotification,
+}: Pick<NotificationsDrawerHeaderProps, "count" | "selectedNotification">) {
+  return {
+    containerClassName: selectedNotification
+      ? "min-h-16 pb-2"
+      : "min-h-18 border-border border-b pb-4",
+    countLabel: getUnreadCountLabel(count),
+    showListActions: !selectedNotification,
+  };
+}
+
+function getUnreadCountLabel(count: number) {
+  if (count === 0) {
+    return "All caught up";
+  }
+
+  return `${count} unread ${count === 1 ? "update" : "updates"}`;
+}
+
 export function NotificationsDrawerHeader({
   count,
   isMarkingAllRead,
@@ -61,13 +91,16 @@ export function NotificationsDrawerHeader({
   onMarkAllReadDialogOpenChange,
   onRefresh,
 }: NotificationsDrawerHeaderProps) {
+  const headerState = getNotificationsDrawerHeaderState({
+    count,
+    selectedNotification,
+  });
+
   return (
     <div
       className={cn(
         "flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 pt-4",
-        selectedNotification
-          ? "min-h-16 pb-2"
-          : "min-h-18 border-border border-b pb-4",
+        headerState.containerClassName,
       )}
     >
       <div className="min-w-0 flex-1">
@@ -75,13 +108,11 @@ export function NotificationsDrawerHeader({
           Notifications
         </h2>
         <p className="mt-1 text-slate-muted text-xs">
-          {count > 0
-            ? `${count} unread ${count === 1 ? "update" : "updates"}`
-            : "All caught up"}
+          {headerState.countLabel}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        {!selectedNotification ? (
+        {headerState.showListActions ? (
           <NotificationsListHeaderActions
             count={count}
             isMarkingAllRead={isMarkingAllRead}
@@ -136,6 +167,8 @@ function NotificationsListHeaderActions({
   onMarkAllReadDialogOpen: () => void;
   onRefresh: () => void;
 }) {
+  const labels = getNotificationsListHeaderActionLabels(isOnline);
+
   return (
     <>
       <Tooltip>
@@ -152,11 +185,7 @@ function NotificationsListHeaderActions({
             <CheckCheck className="size-4 shrink-0" aria-hidden="true" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">
-          {isOnline
-            ? "Mark all notifications as read"
-            : "Reconnect to update read state"}
-        </TooltipContent>
+        <TooltipContent side="bottom">{labels.markAllRead}</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -172,12 +201,24 @@ function NotificationsListHeaderActions({
             <RefreshCw className="size-4 shrink-0" aria-hidden="true" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">
-          {isOnline ? "Refresh notifications" : "Reconnect to refresh"}
-        </TooltipContent>
+        <TooltipContent side="bottom">{labels.refresh}</TooltipContent>
       </Tooltip>
     </>
   );
+}
+
+function getNotificationsListHeaderActionLabels(isOnline: boolean) {
+  if (!isOnline) {
+    return {
+      markAllRead: "Reconnect to update read state",
+      refresh: "Reconnect to refresh",
+    };
+  }
+
+  return {
+    markAllRead: "Mark all notifications as read",
+    refresh: "Refresh notifications",
+  };
 }
 
 export function NotificationsDrawerBody({
@@ -207,15 +248,16 @@ export function NotificationsDrawerBody({
     return (
       <NotificationDetail
         item={selectedNotification}
-        isTogglingRead={
-          pendingNotificationId === selectedNotification.id &&
-          (pendingDetailAction === "mark-read" ||
-            pendingDetailAction === "mark-unread")
-        }
-        isOpening={
-          pendingNotificationId === selectedNotification.id &&
-          pendingDetailAction === "open"
-        }
+        isTogglingRead={isSelectedNotificationReadTogglePending({
+          pendingDetailAction,
+          pendingNotificationId,
+          selectedNotification,
+        })}
+        isOpening={isSelectedNotificationOpenPending({
+          pendingDetailAction,
+          pendingNotificationId,
+          selectedNotification,
+        })}
         isReadActionDisabled={!isOnline}
         onBack={onBackToList}
         onToggleRead={onToggleSelectedNotificationRead}
@@ -231,9 +273,10 @@ export function NotificationsDrawerBody({
           key={group.key}
           label={group.label}
           items={group.items}
-          pendingNotificationId={
-            pendingDetailAction ? pendingNotificationId : null
-          }
+          pendingNotificationId={getListPendingNotificationId({
+            pendingDetailAction,
+            pendingNotificationId,
+          })}
           pendingReadToggleNotificationId={pendingReadToggleNotificationId}
           isReadActionDisabled={!isOnline}
           onSelect={onSelectNotification}
@@ -242,6 +285,52 @@ export function NotificationsDrawerBody({
       ))}
     </>
   );
+}
+
+function isSelectedNotificationReadTogglePending({
+  pendingDetailAction,
+  pendingNotificationId,
+  selectedNotification,
+}: {
+  pendingDetailAction: PendingDetailAction;
+  pendingNotificationId: string | null;
+  selectedNotification: Notification;
+}) {
+  return (
+    pendingNotificationId === selectedNotification.id &&
+    isReadToggleDetailAction(pendingDetailAction)
+  );
+}
+
+function isSelectedNotificationOpenPending({
+  pendingDetailAction,
+  pendingNotificationId,
+  selectedNotification,
+}: {
+  pendingDetailAction: PendingDetailAction;
+  pendingNotificationId: string | null;
+  selectedNotification: Notification;
+}) {
+  return (
+    pendingNotificationId === selectedNotification.id &&
+    pendingDetailAction === "open"
+  );
+}
+
+function isReadToggleDetailAction(
+  pendingDetailAction: PendingDetailAction,
+): pendingDetailAction is ReadToggleDetailAction {
+  return READ_TOGGLE_DETAIL_ACTIONS.has(pendingDetailAction);
+}
+
+function getListPendingNotificationId({
+  pendingDetailAction,
+  pendingNotificationId,
+}: {
+  pendingDetailAction: PendingDetailAction;
+  pendingNotificationId: string | null;
+}) {
+  return pendingDetailAction ? pendingNotificationId : null;
 }
 
 function NotificationsEmptyState() {

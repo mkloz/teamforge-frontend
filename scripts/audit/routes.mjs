@@ -1,3 +1,5 @@
+// @ts-check
+
 import { z } from "zod";
 
 /**
@@ -5,6 +7,8 @@ import { z } from "zod";
  * @property {string[]} [expectedFailedRequestPatterns] URL/text fragments for expected failed requests.
  * @property {string} slug File-safe route identifier used for reports.
  * @property {string} path App route path to audit.
+ *
+ * @typedef {Record<string, unknown>} RouteDiscoveryItem
  *
  * @typedef {object} ResolveAuditRoutesOptions
  * @property {string} accessToken Bearer token for route discovery.
@@ -191,7 +195,7 @@ async function resolveUserId({ accessToken, apiUrl }) {
  *
  * @param {string} endpoint API endpoint relative to `/api/v1`.
  * @param {ResolveAuditRoutesOptions} options Route discovery options.
- * @returns {Promise<Record<string, unknown>[] | null>} Items array when available.
+ * @returns {Promise<RouteDiscoveryItem[] | null>} Items array when available.
  */
 async function fetchItems(endpoint, options) {
   const payload = await fetchJson(`${endpoint}?limit=1`, options);
@@ -205,7 +209,7 @@ async function fetchItems(endpoint, options) {
  *
  * @param {string} endpoint API endpoint relative to `/api/v1`.
  * @param {ResolveAuditRoutesOptions} options Route discovery options.
- * @returns {Promise<Record<string, unknown> | null>} JSON object when available.
+ * @returns {Promise<RouteDiscoveryItem | null>} JSON object when available.
  */
 async function fetchJson(endpoint, { accessToken, apiUrl }) {
   try {

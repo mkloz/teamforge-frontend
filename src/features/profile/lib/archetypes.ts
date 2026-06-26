@@ -28,10 +28,6 @@ export const TYPE_INFO: Record<PersonalityType, TypeInfo> = {
   ESFP: { title: "The Entertainer", archetype: "The Performer" },
 };
 
-export function getTypeTitle(type: PersonalityType): string {
-  return TYPE_INFO[type].title;
-}
-
 export function getArchetype(type: PersonalityType): string {
   return TYPE_INFO[type].archetype;
 }

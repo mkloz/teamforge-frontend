@@ -27,12 +27,6 @@ export interface PlaywrightAuditRoute {
   slug: string;
 }
 
-export interface PlaywrightAccessibilityRoute {
-  expectedFailedRequestPatterns?: string[];
-  path: string;
-  slug: string;
-}
-
 type PlaywrightRouteSet = "authenticated" | "smoke";
 
 const routeInventoryItemSchema = z.object({
@@ -112,139 +106,138 @@ const PLAYWRIGHT_ROUTE_INVENTORY: Record<string, RouteInventoryItem> = {
   },
 };
 
-export const PLAYWRIGHT_ROUTE_CONTRACTS: Record<string, PlaywrightAuditRoute> =
-  {
-    "14-home": {
-      path: "/home",
-      productChecks: [
-        {
-          kind: "label",
-          name: "Active groups and sharing",
-        },
-      ],
-      slug: "14-home",
-    },
-    "15-explore": {
-      path: "/explore",
-      productChecks: [
-        {
-          kind: "role",
-          level: 1,
-          name: "Explore",
-          role: "heading",
-          visibility: "attached",
-        },
-        {
-          kind: "text",
-          name: "Open groups ranked by fit, timing, and available seats.",
-          visibility: "attached",
-        },
-      ],
-      slug: "15-explore",
-    },
-    "16-group-detail-sample": {
-      path: "/groups/audit-group-id",
-      productChecks: [
-        {
-          kind: "label",
-          name: "Show group QR code",
-        },
-        {
-          kind: "role",
-          name: "The Pitch",
-          role: "region",
-          visibility: "attached",
-        },
-        {
-          kind: "role",
-          name: "Group decision panel",
-          role: "complementary",
-          visibility: "attached",
-        },
-      ],
-      slug: "16-group-detail-sample",
-    },
-    "17-activity": {
-      path: "/activity",
-      productChecks: [
-        {
-          kind: "role",
-          level: 1,
-          name: "Activity",
-          role: "heading",
-          visibility: "attached",
-        },
-        {
-          kind: "role",
-          name: "Activity",
-          role: "region",
-          visibility: "attached",
-        },
-      ],
-      slug: "17-activity",
-    },
-    "18-profile": {
-      path: "/profile",
-      productChecks: [
-        {
-          kind: "label",
-          name: "Show QR Code",
-        },
-        {
-          kind: "text",
-          name: "Profile sketch",
-          visibility: "attached",
-        },
-      ],
-      slug: "18-profile",
-    },
-    "19-user-detail-sample": {
-      path: "/users/audit-user-id",
-      productChecks: [
-        {
-          kind: "text",
-          name: "Profile sketch",
-          visibility: "attached",
-        },
-      ],
-      slug: "19-user-detail-sample",
-    },
-    "20-settings": {
-      path: "/settings",
-      productChecks: [
-        {
-          kind: "role",
-          level: 1,
-          name: "Settings",
-          role: "heading",
-        },
-        {
-          kind: "role",
-          level: 2,
-          name: "Make your profile feel like you",
-          role: "heading",
-          visibility: "attached",
-        },
-      ],
-      slug: "20-settings",
-    },
-    "21-forge": {
-      path: "/forge",
-      productChecks: [
-        {
-          kind: "role",
-          level: 1,
-          name: "What are you trying to make happen?",
-          role: "heading",
-        },
-        {
-          kind: "label",
-          name: "Forge my group",
-        },
-      ],
-      slug: "21-forge",
-    },
-  };
+const PLAYWRIGHT_ROUTE_CONTRACTS: Record<string, PlaywrightAuditRoute> = {
+  "14-home": {
+    path: "/home",
+    productChecks: [
+      {
+        kind: "label",
+        name: "Active groups and sharing",
+      },
+    ],
+    slug: "14-home",
+  },
+  "15-explore": {
+    path: "/explore",
+    productChecks: [
+      {
+        kind: "role",
+        level: 1,
+        name: "Explore",
+        role: "heading",
+        visibility: "attached",
+      },
+      {
+        kind: "text",
+        name: "Open groups ranked by fit, timing, and available seats.",
+        visibility: "attached",
+      },
+    ],
+    slug: "15-explore",
+  },
+  "16-group-detail-sample": {
+    path: "/groups/audit-group-id",
+    productChecks: [
+      {
+        kind: "label",
+        name: "Show group QR code",
+      },
+      {
+        kind: "role",
+        name: "The Pitch",
+        role: "region",
+        visibility: "attached",
+      },
+      {
+        kind: "role",
+        name: "Group decision panel",
+        role: "complementary",
+        visibility: "attached",
+      },
+    ],
+    slug: "16-group-detail-sample",
+  },
+  "17-activity": {
+    path: "/activity",
+    productChecks: [
+      {
+        kind: "role",
+        level: 1,
+        name: "Activity",
+        role: "heading",
+        visibility: "attached",
+      },
+      {
+        kind: "role",
+        name: "Activity",
+        role: "region",
+        visibility: "attached",
+      },
+    ],
+    slug: "17-activity",
+  },
+  "18-profile": {
+    path: "/profile",
+    productChecks: [
+      {
+        kind: "label",
+        name: "Show QR Code",
+      },
+      {
+        kind: "text",
+        name: "Profile sketch",
+        visibility: "attached",
+      },
+    ],
+    slug: "18-profile",
+  },
+  "19-user-detail-sample": {
+    path: "/users/audit-user-id",
+    productChecks: [
+      {
+        kind: "text",
+        name: "Profile sketch",
+        visibility: "attached",
+      },
+    ],
+    slug: "19-user-detail-sample",
+  },
+  "20-settings": {
+    path: "/settings",
+    productChecks: [
+      {
+        kind: "role",
+        level: 1,
+        name: "Settings",
+        role: "heading",
+      },
+      {
+        kind: "role",
+        level: 2,
+        name: "Make your profile feel like you",
+        role: "heading",
+        visibility: "attached",
+      },
+    ],
+    slug: "20-settings",
+  },
+  "21-forge": {
+    path: "/forge",
+    productChecks: [
+      {
+        kind: "role",
+        level: 1,
+        name: "What are you trying to make happen?",
+        role: "heading",
+      },
+      {
+        kind: "label",
+        name: "Forge my group",
+      },
+    ],
+    slug: "21-forge",
+  },
+};
 
 function normalizeRouteSet(value: string | undefined): PlaywrightRouteSet {
   return value === "smoke" ? "smoke" : "authenticated";

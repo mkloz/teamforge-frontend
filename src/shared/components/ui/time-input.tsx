@@ -1,7 +1,12 @@
 import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import {
+  type CSSProperties,
+  type Dispatch,
   type KeyboardEvent,
+  type MutableRefObject,
   type ReactNode,
+  type RefObject,
+  type SetStateAction,
   useCallback,
   useEffect,
   useId,
@@ -28,6 +33,8 @@ type TimeInputProps = Omit<
 };
 
 type TimePeriod = "AM" | "PM";
+type TimeFormat = "12" | "24";
+type TimeParts = ReturnType<typeof getTimeParts>;
 const TIME_PERIODS: TimePeriod[] = ["AM", "PM"];
 const TIME_OPTION_KEY_OFFSETS: Record<string, number> = {
   ArrowDown: 1,
@@ -35,11 +42,17 @@ const TIME_OPTION_KEY_OFFSETS: Record<string, number> = {
   ArrowRight: 1,
   ArrowUp: -1,
 };
+const TIME_INPUT_PANEL_OPEN_KEYS = new Set([" ", "ArrowDown", "Enter"]);
 
 interface ActiveTimeOptionRefs {
   hour: HTMLButtonElement | null;
   minute: HTMLButtonElement | null;
   period: HTMLButtonElement | null;
+}
+
+interface TimeInputPanelState {
+  panelStyle: CSSProperties;
+  portalTarget: Element;
 }
 
 function focusActiveTimeOptions(activeRefs: ActiveTimeOptionRefs) {
@@ -55,6 +68,61 @@ function getTimePickerGridClass(useMeridiem: boolean) {
   return useMeridiem
     ? "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(3.5rem,0.7fr)]"
     : "grid-cols-2";
+}
+
+function getTimePickerPanelWidth(useMeridiem: boolean) {
+  return useMeridiem ? 188 : 144;
+}
+
+function shouldOpenTimeInputPanel(disabled: boolean | undefined, key: string) {
+  return !disabled && TIME_INPUT_PANEL_OPEN_KEYS.has(key);
+}
+
+function openTimeInputPanelIfEnabled({
+  disabled,
+  openPanel,
+}: {
+  disabled: boolean | undefined;
+  openPanel: () => void;
+}) {
+  if (disabled) {
+    return;
+  }
+
+  openPanel();
+}
+
+function handleTimeInputKeyDown({
+  disabled,
+  event,
+  openPanel,
+}: {
+  disabled: boolean | undefined;
+  event: KeyboardEvent<HTMLInputElement>;
+  openPanel: () => void;
+}) {
+  if (!shouldOpenTimeInputPanel(disabled, event.key)) {
+    return;
+  }
+
+  event.preventDefault();
+  openPanel();
+}
+
+function getTimeInputPanelState({
+  open,
+  panelStyle,
+  portalTarget,
+}: {
+  open: boolean;
+  panelStyle: CSSProperties | null;
+  portalTarget: Element | null;
+}): TimeInputPanelState | null {
+  if (!open || !panelStyle || !portalTarget) {
+    return null;
+  }
+
+  return { panelStyle, portalTarget };
 }
 
 function handleColumnKeyDown<T>(
@@ -93,25 +161,46 @@ function formatTimeValue(hour: number, minute: number) {
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
+function readTimeMinuteParts(value: string) {
+  const [hourValue, minuteValue] = value.split(":").map(Number);
+
+  return { hourValue, minuteValue };
+}
+
+function isValidTimeHour(hour: number) {
+  return Number.isFinite(hour) && hour >= 0 && hour <= 23;
+}
+
+function isValidTimeMinute(minute: number) {
+  return Number.isFinite(minute) && minute >= 0 && minute <= 59;
+}
+
+function areValidTimeMinuteParts({
+  hourValue,
+  minuteValue,
+}: ReturnType<typeof readTimeMinuteParts>) {
+  return isValidTimeHour(hourValue) && isValidTimeMinute(minuteValue);
+}
+
+function getTotalTimeMinutes({
+  hourValue,
+  minuteValue,
+}: ReturnType<typeof readTimeMinuteParts>) {
+  return hourValue * 60 + minuteValue;
+}
+
 function parseTimeMinutes(value: string | null | undefined) {
   if (!value) {
     return null;
   }
 
-  const [hourValue, minuteValue] = value.split(":").map(Number);
+  const timeParts = readTimeMinuteParts(value);
 
-  if (
-    !Number.isFinite(hourValue) ||
-    !Number.isFinite(minuteValue) ||
-    hourValue < 0 ||
-    hourValue > 23 ||
-    minuteValue < 0 ||
-    minuteValue > 59
-  ) {
+  if (!areValidTimeMinuteParts(timeParts)) {
     return null;
   }
 
-  return hourValue * 60 + minuteValue;
+  return getTotalTimeMinutes(timeParts);
 }
 
 function formatTimeDisplay(
@@ -143,7 +232,7 @@ function getSafeInterval(intervalMinutes: number) {
 }
 
 function buildMinuteOptions(intervalMinutes: number) {
-  const safeInterval = Math.max(5, Math.min(60, intervalMinutes));
+  const safeInterval = getSafeInterval(intervalMinutes);
   const optionCount = Math.ceil(60 / safeInterval);
 
   return Array.from({ length: optionCount }, (_, index) => {
@@ -200,6 +289,34 @@ function toHour24(hour: number, period: TimePeriod, useMeridiem: boolean) {
   }
 
   return (hour % 12) + (period === "PM" ? 12 : 0);
+}
+
+function getCommittedTimeValue({
+  parts,
+  selectedParts,
+  useMeridiem,
+}: {
+  parts: Partial<TimeParts>;
+  selectedParts: TimeParts;
+  useMeridiem: boolean;
+}) {
+  const hour = parts.hour ?? selectedParts.hour;
+  const minute = parts.minute ?? selectedParts.minute;
+  const period = parts.period ?? selectedParts.period;
+
+  return formatTimeValue(toHour24(hour, period, useMeridiem), minute);
+}
+
+function buildHourOptions(useMeridiem: boolean) {
+  return Array.from({ length: useMeridiem ? 12 : 24 }, (_, index) =>
+    useMeridiem ? index + 1 : index,
+  );
+}
+
+function getNearestTimeOption(options: number[], value: number) {
+  return options.reduce((nearest, option) =>
+    Math.abs(option - value) < Math.abs(nearest - value) ? option : nearest,
+  );
 }
 
 interface TimeScrollColumnProps<T extends number | string> {
@@ -341,6 +458,205 @@ function TimeScrollColumn<T extends number | string>({
   );
 }
 
+interface TimePeriodColumnProps {
+  activeRef: (node: HTMLButtonElement | null) => void;
+  onSelect: (period: TimePeriod) => void;
+  selectedPeriod: TimePeriod;
+}
+
+function TimePeriodColumn({
+  activeRef,
+  onSelect,
+  selectedPeriod,
+}: TimePeriodColumnProps) {
+  return (
+    <div className="flex min-w-0 flex-col px-1.5">
+      <p className="pb-2 text-center font-semibold text-slate-muted text-xs">
+        Period
+      </p>
+      <div
+        role="listbox"
+        aria-label="Choose period"
+        className="flex min-h-56 flex-1 flex-col justify-center gap-1"
+      >
+        {TIME_PERIODS.map((period) => {
+          const selected = selectedPeriod === period;
+
+          return (
+            <Button
+              key={period}
+              ref={(node) => {
+                if (selected) {
+                  activeRef(node);
+                }
+              }}
+              type="button"
+              variant="ghost"
+              size="sm"
+              role="option"
+              aria-selected={selected}
+              tabIndex={selected ? 0 : -1}
+              className={cn(
+                "mx-auto h-8 w-full max-w-14 rounded-full text-xs",
+                selected && "border-primary bg-primary text-primary-foreground",
+              )}
+              onKeyDown={(event) =>
+                handleColumnKeyDown(
+                  TIME_PERIODS,
+                  selectedPeriod,
+                  event,
+                  onSelect,
+                )
+              }
+              onClick={() => onSelect(period)}
+            >
+              {period}
+            </Button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+interface TimeInputPanelProps {
+  activeRefs: MutableRefObject<ActiveTimeOptionRefs>;
+  clearable: boolean;
+  closePanel: () => void;
+  commitParts: (parts: Partial<TimeParts>) => void;
+  hourOptions: number[];
+  minuteOptions: number[];
+  onValueChange: (value: string) => void;
+  panelId: string;
+  panelRef: RefObject<HTMLDivElement | null>;
+  panelStyle: CSSProperties;
+  portalTarget: Element;
+  selectedMinute: number;
+  selectedParts: TimeParts;
+  setTimeFormat: Dispatch<SetStateAction<TimeFormat>>;
+  useMeridiem: boolean;
+}
+
+function TimeInputPanel({
+  activeRefs,
+  clearable,
+  closePanel,
+  commitParts,
+  hourOptions,
+  minuteOptions,
+  onValueChange,
+  panelId,
+  panelRef,
+  panelStyle,
+  portalTarget,
+  selectedMinute,
+  selectedParts,
+  setTimeFormat,
+  useMeridiem,
+}: TimeInputPanelProps) {
+  return createPortal(
+    <div
+      id={panelId}
+      ref={panelRef}
+      style={panelStyle}
+      className="z-100 rounded-xl border border-border bg-card p-2 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]"
+    >
+      <div
+        className={cn(
+          "grid w-full items-stretch divide-x divide-border/60 rounded-xl py-1",
+          getTimePickerGridClass(useMeridiem),
+        )}
+      >
+        <TimeScrollColumn
+          title="Hour"
+          ariaLabel="Choose hour"
+          options={hourOptions}
+          currentValue={selectedParts.hour}
+          isSelected={(hour) => selectedParts.hour === hour}
+          activeRef={(node) => {
+            activeRefs.current.hour = node;
+          }}
+          renderOption={(hour) =>
+            useMeridiem ? hour : String(hour).padStart(2, "0")
+          }
+          onKeyDown={(_, event) =>
+            handleColumnKeyDown(
+              hourOptions,
+              selectedParts.hour,
+              event,
+              (nextHour) => commitParts({ hour: nextHour }),
+            )
+          }
+          onSelect={(hour) => commitParts({ hour })}
+        />
+
+        <TimeScrollColumn
+          title="Minute"
+          ariaLabel="Choose minute"
+          options={minuteOptions}
+          currentValue={selectedMinute}
+          isSelected={(minute) => selectedMinute === minute}
+          activeRef={(node) => {
+            activeRefs.current.minute = node;
+          }}
+          renderOption={(minute) => String(minute).padStart(2, "0")}
+          onKeyDown={(_, event) =>
+            handleColumnKeyDown(
+              minuteOptions,
+              selectedMinute,
+              event,
+              (nextMinute) => commitParts({ minute: nextMinute }),
+            )
+          }
+          onSelect={(minute) => commitParts({ minute })}
+        />
+
+        {useMeridiem ? (
+          <TimePeriodColumn
+            selectedPeriod={selectedParts.period}
+            activeRef={(node) => {
+              activeRefs.current.period = node;
+            }}
+            onSelect={(period) => commitParts({ period })}
+          />
+        ) : null}
+      </div>
+
+      <div className="mt-2 flex items-center justify-between gap-2 border-border/70 border-t pt-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="xs"
+          onClick={() => {
+            setTimeFormat((current) => (current === "12" ? "24" : "12"));
+          }}
+        >
+          {useMeridiem ? "24h" : "12h"}
+        </Button>
+        <div className="flex items-center gap-2">
+          {clearable ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="xs"
+              onClick={() => {
+                onValueChange("");
+                closePanel();
+              }}
+            >
+              Clear
+            </Button>
+          ) : null}
+          <Button type="button" variant="ghost" size="xs" onClick={closePanel}>
+            Done
+          </Button>
+        </div>
+      </div>
+    </div>,
+    portalTarget,
+  );
+}
+
 function TimeInput({
   className,
   clearable = true,
@@ -353,7 +669,7 @@ function TimeInput({
   ...props
 }: TimeInputProps) {
   const panelId = useId();
-  const [timeFormat, setTimeFormat] = useState<"12" | "24">(() =>
+  const [timeFormat, setTimeFormat] = useState<TimeFormat>(() =>
     shouldUseMeridiemTime() ? "12" : "24",
   );
   const useMeridiem = timeFormat === "12";
@@ -367,7 +683,7 @@ function TimeInput({
     triggerRef,
   } = useFloatingInputPanel({
     panelHeight: 340,
-    panelWidth: useMeridiem ? 188 : 144,
+    panelWidth: getTimePickerPanelWidth(useMeridiem),
   });
   const activeRefs = useRef<ActiveTimeOptionRefs>({
     hour: null,
@@ -376,30 +692,33 @@ function TimeInput({
   });
   const selectedParts = getTimeParts(value, intervalMinutes, useMeridiem);
   const hourOptions = useMemo(
-    () =>
-      Array.from({ length: useMeridiem ? 12 : 24 }, (_, index) =>
-        useMeridiem ? index + 1 : index,
-      ),
+    () => buildHourOptions(useMeridiem),
     [useMeridiem],
   );
   const minuteOptions = useMemo(
     () => buildMinuteOptions(intervalMinutes),
     [intervalMinutes],
   );
+  const panelState = getTimeInputPanelState({
+    open,
+    panelStyle,
+    portalTarget,
+  });
 
   const commitParts = (parts: Partial<typeof selectedParts>) => {
-    const hour = parts.hour ?? selectedParts.hour;
-    const minute = parts.minute ?? selectedParts.minute;
-    const period = parts.period ?? selectedParts.period;
-
-    onValueChange(formatTimeValue(toHour24(hour, period, useMeridiem), minute));
-  };
-
-  const getNearestMinute = (minute: number) => {
-    return minuteOptions.reduce((nearest, option) =>
-      Math.abs(option - minute) < Math.abs(nearest - minute) ? option : nearest,
+    onValueChange(
+      getCommittedTimeValue({
+        parts,
+        selectedParts,
+        useMeridiem,
+      }),
     );
   };
+
+  const selectedMinute = getNearestTimeOption(
+    minuteOptions,
+    selectedParts.minute,
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: selected time changes should recenter the active option while the panel is open.
   useEffect(() => {
@@ -430,176 +749,32 @@ function TimeInput({
         leftIcon={<Clock size={15} />}
         className={cn("cursor-pointer caret-transparent", className)}
         onClick={() => {
-          if (!disabled) {
-            openPanel();
-          }
+          openTimeInputPanelIfEnabled({ disabled, openPanel });
         }}
         onKeyDown={(event) => {
-          if (
-            !disabled &&
-            (event.key === "Enter" ||
-              event.key === " " ||
-              event.key === "ArrowDown")
-          ) {
-            event.preventDefault();
-            openPanel();
-          }
+          handleTimeInputKeyDown({ disabled, event, openPanel });
         }}
       />
 
-      {open && panelStyle && portalTarget
-        ? createPortal(
-            <div
-              id={panelId}
-              ref={panelRef}
-              style={panelStyle}
-              className="z-100 rounded-xl border border-border bg-card p-2 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]"
-            >
-              <div
-                className={cn(
-                  "grid w-full items-stretch divide-x divide-border/60 rounded-xl py-1",
-                  getTimePickerGridClass(useMeridiem),
-                )}
-              >
-                <TimeScrollColumn
-                  title="Hour"
-                  ariaLabel="Choose hour"
-                  options={hourOptions}
-                  currentValue={selectedParts.hour}
-                  isSelected={(hour) => selectedParts.hour === hour}
-                  activeRef={(node) => {
-                    activeRefs.current.hour = node;
-                  }}
-                  renderOption={(hour) =>
-                    useMeridiem ? hour : String(hour).padStart(2, "0")
-                  }
-                  onKeyDown={(_, event) =>
-                    handleColumnKeyDown(
-                      hourOptions,
-                      selectedParts.hour,
-                      event,
-                      (nextHour) => commitParts({ hour: nextHour }),
-                    )
-                  }
-                  onSelect={(hour) => commitParts({ hour })}
-                />
-
-                <TimeScrollColumn
-                  title="Minute"
-                  ariaLabel="Choose minute"
-                  options={minuteOptions}
-                  currentValue={getNearestMinute(selectedParts.minute)}
-                  isSelected={(minute) =>
-                    getNearestMinute(selectedParts.minute) === minute
-                  }
-                  activeRef={(node) => {
-                    activeRefs.current.minute = node;
-                  }}
-                  renderOption={(minute) => String(minute).padStart(2, "0")}
-                  onKeyDown={(_, event) =>
-                    handleColumnKeyDown(
-                      minuteOptions,
-                      getNearestMinute(selectedParts.minute),
-                      event,
-                      (nextMinute) => commitParts({ minute: nextMinute }),
-                    )
-                  }
-                  onSelect={(minute) => commitParts({ minute })}
-                />
-
-                {useMeridiem ? (
-                  <div className="flex min-w-0 flex-col px-1.5">
-                    <p className="pb-2 text-center font-semibold text-slate-muted text-xs">
-                      Period
-                    </p>
-                    <div
-                      role="listbox"
-                      aria-label="Choose period"
-                      className="flex min-h-56 flex-1 flex-col justify-center gap-1"
-                    >
-                      {TIME_PERIODS.map((period) => {
-                        const selected = selectedParts.period === period;
-
-                        return (
-                          <Button
-                            key={period}
-                            ref={(node) => {
-                              if (selected) {
-                                activeRefs.current.period = node;
-                              }
-                            }}
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            role="option"
-                            aria-selected={selected}
-                            tabIndex={selected ? 0 : -1}
-                            className={cn(
-                              "mx-auto h-8 w-full max-w-14 rounded-full text-xs",
-                              selected &&
-                                "border-primary bg-primary text-primary-foreground",
-                            )}
-                            onKeyDown={(event) =>
-                              handleColumnKeyDown(
-                                TIME_PERIODS,
-                                selectedParts.period,
-                                event,
-                                (nextPeriod) =>
-                                  commitParts({ period: nextPeriod }),
-                              )
-                            }
-                            onClick={() => commitParts({ period })}
-                          >
-                            {period}
-                          </Button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-
-              <div className="mt-2 flex items-center justify-between gap-2 border-border/70 border-t pt-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="xs"
-                  onClick={() => {
-                    setTimeFormat((current) =>
-                      current === "12" ? "24" : "12",
-                    );
-                  }}
-                >
-                  {useMeridiem ? "24h" : "12h"}
-                </Button>
-                <div className="flex items-center gap-2">
-                  {clearable ? (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="xs"
-                      onClick={() => {
-                        onValueChange("");
-                        closePanel();
-                      }}
-                    >
-                      Clear
-                    </Button>
-                  ) : null}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="xs"
-                    onClick={closePanel}
-                  >
-                    Done
-                  </Button>
-                </div>
-              </div>
-            </div>,
-            portalTarget,
-          )
-        : null}
+      {panelState ? (
+        <TimeInputPanel
+          activeRefs={activeRefs}
+          clearable={clearable}
+          closePanel={closePanel}
+          commitParts={commitParts}
+          hourOptions={hourOptions}
+          minuteOptions={minuteOptions}
+          onValueChange={onValueChange}
+          panelId={panelId}
+          panelRef={panelRef}
+          panelStyle={panelState.panelStyle}
+          portalTarget={panelState.portalTarget}
+          selectedMinute={selectedMinute}
+          selectedParts={selectedParts}
+          setTimeFormat={setTimeFormat}
+          useMeridiem={useMeridiem}
+        />
+      ) : null}
     </div>
   );
 }

@@ -9,6 +9,14 @@ interface RailCardProps {
   tone?: "default" | "highlight" | "muted";
 }
 
+type RailCardTone = NonNullable<RailCardProps["tone"]>;
+
+const RAIL_CARD_TONE_CLASS = {
+  default: "border-border bg-card",
+  highlight: "border-forge-teal/25 bg-forge-teal/5",
+  muted: "border-border/70 bg-card/60",
+} satisfies Record<RailCardTone, string>;
+
 export function RailCard({
   eyebrow,
   heading,
@@ -16,23 +24,46 @@ export function RailCard({
   className,
   tone = "default",
 }: RailCardProps) {
+  const hasHeader = hasRailCardHeader({ eyebrow, heading });
+
   return (
     <div
       className={cn(
         "rounded-2xl border p-4 transition-colors",
-        tone === "default" && "border-border bg-card",
-        tone === "highlight" && "border-forge-teal/25 bg-forge-teal/5",
-        tone === "muted" && "border-border/70 bg-card/60",
+        RAIL_CARD_TONE_CLASS[tone],
         className,
       )}
     >
-      {eyebrow ? (
-        <p className="font-bold text-forge-teal text-xs">{eyebrow}</p>
-      ) : null}
-      {heading ? (
-        <h3 className="mt-1 font-bold text-foreground text-sm">{heading}</h3>
-      ) : null}
-      <div className={cn(eyebrow || heading ? "mt-3" : "")}>{children}</div>
+      <RailCardEyebrow eyebrow={eyebrow} />
+      <RailCardHeading heading={heading} />
+      <div className={cn(getRailCardContentClass(hasHeader))}>{children}</div>
     </div>
   );
+}
+
+function RailCardEyebrow({ eyebrow }: { eyebrow?: string }) {
+  if (!eyebrow) {
+    return null;
+  }
+
+  return <p className="font-bold text-forge-teal text-xs">{eyebrow}</p>;
+}
+
+function RailCardHeading({ heading }: { heading?: string }) {
+  if (!heading) {
+    return null;
+  }
+
+  return <h3 className="mt-1 font-bold text-foreground text-sm">{heading}</h3>;
+}
+
+function hasRailCardHeader({
+  eyebrow,
+  heading,
+}: Pick<RailCardProps, "eyebrow" | "heading">) {
+  return Boolean(eyebrow || heading);
+}
+
+function getRailCardContentClass(hasHeader: boolean) {
+  return hasHeader ? "mt-3" : "";
 }

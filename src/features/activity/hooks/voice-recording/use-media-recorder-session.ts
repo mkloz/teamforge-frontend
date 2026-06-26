@@ -11,6 +11,9 @@ import type {
 } from "./voice-recording.types";
 import { createVoiceRecordingResult } from "./voice-recording-result";
 
+type AudioRecorder = NonNullable<ReturnType<typeof createAudioRecorder>>;
+type StartRecordingBlockReason = "active-recorder" | "not-supported";
+
 interface UseMediaRecorderSessionOptions {
   clearTimer: () => void;
   getDurationSeconds: () => number;
@@ -57,50 +60,71 @@ export function useMediaRecorderSession({
   }, []);
 
   async function startRecording() {
-    if (mediaRecorderRef.current) {
+    const blockReason = getStartRecordingBlockReason(mediaRecorderRef.current);
+
+    if (blockReason === "active-recorder") {
       return;
     }
 
-    if (!canRecordAudio()) {
+    if (blockReason === "not-supported") {
       onError("not-supported");
       return;
     }
 
     try {
-      onError(null);
-      const stream = await requestAudioStream();
-      const recorder = createAudioRecorder(stream);
-
-      if (!recorder) {
-        stopMediaStream(stream);
-        onError("not-supported");
-        return;
-      }
-
-      streamRef.current = stream;
-      mediaRecorderRef.current = recorder;
-      chunksRef.current = [];
-
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
-        }
-      };
-
-      recorder.start(100);
-      onRecordingChange(true);
-      startTimer();
+      await startSupportedRecording();
     } catch (error) {
-      stopStream();
-      mediaRecorderRef.current = null;
-
-      if (error instanceof DOMException && error.name === "NotAllowedError") {
-        onError("permission-denied");
-        return;
-      }
-
-      onError("unknown");
+      handleStartRecordingError(error);
     }
+  }
+
+  async function startSupportedRecording() {
+    onError(null);
+    const stream = await requestAudioStream();
+    const recorder = createAudioRecorder(stream);
+
+    if (!recorder) {
+      handleUnsupportedRecorder(stream);
+      return;
+    }
+
+    prepareRecordingSession(stream, recorder);
+    recorder.start(100);
+    onRecordingChange(true);
+    startTimer();
+  }
+
+  function handleUnsupportedRecorder(stream: MediaStream) {
+    stopMediaStream(stream);
+    onError("not-supported");
+  }
+
+  function prepareRecordingSession(
+    stream: MediaStream,
+    recorder: AudioRecorder,
+  ) {
+    streamRef.current = stream;
+    mediaRecorderRef.current = recorder;
+    chunksRef.current = [];
+    recorder.ondataavailable = appendRecordedChunk;
+  }
+
+  function appendRecordedChunk(event: BlobEvent) {
+    if (event.data.size > 0) {
+      chunksRef.current.push(event.data);
+    }
+  }
+
+  function handleStartRecordingError(error: unknown) {
+    stopStream();
+    mediaRecorderRef.current = null;
+
+    if (isMicrophonePermissionDenied(error)) {
+      onError("permission-denied");
+      return;
+    }
+
+    onError("unknown");
   }
 
   function stopRecording(): Promise<VoiceRecordingResult | null> {
@@ -150,4 +174,22 @@ export function useMediaRecorderSession({
     startRecording,
     stopRecording,
   };
+}
+
+function getStartRecordingBlockReason(
+  recorder: ReturnType<typeof createAudioRecorder>,
+): StartRecordingBlockReason | null {
+  if (recorder) {
+    return "active-recorder";
+  }
+
+  if (!canRecordAudio()) {
+    return "not-supported";
+  }
+
+  return null;
+}
+
+function isMicrophonePermissionDenied(error: unknown) {
+  return error instanceof DOMException && error.name === "NotAllowedError";
 }

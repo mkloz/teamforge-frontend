@@ -10,6 +10,12 @@ import {
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import type { AuthSession } from "@/shared/schemas";
+import {
+  getSessionActionState,
+  getSessionRowViewState,
+  type SessionActionState,
+  type SessionRowViewState,
+} from "./session-action-state";
 import { describeSessionDevice } from "./session-device";
 import { formatSessionTime } from "./settings-control-formatters";
 
@@ -20,6 +26,8 @@ interface SessionRowProps {
   onRevoke: (session: AuthSession) => Promise<void>;
 }
 
+type SessionDevice = ReturnType<typeof describeSessionDevice>;
+
 export function SessionRow({
   session,
   isOnline,
@@ -27,109 +35,156 @@ export function SessionRow({
   onRevoke,
 }: SessionRowProps) {
   const device = describeSessionDevice(session);
-  const DeviceIcon = device.icon;
-  const actionTitle = session.isCurrent
-    ? "Sign out of this browser?"
-    : `Revoke ${device.label}?`;
-  const actionDescription = session.isCurrent
-    ? "This ends your current session and sends you back to login."
-    : "This ends that device session. The next person using it will need to sign in again.";
-  const actionLabel = session.isCurrent ? "Sign out here" : "Revoke session";
+  const viewState = getSessionRowViewState(session);
+  const actionState = getSessionActionState({
+    deviceLabel: device.label,
+    isOnline,
+    isRevoking,
+    session,
+  });
 
   return (
     <div
       className={cn(
         "md:main-action-grid grid gap-4 border-border border-b py-5 last:border-b-0 md:items-center",
-        session.isCurrent && "border-primary/25",
+        viewState.rowHighlightClassName,
       )}
     >
-      <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4">
-        <IconTile
-          icon={DeviceIcon}
-          shape="circle"
-          size="lg"
-          tone={session.isCurrent ? "teal" : "neutral"}
-          className={session.isCurrent ? "bg-primary/8" : "bg-muted"}
-          iconClassName="size-4"
-        />
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="font-semibold text-base text-ink leading-6">
-              {device.label}
-            </p>
-            {session.isCurrent && (
-              <StatusPill size="xs" tone="teal" surface="soft">
-                Current
-              </StatusPill>
-            )}
-          </div>
-          <div className="mt-3 grid gap-2 text-slate-muted text-xs sm:grid-cols-3">
-            <span className="flex min-w-0 items-center gap-2">
-              <CalendarClock size={14} className="shrink-0" />
-              <span className="truncate">
-                Started {formatSessionTime(session.createdAt)}
-              </span>
-            </span>
-            <span className="flex min-w-0 items-center gap-2">
-              <Clock3 size={14} className="shrink-0" />
-              <span className="truncate">
-                Expires {formatSessionTime(session.expiresAt)}
-              </span>
-            </span>
-            <span className="flex min-w-0 items-center gap-2">
-              <Wifi size={14} className="shrink-0" />
-              <span className="truncate">
-                {session.ipAddress ? `IP ${session.ipAddress}` : "IP unknown"}
-              </span>
-            </span>
-          </div>
-          {session.userAgent && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="mt-3 block max-w-3xl cursor-help truncate border-0 bg-transparent p-0 text-left text-slate-muted/75 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
-                >
-                  {session.userAgent}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>{session.userAgent}</TooltipContent>
-            </Tooltip>
-          )}
-        </div>
-      </div>
+      <SessionDeviceSummary
+        device={device}
+        session={session}
+        viewState={viewState}
+      />
 
-      <ActionDialog
-        cancelLabel="Keep session"
-        confirmLabel={isRevoking ? "Signing out..." : actionLabel}
-        description={actionDescription}
-        details={[
-          `Started ${formatSessionTime(session.createdAt)}`,
-          `Expires ${formatSessionTime(session.expiresAt)}`,
-          session.ipAddress ? `IP ${session.ipAddress}` : "IP unknown",
-        ]}
-        disabled={!isOnline || isRevoking}
-        loading={isRevoking}
+      <SessionRevokeDialog
+        actionState={actionState}
+        isRevoking={isRevoking}
         onConfirm={() => onRevoke(session)}
-        title={actionTitle}
-        tone={session.isCurrent ? "danger" : "warning"}
-        trigger={
-          <Button
-            type="button"
-            variant={session.isCurrent ? "destructive" : "outline"}
-            size="sm"
-            className="w-full md:w-auto"
-            disabled={!isOnline || isRevoking}
-          >
-            <LogOut size={14} />
-            {isRevoking
-              ? "Signing out..."
-              : session.isCurrent
-                ? "Sign out here"
-                : "Revoke"}
-          </Button>
-        }
       />
     </div>
+  );
+}
+
+function SessionDeviceSummary({
+  device,
+  session,
+  viewState,
+}: {
+  device: SessionDevice;
+  session: AuthSession;
+  viewState: SessionRowViewState;
+}) {
+  const DeviceIcon = device.icon;
+
+  return (
+    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4">
+      <IconTile
+        icon={DeviceIcon}
+        shape="circle"
+        size="lg"
+        tone={viewState.deviceTone}
+        className={viewState.deviceClassName}
+        iconClassName="size-4"
+      />
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="font-semibold text-base text-ink leading-6">
+            {device.label}
+          </p>
+          {viewState.isCurrentSession && (
+            <StatusPill size="xs" tone="teal" surface="soft">
+              Current
+            </StatusPill>
+          )}
+        </div>
+        <SessionTimestampFacts session={session} />
+        <SessionUserAgentTooltip userAgent={session.userAgent} />
+      </div>
+    </div>
+  );
+}
+
+function SessionTimestampFacts({ session }: { session: AuthSession }) {
+  return (
+    <div className="mt-3 grid gap-2 text-slate-muted text-xs sm:grid-cols-3">
+      <span className="flex min-w-0 items-center gap-2">
+        <CalendarClock size={14} className="shrink-0" />
+        <span className="truncate">
+          Started {formatSessionTime(session.createdAt)}
+        </span>
+      </span>
+      <span className="flex min-w-0 items-center gap-2">
+        <Clock3 size={14} className="shrink-0" />
+        <span className="truncate">
+          Expires {formatSessionTime(session.expiresAt)}
+        </span>
+      </span>
+      <span className="flex min-w-0 items-center gap-2">
+        <Wifi size={14} className="shrink-0" />
+        <span className="truncate">
+          {session.ipAddress ? `IP ${session.ipAddress}` : "IP unknown"}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+function SessionUserAgentTooltip({
+  userAgent,
+}: {
+  userAgent: string | null | undefined;
+}) {
+  if (!userAgent) {
+    return null;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          className="mt-3 block max-w-3xl cursor-help truncate border-0 bg-transparent p-0 text-left text-slate-muted/75 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+        >
+          {userAgent}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{userAgent}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function SessionRevokeDialog({
+  actionState,
+  isRevoking,
+  onConfirm,
+}: {
+  actionState: SessionActionState;
+  isRevoking: boolean;
+  onConfirm: () => Promise<void>;
+}) {
+  return (
+    <ActionDialog
+      cancelLabel="Keep session"
+      confirmLabel={isRevoking ? "Signing out..." : actionState.actionLabel}
+      description={actionState.actionDescription}
+      details={actionState.details}
+      disabled={actionState.disabled}
+      loading={isRevoking}
+      onConfirm={onConfirm}
+      title={actionState.actionTitle}
+      tone={actionState.tone}
+      trigger={
+        <Button
+          type="button"
+          variant={actionState.triggerVariant}
+          size="sm"
+          className="w-full md:w-auto"
+          disabled={actionState.disabled}
+        >
+          <LogOut size={14} />
+          {actionState.triggerLabel}
+        </Button>
+      }
+    />
   );
 }

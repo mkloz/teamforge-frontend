@@ -1,6 +1,6 @@
 import { type ZodTypeAny, z } from "zod";
 
-export const paginationMetaSchema = z.object({
+const paginationMetaSchema = z.object({
   totalItemsCount: z.number(),
   itemsPerPage: z.number(),
   currentPage: z.number(),

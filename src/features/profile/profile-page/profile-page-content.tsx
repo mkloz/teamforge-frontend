@@ -17,7 +17,6 @@ import { buildPublicProfilePath } from "@/features/profile/lib/profile-route";
 import {
   getUserArchetype,
   getUserDimensionScores,
-  getUserOceanScores,
 } from "@/features/profile/lib/profile-utils";
 import {
   SkeletonAvatar,
@@ -27,6 +26,7 @@ import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
+import { getUserOceanScores } from "@/shared/lib/user-psychometrics";
 import type { User } from "@/shared/schemas";
 
 import { useProfileCollapsibleHeader } from "../hooks/use-profile-collapsible-header";
@@ -68,13 +68,8 @@ export function ProfilePageContent({
   const socialRead = profileInsights
     ? getCompactSocialRead(profileInsights.portrait.lead)
     : null;
-  const shouldShowUserMenu = showUserMenu ?? mode === "self";
-  const profileQrUrl = `${getCurrentBrowserOrigin()}${buildPublicProfilePath(
-    profile.id,
-    {
-      intent: "connect",
-    },
-  )}`;
+  const shouldShowUserMenu = getShouldShowUserMenu(showUserMenu, mode);
+  const profileQrUrl = getProfileQrUrl(profile.id);
 
   const { isPinned: isProfileHeaderPinned } = useProfileCollapsibleHeader({
     ref: profilePageRef,
@@ -89,26 +84,7 @@ export function ProfilePageContent({
       <ProfileCompactHeader user={profile} visible={isProfileHeaderPinned} />
 
       {shouldShowUserMenu ? (
-        <div className="absolute top-4 right-4 z-50 flex items-center gap-3 md:top-6 md:right-8">
-          <QrShareDialog
-            url={profileQrUrl}
-            avatarSrc={profile.avatar}
-            bottomText={`@${profile.name.replace(/\s/g, "").toLowerCase()}`}
-            trigger={
-              <Button
-                variant="inverseGhost"
-                size="icon"
-                className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
-                aria-label="Show QR Code"
-              >
-                <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
-              </Button>
-            }
-          />
-          <Suspense fallback={<ProfileUserMenuFallback />}>
-            <LazyUserMenu trigger="settings" />
-          </Suspense>
-        </div>
+        <ProfileHeaderActions profile={profile} profileQrUrl={profileQrUrl} />
       ) : null}
 
       <div className="transform-[translate3d(0,var(--profile-cover-phase-offset,0px),0)] relative z-(--profile-hero-z-index) mx-auto flex w-full max-w-lg flex-col gap-8 px-4 pt-24 pb-8 sm:max-w-6xl sm:px-6 md:px-8 md:pt-16 lg:gap-12 lg:pb-16">
@@ -141,6 +117,37 @@ export function ProfilePageContent({
   );
 }
 
+function ProfileHeaderActions({
+  profile,
+  profileQrUrl,
+}: {
+  profile: User;
+  profileQrUrl: string;
+}) {
+  return (
+    <div className="absolute top-4 right-4 z-50 flex items-center gap-3 md:top-6 md:right-8">
+      <QrShareDialog
+        url={profileQrUrl}
+        avatarSrc={profile.avatar}
+        bottomText={getProfileQrHandle(profile.name)}
+        trigger={
+          <Button
+            variant="inverseGhost"
+            size="icon"
+            className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
+            aria-label="Show QR Code"
+          >
+            <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
+          </Button>
+        }
+      />
+      <Suspense fallback={<ProfileUserMenuFallback />}>
+        <LazyUserMenu trigger="settings" />
+      </Suspense>
+    </div>
+  );
+}
+
 function ProfileUserMenuFallback() {
   return (
     <Skeleton
@@ -156,6 +163,23 @@ function buildProfileCoreModel(profile: User) {
     dimensionScores: getUserDimensionScores(profile),
     oceanScores: getUserOceanScores(profile),
   };
+}
+
+function getShouldShowUserMenu(
+  showUserMenu: boolean | undefined,
+  mode: NonNullable<ProfilePageContentProps["mode"]>,
+) {
+  return showUserMenu ?? mode === "self";
+}
+
+function getProfileQrUrl(profileId: User["id"]) {
+  return `${getCurrentBrowserOrigin()}${buildPublicProfilePath(profileId, {
+    intent: "connect",
+  })}`;
+}
+
+function getProfileQrHandle(name: User["name"]) {
+  return `@${name.replace(/\s/g, "").toLowerCase()}`;
 }
 
 function useProfileInsights(
@@ -296,7 +320,7 @@ function ProfilePortraitSectionFallback() {
           {["first", "second", "third"].map((item, index) => (
             <div
               key={item}
-              className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 md:last:pr-0 md:first:border-l-0 md:first:pl-0"
+              className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 last:md:pr-0 first:md:border-l-0 first:md:pl-0"
             >
               <div className="flex min-w-0 items-center gap-2">
                 <Skeleton

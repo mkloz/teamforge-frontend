@@ -14,24 +14,6 @@ import {
   getMessages,
 } from "@/features/activity/api/messages/message-cache-readers";
 
-export {
-  type ActivityMessagesInfiniteData,
-  type ActivityMessagesPageData,
-  DEFAULT_ACTIVITY_MESSAGE_LIMIT,
-} from "@/features/activity/api/messages/message-cache-types";
-export {
-  flattenMessagePages,
-  toMessageApi,
-} from "@/features/activity/api/messages/message-mappers";
-export {
-  getMessageVersion,
-  mergePinnedApiMessages,
-  pickNewerApiMessage,
-  shouldReplaceApiMessage,
-  shouldReplaceMessage,
-} from "@/features/activity/api/messages/message-versioning";
-export { findMatchingOptimisticMessage } from "@/features/activity/api/messages/optimistic-message-match";
-
 export const ActivityMessageCache = {
   getLatestCachedMessage,
   getMessageCaches,

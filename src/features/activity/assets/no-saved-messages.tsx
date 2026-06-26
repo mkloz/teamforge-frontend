@@ -1,19 +1,6 @@
 import { useId } from "react";
-import {
-  emptyVisualAmber,
-  emptyVisualStroke,
-  emptyVisualTeal,
-} from "@/assets/empty-state/tokens";
 import type { EmptyStateVisualBaseProps } from "@/assets/empty-state/types";
-import { cn } from "@/shared/lib/utils";
-
-type FillToken = "stroke" | "teal" | "amber";
-
-const fillByToken: Record<FillToken, string> = {
-  amber: emptyVisualAmber,
-  stroke: emptyVisualStroke,
-  teal: emptyVisualTeal,
-};
+import { TokenizedMaskedEmptyStateSvg } from "@/shared/assets/empty-state/masked-svg-paths";
 
 const visiblePaths = [
   {
@@ -179,39 +166,18 @@ export function NoSavedMessagesVisual({
 }: EmptyStateVisualBaseProps) {
   const reactId = useId();
   const maskId = `no-saved-messages-${reactId.replaceAll(":", "")}`;
-  const maskUrl = `url(#${maskId})`;
 
   return (
-    <svg
+    <TokenizedMaskedEmptyStateSvg
       viewBox="62 146 1928 1531"
-      role={title ? "img" : undefined}
-      aria-hidden={title ? undefined : true}
-      aria-label={title}
-      preserveAspectRatio="xMidYMid meet"
-      className={cn("block h-auto max-w-full text-foreground", className)}
+      className={className}
+      cutoutPaths={cutoutPaths}
+      maskHeight="1836"
+      maskId={maskId}
+      maskWidth="2048"
+      title={title}
+      visiblePaths={visiblePaths}
       {...props}
-    >
-      {title ? <title>{title}</title> : null}
-      <defs>
-        <mask
-          id={maskId}
-          x="0"
-          y="0"
-          width="2048"
-          height="1836"
-          maskUnits="userSpaceOnUse"
-        >
-          <rect width="2048" height="1836" fill="white" stroke="none" />
-          {cutoutPaths.map((path) => (
-            <path key={path.id} d={path.d} fill="black" stroke="none" />
-          ))}
-        </mask>
-      </defs>
-      <g mask={maskUrl} stroke="none">
-        {visiblePaths.map((path) => (
-          <path key={path.id} d={path.d} fill={fillByToken[path.fill]} />
-        ))}
-      </g>
-    </svg>
+    />
   );
 }

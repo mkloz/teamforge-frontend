@@ -24,6 +24,46 @@ interface PlanAttentionModel {
   kind: PlanAttentionKind;
 }
 
+interface PlanAttentionNeeds {
+  needsLocation: boolean;
+  needsTime: boolean;
+}
+
+const MILLISECONDS_PER_DAY = 86_400_000;
+
+const PLAN_ATTENTION_MODELS = {
+  details: {
+    actionLabel: "Set details",
+    description: "Pick the time and venue.",
+    kind: "details",
+  },
+  review: {
+    actionLabel: "Review plan",
+    description: "Review the latest proposal.",
+    kind: "review",
+  },
+  time: {
+    actionLabel: "Set time",
+    description: "Pick when this happens.",
+    kind: "time",
+  },
+  venue: {
+    actionLabel: "Set venue",
+    description: "Pick where this happens.",
+    kind: "venue",
+  },
+} satisfies Record<PlanAttentionKind, PlanAttentionModel>;
+
+const PROFILE_STEP_META_BY_KIND = {
+  account: ["Profile setup"],
+  interests: ["Group fit", "Interest signal"],
+  personality: ["Group fit", "Personality signal"],
+  security: ["Account safety"],
+} satisfies Record<
+  NonNullable<HomeViewer["nextStep"]>["kind"],
+  readonly string[]
+>;
+
 export function formatQueueCount(count: number, singular: string) {
   if (count === 0) {
     return null;
@@ -44,15 +84,7 @@ export function getQueueMomentLabel(value: string, prefix: string) {
   }
 
   const now = new Date();
-  const startOfToday = new Date(now);
-  startOfToday.setHours(0, 0, 0, 0);
-
-  const startOfDate = new Date(date);
-  startOfDate.setHours(0, 0, 0, 0);
-
-  const dayDiff = Math.round(
-    (startOfDate.getTime() - startOfToday.getTime()) / 86_400_000,
-  );
+  const dayDiff = getCalendarDayDiff(date, now);
 
   if (dayDiff === 0) {
     return `${prefix} today`;
@@ -72,6 +104,19 @@ export function getQueueMomentLabel(value: string, prefix: string) {
   })}`;
 }
 
+function getCalendarDayDiff(date: Date, now: Date) {
+  return Math.round(
+    (getStartOfDay(date).getTime() - getStartOfDay(now).getTime()) /
+      MILLISECONDS_PER_DAY,
+  );
+}
+
+function getStartOfDay(date: Date) {
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
+  return startOfDay;
+}
+
 export function getFriendRequestMeta(request: AttentionQueueFriendRequest) {
   const meta = [
     request.counterpart.city,
@@ -86,38 +131,31 @@ export function getPlanAttentionModel(
   group: AttentionQueuePlan,
 ): PlanAttentionModel {
   const plan = group.plan;
-  const needsLocation = plan.locationMode === "TBD" || !plan.location?.trim();
-  const needsTime = !plan.dateTime;
+  const attentionKind = getPlanAttentionKind({
+    needsLocation: plan.locationMode === "TBD" || !plan.location?.trim(),
+    needsTime: !plan.dateTime,
+  });
 
+  return { ...PLAN_ATTENTION_MODELS[attentionKind] };
+}
+
+function getPlanAttentionKind({
+  needsLocation,
+  needsTime,
+}: PlanAttentionNeeds): PlanAttentionKind {
   if (needsLocation && needsTime) {
-    return {
-      actionLabel: "Set details",
-      description: "Pick the time and venue.",
-      kind: "details",
-    };
+    return "details";
   }
 
   if (needsLocation) {
-    return {
-      actionLabel: "Set venue",
-      description: "Pick where this happens.",
-      kind: "venue",
-    };
+    return "venue";
   }
 
   if (needsTime) {
-    return {
-      actionLabel: "Set time",
-      description: "Pick when this happens.",
-      kind: "time",
-    };
+    return "time";
   }
 
-  return {
-    actionLabel: "Review plan",
-    description: "Review the latest proposal.",
-    kind: "review",
-  };
+  return "review";
 }
 
 export function getPlanMeta(group: PlannedGroup) {
@@ -132,17 +170,5 @@ export function getPlanMeta(group: PlannedGroup) {
 export function getProfileStepMeta(
   nextStep: NonNullable<HomeViewer["nextStep"]>,
 ) {
-  if (nextStep.kind === "personality") {
-    return ["Group fit", "Personality signal"];
-  }
-
-  if (nextStep.kind === "interests") {
-    return ["Group fit", "Interest signal"];
-  }
-
-  if (nextStep.kind === "security") {
-    return ["Account safety"];
-  }
-
-  return ["Profile setup"];
+  return [...PROFILE_STEP_META_BY_KIND[nextStep.kind]];
 }

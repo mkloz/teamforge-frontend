@@ -10,10 +10,6 @@ import { useState } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-import {
-  canDeleteMessage,
-  canSaveMessage,
-} from "@/features/activity/lib/message-action-capabilities";
 import { getMessagesClipboardContent } from "@/features/activity/lib/message-clipboard";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
@@ -24,12 +20,23 @@ import {
 } from "@/shared/lib/app-toast";
 import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
+import {
+  getMessageSelectionToolbarState,
+  getSavedMessageToggleTargets,
+  getSelectedMessagesCopiedToastMessage,
+  getSelectedMessagesDeleteDescription,
+  getSelectedMessagesDeletedToastMessage,
+  getSelectedMessagesSaveToastMessage,
+  getSelectionActionButtonStates,
+} from "./message-selection-toolbar-state";
 import { ForwardMessageDialog } from "./unified-message-list/unified-message-item/message-actions-menu";
 
 interface MessageSelectionToolbarProps {
   selectedMessages: UnifiedMessage[];
   onClearSelection: () => void;
 }
+
+type ActivityMessageActions = ReturnType<typeof useActivityMessageActions>;
 
 export function MessageSelectionToolbar({
   selectedMessages,
@@ -42,18 +49,26 @@ export function MessageSelectionToolbar({
   const messageActions = useActivityMessageActions();
   const savedMessageIds = useSavedMessageIds();
   const isOnline = messageActions.isOnline;
-  const selectedCount = selectedMessages.length;
-  const saveableMessages = selectedMessages.filter(canSaveMessage);
-  const canForward =
-    selectedCount > 0 && selectedMessages.every(canSaveMessage);
-  const canDelete =
-    selectedCount > 0 && selectedMessages.every(canDeleteMessage);
-  const allSaveableMessagesSaved =
-    saveableMessages.length > 0 &&
-    saveableMessages.every((message) =>
-      isMessageSaved(message, savedMessageIds),
-    );
-  const saveLabel = allSaveableMessagesSaved ? "Unsave" : "Save";
+  const {
+    allSaveableMessagesSaved,
+    canDelete,
+    canForward,
+    saveableMessages,
+    saveLabel,
+    selectedCount,
+  } = getMessageSelectionToolbarState({
+    savedMessageIds,
+    selectedMessages,
+  });
+  const actionButtonStates = getSelectionActionButtonStates({
+    canDelete,
+    canForward,
+    isDeleting,
+    isOnline,
+    isSaving,
+    saveLabel,
+    saveableCount: saveableMessages.length,
+  });
 
   async function handleCopySelected() {
     const text = getMessagesClipboardContent(selectedMessages);
@@ -65,10 +80,9 @@ export function MessageSelectionToolbar({
       return;
     }
 
-    showAppSuccessToast(
-      selectedCount === 1 ? "Message copied." : "Messages copied.",
-      { id: "selected-messages-copied" },
-    );
+    showAppSuccessToast(getSelectedMessagesCopiedToastMessage(selectedCount), {
+      id: "selected-messages-copied",
+    });
     onClearSelection();
   }
 
@@ -77,41 +91,28 @@ export function MessageSelectionToolbar({
       return;
     }
 
-    if (!isOnline) {
-      showAppInfoToast("You're offline.", {
-        id: "selected-messages-save-offline",
-        description: "Reconnect before updating saved messages.",
-      });
+    if (showSelectionOfflineToastIfNeeded(isOnline, "save")) {
       return;
     }
 
-    setIsSaving(true);
-
-    try {
-      await Promise.all(
-        saveableMessages.map(async (message) => {
-          const isSaved = isMessageSaved(message, savedMessageIds);
-
-          if (allSaveableMessagesSaved ? isSaved : !isSaved) {
-            await messageActions.toggleSaved(message, isSaved);
-          }
+    await runSelectionMutation({
+      fallbackMessage: "We couldn't update saved messages.",
+      run: () =>
+        toggleSavedSelectedMessages({
+          allSaveableMessagesSaved,
+          messageActions,
+          savedMessageIds,
+          saveableMessages,
         }),
-      );
-
-      showAppSuccessToast(
-        allSaveableMessagesSaved
-          ? "Removed from saved messages."
-          : "Saved messages.",
-        { id: "selected-messages-saved" },
-      );
-      onClearSelection();
-    } catch (error) {
-      showAppErrorToast(error, {
-        fallbackMessage: "We couldn't update saved messages.",
-      });
-    } finally {
-      setIsSaving(false);
-    }
+      setIsPending: setIsSaving,
+      onSuccess: () => {
+        showAppSuccessToast(
+          getSelectedMessagesSaveToastMessage(allSaveableMessagesSaved),
+          { id: "selected-messages-saved" },
+        );
+        onClearSelection();
+      },
+    });
   }
 
   async function handleDeleteSelected() {
@@ -119,35 +120,22 @@ export function MessageSelectionToolbar({
       return;
     }
 
-    if (!isOnline) {
-      showAppInfoToast("You're offline.", {
-        id: "selected-messages-delete-offline",
-        description: "Reconnect before deleting messages.",
-      });
+    if (showSelectionOfflineToastIfNeeded(isOnline, "delete")) {
       return;
     }
 
-    setIsDeleting(true);
-
-    try {
-      await Promise.all(
-        selectedMessages.map((message) =>
-          messageActions.deleteMessage(message),
-        ),
-      );
-
-      showAppSuccessToast(
-        selectedCount === 1 ? "Message deleted." : "Messages deleted.",
-        { id: "selected-messages-deleted" },
-      );
-      onClearSelection();
-    } catch (error) {
-      showAppErrorToast(error, {
-        fallbackMessage: "We couldn't delete those messages.",
-      });
-    } finally {
-      setIsDeleting(false);
-    }
+    await runSelectionMutation({
+      fallbackMessage: "We couldn't delete those messages.",
+      run: () => deleteSelectedMessages({ messageActions, selectedMessages }),
+      setIsPending: setIsDeleting,
+      onSuccess: () => {
+        showAppSuccessToast(
+          getSelectedMessagesDeletedToastMessage(selectedCount),
+          { id: "selected-messages-deleted" },
+        );
+        onClearSelection();
+      },
+    });
   }
 
   return (
@@ -169,41 +157,16 @@ export function MessageSelectionToolbar({
             {selectedCount} selected
           </span>
 
-          <SelectionActionButton
-            icon={Copy}
-            label="Copy"
-            onClick={() => {
+          <SelectionToolbarActions
+            buttonStates={actionButtonStates}
+            onCopy={() => {
               void handleCopySelected();
             }}
-          />
-          <SelectionActionButton
-            disabled={!canForward}
-            icon={Forward}
-            label="Forward"
-            onClick={() => setForwardDialogOpen(true)}
-          />
-          <SelectionActionButton
-            disabled={saveableMessages.length === 0 || isSaving || !isOnline}
-            icon={Bookmark}
-            label={isSaving ? "Saving" : saveLabel}
-            onClick={() => {
+            onDelete={() => setDeleteDialogOpen(true)}
+            onForward={() => setForwardDialogOpen(true)}
+            onSave={() => {
               void handleToggleSavedSelected();
             }}
-            title={
-              !isOnline
-                ? "Reconnect before updating saved messages."
-                : undefined
-            }
-          />
-          <SelectionActionButton
-            danger
-            disabled={!canDelete || isDeleting || !isOnline}
-            icon={Trash2}
-            label={isDeleting ? "Deleting" : "Delete"}
-            onClick={() => setDeleteDialogOpen(true)}
-            title={
-              !isOnline ? "Reconnect before deleting messages." : undefined
-            }
           />
         </div>
       </div>
@@ -211,11 +174,7 @@ export function MessageSelectionToolbar({
       <ActionDialog
         cancelLabel="Keep messages"
         confirmLabel={isDeleting ? "Deleting..." : "Delete messages"}
-        description={
-          selectedCount === 1
-            ? "This removes the selected message from the conversation."
-            : `This removes ${selectedCount} selected messages from the conversation.`
-        }
+        description={getSelectedMessagesDeleteDescription(selectedCount)}
         disabled={!isOnline || isDeleting}
         loading={isDeleting}
         onConfirm={handleDeleteSelected}
@@ -237,6 +196,134 @@ export function MessageSelectionToolbar({
       ) : null}
     </>
   );
+}
+
+function SelectionToolbarActions({
+  buttonStates,
+  onCopy,
+  onDelete,
+  onForward,
+  onSave,
+}: {
+  buttonStates: ReturnType<typeof getSelectionActionButtonStates>;
+  onCopy: () => void;
+  onDelete: () => void;
+  onForward: () => void;
+  onSave: () => void;
+}) {
+  return (
+    <>
+      <SelectionActionButton
+        icon={Copy}
+        label={buttonStates.copy.label}
+        onClick={onCopy}
+      />
+      <SelectionActionButton
+        disabled={buttonStates.forward.disabled}
+        icon={Forward}
+        label={buttonStates.forward.label}
+        onClick={onForward}
+      />
+      <SelectionActionButton
+        disabled={buttonStates.save.disabled}
+        icon={Bookmark}
+        label={buttonStates.save.label}
+        onClick={onSave}
+        title={buttonStates.save.title}
+      />
+      <SelectionActionButton
+        danger
+        disabled={buttonStates.delete.disabled}
+        icon={Trash2}
+        label={buttonStates.delete.label}
+        onClick={onDelete}
+        title={buttonStates.delete.title}
+      />
+    </>
+  );
+}
+
+async function runSelectionMutation({
+  fallbackMessage,
+  onSuccess,
+  run,
+  setIsPending,
+}: {
+  fallbackMessage: string;
+  onSuccess: () => void;
+  run: () => Promise<void>;
+  setIsPending: (isPending: boolean) => void;
+}) {
+  setIsPending(true);
+
+  try {
+    await run();
+    onSuccess();
+  } catch (error) {
+    showAppErrorToast(error, {
+      fallbackMessage,
+    });
+  } finally {
+    setIsPending(false);
+  }
+}
+
+async function toggleSavedSelectedMessages({
+  allSaveableMessagesSaved,
+  messageActions,
+  savedMessageIds,
+  saveableMessages,
+}: {
+  allSaveableMessagesSaved: boolean;
+  messageActions: ActivityMessageActions;
+  savedMessageIds: ReadonlySet<string>;
+  saveableMessages: UnifiedMessage[];
+}) {
+  const messagesToToggle = getSavedMessageToggleTargets({
+    allSaveableMessagesSaved,
+    savedMessageIds,
+    saveableMessages,
+  });
+
+  await Promise.all(
+    messagesToToggle.map((message) =>
+      messageActions.toggleSaved(message, allSaveableMessagesSaved),
+    ),
+  );
+}
+
+async function deleteSelectedMessages({
+  messageActions,
+  selectedMessages,
+}: {
+  messageActions: ActivityMessageActions;
+  selectedMessages: UnifiedMessage[];
+}) {
+  await Promise.all(
+    selectedMessages.map((message) => messageActions.deleteMessage(message)),
+  );
+}
+
+function showSelectionOfflineToastIfNeeded(
+  isOnline: boolean,
+  action: "delete" | "save",
+) {
+  if (isOnline) {
+    return false;
+  }
+
+  showAppInfoToast("You're offline.", {
+    id:
+      action === "save"
+        ? "selected-messages-save-offline"
+        : "selected-messages-delete-offline",
+    description:
+      action === "save"
+        ? "Reconnect before updating saved messages."
+        : "Reconnect before deleting messages.",
+  });
+
+  return true;
 }
 
 function SelectionActionButton({
@@ -270,11 +357,4 @@ function SelectionActionButton({
       <span className="hidden sm:inline">{label}</span>
     </Button>
   );
-}
-
-function isMessageSaved(
-  message: UnifiedMessage,
-  savedMessageIds: ReadonlySet<string>,
-) {
-  return message.isSaved || savedMessageIds.has(message.id);
 }

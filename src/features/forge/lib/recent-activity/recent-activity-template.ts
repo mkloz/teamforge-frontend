@@ -29,66 +29,158 @@ type RecentActivityTemplateGroupFields = Pick<
   ForgePlanTemplate,
   "avatarImage" | "fixedSize" | "groupDescription" | "groupName"
 >;
+type RecentActivityPlanCopyFields = Pick<
+  RecentActivityTemplatePlanFields,
+  "planDescription" | "planName"
+>;
+type RecentActivityPlanLocationFields = Pick<
+  RecentActivityTemplatePlanFields,
+  "locationType" | "planLocation" | "planLocationLat" | "planLocationLng"
+>;
+type RecentActivityPlanCostFields = Pick<
+  RecentActivityTemplatePlanFields,
+  "planCost" | "planCostAmount" | "planCostDetails"
+>;
+type RecentActivityGroupCopyFields = Pick<
+  RecentActivityTemplateGroupFields,
+  "groupDescription" | "groupName"
+>;
 
-function getPlanCostAmount(plan: RecentActivityPlan | null | undefined) {
-  const costAmount = plan?.costAmount;
-
-  return typeof costAmount === "number" ? String(costAmount) : "";
+interface RecentActivityTemplateSections {
+  categoryLabel: string;
+  groupFields: RecentActivityTemplateGroupFields;
+  planFields: RecentActivityTemplatePlanFields;
 }
 
-function getReusableCoverImage(value?: string | null) {
+const DEFAULT_TEMPLATE_TEXT = "";
+const DEFAULT_TEMPLATE_LOCATION_TYPE = "TBD";
+const DEFAULT_TEMPLATE_COST = "FREE";
+const EMPTY_RECENT_ACTIVITY_PLAN: Partial<RecentActivityPlan> = {};
+
+function getTemplateText(value: string | null | undefined) {
+  return value ?? DEFAULT_TEMPLATE_TEXT;
+}
+
+function getTemplateNumber(value: number | null | undefined) {
+  return value ?? null;
+}
+
+function getTemplateCostAmount(value: number | null | undefined) {
+  return typeof value === "number" ? String(value) : "";
+}
+
+function getTemplateLocationType(
+  value: RecentActivityPlan["locationMode"] | null | undefined,
+): RecentActivityPlanLocationFields["locationType"] {
+  return value ?? DEFAULT_TEMPLATE_LOCATION_TYPE;
+}
+
+function getTemplateCost(
+  value: RecentActivityPlan["cost"] | null | undefined,
+): RecentActivityPlanCostFields["planCost"] {
+  return value ?? DEFAULT_TEMPLATE_COST;
+}
+
+function getReusableTemplateCoverImage(value?: string | null) {
   return typeof value === "string" && isManagedAssetReference(value)
     ? value
     : null;
 }
 
-function getReusableAvatarImage(value?: string | null) {
+function getReusableTemplateAvatarImage(value?: string | null) {
   return typeof value === "string" && isManagedUploadUrl(value) ? value : null;
 }
 
-function getTemplateCategoryLabel(activity: RecentForgeActivity) {
+function getRecentActivityTemplateCategoryLabel(activity: RecentForgeActivity) {
   const categoryId = getRecentActivityCategoryId(activity);
 
   return getRecentActivityCategoryLabel(categoryId, activity.title);
 }
 
-function getTemplatePlanFields(
+function getRecentActivityPlanCopyFields(
+  plan: RecentActivityPlan | null | undefined,
+  activityTitle: string,
+): RecentActivityPlanCopyFields {
+  return {
+    planName: plan?.title ?? normalizeRecentActivityTitle(activityTitle),
+    planDescription: getTemplateText(plan?.description),
+  };
+}
+
+function getRecentActivityPlanLocationFields(
+  plan: RecentActivityPlan | null | undefined,
+): RecentActivityPlanLocationFields {
+  const source = plan ?? EMPTY_RECENT_ACTIVITY_PLAN;
+
+  return {
+    planLocation: getTemplateText(source.location),
+    planLocationLat: getTemplateNumber(source.locationLat),
+    planLocationLng: getTemplateNumber(source.locationLng),
+    locationType: getTemplateLocationType(source.locationMode),
+  };
+}
+
+function getRecentActivityPlanCostFields(
+  plan: RecentActivityPlan | null | undefined,
+): RecentActivityPlanCostFields {
+  const source = plan ?? EMPTY_RECENT_ACTIVITY_PLAN;
+
+  return {
+    planCost: getTemplateCost(source.cost),
+    planCostAmount: getTemplateCostAmount(source.costAmount),
+    planCostDetails: getTemplateText(source.costDetails),
+  };
+}
+
+function getRecentActivityTemplatePlanFields(
   plan: RecentActivityPlan | null | undefined,
   activityTitle: string,
 ): RecentActivityTemplatePlanFields {
   return {
-    planName: plan?.title ?? normalizeRecentActivityTitle(activityTitle),
-    planDescription: plan?.description ?? "",
-    planLocation: plan?.location ?? "",
-    planLocationLat: plan?.locationLat ?? null,
-    planLocationLng: plan?.locationLng ?? null,
-    locationType: plan?.locationMode ?? "TBD",
-    planCost: plan?.cost ?? "FREE",
-    planCostAmount: getPlanCostAmount(plan),
-    planCostDetails: plan?.costDetails ?? "",
-    coverImage: getReusableCoverImage(plan?.coverImage),
+    ...getRecentActivityPlanCopyFields(plan, activityTitle),
+    ...getRecentActivityPlanLocationFields(plan),
+    ...getRecentActivityPlanCostFields(plan),
+    coverImage: getReusableTemplateCoverImage(plan?.coverImage),
   };
 }
 
-function getTemplateGroupFields(
+function getRecentActivityGroupCopyFields(
+  group: RecentActivityGroup | null | undefined,
+): RecentActivityGroupCopyFields {
+  return {
+    groupName: getTemplateText(group?.name),
+    groupDescription: getTemplateText(group?.description),
+  };
+}
+
+function getRecentActivityTemplateGroupFields(
   group: RecentActivityGroup | null | undefined,
 ): RecentActivityTemplateGroupFields {
   return {
-    fixedSize: group?.maxMembers ?? null,
-    groupName: group?.name ?? "",
-    groupDescription: group?.description ?? "",
-    avatarImage: getReusableAvatarImage(group?.avatar),
+    ...getRecentActivityGroupCopyFields(group),
+    fixedSize: getTemplateNumber(group?.maxMembers),
+    avatarImage: getReusableTemplateAvatarImage(group?.avatar),
+  };
+}
+
+function getRecentActivityTemplateSections(
+  activity: RecentForgeActivity,
+): RecentActivityTemplateSections {
+  const plan = activity.group?.plan;
+  const group = activity.group;
+
+  return {
+    categoryLabel: getRecentActivityTemplateCategoryLabel(activity),
+    groupFields: getRecentActivityTemplateGroupFields(group),
+    planFields: getRecentActivityTemplatePlanFields(plan, activity.title),
   };
 }
 
 export function buildRecentActivityTemplate(
   activity: RecentForgeActivity,
 ): ForgePlanTemplate {
-  const plan = activity.group?.plan;
-  const group = activity.group;
-  const categoryLabel = getTemplateCategoryLabel(activity);
-  const planFields = getTemplatePlanFields(plan, activity.title);
-  const groupFields = getTemplateGroupFields(group);
+  const { categoryLabel, groupFields, planFields } =
+    getRecentActivityTemplateSections(activity);
 
   return {
     selectedActivity: categoryLabel,

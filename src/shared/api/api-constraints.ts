@@ -1,5 +1,5 @@
 export const API_MAX_PAGE = 500;
-export const API_MAX_LIMIT = 100;
+const API_MAX_LIMIT = 100;
 
 export const EXPLORE_MAX_CATEGORY_FILTERS = 12;
 export const EXPLORE_MIN_DISTANCE_KM = 2;

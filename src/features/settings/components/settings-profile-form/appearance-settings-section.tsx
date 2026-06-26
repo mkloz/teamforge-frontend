@@ -58,6 +58,7 @@ type ThemePreferenceValues = Pick<
   NotificationPreferences,
   "themeAppearance" | "themeStyle" | "themeColor"
 >;
+type ThemePreferenceKey = keyof ThemePreferenceValues;
 
 interface ThemeSelectionState extends ThemePreferenceValues {
   selectedAppearanceOption: (typeof APPEARANCE_OPTIONS)[number];
@@ -72,11 +73,41 @@ interface ThemeSavingState {
   isSavingColor: boolean;
 }
 
+interface GridOptionBoundaryState {
+  isFirstColumnOnDesktop: boolean;
+  isLastInGroup: boolean;
+  isLastRowOnDesktop: boolean;
+}
+
+interface GridOptionBoundaryClassRule {
+  className: string;
+  isActive: (state: GridOptionBoundaryState) => boolean;
+}
+
 const DEFAULT_THEME_PREFERENCES = {
   themeAppearance: DEFAULT_THEME_APPEARANCE,
   themeStyle: DEFAULT_THEME_STYLE,
   themeColor: DEFAULT_THEME_COLOR,
 } satisfies ThemePreferenceValues;
+
+const GRID_OPTION_BOUNDARY_CLASS_RULES = [
+  {
+    className: "md:border-r md:pr-5",
+    isActive: ({ isFirstColumnOnDesktop }) => isFirstColumnOnDesktop,
+  },
+  {
+    className: "md:pl-5",
+    isActive: ({ isFirstColumnOnDesktop }) => !isFirstColumnOnDesktop,
+  },
+  {
+    className: "border-b-0",
+    isActive: ({ isLastInGroup }) => isLastInGroup,
+  },
+  {
+    className: "md:border-b-0",
+    isActive: ({ isLastRowOnDesktop }) => isLastRowOnDesktop,
+  },
+] as const satisfies readonly GridOptionBoundaryClassRule[];
 
 const APPEARANCE_OPTIONS = [
   {
@@ -369,6 +400,16 @@ const COLOR_OPTIONS = [
   },
 ] as const;
 
+const APPEARANCE_OPTION_BY_ID = new Map(
+  APPEARANCE_OPTIONS.map((option) => [option.id, option]),
+);
+const STYLE_OPTION_BY_VALUE = new Map(
+  STYLE_OPTIONS.map((option) => [option.value, option]),
+);
+const COLOR_OPTION_BY_VALUE = new Map(
+  COLOR_OPTIONS.map((option) => [option.value, option]),
+);
+
 export function AppearanceSettingsSection({
   notificationPreferences,
   isLoadingNotificationPreferences,
@@ -455,9 +496,10 @@ export function AppearanceSettingsSection({
         styleLabel={selection.selectedStyleOption.label}
         styleIcon={selection.selectedStyleOption.icon}
         colorLabel={selection.selectedColorOption.label}
-        colorSwatches={
-          selection.selectedColorOption.swatches[isDark ? "dark" : "light"]
-        }
+        colorSwatches={getThemeColorSwatches(
+          selection.selectedColorOption,
+          isDark,
+        )}
       />
 
       <div className="flex flex-col gap-8 border-border border-t pt-6">
@@ -494,32 +536,75 @@ function getThemeSelectionState(
   notificationPreferences: NotificationPreferences | null,
   fallback: ThemePreferenceValues,
 ): ThemeSelectionState {
-  const selectedValues = {
-    themeAppearance:
-      notificationPreferences?.themeAppearance ?? fallback.themeAppearance,
-    themeStyle: notificationPreferences?.themeStyle ?? fallback.themeStyle,
-    themeColor: notificationPreferences?.themeColor ?? fallback.themeColor,
-  };
+  const selectedValues = getSelectedThemeValues(
+    notificationPreferences,
+    fallback,
+  );
 
   return {
     ...selectedValues,
-    selectedAppearanceOption:
-      APPEARANCE_OPTIONS.find(
-        (option) => option.id === selectedValues.themeAppearance,
-      ) ?? APPEARANCE_OPTIONS[0],
-    selectedStyleOption:
-      STYLE_OPTIONS.find(
-        (option) => option.value === selectedValues.themeStyle,
-      ) ?? STYLE_OPTIONS[0],
-    selectedColorOption:
-      COLOR_OPTIONS.find(
-        (option) => option.value === selectedValues.themeColor,
-      ) ?? COLOR_OPTIONS[0],
-    isDefaultTheme:
-      selectedValues.themeAppearance === DEFAULT_THEME_APPEARANCE &&
-      selectedValues.themeStyle === DEFAULT_THEME_STYLE &&
-      selectedValues.themeColor === DEFAULT_THEME_COLOR,
+    selectedAppearanceOption: getSelectedAppearanceOption(
+      selectedValues.themeAppearance,
+    ),
+    selectedStyleOption: getSelectedStyleOption(selectedValues.themeStyle),
+    selectedColorOption: getSelectedColorOption(selectedValues.themeColor),
+    isDefaultTheme: getIsDefaultTheme(selectedValues),
   };
+}
+
+function getSelectedThemeValues(
+  notificationPreferences: NotificationPreferences | null,
+  fallback: ThemePreferenceValues,
+): ThemePreferenceValues {
+  return {
+    themeAppearance: getThemePreferenceValue(
+      notificationPreferences,
+      fallback,
+      "themeAppearance",
+    ),
+    themeStyle: getThemePreferenceValue(
+      notificationPreferences,
+      fallback,
+      "themeStyle",
+    ),
+    themeColor: getThemePreferenceValue(
+      notificationPreferences,
+      fallback,
+      "themeColor",
+    ),
+  };
+}
+
+function getThemePreferenceValue<Key extends ThemePreferenceKey>(
+  notificationPreferences: NotificationPreferences | null,
+  fallback: ThemePreferenceValues,
+  key: Key,
+) {
+  return notificationPreferences?.[key] ?? fallback[key];
+}
+
+function getSelectedAppearanceOption(themeAppearance: ThemeAppearanceValue) {
+  return APPEARANCE_OPTION_BY_ID.get(themeAppearance) ?? APPEARANCE_OPTIONS[0];
+}
+
+function getSelectedStyleOption(themeStyle: ThemeStyleValue) {
+  return STYLE_OPTION_BY_VALUE.get(themeStyle) ?? STYLE_OPTIONS[0];
+}
+
+function getSelectedColorOption(themeColor: ThemeColorValue) {
+  return COLOR_OPTION_BY_VALUE.get(themeColor) ?? COLOR_OPTIONS[0];
+}
+
+function getIsDefaultTheme({
+  themeAppearance,
+  themeColor,
+  themeStyle,
+}: ThemePreferenceValues) {
+  return (
+    themeAppearance === DEFAULT_THEME_APPEARANCE &&
+    themeStyle === DEFAULT_THEME_STYLE &&
+    themeColor === DEFAULT_THEME_COLOR
+  );
 }
 
 function getThemeSavingState(
@@ -559,13 +644,13 @@ function getResetDisabledState({
   isSavingStyle,
   isSavingColor,
 }: ThemeSavingState & { isDefaultTheme: boolean; isDisabled: boolean }) {
-  return (
-    isDisabled ||
-    isSavingAppearance ||
-    isSavingStyle ||
-    isSavingColor ||
-    isDefaultTheme
-  );
+  return [
+    isDisabled,
+    isSavingAppearance,
+    isSavingStyle,
+    isSavingColor,
+    isDefaultTheme,
+  ].some(Boolean);
 }
 
 function getResetLoadingState({
@@ -882,35 +967,29 @@ function StyleOptionRow({
   isLastRowOnDesktop,
   onClick,
 }: StyleOptionRowProps) {
+  const optionClassName = getStyleOptionRowClassName({
+    disabled,
+    isFirstColumnOnDesktop,
+    isLastInGroup,
+    isLastRowOnDesktop,
+    selected,
+  });
+  const iconClassName = getStyleOptionIconClassName(selected);
+
   return (
     <button
       type="button"
       aria-pressed={selected}
       disabled={disabled}
       onClick={onClick}
-      className={cn(
-        "group flex w-full items-center gap-3 border-border border-b px-2 py-3 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none",
-        selected
-          ? "text-ink"
-          : "text-slate-muted hover:bg-muted/35 hover:text-ink",
-        isFirstColumnOnDesktop && "md:border-r md:pr-5",
-        !isFirstColumnOnDesktop && "md:pl-5",
-        isLastInGroup && "border-b-0",
-        isLastRowOnDesktop && "md:border-b-0",
-        disabled && "cursor-not-allowed opacity-65",
-      )}
+      className={optionClassName}
     >
       <IconTile
         icon={Icon}
         tone={selected ? "teal" : "neutral"}
         size="lg"
         bordered
-        className={cn(
-          "transition-colors duration-150",
-          selected
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-border bg-input text-slate-muted group-hover:text-ink",
-        )}
+        className={iconClassName}
         iconClassName="size-4"
       />
 
@@ -935,6 +1014,28 @@ function StyleOptionRow({
         </span>
       </span>
     </button>
+  );
+}
+
+function getStyleOptionRowClassName({
+  disabled,
+  selected,
+  ...boundaryState
+}: GridOptionBoundaryState & { disabled: boolean; selected: boolean }) {
+  return cn(
+    "group flex w-full items-center gap-3 border-border border-b px-2 py-3 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none",
+    selected ? "text-ink" : "text-slate-muted hover:bg-muted/35 hover:text-ink",
+    ...getGridOptionBoundaryClassNames(boundaryState),
+    disabled && "cursor-not-allowed opacity-65",
+  );
+}
+
+function getStyleOptionIconClassName(selected: boolean) {
+  return cn(
+    "transition-colors duration-150",
+    selected
+      ? "border-primary bg-primary text-primary-foreground"
+      : "border-border bg-input text-slate-muted group-hover:text-ink",
   );
 }
 
@@ -990,7 +1091,7 @@ function ColorTableGrid({
                   key={option.value}
                   label={option.label}
                   description={option.description}
-                  swatches={option.swatches[isDark ? "dark" : "light"]}
+                  swatches={getThemeColorSwatches(option, isDark)}
                   selected={selectedThemeColor === option.value}
                   isDefault={option.value === DEFAULT_THEME_COLOR}
                   disabled={disabled}
@@ -1019,6 +1120,10 @@ function getColorOptionGroups(options: readonly ColorOption[]) {
       options: options.filter((option) => option.tag === "Experimental"),
     },
   ] as const;
+}
+
+function getThemeColorSwatches(option: ColorOption, isDark: boolean) {
+  return option.swatches[isDark ? "dark" : "light"];
 }
 
 function getLastGridRowStartIndex(optionCount: number) {
@@ -1050,21 +1155,21 @@ function ColorOptionRow({
   isLastRowOnDesktop,
   onClick,
 }: ColorOptionRowProps) {
+  const optionClassName = getColorOptionRowClassName({
+    disabled,
+    isFirstColumnOnDesktop,
+    isLastInGroup,
+    isLastRowOnDesktop,
+    selected,
+  });
+
   return (
     <button
       type="button"
       aria-pressed={selected}
       disabled={disabled}
       onClick={onClick}
-      className={cn(
-        "group grid min-h-16 w-full grid-cols-[5.5rem_minmax(0,1fr)_auto] items-center gap-4 border-border border-b px-2 py-3 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none",
-        selected ? "text-ink" : "hover:bg-muted/35",
-        isFirstColumnOnDesktop && "md:border-r md:pr-5",
-        !isFirstColumnOnDesktop && "md:pl-5",
-        isLastInGroup && "border-b-0",
-        isLastRowOnDesktop && "md:border-b-0",
-        disabled && "cursor-not-allowed opacity-65",
-      )}
+      className={optionClassName}
     >
       <SwatchStrip swatches={swatches} className="h-11 w-full" />
 
@@ -1078,21 +1183,56 @@ function ColorOptionRow({
         </span>
       </span>
 
-      <span
-        className={cn(
-          "flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors duration-150",
-          selected
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-transparent bg-transparent text-transparent group-hover:border-border group-hover:bg-input group-hover:text-slate-muted",
-        )}
-      >
-        {selected ? (
-          <Check size={11} strokeWidth={3} aria-hidden="true" />
-        ) : (
-          <span className="size-1.5 rounded-full bg-current" />
-        )}
-      </span>
+      <ColorSelectionMark selected={selected} />
     </button>
+  );
+}
+
+function getColorOptionRowClassName({
+  disabled,
+  selected,
+  ...boundaryState
+}: GridOptionBoundaryState & { disabled: boolean; selected: boolean }) {
+  return cn(
+    "group grid min-h-16 w-full grid-cols-[5.5rem_minmax(0,1fr)_auto] items-center gap-4 border-border border-b px-2 py-3 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:transition-none",
+    selected ? "text-ink" : "hover:bg-muted/35",
+    ...getGridOptionBoundaryClassNames(boundaryState),
+    disabled && "cursor-not-allowed opacity-65",
+  );
+}
+
+function ColorSelectionMark({ selected }: { selected: boolean }) {
+  return (
+    <span
+      className={cn(
+        "flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors duration-150",
+        selected
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-transparent bg-transparent text-transparent group-hover:border-border group-hover:bg-input group-hover:text-slate-muted",
+      )}
+    >
+      {selected ? (
+        <Check size={11} strokeWidth={3} aria-hidden="true" />
+      ) : (
+        <span className="size-1.5 rounded-full bg-current" />
+      )}
+    </span>
+  );
+}
+
+function getGridOptionBoundaryClassNames({
+  isFirstColumnOnDesktop,
+  isLastInGroup,
+  isLastRowOnDesktop,
+}: GridOptionBoundaryState) {
+  const boundaryState = {
+    isFirstColumnOnDesktop,
+    isLastInGroup,
+    isLastRowOnDesktop,
+  };
+
+  return GRID_OPTION_BOUNDARY_CLASS_RULES.map(
+    (rule) => rule.isActive(boundaryState) && rule.className,
   );
 }
 

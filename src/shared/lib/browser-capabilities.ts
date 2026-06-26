@@ -16,14 +16,6 @@ export type BrowserShareResult =
   | "dismissed"
   | "failed";
 
-export function getCurrentBrowserUrl(fallback?: string) {
-  if (!hasBrowserWindow()) {
-    return getAppBaseUrl(fallback);
-  }
-
-  return window.location.href;
-}
-
 export function getCurrentBrowserOrigin(fallback?: string) {
   return getAppBaseUrl(fallback);
 }

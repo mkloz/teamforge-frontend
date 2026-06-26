@@ -16,6 +16,9 @@ type AuthLoadingVariant =
   | "login"
   | "register"
   | "reset-password";
+type AuthFormLoadingVariant = Extract<AuthLoadingVariant, "login" | "register">;
+type AuthLoadingLayout = "form" | "support";
+type SupportLoadingKind = "activate" | "forgot-password" | "reset-password";
 
 interface AuthPageLoadingProps extends PageLoadingProps {
   variant: AuthLoadingVariant;
@@ -29,31 +32,68 @@ const AUTH_LOADING_NAMES = {
   "reset-password": "auth.reset-password-page",
 } satisfies Record<AuthLoadingVariant, string>;
 
+const SUPPORT_LOADING_KIND_BY_VARIANT: Partial<
+  Record<AuthLoadingVariant, SupportLoadingKind>
+> = {
+  activate: "activate",
+  "forgot-password": "forgot-password",
+  "reset-password": "reset-password",
+};
+
+const AUTH_LOADING_SHELL_LAYOUT = {
+  form: {
+    backLabel: "Back home",
+    backTo: "/",
+    contentClassName: "sm:px-10 lg:p-0",
+    innerClassName: "justify-start px-4 lg:justify-center",
+    scrollClassName: "",
+    showProgress: true,
+  },
+  support: {
+    backLabel: "Back to login",
+    backTo: "/auth/login",
+    contentClassName: "sm:px-0",
+    innerClassName: "justify-center",
+    scrollClassName: "px-4",
+    showProgress: false,
+  },
+} satisfies Record<
+  AuthLoadingLayout,
+  {
+    backLabel: string;
+    backTo: "/" | "/auth/login";
+    contentClassName: string;
+    innerClassName: string;
+    scrollClassName: string;
+    showProgress: boolean;
+  }
+>;
+
 export function AuthPageLoading({ variant }: AuthPageLoadingProps) {
   void AUTH_LOADING_NAMES[variant];
   return <AuthPageLoadingFixture variant={variant} />;
 }
 
-export function AuthPageLoadingFixture({
+function AuthPageLoadingFixture({
   variant,
 }: Pick<AuthPageLoadingProps, "variant">) {
-  if (variant === "forgot-password") {
-    return <SupportLoadingFixture kind="forgot-password" />;
+  if (isAuthFormLoadingVariant(variant)) {
+    return (
+      <AuthLoadingShell>
+        <AuthFormSkeleton variant={variant} />
+      </AuthLoadingShell>
+    );
   }
 
-  if (variant === "reset-password") {
-    return <SupportLoadingFixture kind="reset-password" />;
-  }
+  const supportKind = SUPPORT_LOADING_KIND_BY_VARIANT[variant];
 
-  if (variant === "activate") {
-    return <SupportLoadingFixture kind="activate" />;
-  }
+  return <SupportLoadingFixture kind={supportKind ?? "forgot-password"} />;
+}
 
-  return (
-    <AuthLoadingShell>
-      <AuthFormSkeleton variant={variant} />
-    </AuthLoadingShell>
-  );
+function isAuthFormLoadingVariant(
+  variant: AuthLoadingVariant,
+): variant is AuthFormLoadingVariant {
+  return variant === "login" || variant === "register";
 }
 
 function AuthLoadingShell({
@@ -63,15 +103,14 @@ function AuthLoadingShell({
   children: ReactNode;
   layout?: "form" | "support";
 }) {
-  const isSupportLayout = layout === "support";
-  const backLabel = isSupportLayout ? "Back to login" : "Back home";
+  const shellLayout = AUTH_LOADING_SHELL_LAYOUT[layout];
 
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
         <Link
-          to={isSupportLayout ? "/auth/login" : "/"}
-          aria-label={backLabel}
+          to={shellLayout.backTo}
+          aria-label={shellLayout.backLabel}
           className="pointer-events-auto inline-flex h-9 w-28 items-center rounded-full px-4"
         >
           <Skeleton className="h-3 w-full" />
@@ -87,32 +126,30 @@ function AuthLoadingShell({
 
       <div className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
         <BackgroundTexture />
-        {isSupportLayout ? null : (
+        {shellLayout.showProgress ? (
           <TopProgressBar
             progress={0}
             className="absolute top-0 right-0 left-0 z-50 w-full"
           />
-        )}
+        ) : null}
 
         <div
           className={cn(
             "relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth pb-4",
-            isSupportLayout && "px-4",
+            shellLayout.scrollClassName,
           )}
         >
           <div
             className={cn(
               "flex min-h-full w-full flex-col items-center pt-20 pb-10 lg:py-8",
-              isSupportLayout
-                ? "justify-center"
-                : "justify-start px-4 lg:justify-center",
+              shellLayout.innerClassName,
             )}
           >
             <div
               className={cn(
                 "w-full max-w-sm px-2",
-                isSupportLayout ? "sm:px-0" : "sm:px-10 lg:p-0",
-                !isSupportLayout && "relative",
+                shellLayout.contentClassName,
+                layout === "form" && "relative",
               )}
             >
               {children}
@@ -124,7 +161,7 @@ function AuthLoadingShell({
   );
 }
 
-function AuthFormSkeleton({ variant }: { variant: "login" | "register" }) {
+function AuthFormSkeleton({ variant }: { variant: AuthFormLoadingVariant }) {
   return (
     <div
       aria-label={`Loading ${variant}`}
@@ -181,11 +218,7 @@ function AuthInputSkeleton({
   );
 }
 
-function SupportLoadingFixture({
-  kind,
-}: {
-  kind: "activate" | "forgot-password" | "reset-password";
-}) {
+function SupportLoadingFixture({ kind }: { kind: SupportLoadingKind }) {
   return (
     <AuthLoadingShell layout="support">
       <div

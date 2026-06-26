@@ -4,17 +4,14 @@ import { AlertCircle } from "lucide-react";
 import { Notice } from "@/shared/components/ui/notice";
 import type { ForgeFooterChildProps } from "./types";
 
+type ForgeFooterState = ForgeFooterChildProps["fw"];
+
+const PLAN_VALIDATION_STEP = 3;
+const UNSET_LOCATION_TYPE = "TBD";
+
 export function FooterValidationHints({ fw }: ForgeFooterChildProps) {
   const planValidationMessage = fw.forgeValidationMessage;
-  const shouldShowPlanValidation = Boolean(
-    fw.step === 3 &&
-      !fw.canAdvanceStep2 &&
-      planValidationMessage &&
-      (fw.planName.trim().length > 0 ||
-        fw.planDate.length > 0 ||
-        fw.planTime.length > 0 ||
-        fw.locationType !== "TBD"),
-  );
+  const shouldShowPlanValidation = shouldShowFooterPlanValidation(fw);
 
   return (
     <AnimatePresence>
@@ -40,4 +37,38 @@ export function FooterValidationHints({ fw }: ForgeFooterChildProps) {
       )}
     </AnimatePresence>
   );
+}
+
+function shouldShowFooterPlanValidation(fw: ForgeFooterState) {
+  return [
+    isPlanValidationStep(fw),
+    hasBlockingPlanValidation(fw),
+    hasStartedPlanDetails(fw),
+  ].every(Boolean);
+}
+
+function isPlanValidationStep(fw: ForgeFooterState) {
+  return fw.step === PLAN_VALIDATION_STEP;
+}
+
+function hasBlockingPlanValidation(fw: ForgeFooterState) {
+  return [!fw.canAdvanceStep2, Boolean(fw.forgeValidationMessage)].every(
+    Boolean,
+  );
+}
+
+function hasStartedPlanDetails(fw: ForgeFooterState) {
+  return [hasEnteredPlanText(fw), hasSelectedPlanLocation(fw)].some(Boolean);
+}
+
+function hasEnteredPlanText(fw: ForgeFooterState) {
+  return [fw.planName.trim(), fw.planDate, fw.planTime].some(hasText);
+}
+
+function hasSelectedPlanLocation(fw: ForgeFooterState) {
+  return fw.locationType !== UNSET_LOCATION_TYPE;
+}
+
+function hasText(value: string) {
+  return value.length > 0;
 }

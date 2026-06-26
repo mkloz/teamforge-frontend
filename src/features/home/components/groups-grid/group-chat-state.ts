@@ -12,6 +12,15 @@ export interface GroupChatStatus {
   isPinned: boolean;
 }
 
+const MESSAGE_TYPE_PREVIEWS: Record<MessageApi["type"], string> = {
+  FILE: "File",
+  IMAGE: "Photo",
+  PLAN_UPDATE: "Plan update",
+  SYSTEM: "Group update",
+  TEXT: "New message",
+  VOICE: "Voice note",
+};
+
 export function collectGroupChatState(chats: ChatApi[]): GroupChatState {
   const lastActivityByGroupId = new Map<string, string>();
   const messagePreviewsByGroupId = new Map<string, string>();
@@ -19,27 +28,14 @@ export function collectGroupChatState(chats: ChatApi[]): GroupChatState {
   const unreadCountsByGroupId = new Map<string, number>();
 
   for (const chat of chats) {
-    if (chat.type !== "GROUP" || !chat.groupId) {
+    if (!isGroupChat(chat)) {
       continue;
     }
 
-    const unreadCount = chat.unreadCount ?? (chat.hasUnread ? 1 : 0);
-
-    unreadCountsByGroupId.set(chat.groupId, unreadCount);
-    statusesByGroupId.set(chat.groupId, {
-      isMuted: chat.isMuted,
-      isPinned: chat.isPinned,
-    });
-
-    if (chat.lastMessage?.createdAt) {
-      lastActivityByGroupId.set(chat.groupId, chat.lastMessage.createdAt);
-    }
-
-    const messagePreview = getMessagePreview(chat);
-
-    if (messagePreview) {
-      messagePreviewsByGroupId.set(chat.groupId, messagePreview);
-    }
+    unreadCountsByGroupId.set(chat.groupId, getUnreadCount(chat));
+    statusesByGroupId.set(chat.groupId, getGroupChatStatus(chat));
+    setLastActivity(lastActivityByGroupId, chat);
+    setMessagePreview(messagePreviewsByGroupId, chat);
   }
 
   return {
@@ -50,26 +46,75 @@ export function collectGroupChatState(chats: ChatApi[]): GroupChatState {
   };
 }
 
+function isGroupChat(chat: ChatApi): chat is ChatApi & { groupId: string } {
+  return chat.type === "GROUP" && Boolean(chat.groupId);
+}
+
+function getUnreadCount(chat: ChatApi) {
+  return chat.unreadCount ?? (chat.hasUnread ? 1 : 0);
+}
+
+function getGroupChatStatus(chat: ChatApi): GroupChatStatus {
+  return {
+    isMuted: chat.isMuted,
+    isPinned: chat.isPinned,
+  };
+}
+
+function setLastActivity(
+  lastActivityByGroupId: Map<string, string>,
+  chat: ChatApi & { groupId: string },
+) {
+  if (chat.lastMessage?.createdAt) {
+    lastActivityByGroupId.set(chat.groupId, chat.lastMessage.createdAt);
+  }
+}
+
+function setMessagePreview(
+  messagePreviewsByGroupId: Map<string, string>,
+  chat: ChatApi & { groupId: string },
+) {
+  const messagePreview = getMessagePreview(chat);
+
+  if (messagePreview) {
+    messagePreviewsByGroupId.set(chat.groupId, messagePreview);
+  }
+}
+
 function getMessagePreview(chat: ChatApi) {
   const message = chat.lastMessage;
 
-  if (!message) {
+  if (!canPreviewMessage(message)) {
     return null;
   }
 
-  if (message.type === "SYSTEM") {
-    return null;
-  }
-
-  const content = compactPreview(
-    message.content.trim() || getMessageTypePreview(message.type),
-  );
+  const content = getCompactMessagePreviewContent(message);
 
   if (message.type === "PLAN_UPDATE") {
     return content;
   }
 
-  return message.sender?.name ? `${message.sender.name}: ${content}` : content;
+  return getSenderPrefixedPreview(message, content);
+}
+
+function canPreviewMessage(
+  message: ChatApi["lastMessage"],
+): message is MessageApi {
+  return Boolean(message && message.type !== "SYSTEM");
+}
+
+function getCompactMessagePreviewContent(message: MessageApi) {
+  return compactPreview(
+    message.content.trim() || getMessageTypePreview(message.type),
+  );
+}
+
+function getSenderPrefixedPreview(message: MessageApi, content: string) {
+  if (!message.sender?.name) {
+    return content;
+  }
+
+  return `${message.sender.name}: ${content}`;
 }
 
 function compactPreview(value: string) {
@@ -77,25 +122,5 @@ function compactPreview(value: string) {
 }
 
 function getMessageTypePreview(type: MessageApi["type"]) {
-  if (type === "IMAGE") {
-    return "Photo";
-  }
-
-  if (type === "VOICE") {
-    return "Voice note";
-  }
-
-  if (type === "FILE") {
-    return "File";
-  }
-
-  if (type === "PLAN_UPDATE") {
-    return "Plan update";
-  }
-
-  if (type === "SYSTEM") {
-    return "Group update";
-  }
-
-  return "New message";
+  return MESSAGE_TYPE_PREVIEWS[type] ?? "New message";
 }

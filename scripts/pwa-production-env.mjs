@@ -1,13 +1,18 @@
+// @ts-check
+
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import process from "node:process";
 
 /**
  * @typedef {Record<string, string | undefined>} EnvMap
+ * @typedef {"VITE_API_URL" | "VITE_APP_URL" | "VITE_GIPHY_API_KEY" | "VITE_GOOGLE_CLIENT_ID" | "VITE_GOOGLE_MAPS_API_KEY" | "VITE_MEDIA_BASE_URL"} RequiredEnvKey
  * @typedef {{ detail: string; name: string; passed: boolean }} EnvCheck
  * @typedef {{ envFile: string | null }} CliArgs
+ * @typedef {{ url: URL; value: string | undefined }} ParsedEnvUrl
  */
 
+/** @type {readonly RequiredEnvKey[]} */
 const REQUIRED_ENV_KEYS = [
   "VITE_APP_URL",
   "VITE_API_URL",
@@ -24,6 +29,7 @@ const PLACEHOLDER_PATTERN =
 const PRODUCTION_API_URL = "https://api.mkloz.com/teamforge/api/v1";
 const EXPECTED_PRODUCTION_SOCKET_PATH = "/teamforge/socket.io";
 
+/** @type {EnvCheck[]} */
 const checks = [];
 
 /**
@@ -44,23 +50,46 @@ function addCheck(name, passed, detail) {
  * @returns {CliArgs} Parsed args.
  */
 function parseArgs(argv) {
+  /** @type {CliArgs} */
   const args = { envFile: null };
 
   for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
+    const envFileArg = parseEnvFileArg(argv[index], argv[index + 1]);
 
-    if (arg === "--env-file") {
-      args.envFile = argv[index + 1] ?? null;
-      index += 1;
+    if (!envFileArg) {
       continue;
     }
 
-    if (arg.startsWith("--env-file=")) {
-      args.envFile = arg.slice("--env-file=".length);
+    args.envFile = envFileArg.envFile;
+
+    if (envFileArg.consumesNext) {
+      index += 1;
     }
   }
 
   return args;
+}
+
+/**
+ * Parses one env-file CLI flag.
+ *
+ * @param {string} arg Current CLI arg.
+ * @param {string | undefined} nextArg Next CLI arg.
+ * @returns {{ consumesNext: boolean; envFile: string | null } | null} Parsed flag.
+ */
+function parseEnvFileArg(arg, nextArg) {
+  if (arg === "--env-file") {
+    return { consumesNext: true, envFile: nextArg ?? null };
+  }
+
+  if (arg.startsWith("--env-file=")) {
+    return {
+      consumesNext: false,
+      envFile: arg.slice("--env-file=".length),
+    };
+  }
+
+  return null;
 }
 
 /**
@@ -80,31 +109,48 @@ function stripEnvQuotes(value) {
  * @returns {EnvMap} Parsed key/value pairs.
  */
 function parseEnvFile(text) {
+  /** @type {EnvMap} */
   const result = {};
 
   for (const line of text.split(/\r?\n/u)) {
-    const trimmed = line.trim();
+    const assignment = parseEnvAssignmentLine(line);
 
-    if (!trimmed || trimmed.startsWith("#")) {
+    if (!assignment) {
       continue;
     }
 
-    const assignment = trimmed.startsWith("export ")
-      ? trimmed.slice("export ".length)
-      : trimmed;
-    const separatorIndex = assignment.indexOf("=");
-
-    if (separatorIndex === -1) {
-      continue;
-    }
-
-    const key = assignment.slice(0, separatorIndex).trim();
-    const value = stripEnvQuotes(assignment.slice(separatorIndex + 1));
-
-    result[key] = value;
+    result[assignment.key] = assignment.value;
   }
 
   return result;
+}
+
+/**
+ * Parses one dotenv assignment line.
+ *
+ * @param {string} line Dotenv line.
+ * @returns {{ key: string; value: string } | null} Parsed assignment.
+ */
+function parseEnvAssignmentLine(line) {
+  const trimmed = line.trim();
+
+  if (!trimmed || trimmed.startsWith("#")) {
+    return null;
+  }
+
+  const assignment = trimmed.startsWith("export ")
+    ? trimmed.slice("export ".length)
+    : trimmed;
+  const separatorIndex = assignment.indexOf("=");
+
+  if (separatorIndex === -1) {
+    return null;
+  }
+
+  return {
+    key: assignment.slice(0, separatorIndex).trim(),
+    value: stripEnvQuotes(assignment.slice(separatorIndex + 1)),
+  };
 }
 
 /**
@@ -167,6 +213,46 @@ function getSocketPathForApiUrl(apiUrl) {
 }
 
 /**
+ * Parses a URL-valued env key while recording the parse check.
+ *
+ * @param {EnvMap} env Environment map.
+ * @param {"VITE_API_URL" | "VITE_APP_URL" | "VITE_MEDIA_BASE_URL"} key URL env key.
+ * @returns {ParsedEnvUrl | null} Parsed URL result.
+ */
+function parseUrlEnvValue(env, key) {
+  const value = env[key];
+
+  try {
+    const url = new URL(value ?? "");
+
+    addCheck(`${key} parses`, true, `${value} is a valid URL.`);
+    return { url, value };
+  } catch {
+    addCheck(`${key} parses`, false, `${value ?? ""} is not a URL.`);
+    return null;
+  }
+}
+
+/**
+ * Validates the production URL invariants shared by public browser env URLs.
+ *
+ * @param {"VITE_API_URL" | "VITE_APP_URL" | "VITE_MEDIA_BASE_URL"} key URL env key.
+ * @param {URL} url Parsed URL.
+ */
+function validateProductionUrlShape(key, url) {
+  addCheck(
+    `${key} uses HTTPS`,
+    url.protocol === "https:",
+    `${key} protocol is ${url.protocol}.`,
+  );
+  addCheck(
+    `${key} is not local`,
+    !LOCAL_HOSTS.has(url.hostname),
+    `${key} host is ${url.hostname}.`,
+  );
+}
+
+/**
  * Validates required browser-baked env keys.
  *
  * @param {EnvMap} env Environment map.
@@ -192,27 +278,13 @@ function validateRequiredEnv(env) {
  * @param {EnvMap} env Environment map.
  */
 function validateAppUrl(env) {
-  const value = env.VITE_APP_URL;
-  let appUrl;
+  const parsed = parseUrlEnvValue(env, "VITE_APP_URL");
 
-  try {
-    appUrl = new URL(value);
-    addCheck("VITE_APP_URL parses", true, `${value} is a valid URL.`);
-  } catch {
-    addCheck("VITE_APP_URL parses", false, `${value ?? ""} is not a URL.`);
+  if (!parsed) {
     return;
   }
 
-  addCheck(
-    "VITE_APP_URL uses HTTPS",
-    appUrl.protocol === "https:",
-    `VITE_APP_URL protocol is ${appUrl.protocol}.`,
-  );
-  addCheck(
-    "VITE_APP_URL is not local",
-    !LOCAL_HOSTS.has(appUrl.hostname),
-    `VITE_APP_URL host is ${appUrl.hostname}.`,
-  );
+  validateProductionUrlShape("VITE_APP_URL", parsed.url);
 }
 
 /**
@@ -221,27 +293,15 @@ function validateAppUrl(env) {
  * @param {EnvMap} env Environment map.
  */
 function validateApiUrl(env) {
-  const value = env.VITE_API_URL;
-  let apiUrl;
+  const parsed = parseUrlEnvValue(env, "VITE_API_URL");
 
-  try {
-    apiUrl = new URL(value);
-    addCheck("VITE_API_URL parses", true, `${value} is a valid URL.`);
-  } catch {
-    addCheck("VITE_API_URL parses", false, `${value ?? ""} is not a URL.`);
+  if (!parsed) {
     return;
   }
 
-  addCheck(
-    "VITE_API_URL uses HTTPS",
-    apiUrl.protocol === "https:",
-    `VITE_API_URL protocol is ${apiUrl.protocol}.`,
-  );
-  addCheck(
-    "VITE_API_URL is not local",
-    !LOCAL_HOSTS.has(apiUrl.hostname),
-    `VITE_API_URL host is ${apiUrl.hostname}.`,
-  );
+  const { url: apiUrl, value } = parsed;
+
+  validateProductionUrlShape("VITE_API_URL", apiUrl);
   addCheck(
     "VITE_API_URL includes API prefix",
     API_PREFIX_PATTERN.test(apiUrl.pathname.replace(/\/+$/u, "")),
@@ -277,31 +337,13 @@ function validateApiUrl(env) {
  * @param {EnvMap} env Environment map.
  */
 function validateMediaBaseUrl(env) {
-  const value = env.VITE_MEDIA_BASE_URL;
-  let mediaUrl;
+  const parsed = parseUrlEnvValue(env, "VITE_MEDIA_BASE_URL");
 
-  try {
-    mediaUrl = new URL(value);
-    addCheck("VITE_MEDIA_BASE_URL parses", true, `${value} is a valid URL.`);
-  } catch {
-    addCheck(
-      "VITE_MEDIA_BASE_URL parses",
-      false,
-      `${value ?? ""} is not a URL.`,
-    );
+  if (!parsed) {
     return;
   }
 
-  addCheck(
-    "VITE_MEDIA_BASE_URL uses HTTPS",
-    mediaUrl.protocol === "https:",
-    `VITE_MEDIA_BASE_URL protocol is ${mediaUrl.protocol}.`,
-  );
-  addCheck(
-    "VITE_MEDIA_BASE_URL is not local",
-    !LOCAL_HOSTS.has(mediaUrl.hostname),
-    `VITE_MEDIA_BASE_URL host is ${mediaUrl.hostname}.`,
-  );
+  validateProductionUrlShape("VITE_MEDIA_BASE_URL", parsed.url);
 }
 
 /**
@@ -310,19 +352,55 @@ function validateMediaBaseUrl(env) {
  * @param {string | null} envFile Env file path, if supplied.
  */
 function printSummary(envFile) {
-  const failed = checks.filter((check) => !check.passed);
-  const passed = checks.filter((check) => check.passed);
+  const { failed, passed } = summarizeEnvChecks();
   const source = envFile ? ` from ${envFile}` : " from process env";
 
+  printEnvCheckLines();
+  printEnvCheckCountSummary(source, passed.length, failed.length);
+  setFailureExitCode(failed);
+}
+
+/**
+ * Groups env checks by outcome.
+ *
+ * @returns {{ failed: EnvCheck[]; passed: EnvCheck[] }} Check summary.
+ */
+function summarizeEnvChecks() {
+  return {
+    failed: checks.filter((check) => !check.passed),
+    passed: checks.filter((check) => check.passed),
+  };
+}
+
+/**
+ * Prints each env check line.
+ */
+function printEnvCheckLines() {
   for (const check of checks) {
     const label = check.passed ? "PASS" : "FAIL";
     process.stdout.write(`${label} ${check.name}: ${check.detail}\n`);
   }
+}
 
+/**
+ * Prints the final env check count summary.
+ *
+ * @param {string} source Env source label.
+ * @param {number} passedCount Passing check count.
+ * @param {number} failedCount Failed check count.
+ */
+function printEnvCheckCountSummary(source, passedCount, failedCount) {
   process.stdout.write(
-    `\nPWA production env preflight${source}: ${passed.length} passed, ${failed.length} failed.\n`,
+    `\nPWA production env preflight${source}: ${passedCount} passed, ${failedCount} failed.\n`,
   );
+}
 
+/**
+ * Sets a failing process exit code when needed.
+ *
+ * @param {readonly EnvCheck[]} failed Failed checks.
+ */
+function setFailureExitCode(failed) {
   if (failed.length > 0) {
     process.exitCode = 1;
   }

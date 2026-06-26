@@ -3,12 +3,6 @@ import { ActivityFeedQueryFactory } from "@/features/activity/api/query-factory/
 import { ActivityMessageQueryFactory } from "@/features/activity/api/query-factory/activity-message-query-factory";
 import { ActivitySelectionQueryFactory } from "@/features/activity/api/query-factory/activity-selection-query-factory";
 
-export type {
-  ActivityDirectSelectionData,
-  ActivityFeedData,
-  ActivityGroupSelectionData,
-} from "./activity-query-data";
-
 export const ActivityQueryFactory = {
   ...ActivityBaseQueryFactory,
   ...ActivityFeedQueryFactory,

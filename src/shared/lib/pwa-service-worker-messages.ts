@@ -21,19 +21,29 @@ function isMessageType(value: unknown): value is PwaServiceWorkerMessageType {
   );
 }
 
-export function isPwaServiceWorkerMessage(
-  value: unknown,
-): value is PwaServiceWorkerMessage {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
+function isRecord(value: unknown): value is Record<PropertyKey, unknown> {
+  return Boolean(value) && typeof value === "object";
+}
 
-  const candidate = value as Partial<PwaServiceWorkerMessage>;
-
+function hasRequiredPwaMessageFields(
+  candidate: Partial<PwaServiceWorkerMessage>,
+) {
   return (
     isMessageType(candidate.type) &&
     typeof candidate.route === "string" &&
     typeof candidate.url === "string" &&
     typeof candidate.sentAt === "number"
   );
+}
+
+export function isPwaServiceWorkerMessage(
+  value: unknown,
+): value is PwaServiceWorkerMessage {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const candidate = value as Partial<PwaServiceWorkerMessage>;
+
+  return hasRequiredPwaMessageFields(candidate);
 }

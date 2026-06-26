@@ -24,50 +24,25 @@ export function GroupAvatarSection({
           Group avatar
         </p>
         <p className="mt-0.5 text-muted-foreground/60 text-xs">
-          {isOnline
-            ? "A square icon that identifies your group across the app. Drag and drop or tap to upload."
-            : "Reconnect before uploading a group avatar."}
+          {getGroupAvatarHelpText(isOnline)}
         </p>
       </div>
 
       <div className="flex h-22 items-stretch gap-3 sm:h-24">
-        <div className="relative h-full w-22 shrink-0 overflow-hidden rounded-lg border border-border bg-muted sm:w-24 sm:rounded-xl">
-          {avatarImage ? (
-            <Avatar
-              src={avatarImage}
-              name={groupName || planTitle}
-              shape="rounded"
-              className="size-full rounded-lg text-sm sm:rounded-xl sm:text-lg"
-            />
-          ) : (
-            <div className="flex size-full items-center justify-center bg-card/70 p-2">
-              <GroupAvatarPlaceholderVisual className="h-10 w-auto text-foreground sm:h-12" />
-            </div>
-          )}
-          {avatarImage && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-xs"
-              disabled={!isOnline}
-              onClick={() => onAvatarImageChange(null)}
-              className="absolute top-1.5 right-1.5 z-20 size-6 rounded-full bg-black/45 text-white hover:bg-black/65"
-              aria-label="Remove avatar"
-              title={
-                isOnline ? undefined : "Reconnect before changing group images."
-              }
-            >
-              <X size={12} />
-            </Button>
-          )}
-        </div>
+        <GroupAvatarPreview
+          avatarImage={avatarImage}
+          groupName={groupName}
+          isOnline={isOnline}
+          planTitle={planTitle}
+          onAvatarImageChange={onAvatarImageChange}
+        />
         <FileDropzone
           className="min-h-0 min-w-0 flex-1"
           dropzoneClassName="h-full min-h-0"
           inputRef={avatarInputRef}
           variant="avatar"
           accept="image/*"
-          title={avatarImage ? "Replace avatar" : "Upload group avatar"}
+          title={getGroupAvatarDropzoneTitle(avatarImage)}
           description="Drop a square image here or tap to browse."
           helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
@@ -79,4 +54,97 @@ export function GroupAvatarSection({
       </div>
     </div>
   );
+}
+
+function GroupAvatarPreview({
+  avatarImage,
+  groupName,
+  isOnline,
+  onAvatarImageChange,
+  planTitle,
+}: Pick<
+  GroupAvatarSectionProps,
+  "avatarImage" | "groupName" | "isOnline" | "onAvatarImageChange" | "planTitle"
+>) {
+  return (
+    <div className="relative h-full w-22 shrink-0 overflow-hidden rounded-lg border border-border bg-muted sm:w-24 sm:rounded-xl">
+      <GroupAvatarImage
+        avatarImage={avatarImage}
+        groupName={groupName}
+        planTitle={planTitle}
+      />
+      <RemoveGroupAvatarButton
+        avatarImage={avatarImage}
+        isOnline={isOnline}
+        onAvatarImageChange={onAvatarImageChange}
+      />
+    </div>
+  );
+}
+
+function GroupAvatarImage({
+  avatarImage,
+  groupName,
+  planTitle,
+}: Pick<GroupAvatarSectionProps, "avatarImage" | "groupName" | "planTitle">) {
+  if (avatarImage) {
+    return (
+      <Avatar
+        src={avatarImage}
+        name={groupName || planTitle}
+        shape="rounded"
+        className="size-full rounded-lg text-sm sm:rounded-xl sm:text-lg"
+      />
+    );
+  }
+
+  return (
+    <div className="flex size-full items-center justify-center bg-card/70 p-2">
+      <GroupAvatarPlaceholderVisual className="h-10 w-auto text-foreground sm:h-12" />
+    </div>
+  );
+}
+
+function RemoveGroupAvatarButton({
+  avatarImage,
+  isOnline,
+  onAvatarImageChange,
+}: Pick<
+  GroupAvatarSectionProps,
+  "avatarImage" | "isOnline" | "onAvatarImageChange"
+>) {
+  if (!avatarImage) {
+    return null;
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon-xs"
+      disabled={!isOnline}
+      onClick={() => onAvatarImageChange(null)}
+      className="absolute top-1.5 right-1.5 z-20 size-6 rounded-full bg-black/45 text-white hover:bg-black/65"
+      aria-label="Remove avatar"
+      title={getRemoveGroupAvatarTitle(isOnline)}
+    >
+      <X size={12} />
+    </Button>
+  );
+}
+
+function getGroupAvatarHelpText(isOnline: boolean) {
+  return isOnline
+    ? "A square icon that identifies your group across the app. Drag and drop or tap to upload."
+    : "Reconnect before uploading a group avatar.";
+}
+
+function getGroupAvatarDropzoneTitle(
+  avatarImage: GroupAvatarSectionProps["avatarImage"],
+) {
+  return avatarImage ? "Replace avatar" : "Upload group avatar";
+}
+
+function getRemoveGroupAvatarTitle(isOnline: boolean) {
+  return isOnline ? undefined : "Reconnect before changing group images.";
 }

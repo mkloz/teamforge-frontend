@@ -47,6 +47,10 @@ interface PreferencesMutationContext {
   previousPreferences: NotificationPreferences | undefined;
 }
 
+type UpdateNotificationPreferencesResult = Awaited<
+  ReturnType<typeof SettingsCommands.updateNotificationPreferences>
+>;
+
 function getChangedPreferenceKeys(
   previousPreferences: NotificationPreferences | undefined,
   nextPreferences: NotificationPreferences,
@@ -63,24 +67,111 @@ function getChangedPreferenceKeys(
 function rollbackChangedPreferenceKeys(
   currentPreferences: NotificationPreferences | undefined,
   context: PreferencesMutationContext | undefined,
-) {
-  if (!context?.previousPreferences || !currentPreferences) {
-    return context?.previousPreferences ?? currentPreferences;
+): NotificationPreferences | undefined {
+  const rollbackContext = getRollbackContext(currentPreferences, context);
+
+  if (!rollbackContext) {
+    return getRollbackPreferencesFallback(currentPreferences, context);
   }
 
-  const nextPreferences = { ...currentPreferences };
+  return restoreChangedPreferenceValues(rollbackContext);
+}
+
+function getRollbackContext(
+  currentPreferences: NotificationPreferences | undefined,
+  context: PreferencesMutationContext | undefined,
+) {
+  const previousPreferences = context?.previousPreferences;
+
+  if (!currentPreferences || !context || !previousPreferences) {
+    return null;
+  }
+
+  return {
+    context,
+    currentPreferences,
+    previousPreferences,
+  };
+}
+
+function getRollbackPreferencesFallback(
+  currentPreferences: NotificationPreferences | undefined,
+  context: PreferencesMutationContext | undefined,
+) {
+  return context?.previousPreferences ?? currentPreferences;
+}
+
+function restoreChangedPreferenceValues({
+  context,
+  currentPreferences,
+  previousPreferences,
+}: {
+  context: PreferencesMutationContext;
+  currentPreferences: NotificationPreferences;
+  previousPreferences: NotificationPreferences;
+}) {
+  const nextPreferences: NotificationPreferences = { ...currentPreferences };
 
   for (const key of context.changedKeys) {
-    if (nextPreferences[key] !== context.optimisticPreferences[key]) {
-      continue;
-    }
-
-    Object.assign(nextPreferences, {
-      [key]: context.previousPreferences[key],
-    });
+    restorePreviousPreferenceValueIfOptimistic(
+      nextPreferences,
+      context,
+      previousPreferences,
+      key,
+    );
   }
 
   return nextPreferences;
+}
+
+function restorePreviousPreferenceValueIfOptimistic(
+  nextPreferences: NotificationPreferences,
+  context: PreferencesMutationContext,
+  previousPreferences: NotificationPreferences,
+  key: SettingsPreferenceKey,
+) {
+  if (!isOptimisticPreferenceValue(nextPreferences, context, key)) {
+    return;
+  }
+
+  restorePreviousPreferenceValue(nextPreferences, previousPreferences, key);
+}
+
+function isOptimisticPreferenceValue(
+  currentPreferences: NotificationPreferences,
+  context: PreferencesMutationContext,
+  key: SettingsPreferenceKey,
+) {
+  return currentPreferences[key] === context.optimisticPreferences[key];
+}
+
+function restorePreviousPreferenceValue(
+  nextPreferences: NotificationPreferences,
+  previousPreferences: NotificationPreferences,
+  key: SettingsPreferenceKey,
+) {
+  Object.assign(nextPreferences, {
+    [key]: previousPreferences[key],
+  });
+}
+
+function getSavingPreferenceKeysWithChanges(
+  currentKeys: ReadonlySet<SettingsPreferenceKey>,
+  changedKeys: readonly SettingsPreferenceKey[],
+  shouldTrack: boolean,
+) {
+  const nextKeys = new Set(currentKeys);
+
+  for (const key of changedKeys) {
+    if (shouldTrack) {
+      nextKeys.add(key);
+      continue;
+    }
+
+    nextKeys.delete(key);
+  }
+
+  return nextKeys;
 }
 
 export function useSettingsPreferencesActions({
@@ -97,7 +188,12 @@ export function useSettingsPreferencesActions({
     enabled,
   });
 
-  const preferencesMutation = useMutation({
+  const preferencesMutation = useMutation<
+    UpdateNotificationPreferencesResult,
+    Error,
+    NotificationPreferences,
+    PreferencesMutationContext
+  >({
     meta: {
       errorToastMessage: "We couldn't update your settings right now.",
       telemetryName: trackedMutationNames.settingsNotificationPreferences,
@@ -189,32 +285,38 @@ export function useSettingsPreferencesActions({
       return;
     }
 
-    setSavingPreferenceKeys((current) => {
-      const next = new Set(current);
-      changedKeys.forEach((key) => {
-        next.add(key);
-      });
-      return next;
-    });
+    setSavingPreferenceKeys((current) =>
+      getSavingPreferenceKeysWithChanges(current, changedKeys, true),
+    );
     setPreferencesError(null);
 
     try {
       await preferencesMutation.mutateAsync(nextPreferences);
     } finally {
-      setSavingPreferenceKeys((current) => {
-        const next = new Set(current);
-        changedKeys.forEach((key) => {
-          next.delete(key);
-        });
-        return next;
-      });
+      setSavingPreferenceKeys((current) =>
+        getSavingPreferenceKeysWithChanges(current, changedKeys, false),
+      );
     }
   }
 
-  async function updateNotificationPreference(
-    key: BooleanSettingsPreferenceKey,
-    value: boolean,
+  async function saveNotificationPreferencePatch(
+    values: Partial<NotificationPreferences>,
   ) {
+    const currentPreferences = notificationPreferencesQuery.data;
+
+    if (!currentPreferences) {
+      return;
+    }
+
+    await saveNotificationPreferences({
+      ...currentPreferences,
+      ...values,
+    });
+  }
+
+  async function saveSingleNotificationPreference<
+    Key extends BooleanSettingsPreferenceKey,
+  >(key: Key, value: NotificationPreferences[Key]) {
     const currentPreferences = notificationPreferencesQuery.data;
 
     if (!currentPreferences) {
@@ -227,22 +329,20 @@ export function useSettingsPreferencesActions({
     });
   }
 
+  async function updateNotificationPreference(
+    key: BooleanSettingsPreferenceKey,
+    value: boolean,
+  ) {
+    await saveSingleNotificationPreference(key, value);
+  }
+
   async function updateMatchingPreference(
     values: Pick<
       NotificationPreferences,
       "autoMatchingEnabled" | "minCompatibilityScore"
     >,
   ) {
-    const currentPreferences = notificationPreferencesQuery.data;
-
-    if (!currentPreferences) {
-      return;
-    }
-
-    await saveNotificationPreferences({
-      ...currentPreferences,
-      ...values,
-    });
+    await saveNotificationPreferencePatch(values);
   }
 
   async function updatePrivacyPreference(
@@ -254,16 +354,7 @@ export function useSettingsPreferencesActions({
       | "showFriendsListOnProfile"
     >,
   ) {
-    const currentPreferences = notificationPreferencesQuery.data;
-
-    if (!currentPreferences) {
-      return;
-    }
-
-    await saveNotificationPreferences({
-      ...currentPreferences,
-      ...values,
-    });
+    await saveNotificationPreferencePatch(values);
   }
 
   async function updateAppearancePreference(
@@ -272,16 +363,7 @@ export function useSettingsPreferencesActions({
       "themeAppearance" | "themeStyle" | "themeColor"
     >,
   ) {
-    const currentPreferences = notificationPreferencesQuery.data;
-
-    if (!currentPreferences) {
-      return;
-    }
-
-    await saveNotificationPreferences({
-      ...currentPreferences,
-      ...values,
-    });
+    await saveNotificationPreferencePatch(values);
   }
 
   return {

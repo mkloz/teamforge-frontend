@@ -5,6 +5,21 @@ import {
 } from "@/features/forge/lib/forge-execution-schema";
 import type { ForgeWizardData } from "@/features/forge/lib/forge-wizard";
 
+const DEFAULT_FORGE_EXECUTION_MESSAGE =
+  "Finish the plan details before forming the group.";
+const ISSUE_MESSAGE_FIELDS = new Set<unknown>([
+  "planName",
+  "planDate",
+  "planTime",
+  "planLocation",
+  "planLocationLat",
+  "planCostAmount",
+]);
+const ISSUE_FIELD_MESSAGES = new Map<unknown, string>([
+  ["selectedActivity", "Choose an activity before forming the group."],
+  ["autoMinSize", "Keep the minimum group size below the maximum."],
+]);
+
 function buildRawForgeExecutionInput(state: ForgeWizardData) {
   return {
     selectedActivity: state.selectedActivity,
@@ -69,55 +84,46 @@ export function getForgeExecutionValidation(
   };
 }
 
-export function canSubmitForgeExecutionInput(state: ForgeWizardData) {
-  return getForgeExecutionValidation(state).canSubmit;
-}
-
-export function getForgeExecutionValidationMessage(state: ForgeWizardData) {
-  return getForgeExecutionValidation(state).message;
-}
-
 export function getForgeExecutionIssueMessage(issue?: ZodIssue) {
   if (!issue) {
-    return "Finish the plan details before forming the group.";
+    return DEFAULT_FORGE_EXECUTION_MESSAGE;
   }
 
   const field = issue.path[0];
+  const fieldMessage = ISSUE_FIELD_MESSAGES.get(field);
 
-  if (field === "selectedActivity") {
-    return "Choose an activity before forming the group.";
+  if (fieldMessage) {
+    return fieldMessage;
   }
 
-  if (field === "planName") {
+  if (ISSUE_MESSAGE_FIELDS.has(field)) {
     return issue.message;
   }
 
-  if (field === "planDate" || field === "planTime") {
-    return issue.message;
-  }
-
-  if (field === "planLocation" || field === "planLocationLat") {
-    return issue.message;
-  }
-
-  if (field === "planCostAmount") {
-    return issue.message;
-  }
-
-  if (field === "autoMinSize") {
-    return "Keep the minimum group size below the maximum.";
-  }
-
-  return issue.message || "Finish the plan details before forming the group.";
+  return issue.message || DEFAULT_FORGE_EXECUTION_MESSAGE;
 }
 
 function getForgeValidationMessage(state: ForgeWizardData, issues: ZodIssue[]) {
   const planName = state.planName.trim();
+  const planNameMessage = getPlanNameValidationMessage(planName);
+  const scheduleMessage = getPlanScheduleValidationMessage(state);
 
   if (!state.selectedActivity) {
     return "Choose an activity before forming the group.";
   }
 
+  if (planNameMessage) {
+    return planNameMessage;
+  }
+
+  if (scheduleMessage) {
+    return scheduleMessage;
+  }
+
+  return getForgeExecutionIssueMessage(issues[0]);
+}
+
+function getPlanNameValidationMessage(planName: string) {
   if (planName.length === 0) {
     return "Add a plan name before forming the group.";
   }
@@ -126,17 +132,24 @@ function getForgeValidationMessage(state: ForgeWizardData, issues: ZodIssue[]) {
     return "Use at least 3 characters for the plan name.";
   }
 
-  if (!state.planDate && !state.planTime) {
+  return null;
+}
+
+function getPlanScheduleValidationMessage({
+  planDate,
+  planTime,
+}: ForgeWizardData) {
+  if (!planDate && !planTime) {
     return "Add a date and time before forming the group.";
   }
 
-  if (!state.planDate) {
+  if (!planDate) {
     return "Add a date before forming the group.";
   }
 
-  if (!state.planTime) {
+  if (!planTime) {
     return "Add a time before forming the group.";
   }
 
-  return getForgeExecutionIssueMessage(issues[0]);
+  return null;
 }

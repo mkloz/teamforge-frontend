@@ -12,24 +12,17 @@ import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
 
 const GROUP_PLAN_DETAIL_ROUTE = "/app-shell/groups/$groupId";
+const GROUP_PLAN_DETAIL_DEFAULT_DESCRIPTION =
+  "Review the TeamForge group, plan, members, and fit signals.";
 
 export function GroupPlanDetailPage() {
   const { groupId } = useParams({ from: GROUP_PLAN_DETAIL_ROUTE });
   const search = useSearch({ from: GROUP_PLAN_DETAIL_ROUTE });
   const detailQuery = useGroupPlanDetail(groupId);
-  const pageMetadata = useMemo(() => {
-    const detail = detailQuery.data;
-    const title = detail?.plan?.title
-      ? `${detail.plan.title} · ${detail.group.name}`
-      : (detail?.group.name ?? "Group details");
-
-    return createTeamForgePageMetadata({
-      title,
-      description: detail?.plan?.description
-        ? detail.plan.description
-        : "Review the TeamForge group, plan, members, and fit signals.",
-    });
-  }, [detailQuery.data]);
+  const pageMetadata = useMemo(
+    () => getGroupPlanDetailPageMetadata(detailQuery.data),
+    [detailQuery.data],
+  );
 
   usePageMetadata(pageMetadata);
 
@@ -116,4 +109,25 @@ function useGroupPlanDetailLoadedView({
     planId: search.plan,
     proposalId: search.proposal,
   });
+}
+
+function getGroupPlanDetailPageMetadata(detail: GroupPlanDetail | undefined) {
+  return createTeamForgePageMetadata({
+    title: getGroupPlanDetailPageTitle(detail),
+    description: getGroupPlanDetailPageDescription(detail),
+  });
+}
+
+function getGroupPlanDetailPageTitle(detail: GroupPlanDetail | undefined) {
+  return detail?.plan?.title
+    ? `${detail.plan.title} · ${detail.group.name}`
+    : (detail?.group.name ?? "Group details");
+}
+
+function getGroupPlanDetailPageDescription(
+  detail: GroupPlanDetail | undefined,
+) {
+  return detail?.plan?.description
+    ? detail.plan.description
+    : GROUP_PLAN_DETAIL_DEFAULT_DESCRIPTION;
 }

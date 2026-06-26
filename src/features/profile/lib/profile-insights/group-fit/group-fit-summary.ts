@@ -7,7 +7,18 @@ import type {
   ProfilePortraitCandidate,
   SocialProfileModel,
 } from "../types";
-import { getGroupFitStyle } from "./group-fit-style";
+import { type GroupFitPosture, getGroupFitStyle } from "./group-fit-style";
+
+const GROUP_FIT_POSTURE_SIGNALS: Partial<Record<GroupFitPosture, string>> = {
+  builder: "A specific topic or shared problem matters more than mingling.",
+  connector: "The activity should carry the first few minutes.",
+  coordinator: "Give the plan a clear time, place, and fallback.",
+  curator: "The setting should feel chosen, not interchangeable.",
+  host: "The activity should carry the first few minutes.",
+  observer: "Keep the first group small enough for pace to matter.",
+  specialist: "A specific topic or shared problem matters more than mingling.",
+  starter: "Works best when the group can start before every detail is fixed.",
+};
 
 export function buildPortraitGroupSummary(
   key: PortraitKey,
@@ -66,45 +77,34 @@ export function buildPortraitGroupSignals(
     signals.add(`Best first move: ${openingIdea.title}.`);
   }
 
-  if (style.posture === "starter") {
-    signals.add(
-      "Works best when the group can start before every detail is fixed.",
-    );
-  }
-
-  if (style.posture === "connector" || style.posture === "host") {
-    signals.add("The activity should carry the first few minutes.");
-  }
-
-  if (style.posture === "coordinator") {
-    signals.add("Give the plan a clear time, place, and fallback.");
-  }
-
-  if (style.posture === "specialist" || style.posture === "builder") {
-    signals.add(
-      "A specific topic or shared problem matters more than mingling.",
-    );
-  }
-
-  if (style.posture === "observer") {
-    signals.add("Keep the first group small enough for pace to matter.");
-  }
-
-  if (style.posture === "curator") {
-    signals.add("The setting should feel chosen, not interchangeable.");
-  }
+  addPostureSignal(signals, style.posture);
 
   if (socialProfile.context.tensions.length > 0) {
     signals.add("Mixed personality cue; keep the first plan simple.");
   } else {
-    const dominantTrait = socialProfile.context.traits?.dominant;
-
-    if (dominantTrait && dominantTrait.value >= 70) {
-      signals.add(`Clear ${dominantTrait.label} cue.`);
-    }
+    addDominantTraitSignal(signals, socialProfile);
   }
 
   return [...signals].slice(0, 4);
+}
+
+function addPostureSignal(signals: Set<string>, posture: GroupFitPosture) {
+  const postureSignal = GROUP_FIT_POSTURE_SIGNALS[posture];
+
+  if (postureSignal) {
+    signals.add(postureSignal);
+  }
+}
+
+function addDominantTraitSignal(
+  signals: Set<string>,
+  socialProfile: SocialProfileModel,
+) {
+  const dominantTrait = socialProfile.context.traits?.dominant;
+
+  if (dominantTrait && dominantTrait.value >= 70) {
+    signals.add(`Clear ${dominantTrait.label} cue.`);
+  }
 }
 
 function buildGroupSecondaryLaneSentence(lane: ActivityLane | undefined) {

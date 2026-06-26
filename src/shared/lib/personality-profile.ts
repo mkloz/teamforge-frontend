@@ -38,6 +38,8 @@ const TRAITS: OceanTraitKey[] = [
   "neuroticism",
 ];
 
+const MAX_PAIR_SIGNAL_COUNT = 4;
+const MAX_PROFILE_STRENGTHS = 4;
 const SIGNAL_THRESHOLD = 12;
 const STRONG_SIGNAL_THRESHOLD = 22;
 const TERTIARY_SIGNAL_THRESHOLD = 18;
@@ -302,29 +304,27 @@ function getBestPair(
   primary: TraitSignal,
   signals: TraitSignal[],
 ): SignalPair | null {
-  const candidates: SignalPair[] = [];
-
-  for (let left = 0; left < Math.min(signals.length, 4); left++) {
-    for (let right = left + 1; right < Math.min(signals.length, 4); right++) {
-      const first = signals[left];
-      const second = signals[right];
-      const key = getPairKey(first, second);
-
-      candidates.push({
-        first,
-        second,
-        key,
-        strength: first.strength + second.strength,
-      });
-    }
-  }
-
-  const namedPairs = candidates
+  const namedPairs = buildSignalPairs(signals.slice(0, MAX_PAIR_SIGNAL_COUNT))
     .filter((pair) => PAIR_TITLES[pair.key])
     .sort((left, right) => right.strength - left.strength);
   const primaryPair = namedPairs.find((pair) => pairIncludes(pair, primary));
 
   return primaryPair ?? namedPairs[0] ?? null;
+}
+
+function buildSignalPairs(signals: TraitSignal[]) {
+  return signals.flatMap((first, left) =>
+    signals.slice(left + 1).map((second) => buildSignalPair(first, second)),
+  );
+}
+
+function buildSignalPair(first: TraitSignal, second: TraitSignal): SignalPair {
+  return {
+    first,
+    second,
+    key: getPairKey(first, second),
+    strength: first.strength + second.strength,
+  };
 }
 
 function getOtherSignal(pair: SignalPair, signal: TraitSignal) {
@@ -364,20 +364,51 @@ function buildSummary(
   secondary?: TraitSignal,
   tertiary?: TraitSignal,
 ) {
-  const pairKey = secondary ? getPairKey(primary, secondary) : null;
-  const pairDynamic = pairKey ? PAIR_DYNAMICS[pairKey] : null;
   const sentences = [
     TRAIT_COPY[primary.trait][primary.direction].summary,
-    pairDynamic ??
-      (secondary
-        ? TRAIT_COPY[secondary.trait][secondary.direction].summary
-        : null),
-    tertiary && tertiary.strength >= TERTIARY_SIGNAL_THRESHOLD
-      ? getModifierSentence(tertiary)
-      : getBalanceSentence(primary, secondary),
-  ].filter(Boolean);
+    getSecondarySummarySentence(primary, secondary),
+    getSummaryClosingSentence({ primary, secondary, tertiary }),
+  ].filter(isSummarySentence);
 
   return sentences.join(" ");
+}
+
+function getSecondarySummarySentence(
+  primary: TraitSignal,
+  secondary?: TraitSignal,
+) {
+  if (!secondary) {
+    return null;
+  }
+
+  return (
+    PAIR_DYNAMICS[getPairKey(primary, secondary)] ??
+    TRAIT_COPY[secondary.trait][secondary.direction].summary
+  );
+}
+
+function getSummaryClosingSentence({
+  primary,
+  secondary,
+  tertiary,
+}: {
+  primary: TraitSignal;
+  secondary?: TraitSignal;
+  tertiary?: TraitSignal;
+}) {
+  return shouldUseTertiaryModifier(tertiary)
+    ? getModifierSentence(tertiary)
+    : getBalanceSentence(primary, secondary);
+}
+
+function shouldUseTertiaryModifier(
+  tertiary?: TraitSignal,
+): tertiary is TraitSignal {
+  return Boolean(tertiary && tertiary.strength >= TERTIARY_SIGNAL_THRESHOLD);
+}
+
+function isSummarySentence(sentence: string | null): sentence is string {
+  return Boolean(sentence);
 }
 
 function getModifierSentence(signal: TraitSignal) {
@@ -403,11 +434,11 @@ function buildStrengths(signals: TraitSignal[]) {
   fillRemainingStrengths(signals, strengths);
   fillFallbackStrengths(strengths);
 
-  return strengths.slice(0, 4);
+  return strengths.slice(0, MAX_PROFILE_STRENGTHS);
 }
 
 function addOneStrengthPerSignal(signals: TraitSignal[], strengths: string[]) {
-  for (const signal of signals.slice(0, 4)) {
+  for (const signal of signals.slice(0, MAX_PROFILE_STRENGTHS)) {
     const candidates = TRAIT_COPY[signal.trait][signal.direction].strengths;
     const firstUnused = candidates.find(
       (strength) => !strengths.includes(strength),
@@ -421,14 +452,21 @@ function addOneStrengthPerSignal(signals: TraitSignal[], strengths: string[]) {
 
 function fillRemainingStrengths(signals: TraitSignal[], strengths: string[]) {
   for (const signal of signals) {
-    for (const strength of TRAIT_COPY[signal.trait][signal.direction]
-      .strengths) {
-      if (!strengths.includes(strength)) {
-        strengths.push(strength);
-      }
-    }
-    if (strengths.length === 4) {
+    addUnusedStrengths(
+      TRAIT_COPY[signal.trait][signal.direction].strengths,
+      strengths,
+    );
+
+    if (hasEnoughProfileStrengths(strengths)) {
       return;
+    }
+  }
+}
+
+function addUnusedStrengths(candidates: string[], strengths: string[]) {
+  for (const strength of candidates) {
+    if (!strengths.includes(strength)) {
+      strengths.push(strength);
     }
   }
 }
@@ -446,10 +484,14 @@ function fillFallbackStrengths(strengths: string[]) {
       strengths.push(strength);
     }
 
-    if (strengths.length === 4) {
+    if (hasEnoughProfileStrengths(strengths)) {
       return;
     }
   }
+}
+
+function hasEnoughProfileStrengths(strengths: string[]) {
+  return strengths.length === MAX_PROFILE_STRENGTHS;
 }
 
 function buildSocialRead(
@@ -501,24 +543,4 @@ function buildBalancedProfile(): PersonalityProfile {
     inGroups:
       "Around other people, you are often the one who adjusts without making a performance of it. You can be steady, playful, practical, or reflective depending on what feels true in the moment.",
   };
-}
-
-export function getBorderlineExplanation(
-  dimension: string,
-  score: number,
-): string {
-  const side = score <= 50 ? "first" : "second";
-  const percentage = Math.abs(50 - score) <= 5 ? "nearly balanced" : "leaning";
-
-  const dimensionLabels: Record<string, [string, string]> = {
-    EI: ["Extraversion", "Introversion"],
-    SN: ["Sensing", "Intuition"],
-    TF: ["Thinking", "Feeling"],
-    JP: ["Judging", "Perceiving"],
-  };
-
-  const [first, second] = dimensionLabels[dimension] || ["", ""];
-  const leaning = side === "first" ? first : second;
-
-  return `Your ${first}/${second} preference is ${percentage} (${score}% toward ${leaning}). You likely relate to both descriptions depending on the context.`;
 }
