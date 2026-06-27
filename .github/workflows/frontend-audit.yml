@@ -1,0 +1,117 @@
+name: Frontend Browser Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      audit_profile:
+        description: Browser audit preset
+        required: true
+        type: choice
+        default: release
+        options:
+          - release
+          - nightly
+      playwright_lanes:
+        description: Playwright lanes
+        required: true
+        type: choice
+        default: route-health,accessibility
+        options:
+          - route-health
+          - accessibility
+          - route-health,accessibility
+          - all
+      route_set:
+        description: Playwright route-health route set
+        required: true
+        type: choice
+        default: authenticated
+        options:
+          - smoke
+          - authenticated
+      lighthouse_route_slugs:
+        description: Optional comma-separated Lighthouse route slugs
+        required: false
+        type: string
+        default: ""
+  schedule:
+    - cron: "37 3 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  browser-audit:
+    name: Browser audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+
+    env:
+      AUDIT_API_PROXY_PATH: /__audit_api
+      AUDIT_API_PROXY_TARGET: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
+      AUDIT_API_URL: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
+      AUDIT_BROWSER_API_URL: http://127.0.0.1:4173/__audit_api
+      AUDIT_LIGHTHOUSE_IGNORE_CERT_ERRORS: "true"
+      AUDIT_OUTPUT_ROOT: reports/browser-audit-${{ github.run_id }}
+      AUDIT_PLAYWRIGHT_LANES: ${{ inputs.playwright_lanes || 'route-health,accessibility' }}
+      AUDIT_PLAYWRIGHT_ROUTE_SET: ${{ inputs.route_set || 'authenticated' }}
+      AUDIT_PREVIEW_HTTPS: "false"
+      AUDIT_PREVIEW_PORT: "4173"
+      AUDIT_PROFILE: ${{ inputs.audit_profile || 'nightly' }}
+      AUDIT_USER_EMAIL: ${{ secrets.AUDIT_USER_EMAIL }}
+      AUDIT_USER_PASSWORD: ${{ secrets.AUDIT_USER_PASSWORD }}
+      LIGHTHOUSE_ROUTE_SLUGS_INPUT: ${{ inputs.lighthouse_route_slugs }}
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      NODE_VERSION: "24"
+      VITE_API_URL: ${{ vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
+      VITE_APP_URL: ${{ vars.VITE_APP_URL || 'https://teamforge.mkloz.com' }}
+      VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY || secrets.VITE_GIPHY_API_KEY }}
+      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID || secrets.VITE_GOOGLE_CLIENT_ID }}
+      VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY || secrets.VITE_GOOGLE_MAPS_API_KEY }}
+      VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL || 'https://mkloz-teamforge.s3.us-east-1.amazonaws.com' }}
+      VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+      VITE_SENTRY_ENVIRONMENT: audit
+      VITE_SENTRY_RELEASE: ${{ github.sha }}
+      VITE_SENTRY_TRACES_SAMPLE_RATE: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser audit
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${AUDIT_USER_EMAIL:-}" || -z "${AUDIT_USER_PASSWORD:-}" ]]; then
+            echo "::error::Set AUDIT_USER_EMAIL and AUDIT_USER_PASSWORD repository secrets before running browser audits."
+            exit 1
+          fi
+
+          if [[ -n "${LIGHTHOUSE_ROUTE_SLUGS_INPUT:-}" ]]; then
+            export AUDIT_LIGHTHOUSE_ROUTE_SLUGS="$LIGHTHOUSE_ROUTE_SLUGS_INPUT"
+          fi
+
+          node scripts/audit/run-browser-audits.mjs "$AUDIT_PROFILE"
+
+      - name: Upload audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-browser-audit-${{ github.run_id }}
+          path: |
+            reports/
+            temp/audit-preview.*.log
+          if-no-files-found: warn
+          retention-days: 14

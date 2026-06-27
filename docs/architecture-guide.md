@@ -498,7 +498,7 @@ npm install
 npm run dev
 
 # Fast lint pass for staged, unstaged, and untracked changed files
-npm run lint:changed
+npm run check:changed
 
 # Full lint gate
 npm run lint

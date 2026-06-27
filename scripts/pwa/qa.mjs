@@ -118,7 +118,7 @@ import { z } from "zod";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const ROOT_DIR = path.resolve(__dirname, "..");
+const ROOT_DIR = path.resolve(__dirname, "../..");
 const DIST_DIR = path.join(ROOT_DIR, "dist");
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 const REPORTS_DIR = path.join(ROOT_DIR, "reports");
@@ -126,8 +126,8 @@ const REPORT_PATH = path.join(REPORTS_DIR, "pwa-qa-report.md");
 const SRC_DIR = path.join(ROOT_DIR, "src");
 const ENV_EXAMPLE_PATH = path.join(ROOT_DIR, ".env.example");
 const PACKAGE_JSON_PATH = path.join(ROOT_DIR, "package.json");
-const PWA_PRODUCTION_ENV_SCRIPT = "scripts/pwa-production-env.mjs";
-const PWA_RELEASE_SCRIPT = "npm run pwa:env && npm run build && npm run pwa:qa";
+const PWA_PRODUCTION_ENV_SCRIPT = "scripts/pwa/production-env.mjs";
+const PWA_RELEASE_SCRIPT = "node scripts/pwa/release.mjs";
 const LOCAL_APP_URL = "http://localhost:3000";
 const LOCAL_API_URL = "http://localhost:6969/api/v1";
 const MEDIA_BASE_URL = "https://mkloz-teamforge.s3.us-east-1.amazonaws.com";
@@ -183,14 +183,6 @@ const ENV_EXAMPLE_GUARDS = [
 
 /** @type {readonly PackageScriptGuard[]} */
 const PACKAGE_SCRIPT_GUARDS = [
-  {
-    expected: `node ${PWA_PRODUCTION_ENV_SCRIPT}`,
-    failDetail: (value) =>
-      `Expected pwa:env to run node ${PWA_PRODUCTION_ENV_SCRIPT}; found ${value ?? "missing"}.`,
-    name: "pwa:env script",
-    passDetail: "package.json exposes the production PWA env preflight.",
-    scriptName: "pwa:env",
-  },
   {
     expected: PWA_RELEASE_SCRIPT,
     failDetail: (value) =>

@@ -2,7 +2,10 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "@/app/app";
 import { redirectLocalIpToLocalhost } from "@/shared/lib/local-host-canonical-url";
+import { initializeTelemetry } from "@/shared/lib/telemetry";
 import "./index.css";
+
+void initializeTelemetry();
 
 const BRANDED_BOOT_DURATION_MS = 2_000;
 const FAST_BOOT_DURATION_MS = 0;

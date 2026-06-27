@@ -11,9 +11,25 @@
     "binaries"
   ],
   "ignoreFiles": [
+    "src/shared/hooks/use-pwa-runtime-diagnostics.ts",
     "src/shared/types/google-maps.d.ts",
     "src/shared/types/react-css-properties.d.ts"
   ],
-  "entry": ["vite.config.ts", "*.{mjs,js}", "src/main.tsx"],
-  "project": ["src/**/*.{ts,tsx}", "*.{js,mjs,ts}", "src/**/*.css"]
+  "ignoreDependencies": ["fallow", "react-doctor", "repomix"],
+  "entry": [
+    "scripts/**/*.{js,mjs}",
+    "test/audit/**/*.ts",
+    "test/setup/**/*.ts",
+    "test/unit/**/*.test.{ts,tsx}"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}",
+    "*.{js,mjs,ts}",
+    "scripts/**/*.{js,mjs}",
+    "test/audit/**/*.ts",
+    "test/setup/**/*.ts",
+    "test/support/**/*.{ts,tsx}",
+    "test/unit/**/*.{ts,tsx}",
+    "src/**/*.css"
+  ]
 }

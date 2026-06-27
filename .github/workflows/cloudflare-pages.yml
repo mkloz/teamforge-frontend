@@ -45,12 +45,20 @@ jobs:
       PAGES_BRANCH_INPUT: ${{ inputs.pages_branch }}
       PAGES_DEPLOY_TARGET: ${{ inputs.deploy_target || 'production' }}
       PAGES_PRODUCTION_BRANCH: ${{ vars.CLOUDFLARE_PAGES_PRODUCTION_BRANCH || 'main' }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+      SENTRY_RELEASE: ${{ github.sha }}
       VITE_API_URL: ${{ vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
       VITE_APP_URL: ${{ vars.VITE_APP_URL || 'https://teamforge.mkloz.com' }}
       VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY || secrets.VITE_GIPHY_API_KEY }}
       VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID || secrets.VITE_GOOGLE_CLIENT_ID }}
       VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY || secrets.VITE_GOOGLE_MAPS_API_KEY }}
       VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL || 'https://mkloz-teamforge.s3.us-east-1.amazonaws.com' }}
+      VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+      VITE_SENTRY_ENVIRONMENT: ${{ inputs.deploy_target || 'production' }}
+      VITE_SENTRY_RELEASE: ${{ github.sha }}
+      VITE_SENTRY_TRACES_SAMPLE_RATE: ${{ vars.VITE_SENTRY_TRACES_SAMPLE_RATE || '0' }}
 
     steps:
       - name: Checkout
@@ -65,20 +73,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate production browser env
-        run: npm run pwa:env
-
-      - name: Run quality gate
-        run: npm run check
-
-      - name: Run unit tests
-        run: npm run test:unit
-
-      - name: Build PWA
-        run: npm run build
-
-      - name: Run PWA QA
-        run: npm run pwa:qa
+      - name: Run release verification
+        run: npm run check:release
 
       - name: Deploy to Cloudflare Pages
         run: |

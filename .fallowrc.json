@@ -9,6 +9,10 @@
     "scripts/**/*.mjs",
     "scripts/**/*.ts"
   ],
+  "health": {
+    "maxCrap": 56,
+    "crapRefactorBand": 0
+  },
   "ignorePatterns": ["src/shared/hooks/use-pwa-runtime-diagnostics.ts"],
   "ignoreDependencies": ["babel-plugin-react-compiler"],
   "ignoreExports": [

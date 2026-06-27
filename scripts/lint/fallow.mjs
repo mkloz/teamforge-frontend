@@ -3,6 +3,12 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
+import {
+  colorText,
+  formatStatusBadge,
+  renderKeyValues,
+  sectionTitle,
+} from "../shared/command-utils.mjs";
 
 /**
  * @typedef {Record<string, any>} FallowJsonPayload
@@ -69,13 +75,42 @@ function countList(value) {
  * or `results` depending on CLI version/schema.
  *
  * @param {FallowJsonPayload} healthPayload Health payload.
- * @returns {number} Normalized complexity finding count.
+ * @returns {FallowJsonPayload[]} Normalized health findings.
  */
-function countHealthFindings(healthPayload) {
-  return Math.max(
-    countList(healthPayload.findings),
-    countList(healthPayload.results),
-  );
+function getHealthFindings(healthPayload) {
+  if (Array.isArray(healthPayload.findings)) {
+    return healthPayload.findings;
+  }
+
+  if (Array.isArray(healthPayload.results)) {
+    return healthPayload.results;
+  }
+
+  return [];
+}
+
+/**
+ * @param {FallowJsonPayload} finding Health finding.
+ * @returns {boolean} Whether this is only a CRAP coverage-risk finding.
+ */
+function isCrapOnlyFinding(finding) {
+  return finding.exceeded === "crap";
+}
+
+/**
+ * @param {FallowJsonPayload[]} findings Health findings.
+ * @returns {number} Count of cyclomatic/cognitive complexity findings.
+ */
+function countStructuralComplexityFindings(findings) {
+  return findings.filter((finding) => !isCrapOnlyFinding(finding)).length;
+}
+
+/**
+ * @param {FallowJsonPayload[]} findings Health findings.
+ * @returns {number} Count of CRAP coverage-risk findings.
+ */
+function countCrapRiskFindings(findings) {
+  return findings.filter(isCrapOnlyFinding).length;
 }
 
 /**
@@ -165,6 +200,26 @@ function qualityForHealthScore(score) {
 }
 
 /**
+ * @param {string} title Section title.
+ * @param {TableRow} headers Table headers.
+ * @param {TableRow[]} rows Table rows.
+ * @returns {void}
+ */
+function printSection(title, headers, rows) {
+  process.stdout.write(`${sectionTitle(title)}\n`);
+
+  if (headers.includes("Status")) {
+    printStatusRows(rows);
+  } else if (headers.length === 5) {
+    printProfileRows(rows);
+  } else {
+    printKeyValueRows(rows);
+  }
+
+  process.stdout.write("\n");
+}
+
+/**
  * @param {TableRow[number]} value Cell value.
  * @returns {string} Printable table cell.
  */
@@ -173,43 +228,56 @@ function normalizeCell(value) {
 }
 
 /**
- * @param {TableRow} headers Table headers.
- * @param {TableRow[]} rows Table rows.
- * @returns {string} Rendered ASCII table.
+ * @param {TableRow[]} rows Status rows.
+ * @returns {void}
  */
-function renderTable(headers, rows) {
-  const normalizedRows = rows.map((row) => row.map(normalizeCell));
-  const normalizedHeaders = headers.map(normalizeCell);
-  const widths = normalizedHeaders.map((header, columnIndex) =>
-    Math.max(
-      header.length,
-      ...normalizedRows.map((row) => row[columnIndex]?.length ?? 0),
-    ),
+function printStatusRows(rows) {
+  const labelWidth = Math.min(
+    Math.max(...rows.map((row) => normalizeCell(row[0]).length), 0),
+    34,
   );
-  const separator = `+-${widths.map((width) => "-".repeat(width)).join("-+-")}-+`;
-  const renderRow = (row) =>
-    `| ${row
-      .map((cell, columnIndex) => cell.padEnd(widths[columnIndex]))
-      .join(" | ")} |`;
 
-  return [
-    separator,
-    renderRow(normalizedHeaders),
-    separator,
-    ...normalizedRows.map(renderRow),
-    separator,
-  ].join("\n");
+  for (const row of rows) {
+    const label = normalizeCell(row[0]).padEnd(labelWidth);
+    const value = normalizeCell(row[1]);
+    const status = normalizeCell(row[2]);
+
+    process.stdout.write(
+      `  ${colorText(label, "muted")} ${value} ${formatStatusBadge(status)}\n`,
+    );
+  }
 }
 
 /**
- * @param {string} title Section title.
- * @param {TableRow} headers Table headers.
- * @param {TableRow[]} rows Table rows.
+ * @param {TableRow[]} rows Profile rows.
  * @returns {void}
  */
-function printSection(title, headers, rows) {
-  process.stdout.write(`${title}\n`);
-  process.stdout.write(`${renderTable(headers, rows)}\n\n`);
+function printProfileRows(rows) {
+  process.stdout.write(
+    `${renderKeyValues(
+      rows.map((row) => ({
+        label: normalizeCell(row[0]),
+        value: `low ${normalizeCell(row[1])} | medium ${normalizeCell(
+          row[2],
+        )} | high ${normalizeCell(row[3])} | very high ${normalizeCell(row[4])}`,
+      })),
+    )}\n`,
+  );
+}
+
+/**
+ * @param {TableRow[]} rows Key-value rows.
+ * @returns {void}
+ */
+function printKeyValueRows(rows) {
+  process.stdout.write(
+    `${renderKeyValues(
+      rows.map((row) => ({
+        label: normalizeCell(row[0]),
+        value: row.slice(1).map(normalizeCell).join(" | "),
+      })),
+    )}\n`,
+  );
 }
 
 /**
@@ -331,10 +399,14 @@ function runFallow(analysis) {
   return createFallowRunResult(analysis, result);
 }
 
+process.stdout.write(`${sectionTitle("Fallow Quality")}\n`);
 process.stdout.write(
-  `Running fallow summary report${
-    shouldFailOnFindings ? " as a failing gate" : " as an advisory report"
-  }...\n\n`,
+  `${colorText(
+    `Running summary report${
+      shouldFailOnFindings ? " as a failing gate" : " as an advisory report"
+    }...`,
+    "muted",
+  )}\n\n`,
 );
 
 const results = Object.fromEntries(
@@ -379,7 +451,12 @@ const elapsedTotal =
   asNumber(deadCode.elapsed_ms) +
   asNumber(dupes.elapsed_ms) +
   asNumber(health.elapsed_ms);
-const healthFindingCount = countHealthFindings(health);
+const healthFindings = getHealthFindings(health);
+const structuralComplexityFindingCount =
+  countStructuralComplexityFindings(healthFindings);
+const crapRiskFindingCount = countCrapRiskFindings(healthFindings);
+const healthFindingCount =
+  structuralComplexityFindingCount + crapRiskFindingCount;
 const cloneGroupCount = countList(dupes.clone_groups);
 const refactorTargetCount = countList(health.targets);
 const hasFindings =
@@ -410,11 +487,18 @@ printSection(
       qualityForPercent(duplicationStats.duplication_percentage, 5),
     ],
     [
-      "Complexity findings",
-      `${formatNumber(healthFindingCount)} across ${formatNumber(
+      "Structural complexity",
+      `${formatNumber(structuralComplexityFindingCount)} across ${formatNumber(
         healthSummary.functions_analyzed,
       )} functions`,
-      qualityForCount(healthFindingCount, 100),
+      qualityForCount(structuralComplexityFindingCount, 10),
+    ],
+    [
+      "Coverage risk / CRAP",
+      `${formatNumber(crapRiskFindingCount)} across ${formatNumber(
+        healthSummary.functions_analyzed,
+      )} functions`,
+      qualityForCount(crapRiskFindingCount, 25),
     ],
     [
       "Refactor targets",
@@ -520,13 +604,23 @@ printSection(
       "info",
     ],
     [
-      "Functions above threshold",
+      "Functions above configured threshold",
       `${formatNumber(healthSummary.functions_above_threshold)} (limits: cyclomatic ${formatNumber(
         healthSummary.max_cyclomatic_threshold,
       )}, cognitive ${formatNumber(
         healthSummary.max_cognitive_threshold,
       )}, CRAP ${formatNumber(healthSummary.max_crap_threshold)})`,
       qualityForCount(healthSummary.functions_above_threshold, 100),
+    ],
+    [
+      "Structural findings",
+      formatNumber(structuralComplexityFindingCount),
+      qualityForCount(structuralComplexityFindingCount, 10),
+    ],
+    [
+      "Coverage risk / CRAP",
+      formatNumber(crapRiskFindingCount),
+      qualityForCount(crapRiskFindingCount, 25),
     ],
     [
       "Severity mix",
@@ -557,11 +651,11 @@ printSection(
       qualityForCount(countList(health.large_functions), 100),
     ],
     [
-      "Hotspots",
-      `${formatNumber(countList(health.hotspots))} structural, ${formatNumber(
+      "Hotspot files",
+      `${formatNumber(countList(health.hotspots))} scored, ${formatNumber(
         vitalSigns.hotspot_top_pct_count,
       )} top-percentile`,
-      qualityForCount(countList(health.hotspots), 100),
+      qualityForCount(vitalSigns.hotspot_top_pct_count, 25),
     ],
   ],
 );
@@ -604,7 +698,10 @@ printSection(
 
 if (hasFindings) {
   process.stdout.write(
-    "Drilldown is intentionally hidden in lint:fallow. Use fallow dead-code, fallow dupes, or fallow health directly for individual findings.\n",
+    `${colorText(
+      "Drilldown is intentionally hidden in the Fallow summary.",
+      "muted",
+    )} Use fallow dead-code, fallow dupes, or fallow health directly for individual findings.\n`,
   );
 }
 

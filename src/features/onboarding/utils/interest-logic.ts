@@ -24,6 +24,28 @@ interface SearchMatch {
   score: number;
 }
 
+type TagSearchResult = InterestSearchResults["tags"][number] & SearchMatch;
+type SubcategorySearchResult = InterestSearchResults["subcategories"][number] &
+  SearchMatch;
+
+interface SearchResultAccumulator {
+  subcategories: SubcategorySearchResult[];
+  tags: TagSearchResult[];
+}
+
+interface SuggestionCandidateContext {
+  leafById: Record<string, Interest>;
+  rejectedIds: Set<string>;
+  selectedIds: Set<string>;
+  suggestedIds: Set<string>;
+}
+
+type SuggestionCandidate = [id: string, score: number];
+
+const EXPLICIT_CORRELATION_WEIGHT = 3;
+const SUBCATEGORY_SIBLING_WEIGHT = 1;
+const MAX_CORRELATED_SUGGESTIONS = 15;
+
 /**
  * Calculates MBTI-based suggestions based on the user's personality type.
  */
@@ -61,52 +83,17 @@ export function getSearchResults(
   const q = normalizeSearchText(query);
   if (q.length < 2) return { tags: [], subcategories: [] };
 
-  const tagResults: Array<InterestSearchResults["tags"][number] & SearchMatch> =
-    [];
-  const subcategoryResults: Array<
-    InterestSearchResults["subcategories"][number] & SearchMatch
-  > = [];
+  const results = createSearchResultAccumulator();
 
   for (const category of categories) {
-    if (!category.isActive) {
-      continue;
-    }
-
-    for (const subcategory of getSubcategories(category)) {
-      if (!subcategory.isActive) {
-        continue;
-      }
-
-      const subcategoryMatch = getInterestSearchMatch(subcategory, q);
-
-      if (subcategoryMatch) {
-        subcategoryResults.push({
-          subcategory,
-          category,
-          score: subcategoryMatch.score,
-        });
-      }
-
-      for (const tag of getLeafInterests(subcategory)) {
-        const tagMatch = getInterestSearchMatch(tag, q);
-
-        if (tagMatch) {
-          tagResults.push({
-            tag,
-            category,
-            matchedAlias: tagMatch.matchedAlias,
-            score: tagMatch.score,
-          });
-        }
-      }
-    }
+    appendSearchResults(results, getCategorySearchResults(category, q));
   }
 
   return {
-    subcategories: rankSearchResults(subcategoryResults).map(
+    subcategories: rankSearchResults(results.subcategories).map(
       ({ score: _score, ...result }) => result,
     ),
-    tags: rankSearchResults(tagResults).map(
+    tags: rankSearchResults(results.tags).map(
       ({ score: _score, ...result }) => result,
     ),
   };
@@ -127,65 +114,24 @@ export function getCorrelatedSuggestions(
   if (uniqueSelectedIds.length < 2) return [];
 
   const selectedSet = new Set(uniqueSelectedIds);
-  const candidates = new Map<string, number>();
   const subcategoryByLeafId = buildSubcategoryByLeafId(categories);
   const catalogOrderByLeafId = buildCatalogOrderByLeafId(categories);
+  const candidateContext: SuggestionCandidateContext = {
+    leafById,
+    selectedIds: selectedSet,
+    rejectedIds,
+    suggestedIds,
+  };
+  const candidates = buildCorrelatedSuggestionCandidates(
+    uniqueSelectedIds,
+    subcategoryByLeafId,
+    candidateContext,
+  );
 
-  // 1. Explicit correlations (weighted high)
-  for (const id of uniqueSelectedIds) {
-    const correlated = CORRELATED_TAGS[id] || [];
-    for (const relatedId of correlated) {
-      if (
-        canSuggestInterest(
-          relatedId,
-          leafById,
-          selectedSet,
-          rejectedIds,
-          suggestedIds,
-        )
-      ) {
-        candidates.set(relatedId, (candidates.get(relatedId) || 0) + 3);
-      }
-    }
-  }
-
-  // 2. Implicit subcategory siblings (weighted low)
-  for (const id of uniqueSelectedIds) {
-    const subcategory = subcategoryByLeafId.get(id);
-    if (!subcategory) continue;
-
-    for (const sibling of getLeafInterests(subcategory)) {
-      if (
-        sibling.id !== id &&
-        canSuggestInterest(
-          sibling.id,
-          leafById,
-          selectedSet,
-          rejectedIds,
-          suggestedIds,
-        )
-      ) {
-        candidates.set(sibling.id, (candidates.get(sibling.id) || 0) + 1);
-      }
-    }
-  }
-
-  return Array.from(candidates.entries())
-    .sort((a, b) => {
-      const scoreDelta = b[1] - a[1];
-
-      if (scoreDelta !== 0) {
-        return scoreDelta;
-      }
-
-      return (
-        getCatalogOrder(a[0], catalogOrderByLeafId) -
-        getCatalogOrder(b[0], catalogOrderByLeafId)
-      );
-    })
-    .slice(0, 15)
-    .map(([id]) => leafById[id])
-    .filter((interest): interest is Interest => Boolean(interest));
+  return rankCorrelatedSuggestionCandidates(candidates, {
+    catalogOrderByLeafId,
+    leafById,
+  });
 }
 
 /**
@@ -208,6 +154,224 @@ export function getShouldShowBalanceNudge(
     if (countInCat / selectedCount > 0.7) return true;
   }
   return false;
+}
+
+function createSearchResultAccumulator(): SearchResultAccumulator {
+  return { subcategories: [], tags: [] };
+}
+
+function appendSearchResults(
+  target: SearchResultAccumulator,
+  source: SearchResultAccumulator,
+) {
+  target.subcategories.push(...source.subcategories);
+  target.tags.push(...source.tags);
+}
+
+function getCategorySearchResults(
+  category: Interest,
+  query: string,
+): SearchResultAccumulator {
+  const results = createSearchResultAccumulator();
+
+  for (const subcategory of getActiveSubcategories(category)) {
+    appendSubcategorySearchResults(results, category, subcategory, query);
+  }
+
+  return results;
+}
+
+function appendSubcategorySearchResults(
+  results: SearchResultAccumulator,
+  category: Interest,
+  subcategory: Interest,
+  query: string,
+) {
+  const subcategoryResult = getSubcategorySearchResult(
+    category,
+    subcategory,
+    query,
+  );
+
+  if (subcategoryResult) {
+    results.subcategories.push(subcategoryResult);
+  }
+
+  results.tags.push(...getTagSearchResults(category, subcategory, query));
+}
+
+function getSubcategorySearchResult(
+  category: Interest,
+  subcategory: Interest,
+  query: string,
+): SubcategorySearchResult | null {
+  const subcategoryMatch = getInterestSearchMatch(subcategory, query);
+
+  if (!subcategoryMatch) {
+    return null;
+  }
+
+  return {
+    category,
+    subcategory,
+    score: subcategoryMatch.score,
+  };
+}
+
+function getTagSearchResults(
+  category: Interest,
+  subcategory: Interest,
+  query: string,
+) {
+  return getLeafInterests(subcategory)
+    .map((tag) => getTagSearchResult(category, tag, query))
+    .filter((result): result is TagSearchResult => Boolean(result));
+}
+
+function getTagSearchResult(
+  category: Interest,
+  tag: Interest,
+  query: string,
+): TagSearchResult | null {
+  const tagMatch = getInterestSearchMatch(tag, query);
+
+  if (!tagMatch) {
+    return null;
+  }
+
+  return {
+    category,
+    matchedAlias: tagMatch.matchedAlias,
+    score: tagMatch.score,
+    tag,
+  };
+}
+
+function getActiveSubcategories(category: Interest) {
+  if (!category.isActive) {
+    return [];
+  }
+
+  return getSubcategories(category).filter(
+    (subcategory) => subcategory.isActive,
+  );
+}
+
+function buildCorrelatedSuggestionCandidates(
+  selectedIds: string[],
+  subcategoryByLeafId: Map<string, Interest>,
+  context: SuggestionCandidateContext,
+) {
+  const candidates = new Map<string, number>();
+
+  addExplicitCorrelationCandidates(candidates, selectedIds, context);
+  addSubcategorySiblingCandidates(
+    candidates,
+    selectedIds,
+    subcategoryByLeafId,
+    context,
+  );
+
+  return candidates;
+}
+
+function addExplicitCorrelationCandidates(
+  candidates: Map<string, number>,
+  selectedIds: string[],
+  context: SuggestionCandidateContext,
+) {
+  for (const id of selectedIds) {
+    for (const relatedId of CORRELATED_TAGS[id] || []) {
+      addSuggestionCandidateScore(
+        candidates,
+        relatedId,
+        EXPLICIT_CORRELATION_WEIGHT,
+        context,
+      );
+    }
+  }
+}
+
+function addSubcategorySiblingCandidates(
+  candidates: Map<string, number>,
+  selectedIds: string[],
+  subcategoryByLeafId: Map<string, Interest>,
+  context: SuggestionCandidateContext,
+) {
+  for (const id of selectedIds) {
+    const subcategory = subcategoryByLeafId.get(id);
+
+    if (!subcategory) {
+      continue;
+    }
+
+    for (const sibling of getLeafInterests(subcategory)) {
+      if (sibling.id === id) {
+        continue;
+      }
+
+      addSuggestionCandidateScore(
+        candidates,
+        sibling.id,
+        SUBCATEGORY_SIBLING_WEIGHT,
+        context,
+      );
+    }
+  }
+}
+
+function addSuggestionCandidateScore(
+  candidates: Map<string, number>,
+  id: string,
+  score: number,
+  context: SuggestionCandidateContext,
+) {
+  if (
+    !canSuggestInterest(
+      id,
+      context.leafById,
+      context.selectedIds,
+      context.rejectedIds,
+      context.suggestedIds,
+    )
+  ) {
+    return;
+  }
+
+  candidates.set(id, (candidates.get(id) || 0) + score);
+}
+
+function rankCorrelatedSuggestionCandidates(
+  candidates: Map<string, number>,
+  options: {
+    catalogOrderByLeafId: Map<string, number>;
+    leafById: Record<string, Interest>;
+  },
+) {
+  return Array.from(candidates.entries())
+    .sort((a, b) =>
+      compareSuggestionCandidates(a, b, options.catalogOrderByLeafId),
+    )
+    .slice(0, MAX_CORRELATED_SUGGESTIONS)
+    .map(([id]) => options.leafById[id])
+    .filter((interest): interest is Interest => Boolean(interest));
+}
+
+function compareSuggestionCandidates(
+  a: SuggestionCandidate,
+  b: SuggestionCandidate,
+  catalogOrderByLeafId: Map<string, number>,
+) {
+  const scoreDelta = b[1] - a[1];
+
+  if (scoreDelta !== 0) {
+    return scoreDelta;
+  }
+
+  return (
+    getCatalogOrder(a[0], catalogOrderByLeafId) -
+    getCatalogOrder(b[0], catalogOrderByLeafId)
+  );
 }
 
 function buildSubcategoryByLeafId(categories: Interest[]) {

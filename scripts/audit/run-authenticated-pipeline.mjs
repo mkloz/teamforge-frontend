@@ -84,11 +84,14 @@ import {
  * @property {boolean} previewHttps Whether the local preview uses HTTPS.
  *
  * @typedef {object} ChildAuditStage
+ * @property {"loaded" | "browser" | "squirrel"} batch Execution batch. Stages in the same batch may run together.
  * @property {boolean} enabled Whether the child stage is selected.
  * @property {string} label Friendly stage label for logs.
  * @property {string} outputDirName Directory name under the combined output root.
  * @property {string} outputEnvName Environment variable consumed by the child script.
  * @property {string} scriptPath Absolute path to the child script.
+ *
+ * @typedef {ChildAuditStage[]} ChildAuditStageBatch
  *
  * @typedef {object} ChildAuditEnvOptions
  * @property {string} auditSessionJson Serialized audit session JSON.
@@ -158,6 +161,7 @@ const staticPreviewServerScript = path.join(
   "static-preview-server.mjs",
 );
 const defaultApiProxyPath = "/__audit_api";
+const childAuditStageBatchOrder = ["loaded", "browser", "squirrel"];
 const loadedAuditResultsSchema = z.array(
   z
     .object({
@@ -545,6 +549,7 @@ async function getAuditSessionJson(needsAuditSession) {
 function getEnabledChildAuditStages(stages) {
   return [
     {
+      batch: "loaded",
       enabled: stages.runLoaded,
       label: "loaded route audit",
       outputDirName: "loaded",
@@ -552,6 +557,7 @@ function getEnabledChildAuditStages(stages) {
       scriptPath: loadedAuditScript,
     },
     {
+      batch: "browser",
       enabled: stages.runPlaywright,
       label: "Playwright route health audit",
       outputDirName: "playwright",
@@ -559,6 +565,7 @@ function getEnabledChildAuditStages(stages) {
       scriptPath: playwrightAuditScript,
     },
     {
+      batch: "browser",
       enabled: stages.runLighthouse,
       label: "Lighthouse report-only audit",
       outputDirName: "lighthouse",
@@ -566,6 +573,7 @@ function getEnabledChildAuditStages(stages) {
       scriptPath: lighthouseAuditScript,
     },
     {
+      batch: "squirrel",
       enabled: stages.runSquirrel,
       label: "authenticated SquirrelScan",
       outputDirName: "squirrel",
@@ -584,6 +592,7 @@ function getEnabledChildAuditStages(stages) {
 function getChildAuditEnv({ auditSessionJson, baseUrl, outputRoot, stage }) {
   return {
     ...process.env,
+    AUDIT_KEEP_TOKEN_FILE: "true",
     AUDIT_SESSION_JSON: auditSessionJson,
     AUDIT_BASE_URL: baseUrl,
     [stage.outputEnvName]: path.join(outputRoot, stage.outputDirName),
@@ -609,7 +618,63 @@ async function runChildAuditStage({
 }
 
 /**
- * Runs selected child audit stages sequentially.
+ * Groups enabled child stages into ordered execution batches.
+ *
+ * Loaded-route and SquirrelScan lanes keep their historical isolated slots,
+ * while the browser-owned Playwright and Lighthouse lanes can run in parallel
+ * against the same preview.
+ *
+ * @param {PipelineStageFlags} stages Stage flags.
+ * @returns {ChildAuditStageBatch[]} Ordered stage batches.
+ */
+function getEnabledChildAuditStageBatches(stages) {
+  const enabledStages = getEnabledChildAuditStages(stages);
+
+  return childAuditStageBatchOrder
+    .map((batch) => enabledStages.filter((stage) => stage.batch === batch))
+    .filter((batch) => batch.length > 0);
+}
+
+/**
+ * Returns the first rejected stage reason from a settled batch.
+ *
+ * @param {PromiseSettledResult<void>[]} results Batch results.
+ * @returns {unknown} First rejection reason or null.
+ */
+function getRejectedAuditStageReason(results) {
+  return results.find((result) => result.status === "rejected")?.reason ?? null;
+}
+
+/**
+ * Runs one execution batch and waits for every child before reporting failure.
+ *
+ * @param {{ auditSessionJson: string; baseUrl: string; batch: ChildAuditStageBatch; outputRoot: string }} options Batch options.
+ */
+async function runChildAuditStageBatch({
+  auditSessionJson,
+  baseUrl,
+  batch,
+  outputRoot,
+}) {
+  const results = await Promise.allSettled(
+    batch.map((stage) =>
+      runChildAuditStage({
+        auditSessionJson,
+        baseUrl,
+        outputRoot,
+        stage,
+      }),
+    ),
+  );
+  const rejectionReason = getRejectedAuditStageReason(results);
+
+  if (rejectionReason) {
+    throw rejectionReason;
+  }
+}
+
+/**
+ * Runs selected child audit stages in ordered batches.
  *
  * @param {RunEnabledChildAuditStagesOptions} options Stage runner options.
  * @returns {Promise<void>}
@@ -619,18 +684,15 @@ async function runEnabledChildAuditStages({
   config,
   stages,
 }) {
-  await getEnabledChildAuditStages(stages).reduce(
-    (previous, stage) =>
-      previous.then(() =>
-        runChildAuditStage({
-          auditSessionJson,
-          baseUrl: config.baseUrl,
-          outputRoot: config.outputRoot,
-          stage,
-        }),
-      ),
-    Promise.resolve(),
-  );
+  for (const batch of getEnabledChildAuditStageBatches(stages)) {
+    // eslint-disable-next-line no-await-in-loop -- Stage batches preserve audit ordering while allowing safe browser lanes to run together.
+    await runChildAuditStageBatch({
+      auditSessionJson,
+      baseUrl: config.baseUrl,
+      batch,
+      outputRoot: config.outputRoot,
+    });
+  }
 }
 
 function ensureAuditCredentialsIfRequired(needsAuditSession) {

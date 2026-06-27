@@ -63,7 +63,7 @@ scripts/audit/
 
 The seam between the two folders should stay simple: `scripts/audit/` starts the app, authenticates, resolves routes, and chooses output paths; `test/audit/` opens the browser and proves the loaded app state is healthy.
 
-Run the Playwright lane with `npm run audit:playwright` against an already running audit preview, or set `AUDIT_RUN_PLAYWRIGHT=true` when running `npm run audit:auth`.
+Run the Playwright lane with `node scripts/audit/run-playwright.mjs` against an already running audit preview, or set `AUDIT_RUN_PLAYWRIGHT=true` when running `node scripts/audit/run-authenticated-pipeline.mjs`.
 
 By default, Playwright runs the route-health lane over the expanded authenticated route set: `/home`, `/explore`, `/activity`, `/profile`, `/settings`, `/forge`, plus group and user detail routes when the audit runner can resolve real local IDs. Set `AUDIT_PLAYWRIGHT_ROUTE_SET=smoke` to keep the old fast loop over `/home`, `/explore`, and `/activity`.
 
@@ -71,7 +71,11 @@ Set `AUDIT_PLAYWRIGHT_LANES=accessibility` to run only the axe lane, or `AUDIT_P
 
 The generated `playwright/index.md` is the triage surface: it links each route JSON file, summarizes axe findings by rule, and lists the highest-node routes with example selectors.
 
-Run `npm run audit:lighthouse` against an already running audit preview, or set `AUDIT_RUN_LIGHTHOUSE=true` when running `npm run audit:auth`. The Lighthouse lane is intentionally report-only and narrow by default: `/`, `/download`, and `/home`, with performance, accessibility, best-practices, and SEO categories. It writes one HTML report, one JSON report, and one summary JSON per route under `lighthouse/`, plus a compact `lighthouse/index.md`.
+Run `node scripts/audit/run-lighthouse.mjs` against an already running audit preview, or set `AUDIT_RUN_LIGHTHOUSE=true` when running `node scripts/audit/run-authenticated-pipeline.mjs`. The Lighthouse lane is intentionally report-only and narrow by default: `/`, `/download`, and `/home`, with performance, accessibility, best-practices, and SEO categories. It writes one HTML report, one JSON report, and one summary JSON per route under `lighthouse/`, plus a compact `lighthouse/index.md`.
+
+Use `npm run audit:release` or `npm run audit:nightly` for the normal browser audit policy. Those wrappers build an audit-auth preview, run Playwright route-health plus report-only axe, run Lighthouse, and skip the legacy loaded-route and SquirrelScan lanes. The authenticated audit pipeline batches Playwright and Lighthouse together after the preview starts, while the parent process owns token-file cleanup.
+
+The `Frontend Browser Audit` workflow runs the same command on a nightly schedule and through manual dispatch. It keeps browser audits out of the PR gate and out of the Cloudflare deploy job so the temporary `VITE_AUDIT_AUTH_ENABLED=true` bundle cannot be deployed by accident.
 
 For a focused local pipeline run that skips the legacy loaded-route and SquirrelScan stages:
 
@@ -84,7 +88,7 @@ $env:AUDIT_PLAYWRIGHT_LANES='route-health,accessibility'
 $env:AUDIT_PLAYWRIGHT_ROUTE_SET='authenticated'
 $env:AUDIT_PREVIEW_HTTPS='false'
 $env:AUDIT_PLAYWRIGHT_CHANNEL='chrome'
-npm run audit:auth
+node scripts/audit/run-authenticated-pipeline.mjs
 ```
 
 Use `AUDIT_PLAYWRIGHT_CHANNEL=chrome` when the bundled Playwright browser is not installed locally or corporate HTTPS inspection blocks `npx playwright install chromium`. For HTTPS preview runs, make sure the certificate configured by `AUDIT_PREVIEW_CERT_PATH` is trusted by Node and the browser runtime.

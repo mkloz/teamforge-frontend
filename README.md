@@ -15,6 +15,7 @@ The core mechanic: press one button — **"Forge my group"** — and receive one
 - [Project Structure](#project-structure)
 - [Environment Variables](#environment-variables)
 - [Available Scripts](#available-scripts)
+- [Agentic Lead Development](#agentic-lead-development)
 - [Architecture](#architecture)
 - [Design System](#design-system)
 - [Production PWA Release](#production-pwa-release)
@@ -160,6 +161,10 @@ Create a `.env.local` file at the project root. **Never commit this file.**
 | `VITE_GOOGLE_CLIENT_ID` | Yes      | Google OAuth 2.0 client ID for social login                          |
 | `VITE_GOOGLE_MAPS_API_KEY` | Yes   | Google Maps API key for location autocomplete                        |
 | `VITE_GIPHY_API_KEY`    | Yes      | Giphy Web SDK key for GIF search in chat                             |
+| `VITE_SENTRY_DSN`       | No       | Enables Sentry browser error telemetry when set                      |
+| `VITE_SENTRY_ENVIRONMENT` | No     | Sentry environment label; defaults to the Vite mode                  |
+| `VITE_SENTRY_RELEASE`   | No       | Release id used to connect runtime errors to uploaded source maps    |
+| `VITE_SENTRY_TRACES_SAMPLE_RATE` | No | Optional Sentry performance sample rate from `0` to `1`; defaults to `0` |
 
 Local development usually uses:
 
@@ -176,6 +181,10 @@ VITE_APP_URL=https://teamforge.app
 VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1
 VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com
 ```
+
+Sentry is disabled unless `VITE_SENTRY_DSN` is set. Source map upload is
+separate from runtime telemetry and only runs in CI builds when
+`SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT` are configured.
 
 The realtime client derives the Socket.IO transport path from `VITE_API_URL`.
 For the production URL above, it connects to the `/realtime` namespace through
@@ -202,22 +211,42 @@ browser keys before building, then runs the production PWA QA pass against
 
 ## Available Scripts
 
-| Script              | Description                                   |
-| ------------------- | --------------------------------------------- |
-| `npm run dev`       | Start the Vite development server with HMR    |
-| `npm run build`       | Type-check and build for production (`dist/`) |
-| `npm run preview`     | Preview the production build locally          |
-| `npm run test`        | Run the unit test command                     |
-| `npm run test:unit`   | Run Vitest unit tests                         |
-| `npm run pwa:env`     | Validate production PWA browser environment values before build/deploy |
-| `npm run pwa:qa`      | Run source and build-artifact PWA checks      |
-| `npm run pwa:release` | Run the production PWA env preflight, build, and QA gate |
-| `npm run lint`        | Run the full lint gate: Oxlint, React Compiler tracker, Biome, dependency-cruiser, and TypeScript |
-| `npm run lint:changed` | Run the strict changed-file lint gate with full Oxlint |
-| `npm run lint:fast`   | Run the faster changed-file lint gate while iterating |
-| `npm run lint:fix`    | Apply Biome safe fixes, formatting, and Knip checks |
+Daily app commands:
+`npm run dev`, `npm run build`, `npm run preview`, and `npm test`.
 
-Pre-commit hooks (via Husky + lint-staged) automatically run React Compiler tracking, Biome safe fixes, and Oxlint on staged files before every commit. Use `npm run lint:fast` for a quick local pass on changed files while iterating, and `npm run lint:changed` when you need the stricter changed-file gate with the full Oxlint config.
+Quality commands:
+`npm run lint` runs the full static lint gate, while `npm run lint:fix` applies Biome fixes, formatting, and Knip checks. Run `node scripts/quality/intelligence.mjs` directly when you need the combined Fallow plus React Doctor diagnostic report.
+
+Check commands:
+`npm run check:changed` is the normal changed-file gate for local work. `npm run check:local`, `npm run check:pr`, and `npm run check:release` run the parallel verification gates for local confidence, pull requests, and releases. Set `VERIFY_RUN_BROWSER_AUDITS=true` with `check:release` for the optional browser audit lane.
+
+Agent context commands:
+`npm run agent:health` prints compact repo health for agents. `npm run agent:pack` generates scoped Repomix context under `temp/repomix/`; pass `-- --skip-health` for context-only output.
+
+Release commands:
+`npm run pwa:release` runs the production PWA env preflight, build, and QA gate.
+
+Browser audit commands:
+`npm run audit:release` runs the standard Playwright plus Lighthouse release audit, `npm run audit:nightly` runs the broader scheduled profile, and `npm run audit:cert` prepares a local HTTPS preview certificate.
+
+Pre-commit hooks (via Husky + lint-staged) automatically run React Compiler tracking, Biome safe fixes, and Oxlint on staged files before every commit. Use `npm run check:changed` for a local changed-file pass while iterating.
+
+---
+
+## Agentic Lead Development
+
+Agent-driven work in this repo is led by one accountable editor. Parallel agents can research, review, propose patches, or handle isolated slices, but their output is reviewed before it becomes the final diff.
+
+Use this flow for broad refactors, quality sweeps, multi-feature changes, or agent team mode:
+
+1. Read `AGENTS.md` first; it is the authoritative rulebook for agents.
+2. Run `npm run agent:health` for a compact repo health summary, and `npm run agent:pack` when a worker needs scoped repo context.
+3. Use `node scripts/quality/intelligence.mjs` to combine Fallow and React Doctor signals. Treat the report as triage input, not an automatic fix list.
+4. Split work by non-overlapping ownership: feature folder, script family, runtime/PWA, API contract, docs/config, or review-only lane.
+5. Apply only changes that preserve current behavior and visual appearance unless the task explicitly asks otherwise.
+6. Verify with the smallest useful command, usually `npm run check:changed`; escalate to `check:local`, `check:pr`, `check:release`, or `pwa:release` only when the change scope justifies it.
+
+OpenCode and Oh My OpenAgent configuration is user-level, not repo-level. Keep provider secrets and local model routing out of committed files.
 
 ---
 
@@ -309,8 +338,8 @@ browser-baked integration keys are production-ready.
 2. Follow the feature co-location pattern described in [Project Structure](#project-structure).
 3. Use the `@/` path alias — never relative `../../` imports.
 4. Use named exports for all components except route-level page files.
-5. Run `npm run lint:fast` while iterating on small changes; use `npm run lint:changed` for the stricter changed-file gate.
-6. Run `npm run lint` and `npm run build` before opening a pull request.
+5. Run `npm run check:changed` while iterating on small changes.
+6. Run `npm run check:pr` before opening a pull request.
 7. Never use `localStorage` for persistent data — all state goes through the API layer.
 
 For AI agent contributors, read [`AGENTS.md`](AGENTS.md) in full before making any changes.

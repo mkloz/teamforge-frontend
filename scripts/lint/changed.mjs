@@ -684,10 +684,10 @@ function runChangedTypeCheck(changedFiles) {
   const typeFiles = [...appFiles, ...nodeFiles];
 
   if (typeFiles.length === 0) {
-    return skippedStage("lint:types", "No matching changed TypeScript files.");
+    return skippedStage("typecheck", "No matching changed TypeScript files.");
   }
 
-  let output = stageHeader("lint:types", typeFiles);
+  let output = stageHeader("typecheck", typeFiles);
   const diagnostics = [
     ...typeCheckChangedFiles({
       configPath: "tsconfig.app.json",
@@ -701,7 +701,7 @@ function runChangedTypeCheck(changedFiles) {
 
   if (diagnostics.length === 0) {
     return {
-      name: "lint:types",
+      name: "typecheck",
       output: `${output}  TypeScript found 0 errors in changed files.\n`,
       status: 0,
     };
@@ -716,7 +716,7 @@ function runChangedTypeCheck(changedFiles) {
 
   output += ts.formatDiagnosticsWithColorAndContext(diagnostics, formatHost);
   return {
-    name: "lint:types",
+    name: "typecheck",
     output,
     status: 1,
   };
@@ -1035,7 +1035,7 @@ function createOxlintStageJob({ changedFiles, options, stageSet }) {
  * @returns {string} Stage name.
  */
 function getOxlintStageName(mode) {
-  return mode === "full" ? "lint:oxlint" : "lint:oxlint:fast";
+  return mode === "full" ? "oxlint" : "oxlint:fast";
 }
 
 /**
@@ -1052,7 +1052,7 @@ function createCompilerStageJob({ changedFiles, stageSet }) {
       baseArgs: ["--check-files"],
       command: "react-compiler-tracker",
       files: changedFiles.filter(isReactCompilerFile),
-      name: "lint:compiler",
+      name: "react-compiler",
     });
 }
 
@@ -1070,7 +1070,7 @@ function createBiomeStageJob({ changedFiles, stageSet }) {
       baseArgs: ["check", "--no-errors-on-unmatched", "--write"],
       command: "biome",
       files: getFilesForExtensions(changedFiles, EXTENSIONS.biome),
-      name: "lint:biome",
+      name: "biome",
     });
 }
 
@@ -1158,12 +1158,12 @@ async function runArchitectureStage(changedFiles) {
 
   if (!hasArchitectureFiles) {
     return skippedStage(
-      "lint:architecture",
+      "architecture",
       "No matching changed architecture files.",
     );
   }
 
-  const result = await runCommand("lint:architecture", "depcruise", [
+  const result = await runCommand("architecture", "depcruise", [
     "--affected",
     "HEAD",
     "--config",
@@ -1173,8 +1173,8 @@ async function runArchitectureStage(changedFiles) {
   ]);
 
   return {
-    name: "lint:architecture",
-    output: `\n> lint:architecture (native changed mode)\n${result.output}`,
+    name: "architecture",
+    output: `\n> architecture (native changed mode)\n${result.output}`,
     status: result.status,
   };
 }

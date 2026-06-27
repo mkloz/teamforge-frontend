@@ -1,12 +1,15 @@
+/// <reference types="vitest/config" />
+
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import type { Plugin } from "vite";
 import { defineConfig, loadEnv } from "vite";
 import type { ManifestOptions } from "vite-plugin-pwa";
 import { VitePWA } from "vite-plugin-pwa";
-import { changedFileLintPlugin } from "./scripts/vite-changed-file-lint-plugin";
+import { changedFileLintPlugin } from "./scripts/lint/vite-changed-file-lint-plugin";
 import { normalizeBaseUrl } from "./src/shared/lib/url-normalization";
 
 const teamForgeManifest = {
@@ -305,16 +308,37 @@ function getWebSocketOrigin(value: string) {
   return `${protocol}//${url.host}`;
 }
 
+function getOptionalUrlOrigin(value: string | null) {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return new URL(value).origin;
+  } catch {
+    return null;
+  }
+}
+
+function getSentryConnectSources(sentryDsn: string | null) {
+  const sentryOrigin = getOptionalUrlOrigin(sentryDsn);
+
+  return sentryOrigin ? [sentryOrigin] : [];
+}
+
 function renderContentSecurityPolicy({
   apiUrl,
   mediaBaseUrl,
+  sentryDsn,
 }: {
   apiUrl: string;
   mediaBaseUrl: string;
+  sentryDsn: string | null;
 }) {
   const mediaOrigin = getUrlOrigin(mediaBaseUrl);
   const apiOrigin = getUrlOrigin(apiUrl);
   const realtimeOrigin = getWebSocketOrigin(apiUrl);
+  const sentryConnectSources = getSentryConnectSources(sentryDsn);
 
   return [
     "default-src 'self'",
@@ -349,6 +373,7 @@ function renderContentSecurityPolicy({
       "https://places.googleapis.com",
       "https://api.giphy.com",
       "https://*.giphy.com",
+      ...sentryConnectSources,
     ].join(" "),
     "media-src 'self' blob: https://*.giphy.com https://giphy.com",
     "manifest-src 'self'",
@@ -361,11 +386,13 @@ function renderContentSecurityPolicy({
 function renderHeadersFile({
   apiUrl,
   mediaBaseUrl,
+  sentryDsn,
 }: {
   apiUrl: string;
   mediaBaseUrl: string;
+  sentryDsn: string | null;
 }) {
-  const csp = renderContentSecurityPolicy({ apiUrl, mediaBaseUrl });
+  const csp = renderContentSecurityPolicy({ apiUrl, mediaBaseUrl, sentryDsn });
 
   return `/*
   Content-Security-Policy: ${csp};
@@ -438,10 +465,12 @@ function teamForgePublicHostPlugin({
   apiUrl,
   appUrl,
   mediaBaseUrl,
+  sentryDsn,
 }: {
   apiUrl: string | null;
   appUrl: string | null;
   mediaBaseUrl: string | null;
+  sentryDsn: string | null;
 }): Plugin {
   let outDir: string;
 
@@ -492,7 +521,7 @@ function teamForgePublicHostPlugin({
       await Promise.all([
         writeFile(
           path.join(outDir, "_headers"),
-          renderHeadersFile({ apiUrl, mediaBaseUrl }),
+          renderHeadersFile({ apiUrl, mediaBaseUrl, sentryDsn }),
         ),
         writeFile(path.join(outDir, "robots.txt"), renderRobotsTxt(appUrl)),
         writeFile(path.join(outDir, "sitemap.xml"), renderSitemapXml(appUrl)),
@@ -523,12 +552,60 @@ function teamForgeManifestDevPlugin(): Plugin {
   };
 }
 
+function readTrimmedEnv(name: string) {
+  return process.env[name]?.trim() || null;
+}
+
+function getSentryReleaseName() {
+  return (
+    readTrimmedEnv("SENTRY_RELEASE") ??
+    readTrimmedEnv("VITE_SENTRY_RELEASE") ??
+    readTrimmedEnv("GITHUB_SHA")
+  );
+}
+
+function hasSentrySourcemapUploadConfig() {
+  return Boolean(
+    readTrimmedEnv("SENTRY_AUTH_TOKEN") &&
+      readTrimmedEnv("SENTRY_ORG") &&
+      readTrimmedEnv("SENTRY_PROJECT"),
+  );
+}
+
+function getSentryBuildPlugins(command: string) {
+  if (command !== "build" || !hasSentrySourcemapUploadConfig()) {
+    return [];
+  }
+
+  return sentryVitePlugin({
+    authToken: readTrimmedEnv("SENTRY_AUTH_TOKEN") ?? undefined,
+    org: readTrimmedEnv("SENTRY_ORG") ?? undefined,
+    project: readTrimmedEnv("SENTRY_PROJECT") ?? undefined,
+    release: {
+      name: getSentryReleaseName() ?? undefined,
+    },
+    sourcemaps: {
+      assets: "./dist/assets/**",
+      filesToDeleteAfterUpload: "./dist/assets/**/*.map",
+    },
+    telemetry: false,
+    bundleSizeOptimizations: {
+      excludeDebugStatements: true,
+      excludeReplayIframe: true,
+      excludeReplayShadowDom: true,
+      excludeReplayWorker: true,
+    },
+  });
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const appUrl = normalizeBaseUrl(env.VITE_APP_URL);
   const apiUrl = normalizeBaseUrl(env.VITE_API_URL);
   const mediaBaseUrl = normalizeBaseUrl(env.VITE_MEDIA_BASE_URL);
+  const sentryDsn = env.VITE_SENTRY_DSN?.trim() || null;
+  const shouldUploadSentrySourcemaps = hasSentrySourcemapUploadConfig();
 
   if (command === "build" && (!appUrl || !apiUrl || !mediaBaseUrl)) {
     throw new Error(
@@ -548,7 +625,7 @@ export default defineConfig(({ command, mode }) => {
           : undefined,
       ),
       tailwindcss(),
-      teamForgePublicHostPlugin({ apiUrl, appUrl, mediaBaseUrl }),
+      teamForgePublicHostPlugin({ apiUrl, appUrl, mediaBaseUrl, sentryDsn }),
       teamForgeManifestDevPlugin(),
       VitePWA({
         registerType: "prompt",
@@ -616,6 +693,7 @@ export default defineConfig(({ command, mode }) => {
         },
       }),
       changedFileLintPlugin(),
+      ...getSentryBuildPlugins(command),
     ],
     server: {
       port: 3000,
@@ -628,7 +706,17 @@ export default defineConfig(({ command, mode }) => {
         ],
       },
     },
+    test: {
+      environment: "node",
+      setupFiles: ["./test/setup/vitest.setup.ts"],
+      env: {
+        VITE_API_URL: "http://localhost:6969/api/v1",
+        VITE_APP_URL: "http://localhost:3000",
+        VITE_MEDIA_BASE_URL: "http://localhost:6969/media",
+      },
+    },
     build: {
+      sourcemap: shouldUploadSentrySourcemaps,
       rollupOptions: {
         output: {
           manualChunks(id) {

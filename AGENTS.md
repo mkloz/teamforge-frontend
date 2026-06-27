@@ -55,7 +55,7 @@ Authenticated routes are protected by the app-shell `beforeLoad`; onboarding rou
 - App-wide realtime handles `notification.new` and `group.updated` in `src/app/runtime/app-realtime-events.ts`.
 - Activity and group-plan detail routes handle chat, read, typing, presence, plan, and group events locally.
 - The app is a PWA via `vite-plugin-pwa`; `/download` owns install guidance, diagnostics, and push-notification readiness.
-- Use `scripts/generate-icons.js` only when intentionally regenerating PWA icons.
+- Use `scripts/pwa/generate-icons.js` only when intentionally regenerating PWA icons.
 
 ---
 
@@ -174,11 +174,35 @@ Preferred MCP stack: **21st.dev**, **Chrome DevTools MCP**, **Context7**, **Fire
 
 UI workflow: read local code and design docs, use sequential-thinking for complex planning, use 21st.dev/Firecrawl for inspiration, Context7 for API details, implement with TeamForge conventions, then verify rendered behavior in Chrome DevTools when it matters.
 
+## Agentic Lead Development
+
+TeamForge uses an agentic lead flow for broad refactors, quality sweeps, research-heavy work, and multi-surface implementation. The current session remains accountable for the final patch: delegate for speed, but merge only changes that fit this repo and pass review.
+
+Default loop:
+
+1. Classify the work before spawning agents: frontend UI/state, backend contract/API, runtime/debugging, refactor/readability, quality sweep, documentation, or visual review.
+2. Establish local context first with code inspection. For broad work, run `npm run agent:health`; use `npm run agent:pack` when workers need a compact repo context bundle.
+3. Use `node scripts/quality/intelligence.mjs` when Fallow plus React Doctor diagnostics should guide prioritization. Treat those tools as indicators, not truth; fix only findings that represent real product or maintainability risk.
+4. Split work into isolated bundles with non-overlapping file ownership. Good slices are feature folders, script families, API/client contracts, PWA/runtime, or docs/config. Avoid assigning multiple workers to the same files unless one is explicitly reviewing the other.
+5. Give workers bounded prompts: objective, relevant paths, constraints from this file, expected output, and the smallest useful verification. Ask for findings or patches, not broad rewrites.
+6. Review worker output before applying it. Preserve behavior, UI appearance, routing, API contracts, env handling, and TeamForge copy/design rules unless the task explicitly changes them.
+7. Verify with the smallest relevant command. Use `npm run check:changed` for ordinary code/doc changes, `npm run check:local` or `npm run check:pr` for larger changes, and `npm run check:release` or `npm run pwa:release` only when the release/PWA surface is affected.
+8. Do not commit unless the user explicitly asks. When asked to commit, use the Conventional Commit rules below.
+
+Routing expectations:
+
+- Manual Codex flow is preferred for small, sensitive, or tightly coupled edits where one accountable editor is safer.
+- Direct OpenCode agents are suitable for focused implementation, research, review, or visual alternatives.
+- Oh My OpenAgent/team mode is suitable for broad multi-file work that benefits from planner, worker, reviewer, and visual roles.
+- Use GPT-class models for implementation, architecture, backend contracts, security, debugging, and risky refactors. Use Gemini-class visual agents for UI generation, layout alternatives, screenshot critique, and multimodal inspection only.
+- Do not send secrets, private env values, auth tokens, billing details, or large private code dumps to external agents or research tools.
+
 ## Skill Bundle Governance
 
 - Treat `.agents/skills/` as a mixed local plus bundled skill library.
 - `AGENTS.md` and any `teamforge-*` skill override generic bundled skills on conflict.
 - Specialist bundled skills are opt-in, not default. Use them when the user explicitly asks for that specialty or when the task is primarily about that specialty.
+- Use `teamforge-agent-driven-pipeline` before broad, ambiguous, multi-agent, OpenCode, Oh My OpenAgent, model-routing, or quality-orchestration work.
 - For routine TeamForge work, prefer this order: `repo-grounded-implementation-engineer`, `frontend-product-ui-engineer`, the relevant `teamforge-*` wrapper, then stack-specific helpers such as `tanstack-query-best-practices`, `zod`, `zustand`, `shadcn-ui`, `react-19`, `playwright-best-practices`, or `pwa-development`.
 - For backend/API contract work, prefer this order: `system-design-api-data-architect`, the relevant `teamforge-backend-*` wrapper, then stack-specific helpers. This repo contains the frontend and a copy of the backend contract; do not claim backend implementation changes unless the backend files are actually present.
 - Broad design bundle skills such as `frontend-design`, `impeccable`, and `ui-ux-pro-max` are reference tools for explicit design exploration or critique. They are not the default path for everyday TeamForge product UI implementation.
@@ -201,8 +225,7 @@ UI workflow: read local code and design docs, use sequential-thinking for comple
 ## Validation
 
 - Do not add frontend tests unless the user explicitly asks.
-- For small changes, run `npm run lint:changed` before handing work back.
-- Use `npm run lint:fast` for quick changed-file feedback while iterating.
+- For small changes, run `npm run check:changed` before handing work back.
 - Do not run `npm run build`, full `npm run lint`, tests, audits, or full-system commands for ordinary changes. Use them only for large refactors or changes that clearly need broad verification.
 
 ---

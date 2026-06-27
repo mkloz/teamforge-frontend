@@ -22,6 +22,8 @@ test/
 
 `unit/` contains fast Vitest coverage for pure logic, schemas, reducers, mappers, and feature-facing contracts. It mirrors `src/` so a test is easy to find from the production module it protects.
 
+Behavior specs live in `unit/` with a `.behavior.test.ts` or `.behavior.test.tsx` suffix when they still belong in the fast Vitest lane but exercise real app boundaries such as React Query hooks, API adapters, or form flows. Prefer MSW handlers from `test/support/msw/` over global `fetch` mocks so tests exercise the same request paths as the app.
+
 `audit/` is reserved for browser-backed audit coverage: authenticated route health, accessibility, user flows, screenshots, traces, and loaded-state assertions. It should be run by the audit pipeline, not by the unit test command.
 
 `support/` contains reusable test modules. Keep factories and shared builders here when they are useful across more than one lane or product area.
@@ -40,6 +42,6 @@ Avoid deep relative imports into `support/`; they make nested tests brittle when
 
 ## Script Ownership
 
-`npm run test:unit` runs `test/unit`.
+`npm test` runs `test/unit`.
 
 Audit orchestration, preview serving, authentication, route inventory, and report assembly belong in `scripts/audit/`. Browser-level audit assertions belong in `test/audit/`.

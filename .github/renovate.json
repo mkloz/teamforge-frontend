@@ -1,0 +1,146 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    ":semanticCommitScope(deps)"
+  ],
+  "timezone": "Europe/London",
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
+  "prConcurrentLimit": 8,
+  "prHourlyLimit": 2,
+  "schedule": ["before 6am on monday"],
+  "major": {
+    "dependencyDashboardApproval": true,
+    "labels": ["dependencies", "major"]
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["dependencies", "security"],
+    "schedule": ["at any time"]
+  },
+  "packageRules": [
+    {
+      "description": "Keep GitHub workflow actions moving together.",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "groupName": "github actions",
+      "commitMessageTopic": "github actions"
+    },
+    {
+      "description": "Keep the React runtime and compiler lane aligned.",
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom",
+        "@vitejs/plugin-react",
+        "babel-plugin-react-compiler",
+        "@doist/react-compiler-tracker"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "react runtime and compiler"
+    },
+    {
+      "description": "Keep TanStack packages compatible with each other.",
+      "matchPackageNames": ["/^@tanstack\\//"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "tanstack packages"
+    },
+    {
+      "description": "Group form and validation dependencies.",
+      "matchPackageNames": [
+        "react-hook-form",
+        "@hookform/resolvers",
+        "zod",
+        "input-otp"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "forms and validation"
+    },
+    {
+      "description": "Group UI primitive updates that often need one visual review.",
+      "matchPackageNames": [
+        "/^@radix-ui\\//",
+        "radix-ui",
+        "vaul",
+        "embla-carousel-react",
+        "lucide-react",
+        "sonner"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "ui primitives"
+    },
+    {
+      "description": "Group Tailwind and styling support packages.",
+      "matchPackageNames": [
+        "tailwindcss",
+        "@tailwindcss/vite",
+        "tailwind-merge",
+        "tw-animate-css",
+        "class-variance-authority",
+        "clsx"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "tailwind and styling"
+    },
+    {
+      "description": "Group Vite, TypeScript, PWA, and build tooling.",
+      "matchPackageNames": [
+        "typescript",
+        "vite",
+        "vite-plugin-pwa",
+        "sharp",
+        "repomix"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "build tooling"
+    },
+    {
+      "description": "Group static analysis and quality intelligence tools.",
+      "matchPackageNames": [
+        "@biomejs/biome",
+        "dependency-cruiser",
+        "fallow",
+        "knip",
+        "oxlint",
+        "oxlint-plugin-inhuman",
+        "oxlint-plugin-query",
+        "oxlint-tailwindcss",
+        "oxlint-tsgolint",
+        "react-doctor"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "quality tooling"
+    },
+    {
+      "description": "Group unit and browser test tooling.",
+      "matchPackageNames": [
+        "vitest",
+        "jsdom",
+        "msw",
+        "@testing-library/jest-dom",
+        "@testing-library/react",
+        "@testing-library/user-event",
+        "@playwright/test",
+        "@axe-core/playwright",
+        "axe-core",
+        "lighthouse",
+        "chrome-launcher"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "test and audit tooling"
+    },
+    {
+      "description": "Group Sentry runtime and build plugin updates.",
+      "matchPackageNames": ["/^@sentry\\//"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "sentry telemetry"
+    }
+  ]
+}

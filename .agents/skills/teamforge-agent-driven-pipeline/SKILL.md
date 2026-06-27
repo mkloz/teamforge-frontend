@@ -30,7 +30,7 @@ Use this skill before broad, ambiguous, multi-agent, or model-routing work in Te
 | Work type | Primary lane | Model bias | Verification |
 | --- | --- | --- | --- |
 | Backend contracts, auth, Prisma/data, security | Direct OpenCode or Codex manual | GPT high | Typecheck/test or targeted backend check |
-| Frontend state/data/query/forms | Direct OpenCode or Codex manual | GPT high | `npm run lint:changed`, route smoke if needed |
+| Frontend state/data/query/forms | Direct OpenCode or Codex manual | GPT high | `npm run check:changed`, route smoke if needed |
 | UI generation, layout alternatives, visual critique | Direct `ui-designer` or OMO visual category | Gemini 3.5 Flash | Chrome/Playwright screenshot and a11y snapshot |
 | Quick visual option scanning | Direct `visual-scout` | Gemini 3.1 Flash Lite | Human review or screenshot comparison |
 | Broad multi-step orchestration | OMO `hephaestus`/`sisyphus`/`atlas` | GPT, with Gemini only for visual subwork | OMO completion plus local checks |
@@ -62,7 +62,7 @@ Use this skill before broad, ambiguous, multi-agent, or model-routing work in Te
    - Read local context first.
    - Ask agents for bounded outputs: findings, plan, patch, review, or UI alternatives.
    - Apply changes through the current coding agent, not blindly from subagent text.
-   - Run the smallest relevant verification (`lint:changed`, smoke prompt, targeted tests, screenshot, or API probe).
+   - Run the smallest relevant verification (`npm run check:changed`, smoke prompt, targeted tests, screenshot, or API probe).
    - Escalate to broader checks only when the blast radius justifies it.
 
 ## Current TeamForge Routing

@@ -68,7 +68,7 @@ function getStderr(error: ExecFileException | null, stderr: Buffer | string) {
  * Runs the changed-file lint script for the current Vite project.
  */
 function runChangedLint(root: string, files?: string[]) {
-  const scriptPath = path.join(root, "scripts", "lint-changed.mjs");
+  const scriptPath = path.join(root, "scripts", "lint", "changed.mjs");
   const args = [scriptPath, "--stages", VITE_LINT_STAGES];
 
   if (files?.length) {
@@ -124,7 +124,7 @@ function logResult(config: ResolvedConfig, result: LintResult) {
  * Ensures the changed-file lint script exists before the plugin runs.
  */
 function assertPluginReady(config: ResolvedConfig) {
-  const scriptPath = path.join(config.root, "scripts", "lint-changed.mjs");
+  const scriptPath = path.join(config.root, "scripts", "lint", "changed.mjs");
 
   if (!existsSync(scriptPath)) {
     throw new Error(`Changed-file lint script was not found: ${scriptPath}`);
