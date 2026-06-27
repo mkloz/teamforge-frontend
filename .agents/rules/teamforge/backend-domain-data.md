@@ -1,6 +1,6 @@
 ---
-name: teamforge-backend-domain-data
-description: TeamForge backend domain data and Prisma invariant playbook. Use when changing users, interests, activities, Forge, groups, memberships, plans, proposals, chats, friendships, invites, ratings, trust score, matching preferences, database schemas, indexes, transactions, or migrations.
+trigger: model_decision
+description: "Use when changing or reviewing TeamForge persistent domain models, Prisma/data invariants, Forge groups, memberships, plans, proposals, chats, friendships, invites, ratings, trust, interests, migrations, indexes, or transactions."
 ---
 
 # TeamForge Backend Domain Data

@@ -1,6 +1,6 @@
 ---
-name: teamforge-backend-production-runtime
-description: TeamForge backend production runtime and operations playbook. Use when changing backend environment variables, health checks, CORS/cookies, uploads, rate limits, deployment paths, service-worker/PWA support, logging, request IDs, observability, Redis/PostgreSQL dependencies, or production release readiness.
+trigger: model_decision
+description: "Use when reviewing or changing TeamForge backend production readiness, environment variables, health checks, CORS/cookies, deployment paths, uploads, rate limits, request IDs, observability, Redis/PostgreSQL dependencies, web push, or PWA support."
 ---
 
 # TeamForge Backend Production Runtime

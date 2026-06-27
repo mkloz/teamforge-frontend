@@ -174,6 +174,16 @@ Preferred MCP stack: **21st.dev**, **Chrome DevTools MCP**, **Context7**, **Fire
 
 UI workflow: read local code and design docs, use sequential-thinking for complex planning, use 21st.dev/Firecrawl for inspiration, Context7 for API details, implement with TeamForge conventions, then verify rendered behavior in Chrome DevTools when it matters.
 
+## Core Agent Modes
+
+Use these repo-local rules when they truly fit. They are operating modes for specific situations, not default ceremony for every task. Rules trigger by model decision from their `description` metadata; do not require slash commands or keyword gates.
+
+- **Chain Protocol:** `.agents/rules/chain-protocol.md` - split a broad goal into manageable approved tasks, execute one slice at a time, and end each response with the next suggested task.
+- **Agent Delegation Protocol:** `.agents/rules/agent-delegation-protocol.md` - route broad or parallelizable work to suitable workers/models to save time and cost while the current session remains accountable for the final patch.
+- **Consensus Review Protocol:** `.agents/rules/consensus-review-protocol.md` - ask independent AI reviewers or research tools to critique an idea, expose unsupported assumptions, and broaden the evidence base before acting.
+
+When multiple modes apply, prefer this order: use Consensus Review to pressure-test the idea, Agent Delegation to split and route the work, then Chain Protocol to execute the approved sequence. Never let a mode override repo evidence, TeamForge product constraints, security rules, or the verification requirements in this file.
+
 ## Agentic Lead Development
 
 TeamForge uses an agentic lead flow for broad refactors, quality sweeps, research-heavy work, and multi-surface implementation. The current session remains accountable for the final patch: delegate for speed, but merge only changes that fit this repo and pass review.
@@ -182,7 +192,7 @@ Default loop:
 
 1. Classify the work before spawning agents: frontend UI/state, backend contract/API, runtime/debugging, refactor/readability, quality sweep, documentation, or visual review.
 2. Establish local context first with code inspection. For broad work, run `npm run agent:health`; use `npm run agent:pack` when workers need a compact repo context bundle.
-3. Use `node scripts/quality/intelligence.mjs` when Fallow plus React Doctor diagnostics should guide prioritization. Treat those tools as indicators, not truth; fix only findings that represent real product or maintainability risk.
+3. Use `.agents/rules/teamforge/quality-intelligence.md` and `node scripts/quality/intelligence.mjs` when Fallow plus React Doctor diagnostics should guide prioritization. Treat those tools as indicators, not truth; fix only findings that represent real product or maintainability risk.
 4. Split work into isolated bundles with non-overlapping file ownership. Good slices are feature folders, script families, API/client contracts, PWA/runtime, or docs/config. Avoid assigning multiple workers to the same files unless one is explicitly reviewing the other.
 5. Give workers bounded prompts: objective, relevant paths, constraints from this file, expected output, and the smallest useful verification. Ask for findings or patches, not broad rewrites.
 6. Review worker output before applying it. Preserve behavior, UI appearance, routing, API contracts, env handling, and TeamForge copy/design rules unless the task explicitly changes them.
@@ -200,13 +210,16 @@ Routing expectations:
 ## Skill Bundle Governance
 
 - Treat `.agents/skills/` as a mixed local plus bundled skill library.
-- `AGENTS.md` and any `teamforge-*` skill override generic bundled skills on conflict.
+- Treat `.agents/rules/teamforge/` as the source of truth for TeamForge-specific playbooks and context. Do not duplicate TeamForge guidance back into `teamforge-*` skills.
+- `AGENTS.md` and `.agents/rules/teamforge/` override generic bundled skills on conflict.
 - Specialist bundled skills are opt-in, not default. Use them when the user explicitly asks for that specialty or when the task is primarily about that specialty.
-- Use `teamforge-agent-driven-pipeline` before broad, ambiguous, multi-agent, OpenCode, Oh My OpenAgent, model-routing, or quality-orchestration work.
-- For routine TeamForge work, prefer this order: `repo-grounded-implementation-engineer`, `frontend-product-ui-engineer`, the relevant `teamforge-*` wrapper, then stack-specific helpers such as `tanstack-query-best-practices`, `zod`, `zustand`, `shadcn-ui`, `react-19`, `playwright-best-practices`, or `pwa-development`.
-- For backend/API contract work, prefer this order: `system-design-api-data-architect`, the relevant `teamforge-backend-*` wrapper, then stack-specific helpers. This repo contains the frontend and a copy of the backend contract; do not claim backend implementation changes unless the backend files are actually present.
+- Use `.agents/rules/teamforge/agent-driven-pipeline.md` before broad, ambiguous, multi-agent, OpenCode, Oh My OpenAgent, model-routing, or quality-orchestration work.
+- For routine TeamForge work, prefer this order: `repo-grounded-implementation-engineer`, `frontend-product-ui-engineer`, the narrowest relevant `.agents/rules/teamforge/` playbook, then stack-specific helpers such as `tanstack-query-best-practices`, `zod`, `zustand`, `shadcn-ui`, `react-19`, `playwright-best-practices`, or `pwa-development`.
+- For backend/API contract work, prefer this order: `system-design-api-data-architect`, the narrowest relevant backend playbook in `.agents/rules/teamforge/`, then stack-specific helpers. This repo contains the frontend and a copy of the backend contract; do not claim backend implementation changes unless the backend files are actually present.
+- For debugging, quality, factual verification, or UI polish, use the matching TeamForge playbook first: `debugging-protocol.md`, `quality-intelligence.md`, `evidence-review.md`, or `ui-quality-gate.md`.
 - Broad design bundle skills such as `frontend-design`, `impeccable`, and `ui-ux-pro-max` are reference tools for explicit design exploration or critique. They are not the default path for everyday TeamForge product UI implementation.
 - Never let bundled skill guidance override TeamForge rules on fonts, color tokens, copy constraints, routing, `apiClient`, TanStack Query ownership, PWA behavior, or realtime session handling.
+- Before promoting another generic skill into repo policy, review `.agents/rules/teamforge/skill-adaptation-roadmap.md`.
 
 ---
 

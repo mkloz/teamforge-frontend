@@ -1,6 +1,6 @@
 ---
-name: teamforge-copy-guardrails
-description: TeamForge copy and naming review playbook. Use when editing user-facing copy, labels, empty states, CTAs, onboarding/results text, errors, notifications, settings labels, or product/domain identifiers where dating-app, gamification, or algorithm-language drift is possible.
+trigger: model_decision
+description: "Use when writing or reviewing TeamForge user-facing copy, aria labels, toasts, empty states, CTAs, onboarding/results text, errors, notifications, settings labels, or identifiers where dating-app, gamification, or algorithm-language drift is possible."
 ---
 
 # TeamForge Copy Guardrails: Review Playbook

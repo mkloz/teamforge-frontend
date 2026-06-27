@@ -1,4 +1,0 @@
-interface:
-  display_name: "TeamForge Routing"
-  short_description: "Routes, guards, lazy pages, and nuqs"
-  default_prompt: "Use $teamforge-router-and-guards to add or review a TeamForge route with guards and search state."

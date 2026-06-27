@@ -1,6 +1,6 @@
 ---
-name: teamforge-api-client-and-query
-description: TeamForge API/query integration playbook. Use when adding endpoint adapters, schemas, query option factories, cache keys, cache updaters, invalidation helpers, auth/session queries, or mutation metadata around the ky apiClient and TanStack Query.
+trigger: model_decision
+description: "Use when adding or changing TeamForge API adapters, ky apiClient calls, response parsing, TanStack Query options, query keys, cache updaters, invalidation helpers, mutations, or session-sensitive data flows."
 ---
 
 # TeamForge API Client And Query: Integration Playbook

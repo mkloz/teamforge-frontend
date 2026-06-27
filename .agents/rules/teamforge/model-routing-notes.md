@@ -1,3 +1,8 @@
+---
+trigger: model_decision
+description: "Use when updating, evaluating, or explaining TeamForge OpenCode/Oh My OpenAgent model routing, provider availability, smoke tests, free-tier limitations, billing-safe model choices, or OMO config assumptions."
+---
+
 # Model Routing Notes
 
 ## Sources Checked

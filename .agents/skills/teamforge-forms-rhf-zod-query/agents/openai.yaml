@@ -1,4 +1,0 @@
-interface:
-  display_name: "TeamForge Forms"
-  short_description: "RHF, Zod, and query form patterns"
-  default_prompt: "Use $teamforge-forms-rhf-zod-query to update a TeamForge form with validation, submission, and error handling."

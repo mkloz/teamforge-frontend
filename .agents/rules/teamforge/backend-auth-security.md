@@ -1,6 +1,6 @@
 ---
-name: teamforge-backend-auth-security
-description: TeamForge backend auth, session, and authorization security playbook. Use when changing login, registration, Google OAuth, OTP, password reset, refresh tokens, cookies, sessions, ownership checks, rate limits, account deletion, or user privacy boundaries.
+trigger: model_decision
+description: "Use when reviewing or changing TeamForge auth, sessions, refresh tokens, cookies, Google OAuth, OTP, password reset, account deletion, authorization, ownership checks, privacy boundaries, or rate limits."
 ---
 
 # TeamForge Backend Auth And Security

@@ -1,4 +1,0 @@
-interface:
-  display_name: "TeamForge Backend Auth"
-  short_description: "Auth, sessions, ownership, and privacy"
-  default_prompt: "Use $teamforge-backend-auth-security to review TeamForge auth, session, and authorization behavior."

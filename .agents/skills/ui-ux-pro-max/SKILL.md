@@ -1,6 +1,6 @@
 ---
 name: ui-ux-pro-max
-description: "Broad UI/UX reference bundle for web and mobile. Use only when the user explicitly asks for style exploration, design ideation, visual critique, or cross-stack UX comparison beyond the repo's established design system. For TeamForge, treat this as a reference library rather than default implementation guidance; AGENTS.md, frontend-product-ui-engineer, and teamforge-* skills override it on conflict."
+description: "Broad UI/UX reference bundle for web and mobile. Use only when the user explicitly asks for style exploration, design ideation, visual critique, or cross-stack UX comparison beyond the repo's established design system. For TeamForge, treat this as a reference library rather than default implementation guidance; AGENTS.md, frontend-product-ui-engineer, and .agents/rules/teamforge/ override it on conflict."
 ---
 
 # UI/UX Pro Max - Design Intelligence
@@ -11,7 +11,7 @@ Comprehensive design guide for web and mobile applications. Contains 50+ styles,
 
 - TeamForge is a React + Vite + Tailwind + shadcn/ui web app, not a React Native app.
 - Use this skill as a reference library for explicit design exploration or critique, not as the default implementation path.
-- When this skill conflicts with `AGENTS.md`, TeamForge tokens, or any `teamforge-*` skill, follow the repo-local guidance instead.
+- When this skill conflicts with `AGENTS.md`, TeamForge tokens, or `.agents/rules/teamforge/`, follow the repo-local guidance instead.
 - Ignore React Native-only instructions unless the user explicitly asks for mobile-app inspiration.
 
 ## When to Apply

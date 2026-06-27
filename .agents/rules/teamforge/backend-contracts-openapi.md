@@ -1,6 +1,6 @@
 ---
-name: teamforge-backend-contracts-openapi
-description: TeamForge backend REST contract and OpenAPI sync playbook. Use when adding, reviewing, or changing backend endpoints, request/response DTOs, error shapes, frontend Zod schemas, OpenAPI docs, API adapters, pagination, filtering, or cross-layer API expectations.
+trigger: model_decision
+description: "Use when adding, reviewing, or changing TeamForge backend REST contracts, OpenAPI paths, request/response DTOs, frontend Zod schemas, error envelopes, pagination, filtering, API adapters, or cache/realtime consequences."
 ---
 
 # TeamForge Backend Contracts And OpenAPI

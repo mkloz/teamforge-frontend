@@ -1,6 +1,6 @@
 ---
-name: teamforge-realtime-pwa
-description: TeamForge realtime and PWA runtime integration playbook. Use when editing Socket.IO session sync, event handlers, service-worker messages, resume/reconnect refresh, offline UX, web push, app badges, diagnostics, or the download/install experience.
+trigger: model_decision
+description: "Use when changing TeamForge frontend realtime, Socket.IO session sync, event handlers, PWA runtime, service-worker messages, web push, app badges, diagnostics, resume/reconnect refresh, offline UX, or download/install behavior."
 ---
 
 # TeamForge Realtime And PWA: Runtime Playbook

@@ -1,4 +1,0 @@
-interface:
-  display_name: "TeamForge Backend Runtime"
-  short_description: "Production paths, health, uploads, ops"
-  default_prompt: "Use $teamforge-backend-production-runtime to review TeamForge backend production runtime and deployment readiness."

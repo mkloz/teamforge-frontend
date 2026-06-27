@@ -1,15 +1,15 @@
 ---
-name: teamforge-agent-driven-pipeline
-description: Use for TeamForge agent-driven coding pipelines, OpenCode or Oh My OpenAgent orchestration, model routing, MCP selection, multi-agent planning, UI generation routing, verification strategy, or deciding which specialist agent/mode should handle backend, frontend, debugging, refactoring, research, review, and visual work.
+trigger: model_decision
+description: "Use for broad, ambiguous, multi-agent, model-routing, OpenCode, Oh My OpenAgent, MCP-selection, UI-generation routing, verification-strategy, or quality-orchestration work in TeamForge."
 ---
 
 # TeamForge Agent-Driven Pipeline
 
-Use this skill before broad, ambiguous, multi-agent, or model-routing work in TeamForge. Keep the pipeline evidence-based: inspect the repo, verify available providers, and route work by model strengths rather than novelty.
+Use this before broad, ambiguous, multi-agent, or model-routing work in TeamForge. Keep the pipeline evidence-based: inspect the repo, verify available providers, and route work by model strengths rather than novelty.
 
 ## Ground Rules
 
-- Treat `AGENTS.md`, TeamForge skills, and local repo conventions as higher priority than external examples.
+- Treat `AGENTS.md`, `.agents/rules/teamforge/`, and local repo conventions as higher priority than external examples.
 - Use GPT as the default engineering workhorse unless a task clearly benefits from Gemini visual/multimodal strengths.
 - Use Gemini for UI generation, visual exploration, screenshots, layout critique, multimodal inspection, and quick visual alternatives.
 - Do not route core implementation, security review, backend contracts, auth, migrations, or high-risk refactors to unverified free-tier models.
@@ -19,10 +19,12 @@ Use this skill before broad, ambiguous, multi-agent, or model-routing work in Te
 ## Pipeline
 
 1. Classify the task.
-   - Backend/API/data/auth: use `system-design-api-data-architect`, relevant `teamforge-backend-*`, then implementation/review agents.
-   - Frontend/product UI: use `frontend-product-ui-engineer`, relevant TeamForge wrappers, then visual/UI agents only for design alternatives or critique.
-   - Debugging/build/runtime: use `production-quality-debugger`; reproduce before changing code.
+   - Backend/API/data/auth: use `system-design-api-data-architect`, relevant TeamForge backend playbooks, then implementation/review agents.
+   - Frontend/product UI: use `frontend-product-ui-engineer`, relevant TeamForge playbooks, then visual/UI agents only for design alternatives or critique.
+   - Debugging/build/runtime: use `debugging-protocol.md`; reproduce before changing code.
    - Refactoring/readability: use `repo-grounded-implementation-engineer` and `code-refactoring`; preserve behavior first.
+   - Quality sweep: use `quality-intelligence.md` before changing files based on tool output.
+   - UI quality/review: use `ui-quality-gate.md` for visual, accessibility, responsive, and rendered verification.
    - Research/docs/API syntax: use Context7 for library docs and Firecrawl/web only when current external evidence is needed.
 
 ### Decision Matrix
@@ -35,6 +37,7 @@ Use this skill before broad, ambiguous, multi-agent, or model-routing work in Te
 | Quick visual option scanning | Direct `visual-scout` | Gemini 3.1 Flash Lite | Human review or screenshot comparison |
 | Broad multi-step orchestration | OMO `hephaestus`/`sisyphus`/`atlas` | GPT, with Gemini only for visual subwork | OMO completion plus local checks |
 | Code review / risk pass | Direct `reviewer` or OMO `oracle` | GPT high | Findings with file/line evidence |
+| Quality intelligence | Manual Codex or focused reviewer | GPT high | `quality-intelligence.md` plus local evidence |
 | Library/API docs | Codex + Context7 | Current docs over model intuition | Source link or doc excerpt |
 | Live page/debugging | Chrome DevTools / Playwright | Tool evidence first | Console/network/screenshot evidence |
 
@@ -64,6 +67,7 @@ Use this skill before broad, ambiguous, multi-agent, or model-routing work in Te
    - Apply changes through the current coding agent, not blindly from subagent text.
    - Run the smallest relevant verification (`npm run check:changed`, smoke prompt, targeted tests, screenshot, or API probe).
    - Escalate to broader checks only when the blast radius justifies it.
+   - If agents repeat the same failure pattern, stop and use `agent-failure-diagnostics.md`.
 
 ## Current TeamForge Routing
 
@@ -127,4 +131,4 @@ Turn on OMO/team mode when the work benefits from role separation: planning plus
 
 ## When To Read The Reference
 
-Read `references/model-routing-notes.md` when updating OpenCode/OMO config, changing provider subscriptions, evaluating team mode, or explaining why a model is assigned to a role.
+Read `model-routing-notes.md` when updating OpenCode/OMO config, changing provider subscriptions, evaluating team mode, or explaining why a model is assigned to a role.

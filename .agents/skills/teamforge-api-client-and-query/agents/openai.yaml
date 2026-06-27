@@ -1,4 +1,0 @@
-interface:
-  display_name: "TeamForge API Query"
-  short_description: "apiClient, query keys, and cache rules"
-  default_prompt: "Use $teamforge-api-client-and-query to wire a TeamForge API call through apiClient and TanStack Query."

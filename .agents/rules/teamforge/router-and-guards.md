@@ -1,6 +1,6 @@
 ---
-name: teamforge-router-and-guards
-description: TeamForge route and guard integration playbook. Use when adding or changing routes, beforeLoad auth/onboarding behavior, lazy route modules, preload strategy, canonical URL/search validation, route errors, or nuqs-backed route state.
+trigger: model_decision
+description: "Use when adding or changing TeamForge TanStack Router routes, beforeLoad guards, auth/onboarding redirects, lazy route modules, preload strategy, canonical URL/search validation, route errors, or nuqs-backed route state."
 ---
 
 # TeamForge Router And Guards: Integration Playbook

@@ -1,4 +1,0 @@
-interface:
-  display_name: "TeamForge Realtime PWA"
-  short_description: "Realtime session and PWA runtime rules"
-  default_prompt: "Use $teamforge-realtime-pwa to update TeamForge realtime or PWA runtime behavior."

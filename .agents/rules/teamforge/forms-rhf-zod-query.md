@@ -1,11 +1,11 @@
 ---
-name: teamforge-forms-rhf-zod-query
-description: TeamForge form integration playbook. Use when a change must connect form state, Zod schemas, backend commands, offline guards, TanStack Query mutations, navigation, or user-visible errors in auth, onboarding, settings, profile, forge, or other input-heavy flows.
+trigger: model_decision
+description: "Use when TeamForge form work connects React Hook Form, Zod schemas, DTO mapping, backend commands, offline guards, TanStack Query mutations, cache updates, navigation, or user-visible root/field errors."
 ---
 
 # TeamForge Forms: Integration Playbook
 
-Use this for the parts AGENTS.md does not spell out: where form values become DTOs, which cache or route changes happen after submit, and how errors/offline behavior reach the UI.
+Use this for the parts `AGENTS.md` does not spell out: where form values become DTOs, which cache or route changes happen after submit, and how errors/offline behavior reach the UI.
 
 ## Start From The Closest Flow
 

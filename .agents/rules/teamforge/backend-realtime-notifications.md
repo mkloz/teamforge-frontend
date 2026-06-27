@@ -1,6 +1,6 @@
 ---
-name: teamforge-backend-realtime-notifications
-description: TeamForge backend realtime, notifications, and push delivery playbook. Use when changing Socket.IO events, rooms, presence, typing, chat read state, message events, plan/group event payloads, notification creation, web push subscriptions, service-worker messages, or event idempotency.
+trigger: model_decision
+description: "Use when changing or reviewing TeamForge backend Socket.IO events, rooms, presence, typing, chat read state, message events, group/plan event payloads, notifications, web push subscriptions, service-worker messages, or event idempotency."
 ---
 
 # TeamForge Backend Realtime And Notifications

@@ -1,4 +1,0 @@
-interface:
-  display_name: "TeamForge Backend Contracts"
-  short_description: "OpenAPI and REST contract alignment"
-  default_prompt: "Use $teamforge-backend-contracts-openapi to review a TeamForge backend endpoint contract and frontend schema alignment."

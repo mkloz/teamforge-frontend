@@ -1,4 +1,0 @@
-interface:
-  display_name: "TeamForge Realtime Backend"
-  short_description: "Socket events, notifications, and push"
-  default_prompt: "Use $teamforge-backend-realtime-notifications to review TeamForge realtime events, notifications, and push delivery."
