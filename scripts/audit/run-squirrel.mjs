@@ -197,7 +197,7 @@ async function createSquirrelAuditContext() {
     keepTokenFile: process.env.AUDIT_KEEP_TOKEN_FILE === "true",
     outputDir:
       process.env.AUDIT_OUTPUT_DIR ??
-      path.join(cwd, "reports", `squirrelscan-authenticated-${todayStamp()}`),
+      path.join(cwd, "temp", `squirrelscan-authenticated-${todayStamp()}`),
     projectPrefix:
       process.env.AUDIT_PROJECT_PREFIX ?? "teamforge-authenticated",
     routeDiscoveryTokens,

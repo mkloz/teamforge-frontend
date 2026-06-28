@@ -649,7 +649,7 @@ function getLighthouseRunConfig() {
   const refreshCookieName = getRefreshCookieName();
   const outputDir =
     process.env.AUDIT_LIGHTHOUSE_OUTPUT_DIR ??
-    path.join(cwd, "reports", `lighthouse-audit-${todayStamp()}`);
+    path.join(cwd, "temp", `lighthouse-audit-${todayStamp()}`);
   const categories = getLighthouseCategories();
   const routeSlugs = getLighthouseRouteSlugs();
   const useAuthSession = shouldUseAuthSession(routeSlugs);

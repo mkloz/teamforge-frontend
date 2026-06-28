@@ -122,7 +122,7 @@ const ROOT_DIR = path.resolve(__dirname, "../..");
 const DIST_DIR = path.join(ROOT_DIR, "dist");
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 const REPORTS_DIR = path.join(ROOT_DIR, "reports");
-const REPORT_PATH = path.join(REPORTS_DIR, "pwa-qa-report.md");
+const REPORT_PATH = path.join(REPORTS_DIR, "pwa-qa.md");
 const SRC_DIR = path.join(ROOT_DIR, "src");
 const ENV_EXAMPLE_PATH = path.join(ROOT_DIR, ".env.example");
 const PACKAGE_JSON_PATH = path.join(ROOT_DIR, "package.json");
@@ -307,7 +307,6 @@ const PWA_SOURCE_MARKER_TARGETS = [
       "registerSW",
       "beforeinstallprompt",
       "appinstalled",
-      "recordPwaServiceWorkerUpdate",
       "LazyPwaAuthenticatedRuntime",
       "PwaLaunchSourceCleanupRuntime",
       "OfflineConnectionBanner",
@@ -324,7 +323,6 @@ const PWA_SOURCE_MARKER_TARGETS = [
       "PwaResumeRefreshRuntime",
       "PWA_RESUME_REFRESH_COOLDOWN_MS",
       'refetchType: "active"',
-      "recordPwaReconnectRefresh",
       "PwaServiceWorkerMessageRuntime",
       "visibilitychange",
       "pageshow",
@@ -338,9 +336,7 @@ const PWA_SOURCE_MARKER_TARGETS = [
   },
   {
     markers: [
-      "recordPwaRealtimeResync",
-      "reconnectRealtimeWithDiagnostic",
-      "initial sync",
+      "reconnectRealtimeWhenReady",
       "visibilitychange",
       "online",
       "focus",
@@ -348,25 +344,6 @@ const PWA_SOURCE_MARKER_TARGETS = [
     relativePath: path.relative(
       ROOT_DIR,
       path.join(SRC_DIR, "app/runtime/app-realtime-sync.tsx"),
-    ),
-  },
-  {
-    markers: [
-      "recordPwaReconnectRefresh",
-      "recordPwaRealtimeResync",
-      "subscribePwaRuntimeDiagnostics",
-      "getPwaRuntimeDiagnosticsSnapshot",
-    ],
-    relativePath: path.relative(
-      ROOT_DIR,
-      path.join(SRC_DIR, "shared/lib/pwa-runtime-diagnostics.ts"),
-    ),
-  },
-  {
-    markers: ["useSyncExternalStore", "subscribePwaRuntimeDiagnostics"],
-    relativePath: path.relative(
-      ROOT_DIR,
-      path.join(SRC_DIR, "shared/hooks/use-pwa-runtime-diagnostics.ts"),
     ),
   },
 ];

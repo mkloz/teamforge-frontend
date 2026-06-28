@@ -11,11 +11,16 @@
     "binaries"
   ],
   "ignoreFiles": [
-    "src/shared/hooks/use-pwa-runtime-diagnostics.ts",
     "src/shared/types/google-maps.d.ts",
     "src/shared/types/react-css-properties.d.ts"
   ],
-  "ignoreDependencies": ["fallow", "react-doctor", "repomix"],
+  "ignoreDependencies": [
+    "@doist/react-compiler-tracker",
+    "babel-plugin-react-compiler",
+    "fallow",
+    "react-doctor",
+    "repomix"
+  ],
   "entry": [
     "scripts/**/*.{js,mjs}",
     "test/audit/**/*.ts",

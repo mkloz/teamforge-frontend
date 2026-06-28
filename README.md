@@ -218,16 +218,25 @@ Quality commands:
 `npm run lint` runs the full static lint gate, while `npm run lint:fix` applies Biome fixes, formatting, and Knip checks. Run `node scripts/quality/intelligence.mjs` directly when you need the combined Fallow plus React Doctor diagnostic report.
 
 Check commands:
-`npm run check:changed` is the normal changed-file gate for local work. `npm run check:local`, `npm run check:pr`, and `npm run check:release` run the parallel verification gates for local confidence, pull requests, and releases. Set `VERIFY_RUN_BROWSER_AUDITS=true` with `check:release` for the optional browser audit lane.
+`npm run check:changed` is the normal changed-file gate for local work. `npm run check:local`, `npm run check:pr`, and `npm run check:release` run the parallel verification gates for local confidence, pull requests, and releases. The PR and release gates add Knip, high-severity npm audit, Gitleaks secret scanning, and a production bundle check on top of the static, quality, type, and unit lanes. Set `VERIFY_RUN_BROWSER_AUDITS=true` with `check:release` for the optional browser audit lane.
+
+Script reports:
+Human-readable script reports are flat files in `reports/`, one stable file per script such as `reports/verify.md`, `reports/quality-intelligence.md`, `reports/react-doctor.md`, `reports/gitleaks.md`, and `reports/pwa-qa.md`. Each report includes a generated timestamp. Machine-readable payloads, browser audit artifacts, screenshots, and one-off command output belong in `temp/`.
 
 Agent context commands:
-`npm run agent:health` prints compact repo health for agents. `npm run agent:pack` generates scoped Repomix context under `temp/repomix/`; pass `-- --skip-health` for context-only output.
+`npm run agent:health` prints compact repo health for agents, including explicit oversized-file analysis for tracked source/script files. `npm run agent:pack` generates scoped Repomix context under `temp/repomix/`; pass `-- --skip-health` for context-only output.
 
 Release commands:
 `npm run pwa:release` runs the production PWA env preflight, build, and QA gate.
 
 Browser audit commands:
 `npm run audit:release` runs the standard Playwright plus Lighthouse release audit, `npm run audit:nightly` runs the broader scheduled profile, and `npm run audit:cert` prepares a local HTTPS preview certificate.
+
+Direct security wrapper:
+`node scripts/security/gitleaks.mjs` runs the same Gitleaks secret scan used by PR, release, scheduled, and Cloudflare deploy gates. It uses a local `gitleaks` binary when available, otherwise Docker.
+The `.gitleaks.toml` config extends the default rules and only allowlists
+documented placeholder values plus the Playwright mock verification-token
+example under `.agents/skills/`.
 
 Pre-commit hooks (via Husky + lint-staged) automatically run React Compiler tracking, Biome safe fixes, and Oxlint on staged files before every commit. Use `npm run check:changed` for a local changed-file pass while iterating.
 
@@ -296,9 +305,16 @@ npm run pwa:release
 ### Cloudflare Pages CI/CD
 
 Frontend deploys are handled by `.github/workflows/cloudflare-pages.yml`.
-GitHub Actions runs the production browser-env preflight, the full quality gate,
-unit tests, the Vite build, and PWA QA before uploading `dist/` to Cloudflare
-Pages with Wrangler Direct Upload.
+GitHub Actions runs the full release gate before uploading `dist/` to
+Cloudflare Pages with Wrangler Direct Upload. That gate includes Oxlint, React
+Compiler tracking, Biome, dependency-cruiser, Fallow plus React Doctor quality
+intelligence, TypeScript, unit tests, Knip, high-severity npm audit, Gitleaks,
+the production browser-env preflight, Vite build, and PWA QA.
+
+The companion security workflows run Gitleaks on PRs, pushes, weekly schedule,
+and manual dispatch; CodeQL with `security-extended` and `security-and-quality`
+queries; and dependency review on pull requests with moderate-or-higher
+dependency changes blocked.
 
 Required GitHub environment secrets:
 

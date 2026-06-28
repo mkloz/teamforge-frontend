@@ -47,7 +47,7 @@ export function GroupPanelScrollArea({
       ref={scrollRef}
       onScroll={handleScroll}
       className={cn(
-        "flex-1 overflow-y-auto [--collapsible-panel-collapsed-height:4.5rem] [--collapsible-panel-compact-opacity:0] [--collapsible-panel-compact-scrim-opacity:0] [--collapsible-panel-original-card-delay:0ms] [--collapsible-panel-original-card-opacity:1] [--collapsible-panel-original-card-y:0px] [--collapsible-panel-original-pointer-events:auto] [overflow-anchor:none] [scrollbar-color:var(--muted-foreground)_transparent] [scrollbar-width:thin]",
+        "scrollbar-thin flex-1 overflow-y-auto [--collapsible-panel-collapsed-height:4.5rem] [--collapsible-panel-compact-opacity:0] [--collapsible-panel-compact-scrim-opacity:0] [--collapsible-panel-original-card-delay:0ms] [--collapsible-panel-original-card-opacity:1] [--collapsible-panel-original-card-y:0px] [--collapsible-panel-original-pointer-events:auto] [overflow-anchor:none] [scrollbar-color:var(--muted-foreground)_transparent]",
         isMobile
           ? "scrollbar-hide pb-6 [--collapsible-panel-expanded-height:11rem]"
           : "[--collapsible-panel-expanded-height:10rem]",

@@ -41,8 +41,13 @@ import {
  * @typedef {{ filePath: string; findings: NormalizedFinding[]; priority: number; reasons: string[]; sources: string[] }} TriageRow
  */
 
-const DEFAULT_REPORT_DIR = path.join(ROOT, "reports", "quality-intelligence");
+const DEFAULT_REPORT_DIR = path.join(ROOT, "reports");
 const DEFAULT_TEMP_DIR = path.join(ROOT, "temp", "quality-intelligence");
+const SUMMARY_PATH = path.join(
+  ROOT,
+  "temp",
+  "quality-intelligence-summary.json",
+);
 const shouldBlock = process.env.QUALITY_INTELLIGENCE_BLOCKING === "true";
 const numberFormatter = new Intl.NumberFormat("en-US");
 
@@ -181,7 +186,7 @@ async function runReactDoctor(options) {
       "--json-file",
       jsonFile,
       "--report-dir",
-      path.join(ROOT, "reports", "react-doctor"),
+      path.join(ROOT, "reports"),
     ],
     name: "react-doctor",
     spec: resolveNodeScript("scripts/quality/react-doctor.mjs"),
@@ -1141,8 +1146,8 @@ function getQualityCommandSummary(summary, elapsedMs, options) {
     `Calibrated blocking candidates: ${formatNumber(blockingFindings.length)}`,
     `Duration: ${formatDuration(elapsedMs)}`,
     `Artifacts: \`${toRepoRelativePath(
-      path.join(options.reportDir, "index.md"),
-    )}\` and \`${toRepoRelativePath(path.join(options.reportDir, "summary.json"))}\``,
+      path.join(options.reportDir, "quality-intelligence.md"),
+    )}\` and \`${toRepoRelativePath(SUMMARY_PATH)}\``,
   ];
 }
 
@@ -1261,14 +1266,14 @@ async function main() {
   ]);
   const summary = createQualitySummary(fallowResults, reactDoctorPayload);
   const elapsedMs = performance.now() - startedAt;
-  const reportPath = path.join(options.reportDir, "index.md");
+  const reportPath = path.join(options.reportDir, "quality-intelligence.md");
 
   await Promise.all([
     writeTextFile(
       reportPath,
       formatMarkdownReport(summary, elapsedMs, options),
     ),
-    writeJsonFile(path.join(options.reportDir, "summary.json"), {
+    writeJsonFile(SUMMARY_PATH, {
       blocking: {
         candidates: getBlockingFindings(summary),
         enabled: shouldBlock,
@@ -1292,9 +1297,9 @@ async function main() {
     printSummary(summary, elapsedMs);
     const reportArtifacts = [
       toRepoRelativePath(reportPath),
-      toRepoRelativePath(path.join(options.reportDir, "summary.json")),
+      toRepoRelativePath(SUMMARY_PATH),
       ...(summary.reactDoctor.diagnostics > 0
-        ? ["reports/react-doctor/index.md"]
+        ? ["reports/react-doctor.md"]
         : []),
     ];
 

@@ -48,7 +48,7 @@ const INCLUDE_PATTERNS = [
   "docs/api-data-models.md",
   "docs/open-api.yaml",
   "reports/agent-health.md",
-  "reports/quality-intelligence/index.md",
+  "reports/quality-intelligence.md",
 ].join(",");
 const IGNORE_PATTERNS = [
   "node_modules/**",

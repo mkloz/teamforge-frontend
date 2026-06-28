@@ -87,7 +87,12 @@ function getTasks(mode) {
   ];
 
   if (mode === "pr" || mode === "release") {
-    tasks.push(createKnipTask(), createAuditTask(), createBuildBundleTask());
+    tasks.push(
+      createSecretScanTask(),
+      createKnipTask(),
+      createAuditTask(),
+      createBuildBundleTask(mode),
+    );
   }
 
   if (mode === "release") {
@@ -218,15 +223,47 @@ function createAuditTask() {
 }
 
 /**
+ * @returns {TaskSpec} Secret scan task.
+ */
+function createSecretScanTask() {
+  return {
+    id: "secrets",
+    label: "Gitleaks secret scan",
+    spec: resolveNodeScript("scripts/security/gitleaks.mjs"),
+    args: [],
+  };
+}
+
+/**
+ * @param {VerifyMode} mode Verify mode.
  * @returns {TaskSpec} Bundle build task.
  */
-function createBuildBundleTask() {
+function createBuildBundleTask(mode) {
   return {
     deps: ["types"],
+    env: mode === "pr" ? getPrBuildEnv() : undefined,
     id: "bundle",
     label: "Vite bundle",
     spec: resolvePackageBin("vite"),
     args: ["build"],
+  };
+}
+
+/**
+ * @returns {NodeJS.ProcessEnv} Local-safe Vite env for PR bundle verification.
+ */
+function getPrBuildEnv() {
+  return {
+    VITE_API_URL: process.env.VITE_API_URL ?? "http://localhost:6969/api/v1",
+    VITE_APP_URL: process.env.VITE_APP_URL ?? "http://localhost:3000",
+    VITE_GIPHY_API_KEY: process.env.VITE_GIPHY_API_KEY ?? "ci-giphy-key",
+    VITE_GOOGLE_CLIENT_ID:
+      process.env.VITE_GOOGLE_CLIENT_ID ?? "ci-google-client-id",
+    VITE_GOOGLE_MAPS_API_KEY:
+      process.env.VITE_GOOGLE_MAPS_API_KEY ?? "ci-google-maps-key",
+    VITE_MEDIA_BASE_URL:
+      process.env.VITE_MEDIA_BASE_URL ??
+      "https://mkloz-teamforge.s3.us-east-1.amazonaws.com",
   };
 }
 
@@ -568,7 +605,7 @@ function getVerifyCommandSummary({
     `Total captured task time: ${formatDuration(
       results.reduce((total, result) => total + result.durationMs, 0),
     )}.`,
-    `Report path: \`reports/verify/${mode}.md\``,
+    `Report path: \`reports/verify.md\``,
   ];
 }
 
@@ -673,7 +710,7 @@ function getUsefulCompletionLines(output) {
  * @returns {Promise<void>}
  */
 async function writeReport(mode, results, concurrency) {
-  const reportPath = path.join(ROOT, "reports", "verify", `${mode}.md`);
+  const reportPath = path.join(ROOT, "reports", "verify.md");
 
   await ensureDirectory(path.dirname(reportPath));
   await writeTextFile(reportPath, formatReport(mode, results, concurrency));

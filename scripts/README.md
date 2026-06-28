@@ -9,5 +9,6 @@ folder here.
 - `lint/`: full lint, changed-file linting, Fallow, Knip, and the Vite changed-lint plugin.
 - `pwa/`: production PWA release, environment, QA, and icon generation.
 - `quality/`: Fallow plus React Doctor inspection reports and policy.
+- `security/`: deploy-blocking secret scanning and security reports.
 - `shared/`: reusable command, stage, and report helpers for Node-based scripts.
 - `verify/`: parallel task graph used by `check:*` npm scripts.

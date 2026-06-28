@@ -1,5 +1,4 @@
 import { warnInDevelopment } from "@/shared/lib/development-warning";
-import { recordPwaAppBadgeSync } from "@/shared/lib/pwa-runtime-diagnostics";
 
 interface AppBadgeApi {
   clearAppBadge?: () => Promise<void>;
@@ -57,25 +56,13 @@ function getSyncAppBadgeApi() {
   return hasSyncAppBadgeApi(badgeNavigator) ? badgeNavigator : null;
 }
 
-function getUnreadBadgeSyncReason(badgeCount: number) {
-  if (badgeCount === 0) {
-    return "clear unread notifications";
-  }
-
-  return `set ${badgeCount} unread notification${badgeCount === 1 ? "" : "s"}`;
-}
-
 async function runAppBadgeSync(
-  syncReason: string,
   operation: () => Promise<void>,
   warningMessage: string,
 ) {
   try {
-    recordPwaAppBadgeSync("running", syncReason);
     await operation();
-    recordPwaAppBadgeSync("success", syncReason);
   } catch (error) {
-    recordPwaAppBadgeSync("error", syncReason, error);
     warnInDevelopment(warningMessage, error);
   }
 }
@@ -100,7 +87,6 @@ export async function clearAppBadge() {
   }
 
   await runAppBadgeSync(
-    "clear app badge",
     () => badgeNavigator.clearAppBadge(),
     "TeamForge app badge could not be cleared.",
   );
@@ -114,10 +100,8 @@ export async function syncUnreadAppBadge(unreadCount: number) {
   }
 
   const badgeCount = getAppBadgeCount(unreadCount);
-  const syncReason = getUnreadBadgeSyncReason(badgeCount);
 
   await runAppBadgeSync(
-    syncReason,
     () => applyUnreadAppBadge(badgeNavigator, badgeCount),
     "TeamForge app badge could not be updated.",
   );

@@ -2,6 +2,7 @@
 // @ts-check
 
 import { execFileSync } from "node:child_process";
+import { readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import {
   colorText,
@@ -27,16 +28,20 @@ import {
 
 /**
  * @typedef {{ badge?: string; commandLine?: string; details?: string[]; durationMs: number; name: string; output?: string; status: number; summary: string }} HealthCommandSummary
+ * @typedef {{ bytes: number; filePath: string; lines: number }} FileSizeRow
+ * @typedef {{ largest: FileSizeRow[]; oversized: FileSizeRow[]; scannedFiles: number }} FileSizeSummary
  */
 
 const REPORT_PATH = path.join(ROOT, "reports", "agent-health.md");
 const QUALITY_SUMMARY_PATH = path.join(
   ROOT,
-  "reports",
-  "quality-intelligence",
-  "summary.json",
+  "temp",
+  "quality-intelligence-summary.json",
 );
 const numberFormatter = new Intl.NumberFormat("en-US");
+const FILE_SIZE_LINE_LIMIT = 500;
+const FILE_SIZE_BYTE_LIMIT = 60 * 1024;
+const FILE_SIZE_DISPLAY_LIMIT = 12;
 
 /**
  * @param {string[]} args Git arguments.
@@ -68,6 +73,112 @@ function getGitSummary() {
     mergeBase,
     status,
   };
+}
+
+/**
+ * @returns {FileSizeSummary} File size health summary.
+ */
+function getFileSizeSummary() {
+  const rows = git(["ls-files"])
+    .split(/\r?\n/u)
+    .filter(isFileSizeScanTarget)
+    .map(readFileSizeRow)
+    .filter((row) => row !== null);
+  const largest = [...rows]
+    .toSorted(compareFileSizeRows)
+    .slice(0, FILE_SIZE_DISPLAY_LIMIT);
+  const oversized = rows
+    .filter(
+      (row) =>
+        row.lines >= FILE_SIZE_LINE_LIMIT || row.bytes >= FILE_SIZE_BYTE_LIMIT,
+    )
+    .toSorted(compareOversizedFileRows);
+
+  return {
+    largest,
+    oversized,
+    scannedFiles: rows.length,
+  };
+}
+
+/**
+ * @param {string} filePath Repo-relative file path.
+ * @returns {boolean} Whether the file should be included in file-size health.
+ */
+function isFileSizeScanTarget(filePath) {
+  if (
+    filePath.startsWith(".agents/") ||
+    filePath.startsWith("docs/open-api.") ||
+    filePath.startsWith("public/icons/") ||
+    filePath === "package-lock.json"
+  ) {
+    return false;
+  }
+
+  return /\.(?:[cm]?[jt]sx?|css|md|json|ya?ml)$/iu.test(filePath);
+}
+
+/**
+ * @param {string} filePath Repo-relative file path.
+ * @returns {FileSizeRow | null} File-size row when readable.
+ */
+function readFileSizeRow(filePath) {
+  try {
+    const absolutePath = path.join(ROOT, filePath);
+    const content = readFileSync(absolutePath, "utf8");
+
+    return {
+      bytes: statSync(absolutePath).size,
+      filePath,
+      lines: countLines(content),
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @param {string} content File content.
+ * @returns {number} Line count.
+ */
+function countLines(content) {
+  return content ? content.split(/\r?\n/u).length : 0;
+}
+
+/**
+ * @param {FileSizeRow} left Left row.
+ * @param {FileSizeRow} right Right row.
+ * @returns {number} Sort order.
+ */
+function compareFileSizeRows(left, right) {
+  return (
+    right.lines - left.lines ||
+    right.bytes - left.bytes ||
+    left.filePath.localeCompare(right.filePath)
+  );
+}
+
+/**
+ * @param {FileSizeRow} left Left row.
+ * @param {FileSizeRow} right Right row.
+ * @returns {number} Sort order.
+ */
+function compareOversizedFileRows(left, right) {
+  return (
+    getOversizeRatio(right) - getOversizeRatio(left) ||
+    compareFileSizeRows(left, right)
+  );
+}
+
+/**
+ * @param {FileSizeRow} row File-size row.
+ * @returns {number} Maximum threshold ratio.
+ */
+function getOversizeRatio(row) {
+  return Math.max(
+    row.lines / FILE_SIZE_LINE_LIMIT,
+    row.bytes / FILE_SIZE_BYTE_LIMIT,
+  );
 }
 
 /**
@@ -289,6 +400,22 @@ function formatNumber(value) {
 }
 
 /**
+ * @param {number} bytes Byte count.
+ * @returns {string} Human-readable file size.
+ */
+function formatBytes(bytes) {
+  if (bytes < 1024) {
+    return `${formatNumber(bytes)} B`;
+  }
+
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KiB`;
+  }
+
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
+}
+
+/**
  * @param {unknown} value Candidate metadata.
  * @returns {value is { vulnerabilities: Record<string, number> }} Whether this is audit metadata.
  */
@@ -332,12 +459,14 @@ function summarizeCommand(
 /**
  * @param {ReturnType<typeof getGitSummary>} gitSummary Git summary.
  * @param {HealthCommandSummary[]} commandSummaries Command summaries.
+ * @param {FileSizeSummary} fileSizeSummary File-size summary.
  * @returns {string} Markdown report.
  */
-function formatReport(gitSummary, commandSummaries) {
-  const needsReview = commandSummaries.some(
-    (summary) => summary.status !== 0 || summary.badge === "review",
-  );
+function formatReport(gitSummary, commandSummaries, fileSizeSummary) {
+  const needsReview =
+    commandSummaries.some(
+      (summary) => summary.status !== 0 || summary.badge === "review",
+    ) || fileSizeSummary.oversized.length > 0;
 
   return [
     "# Agent Health",
@@ -370,12 +499,47 @@ function formatReport(gitSummary, commandSummaries) {
     "",
     commandSummaries.map(formatCommandDetail).join("\n\n"),
     "",
+    "## File Size Health",
+    "",
+    renderMarkdownBullets([
+      `Scanned files: ${formatNumber(fileSizeSummary.scannedFiles)}`,
+      `Oversized files: ${formatNumber(
+        fileSizeSummary.oversized.length,
+      )} at or above ${formatNumber(FILE_SIZE_LINE_LIMIT)} lines or ${formatBytes(
+        FILE_SIZE_BYTE_LIMIT,
+      )}.`,
+    ]),
+    "",
+    fileSizeSummary.oversized.length === 0
+      ? "No oversized source files found."
+      : renderMarkdownTable(
+          ["File", "Lines", "Size"],
+          fileSizeSummary.oversized
+            .slice(0, FILE_SIZE_DISPLAY_LIMIT)
+            .map((row) => [
+              row.filePath,
+              formatNumber(row.lines),
+              formatBytes(row.bytes),
+            ]),
+        ),
+    "",
+    "Largest tracked source/script files:",
+    "",
+    renderMarkdownTable(
+      ["File", "Lines", "Size"],
+      fileSizeSummary.largest.map((row) => [
+        row.filePath,
+        formatNumber(row.lines),
+        formatBytes(row.bytes),
+      ]),
+    ),
+    "",
     "## Related Reports",
     "",
     renderMarkdownBullets([
-      "`reports/quality-intelligence/index.md`: detailed Fallow and React Doctor correlation report.",
-      "`reports/quality-intelligence/summary.json`: machine-readable quality metrics consumed by agent health.",
-      "`reports/react-doctor/index.md`: detailed React Doctor diagnostics when diagnostics exist.",
+      "`reports/quality-intelligence.md`: detailed Fallow and React Doctor correlation report.",
+      "`temp/quality-intelligence-summary.json`: machine-readable quality metrics consumed by agent health.",
+      "`reports/react-doctor.md`: detailed React Doctor diagnostics when diagnostics exist.",
     ]),
     "",
     "## Changed Files",
@@ -387,7 +551,12 @@ function formatReport(gitSummary, commandSummaries) {
     "## Command Execution Summary",
     "",
     renderMarkdownBullets(
-      getAgentHealthCommandSummary(gitSummary, commandSummaries, needsReview),
+      getAgentHealthCommandSummary(
+        gitSummary,
+        commandSummaries,
+        needsReview,
+        fileSizeSummary,
+      ),
     ),
     "",
   ].join("\n");
@@ -438,12 +607,14 @@ function renderMarkdownBullets(items) {
  * @param {ReturnType<typeof getGitSummary>} gitSummary Git summary.
  * @param {HealthCommandSummary[]} commandSummaries Command summaries.
  * @param {boolean} needsReview Whether the run has review signals.
+ * @param {FileSizeSummary} fileSizeSummary File-size summary.
  * @returns {string[]} Command execution summary bullets.
  */
 function getAgentHealthCommandSummary(
   gitSummary,
   commandSummaries,
   needsReview,
+  fileSizeSummary,
 ) {
   const failedCommands = commandSummaries.filter(
     (summary) => summary.status !== 0,
@@ -457,6 +628,9 @@ function getAgentHealthCommandSummary(
     `Branch: ${gitSummary.branch}; changed files: ${formatNumber(
       gitSummary.changed,
     )}.`,
+    `File size scan: ${formatNumber(fileSizeSummary.scannedFiles)} files scanned; ${formatNumber(
+      fileSizeSummary.oversized.length,
+    )} oversized.`,
     `Report path: \`${toRepoRelativePath(REPORT_PATH)}\``,
   ];
 }
@@ -464,11 +638,13 @@ function getAgentHealthCommandSummary(
 /**
  * @param {ReturnType<typeof getGitSummary>} gitSummary Git summary.
  * @param {HealthCommandSummary[]} commandSummaries Command summaries.
+ * @param {FileSizeSummary} fileSizeSummary File-size summary.
  */
-function printSummary(gitSummary, commandSummaries) {
-  const needsReview = commandSummaries.some(
-    (summary) => summary.status !== 0 || summary.badge === "review",
-  );
+function printSummary(gitSummary, commandSummaries, fileSizeSummary) {
+  const needsReview =
+    commandSummaries.some(
+      (summary) => summary.status !== 0 || summary.badge === "review",
+    ) || fileSizeSummary.oversized.length > 0;
 
   process.stdout.write(`${sectionTitle("Agent Health")}\n`);
   process.stdout.write(
@@ -478,6 +654,13 @@ function printSummary(gitSummary, commandSummaries) {
     `${renderKeyValues([
       { label: "Changed files", value: formatNumber(gitSummary.changed) },
       { label: "Merge base", value: gitSummary.mergeBase },
+      {
+        label: "Oversized files",
+        tone: fileSizeSummary.oversized.length > 0 ? "warning" : "success",
+        value: `${formatNumber(fileSizeSummary.oversized.length)} of ${formatNumber(
+          fileSizeSummary.scannedFiles,
+        )} scanned`,
+      },
     ])}\n\n`,
   );
 
@@ -501,6 +684,25 @@ function printSummary(gitSummary, commandSummaries) {
     process.stdout.write(`${renderBullets(gitSummary.status, 8)}\n`);
   }
 
+  if (fileSizeSummary.oversized.length > 0) {
+    process.stdout.write(
+      `\n${colorText("Largest oversized files", "accent")}\n`,
+    );
+    process.stdout.write(
+      `${renderBullets(
+        fileSizeSummary.oversized
+          .slice(0, 8)
+          .map(
+            (row) =>
+              `${row.filePath} (${formatNumber(row.lines)} lines, ${formatBytes(
+                row.bytes,
+              )})`,
+          ),
+        8,
+      )}\n`,
+    );
+  }
+
   process.stdout.write(
     `\n${colorText("Report", "accent")}\n  - ${toRepoRelativePath(REPORT_PATH)}\n`,
   );
@@ -513,6 +715,7 @@ function printSummary(gitSummary, commandSummaries) {
  */
 async function main() {
   const gitSummary = getGitSummary();
+  const fileSizeSummary = getFileSizeSummary();
   const commandSummaries = await Promise.all([
     runQualityIntelligence(),
     runArchitectureSummary(),
@@ -520,8 +723,11 @@ async function main() {
     runAuditSummary(),
   ]);
 
-  await writeTextFile(REPORT_PATH, formatReport(gitSummary, commandSummaries));
-  printSummary(gitSummary, commandSummaries);
+  await writeTextFile(
+    REPORT_PATH,
+    formatReport(gitSummary, commandSummaries, fileSizeSummary),
+  );
+  printSummary(gitSummary, commandSummaries, fileSizeSummary);
 }
 
 main().catch((error) => {

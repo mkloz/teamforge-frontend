@@ -65,21 +65,21 @@ TeamForge follows a decoupled architecture with a React-based frontend (this rep
 
 ### Technology Stack
 
-| Layer | Technology | Version | Purpose |
-|-------|------------|---------|---------|
-| Framework | React | 19.2 | UI rendering |
-| Language | TypeScript | 5.9 | Type safety |
-| Build | Vite | 7.x | Development and bundling |
-| Routing | TanStack Router | 1.x | Manual route tree in `src/router.tsx` |
-| URL State | nuqs | 2.x | URL-backed UI state |
-| Server State | TanStack Query | 5.x | API data fetching and caching |
-| Client State | Zustand | 5.x | UI state management |
-| Forms | React Hook Form + Zod | 7.x / 4.x | Form handling and validation |
-| Styling | Tailwind CSS | 4.x | Utility-first CSS |
-| Components | shadcn/ui + Radix | - | Accessible UI primitives |
-| HTTP | ky | 1.x | HTTP client with interceptors |
-| Realtime | Socket.IO client | 4.x | Live chat, plan, group, and notification events |
-| Animation | Framer Motion | 12.x | Motion and transitions |
+| Layer        | Technology            | Version   | Purpose                                         |
+| ------------ | --------------------- | --------- | ----------------------------------------------- |
+| Framework    | React                 | 19.2      | UI rendering                                    |
+| Language     | TypeScript            | 5.9       | Type safety                                     |
+| Build        | Vite                  | 7.x       | Development and bundling                        |
+| Routing      | TanStack Router       | 1.x       | Manual route tree in `src/router.tsx`           |
+| URL State    | nuqs                  | 2.x       | URL-backed UI state                             |
+| Server State | TanStack Query        | 5.x       | API data fetching and caching                   |
+| Client State | Zustand               | 5.x       | UI state management                             |
+| Forms        | React Hook Form + Zod | 7.x / 4.x | Form handling and validation                    |
+| Styling      | Tailwind CSS          | 4.x       | Utility-first CSS                               |
+| Components   | shadcn/ui + Radix     | -         | Accessible UI primitives                        |
+| HTTP         | ky                    | 1.x       | HTTP client with interceptors                   |
+| Realtime     | Socket.IO client      | 4.x       | Live chat, plan, group, and notification events |
+| Animation    | Framer Motion         | 12.x      | Motion and transitions                          |
 
 ### Directory Structure
 
@@ -139,6 +139,7 @@ src/features/<feature-name>/
 ```
 
 **Rules:**
+
 - All feature code is co-located within its feature directory
 - No cross-feature imports of internal modules
 - Shared code goes in `src/shared/`
@@ -161,34 +162,34 @@ src/features/<feature-name>/
 
 ### State Categories
 
-| Category | Tool | Location | Example |
-|----------|------|----------|---------|
-| Server data | TanStack Query | Feature hooks | User profile, groups, messages |
-| UI state (shared) | Zustand | Feature stores | Forge wizard step, selected filters |
-| Form state | React Hook Form | Component | Registration form, plan editor |
-| Local ephemeral | useState/useReducer | Component | Dropdown open state |
+| Category          | Tool                | Location       | Example                             |
+| ----------------- | ------------------- | -------------- | ----------------------------------- |
+| Server data       | TanStack Query      | Feature hooks  | User profile, groups, messages      |
+| UI state (shared) | Zustand             | Feature stores | Forge wizard step, selected filters |
+| Form state        | React Hook Form     | Component      | Registration form, plan editor      |
+| Local ephemeral   | useState/useReducer | Component      | Dropdown open state                 |
 
 ### TanStack Query Patterns
 
 ```typescript
 // Query key convention: [entity, identifier, ...params]
-const queryKey = ['groups', groupId, 'messages'];
+const queryKey = ["groups", groupId, "messages"];
 
 // Mutation with optimistic updates
 const mutation = useMutation({
-  mutationFn: sendMessage,
-  onMutate: async (newMessage) => {
-    await queryClient.cancelQueries({ queryKey });
-    const previous = queryClient.getQueryData(queryKey);
-    queryClient.setQueryData(queryKey, (old) => [...old, newMessage]);
-    return { previous };
-  },
-  onError: (err, newMessage, context) => {
-    queryClient.setQueryData(queryKey, context.previous);
-  },
-  onSettled: () => {
-    queryClient.invalidateQueries({ queryKey });
-  },
+    mutationFn: sendMessage,
+    onMutate: async (newMessage) => {
+        await queryClient.cancelQueries({ queryKey });
+        const previous = queryClient.getQueryData(queryKey);
+        queryClient.setQueryData(queryKey, (old) => [...old, newMessage]);
+        return { previous };
+    },
+    onError: (err, newMessage, context) => {
+        queryClient.setQueryData(queryKey, context.previous);
+    },
+    onSettled: () => {
+        queryClient.invalidateQueries({ queryKey });
+    },
 });
 ```
 
@@ -196,33 +197,33 @@ const mutation = useMutation({
 
 Social mutations update more than one route surface. Keep these query-key groups in sync when changing related behavior:
 
-| Flow | Caches to refresh |
-|------|-------------------|
-| Accept group invite or join open group | Home groups, home plans, home stats, explore groups, Activity groups, Activity chats, group selection |
-| Send group invite | Home sent invitations, home received invitations, notifications, unread count |
-| Group leave, removal, disband, or `group.updated` realtime | Activity groups, Activity chats, group selection, home groups, home plans, home stats |
-| Accept friend request or receive `FRIEND_ACCEPTED` notification | Explore friend requests, Activity friendships, Activity chats, direct selection |
-| Block or unblock user | Settings blocked users, Activity friendships, Activity chats, direct selection |
-| Submit group rating | Activity ratings for that group |
+| Flow                                                            | Caches to refresh                                                                                     |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Accept group invite or join open group                          | Home groups, home plans, home stats, explore groups, Activity groups, Activity chats, group selection |
+| Send group invite                                               | Home sent invitations, home received invitations, notifications, unread count                         |
+| Group leave, removal, disband, or `group.updated` realtime      | Activity groups, Activity chats, group selection, home groups, home plans, home stats                 |
+| Accept friend request or receive `FRIEND_ACCEPTED` notification | Explore friend requests, Activity friendships, Activity chats, direct selection                       |
+| Block or unblock user                                           | Settings blocked users, Activity friendships, Activity chats, direct selection                        |
+| Submit group rating                                             | Activity ratings for that group                                                                       |
 
 ### Zustand Store Pattern
 
 ```typescript
 // Feature store with TypeScript
 interface ForgeStore {
-  step: number;
-  activity: Activity | null;
-  setStep: (step: number) => void;
-  setActivity: (activity: Activity) => void;
-  reset: () => void;
+    step: number;
+    activity: Activity | null;
+    setStep: (step: number) => void;
+    setActivity: (activity: Activity) => void;
+    reset: () => void;
 }
 
 export const useForgeStore = create<ForgeStore>((set) => ({
-  step: 0,
-  activity: null,
-  setStep: (step) => set({ step }),
-  setActivity: (activity) => set({ activity }),
-  reset: () => set({ step: 0, activity: null }),
+    step: 0,
+    activity: null,
+    setStep: (step) => set({ step }),
+    setActivity: (activity) => set({ activity }),
+    reset: () => set({ step: 0, activity: null }),
 }));
 ```
 
@@ -232,30 +233,30 @@ export const useForgeStore = create<ForgeStore>((set) => ({
 
 ### Route Structure
 
-| Route | Component | Auth Required | Layout |
-|-------|-----------|---------------|--------|
-| `/` | LandingPage | No | Full-page |
-| `/download` | DownloadPage | No | Full-page |
-| `/privacy` | LegalPage | No | Full-page |
-| `/terms` | LegalPage | No | Full-page |
-| `/auth` | Redirect to login | No | Full-page |
-| `/auth/login` | LoginPage | No | Full-page |
-| `/auth/register` | RegisterPage | No | Full-page |
-| `/auth/forgot-password` | ForgotPasswordPage | No | Full-page |
-| `/auth/reset-password/$token` | ResetPasswordPage | No | Full-page |
-| `/auth/activate/$token` | ActivateAccountPage | No | Full-page |
-| `/onboarding/profile` | ProfileBasicsPage | Yes | Full-page |
-| `/onboarding/personality` | PersonalityTestPage | Yes | Full-page |
-| `/onboarding/interests` | InterestsPage | Yes | Full-page |
-| `/home` | HomePage | Yes | App Shell |
-| `/explore` | ExplorePage | Yes | App Shell |
-| `/groups/$groupId` | GroupPlanDetailPage | Yes | App Shell |
-| `/activity` | ActivityPage | Yes | App Shell |
-| `/profile` | ProfilePage | Yes | App Shell |
-| `/users/$userId` | UserDetailPage | Yes | App Shell |
-| `/settings` | SettingsPage | Yes | App Shell |
-| `/forge` | ForgePage | Yes | App Shell |
-| `/design-system/icon-notice-variants` | IconNoticeVariantsPage | No | Dev-only full-page |
+| Route                                 | Component              | Auth Required | Layout             |
+| ------------------------------------- | ---------------------- | ------------- | ------------------ |
+| `/`                                   | LandingPage            | No            | Full-page          |
+| `/download`                           | DownloadPage           | No            | Full-page          |
+| `/privacy`                            | LegalPage              | No            | Full-page          |
+| `/terms`                              | LegalPage              | No            | Full-page          |
+| `/auth`                               | Redirect to login      | No            | Full-page          |
+| `/auth/login`                         | LoginPage              | No            | Full-page          |
+| `/auth/register`                      | RegisterPage           | No            | Full-page          |
+| `/auth/forgot-password`               | ForgotPasswordPage     | No            | Full-page          |
+| `/auth/reset-password/$token`         | ResetPasswordPage      | No            | Full-page          |
+| `/auth/activate/$token`               | ActivateAccountPage    | No            | Full-page          |
+| `/onboarding/profile`                 | ProfileBasicsPage      | Yes           | Full-page          |
+| `/onboarding/personality`             | PersonalityTestPage    | Yes           | Full-page          |
+| `/onboarding/interests`               | InterestsPage          | Yes           | Full-page          |
+| `/home`                               | HomePage               | Yes           | App Shell          |
+| `/explore`                            | ExplorePage            | Yes           | App Shell          |
+| `/groups/$groupId`                    | GroupPlanDetailPage    | Yes           | App Shell          |
+| `/activity`                           | ActivityPage           | Yes           | App Shell          |
+| `/profile`                            | ProfilePage            | Yes           | App Shell          |
+| `/users/$userId`                      | UserDetailPage         | Yes           | App Shell          |
+| `/settings`                           | SettingsPage           | Yes           | App Shell          |
+| `/forge`                              | ForgePage              | Yes           | App Shell          |
+| `/design-system/icon-notice-variants` | IconNoticeVariantsPage | No            | Dev-only full-page |
 
 ### App Shell Layout
 
@@ -292,18 +293,18 @@ The authenticated app uses a consistent shell:
 
 ```typescript
 // src/shared/api/api.ts
-import ky from 'ky';
+import ky from "ky";
 
 export const apiClient = ky.create({
-  prefixUrl: import.meta.env.VITE_API_URL,
-  credentials: 'include',
-  cache: 'no-store',
-  timeout: 15_000,
-  hooks: {
-    beforeRequest: [attachAccessOrRefreshToken],
-    afterResponse: [refreshAndRetryUnauthorizedRequest],
-    beforeError: [parseApiError],
-  },
+    prefixUrl: import.meta.env.VITE_API_URL,
+    credentials: "include",
+    cache: "no-store",
+    timeout: 15_000,
+    hooks: {
+        beforeRequest: [attachAccessOrRefreshToken],
+        afterResponse: [refreshAndRetryUnauthorizedRequest],
+        beforeError: [parseApiError],
+    },
 });
 ```
 
@@ -334,16 +335,16 @@ export const apiClient = ky.create({
 
 ### Service Boundaries
 
-| Service | Responsibility |
-|---------|----------------|
-| **Auth Service** | Registration, login, OAuth, JWT, sessions, OTP |
-| **User Service** | Profile CRUD, interests, search status |
-| **Matching Service** | Forge algorithm, compatibility scoring |
-| **Group Service** | Group CRUD, membership, invites |
-| **Plan Service** | Plan CRUD, proposals, voting, comments |
-| **Chat Service** | Messages, reactions, attachments, read status |
-| **Trust Service** | Rating aggregation, trust score calculation |
-| **Notification Service** | Push, in-app, email notifications |
+| Service                  | Responsibility                                 |
+| ------------------------ | ---------------------------------------------- |
+| **Auth Service**         | Registration, login, OAuth, JWT, sessions, OTP |
+| **User Service**         | Profile CRUD, interests, search status         |
+| **Matching Service**     | Forge algorithm, compatibility scoring         |
+| **Group Service**        | Group CRUD, membership, invites                |
+| **Plan Service**         | Plan CRUD, proposals, voting, comments         |
+| **Chat Service**         | Messages, reactions, attachments, read status  |
+| **Trust Service**        | Rating aggregation, trust score calculation    |
+| **Notification Service** | Push, in-app, email notifications              |
 
 ### Database Schema (Prisma)
 
@@ -376,7 +377,7 @@ User ─────────────────────────
 ### Scoring Formula
 
 ```
-compatibility_score = 
+compatibility_score =
     w1 * interest_similarity(user_a, user_b) +
     w2 * social_graph_proximity(user_a, user_b) +
     w3 * age_alignment(user_a, user_b) +
@@ -386,13 +387,13 @@ compatibility_score =
 
 ### Weight Distribution (Example)
 
-| Factor | Weight | Notes |
-|--------|--------|-------|
-| Interest similarity | 0.30 | Jaccard similarity on interest sets |
-| Social graph | 0.25 | Mutual friends, friend-of-friend bonus |
-| Age alignment | 0.15 | Gaussian decay from target age |
-| Trust score | 0.20 | Average trust of both users |
-| Location | 0.10 | Distance-based decay |
+| Factor              | Weight | Notes                                  |
+| ------------------- | ------ | -------------------------------------- |
+| Interest similarity | 0.30   | Jaccard similarity on interest sets    |
+| Social graph        | 0.25   | Mutual friends, friend-of-friend bonus |
+| Age alignment       | 0.15   | Gaussian decay from target age         |
+| Trust score         | 0.20   | Average trust of both users            |
+| Location            | 0.10   | Distance-based decay                   |
 
 ### Group Formation Process
 
@@ -423,19 +424,20 @@ new_trust = α * recent_rating + (1 - α) * previous_trust
 ```
 
 Where:
+
 - `α` = 0.2 (smoothing factor)
 - Ratings are 1-5, normalized to 0-1
 - Initial trust = 0.5
 
 ### Trust Impact
 
-| Trust Level | Effect |
-|-------------|--------|
-| 0.0 - 0.3 | Low priority in matching, warning displayed |
-| 0.3 - 0.5 | Normal matching, no special treatment |
-| 0.5 - 0.7 | Slight priority boost |
-| 0.7 - 0.9 | High priority, trusted badge |
-| 0.9 - 1.0 | Premium matching status |
+| Trust Level | Effect                                      |
+| ----------- | ------------------------------------------- |
+| 0.0 - 0.3   | Low priority in matching, warning displayed |
+| 0.3 - 0.5   | Normal matching, no special treatment       |
+| 0.5 - 0.7   | Slight priority boost                       |
+| 0.7 - 0.9   | High priority, trusted badge                |
+| 0.9 - 1.0   | Premium matching status                     |
 
 ---
 
@@ -467,22 +469,22 @@ Where:
 
 ### Frontend
 
-| Technique | Implementation |
-|-----------|----------------|
-| Code splitting | Lazy-loaded route pages |
-| Bundle optimization | Vite tree-shaking |
-| Image optimization | Lazy loading, proper sizing |
-| Query caching | TanStack Query stale-while-revalidate |
-| Virtual scrolling | For long message lists |
+| Technique           | Implementation                        |
+| ------------------- | ------------------------------------- |
+| Code splitting      | Lazy-loaded route pages               |
+| Bundle optimization | Vite tree-shaking                     |
+| Image optimization  | Lazy loading, proper sizing           |
+| Query caching       | TanStack Query stale-while-revalidate |
+| Virtual scrolling   | For long message lists                |
 
 ### API
 
-| Technique | Implementation |
-|-----------|----------------|
-| Pagination | Cursor-based for messages |
-| Caching | Redis for hot data |
-| Indexing | PostgreSQL indexes on frequent queries |
-| Batch operations | Bulk notification updates |
+| Technique        | Implementation                         |
+| ---------------- | -------------------------------------- |
+| Pagination       | Cursor-based for messages              |
+| Caching          | Redis for hot data                     |
+| Indexing         | PostgreSQL indexes on frequent queries |
+| Batch operations | Bulk notification updates              |
 
 ---
 
@@ -516,14 +518,14 @@ npm run build
 
 ### Environment Variables
 
-| Variable | Purpose |
-|----------|---------|
-| `VITE_APP_URL` | Public frontend base URL for canonical metadata, generated public files, and share links |
-| `VITE_API_URL` | Backend REST API base URL, including `/api/v1` |
-| `VITE_MEDIA_BASE_URL` | Public media asset base URL for seed/template imagery |
-| `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID |
-| `VITE_GOOGLE_MAPS_API_KEY` | Google Maps key for location autocomplete |
-| `VITE_GIPHY_API_KEY` | Giphy Web SDK key for chat GIF search |
+| Variable                   | Purpose                                                                                  |
+| -------------------------- | ---------------------------------------------------------------------------------------- |
+| `VITE_APP_URL`             | Public frontend base URL for canonical metadata, generated public files, and share links |
+| `VITE_API_URL`             | Backend REST API base URL, including `/api/v1`                                           |
+| `VITE_MEDIA_BASE_URL`      | Public media asset base URL for seed/template imagery                                    |
+| `VITE_GOOGLE_CLIENT_ID`    | Google OAuth client ID                                                                   |
+| `VITE_GOOGLE_MAPS_API_KEY` | Google Maps key for location autocomplete                                                |
+| `VITE_GIPHY_API_KEY`       | Giphy Web SDK key for chat GIF search                                                    |
 
 Local development uses `VITE_APP_URL=http://localhost:3000` and
 `VITE_API_URL=http://localhost:6969/api/v1`. Production uses public browser
@@ -550,4 +552,4 @@ and runs the PWA QA pass against `dist/`.
 
 ---
 
-*For product vision, see `product-vision.md`. For feature specifications, see `feature-specifications.md`.*
+_For product vision, see `product-vision.md`. For feature specifications, see `feature-specifications.md`._

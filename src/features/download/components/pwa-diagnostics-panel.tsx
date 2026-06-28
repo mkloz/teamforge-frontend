@@ -21,7 +21,6 @@ import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
 import { useServiceWorkerDiagnostics } from "@/shared/hooks/use-service-worker-diagnostics";
 import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
-import { recordPwaServiceWorkerUpdate } from "@/shared/lib/pwa-runtime-diagnostics";
 import { trackPwaServiceWorkerUpdateCheck } from "@/shared/lib/pwa-telemetry";
 import { cn } from "@/shared/lib/utils";
 
@@ -486,11 +485,9 @@ function trackDiagnosticsRefreshStarted(
     source: "download-diagnostics",
     status: "started",
   });
-  recordPwaServiceWorkerUpdate("running", "manual update check");
 }
 
 function trackDiagnosticsRefreshError() {
-  recordPwaServiceWorkerUpdate("error", "manual update check");
   trackPwaServiceWorkerUpdateCheck({
     source: "download-diagnostics",
     status: "error",
@@ -542,19 +539,15 @@ export function PwaDiagnosticsPanel() {
       }
 
       if (serviceWorkerResult.value.status === "error") {
-        recordPwaServiceWorkerUpdate("error", "manual update check");
+        trackDiagnosticsRefreshError();
       } else {
-        recordPwaServiceWorkerUpdate(
-          "success",
-          `manual check: ${serviceWorkerResult.value.status}`,
-        );
+        trackPwaServiceWorkerUpdateCheck({
+          isControlled: serviceWorkerResult.value.isControlled,
+          serviceWorkerStatus: serviceWorkerResult.value.status,
+          source: "download-diagnostics",
+          status: "success",
+        });
       }
-      trackPwaServiceWorkerUpdateCheck({
-        isControlled: serviceWorkerResult.value.isControlled,
-        serviceWorkerStatus: serviceWorkerResult.value.status,
-        source: "download-diagnostics",
-        status: "success",
-      });
     } finally {
       setIsRefreshing(false);
     }

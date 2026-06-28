@@ -58,7 +58,7 @@ function parseProfile(argv) {
  * @returns {string} Report root.
  */
 function getDefaultOutputRoot(profile) {
-  return path.join(cwd, "reports", `browser-audit-${profile}-${todayStamp()}`);
+  return path.join(cwd, "temp", `browser-audit-${profile}-${todayStamp()}`);
 }
 
 /**
@@ -75,6 +75,7 @@ function getBrowserAuditDefaults(profile) {
     AUDIT_LIGHTHOUSE_CATEGORIES: "performance,accessibility,best-practices,seo",
     AUDIT_LIGHTHOUSE_ROUTE_SLUGS: lighthouseRouteSlugsByProfile[profile],
     AUDIT_OUTPUT_ROOT: getDefaultOutputRoot(profile),
+    AUDIT_PIPELINE_REPORT_PATH: path.join(cwd, "reports", "browser-audit.md"),
     AUDIT_PLAYWRIGHT_LANES: "route-health,accessibility",
     AUDIT_PLAYWRIGHT_ROUTE_SET: "authenticated",
     AUDIT_RUN_LIGHTHOUSE: "true",

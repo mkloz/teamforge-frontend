@@ -14,7 +14,6 @@ import {
   clearPwaInstallPrompt,
   setPwaInstallPrompt,
 } from "@/shared/lib/pwa-install-prompt";
-import { recordPwaServiceWorkerUpdate } from "@/shared/lib/pwa-runtime-diagnostics";
 import {
   trackPwaAppInstalled,
   trackPwaInstallPromptAvailable,
@@ -130,7 +129,6 @@ function registerPwaServiceWorker() {
   updateServiceWorker = registerSW({
     immediate: true,
     onNeedRefresh() {
-      recordPwaServiceWorkerUpdate("success", "update waiting");
       trackPwaServiceWorkerUpdateReady({ source: "runtime" });
 
       void import("@/shared/lib/app-toast").then(({ showAppInfoToast }) => {
@@ -143,7 +141,6 @@ function registerPwaServiceWorker() {
             label: <RefreshToastActionLabel />,
             onClick: () => {
               hasRequestedPwaUpdateReload = true;
-              recordPwaServiceWorkerUpdate("running", "update requested");
 
               showAppInfoToast("Updating TeamForge...", {
                 description:
@@ -156,20 +153,11 @@ function registerPwaServiceWorker() {
 
               if (!updatePromise) {
                 hasRequestedPwaUpdateReload = false;
-                recordPwaServiceWorkerUpdate(
-                  "error",
-                  "update helper unavailable",
-                );
                 return;
               }
 
               void updatePromise.catch((error: unknown) => {
                 hasRequestedPwaUpdateReload = false;
-                recordPwaServiceWorkerUpdate(
-                  "error",
-                  "update requested",
-                  error,
-                );
                 warnInDevelopment("PWA service worker update failed.", error);
 
                 void import("@/shared/lib/app-toast").then(
@@ -196,8 +184,6 @@ function registerPwaServiceWorker() {
       });
     },
     onNeedReload() {
-      recordPwaServiceWorkerUpdate("success", "new version active");
-
       if (hasRequestedPwaUpdateReload) {
         reloadForPwaUpdate();
         return;

@@ -6,7 +6,7 @@ import {
 } from "@testing-library/react";
 import type { ReactElement, ReactNode } from "react";
 
-export function createTestQueryClient() {
+function createTestQueryClient() {
   return new QueryClient({
     defaultOptions: {
       mutations: {

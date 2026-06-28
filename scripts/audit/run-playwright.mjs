@@ -1153,7 +1153,7 @@ async function main() {
   const refreshCookieName = getRefreshCookieName();
   const outputDir =
     process.env.AUDIT_PLAYWRIGHT_OUTPUT_DIR ??
-    path.join(cwd, "reports", `playwright-audit-${todayStamp()}`);
+    path.join(cwd, "temp", `playwright-audit-${todayStamp()}`);
   const keepTokenFile = process.env.AUDIT_KEEP_TOKEN_FILE === "true";
   const lanes = getPlaywrightLanes();
   const routeSet = getPlaywrightRouteSet();

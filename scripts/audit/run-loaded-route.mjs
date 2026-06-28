@@ -1246,7 +1246,7 @@ function getLoadedAuditOutputDir() {
   return (
     process.env.LOADED_AUDIT_OUTPUT_DIR ??
     process.env.AUDIT_LOADED_OUTPUT_DIR ??
-    path.join(cwd, "reports", `loaded-route-audit-${todayStamp()}`)
+    path.join(cwd, "temp", `loaded-route-audit-${todayStamp()}`)
   );
 }
 

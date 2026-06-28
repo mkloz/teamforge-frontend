@@ -139,17 +139,17 @@ npm run pwa:release
 
 Follow `docs/visual-style-guide.md`. Key enforced rules:
 
-| Token | Light | Dark | Use |
-| --- | --- | --- | --- |
-| `--color-forge-teal` | `#0D9488` | `#0D9488` | Brand teal, active states, icons, progress, selected states |
-| `--primary` | `#0F766E` | `#0D9488` | Solid semantic primary surfaces where text contrast matters |
-| `--color-spark-amber` / `--accent` | `#F59E0B` | `#FBBF24` | Trust scores, notifications, highlights |
-| `--background` | `#F1F4F1` | `#0B0F0E` | Body background and floating navigation bases |
-| `--color-canvas` | `#F7F8F4` | `#111716` | Main page and long-session reading surfaces |
-| `--card` / `--popover` | `#FFFEFA` | `#18201E` | Cards, menus, dialogs, elevated panels |
-| `--input` | `#EEF2ED` | `#202927` | Text fields, selects, radios, tactile controls |
-| `--color-ink` | `#1C1F1D` | `#F2F5F1` | Headings and body text |
-| `--color-slate-muted` | `#68756F` | `#A4B2AC` | Secondary text, captions, placeholders |
+| Token                              | Light     | Dark      | Use                                                         |
+| ---------------------------------- | --------- | --------- | ----------------------------------------------------------- |
+| `--color-forge-teal`               | `#0D9488` | `#0D9488` | Brand teal, active states, icons, progress, selected states |
+| `--primary`                        | `#0F766E` | `#0D9488` | Solid semantic primary surfaces where text contrast matters |
+| `--color-spark-amber` / `--accent` | `#F59E0B` | `#FBBF24` | Trust scores, notifications, highlights                     |
+| `--background`                     | `#F1F4F1` | `#0B0F0E` | Body background and floating navigation bases               |
+| `--color-canvas`                   | `#F7F8F4` | `#111716` | Main page and long-session reading surfaces                 |
+| `--card` / `--popover`             | `#FFFEFA` | `#18201E` | Cards, menus, dialogs, elevated panels                      |
+| `--input`                          | `#EEF2ED` | `#202927` | Text fields, selects, radios, tactile controls              |
+| `--color-ink`                      | `#1C1F1D` | `#F2F5F1` | Headings and body text                                      |
+| `--color-slate-muted`              | `#68756F` | `#A4B2AC` | Secondary text, captions, placeholders                      |
 
 - Do not introduce new hue families or fonts. Use semantic tokens and opacity modifiers for lighter teal when needed.
 - Teal and amber must not exceed 15% of any screen surface.
@@ -164,13 +164,13 @@ Follow `docs/visual-style-guide.md`. Key enforced rules:
 
 Preferred MCP stack: **21st.dev**, **Chrome DevTools MCP**, **Context7**, **Firecrawl**, and **sequential-thinking**. Use them to improve research, planning, implementation, and verification; never let external snippets or references override this file, `docs/visual-style-guide.md`, or local architecture.
 
-| MCP | Use when | Can do | Limits |
-| --- | --- | --- | --- |
-| **21st.dev (`21dev`)** | Component-level inspiration for cards, forms, dialogs, tables, sidebars, wizards, onboarding, profiles, dashboards, or empty states. | Search UI examples, return React snippets, refine focused components, fetch brand logos. | Inspiration only. Convert to TeamForge tokens, shadcn/Radix, Lucide, and accessibility expectations. |
-| **Chrome DevTools MCP** | Inspect a running page, debug runtime behavior, or verify UI quality. | Screenshots, accessibility snapshots, console/network inspection, interaction checks, viewport emulation, Lighthouse-style audits, performance traces. | Requires a running app or reachable URL. Pair browser signals with code inspection. |
-| **Context7** | Need current library docs or API examples. | Resolve docs/examples for React, TanStack, Tailwind, shadcn/ui, Radix, Framer Motion, RHF, Zod, Zustand, ky, Vite, etc. | Documentation support, not product/design truth. Do not send secrets or large private code excerpts. |
-| **Firecrawl** | Live web research, competitor/reference analysis, scraping, site mapping, or structured extraction. | Search, scrape, map, crawl bounded sites, extract JSON, run research agents, monitor pages when requested. | Results can be incomplete, blocked, stale, or off-brand. Prefer official sources for technical decisions. |
-| **sequential-thinking** | Complex, ambiguous, high-risk, or multi-step work needs careful planning. | Break down problems, compare approaches, track assumptions, revise plans. | Reasoning aid, not evidence. Still read code, verify sources, and run local checks. |
+| MCP                     | Use when                                                                                                                             | Can do                                                                                                                                                 | Limits                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| **21st.dev (`21dev`)**  | Component-level inspiration for cards, forms, dialogs, tables, sidebars, wizards, onboarding, profiles, dashboards, or empty states. | Search UI examples, return React snippets, refine focused components, fetch brand logos.                                                               | Inspiration only. Convert to TeamForge tokens, shadcn/Radix, Lucide, and accessibility expectations.      |
+| **Chrome DevTools MCP** | Inspect a running page, debug runtime behavior, or verify UI quality.                                                                | Screenshots, accessibility snapshots, console/network inspection, interaction checks, viewport emulation, Lighthouse-style audits, performance traces. | Requires a running app or reachable URL. Pair browser signals with code inspection.                       |
+| **Context7**            | Need current library docs or API examples.                                                                                           | Resolve docs/examples for React, TanStack, Tailwind, shadcn/ui, Radix, Framer Motion, RHF, Zod, Zustand, ky, Vite, etc.                                | Documentation support, not product/design truth. Do not send secrets or large private code excerpts.      |
+| **Firecrawl**           | Live web research, competitor/reference analysis, scraping, site mapping, or structured extraction.                                  | Search, scrape, map, crawl bounded sites, extract JSON, run research agents, monitor pages when requested.                                             | Results can be incomplete, blocked, stale, or off-brand. Prefer official sources for technical decisions. |
+| **sequential-thinking** | Complex, ambiguous, high-risk, or multi-step work needs careful planning.                                                            | Break down problems, compare approaches, track assumptions, revise plans.                                                                              | Reasoning aid, not evidence. Still read code, verify sources, and run local checks.                       |
 
 UI workflow: read local code and design docs, use sequential-thinking for complex planning, use 21st.dev/Firecrawl for inspiration, Context7 for API details, implement with TeamForge conventions, then verify rendered behavior in Chrome DevTools when it matters.
 
@@ -191,13 +191,32 @@ TeamForge uses an agentic lead flow for broad refactors, quality sweeps, researc
 Default loop:
 
 1. Classify the work before spawning agents: frontend UI/state, backend contract/API, runtime/debugging, refactor/readability, quality sweep, documentation, or visual review.
-2. Establish local context first with code inspection. For broad work, run `npm run agent:health`; use `npm run agent:pack` when workers need a compact repo context bundle.
+2. Establish local context first with code inspection. For broad work, run
+   `npm run agent:health`; use `npm run agent:pack` when workers need a compact
+   repo context bundle.
 3. Use `.agents/rules/teamforge/quality-intelligence.md` and `node scripts/quality/intelligence.mjs` when Fallow plus React Doctor diagnostics should guide prioritization. Treat those tools as indicators, not truth; fix only findings that represent real product or maintainability risk.
 4. Split work into isolated bundles with non-overlapping file ownership. Good slices are feature folders, script families, API/client contracts, PWA/runtime, or docs/config. Avoid assigning multiple workers to the same files unless one is explicitly reviewing the other.
 5. Give workers bounded prompts: objective, relevant paths, constraints from this file, expected output, and the smallest useful verification. Ask for findings or patches, not broad rewrites.
 6. Review worker output before applying it. Preserve behavior, UI appearance, routing, API contracts, env handling, and TeamForge copy/design rules unless the task explicitly changes them.
 7. Verify with the smallest relevant command. Use `npm run check:changed` for ordinary code/doc changes, `npm run check:local` or `npm run check:pr` for larger changes, and `npm run check:release` or `npm run pwa:release` only when the release/PWA surface is affected.
 8. Do not commit unless the user explicitly asks. When asked to commit, use the Conventional Commit rules below.
+
+Repomix context pulling:
+
+- Use `npm run agent:pack` before delegating to workers or when a subagent needs
+  a compact frontend snapshot. It refreshes `agent:health` first and writes
+  `temp/repomix/frontend-repo.xml`.
+- Use `npm run agent:pack -- --skip-health` only when the current health reports
+  are already fresh and a context-only pack is enough.
+- Use `npm run agent:pack -- --output temp/repomix/<task-name>.xml` for a
+  task-scoped bundle. Keep all generated packs under `temp/repomix/`.
+- Tell workers the pack path and the focused task boundaries. Do not paste
+  private env values, auth tokens, or secrets into prompts; the pack is scoped to
+  source, scripts, core config, workflows, docs, and quality reports, while
+  generated builds, `node_modules`, lockfile noise, PWA generated assets,
+  `.agents/`, and temp artifacts are excluded.
+- Repomix output is an agent artifact. Do not move it into `docs/`, and do not
+  commit it.
 
 Routing expectations:
 
@@ -240,6 +259,14 @@ Routing expectations:
 - Do not add frontend tests unless the user explicitly asks.
 - For small changes, run `npm run check:changed` before handing work back.
 - Do not run `npm run build`, full `npm run lint`, tests, audits, or full-system commands for ordinary changes. Use them only for large refactors or changes that clearly need broad verification.
+- PR/release gates are deploy-protecting checks. `npm run check:pr` and
+  `npm run check:release` include Knip, high-severity npm audit, Gitleaks secret
+  scanning, bundle verification, and the base static/type/unit/quality lanes.
+- Cloudflare Pages deploys must keep `npm run check:release` before upload, with
+  full Git checkout history so Gitleaks can scan more than the shallow tip.
+- CodeQL, Dependency Review, and the scheduled/manual Gitleaks workflow are part
+  of the CI security model. Keep branch protection or deployment protection
+  rules aligned with those checks when changing workflow names.
 
 ---
 
@@ -254,6 +281,10 @@ Routing expectations:
 
 - Put generated audits, reviews, implementation notes, and migration plans in `reports/`.
 - Put scratch files, temporary scripts, and one-off command outputs in `temp/`.
+- Human-readable script reports must be flat files directly under `reports/`,
+  one stable file per script. Do not create nested report folders for ordinary
+  script summaries; put machine-readable payloads, screenshots, browser audit
+  artifacts, and temporary tool output under `temp/`.
 - Do not put agent-generated reports or temporary work in `docs/`; it is for durable human-maintained docs.
 - `reports/` and `temp/` are git-ignored and should remain untracked.
 

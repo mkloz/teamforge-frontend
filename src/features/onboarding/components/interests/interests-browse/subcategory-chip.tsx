@@ -10,7 +10,7 @@ const subcategoryChipVariants = cva(
     variants: {
       state: {
         collapsed:
-          "border-slate-muted/15 bg-card text-slate-muted hover:border-slate-muted/30 hover:bg-canvas dark:border-white/10 dark:hover:border-white/18 dark:hover:bg-white/5",
+          "border-slate-muted/15 bg-card text-slate-muted hover:border-slate-muted/30 hover:bg-canvas dark:border-white/10 hover:dark:border-white/18 hover:dark:bg-white/5",
         expanded: "border-forge-teal/30 bg-forge-teal/10 text-forge-teal",
       },
     },

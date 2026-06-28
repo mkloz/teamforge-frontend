@@ -28,7 +28,7 @@ export function ExtensionOptionCard({
         "group/btn relative h-auto w-full min-w-0 justify-between rounded-xl border px-3 py-2.5 transition-all sm:px-3.5 sm:py-3",
         isSelected
           ? "border-forge-teal/70 bg-forge-teal/5 shadow-forge-teal/10 shadow-sm"
-          : "border-border/60 bg-card hover:border-slate-muted/35 dark:border-white/10 dark:hover:border-white/16",
+          : "border-border/60 bg-card hover:border-slate-muted/35 dark:border-white/10 hover:dark:border-white/16",
       )}
     >
       <div className="relative z-10 flex min-w-0 flex-col items-start">

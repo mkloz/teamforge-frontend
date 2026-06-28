@@ -14,13 +14,14 @@ on:
 permissions:
   contents: read
   pull-requests: read
-  security-events: write
 
 jobs:
   gitleaks:
     name: Gitleaks
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks:v8.30.1
 
     steps:
       - name: Checkout
@@ -28,8 +29,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
       - name: Scan for secrets
-        uses: gitleaks/gitleaks-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+        run: node scripts/security/gitleaks.mjs
+
+      - name: Upload secret scan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-gitleaks-${{ github.run_id }}
+          path: reports/gitleaks.md
+          if-no-files-found: warn
+          retention-days: 14

@@ -35,7 +35,7 @@ jobs:
   deploy:
     name: Build and deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     environment: production
 
     env:
@@ -63,6 +63,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -73,7 +75,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run release verification
+      - name: Run release verification and security gates
         run: npm run check:release
 
       - name: Deploy to Cloudflare Pages

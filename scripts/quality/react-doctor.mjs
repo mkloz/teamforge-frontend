@@ -39,8 +39,13 @@ import {
  * @typedef {{ affectedFileCount: number; blockerCount: number; diagnosticCount: number; errorCount: number; warningCount: number }} ReactDoctorSummary
  */
 
-const DEFAULT_REPORT_DIR = path.join(ROOT, "reports", "react-doctor");
-const DEFAULT_JSON_FILE = path.join(DEFAULT_REPORT_DIR, "report.json");
+const DEFAULT_REPORT_DIR = path.join(ROOT, "reports");
+const DEFAULT_JSON_FILE = path.join(ROOT, "temp", "react-doctor.json");
+const DEFAULT_DIAGNOSTICS_DIR = path.join(
+  ROOT,
+  "temp",
+  "react-doctor-diagnostics",
+);
 const SEVERITY_ORDER = ["error", "warning", "info"];
 const numberFormatter = new Intl.NumberFormat("en-US");
 
@@ -235,7 +240,7 @@ function getReactDoctorArgs(options) {
     "--no-color",
     "-y",
     "--output-dir",
-    path.join(options.reportDir, "diagnostics"),
+    DEFAULT_DIAGNOSTICS_DIR,
   ];
 
   if (options.scope !== "full") {
@@ -727,7 +732,7 @@ async function main() {
 
   const { payload, status } = await runReactDoctor(options);
   const wrapperStatus = getWrapperStatus(payload, options, status);
-  const reportPath = path.join(options.reportDir, "index.md");
+  const reportPath = path.join(options.reportDir, "react-doctor.md");
   const writeMarkdownReport = shouldWriteMarkdownReport(payload);
 
   await writeJsonFile(options.jsonFile, payload);
@@ -746,7 +751,7 @@ async function main() {
     const artifacts = [
       ...(writeMarkdownReport ? [toRepoRelativePath(reportPath)] : []),
       toRepoRelativePath(options.jsonFile),
-      toRepoRelativePath(path.join(options.reportDir, "diagnostics")),
+      toRepoRelativePath(DEFAULT_DIAGNOSTICS_DIR),
     ];
 
     process.stdout.write(

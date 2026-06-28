@@ -11,10 +11,6 @@ import { useUnreadAppBadge } from "@/shared/hooks/use-unread-app-badge";
 import { useUnreadDocumentTitleBadge } from "@/shared/hooks/use-unread-document-title-badge";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import {
-  recordPwaReconnectRefresh,
-  recordPwaServiceWorkerMessage,
-} from "@/shared/lib/pwa-runtime-diagnostics";
-import {
   isPwaServiceWorkerMessage,
   PWA_SERVICE_WORKER_MESSAGE_TYPES,
   type PwaServiceWorkerMessage,
@@ -78,28 +74,23 @@ function PwaServiceWorkerMessageRuntime() {
         return;
       }
 
-      const message = event.data;
-      const reason = getPwaServiceWorkerMessageReason(message);
-
       if (!isAuthenticated) {
-        recordPwaServiceWorkerMessage("success", `${reason} while signed out`);
         return;
       }
 
-      recordPwaServiceWorkerMessage("running", reason);
+      const message = event.data;
+      const reason = getPwaServiceWorkerMessageReason(message);
 
       void Promise.all([
         invalidateNotificationSurfaces(),
         refreshPwaResumeQueries(),
       ])
         .then(() => {
-          recordPwaServiceWorkerMessage("success", reason);
           return undefined;
         })
         .catch((error: unknown) => {
-          recordPwaServiceWorkerMessage("error", reason, error);
           warnInDevelopment(
-            "PWA service worker message refresh failed.",
+            `PWA service worker message refresh failed after ${reason}.`,
             error,
           );
           return undefined;
@@ -154,15 +145,12 @@ function refreshPwaRuntimeSurfaces(reason: string) {
   }
 
   lastPwaRuntimeRefreshAt = now;
-  recordPwaReconnectRefresh("running", reason);
 
   const refreshPromise = refreshPwaResumeQueries()
     .then(() => {
-      recordPwaReconnectRefresh("success", reason);
       return undefined;
     })
     .catch((error: unknown) => {
-      recordPwaReconnectRefresh("error", reason, error);
       warnInDevelopment(`PWA runtime refresh failed after ${reason}.`, error);
       return undefined;
     });

@@ -184,25 +184,6 @@ const routeInventorySchema = z.object({
       .passthrough(),
   ),
 });
-const pipelineOutputLinkEntries = [
-  {
-    flag: "runLoaded",
-    link: "- [Loaded browser route audit](loaded/index.md)",
-  },
-  {
-    flag: "runPlaywright",
-    link: "- [Playwright route health](playwright/index.md)",
-  },
-  {
-    flag: "runLighthouse",
-    link: "- [Lighthouse report-only audit](lighthouse/index.md)",
-  },
-  {
-    flag: "runSquirrel",
-    link: "- [Authenticated SquirrelScan reports](squirrel/index.md)",
-  },
-];
-
 /**
  * Resolves static pipeline config from environment variables.
  *
@@ -227,7 +208,19 @@ function getPipelineConfig() {
 function getPipelineOutputRoot() {
   return (
     process.env.AUDIT_OUTPUT_ROOT ??
-    path.join(cwd, "reports", `authenticated-audit-${todayStamp()}`)
+    path.join(cwd, "temp", `authenticated-audit-${todayStamp()}`)
+  );
+}
+
+/**
+ * Resolves the flat human report path for the combined audit pipeline.
+ *
+ * @returns {string} Markdown report path.
+ */
+function getPipelineReportPath() {
+  return (
+    process.env.AUDIT_PIPELINE_REPORT_PATH ??
+    path.join(cwd, "reports", "authenticated-audit.md")
   );
 }
 
@@ -931,17 +924,34 @@ function formatSquirrelSummaryLine(runSquirrel) {
     : "SquirrelScan: skipped.";
 }
 
-function formatPipelineOutputLinks({
-  runLighthouse,
-  runLoaded,
-  runPlaywright,
-  runSquirrel,
-}) {
-  const flags = { runLighthouse, runLoaded, runPlaywright, runSquirrel };
-
-  return pipelineOutputLinkEntries
-    .filter((entry) => flags[entry.flag])
-    .map((entry) => entry.link)
+function formatPipelineOutputLinks(options) {
+  return [
+    {
+      enabled: options.runLoaded,
+      label: "Loaded browser route audit",
+      reportPath: path.join(options.outputRoot, "loaded", "index.md"),
+    },
+    {
+      enabled: options.runPlaywright,
+      label: "Playwright route health",
+      reportPath: path.join(options.outputRoot, "playwright", "index.md"),
+    },
+    {
+      enabled: options.runLighthouse,
+      label: "Lighthouse report-only audit",
+      reportPath: path.join(options.outputRoot, "lighthouse", "index.md"),
+    },
+    {
+      enabled: options.runSquirrel,
+      label: "Authenticated SquirrelScan reports",
+      reportPath: path.join(options.outputRoot, "squirrel", "index.md"),
+    },
+  ]
+    .filter((entry) => entry.enabled)
+    .map(
+      (entry) =>
+        `- ${entry.label}: \`${path.relative(cwd, entry.reportPath)}\``,
+    )
     .join("\n");
 }
 
@@ -1015,7 +1025,7 @@ function writePipelineIndex(options) {
 
   writePipelineManifest(options, routes, loadedSummary);
   writeText(
-    path.join(options.outputRoot, "index.md"),
+    getPipelineReportPath(),
     formatPipelineIndexMarkdown(options, routes, loadedSummary),
   );
 }

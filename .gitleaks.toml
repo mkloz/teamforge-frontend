@@ -1,0 +1,29 @@
+title = "TeamForge frontend gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Allow documented placeholder values in CI and agent docs only."
+condition = "AND"
+regexTarget = "line"
+paths = [
+  '''^\.github/workflows/.*\.yml$''',
+  '''^AGENTS\.md$''',
+  '''^README\.md$''',
+]
+regexes = [
+  '''ci-[a-z0-9-]+''',
+  '''your-[a-z0-9-]+''',
+]
+
+[[allowlists]]
+description = "Allow Playwright documentation mock verification token."
+condition = "AND"
+regexTarget = "line"
+paths = [
+  '''^\.agents/skills/playwright-best-practices/advanced/authentication-flows\.md$''',
+]
+regexes = [
+  '''mockToken = ['"]test-verification-[a-z0-9-]+['"]''',
+]

@@ -1,0 +1,12 @@
+{
+  "ignore": {
+    "files": [
+      ".agents/**",
+      "coverage/**",
+      "dist/**",
+      "dist-ssr/**",
+      "reports/**",
+      "temp/**"
+    ]
+  }
+}

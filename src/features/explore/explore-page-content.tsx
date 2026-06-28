@@ -52,7 +52,7 @@ function ExploreStickyRail({
   return (
     <div
       className={cn(
-        "scrollbar-hide sticky max-h-none self-start overflow-visible [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [@media(max-height:720px)]:max-h-[calc(100dvh-4rem)] [@media(max-height:720px)]:overflow-y-auto [@media(max-height:720px)]:overscroll-contain [@media(max-height:720px)]:pr-2",
+        "scrollbar-hide scrollbar-none sticky max-h-none self-start overflow-visible [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [@media(max-height:720px)]:max-h-[calc(100dvh-4rem)] [@media(max-height:720px)]:overflow-y-auto [@media(max-height:720px)]:overscroll-contain [@media(max-height:720px)]:pr-2",
         side === "left" ? "top-6" : "top-8",
       )}
     >

@@ -7,7 +7,6 @@ import {
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
-import { recordPwaRealtimeResync } from "@/shared/lib/pwa-runtime-diagnostics";
 
 const realtimeRoutePrefixes = [
   "/activity",
@@ -85,10 +84,9 @@ export function AppRealtimeSync() {
         }
 
         const unsubscribeSession = subscribeRealtimeSessionSync();
-        recordPwaRealtimeResync("initial sync");
         const unsubscribeRealtimeEvents = subscribeAppRealtimeEvents();
         let lastResumeSyncAt = 0;
-        const reconnectRealtimeWithDiagnostic = (reason: string) => {
+        const reconnectRealtimeWhenReady = () => {
           if (!isAppVisibleAndOnline()) {
             return;
           }
@@ -100,21 +98,20 @@ export function AppRealtimeSync() {
           }
 
           lastResumeSyncAt = now;
-          recordPwaRealtimeResync(reason);
           reconnectRealtimeSession();
         };
         const handlePageHide = () => {
           disconnectRealtimeSession();
         };
         const handleFocus = () => {
-          reconnectRealtimeWithDiagnostic("window focus");
+          reconnectRealtimeWhenReady();
         };
         const handleOnline = () => {
-          reconnectRealtimeWithDiagnostic("network reconnect");
+          reconnectRealtimeWhenReady();
         };
         const handlePageShow = (event: PageTransitionEvent) => {
           if (event.persisted) {
-            reconnectRealtimeWithDiagnostic("page restore");
+            reconnectRealtimeWhenReady();
           }
         };
         const handleVisibilityChange = () => {
@@ -124,7 +121,7 @@ export function AppRealtimeSync() {
           }
 
           if (document.visibilityState === "visible") {
-            reconnectRealtimeWithDiagnostic("app foreground");
+            reconnectRealtimeWhenReady();
           }
         };
 
