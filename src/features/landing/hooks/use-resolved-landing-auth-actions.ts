@@ -1,12 +1,12 @@
-import {
-  getLandingPrimaryAction,
-  getLandingSecondaryAction,
-} from "@/features/landing/lib/landing-auth";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import {
   useCurrentUserQuery,
   useRestoreAuthSessionQuery,
 } from "@/shared/api/current-user-query";
+import {
+  getLandingPrimaryAction,
+  getLandingSecondaryAction,
+} from "@/shared/components/public-site/public-site-auth-actions";
 
 export function useResolvedLandingAuthActions(
   primaryGuestLabel: string,

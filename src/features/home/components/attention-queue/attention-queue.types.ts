@@ -1,5 +1,5 @@
 import type { useHomeData } from "@/features/home/hooks/use-home-data";
-import type { useProfileFriendRequests } from "@/features/profile/hooks/use-profile-friend-requests";
+import type { useProfileFriendRequests } from "@/features/profile/public/profile-friend-requests";
 
 export type AttentionQueueInvitation = ReturnType<
   typeof useHomeData

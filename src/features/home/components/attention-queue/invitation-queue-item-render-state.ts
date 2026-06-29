@@ -7,7 +7,7 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 
 import type { AttentionQueueInvitation } from "./attention-queue.types";
 import {

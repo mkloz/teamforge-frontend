@@ -1,7 +1,7 @@
 import { CalendarClock, MessageCircle, MousePointer2 } from "lucide-react";
 import planToGroupVisual from "@/features/landing/assets/plan-to-group-visual-ai-cutout.png";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
-import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 
 const SECTION_NOTES = [
   {

@@ -3,7 +3,7 @@ import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
   activityKindValues,
   activityPanelValues,
-} from "@/features/activity/lib/activity-route";
+} from "@/shared/navigation/activity-navigation";
 
 export function useClearActivityRouteSelection() {
   const [, setRouteState] = useQueryStates(

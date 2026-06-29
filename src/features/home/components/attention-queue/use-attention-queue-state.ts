@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeInvitationActions } from "@/features/home/hooks/use-home-invitation-actions";
 import { useHomeViewer } from "@/features/home/hooks/use-home-viewer";
-import { useProfileFriendRequests } from "@/features/profile/hooks/use-profile-friend-requests";
+import { useProfileFriendRequests } from "@/features/profile/public/profile-friend-requests";
 
 interface UseAttentionQueueStateInput {
   focusedInviteId: string | null;

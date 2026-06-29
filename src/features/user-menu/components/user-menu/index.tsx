@@ -7,9 +7,6 @@ import {
   SlidersHorizontal,
   UserRound,
 } from "lucide-react";
-
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
-import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import {
   Sheet,
@@ -25,6 +22,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
+import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 import type { User } from "@/shared/schemas";
 
 import { AppearanceSwitch } from "./appearance-switch";

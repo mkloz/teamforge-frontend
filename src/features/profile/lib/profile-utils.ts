@@ -1,5 +1,5 @@
-import { getArchetype } from "@/features/profile/lib/archetypes";
 import type { DimensionScore } from "@/features/profile/lib/profile-contract";
+import { getArchetype } from "@/features/profile/public/profile-archetypes";
 import { getUserOceanScores } from "@/shared/lib/user-psychometrics";
 import type { User } from "@/shared/schemas";
 

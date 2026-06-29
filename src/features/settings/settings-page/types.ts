@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 
-import type { SettingsSection } from "@/features/settings/lib/settings-route";
+import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 
 export interface SettingsSectionMeta {
   id: SettingsSection;

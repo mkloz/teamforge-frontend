@@ -1,10 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
-
-import type { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { SheetClose } from "@/shared/components/ui/sheet";
 import { cn } from "@/shared/lib/utils";
+import type { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
 interface MenuLinkItemProps {
   description?: string;

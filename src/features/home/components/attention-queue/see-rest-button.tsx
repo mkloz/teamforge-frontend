@@ -1,8 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-
-import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import { Button } from "@/shared/components/ui/button";
+import { buildHomeNavigation } from "@/shared/navigation/home-navigation";
 
 interface SeeRestButtonProps {
   hiddenItemCount: number;

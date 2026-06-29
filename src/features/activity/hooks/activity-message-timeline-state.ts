@@ -1,6 +1,6 @@
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-import type { ActivityKind } from "@/features/activity/lib/activity-route";
+import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
+import type { ActivityKind } from "@/shared/navigation/activity-navigation";
 import type { ChatApi } from "@/shared/schemas";
 
 const PROPOSAL_TIMELINE_MATCH_WINDOW_MS = 5 * 60 * 1000;

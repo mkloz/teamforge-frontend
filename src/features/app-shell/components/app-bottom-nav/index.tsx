@@ -2,7 +2,7 @@ import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathnam
 import {
   appBottomNavigation,
   applyAppNavigationBadges,
-} from "@/features/app-shell/lib/app-navigation";
+} from "@/features/app-shell/public/app-navigation";
 import { cn } from "@/shared/lib/utils";
 import { TabButton } from "./tab-button";
 

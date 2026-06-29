@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   type AppNavigationItem,
   isAppNavigationItemActive,
-} from "@/features/app-shell/lib/app-navigation";
+} from "@/features/app-shell/public/app-navigation";
 import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
 

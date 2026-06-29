@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useReducer, useRef } from "react";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
-import { resolveNotificationDestination } from "@/features/notifications/lib/notification-destination";
+import { resolveNotificationDestination } from "@/features/notifications/lib/destination";
 import {
   Drawer,
   DrawerContent,

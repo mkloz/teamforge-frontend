@@ -5,9 +5,9 @@ import { SlidersHorizontal, UsersRound } from "lucide-react";
 import { EmptyExploreFilteredVisual } from "@/features/explore/assets/empty-explore-filtered";
 import { EmptyExploreOpenVisual } from "@/features/explore/assets/empty-explore-open";
 import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
-import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Button } from "@/shared/components/ui/button";
+import { buildForgeLaunchNavigation } from "@/shared/navigation/forge-navigation";
 
 import { ExploreFeedContent } from "./explore-feed-content";
 import { ExploreFeedSkeleton } from "./explore-feed-skeleton";

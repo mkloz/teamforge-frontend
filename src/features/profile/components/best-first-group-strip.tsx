@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { buildForgeIdeaLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import { buildForgeIdeaLaunchNavigation } from "@/shared/navigation/forge-navigation";
 
 import type { ActivityIdea } from "../lib/profile-insights";
 

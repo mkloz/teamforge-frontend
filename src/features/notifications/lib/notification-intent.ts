@@ -1,4 +1,4 @@
-import type { HomeRouteSearch } from "@/features/home/lib/home-route";
+import type { HomeRouteSearch } from "@/shared/navigation/home-navigation";
 
 const INVITE_ROOT_PATHS = new Set([
   "/invites",

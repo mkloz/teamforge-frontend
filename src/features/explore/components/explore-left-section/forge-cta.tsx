@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { Button } from "@/shared/components/ui/button";
+import { buildForgeLaunchNavigation } from "@/shared/navigation/forge-navigation";
 
 export function ForgeCTA() {
   return (

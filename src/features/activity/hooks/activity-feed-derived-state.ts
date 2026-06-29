@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { useDeferredValue, useEffect, useState } from "react";
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import {
   type ActivityFeedFilter,
   type ActivityTypingByChatId,
@@ -10,6 +9,7 @@ import {
   deriveSavedMessageData,
   getPinnedConversationKeys,
 } from "@/features/activity/hooks/activity-feed-status-data-derivation";
+import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 
 const FEED_ENHANCEMENT_DELAY_MS = 2500;

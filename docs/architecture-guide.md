@@ -146,6 +146,36 @@ src/features/<feature-name>/
 - Page components are thin - business logic lives in hooks
 - Backend-facing data seams should live in feature-local `api/` modules
 
+### Module Interface Vocabulary
+
+TeamForge keeps feature folders private by default. A module under
+`src/features/<feature>/` is **feature internal** unless it lives under
+`src/features/<feature>/public/`.
+
+Use these boundaries for cross-module work:
+
+- **Feature public seam:** `src/features/<feature>/public/*` exposes the narrow
+  contracts another feature may import. Keep these seams intentionally small;
+  never export a whole feature through a public barrel.
+- **Shared navigation contract:** `src/shared/navigation/*` owns
+  feature-independent route builders, route-search parsers, and auth return
+  helpers. It must not import feature code.
+- **Shared primitive:** `src/shared/*` owns feature-agnostic API clients, UI
+  primitives, hooks, schemas, stores, validators, and utilities.
+- **App composition:** `src/app/*` and `src/router.tsx` own providers, router
+  wiring, guards, and runtime side effects.
+
+Allowed cross-feature imports go through another feature's `public/` seam or a
+shared module. Importing another feature's `api/`, `components/`, `hooks/`,
+`lib/`, `schemas/`, `store/`, or route helpers is a migration target unless the
+target has first been promoted into `public/` or `shared/navigation/`.
+
+The blocking feature seam scanner can be run with:
+
+```bash
+npm run lint:feature-seams
+```
+
 ### Current Frontend Notes
 
 - Routes are still declared manually in `src/router.tsx`; the repo is not using TanStack file-based routing.

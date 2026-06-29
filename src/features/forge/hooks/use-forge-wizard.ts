@@ -15,7 +15,6 @@ import {
   buildForgeIdeaTemplate,
   buildForgeIdeaTemplateId,
 } from "@/features/forge/lib/forge-idea-template";
-import type { ForgeIdeaLaunch } from "@/features/forge/lib/forge-route";
 import type { ForgeWizardData, Step } from "@/features/forge/lib/forge-wizard";
 import {
   createInitialForgeWizardState,
@@ -27,6 +26,7 @@ import {
   cloneForgeWizardDraft,
   useForgeWizardDraftStore,
 } from "@/features/forge/store/use-forge-wizard-draft-store";
+import type { ForgeIdeaLaunch } from "@/shared/navigation/forge-navigation";
 
 interface UseForgeWizardOptions {
   onClose: () => void;

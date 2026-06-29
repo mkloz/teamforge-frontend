@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { OnlineStatus } from "@/shared/schemas/enums";
 
 interface FriendCardUser {

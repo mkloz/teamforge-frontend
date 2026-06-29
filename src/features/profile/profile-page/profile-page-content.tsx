@@ -12,7 +12,6 @@ import { ProfileHero } from "@/features/profile/components/profile-hero";
 import { ProfileCompactHeader } from "@/features/profile/components/profile-hero/profile-compact-header";
 import { ProfilePortraitSection } from "@/features/profile/components/profile-portrait-section";
 import type { ProfileInsightModel } from "@/features/profile/lib/profile-insights";
-import { buildPublicProfilePath } from "@/features/profile/lib/profile-route";
 import {
   getUserArchetype,
   getUserDimensionScores,
@@ -27,13 +26,14 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
 import { getUserOceanScores } from "@/shared/lib/user-psychometrics";
+import { buildPublicProfilePath } from "@/shared/navigation/profile-navigation";
 import type { User } from "@/shared/schemas";
 
 import { useProfileCollapsibleHeader } from "../hooks/use-profile-collapsible-header";
 import { ProfileCoverBanner } from "./profile-cover-banner";
 
 const LazyUserMenu = lazy(() =>
-  import("@/features/user-menu/components/user-menu").then((module) => ({
+  import("@/features/user-menu/public/user-menu").then((module) => ({
     default: module.UserMenu,
   })),
 );

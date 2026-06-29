@@ -7,13 +7,12 @@ import {
   Settings,
   User,
 } from "lucide-react";
-
-import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
-import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
-import { buildForgeNavigation } from "@/features/forge/lib/forge-route";
-import { buildHomeNavigation } from "@/features/home/lib/home-route";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
-import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
+import { buildExploreNavigation } from "@/features/explore/public/explore-navigation";
+import { buildActivityNavigation } from "@/shared/navigation/activity-navigation";
+import { buildForgeNavigation } from "@/shared/navigation/forge-navigation";
+import { buildHomeNavigation } from "@/shared/navigation/home-navigation";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
+import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
 type MatchMode = "exact" | "prefix";
 

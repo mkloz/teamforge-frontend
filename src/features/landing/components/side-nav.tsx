@@ -1,6 +1,6 @@
 import { ChevronUp } from "lucide-react";
-import { LANDING_SECTIONS } from "@/features/landing/constants/landing-sections";
 import { useLandingSectionNavigation } from "@/features/landing/hooks/use-landing-section-navigation";
+import { LANDING_SECTIONS } from "@/shared/components/public-site/landing-sections";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 

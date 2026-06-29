@@ -89,6 +89,7 @@ function getTasks(mode) {
     createCompilerTask(),
     createBiomeTask(),
     createArchitectureTask(),
+    createFeatureImportSeamsTask(),
     createQualityTask(mode),
     createTypesTask(),
     createUnitTask(),
@@ -166,6 +167,18 @@ function createArchitectureTask() {
     label: "dependency-cruiser",
     spec: resolvePackageBin("dependency-cruiser", "depcruise"),
     args: ["--config", ".dependency-cruiser.cjs", "src", "vite.config.ts"],
+  };
+}
+
+/**
+ * @returns {TaskSpec} Feature import seam task.
+ */
+function createFeatureImportSeamsTask() {
+  return {
+    id: "feature-seams",
+    label: "Feature import seams",
+    spec: resolveNodeScript("scripts/lint/feature-import-seams.mjs"),
+    args: ["--strict"],
   };
 }
 

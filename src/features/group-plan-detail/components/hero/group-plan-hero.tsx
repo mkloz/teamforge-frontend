@@ -13,7 +13,7 @@ import {
 import {
   type GroupPlanDetailRouteSearch,
   getGroupPlanDetailBackLink,
-} from "@/features/group-plan-detail/lib/group-plan-detail-route";
+} from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { buildAppUrl } from "@/shared/lib/app-url";

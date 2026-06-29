@@ -1,7 +1,7 @@
 import { resolveOnboardingExitNavigation } from "@/features/onboarding/lib/onboarding-exit-route";
 import { buildOnboardingReturnSearch } from "@/features/onboarding/lib/onboarding-flow-state";
-import type { OnboardingReturnTarget } from "@/features/onboarding/lib/onboarding-route";
-import type { SettingsSection } from "@/features/settings/lib/settings-route";
+import type { OnboardingReturnTarget } from "@/features/onboarding/public/onboarding-navigation";
+import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import type { PersonalityType } from "@/shared/schemas";
 
 interface PersonalityFlowSearchParams {

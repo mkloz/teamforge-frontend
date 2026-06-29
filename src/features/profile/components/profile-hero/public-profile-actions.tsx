@@ -8,8 +8,7 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import { type RefObject, useEffect, useRef } from "react";
-import { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
-import { usePublicProfileActions } from "@/features/profile/hooks/use-public-profile-actions";
+import { usePublicProfileActions } from "@/features/profile/public/public-profile-actions";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -18,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { cn } from "@/shared/lib/utils";
+import { buildActivityDmNavigation } from "@/shared/navigation/activity-navigation";
 import type { User } from "@/shared/schemas";
 
 interface PublicProfileActionsProps {

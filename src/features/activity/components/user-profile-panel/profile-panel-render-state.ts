@@ -1,9 +1,9 @@
-import { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
+import { cn } from "@/shared/lib/utils";
+import { buildActivityDmNavigation } from "@/shared/navigation/activity-navigation";
 import {
   buildProfileNavigation,
   type ProfileNavigation,
-} from "@/features/profile/lib/profile-route";
-import { cn } from "@/shared/lib/utils";
+} from "@/shared/navigation/profile-navigation";
 import type { MutualGroup } from "./mutual-groups-section";
 import type {
   UserProfilePanelChat,

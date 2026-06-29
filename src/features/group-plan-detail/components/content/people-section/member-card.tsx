@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { Handshake, type LucideIcon, ShieldCheck, Target } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { AdminCrownBadge } from "@/shared/components/common/admin-crown-badge";
 import { Avatar } from "@/shared/components/common/avatar";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import { MemberAction } from "./member-action";
 
 interface MemberCardProps {

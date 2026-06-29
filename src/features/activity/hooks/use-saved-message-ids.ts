@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
+import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
 
 export function useSavedMessageIds() {
   const savedMessagesQuery = useQuery(ActivityQueryFactory.savedMessages());

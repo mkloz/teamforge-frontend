@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 
 export function HostMemberRow() {
   return (

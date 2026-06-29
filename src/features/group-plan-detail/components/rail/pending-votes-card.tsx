@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { CircleDashed } from "lucide-react";
-import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
 import { RailCard } from "@/features/group-plan-detail/components/rail/rail-card";
 import { getPendingVoteHeadline } from "@/features/group-plan-detail/components/rail/rail-model";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Button } from "@/shared/components/ui/button";
+import { buildActivityGroupNavigation } from "@/shared/navigation/activity-navigation";
 
 interface PendingVotesCardProps {
   detail: GroupPlanDetail;

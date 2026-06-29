@@ -1,4 +1,4 @@
-import type { SettingsSection } from "@/features/settings/lib/settings-route";
+import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import { useDeleteAccountAction } from "./use-delete-account-action";
 import { useSettingsAvatarActions } from "./use-settings-avatar-actions";
 import { useSettingsPreferencesActions } from "./use-settings-preferences-actions";

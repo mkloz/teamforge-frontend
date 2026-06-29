@@ -1,6 +1,6 @@
 import { Clock3, type LucideIcon, MapPin, ShieldCheck } from "lucide-react";
 
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 
 import type { AttentionQueueFriendRequest } from "./attention-queue.types";
 import { getFriendRequestMeta } from "./attention-queue-formatters";

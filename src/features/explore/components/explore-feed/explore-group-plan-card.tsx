@@ -7,12 +7,12 @@ import {
   Send,
   UsersRound,
 } from "lucide-react";
-import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { useJoinExploreGroup } from "@/features/explore/hooks/use-join-explore-group";
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import { GroupPlanCard } from "@/shared/components/group-plan-card";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
 import type { ExploreGroup } from "@/shared/schemas";
 import {
   type ExploreGroupPlanCardActionIcon,

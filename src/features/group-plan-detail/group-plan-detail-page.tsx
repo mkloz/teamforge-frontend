@@ -5,7 +5,7 @@ import { useGroupPlanDetail } from "@/features/group-plan-detail/hooks/use-group
 import { useGroupPlanDetailLandingFocus } from "@/features/group-plan-detail/hooks/use-group-plan-detail-landing-focus";
 import { useGroupPlanDetailRealtime } from "@/features/group-plan-detail/hooks/use-group-plan-detail-realtime";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
-import type { GroupPlanDetailRouteSearch } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import type { GroupPlanDetailRouteSearch } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";

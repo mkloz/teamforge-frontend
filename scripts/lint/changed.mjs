@@ -1171,11 +1171,18 @@ async function runArchitectureStage(changedFiles) {
     "src",
     "vite.config.ts",
   ]);
+  const seamResult = await runCommand("feature import seams", "node", [
+    "scripts/lint/feature-import-seams.mjs",
+    "--strict",
+    "--max-examples",
+    "12",
+  ]);
+  const status = result.status === 0 ? seamResult.status : result.status;
 
   return {
     name: "architecture",
-    output: `\n> architecture (native changed mode)\n${result.output}`,
-    status: result.status,
+    output: `\n> architecture (native changed mode)\n${result.output}${seamResult.output}`,
+    status,
   };
 }
 

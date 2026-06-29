@@ -6,12 +6,14 @@ import {
   parseAsStringLiteral,
   useQueryStates,
 } from "nuqs";
-import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
-import { forgeSearchModeValues } from "@/features/forge/lib/forge-route";
 import { useForgeWizardDraftStore } from "@/features/forge/store/use-forge-wizard-draft-store";
+import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
+import {
+  type ForgeIdeaLaunch,
+  forgeSearchModeValues,
+} from "@/shared/navigation/forge-navigation";
 
 import type { ForgeMode } from "../lib/forge-contract";
-import type { ForgeIdeaLaunch } from "../lib/forge-route";
 import { normalizeStep, type Step } from "../lib/forge-wizard";
 
 const IDEA_LAUNCH_STEP = 3 satisfies Step;

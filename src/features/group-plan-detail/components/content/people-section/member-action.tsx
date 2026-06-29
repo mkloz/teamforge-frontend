@@ -8,8 +8,7 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
-import { usePublicProfileActions } from "@/features/profile/hooks/use-public-profile-actions";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
+import { usePublicProfileActions } from "@/features/profile/public/public-profile-actions";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -23,6 +22,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 
 const memberActionClassName =
   "flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground opacity-80 transition-colors duration-150 hover:bg-forge-teal/10 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 group-hover:opacity-100";

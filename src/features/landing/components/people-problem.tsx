@@ -1,7 +1,7 @@
 import { ClipboardList, MousePointer2, UsersRound } from "lucide-react";
 import darkVisual from "@/features/landing/assets/people-problem-visual-ai-cutout.png";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
-import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 
 const PEOPLE_PROBLEM_POINTS = [
   {

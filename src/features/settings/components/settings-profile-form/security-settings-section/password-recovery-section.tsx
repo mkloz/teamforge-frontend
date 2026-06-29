@@ -1,9 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ExternalLink, KeyRound, Mail } from "lucide-react";
-
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { User } from "@/shared/schemas";
 
 interface PasswordRecoverySectionProps {

@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
+import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";

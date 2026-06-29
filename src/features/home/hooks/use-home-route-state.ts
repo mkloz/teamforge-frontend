@@ -8,7 +8,7 @@ import {
 import {
   homeInvitationViewValues,
   homePanelValues,
-} from "@/features/home/lib/home-route";
+} from "@/shared/navigation/home-navigation";
 
 export function useHomeRouteState() {
   const [routeState, setRouteState] = useQueryStates(

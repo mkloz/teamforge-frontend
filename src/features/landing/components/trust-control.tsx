@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import trustControlVisual from "@/features/landing/assets/trust-control-visual-ai-cutout.png";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
-import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 
 const CONTROL_POINTS = [
   {

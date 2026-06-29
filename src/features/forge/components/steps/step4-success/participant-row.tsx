@@ -1,11 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { ShieldCheck, UserMinus, UserPlus } from "lucide-react";
-
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 
 import {
   getParticipantInitials,

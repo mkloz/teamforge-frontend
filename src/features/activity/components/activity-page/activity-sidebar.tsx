@@ -1,4 +1,4 @@
-import { UnifiedConversationList } from "@/features/activity/components/unified-conversation-list";
+import { ConversationList } from "@/features/activity/components/conversation-list";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 import { cn } from "@/shared/lib/utils";
 
@@ -18,7 +18,7 @@ export function ActivitySidebar({ activity, isOnline }: ActivitySidebarProps) {
         activity.hasSelection && "hidden md:flex",
       )}
     >
-      <UnifiedConversationList
+      <ConversationList
         items={activity.filteredItems}
         savedMessages={activity.savedMessages}
         selectedId={activity.selectedId}

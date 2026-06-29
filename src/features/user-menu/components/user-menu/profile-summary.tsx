@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { Avatar } from "@/shared/components/common/avatar";
 import { SheetClose } from "@/shared/components/ui/sheet";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { User } from "@/shared/schemas";
 
 const FALLBACK_PROFILE_SUMMARY = {

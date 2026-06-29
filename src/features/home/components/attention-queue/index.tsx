@@ -8,14 +8,14 @@ import {
 } from "react";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeAttentionQueueRowsSkeleton } from "@/features/home/components/home-skeletons";
-import type {
-  HomeInvitationView,
-  HomePanel,
-} from "@/features/home/lib/home-route";
 import {
   cancelIdleTask,
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
+import type {
+  HomeInvitationView,
+  HomePanel,
+} from "@/shared/navigation/home-navigation";
 
 const LazyLoadedAttentionQueue = lazy(() =>
   import("./attention-queue-loaded").then((module) => ({

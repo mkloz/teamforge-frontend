@@ -2,8 +2,8 @@ import type { HomeViewer } from "@/features/home/lib/home-contract";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
-} from "@/features/onboarding/lib/onboarding-route";
-import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
+} from "@/features/onboarding/public/onboarding-navigation";
+import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
 export function getProfileStepNavigation(
   nextStep: NonNullable<HomeViewer["nextStep"]>,

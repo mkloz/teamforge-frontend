@@ -1,14 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, LogOut } from "lucide-react";
 import { lazy, type MouseEvent, Suspense, useState } from "react";
-
-import {
-  buildSettingsNavigation,
-  type SettingsSection,
-} from "@/features/settings/lib/settings-route";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
+import {
+  buildSettingsNavigation,
+  type SettingsSection,
+} from "@/shared/navigation/settings-navigation";
 
 import { SETTINGS_SECTIONS } from "./settings-sections";
 

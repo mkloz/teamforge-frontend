@@ -1,6 +1,6 @@
-import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
-import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
-import { buildHomeNavigation } from "@/features/home/lib/home-route";
+import { buildExploreNavigation } from "@/features/explore/public/explore-navigation";
+import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
+import { buildHomeNavigation } from "@/shared/navigation/home-navigation";
 
 export const groupPlanDetailSourceValues = [
   "home",

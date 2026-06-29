@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildForgeIdeaTemplate } from "@/features/forge/lib/forge-idea-template";
-import type { ForgeIdeaLaunch } from "@/features/forge/lib/forge-route";
+import type { ForgeIdeaLaunch } from "@/shared/navigation/forge-navigation";
 
 describe("forge idea template matching", () => {
   it("uses activity semantics when an idea has no explicit lane", () => {

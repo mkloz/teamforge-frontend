@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import type { ActivityKind } from "@/features/activity/lib/activity-route";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import type { ActivityKind } from "@/shared/navigation/activity-navigation";
 import { useUiStore } from "@/shared/store/ui.store";
 
 export function useActivityPanels() {

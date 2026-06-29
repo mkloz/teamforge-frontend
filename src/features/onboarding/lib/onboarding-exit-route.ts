@@ -1,8 +1,8 @@
-import type { OnboardingReturnTarget } from "@/features/onboarding/lib/onboarding-route";
+import type { OnboardingReturnTarget } from "@/features/onboarding/public/onboarding-navigation";
 import {
   buildSettingsNavigation,
   type SettingsSection,
-} from "@/features/settings/lib/settings-route";
+} from "@/shared/navigation/settings-navigation";
 
 function buildOnboardingReturnNavigation(
   returnTo: OnboardingReturnTarget | null,

@@ -1,4 +1,4 @@
-import { MessageListSkeletonPattern } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/message-list-skeleton-pattern";
+import { MessageListSkeletonPattern } from "@/features/activity/components/conversation-workspace/message-timeline/message-list-skeleton-pattern";
 import {
   SkeletonAvatar,
   SkeletonButton,

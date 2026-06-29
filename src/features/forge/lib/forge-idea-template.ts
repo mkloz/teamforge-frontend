@@ -2,9 +2,9 @@ import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
 import type { TemplateSeed } from "@/features/forge/data/forge-template-seed-types";
 import { CATEGORY_TEMPLATES } from "@/features/forge/data/forge-template-seeds";
 import { resolvePlanCategory } from "@/features/forge/lib/forge-activity-builders/activity-option-resolution";
-import type { ForgeIdeaLaunch } from "@/features/forge/lib/forge-route";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
 import { buildTemplateFromSeed } from "@/features/forge/lib/forge-template-suggestions";
+import type { ForgeIdeaLaunch } from "@/shared/navigation/forge-navigation";
 import type { PlanCategory } from "@/shared/schemas";
 
 type ActivityCategory = (typeof ACTIVITIES)[number];

@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { type LucideIcon, Settings, UserPlus } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
-import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { useGroupPlanProposalActions } from "@/features/group-plan-detail/hooks/use-group-plan-proposal-actions";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Button } from "@/shared/components/ui/button";
+import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
 
 interface MemberQuickActionsProps {
   detail: GroupPlanDetail;

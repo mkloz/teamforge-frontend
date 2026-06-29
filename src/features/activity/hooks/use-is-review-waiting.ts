@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import type { Group } from "@/features/activity/lib/activity-contract";
+import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import {
   getIsReviewWaiting,

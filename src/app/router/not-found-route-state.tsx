@@ -1,14 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Home, LogIn, Plus, UserPlus } from "lucide-react";
-
-import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
-import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import { NotFoundState } from "@/shared/components/not-found-state";
 import { Button } from "@/shared/components/ui/button";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { buildForgeLaunchNavigation } from "@/shared/navigation/forge-navigation";
+import { buildHomeNavigation } from "@/shared/navigation/home-navigation";
 
 const NOT_FOUND_METADATA = createTeamForgePageMetadata({
   title: "Page Not Found",

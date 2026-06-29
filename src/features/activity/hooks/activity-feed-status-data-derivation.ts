@@ -1,9 +1,9 @@
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import { getActivityConversationKey } from "@/features/activity/lib/activity-conversation-key";
 import {
   mapSavedMessageApi,
   type SavedMessageSnapshot,
 } from "@/features/activity/lib/saved-message";
+import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
 import type { ChatApi, SavedMessageApi } from "@/shared/schemas";
 
 type ActivityFeedData = ReturnType<typeof ActivityQueryFactory.deriveFeedData>;

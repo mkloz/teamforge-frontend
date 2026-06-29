@@ -8,11 +8,10 @@ import {
   Send,
   UsersRound,
 } from "lucide-react";
-
-import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
 import type { ExploreGroup, ExploreJoinResult } from "@/shared/schemas";
 
 type JoinResultStatus = ExploreJoinResult["status"];

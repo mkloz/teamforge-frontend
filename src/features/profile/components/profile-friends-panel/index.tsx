@@ -1,13 +1,13 @@
 import { Link2, type LucideIcon, QrCode, UserPlus, Users } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
-import { buildPublicProfilePath } from "@/features/profile/lib/profile-route";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
 import { cn } from "@/shared/lib/utils";
+import { buildPublicProfilePath } from "@/shared/navigation/profile-navigation";
 import type { User } from "@/shared/schemas";
 import { FriendRequestsList } from "./friend-requests-list";
 import { FriendsList } from "./friends-list";

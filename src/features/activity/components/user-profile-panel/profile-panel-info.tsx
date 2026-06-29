@@ -5,14 +5,14 @@ import {
   MapPin,
   MessageSquareText,
 } from "lucide-react";
-import type { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
-import { getArchetype } from "@/features/profile/lib/archetypes";
-import type { ProfileNavigation } from "@/features/profile/lib/profile-route";
+import { getArchetype } from "@/features/profile/public/profile-archetypes";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import { AvatarPreviewDialog } from "@/shared/components/common/avatar-preview-dialog";
 import { PersonalityCoverArt } from "@/shared/components/profile/personality-cover-art";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import type { buildActivityDmNavigation } from "@/shared/navigation/activity-navigation";
+import type { ProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { OnlineStatus } from "@/shared/schemas/enums";
 import { buildShowUpSignals, type ShowUpSignal } from "./show-up-profile";
 import type { UserProfilePanelParticipant } from "./types";

@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { HeroSection } from "@/features/landing/components/hero";
-import { Navbar } from "@/features/landing/components/navbar";
 import { SideNav } from "@/features/landing/components/side-nav";
+import { DeferredLandingBelowFoldSections } from "@/features/landing/deferred-landing-below-fold-sections";
+import { useLandingScrollSnap } from "@/features/landing/hooks/use-landing-scroll-snap";
+import { scrollToLandingSection } from "@/shared/components/public-site/landing-scroll";
 import {
   LANDING_SECTIONS,
   type LandingSectionId,
-} from "@/features/landing/constants/landing-sections";
-import { DeferredLandingBelowFoldSections } from "@/features/landing/deferred-landing-below-fold-sections";
-import { useLandingScrollSnap } from "@/features/landing/hooks/use-landing-scroll-snap";
-import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
+} from "@/shared/components/public-site/landing-sections";
+import { Navbar } from "@/shared/components/public-site/public-site-shell";
 
 function isLandingSectionId(id: string): id is LandingSectionId {
   return LANDING_SECTIONS.some((section) => section.id === id);

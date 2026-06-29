@@ -3,11 +3,7 @@ import {
   validateGroupPlanDetailSearch,
   validateUserDetailSearch,
 } from "@/app/router/route-search-validators";
-import { validateActivityRouteSearch } from "@/features/activity/lib/activity-route";
-import { validateExploreRouteSearch } from "@/features/explore/lib/explore-route";
-import { validateForgeRouteSearch } from "@/features/forge/lib/forge-route";
-import { validateHomeRouteSearch } from "@/features/home/lib/home-route";
-import { validateSettingsRouteSearch } from "@/features/settings/lib/settings-route";
+import { validateExploreRouteSearch } from "@/features/explore/public/explore-navigation";
 import { refreshAuthSession } from "@/shared/api/api";
 import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { authSession } from "@/shared/api/auth-session";
@@ -19,6 +15,10 @@ import {
   parseAuthReturnSearch,
 } from "@/shared/lib/auth-route";
 import { getPostAuthRedirectPath } from "@/shared/lib/post-auth-route";
+import { validateActivityRouteSearch } from "@/shared/navigation/activity-navigation";
+import { validateForgeRouteSearch } from "@/shared/navigation/forge-navigation";
+import { validateHomeRouteSearch } from "@/shared/navigation/home-navigation";
+import { validateSettingsRouteSearch } from "@/shared/navigation/settings-navigation";
 
 interface RouteLocationLike {
   pathname: string;

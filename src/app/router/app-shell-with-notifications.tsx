@@ -1,7 +1,7 @@
 import { Bell } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { AppLayout } from "@/features/app-shell/app-layout";
-import { useNotificationsDrawerState } from "@/features/notifications/hooks/use-notifications-drawer-state";
+import { useNotificationsDrawerState } from "@/features/notifications/public/notification-drawer";
 import { Button } from "@/shared/components/ui/button";
 
 const NotificationsDrawer = lazy(() =>

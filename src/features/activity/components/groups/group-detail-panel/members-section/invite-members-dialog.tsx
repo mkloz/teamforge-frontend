@@ -4,7 +4,6 @@ import { useState } from "react";
 import { EmptyInviteCandidatesVisual } from "@/assets/empty-state/empty-invite-candidates";
 import { ErrorInviteSendFailedVisual } from "@/features/activity/assets/error-invite-send-failed";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -19,6 +18,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Notice } from "@/shared/components/ui/notice";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { cn } from "@/shared/lib/utils";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 
 interface InviteMembersDialogProps {
   candidates: ActivityParticipant[];

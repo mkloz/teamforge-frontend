@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Loader2, ShieldOff } from "lucide-react";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { FriendshipApi } from "@/shared/schemas";
 import { formatBlockedDate } from "./blocked-users-formatters";
 

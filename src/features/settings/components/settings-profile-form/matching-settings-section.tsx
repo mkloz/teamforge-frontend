@@ -3,7 +3,7 @@ import { Brain, Tags } from "lucide-react";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
-} from "@/features/onboarding/lib/onboarding-route";
+} from "@/features/onboarding/public/onboarding-navigation";
 import {
   OfflineSettingsNotice,
   PreferenceStatusMessage,

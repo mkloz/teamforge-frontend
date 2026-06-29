@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Check, MapPin, Plus, ShieldCheck } from "lucide-react";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { FriendshipApi } from "@/shared/schemas";
 import { formatTrustScore } from "./step3-group.utils";
 

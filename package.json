@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run test/unit",
     "lint": "node scripts/lint/full.mjs",
+    "lint:feature-seams": "node scripts/lint/feature-import-seams.mjs --strict",
     "lint:fix": "node scripts/lint/fix.mjs",
     "check:changed": "node scripts/lint/changed.mjs --full-oxlint",
     "check:local": "node scripts/verify/index.mjs local",

@@ -3,12 +3,12 @@ import {
   type OnboardingReturnTarget,
   onboardingModeValues,
   onboardingReturnTargets,
-} from "@/features/onboarding/lib/onboarding-route";
+} from "@/features/onboarding/public/onboarding-navigation";
+import { normalizeRouteSearch } from "@/shared/lib/route-search";
 import {
   normalizeSettingsSection,
   settingsSectionValues,
-} from "@/features/settings/lib/settings-route";
-import { normalizeRouteSearch } from "@/shared/lib/route-search";
+} from "@/shared/navigation/settings-navigation";
 import { type PersonalityType, personalityTypeSchema } from "@/shared/schemas";
 
 const onboardingFlowParsers = {

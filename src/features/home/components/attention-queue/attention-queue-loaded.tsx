@@ -1,11 +1,11 @@
 import { type RefObject, useRef } from "react";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeAttentionQueueRowsSkeleton } from "@/features/home/components/home-skeletons";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import type {
   HomeInvitationView,
   HomePanel,
-} from "@/features/home/lib/home-route";
-import { StatusPill } from "@/shared/components/ui/status-pill";
+} from "@/shared/navigation/home-navigation";
 
 import { ActionErrorBanner } from "./action-error-banner";
 import {

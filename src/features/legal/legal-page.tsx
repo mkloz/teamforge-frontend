@@ -27,8 +27,10 @@ import {
   UsersRound,
   WalletCards,
 } from "lucide-react";
-import { Footer } from "@/features/landing/components/footer";
-import { Navbar } from "@/features/landing/components/navbar";
+import {
+  Footer,
+  Navbar,
+} from "@/shared/components/public-site/public-site-shell";
 import { buttonVariants } from "@/shared/components/ui/button-variants";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Notice } from "@/shared/components/ui/notice";

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, MapPinned, Tag, Wifi } from "lucide-react";
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
 import {

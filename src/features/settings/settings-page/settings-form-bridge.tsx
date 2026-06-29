@@ -1,8 +1,8 @@
 import { SettingsProfileForm } from "@/features/settings/components/settings-profile-form";
 import { useSettingsBlockedUsers } from "@/features/settings/hooks/use-settings-blocked-users";
 import { useSettingsProfileForm } from "@/features/settings/hooks/use-settings-profile-form";
-import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import { PageErrorState } from "@/shared/components/page-error-state";
+import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import { SettingsSectionContentLoading } from "./settings-page.loading";
 
 interface SettingsFormBridgeProps {

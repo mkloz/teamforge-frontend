@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown, Download } from "lucide-react";
 import { ForgeOrb } from "@/features/landing/components/hero/forge-orb";
-import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
-import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
+import { scrollToLandingSection } from "@/shared/components/public-site/landing-scroll";
+import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 import { Button } from "@/shared/components/ui/button";
 
 export function HeroSection() {

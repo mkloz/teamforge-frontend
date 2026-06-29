@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { cn } from "@/shared/lib/utils";
+import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 
 import { SettingsDetailHeader } from "./settings-detail-header";
 import { getSettingsSectionMeta } from "./settings-sections";

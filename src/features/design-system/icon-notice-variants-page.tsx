@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
+import { ActivityMenuIcon } from "@/features/activity/public/activity-menu-icon";
 import { Button } from "@/shared/components/ui/button";
 import { CountBadge } from "@/shared/components/ui/count-badge";
 import { FactItem, type FactItemProps } from "@/shared/components/ui/fact-item";

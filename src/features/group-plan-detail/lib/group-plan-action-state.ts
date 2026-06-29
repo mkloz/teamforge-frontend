@@ -7,8 +7,7 @@ import {
   Send,
   X,
 } from "lucide-react";
-import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
-import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
+import { buildExploreNavigation } from "@/features/explore/public/explore-navigation";
 import {
   type GroupPlanAccessMode,
   type GroupPlanViewerAccess,
@@ -16,6 +15,7 @@ import {
 } from "@/features/group-plan-detail/lib/group-plan-access";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { formatStatusLabel } from "@/features/group-plan-detail/lib/group-plan-detail-formatters";
+import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
 import type { ExploreJoinResult } from "@/shared/schemas/explore";
 
 type ActionHref =

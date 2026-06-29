@@ -1,6 +1,8 @@
 import { Bell } from "lucide-react";
-import { useNotificationsDrawerState } from "@/features/notifications/hooks/use-notifications-drawer-state";
-import { useUnreadNotificationCount } from "@/features/notifications/hooks/use-unread-notification-count";
+import {
+  useNotificationsDrawerState,
+  useUnreadNotificationCount,
+} from "@/features/notifications/public/notification-drawer";
 import { Button } from "@/shared/components/ui/button";
 import { CountBadge } from "@/shared/components/ui/count-badge";
 

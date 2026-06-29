@@ -3,7 +3,7 @@ import type {
   ActivityFilter,
   ActivityKind,
   ActivityPanel,
-} from "@/features/activity/lib/activity-route";
+} from "@/shared/navigation/activity-navigation";
 
 import type {
   ActivityRouteState,

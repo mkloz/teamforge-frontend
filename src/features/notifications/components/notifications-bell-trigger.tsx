@@ -1,5 +1,5 @@
 import { Bell } from "lucide-react";
-import { useUnreadNotificationCount } from "@/features/notifications/hooks/use-unread-notification-count";
+import { useUnreadNotificationCount } from "@/features/notifications/public/notification-drawer";
 import { Button } from "@/shared/components/ui/button";
 import { CountBadge } from "@/shared/components/ui/count-badge";
 import {

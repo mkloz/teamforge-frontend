@@ -18,15 +18,15 @@ import {
   validateGroupPlanDetailSearch,
   validateUserDetailSearch,
 } from "@/app/router/route-search-validators";
-import { validateActivityRouteSearch } from "@/features/activity/lib/activity-route";
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
-import { validateExploreRouteSearch } from "@/features/explore/lib/explore-route";
-import { validateForgeRouteSearch } from "@/features/forge/lib/forge-route";
-import { validateHomeRouteSearch } from "@/features/home/lib/home-route";
-import { validateSettingsRouteSearch } from "@/features/settings/lib/settings-route";
+import { validateExploreRouteSearch } from "@/features/explore/public/explore-navigation";
 import { appQueryClient } from "@/shared/api/query-client";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
+import { validateActivityRouteSearch } from "@/shared/navigation/activity-navigation";
+import { validateForgeRouteSearch } from "@/shared/navigation/forge-navigation";
+import { validateHomeRouteSearch } from "@/shared/navigation/home-navigation";
+import { validateSettingsRouteSearch } from "@/shared/navigation/settings-navigation";
 
 interface PreloadableGroupPlanDetail {
   plan?: { coverImage?: string | null } | null;
@@ -170,7 +170,7 @@ async function preloadDefaultExploreGroups() {
 
 async function preloadActivityFeed() {
   const { ActivityQueryFactory } = await import(
-    "@/features/activity/api/activity-query-factory"
+    "@/features/activity/public/activity-query-factory"
   );
 
   await Promise.allSettled([

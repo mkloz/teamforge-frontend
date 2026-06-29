@@ -9,20 +9,19 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import type { ReactElement } from "react";
-
-import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
-import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
-import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { buildExploreNavigation } from "@/features/explore/public/explore-navigation";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import type { HomeNextMove } from "@/features/home/lib/home-insights";
-import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
-} from "@/features/onboarding/lib/onboarding-route";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
-import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
+} from "@/features/onboarding/public/onboarding-navigation";
 import { Button } from "@/shared/components/ui/button";
+import { buildActivityGroupNavigation } from "@/shared/navigation/activity-navigation";
+import { buildForgeLaunchNavigation } from "@/shared/navigation/forge-navigation";
+import { buildHomeNavigation } from "@/shared/navigation/home-navigation";
+import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
+import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
 interface HomeHeroMoveIconProps {
   kind: HomeNextMove["kind"];

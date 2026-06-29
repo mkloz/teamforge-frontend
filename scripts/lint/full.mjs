@@ -43,6 +43,12 @@ const stages = [
     spec: resolvePackageBin("dependency-cruiser", "depcruise"),
   },
   {
+    args: ["--strict"],
+    label: "feature import seams",
+    name: "feature-seams",
+    spec: resolveNodeScript("scripts/lint/feature-import-seams.mjs"),
+  },
+  {
     label: "Fallow",
     name: "fallow",
     spec: resolveNodeScript("scripts/lint/fallow.mjs"),

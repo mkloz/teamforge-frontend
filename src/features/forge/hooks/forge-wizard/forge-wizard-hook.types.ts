@@ -1,13 +1,13 @@
 import type { Dispatch, MutableRefObject } from "react";
 
 import type { ForgeMode } from "@/features/forge/lib/forge-contract";
-import type { ForgeIdeaLaunch } from "@/features/forge/lib/forge-route";
 import type {
   ForgeWizardAction,
   ForgeWizardData,
   ForgeWizardField,
   Step,
 } from "@/features/forge/lib/forge-wizard";
+import type { ForgeIdeaLaunch } from "@/shared/navigation/forge-navigation";
 
 export type ForgeWizardDispatch = Dispatch<ForgeWizardAction>;
 export type SetForgeWizardField = <Field extends ForgeWizardField>(

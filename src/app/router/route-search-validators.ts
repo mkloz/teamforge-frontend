@@ -2,12 +2,12 @@ import {
   type GroupPlanDetailRouteSearch,
   type GroupPlanDetailSource,
   groupPlanDetailSourceValues,
-} from "@/features/group-plan-detail/lib/group-plan-detail-route";
+} from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import {
   type UserDetailIntent,
   type UserDetailRouteSearch,
   userDetailIntentValues,
-} from "@/features/profile/lib/profile-route";
+} from "@/shared/navigation/profile-navigation";
 
 function parseOptionalSearchString(value: unknown) {
   return typeof value === "string" ? value : undefined;

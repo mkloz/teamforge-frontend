@@ -4,7 +4,7 @@ import {
   normalizeSettingsSection,
   type SettingsSection,
   settingsSectionValues,
-} from "@/features/settings/lib/settings-route";
+} from "@/shared/navigation/settings-navigation";
 
 const DEFAULT_SETTINGS_SECTION: SettingsSection = "account";
 

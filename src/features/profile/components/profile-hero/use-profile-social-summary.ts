@@ -1,7 +1,7 @@
 import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
-import { useProfileFriendRequests } from "@/features/profile/hooks/use-profile-friend-requests";
 import { useProfileFriends } from "@/features/profile/hooks/use-profile-friends";
 import { useProfilePublicFriends } from "@/features/profile/hooks/use-profile-public-friends";
+import { useProfileFriendRequests } from "@/features/profile/public/profile-friend-requests";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import type { User } from "@/shared/schemas";
 

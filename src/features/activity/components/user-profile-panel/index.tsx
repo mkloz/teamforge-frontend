@@ -1,4 +1,4 @@
-import type { ProfileNavigation } from "@/features/profile/lib/profile-route";
+import type { ProfileNavigation } from "@/shared/navigation/profile-navigation";
 import { type MutualGroup, MutualGroupsSection } from "./mutual-groups-section";
 import { ProfilePanelInfo } from "./profile-panel-info";
 import {

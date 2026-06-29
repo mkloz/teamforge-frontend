@@ -18,6 +18,12 @@ import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
+import { ChatHeader } from "../conversation-workspace/chat-header";
+import { ChatBackground } from "../conversation-workspace/message-timeline/chat-background";
+import { MessageContent } from "../conversation-workspace/message-timeline/message-item/message-content";
+import { MessageFooter } from "../conversation-workspace/message-timeline/message-item/message-footer";
+import { MessageMedia } from "../conversation-workspace/message-timeline/message-item/message-media";
+import { ReplyReference } from "../conversation-workspace/message-timeline/message-item/reply-reference";
 import {
   getSavedMessageBubbleSizeClass,
   getSavedMessageBubbleViewState,
@@ -32,12 +38,6 @@ import {
   type SavedMessagesStateViewState,
   shouldUseSavedMessageInlineFooter,
 } from "./saved-messages-conversation-view-state";
-import { UnifiedChatHeader } from "./unified-conversation-view/unified-chat-header";
-import { ChatBackground } from "./unified-conversation-view/unified-message-list/chat-background";
-import { MessageContent } from "./unified-conversation-view/unified-message-list/unified-message-item/message-content";
-import { MessageFooter } from "./unified-conversation-view/unified-message-list/unified-message-item/message-footer";
-import { MessageMedia } from "./unified-conversation-view/unified-message-list/unified-message-item/message-media";
-import { ReplyReference } from "./unified-conversation-view/unified-message-list/unified-message-item/reply-reference";
 
 interface SavedMessagesConversationViewProps {
   conversations: UnifiedConversation[];
@@ -85,7 +85,7 @@ export function SavedMessagesConversationView({
     <div className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40">
       <ChatBackground />
 
-      <UnifiedChatHeader
+      <ChatHeader
         kind="dm"
         title={SAVED_MESSAGES_TITLE}
         subtitle={subtitle}

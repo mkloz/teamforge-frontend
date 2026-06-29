@@ -1,7 +1,7 @@
 import { type RefObject, useRef, useState } from "react";
 import { SavedMessagesConversationView } from "@/features/activity/components/chat/saved-messages-conversation-view";
-import { UnifiedConversationView } from "@/features/activity/components/chat/unified-conversation-view";
-import type { MessageScrollHandle } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/message-scroll.types";
+import { ConversationWorkspace } from "@/features/activity/components/conversation-workspace";
+import type { MessageScrollHandle } from "@/features/activity/components/conversation-workspace/message-timeline/message-scroll.types";
 import {
   ProfilePanel,
   ProfilePanelMobile,
@@ -408,7 +408,7 @@ function GroupConversationStage({
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
       <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
-        <UnifiedConversationView
+        <ConversationWorkspace
           kind="group"
           data={selectedGroup}
           messages={activity.selectedGroupMessages}
@@ -468,7 +468,7 @@ function DirectConversationStage({
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
       <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
-        <UnifiedConversationView
+        <ConversationWorkspace
           kind="dm"
           data={selectedChat}
           messages={activity.selectedDirectMessages}

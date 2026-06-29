@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
 import { EmptyHomePlansVisual } from "@/features/home/assets/empty-home-plans";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeUpcomingPlansSkeleton } from "@/features/home/components/home-skeletons";
@@ -8,6 +7,7 @@ import { useHomeData } from "@/features/home/hooks/use-home-data";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import { getUpcomingPreview } from "@/features/home/lib/home-insights";
 import { Button } from "@/shared/components/ui/button";
+import { buildActivityNavigation } from "@/shared/navigation/activity-navigation";
 
 import { PlanCard } from "./plan-card";
 

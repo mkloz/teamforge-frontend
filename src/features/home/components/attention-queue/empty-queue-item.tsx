@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
-import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
+import { buildExploreNavigation } from "@/features/explore/public/explore-navigation";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 
 export function EmptyQueueItem() {

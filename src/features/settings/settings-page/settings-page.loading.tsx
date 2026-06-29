@@ -1,5 +1,4 @@
 import { SettingsSessionRowSkeleton } from "@/features/settings/components/settings-session-row-skeleton";
-import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
   SkeletonButton,
@@ -7,6 +6,7 @@ import {
 } from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
+import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 
 interface SettingsPageLoadingProps extends PageLoadingProps {
   activeSection?: SettingsSection;

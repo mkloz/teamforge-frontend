@@ -1,7 +1,7 @@
 import type { QueryKey } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { useUnreadNotificationCount } from "@/features/notifications/hooks/use-unread-notification-count";
+import { useUnreadNotificationCount } from "@/features/notifications/public/notification-drawer";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import { appQueryClient } from "@/shared/api/query-client";
 import { invalidateNotificationSurfaces } from "@/shared/api/query-invalidation";

@@ -1,13 +1,13 @@
 import { lazy, Suspense, useEffect, useRef } from "react";
 import {
-  LANDING_SECTIONS,
-  type LandingSectionId,
-} from "@/features/landing/constants/landing-sections";
-import {
   LANDING_BELOW_FOLD_REQUEST_EVENT,
   type LandingBelowFoldRequestDetail,
   scrollLandingElementToStart,
-} from "@/features/landing/lib/landing-scroll";
+} from "@/shared/components/public-site/landing-scroll";
+import {
+  LANDING_SECTIONS,
+  type LandingSectionId,
+} from "@/shared/components/public-site/landing-sections";
 import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 
 const LazyLandingBelowFoldSections = lazy(() =>

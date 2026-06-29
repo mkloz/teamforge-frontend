@@ -1,12 +1,11 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import type {
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
-import type { ActivityKind } from "@/features/activity/lib/activity-route";
+import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
+import type { ActivityKind } from "@/shared/navigation/activity-navigation";
 import {
   canLoadMessageTimeline,
   getFirstUnreadMessageId,

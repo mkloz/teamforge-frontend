@@ -248,6 +248,28 @@ async function runArchitectureSummary() {
 }
 
 /**
+ * @returns {Promise<HealthCommandSummary>} Feature import seam summary.
+ */
+async function runFeatureImportSeamsSummary() {
+  const result = await runCommand({
+    args: ["--strict"],
+    name: "feature import seams",
+    spec: resolveNodeScript("scripts/lint/feature-import-seams.mjs"),
+  });
+
+  return {
+    ...summarizeCommand(
+      result.name,
+      result.status,
+      result.durationMs,
+      [result.stdout, result.stderr],
+      "no cross-feature internal imports",
+    ),
+    commandLine: result.commandLine,
+  };
+}
+
+/**
  * @returns {Promise<HealthCommandSummary>} Knip summary.
  */
 async function runKnipSummary() {
@@ -810,6 +832,7 @@ async function main() {
   const commandSummaries = await Promise.all([
     runQualityIntelligence(),
     runArchitectureSummary(),
+    runFeatureImportSeamsSummary(),
     runKnipSummary(),
     runAuditSummary(),
   ]);

@@ -1,7 +1,7 @@
 import { Check, Loader2, UserPlus, X } from "lucide-react";
-import { useProfileFriendRequests } from "@/features/profile/hooks/use-profile-friend-requests";
 import { useProfileFriends } from "@/features/profile/hooks/use-profile-friends";
 import { useProfileOutgoingFriendRequests } from "@/features/profile/hooks/use-profile-outgoing-friend-requests";
+import { useProfileFriendRequests } from "@/features/profile/public/profile-friend-requests";
 import { Button } from "@/shared/components/ui/button";
 import { FriendCard } from "./friend-card";
 

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Route } from "lucide-react";
 
-import { homeQuickActions } from "@/features/app-shell/lib/app-navigation";
+import { homeQuickActions } from "@/features/app-shell/public/app-navigation";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 

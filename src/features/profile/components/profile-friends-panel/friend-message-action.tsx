@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { MessageSquare } from "lucide-react";
-import { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
 import { Button } from "@/shared/components/ui/button";
+import { buildActivityDmNavigation } from "@/shared/navigation/activity-navigation";
 
 interface FriendMessageActionProps {
   chatId: string | null;

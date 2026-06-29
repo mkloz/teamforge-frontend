@@ -3,7 +3,7 @@ import { type RefObject, useEffect, useEffectEvent } from "react";
 import type {
   HomeInvitationView,
   HomePanel,
-} from "@/features/home/lib/home-route";
+} from "@/shared/navigation/home-navigation";
 
 import type {
   AttentionQueueFriendRequest,

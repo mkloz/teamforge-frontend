@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Tags } from "lucide-react";
-import { buildInterestsEditNavigation } from "@/features/onboarding/lib/onboarding-route";
+import { buildInterestsEditNavigation } from "@/features/onboarding/public/onboarding-navigation";
 import { EmptyProfileActivityLanesVisual } from "@/features/profile/assets/empty-profile-activity-lanes";
 import { Button } from "@/shared/components/ui/button";
 

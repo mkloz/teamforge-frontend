@@ -7,8 +7,7 @@ import {
   appSidebarNavigation,
   getAppNavigationItem,
   isAppNavigationItemActive,
-} from "@/features/app-shell/lib/app-navigation";
-import { buildHomeNavigation } from "@/features/home/lib/home-route";
+} from "@/features/app-shell/public/app-navigation";
 import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
@@ -16,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
+import { buildHomeNavigation } from "@/shared/navigation/home-navigation";
 import { NavItem } from "./nav-item";
 
 interface AppSidebarProps {

@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { getActiveGroupPreview } from "@/features/home/lib/home-insights";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import { Button } from "@/shared/components/ui/button";
+import { buildActivityNavigation } from "@/shared/navigation/activity-navigation";
 
 import { BrowseGroupsRow } from "./browse-groups-row";
 import type { GroupChatState } from "./group-chat-state";

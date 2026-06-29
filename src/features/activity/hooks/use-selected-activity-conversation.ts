@@ -5,7 +5,6 @@ import type {
   ActivityDirectSelectionData,
   ActivityGroupSelectionData,
 } from "@/features/activity/api/activity-query-data";
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import {
   findSelectedChatSummary,
   getActiveTypingUsers,
@@ -13,6 +12,7 @@ import {
   getSelectedConversationParticipants,
   getSelectedConversationStatus,
 } from "@/features/activity/hooks/use-selected-activity-conversation-state";
+import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 import type { ActivitySelectionKind } from "@/features/activity/store/activity-store/activity-store.types";
 

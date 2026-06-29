@@ -4,7 +4,7 @@ import type {
   ActivityDensity,
   ActivityFilter,
   ActivityKind,
-} from "@/features/activity/lib/activity-route";
+} from "@/shared/navigation/activity-navigation";
 import type {
   ResolvedActivityRouteState,
   SetActivityRouteState,

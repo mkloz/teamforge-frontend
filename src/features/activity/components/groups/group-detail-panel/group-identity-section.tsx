@@ -17,7 +17,7 @@ import type {
   GroupStatus,
   MemberRole,
 } from "@/features/activity/lib/activity-contract";
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import { Avatar } from "@/shared/components/common/avatar";
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";

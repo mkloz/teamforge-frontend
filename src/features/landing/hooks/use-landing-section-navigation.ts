@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useEventCallback, useEventListener } from "usehooks-ts";
-
-import {
-  LANDING_SECTIONS,
-  type LandingSectionId,
-} from "@/features/landing/constants/landing-sections";
 import {
   scrollToLandingSection,
   scrollToLandingTop,
-} from "@/features/landing/lib/landing-scroll";
+} from "@/shared/components/public-site/landing-scroll";
+import {
+  LANDING_SECTIONS,
+  type LandingSectionId,
+} from "@/shared/components/public-site/landing-sections";
 import { getElementById } from "@/shared/lib/browser-scroll";
 
 function isLandingSectionId(id: string): id is LandingSectionId {

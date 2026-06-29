@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { BellOff, Pin, Users } from "lucide-react";
-import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import { Avatar } from "@/shared/components/common/avatar";
 import { UnreadBadge } from "@/shared/components/common/unread-badge";
 import { cn } from "@/shared/lib/utils";
+import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
 
 interface GroupRowProps {
   group: HomeGroup;
