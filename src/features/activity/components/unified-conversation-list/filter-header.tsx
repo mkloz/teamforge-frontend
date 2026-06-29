@@ -1,5 +1,4 @@
 import { LayoutList, Rows } from "lucide-react";
-import { memo } from "react";
 import type { FilterChip } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
 import { RadioGroup } from "@/shared/components/ui/radio-group";
@@ -62,7 +61,7 @@ const NEXT_DENSITY = {
   default: "compact",
 } as const satisfies Record<ConversationListDensity, ConversationListDensity>;
 
-export const FilterHeader = memo(function FilterHeader({
+export function FilterHeader({
   filters,
   activeFilter,
   counts,
@@ -135,7 +134,7 @@ export const FilterHeader = memo(function FilterHeader({
       </div>
     </nav>
   );
-});
+}
 
 function getBadgeCount(
   key: FilterChip,

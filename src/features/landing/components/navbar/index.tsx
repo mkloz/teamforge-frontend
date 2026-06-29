@@ -71,7 +71,7 @@ function getMobileNavigationClassName({
   staticPublicTheme: boolean;
 }) {
   return cn(
-    "dark fixed inset-0 z-40 overflow-y-auto bg-hero-bg/55 pt-16 backdrop-blur-sm transition-opacity duration-150 lg:hidden",
+    "dark fixed inset-0 z-40 m-0 size-auto max-h-none max-w-none overflow-y-auto border-0 bg-hero-bg/55 p-0 pt-16 backdrop-blur-sm transition-opacity duration-150 lg:hidden",
     staticPublicTheme && "public-forge-theme",
     menuOpen
       ? "pointer-events-auto opacity-100"
@@ -84,6 +84,15 @@ function getDownloadInstallAction({
   installAction,
 }: Pick<NavbarProps, "actionSet" | "installAction">) {
   return actionSet === "download" ? installAction : undefined;
+}
+
+async function runLandingSignOut(closeMenu: () => void) {
+  closeMenu();
+  const { logoutCurrentSession } = await import(
+    "@/shared/api/auth-session-commands"
+  );
+
+  await logoutCurrentSession();
 }
 
 export function Navbar({
@@ -134,16 +143,9 @@ export function Navbar({
   async function handleSignOut() {
     setIsSigningOut(true);
 
-    try {
-      closeMenu();
-      const { logoutCurrentSession } = await import(
-        "@/shared/api/auth-session-commands"
-      );
-
-      await logoutCurrentSession();
-    } finally {
+    await runLandingSignOut(closeMenu).finally(() => {
       setIsSigningOut(false);
-    }
+    });
   }
 
   return (
@@ -196,20 +198,22 @@ export function Navbar({
         </div>
       </header>
 
-      <div
+      <dialog
         id="landing-mobile-navigation"
-        ref={menuRef}
+        open={menuOpen}
         className={getMobileNavigationClassName({
           menuOpen,
           staticPublicTheme,
         })}
         aria-hidden={!menuOpen}
         inert={!menuOpen}
-        role="dialog"
         aria-modal="true"
         aria-label="Mobile Navigation Menu"
       >
-        <div className="border-white/10 border-b bg-hero-bg/98 px-6 py-4 shadow-xl">
+        <div
+          ref={menuRef}
+          className="border-white/10 border-b bg-hero-bg/98 px-6 py-4 shadow-xl"
+        >
           <nav
             className="mx-auto grid w-full max-w-sm grid-cols-2 gap-2"
             aria-label="Mobile navigation links"
@@ -242,7 +246,7 @@ export function Navbar({
             />
           </div>
         </div>
-      </div>
+      </dialog>
     </>
   );
 }

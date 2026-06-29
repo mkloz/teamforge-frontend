@@ -1,5 +1,4 @@
 import { Search } from "lucide-react";
-import { memo } from "react";
 import { Input } from "@/shared/components/ui/input";
 
 interface SearchHeaderProps {
@@ -10,7 +9,7 @@ interface SearchHeaderProps {
   onChange: (val: string) => void;
 }
 
-export const SearchHeader = memo(function SearchHeader({
+export function SearchHeader({
   opacity,
   isEnabled,
   placeholder = "Search conversations...",
@@ -38,4 +37,4 @@ export const SearchHeader = memo(function SearchHeader({
       </div>
     </div>
   );
-});
+}

@@ -1,4 +1,5 @@
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import { useActivityComposerMessageState } from "@/features/activity/hooks/use-activity-composer-message-state";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import {
   canDeleteMessage,
@@ -76,12 +77,8 @@ function clearComposerReference(
 export function useActivityMessageActions() {
   const selectedKind = useActivityStore((state) => state.selectedKind);
   const selectedId = useActivityStore((state) => state.selectedId);
-  const replyingTo = useActivityStore((state) => state.replyingTo);
-  const editingMessage = useActivityStore((state) => state.editingMessage);
-  const setReplyingTo = useActivityStore((state) => state.setReplyingTo);
-  const setEditingMessage = useActivityStore(
-    (state) => state.setEditingMessage,
-  );
+  const { editingMessage, replyingTo, setEditingMessage, setReplyingTo } =
+    useActivityComposerMessageState();
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   function guardMessageAction(guard: MessageActionOfflineGuard) {

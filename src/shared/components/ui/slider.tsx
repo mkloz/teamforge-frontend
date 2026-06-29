@@ -1,5 +1,5 @@
 import { Slider as SliderPrimitive } from "radix-ui";
-import React from "react";
+import type { ComponentProps } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -25,20 +25,13 @@ function Slider({
   min = 0,
   max = 100,
   ...props
-}: React.ComponentProps<typeof SliderPrimitive.Root>) {
-  const values = React.useMemo(
-    () =>
-      Array.isArray(value)
-        ? value
-        : Array.isArray(defaultValue)
-          ? defaultValue
-          : [min, max],
-    [value, defaultValue, min, max],
-  );
-  const thumbKeys = React.useMemo(
-    () => getThumbKeys(values.length),
-    [values.length],
-  );
+}: ComponentProps<typeof SliderPrimitive.Root>) {
+  const values = Array.isArray(value)
+    ? value
+    : Array.isArray(defaultValue)
+      ? defaultValue
+      : [min, max];
+  const thumbKeys = getThumbKeys(values.length);
 
   return (
     <SliderPrimitive.Root

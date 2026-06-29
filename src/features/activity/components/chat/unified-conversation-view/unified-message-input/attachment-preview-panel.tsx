@@ -1,4 +1,3 @@
-import { memo } from "react";
 import {
   CHAT_ATTACHMENT_MAX_SIZE_LABEL,
   CHAT_MAX_ATTACHMENTS,
@@ -16,7 +15,7 @@ interface AttachmentPreviewPanelProps {
   onRemoveAttachment: (index: number) => void;
 }
 
-export const AttachmentPreviewPanel = memo(function AttachmentPreviewPanel({
+export function AttachmentPreviewPanel({
   disabled,
   files,
   isEditing,
@@ -43,4 +42,4 @@ export const AttachmentPreviewPanel = memo(function AttachmentPreviewPanel({
       />
     </div>
   );
-});
+}

@@ -10,7 +10,6 @@ import {
   UserRoundPlus,
   UsersRound,
 } from "lucide-react";
-import { memo } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { getSystemMessageConfig } from "@/features/activity/lib/chat-utils";
 import { cn } from "@/shared/lib/utils";
@@ -24,7 +23,7 @@ interface SystemMessageProps {
  * SystemMessage - Renders a system message as a compact status note.
  * Optimized for readability and consistent branding across themes.
  */
-export const SystemMessage = memo(function SystemMessage({
+export function SystemMessage({
   message,
   isHighlighted = false,
 }: SystemMessageProps) {
@@ -84,4 +83,4 @@ export const SystemMessage = memo(function SystemMessage({
       </div>
     </div>
   );
-});
+}

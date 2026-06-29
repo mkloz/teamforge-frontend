@@ -1,5 +1,3 @@
-import { memo } from "react";
-
 import { AnvilAmbientEffects } from "./anvil-ambient-effects";
 import { AnvilBase } from "./anvil-base";
 import { AnvilHammer } from "./anvil-hammer";
@@ -12,9 +10,7 @@ interface ForgeAnvilStageProps {
 const ANVIL_STAGE_VIEW_BOX = "32 32 156 142";
 const ANVIL_STAGE_ASPECT_RATIO = 142 / 156;
 
-export const ForgeAnvilStage = memo(function ForgeAnvilStage({
-  size,
-}: ForgeAnvilStageProps) {
+export function ForgeAnvilStage({ size }: ForgeAnvilStageProps) {
   return (
     <div
       className="relative"
@@ -34,4 +30,4 @@ export const ForgeAnvilStage = memo(function ForgeAnvilStage({
       </svg>
     </div>
   );
-});
+}

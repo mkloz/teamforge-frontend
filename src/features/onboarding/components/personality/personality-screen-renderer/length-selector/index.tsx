@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 import { staggerContainer } from "@/features/onboarding/constants/motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import { LengthSelectorActions } from "./length-selector-actions";
@@ -16,13 +16,15 @@ interface LengthSelectorProps {
   answers?: Record<number, number>;
 }
 
+const EMPTY_LENGTH_SELECTOR_ANSWERS: Record<number, number> = {};
+
 export function LengthSelector({
   onBack,
   onBegin,
   onSelectionChange,
   initialLength = 50,
   mode = "begin",
-  answers = {},
+  answers = EMPTY_LENGTH_SELECTOR_ANSWERS,
 }: LengthSelectorProps) {
   const {
     actionLabel,
@@ -40,25 +42,27 @@ export function LengthSelector({
   });
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
-      className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col gap-0 sm:px-0"
-    >
-      <LengthSelectorHeader {...content} />
-      <LengthSelectorOptionsList
-        answers={answers}
-        isAdjust={isAdjust}
-        onSelect={setSelectedLength}
-        selectedLength={selectedLength}
-      />
-      <LengthSelectorActions
-        actionLabel={actionLabel}
-        backLabel={isAdjust ? "Back to break" : "Back to guidance"}
-        onBack={onBack}
-        onBegin={handleBegin}
-      />
-    </motion.div>
+    <LazyMotion features={domAnimation}>
+      <m.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col gap-0 sm:px-0"
+      >
+        <LengthSelectorHeader {...content} />
+        <LengthSelectorOptionsList
+          answers={answers}
+          isAdjust={isAdjust}
+          onSelect={setSelectedLength}
+          selectedLength={selectedLength}
+        />
+        <LengthSelectorActions
+          actionLabel={actionLabel}
+          backLabel={isAdjust ? "Back to break" : "Back to guidance"}
+          onBack={onBack}
+          onBegin={handleBegin}
+        />
+      </m.div>
+    </LazyMotion>
   );
 }

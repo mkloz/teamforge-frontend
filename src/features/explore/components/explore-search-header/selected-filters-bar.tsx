@@ -71,13 +71,21 @@ function getCategoryFilterChips({
   removeCategory,
   selectedCategories,
 }: ExploreRouteState): SelectedFilterChip[] {
-  return selectedCategories
-    .filter((categoryId) => categoryId !== "ALL")
-    .map((categoryId) => ({
+  const chips: SelectedFilterChip[] = [];
+
+  for (const categoryId of selectedCategories) {
+    if (categoryId === "ALL") {
+      continue;
+    }
+
+    chips.push({
       key: categoryId,
       label: getCategoryLabel(categoryId),
       onRemove: () => removeCategory(categoryId),
-    }));
+    });
+  }
+
+  return chips;
 }
 
 function getLocationFilterChip({

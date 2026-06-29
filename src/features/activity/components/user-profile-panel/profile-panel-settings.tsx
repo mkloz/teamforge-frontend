@@ -5,13 +5,21 @@ import { Button, type ButtonV2Props } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 interface ProfilePanelSettingsProps {
+  content: ProfilePanelSettingsContent;
+  mode: "desktop" | "mobile";
+  safety: ProfilePanelSettingsSafety;
+}
+
+interface ProfilePanelSettingsContent {
   isMuted: boolean;
   isBlocked: boolean;
-  blockActionDisabled?: boolean;
-  isBlockActionPending?: boolean;
-  isMuteActionDisabled?: boolean;
-  isMuteActionPending?: boolean;
-  isMobile?: boolean;
+}
+
+interface ProfilePanelSettingsSafety {
+  blockActionDisabled: boolean;
+  isMuteActionDisabled: boolean;
+  blockActionPending: boolean;
+  muteActionPending: boolean;
   onToggleMute?: () => void;
   onToggleBlock?: () => void;
 }
@@ -53,29 +61,24 @@ interface BlockActionState {
 }
 
 export function ProfilePanelSettings({
-  isMuted,
-  isBlocked,
-  blockActionDisabled = false,
-  isBlockActionPending = false,
-  isMuteActionDisabled = false,
-  isMuteActionPending = false,
-  isMobile = false,
-  onToggleMute,
-  onToggleBlock,
+  content,
+  mode,
+  safety,
 }: ProfilePanelSettingsProps) {
+  const isMobile = mode === "mobile";
   const muteAction = getMuteActionState({
-    isDisabled: isMuteActionDisabled,
-    isMuted,
-    isPending: isMuteActionPending,
-    onToggle: onToggleMute,
+    isDisabled: safety.isMuteActionDisabled,
+    isMuted: content.isMuted,
+    isPending: safety.muteActionPending,
+    onToggle: safety.onToggleMute,
   });
   const blockAction = getBlockActionState({
-    isBlocked,
-    isDisabled: blockActionDisabled,
-    isPending: isBlockActionPending,
-    onToggle: onToggleBlock,
+    isBlocked: content.isBlocked,
+    isDisabled: safety.blockActionDisabled,
+    isPending: safety.blockActionPending,
+    onToggle: safety.onToggleBlock,
   });
-  const blockDialog = getBlockDialogState(isBlocked);
+  const blockDialog = getBlockDialogState(content.isBlocked);
 
   return (
     <section
@@ -87,8 +90,8 @@ export function ProfilePanelSettings({
           variant={muteAction.variant}
           disabled={muteAction.disabled}
           title={muteAction.title}
-          ariaPressed={isMuted}
-          onClick={onToggleMute}
+          ariaPressed={content.isMuted}
+          onClick={safety.onToggleMute}
           label={muteAction.label}
         >
           {muteAction.icon}
@@ -100,8 +103,8 @@ export function ProfilePanelSettings({
           description={blockDialog.description}
           details={blockDialog.details}
           disabled={blockAction.disabled}
-          loading={isBlockActionPending}
-          onConfirm={onToggleBlock}
+          loading={safety.blockActionPending}
+          onConfirm={safety.onToggleBlock}
           title={blockDialog.title}
           tone={blockDialog.tone}
           trigger={

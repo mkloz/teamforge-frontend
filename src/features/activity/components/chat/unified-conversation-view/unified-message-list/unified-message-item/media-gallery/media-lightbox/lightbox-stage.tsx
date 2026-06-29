@@ -1,7 +1,6 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { MouseEvent } from "react";
-import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { isGifVideoAttachment } from "@/features/activity/lib/gif-attachments";
 
@@ -15,7 +14,7 @@ interface LightboxStageProps {
   onPrev: (event: MouseEvent) => void;
 }
 
-export const LightboxStage = memo(function LightboxStage({
+export function LightboxStage({
   count,
   currentMedia,
   onNext,
@@ -23,50 +22,45 @@ export const LightboxStage = memo(function LightboxStage({
 }: LightboxStageProps) {
   return (
     <div className="pointer-events-auto relative flex flex-1 items-center justify-center overflow-hidden p-2 sm:p-10">
-      <AnimatePresence mode="wait" initial={false}>
-        {renderAnimatedLightboxMedia(currentMedia)}
-      </AnimatePresence>
+      <LazyMotion features={domAnimation}>
+        <AnimatePresence mode="wait" initial={false}>
+          {currentMedia ? (
+            <AnimatedLightboxMedia key={currentMedia.id} media={currentMedia} />
+          ) : null}
+        </AnimatePresence>
+      </LazyMotion>
 
       <LightboxStageNavigation count={count} onNext={onNext} onPrev={onPrev} />
     </div>
   );
-});
+}
 
-function renderAnimatedLightboxMedia(media: UnifiedAttachment | null) {
-  if (!media) {
-    return null;
-  }
-
+function AnimatedLightboxMedia({ media }: { media: UnifiedAttachment }) {
   return (
-    <motion.div
-      key={media.id}
+    <m.div
       initial={{
         opacity: 0,
         scale: 0.9,
         rotateY: 10,
-        filter: "blur(20px)",
       }}
       animate={{
         opacity: 1,
         scale: 1,
         rotateY: 0,
-        filter: "blur(0px)",
       }}
       exit={{
         opacity: 0,
         scale: 1.1,
         rotateY: -10,
-        filter: "blur(20px)",
       }}
       transition={{
         duration: 0.45,
         ease: [0.16, 1, 0.3, 1],
-        filter: { duration: 0.3 },
       }}
       className="relative flex size-full items-center justify-center"
     >
       <LightboxMedia media={media} />
-    </motion.div>
+    </m.div>
   );
 }
 

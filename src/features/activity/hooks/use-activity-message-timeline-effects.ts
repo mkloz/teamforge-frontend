@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import { subscribeAppResumeEvents } from "@/shared/lib/app-resume-events";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import type { ChatApi } from "@/shared/schemas";
 import { getChatUnreadCount } from "./activity-message-timeline-state";
@@ -80,37 +81,7 @@ export function useTimelineResumeRefetch({
       });
     }
 
-    function handleFocus() {
-      refetchTimelineAfterResume("window focus");
-    }
-
-    function handleOnline() {
-      refetchTimelineAfterResume("network reconnect");
-    }
-
-    function handlePageShow(event: PageTransitionEvent) {
-      if (event.persisted) {
-        refetchTimelineAfterResume("page restore");
-      }
-    }
-
-    function handleVisibilityChange() {
-      if (document.visibilityState === "visible") {
-        refetchTimelineAfterResume("app foreground");
-      }
-    }
-
-    window.addEventListener("focus", handleFocus);
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("pageshow", handlePageShow);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("pageshow", handlePageShow);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
+    return subscribeAppResumeEvents(refetchTimelineAfterResume);
   }, [canLoadTimeline, resetKey]);
 }
 

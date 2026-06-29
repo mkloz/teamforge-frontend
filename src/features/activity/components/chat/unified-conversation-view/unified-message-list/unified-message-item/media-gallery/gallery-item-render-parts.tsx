@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { Layers, Play } from "lucide-react";
 import { ErrorMediaImageUnavailableVisual } from "@/features/activity/assets/error-media-image-unavailable";
 import { ErrorMediaVideoUnavailableVisual } from "@/features/activity/assets/error-media-video-unavailable";
@@ -18,16 +18,20 @@ interface GalleryItemErrorStateProps {
 }
 
 interface GalleryItemMediaProps {
-  hasGifLoaded: boolean;
   imageState: ImageLoadState;
   index: number;
-  isGif: boolean;
-  isVideoBackedGif: boolean;
   media: UnifiedAttachment;
   onGifError: () => void;
   onGifLoaded: () => void;
   onImageError: () => void;
   onImageLoaded: () => void;
+  viewState: GalleryItemMediaViewState;
+}
+
+interface GalleryItemMediaViewState {
+  hasGifLoaded: boolean;
+  isGif: boolean;
+  isVideoBackedGif: boolean;
   shouldLoadImage: boolean;
 }
 
@@ -40,19 +44,21 @@ export function GalleryItemLoadingSkeleton({
   isLoading,
 }: GalleryItemLoadingSkeletonProps) {
   return (
-    <AnimatePresence>
-      {isLoading && (
-        <motion.div
-          key="skeleton"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
-          className="absolute inset-0"
-        >
-          <Skeleton className="size-full" tone="muted" />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <LazyMotion features={domAnimation}>
+      <AnimatePresence>
+        {isLoading && (
+          <m.div
+            key="skeleton"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="absolute inset-0"
+          >
+            <Skeleton className="size-full" tone="muted" />
+          </m.div>
+        )}
+      </AnimatePresence>
+    </LazyMotion>
   );
 }
 
@@ -74,39 +80,35 @@ export function GalleryItemErrorState({
 }
 
 export function GalleryItemMedia({
-  hasGifLoaded,
   imageState,
   index,
-  isGif,
-  isVideoBackedGif,
   media,
   onGifError,
   onGifLoaded,
   onImageError,
   onImageLoaded,
-  shouldLoadImage,
+  viewState,
 }: GalleryItemMediaProps) {
-  if (isVideoBackedGif) {
+  if (viewState.isVideoBackedGif) {
     return (
       <VideoBackedGifMedia
-        hasGifLoaded={hasGifLoaded}
-        isGif={isGif}
         media={media}
         onGifError={onGifError}
         onGifLoaded={onGifLoaded}
+        viewState={viewState}
       />
     );
   }
 
-  if (shouldLoadImage) {
+  if (viewState.shouldLoadImage) {
     return (
       <GalleryImageMedia
         imageState={imageState}
         index={index}
-        isGif={isGif}
         media={media}
         onImageError={onImageError}
         onImageLoaded={onImageLoaded}
+        viewState={viewState}
       />
     );
   }
@@ -115,19 +117,19 @@ export function GalleryItemMedia({
 }
 
 function VideoBackedGifMedia({
-  hasGifLoaded,
-  isGif,
   media,
   onGifError,
   onGifLoaded,
+  viewState,
 }: Pick<
   GalleryItemMediaProps,
-  "hasGifLoaded" | "isGif" | "media" | "onGifError" | "onGifLoaded"
+  "media" | "onGifError" | "onGifLoaded" | "viewState"
 >) {
   return (
     <video
       src={media.url}
       poster={media.thumbnailUrl || undefined}
+      aria-label={getVideoBackedGifLabel(media)}
       autoPlay
       loop
       muted
@@ -144,8 +146,8 @@ function VideoBackedGifMedia({
       onError={onGifError}
       className={cn(
         "absolute inset-0 size-full object-cover transition-all duration-700 ease-out will-change-transform group-hover/gallery-item:scale-105",
-        isGif && "object-contain",
-        hasGifLoaded ? "opacity-100" : "opacity-0",
+        viewState.isGif && "object-contain",
+        viewState.hasGifLoaded ? "opacity-100" : "opacity-0",
       )}
     >
       <track
@@ -158,16 +160,25 @@ function VideoBackedGifMedia({
   );
 }
 
+function getVideoBackedGifLabel(media: UnifiedAttachment) {
+  return media.name || "GIF preview";
+}
+
 function GalleryImageMedia({
   imageState,
   index,
-  isGif,
   media,
   onImageError,
   onImageLoaded,
+  viewState,
 }: Pick<
   GalleryItemMediaProps,
-  "imageState" | "index" | "isGif" | "media" | "onImageError" | "onImageLoaded"
+  | "imageState"
+  | "index"
+  | "media"
+  | "onImageError"
+  | "onImageLoaded"
+  | "viewState"
 >) {
   return (
     <Image
@@ -185,7 +196,7 @@ function GalleryImageMedia({
       wrapperClassName="absolute inset-0"
       className={cn(
         "transition-all duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
-        isGif && "object-contain",
+        viewState.isGif && "object-contain",
         imageState === "loaded" ? "opacity-100" : "opacity-0",
       )}
       loadingComponent={null}

@@ -10,13 +10,8 @@ export function ManualFriendsSkeleton() {
 
 function ManualFriendsSkeletonContent() {
   return (
-    <div
-      aria-busy="true"
-      aria-label="Loading friends"
-      className="flex flex-col gap-2"
-      role="status"
-    >
-      <span className="sr-only">Loading friends</span>
+    <div aria-busy="true" className="flex flex-col gap-2">
+      <output className="sr-only">Loading friends</output>
       {["maya", "cody", "noah"].map((item, index) => (
         <div
           key={item}

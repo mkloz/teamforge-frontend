@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import { AnimatedCircularProgressBar } from "@/shared/components/ui/animated-circular-progress-bar";
@@ -16,7 +16,7 @@ export function IntermissionHeader({
   Icon,
 }: IntermissionHeaderProps) {
   return (
-    <motion.div
+    <m.div
       variants={fadeUpItem}
       className="group mb-8 flex w-full items-center justify-center gap-0 sm:mb-12"
     >
@@ -54,6 +54,6 @@ export function IntermissionHeader({
           </span>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

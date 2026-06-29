@@ -1,17 +1,17 @@
-import { memo } from "react";
+import type { MouseEvent, ReactNode } from "react";
 
 import { Button } from "@/shared/components/ui/button";
 
-export const NavButton = memo(
-  ({
-    onClick,
-    label,
-    icon,
-  }: {
-    onClick: (e: React.MouseEvent) => void;
-    label: string;
-    icon: React.ReactNode;
-  }) => (
+export function NavButton({
+  onClick,
+  label,
+  icon,
+}: {
+  onClick: (event: MouseEvent) => void;
+  label: string;
+  icon: ReactNode;
+}) {
+  return (
     <Button
       type="button"
       variant="ghost"
@@ -21,5 +21,5 @@ export const NavButton = memo(
     >
       {icon}
     </Button>
-  ),
-);
+  );
+}

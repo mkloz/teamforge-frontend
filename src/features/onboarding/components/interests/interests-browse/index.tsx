@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, domMax, LazyMotion, m } from "framer-motion";
 import { Activity } from "react";
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 import { Accordion } from "@/shared/components/ui/accordion";
@@ -63,9 +63,8 @@ interface InterestsDiscoveryContentProps {
   onToggleSubcategory: (id: string) => void;
 }
 
-interface SearchResultsOverlayInput {
+interface SearchResultsOverlayProps {
   isAtMax: boolean;
-  isSearching: boolean;
   searchQuery: string;
   searchResults: InterestSearchResults;
   selectedIds: Set<string>;
@@ -115,54 +114,58 @@ export function InterestsBrowse({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col pb-8">
-      <PageTitle
-        isSearching={viewState.isSearching}
-        hideContextLabel={hideContextLabel}
-      />
+    <LazyMotion features={domMax}>
+      <div className="mx-auto flex w-full max-w-xl flex-col pb-8">
+        <PageTitle
+          isSearching={viewState.isSearching}
+          hideContextLabel={hideContextLabel}
+        />
 
-      <div className="relative w-full">
-        <Activity mode={viewState.isSearching ? "hidden" : "visible"}>
-          <InterestsDiscoveryContent
-            categories={categories}
-            expandedSubcategories={expandedSubcategories}
-            isAtMax={isAtMax}
-            personalityType={personalityType}
-            selectedIds={selectedIds}
-            showBalanceNudge={showBalanceNudge}
-            suggestedTags={suggestedTags}
-            viewState={viewState}
-            youMightAlsoLike={youMightAlsoLike}
-            onAccordionChange={handleAccordionChange}
-            onRegisterCategory={onRegisterCategory}
-            onReject={onReject}
-            onToggle={onToggle}
-            onToggleSubcategory={onToggleSubcategory}
-          />
-        </Activity>
+        <div className="relative w-full">
+          <Activity mode={viewState.isSearching ? "hidden" : "visible"}>
+            <InterestsDiscoveryContent
+              categories={categories}
+              expandedSubcategories={expandedSubcategories}
+              isAtMax={isAtMax}
+              personalityType={personalityType}
+              selectedIds={selectedIds}
+              showBalanceNudge={showBalanceNudge}
+              suggestedTags={suggestedTags}
+              viewState={viewState}
+              youMightAlsoLike={youMightAlsoLike}
+              onAccordionChange={handleAccordionChange}
+              onRegisterCategory={onRegisterCategory}
+              onReject={onReject}
+              onToggle={onToggle}
+              onToggleSubcategory={onToggleSubcategory}
+            />
+          </Activity>
 
-        <AnimatePresence>
-          {renderSearchResultsOverlay({
-            isAtMax,
-            isSearching: viewState.isSearching,
-            searchQuery,
-            searchResults,
-            selectedIds,
-            onToggle,
-          })}
-        </AnimatePresence>
+          <AnimatePresence>
+            {viewState.isSearching ? (
+              <SearchResultsOverlay
+                key="search-results"
+                isAtMax={isAtMax}
+                searchQuery={searchQuery}
+                searchResults={searchResults}
+                selectedIds={selectedIds}
+                onToggle={onToggle}
+              />
+            ) : null}
+          </AnimatePresence>
+        </div>
+
+        <SelectionShelf
+          isSearching={viewState.isSearching}
+          leafById={leafById}
+          selectedIds={selectedIds}
+          youMightAlsoLike={youMightAlsoLike}
+          isAtMax={isAtMax}
+          onToggle={onToggle}
+          onReject={onReject}
+        />
       </div>
-
-      <SelectionShelf
-        isSearching={viewState.isSearching}
-        leafById={leafById}
-        selectedIds={selectedIds}
-        youMightAlsoLike={youMightAlsoLike}
-        isAtMax={isAtMax}
-        onToggle={onToggle}
-        onReject={onReject}
-      />
-    </div>
+    </LazyMotion>
   );
 }
 
@@ -212,7 +215,7 @@ function InterestsDiscoveryContent({
   onToggleSubcategory,
 }: InterestsDiscoveryContentProps) {
   return (
-    <motion.div
+    <m.div
       layout="position"
       animate={{ opacity: viewState.isSearching ? 0 : 1 }}
       transition={{ duration: 0.2 }}
@@ -260,7 +263,7 @@ function InterestsDiscoveryContent({
         onReject={onReject}
         onToggle={onToggle}
       />
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -333,21 +336,15 @@ function YouMightAlsoLikeSlot({
   );
 }
 
-function renderSearchResultsOverlay({
+function SearchResultsOverlay({
   isAtMax,
-  isSearching,
   searchQuery,
   searchResults,
   selectedIds,
   onToggle,
-}: SearchResultsOverlayInput) {
-  if (!isSearching) {
-    return null;
-  }
-
+}: SearchResultsOverlayProps) {
   return (
-    <motion.div
-      key="search-results"
+    <m.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
@@ -360,6 +357,6 @@ function renderSearchResultsOverlay({
         isAtMax={isAtMax}
         onToggle={onToggle}
       />
-    </motion.div>
+    </m.div>
   );
 }

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
@@ -20,7 +20,7 @@ export function LengthSelectorOptionsList({
   selectedLength,
 }: LengthSelectorOptionsListProps) {
   return (
-    <motion.div variants={fadeUpItem} className="flex flex-col gap-2.5 pb-8">
+    <m.div variants={fadeUpItem} className="flex flex-col gap-2.5 pb-8">
       {TEST_LENGTH_OPTIONS.map((length) => (
         <LengthOptionCard
           key={length}
@@ -31,6 +31,6 @@ export function LengthSelectorOptionsList({
           isAdjust={isAdjust}
         />
       ))}
-    </motion.div>
+    </m.div>
   );
 }

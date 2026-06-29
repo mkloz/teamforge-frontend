@@ -12,6 +12,8 @@ import {
 } from "@/shared/schemas/realtime";
 import type { User } from "@/shared/schemas/user";
 
+// These exports are consumed by AppRealtimeSync through loadAppRealtimeEvents().
+// Fallow does not trace the destructured API of that dynamic import.
 function getCachedCurrentUser() {
   return appQueryClient.getQueryData<User>(CURRENT_USER_QUERY_KEY);
 }
@@ -47,20 +49,24 @@ function syncRealtimeSession() {
   realtimeClient.syncSession(authSession.getAccessToken());
 }
 
+// fallow-ignore-next-line unused-export
 export function reconnectRealtimeSession() {
   realtimeClient.reconnectSession(authSession.getAccessToken());
 }
 
+// fallow-ignore-next-line unused-export
 export function subscribeRealtimeSessionSync() {
   syncRealtimeSession();
 
   return authSession.subscribe(syncRealtimeSession);
 }
 
+// fallow-ignore-next-line unused-export
 export function disconnectRealtimeSession() {
   realtimeClient.syncSession(null);
 }
 
+// fallow-ignore-next-line unused-export
 export function subscribeAppRealtimeEvents() {
   const unsubscribeNotification = realtimeClient.on(
     "notification.new",

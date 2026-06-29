@@ -1,5 +1,5 @@
 import { useRouterState } from "@tanstack/react-router";
-
+import { normalizeRouteSearch } from "@/shared/lib/route-search";
 import type { User } from "@/shared/schemas";
 
 import { getPostAuthRedirectPath } from "./post-auth-route";
@@ -72,20 +72,6 @@ function decodeRouteParam(value: string) {
   } catch {
     return value;
   }
-}
-
-function normalizeReturnSearch(
-  value: string | null | undefined,
-): string | null {
-  if (!value) {
-    return null;
-  }
-
-  const normalized = new URLSearchParams(
-    value.startsWith("?") ? value.slice(1) : value,
-  ).toString();
-
-  return normalized.length > 0 ? normalized : null;
 }
 
 function parseRelativeLocation(value: string): ParsedRelativeLocation | null {
@@ -230,7 +216,7 @@ function resolveAuthReturnLocation(
     return null;
   }
 
-  const search = normalizeReturnSearch(parsedLocation.search);
+  const search = normalizeRouteSearch(parsedLocation.search);
   const href = search
     ? `${parsedLocation.pathname}?${search}`
     : parsedLocation.pathname;

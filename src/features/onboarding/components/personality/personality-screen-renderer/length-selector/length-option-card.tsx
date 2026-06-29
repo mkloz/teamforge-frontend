@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { domMax, LazyMotion, m } from "framer-motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -15,8 +15,10 @@ interface LengthOptionCardProps {
   onSelect: (length: TestLength) => void;
 }
 
+const EMPTY_LENGTH_OPTION_ANSWERS: Record<number, number> = {};
+
 export function LengthOptionCard({
-  answers = {},
+  answers = EMPTY_LENGTH_OPTION_ANSWERS,
   isAdjust = false,
   isSelected,
   length,
@@ -39,14 +41,16 @@ export function LengthOptionCard({
       )}
       contentClassName="block h-auto w-full"
     >
-      {isSelected && (
-        <motion.div
-          layoutId="length-selection-bg"
-          className="pointer-events-none absolute inset-0 bg-forge-teal/8"
-          initial={false}
-          transition={{ type: "spring", stiffness: 400, damping: 35 }}
-        />
-      )}
+      <LazyMotion features={domMax}>
+        {isSelected && (
+          <m.div
+            layoutId="length-selection-bg"
+            className="pointer-events-none absolute inset-0 bg-forge-teal/8"
+            initial={false}
+            transition={{ type: "spring", stiffness: 400, damping: 35 }}
+          />
+        )}
+      </LazyMotion>
 
       <div className="relative z-10 grid grid-cols-1 items-center gap-3.5 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-5">
         <div className="flex items-center gap-3">

@@ -45,15 +45,12 @@ export function AttentionQueue({
   const hasFocusedQueueTarget =
     focusedPanel === "invitations" ||
     Boolean(focusedInviteId || focusedRequestId);
-  const [shouldLoadInteractiveQueue, setShouldLoadInteractiveQueue] = useState(
-    hasFocusedQueueTarget,
-  );
-
-  useEffect(() => {
-    if (hasFocusedQueueTarget) {
-      setShouldLoadInteractiveQueue(true);
-    }
-  }, [hasFocusedQueueTarget]);
+  const [
+    hasDeferredInteractiveQueueLoaded,
+    setHasDeferredInteractiveQueueLoaded,
+  ] = useState(false);
+  const shouldLoadInteractiveQueue =
+    hasFocusedQueueTarget || hasDeferredInteractiveQueueLoaded;
 
   useEffect(() => {
     if (shouldLoadInteractiveQueue) {
@@ -61,11 +58,25 @@ export function AttentionQueue({
     }
 
     const idleTask = scheduleIdleTask(() => {
-      setShouldLoadInteractiveQueue(true);
+      setHasDeferredInteractiveQueueLoaded(true);
     });
 
     return () => cancelIdleTask(idleTask);
   }, [shouldLoadInteractiveQueue]);
+
+  function keepInteractiveQueueLoaded() {
+    setHasDeferredInteractiveQueueLoaded(true);
+  }
+
+  function handleClearInvitationFocus() {
+    keepInteractiveQueueLoaded();
+    onClearInvitationFocus?.();
+  }
+
+  function handleClearFriendRequestFocus() {
+    keepInteractiveQueueLoaded();
+    onClearFriendRequestFocus?.();
+  }
 
   if (!shouldLoadInteractiveQueue) {
     return <AttentionQueueShell focusRef={focusRef} />;
@@ -79,8 +90,8 @@ export function AttentionQueue({
         focusedRequestId={focusedRequestId}
         invitationView={invitationView}
         focusRef={focusRef}
-        onClearInvitationFocus={onClearInvitationFocus}
-        onClearFriendRequestFocus={onClearFriendRequestFocus}
+        onClearInvitationFocus={handleClearInvitationFocus}
+        onClearFriendRequestFocus={handleClearFriendRequestFocus}
       />
     </Suspense>
   );

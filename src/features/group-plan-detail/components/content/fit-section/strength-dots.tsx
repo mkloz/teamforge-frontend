@@ -11,14 +11,12 @@ export function StrengthDots({
   const filled = getFilledDotCount(strength);
 
   return (
-    <div
-      className="flex gap-0.5"
-      role="img"
-      aria-label={`${strength.toLowerCase()} strength`}
-    >
+    <div className="flex gap-0.5">
+      <span className="sr-only">{strength.toLowerCase()} strength</span>
       {STRENGTH_DOT_KEYS.map((key, index) => (
         <span
           key={key}
+          aria-hidden="true"
           className={cn(
             "size-1 rounded-full",
             index < filled ? getFilledDotClass(strength) : "bg-border",

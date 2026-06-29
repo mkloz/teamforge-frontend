@@ -1,5 +1,4 @@
 import { ChevronRight, MessageCircle, Trash2 } from "lucide-react";
-import { memo } from "react";
 import { SavedMessagesAvatarVisual } from "@/features/activity/assets/special-conversation-avatars";
 import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
 import {
@@ -33,40 +32,36 @@ interface SavedMessagesChatListItemProps {
   onSelect: () => void;
 }
 
-export const SavedMessagesChatListItem = memo(
-  function SavedMessagesChatListItem({
-    count,
-    density = "default",
+export function SavedMessagesChatListItem({
+  count,
+  density = "default",
+  isSelected,
+  latestSavedMessage,
+  onRemoveLatest,
+  onSelect,
+}: SavedMessagesChatListItemProps) {
+  const viewState = getSavedMessagesListItemViewState({
+    density,
     isSelected,
     latestSavedMessage,
-    onRemoveLatest,
-    onSelect,
-  }: SavedMessagesChatListItemProps) {
-    const viewState = getSavedMessagesListItemViewState({
-      density,
-      isSelected,
-      latestSavedMessage,
-    });
+  });
 
-    return (
-      <ContextMenu modal={false}>
-        <ContextMenuTrigger asChild>
-          {renderSavedMessagesListItemRow({
-            count,
-            latestSavedMessage,
-            onSelect,
-            viewState,
-          })}
-        </ContextMenuTrigger>
-        <SavedMessagesListItemActions
-          latestSavedMessage={latestSavedMessage}
-          onRemoveLatest={onRemoveLatest}
-          onSelect={onSelect}
-        />
-      </ContextMenu>
-    );
-  },
-);
+  return (
+    <ContextMenu modal={false}>
+      <SavedMessagesListItemRow
+        count={count}
+        latestSavedMessage={latestSavedMessage}
+        onSelect={onSelect}
+        viewState={viewState}
+      />
+      <SavedMessagesListItemActions
+        latestSavedMessage={latestSavedMessage}
+        onRemoveLatest={onRemoveLatest}
+        onSelect={onSelect}
+      />
+    </ContextMenu>
+  );
+}
 
 interface SavedMessagesListItemViewState {
   avatarClassName: string;
@@ -124,7 +119,7 @@ function getSavedMessagesSelectedIndicatorClassName(isSelected: boolean) {
   );
 }
 
-function renderSavedMessagesListItemRow({
+function SavedMessagesListItemRow({
   count,
   latestSavedMessage,
   onSelect,
@@ -136,30 +131,32 @@ function renderSavedMessagesListItemRow({
   viewState: SavedMessagesListItemViewState;
 }) {
   return (
-    <div className={viewState.rowClassName}>
-      <button
-        type="button"
-        aria-current={viewState.isSelected ? "true" : undefined}
-        aria-label={SAVED_MESSAGES_TITLE}
-        className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset"
-        onClick={onSelect}
-      >
-        <span className="sr-only">Open saved messages</span>
-      </button>
+    <ContextMenuTrigger asChild>
+      <div className={viewState.rowClassName}>
+        <button
+          type="button"
+          aria-current={viewState.isSelected ? "true" : undefined}
+          aria-label={SAVED_MESSAGES_TITLE}
+          className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset"
+          onClick={onSelect}
+        >
+          <span className="sr-only">Open saved messages</span>
+        </button>
 
-      <span
-        aria-hidden="true"
-        className={viewState.selectedIndicatorClassName}
-      />
+        <span
+          aria-hidden="true"
+          className={viewState.selectedIndicatorClassName}
+        />
 
-      <SavedMessagesListItemAvatar className={viewState.avatarClassName} />
+        <SavedMessagesListItemAvatar className={viewState.avatarClassName} />
 
-      <SavedMessagesListItemContent
-        count={count}
-        latestSavedMessage={latestSavedMessage}
-        preview={viewState.preview}
-      />
-    </div>
+        <SavedMessagesListItemContent
+          count={count}
+          latestSavedMessage={latestSavedMessage}
+          preview={viewState.preview}
+        />
+      </div>
+    </ContextMenuTrigger>
   );
 }
 

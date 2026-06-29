@@ -1,4 +1,10 @@
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+  AnimatePresence,
+  domAnimation,
+  LazyMotion,
+  m,
+  useReducedMotion,
+} from "framer-motion";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { Notification } from "@/shared/schemas";
 
@@ -50,33 +56,37 @@ export function NotificationsSection({
         </div>
       </div>
       <ul className="divide-y divide-border/55">
-        <AnimatePresence initial={false}>
-          {items.map((item) => (
-            <motion.li
-              key={item.id}
-              initial={
-                shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 4 }
-              }
-              animate={
-                shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
-              }
-              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -2 }}
-              transition={{
-                duration: shouldReduceMotion ? 0.08 : 0.15,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              <NotificationItem
-                item={item}
-                onSelect={onSelect}
-                onToggleRead={onToggleRead}
-                isPending={pendingNotificationId === item.id}
-                isReadActionDisabled={isReadActionDisabled}
-                isTogglingRead={pendingReadToggleNotificationId === item.id}
-              />
-            </motion.li>
-          ))}
-        </AnimatePresence>
+        <LazyMotion features={domAnimation}>
+          <AnimatePresence initial={false}>
+            {items.map((item) => (
+              <m.li
+                key={item.id}
+                initial={
+                  shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 4 }
+                }
+                animate={
+                  shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
+                }
+                exit={
+                  shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -2 }
+                }
+                transition={{
+                  duration: shouldReduceMotion ? 0.08 : 0.15,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                <NotificationItem
+                  item={item}
+                  onSelect={onSelect}
+                  onToggleRead={onToggleRead}
+                  isPending={pendingNotificationId === item.id}
+                  isReadActionDisabled={isReadActionDisabled}
+                  isTogglingRead={pendingReadToggleNotificationId === item.id}
+                />
+              </m.li>
+            ))}
+          </AnimatePresence>
+        </LazyMotion>
       </ul>
     </section>
   );

@@ -1,5 +1,4 @@
 import { Download, FileText } from "lucide-react";
-import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { formatFileSize } from "@/features/activity/lib/chat-utils";
 import { Button } from "@/shared/components/ui/button";
@@ -22,10 +21,6 @@ interface DocumentMessageViewState {
   fileSize: string;
 }
 
-const getFileIcon = (isOwn?: boolean) => (
-  <FileText className={cn("size-5", isOwn ? "text-white" : "text-primary")} />
-);
-
 function getDocumentMessageViewState(
   attachment: UnifiedAttachment,
 ): DocumentMessageViewState {
@@ -39,10 +34,7 @@ function getDocumentMessageViewState(
 /**
  * DocumentMessage - Renders a download card for file attachments.
  */
-export const DocumentMessage = memo(function DocumentMessage({
-  attachment,
-  isOwn,
-}: DocumentMessageProps) {
+export function DocumentMessage({ attachment, isOwn }: DocumentMessageProps) {
   const viewState = getDocumentMessageViewState(attachment);
 
   return (
@@ -61,7 +53,13 @@ export const DocumentMessage = memo(function DocumentMessage({
       <DocumentDownloadButton attachment={attachment} isOwn={isOwn} />
     </div>
   );
-});
+}
+
+function DocumentMessageFileIcon({ isOwn }: { isOwn?: boolean }) {
+  return (
+    <FileText className={cn("size-5", isOwn ? "text-white" : "text-primary")} />
+  );
+}
 
 function DocumentMessageIcon({ isOwn }: { isOwn?: boolean }) {
   return (
@@ -73,7 +71,7 @@ function DocumentMessageIcon({ isOwn }: { isOwn?: boolean }) {
           : "border border-border/20 bg-white/60 dark:bg-canvas/10",
       )}
     >
-      {getFileIcon(isOwn)}
+      <DocumentMessageFileIcon isOwn={isOwn} />
     </div>
   );
 }

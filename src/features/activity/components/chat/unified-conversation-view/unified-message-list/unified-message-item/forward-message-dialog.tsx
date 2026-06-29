@@ -101,17 +101,29 @@ function useForwardDialogModel({
   isOnline: boolean;
   sourceChatId: string;
 }) {
-  const groupsQuery = useQuery(ActivityQueryFactory.groups());
-  const chatsQuery = useQuery(ActivityQueryFactory.chats());
-  const friendshipsQuery = useQuery(ActivityQueryFactory.friendships());
-  const forwardSourceQueries = [groupsQuery, chatsQuery, friendshipsQuery];
+  const {
+    data: groups = [],
+    isError: hasGroupsLoadError,
+    isPending: isLoadingGroups,
+  } = useQuery(ActivityQueryFactory.groups());
+  const {
+    data: chats = [],
+    isError: hasChatsLoadError,
+    isPending: isLoadingChats,
+  } = useQuery(ActivityQueryFactory.chats());
+  const {
+    data: friendships = [],
+    isError: hasFriendshipsLoadError,
+    isPending: isLoadingFriendships,
+  } = useQuery(ActivityQueryFactory.friendships());
 
   return getForwardDialogModel({
-    chats: chatsQuery.data ?? [],
-    friendships: friendshipsQuery.data ?? [],
-    groups: groupsQuery.data ?? [],
-    hasLoadError: forwardSourceQueries.some((query) => query.isError),
-    isLoading: forwardSourceQueries.some((query) => query.isPending),
+    chats,
+    friendships,
+    groups,
+    hasLoadError:
+      hasGroupsLoadError || hasChatsLoadError || hasFriendshipsLoadError,
+    isLoading: isLoadingGroups || isLoadingChats || isLoadingFriendships,
     isOnline,
     sourceChatId,
   });
@@ -209,7 +221,7 @@ async function runForwardMessageAction({
   }
 }
 
-async function forwardMessagesSequentially({
+function forwardMessagesSequentially({
   messages,
   onForward,
   targetChatId,
@@ -218,10 +230,13 @@ async function forwardMessagesSequentially({
   onForward: ForwardMessageHandler;
   targetChatId: string;
 }) {
-  await messages.reduce<Promise<void>>(async (previousForward, message) => {
-    await previousForward;
-    await forwardMessageToTarget({ message, onForward, targetChatId });
-  }, Promise.resolve());
+  return messages.reduce<Promise<void>>(
+    (previousForward, message) =>
+      previousForward.then(() =>
+        forwardMessageToTarget({ message, onForward, targetChatId }),
+      ),
+    Promise.resolve(),
+  );
 }
 
 async function forwardMessageToTarget({
@@ -504,11 +519,21 @@ function buildGroupForwardTargets({
   groups: GroupApi[];
   sourceChatId: string;
 }) {
-  return groups
-    .map((group) =>
-      getGroupForwardTarget({ chatsByGroupId, group, sourceChatId }),
-    )
-    .filter(isForwardTarget);
+  const targets: ForwardTarget[] = [];
+
+  for (const group of groups) {
+    const target = getGroupForwardTarget({
+      chatsByGroupId,
+      group,
+      sourceChatId,
+    });
+
+    if (target) {
+      targets.push(target);
+    }
+  }
+
+  return targets;
 }
 
 function getGroupForwardTarget({
@@ -542,9 +567,17 @@ function buildDirectForwardTargets({
   friendships: FriendshipApi[];
   sourceChatId: string;
 }) {
-  return friendships
-    .map((friendship) => getDirectForwardTarget({ friendship, sourceChatId }))
-    .filter(isForwardTarget);
+  const targets: ForwardTarget[] = [];
+
+  for (const friendship of friendships) {
+    const target = getDirectForwardTarget({ friendship, sourceChatId });
+
+    if (target) {
+      targets.push(target);
+    }
+  }
+
+  return targets;
 }
 
 function getDirectForwardTarget({
@@ -570,10 +603,4 @@ function getDirectForwardTarget({
 
 function sortForwardTargets(targets: ForwardTarget[]) {
   return targets.sort((left, right) => left.title.localeCompare(right.title));
-}
-
-function isForwardTarget(
-  target: ForwardTarget | null,
-): target is ForwardTarget {
-  return target !== null;
 }

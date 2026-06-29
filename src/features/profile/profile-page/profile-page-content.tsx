@@ -5,7 +5,6 @@ import {
   type ReactNode,
   Suspense,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -25,6 +24,7 @@ import {
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
 import { getUserOceanScores } from "@/shared/lib/user-psychometrics";
 import type { User } from "@/shared/schemas";
@@ -48,6 +48,10 @@ const LazyProfileDeferredInsights = lazy(() =>
 
 const PROFILE_DEFERRED_INSIGHTS_DELAY_MS = 12_000;
 
+function loadProfileInsightsModule() {
+  return import("@/features/profile/lib/profile-insights");
+}
+
 interface ProfilePageContentProps {
   profile: User;
   mode?: "self" | "public";
@@ -63,8 +67,8 @@ export function ProfilePageContent({
 }: ProfilePageContentProps) {
   const profilePageRef = useRef<HTMLDivElement | null>(null);
   const profileHeroRowRef = useRef<HTMLDivElement | null>(null);
-  const profileCore = useMemo(() => buildProfileCoreModel(profile), [profile]);
-  const profileInsights = useProfileInsights(profile, profileCore.oceanScores);
+  const profileCore = buildProfileCoreModel(profile);
+  const profileInsights = useProfileInsights(profile);
   const socialRead = profileInsights
     ? getCompactSocialRead(profileInsights.portrait.lead)
     : null;
@@ -182,33 +186,26 @@ function getProfileQrHandle(name: User["name"]) {
   return `@${name.replace(/\s/g, "").toLowerCase()}`;
 }
 
-function useProfileInsights(
-  profile: User,
-  oceanScores: ReturnType<typeof getUserOceanScores>,
-) {
-  const [profileInsights, setProfileInsights] =
-    useState<ProfileInsightModel | null>(null);
-  const previousProfileIdRef = useRef(profile.id);
+function useProfileInsights(profile: User) {
+  const [state, setState] = useState<{
+    profileId: User["id"];
+    profileInsights: ProfileInsightModel | null;
+  }>(() => ({
+    profileId: profile.id,
+    profileInsights: null,
+  }));
 
   useEffect(() => {
     let isStale = false;
 
-    if (previousProfileIdRef.current !== profile.id) {
-      setProfileInsights(null);
-      previousProfileIdRef.current = profile.id;
-    }
-
-    import("@/features/profile/lib/profile-insights")
-      .then(({ buildProfileInsights }) => {
+    void loadProfileInsightsModule()
+      .then(({ buildProfileInsights }) =>
+        buildProfileInsights(profile, getUserOceanScores(profile)),
+      )
+      .catch(() => null)
+      .then((profileInsights) => {
         if (!isStale) {
-          setProfileInsights(buildProfileInsights(profile, oceanScores));
-        }
-
-        return undefined;
-      })
-      .catch(() => {
-        if (!isStale) {
-          setProfileInsights(null);
+          setState({ profileId: profile.id, profileInsights });
         }
 
         return undefined;
@@ -217,9 +214,9 @@ function useProfileInsights(
     return () => {
       isStale = true;
     };
-  }, [profile, oceanScores]);
+  }, [profile]);
 
-  return profileInsights;
+  return state.profileId === profile.id ? state.profileInsights : null;
 }
 
 function getCompactSocialRead(value: string) {
@@ -233,49 +230,9 @@ function DeferredProfileInsights({
   oceanScores,
   profileInsights,
 }: ComponentProps<typeof LazyProfileDeferredInsights>) {
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const [shouldRender, setShouldRender] = useState(false);
-
-  useEffect(() => {
-    if (shouldRender) {
-      return undefined;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setShouldRender(true);
-    }, PROFILE_DEFERRED_INSIGHTS_DELAY_MS);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [shouldRender]);
-
-  useEffect(() => {
-    if (shouldRender) {
-      return undefined;
-    }
-
-    const sentinel = sentinelRef.current;
-
-    if (!sentinel || typeof IntersectionObserver === "undefined") {
-      setShouldRender(true);
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) {
-          return;
-        }
-
-        setShouldRender(true);
-        observer.disconnect();
-      },
-      { rootMargin: "0px" },
-    );
-
-    observer.observe(sentinel);
-
-    return () => observer.disconnect();
-  }, [shouldRender]);
+  const { sentinelRef, shouldRender } = useDeferredRender({
+    delayMs: PROFILE_DEFERRED_INSIGHTS_DELAY_MS,
+  });
 
   return (
     <>

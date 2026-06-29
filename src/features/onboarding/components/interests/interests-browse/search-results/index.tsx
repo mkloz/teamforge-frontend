@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 
 import { SearchEmptyState } from "./search-empty-state";
@@ -28,7 +28,7 @@ export function SearchResults({
   const totalCount = getSearchResultsCount(results);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
@@ -57,6 +57,6 @@ export function SearchResults({
           />
         </div>
       )}
-    </motion.div>
+    </m.div>
   );
 }

@@ -66,8 +66,10 @@ interface MembersGridProps {
   showMemberFit: boolean;
 }
 
+const EMPTY_INVITE_CANDIDATES: ActivityParticipant[] = [];
+
 export function MembersSection({
-  inviteCandidates = [],
+  inviteCandidates = EMPTY_INVITE_CANDIDATES,
   invitingMemberId = null,
   isOnline = true,
   isReadOnly = false,
@@ -203,9 +205,9 @@ function MembersSectionHeader({
           </span>
         </h3>
         {showOfflineMemberActionWarning ? (
-          <p role="status" className="mt-0.5 text-slate-muted text-xs">
+          <output className="mt-0.5 block text-slate-muted text-xs">
             Reconnect before changing members.
-          </p>
+          </output>
         ) : null}
       </div>
       {showInviteAction ? (

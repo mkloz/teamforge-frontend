@@ -1,5 +1,4 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { memo } from "react";
 import { PROPOSAL_STATUS_LABELS } from "@/features/activity/lib/proposal-language";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
@@ -21,7 +20,7 @@ const STATUS_STYLES: Record<PlanProposalStatus, string> = {
   CANCELLED: "text-slate-muted",
 };
 
-export const ProposalHeader = memo(function ProposalHeader({
+export function ProposalHeader({
   field,
   isExpanded,
   onToggle,
@@ -74,4 +73,4 @@ export const ProposalHeader = memo(function ProposalHeader({
       </div>
     </button>
   );
-});
+}

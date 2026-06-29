@@ -6,6 +6,8 @@ import { GroupDescriptionField } from "./group-description-field";
 import { GroupNameField } from "./group-name-field";
 import { useGroupNameSuggestions } from "./use-group-name-suggestions";
 
+const EMPTY_GROUP_NAMES: string[] = [];
+
 export interface GroupIdentityFieldsProps {
   groupName: string;
   onGroupNameChange: (v: string) => void;
@@ -22,7 +24,7 @@ export function GroupIdentityFields({
   groupDescription,
   onGroupDescriptionChange,
   selectedActivity,
-  existingGroupNames = [],
+  existingGroupNames = EMPTY_GROUP_NAMES,
   subtitle = "Optional — you can always update this later.",
 }: GroupIdentityFieldsProps) {
   const nameInputRef = useRef<HTMLInputElement>(null);

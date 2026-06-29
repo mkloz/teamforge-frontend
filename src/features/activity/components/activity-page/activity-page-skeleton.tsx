@@ -36,14 +36,12 @@ export function ActivityPageSkeleton({
   return (
     <div
       aria-busy="true"
-      aria-label="Loading activity"
       className={cn(
         "top-0 flex h-dvh min-h-0 overflow-clip bg-canvas pb-app-bottom-nav md:pb-0",
         contained ? "absolute inset-0" : "fixed inset-0 md:left-14",
       )}
-      role="status"
     >
-      <span className="sr-only">Loading activity</span>
+      <output className="sr-only">Loading activity</output>
       <ActivitySidebarSkeleton />
       <ActivityConversationSkeleton />
     </div>

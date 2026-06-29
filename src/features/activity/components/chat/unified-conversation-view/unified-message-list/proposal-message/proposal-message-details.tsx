@@ -1,5 +1,3 @@
-import { memo } from "react";
-
 import {
   formatProposalDate,
   formatProposalValue,
@@ -22,7 +20,7 @@ interface ProposalMessageDetailsProps {
   viewState: AvailableProposalMessageViewState;
 }
 
-export const ProposalMessageDetails = memo(function ProposalMessageDetails({
+export function ProposalMessageDetails({
   isVoting,
   isWithdrawing,
   isOnline,
@@ -73,13 +71,15 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
       {shouldShowActions ? (
         <div className="mt-2 flex flex-wrap justify-end gap-2">
           <ProposalActions
-            canVote={canVote}
-            hasVoted={hasVoted}
-            isPending={isPending}
-            isProposer={isProposer}
-            isOnline={isOnline}
-            isVoting={isVoting}
-            isWithdrawing={isWithdrawing}
+            state={{
+              canVote,
+              hasVoted,
+              isPending,
+              isProposer,
+              isOnline,
+              isVoting,
+              isWithdrawing,
+            }}
             onApprove={onApprove}
             onReject={onReject}
             onWithdraw={onWithdraw}
@@ -88,4 +88,4 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
       ) : null}
     </div>
   );
-});
+}

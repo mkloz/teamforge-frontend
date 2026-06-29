@@ -1,5 +1,5 @@
 import { BellOff, Bookmark, Pin } from "lucide-react";
-import { lazy, memo, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { useIsReviewWaiting } from "@/features/activity/hooks/use-is-review-waiting";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import { UnreadBadge } from "@/shared/components/common/unread-badge";
@@ -27,68 +27,68 @@ const TYPING_DOT_FALLBACK_INDICES = [0, 1, 2] as const;
 
 interface ContentSectionProps {
   item: UnifiedConversation;
-  isGroup: boolean;
-  isSelected: boolean;
-  isCompact?: boolean;
-  isSavedView?: boolean;
+  density: "compact" | "default";
+  selection: "selected" | "idle";
+  source: "saved" | "conversation";
   onTogglePinned?: () => void;
 }
 
-export const ContentSection = memo(
-  ({
-    item,
+export function ContentSection({
+  item,
+  density,
+  selection,
+  source,
+  onTogglePinned,
+}: ContentSectionProps) {
+  const isCompact = density === "compact";
+  const isGroup = item.kind === "group";
+  const isSavedView = source === "saved";
+  const isSelected = selection === "selected";
+  const isReviewWaiting = useIsReviewWaiting(item.group);
+  const viewState = getContentSectionViewState({
+    hasTogglePinned: Boolean(onTogglePinned),
+    isCompact,
     isGroup,
-    isSelected,
-    isCompact = false,
-    isSavedView = false,
-    onTogglePinned,
-  }: ContentSectionProps) => {
-    const isReviewWaiting = useIsReviewWaiting(item.group);
-    const viewState = getContentSectionViewState({
-      hasTogglePinned: Boolean(onTogglePinned),
-      isCompact,
-      isGroup,
-      isReviewWaiting,
-      isSavedView,
-      item,
-    });
+    isReviewWaiting,
+    isSavedView,
+    item,
+  });
 
-    return (
-      <div className="flex min-w-0 flex-1 flex-col justify-center">
-        <ConversationTitleRow
-          item={item}
-          isCompact={isCompact}
+  return (
+    <div className="flex min-w-0 flex-1 flex-col justify-center">
+      <ConversationTitleRow
+        item={item}
+        isCompact={isCompact}
+        isReviewWaiting={isReviewWaiting}
+        isSelected={isSelected}
+        viewState={viewState}
+        onTogglePinned={onTogglePinned}
+      />
+
+      <ConversationSubtitleRow
+        item={item}
+        isCompact={isCompact}
+        isGroup={isGroup}
+        isSavedView={isSavedView}
+        viewState={viewState}
+      />
+
+      {viewState.hasIndicatorRow && (
+        <GroupIndicators
+          countdown={viewState.countdown}
+          pendingProposalCount={viewState.pendingProposalCount}
+          planStatus={viewState.planStatus}
+          savedMessageCount={
+            viewState.shouldShowSavedCountInIndicatorRow
+              ? item.savedMessageCount
+              : undefined
+          }
           isReviewWaiting={isReviewWaiting}
-          isSelected={isSelected}
-          viewState={viewState}
-          onTogglePinned={onTogglePinned}
         />
-
-        <ConversationSubtitleRow
-          item={item}
-          isCompact={isCompact}
-          isGroup={isGroup}
-          isSavedView={isSavedView}
-          viewState={viewState}
-        />
-
-        {viewState.hasIndicatorRow && (
-          <GroupIndicators
-            countdown={viewState.countdown}
-            pendingProposalCount={viewState.pendingProposalCount}
-            planStatus={viewState.planStatus}
-            savedMessageCount={
-              viewState.shouldShowSavedCountInIndicatorRow
-                ? item.savedMessageCount
-                : undefined
-            }
-            isReviewWaiting={isReviewWaiting}
-          />
-        )}
-      </div>
-    );
-  },
-);
+      )}
+    </div>
+  );
+}
 
 function ConversationTitleRow({
   item,

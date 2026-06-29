@@ -8,6 +8,7 @@ import {
   ensureDirectory,
   formatStatusBadge,
   ROOT,
+  readRequiredOptionValue,
   renderKeyValues,
   resolveNodeScript,
   resolvePackageBin,
@@ -81,44 +82,37 @@ function parseArgs(argv) {
   };
 
   for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
-
-    if (arg === "--skip-health") {
-      options.runHealth = false;
-      continue;
-    }
-
-    if (arg === "--output") {
-      options.outputFile = readOptionValue(argv, index, arg);
-      index += 1;
-      continue;
-    }
-
-    if (arg.startsWith("--output=")) {
-      options.outputFile = arg.slice("--output=".length);
-      continue;
-    }
-
-    throw new Error(`Unknown agent:pack argument: ${arg}`);
+    index = readPackOption(options, argv, index);
   }
 
   return options;
 }
 
 /**
- * @param {string[]} argv Arguments.
- * @param {number} index Current index.
- * @param {string} option Option name.
- * @returns {string} Option value.
+ * @param {CliOptions} options Mutable CLI options.
+ * @param {string[]} argv CLI arguments.
+ * @param {number} index Current argument index.
+ * @returns {number} Next index for the parse loop.
  */
-function readOptionValue(argv, index, option) {
-  const value = argv[index + 1];
+function readPackOption(options, argv, index) {
+  const arg = argv[index];
 
-  if (!value) {
-    throw new Error(`Missing value for ${option}.`);
+  if (arg === "--skip-health") {
+    options.runHealth = false;
+    return index;
   }
 
-  return value;
+  if (arg === "--output") {
+    options.outputFile = readRequiredOptionValue(argv, index, arg);
+    return index + 1;
+  }
+
+  if (arg.startsWith("--output=")) {
+    options.outputFile = arg.slice("--output=".length);
+    return index;
+  }
+
+  throw new Error(`Unknown agent:pack argument: ${arg}`);
 }
 
 /**

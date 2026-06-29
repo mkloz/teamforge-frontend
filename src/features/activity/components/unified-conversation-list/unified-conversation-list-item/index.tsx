@@ -6,7 +6,6 @@ import {
   Pin,
   PinOff,
 } from "lucide-react";
-import { memo } from "react";
 import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
 import {
   ACTIVITY_MENU_ITEM_CLASS,
@@ -43,46 +42,42 @@ interface UnifiedConversationListItemProps {
 /**
  * UnifiedConversationListItem - Renders a single conversation in the sidebar list.
  */
-export const UnifiedConversationListItem = memo(
-  function UnifiedConversationListItem({
-    item,
+export function UnifiedConversationListItem({
+  item,
+  isSelected,
+  isSavedView = false,
+  density = "default",
+  onSelect,
+  onTogglePinned,
+  onToggleMuted,
+  onMarkRead,
+}: UnifiedConversationListItemProps) {
+  const viewState = getConversationListItemViewState({
+    density,
     isSelected,
-    isSavedView = false,
-    density = "default",
-    onSelect,
-    onTogglePinned,
-    onToggleMuted,
-    onMarkRead,
-  }: UnifiedConversationListItemProps) {
-    const viewState = getConversationListItemViewState({
-      density,
-      isSelected,
-      item,
-    });
+    item,
+  });
 
-    return (
-      <ContextMenu modal={false}>
-        <ContextMenuTrigger asChild>
-          {renderConversationListItemRow({
-            isSavedView,
-            item,
-            onSelect,
-            onTogglePinned,
-            viewState,
-          })}
-        </ContextMenuTrigger>
-        <ConversationListItemActions
-          item={item}
-          isMuted={viewState.isMuted}
-          onMarkRead={onMarkRead}
-          onSelect={onSelect}
-          onToggleMuted={onToggleMuted}
-          onTogglePinned={onTogglePinned}
-        />
-      </ContextMenu>
-    );
-  },
-);
+  return (
+    <ContextMenu modal={false}>
+      <ConversationListItemRow
+        isSavedView={isSavedView}
+        item={item}
+        onSelect={onSelect}
+        onTogglePinned={onTogglePinned}
+        viewState={viewState}
+      />
+      <ConversationListItemActions
+        item={item}
+        isMuted={viewState.isMuted}
+        onMarkRead={onMarkRead}
+        onSelect={onSelect}
+        onToggleMuted={onToggleMuted}
+        onTogglePinned={onTogglePinned}
+      />
+    </ContextMenu>
+  );
+}
 
 interface ConversationListItemViewState {
   isCompact: boolean;
@@ -124,7 +119,7 @@ function getConversationListItemViewState({
   };
 }
 
-function renderConversationListItemRow({
+function ConversationListItemRow({
   isSavedView,
   item,
   onSelect,
@@ -138,34 +133,35 @@ function renderConversationListItemRow({
   viewState: ConversationListItemViewState;
 }) {
   return (
-    <div className={viewState.rowClassName}>
-      <button
-        type="button"
-        aria-current={viewState.isSelected ? "true" : undefined}
-        aria-label={viewState.optionLabel}
-        className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset"
-        onClick={onSelect}
-      >
-        <span className="sr-only">{viewState.optionLabel}</span>
-      </button>
-      <span
-        aria-hidden="true"
-        className={viewState.selectedIndicatorClassName}
-      />
-      <AvatarSection
-        item={item}
-        isGroup={viewState.isGroup}
-        isCompact={viewState.isCompact}
-      />
-      <ContentSection
-        item={item}
-        isGroup={viewState.isGroup}
-        isSelected={viewState.isSelected}
-        isCompact={viewState.isCompact}
-        isSavedView={isSavedView}
-        onTogglePinned={onTogglePinned}
-      />
-    </div>
+    <ContextMenuTrigger asChild>
+      <div className={viewState.rowClassName}>
+        <button
+          type="button"
+          aria-current={viewState.isSelected ? "true" : undefined}
+          aria-label={viewState.optionLabel}
+          className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset"
+          onClick={onSelect}
+        >
+          <span className="sr-only">{viewState.optionLabel}</span>
+        </button>
+        <span
+          aria-hidden="true"
+          className={viewState.selectedIndicatorClassName}
+        />
+        <AvatarSection
+          item={item}
+          isGroup={viewState.isGroup}
+          isCompact={viewState.isCompact}
+        />
+        <ContentSection
+          item={item}
+          density={viewState.isCompact ? "compact" : "default"}
+          selection={viewState.isSelected ? "selected" : "idle"}
+          source={isSavedView ? "saved" : "conversation"}
+          onTogglePinned={onTogglePinned}
+        />
+      </div>
+    </ContextMenuTrigger>
   );
 }
 

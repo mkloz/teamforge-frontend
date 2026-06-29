@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Fingerprint } from "lucide-react";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 
@@ -18,7 +18,7 @@ export function CompletionBlueprintCard({
   interestCount,
 }: CompletionBlueprintCardProps) {
   return (
-    <motion.div
+    <m.div
       variants={completionFadeUp}
       className="perspective-1000 relative w-full"
     >
@@ -80,6 +80,6 @@ export function CompletionBlueprintCard({
 
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,color-mix(in_srgb,var(--color-ink)_22%,transparent)_1px,transparent_0)] bg-size-[14px_14px] opacity-5" />
       </div>
-    </motion.div>
+    </m.div>
   );
 }

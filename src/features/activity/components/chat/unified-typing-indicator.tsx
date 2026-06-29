@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { memo, type ReactNode } from "react";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
+import type { ReactNode } from "react";
 import { formatTypingText } from "@/features/activity/lib/chat-utils";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
@@ -26,7 +26,12 @@ interface TypingIndicatorRenderProps {
   users: TypingUser[];
 }
 
-const TYPING_DOT_INDICES = [0, 1, 2] as const;
+const EMPTY_TYPING_USERS: TypingUser[] = [];
+const TYPING_DOTS = [
+  { delay: 0, id: "typing-dot-1" },
+  { delay: 0.15, id: "typing-dot-2" },
+  { delay: 0.3, id: "typing-dot-3" },
+] as const;
 const TYPING_INDICATOR_RENDERERS = {
   floating: renderFloatingTypingIndicator,
   inline: renderInlineTypingIndicator,
@@ -40,8 +45,8 @@ const TYPING_INDICATOR_RENDERERS = {
  * UnifiedTypingIndicator - Renders an organic typing animation with user avatar(s).
  * Supports inline, floating, and minimal (dots only) variants.
  */
-export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
-  users = [],
+export function UnifiedTypingIndicator({
+  users = EMPTY_TYPING_USERS,
   variant = "inline",
   className,
   isGroup = true, // Default to true if not specified
@@ -49,9 +54,14 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
   if (!shouldRenderTypingIndicator(variant, users)) return null;
 
   const text = formatTypingText(users, isGroup) || "";
+  const indicator = TYPING_INDICATOR_RENDERERS[variant]({
+    className,
+    text,
+    users,
+  });
 
-  return TYPING_INDICATOR_RENDERERS[variant]({ className, text, users });
-});
+  return <LazyMotion features={domAnimation}>{indicator}</LazyMotion>;
+}
 
 function shouldRenderTypingIndicator(
   variant: NonNullable<UnifiedTypingIndicatorProps["variant"]>,
@@ -86,7 +96,7 @@ function FloatingTypingIndicator({
   users: TypingUser[];
 }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 12, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.95 }}
@@ -102,7 +112,7 @@ function FloatingTypingIndicator({
           {text.toUpperCase()}
         </span>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -111,11 +121,11 @@ function TypingAvatarStack({ users }: { users: TypingUser[] }) {
     <div className="flex">
       <AnimatePresence mode="popLayout">
         {users.slice(0, 3).map((user, index) => (
-          <motion.div
+          <m.div
             key={user.name}
-            initial={{ opacity: 0, scale: 0 }}
+            initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
+            exit={{ opacity: 0, scale: 0.92 }}
             className={index > 0 ? "-ml-2" : undefined}
           >
             <Avatar
@@ -124,7 +134,7 @@ function TypingAvatarStack({ users }: { users: TypingUser[] }) {
               className="size-5.5 shadow-sm ring-2 ring-canvas"
               fallbackClassName="text-nano"
             />
-          </motion.div>
+          </m.div>
         ))}
       </AnimatePresence>
     </div>
@@ -133,14 +143,14 @@ function TypingAvatarStack({ users }: { users: TypingUser[] }) {
 
 function InlineTypingIndicator({ users }: { users: TypingUser[] }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       className="group/typing mb-4 flex items-end gap-2.5 px-3"
     >
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
+      <m.div
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: 1, scale: 1 }}
         className="shrink-0"
       >
         <Avatar
@@ -148,7 +158,7 @@ function InlineTypingIndicator({ users }: { users: TypingUser[] }) {
           name={users[0]?.name}
           className="size-8 shadow-sm ring-1 ring-border/20"
         />
-      </motion.div>
+      </m.div>
       <div
         className={cn(
           "relative rounded-xl rounded-bl-none border border-border/60 bg-card px-4 py-3 shadow-xs",
@@ -160,7 +170,7 @@ function InlineTypingIndicator({ users }: { users: TypingUser[] }) {
         />
         <TypingDots dotSize="size-1.5" />
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -173,9 +183,9 @@ function TypingDots({
 }) {
   return (
     <div className={cn("flex items-end justify-start gap-1", className)}>
-      {TYPING_DOT_INDICES.map((i) => (
-        <motion.span
-          key={i}
+      {TYPING_DOTS.map((dot) => (
+        <m.span
+          key={dot.id}
           animate={{
             scale: [1, 1.25, 1],
             opacity: [0.4, 1, 0.4],
@@ -183,7 +193,7 @@ function TypingDots({
           transition={{
             duration: 1,
             repeat: Infinity,
-            delay: i * 0.15,
+            delay: dot.delay,
             ease: "easeInOut",
           }}
           className={cn("mb-0.5 rounded-full bg-primary", dotSize)}

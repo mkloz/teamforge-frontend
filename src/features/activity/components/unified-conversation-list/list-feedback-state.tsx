@@ -33,10 +33,10 @@ export function ConversationListErrorState({
     : (descriptionProp ?? defaultDescription);
 
   return (
-    <div
-      className="flex min-h-[calc(100dvh-8rem)] flex-col items-center justify-center px-6 py-12 text-center"
-      role="status"
-    >
+    <div className="flex min-h-[calc(100dvh-8rem)] flex-col items-center justify-center px-6 py-12 text-center">
+      <output className="sr-only">
+        {title}. {description}
+      </output>
       <ErrorNetworkRetryVisual className="h-28 w-auto text-foreground" />
       <div className="mt-5 max-w-60">
         <p className="font-black text-base text-foreground leading-tight">

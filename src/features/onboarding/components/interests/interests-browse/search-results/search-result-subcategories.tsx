@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 import { Button } from "@/shared/components/ui/button";
@@ -100,9 +100,9 @@ function SearchResultSubcategoryItem({
           </div>
         </div>
         {selectedCount > 0 && (
-          <motion.span
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
+          <m.span
+            initial={{ opacity: 0, scale: 0.75 }}
+            animate={{ opacity: 1, scale: 1 }}
             className="mr-2 ml-auto shrink-0"
           >
             <CountBadge
@@ -111,9 +111,9 @@ function SearchResultSubcategoryItem({
               tone="teal"
               className="shadow-teal-glow"
             />
-          </motion.span>
+          </m.span>
         )}
-        <motion.span
+        <m.span
           animate={{ rotate: expanded ? 0 : -90 }}
           transition={{ duration: 0.18 }}
           className={cn(
@@ -122,11 +122,11 @@ function SearchResultSubcategoryItem({
           )}
         >
           <ChevronDown size={14} strokeWidth={2.5} />
-        </motion.span>
+        </m.span>
       </Button>
       <AnimatePresence initial={false}>
         {expanded && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -145,7 +145,7 @@ function SearchResultSubcategoryItem({
                 />
               ))}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

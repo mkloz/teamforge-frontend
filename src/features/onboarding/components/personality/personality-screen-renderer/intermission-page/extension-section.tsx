@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import { getIntermissionUpgradeOptions } from "./constants";
@@ -18,7 +18,7 @@ export function ExtensionSection({
   const upgradeOptions = getIntermissionUpgradeOptions(totalQuestions);
 
   return (
-    <motion.div
+    <m.div
       variants={fadeUpItem}
       className="mb-5 flex w-full flex-col items-start text-left"
     >
@@ -42,6 +42,6 @@ export function ExtensionSection({
           />
         ))}
       </div>
-    </motion.div>
+    </m.div>
   );
 }

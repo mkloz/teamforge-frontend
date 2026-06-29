@@ -1,41 +1,52 @@
-import useEmblaCarousel, {
-  type UseEmblaCarouselType,
-} from "embla-carousel-react";
-import React from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import {
+  type ComponentProps,
+  type KeyboardEvent,
+  useEffect,
+  useEffectEvent,
+  useSyncExternalStore,
+} from "react";
 
+import { CarouselContent } from "@/shared/components/ui/carousel-content";
+import {
+  type CarouselApi,
+  CarouselContext,
+  type CarouselContextProps,
+  type CarouselProps,
+} from "@/shared/components/ui/carousel-context";
+import { CarouselItem } from "@/shared/components/ui/carousel-item";
 import { cn } from "@/shared/lib/utils";
 
-type CarouselApi = UseEmblaCarouselType[1];
-type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
-type CarouselOptions = UseCarouselParameters[0];
-type CarouselPlugin = UseCarouselParameters[1];
+type CarouselScrollSnapshot = "00" | "01" | "10" | "11";
 
-type CarouselProps = {
-  opts?: CarouselOptions;
-  plugins?: CarouselPlugin;
-  orientation?: "horizontal" | "vertical";
-  setApi?: (api: CarouselApi) => void;
-};
+const EMPTY_CAROUSEL_SCROLL_SNAPSHOT = "00";
 
-type CarouselContextProps = {
-  carouselRef: ReturnType<typeof useEmblaCarousel>[0];
-  api: ReturnType<typeof useEmblaCarousel>[1];
-  scrollPrev: () => void;
-  scrollNext: () => void;
-  canScrollPrev: boolean;
-  canScrollNext: boolean;
-} & CarouselProps;
-
-const CarouselContext = React.createContext<CarouselContextProps | null>(null);
-
-function useCarousel() {
-  const context = React.useContext(CarouselContext);
-
-  if (!context) {
-    throw new Error("useCarousel must be used within a <Carousel />");
+function getCarouselScrollSnapshot(api: CarouselApi): CarouselScrollSnapshot {
+  if (!api) {
+    return EMPTY_CAROUSEL_SCROLL_SNAPSHOT;
   }
 
-  return context;
+  return `${api.canScrollPrev() ? "1" : "0"}${
+    api.canScrollNext() ? "1" : "0"
+  }` as CarouselScrollSnapshot;
+}
+
+function getEmptyCarouselScrollSnapshot() {
+  return EMPTY_CAROUSEL_SCROLL_SNAPSHOT;
+}
+
+function subscribeToCarousel(api: CarouselApi, onStoreChange: () => void) {
+  if (!api) {
+    return () => {};
+  }
+
+  api.on("reInit", onStoreChange);
+  api.on("select", onStoreChange);
+
+  return () => {
+    api.off("reInit", onStoreChange);
+    api.off("select", onStoreChange);
+  };
 }
 
 function Carousel({
@@ -46,7 +57,7 @@ function Carousel({
   className,
   children,
   ...props
-}: React.ComponentProps<"div"> & CarouselProps) {
+}: ComponentProps<"div"> & CarouselProps) {
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
@@ -54,86 +65,59 @@ function Carousel({
     },
     plugins,
   );
-  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
-  const [canScrollNext, setCanScrollNext] = React.useState(false);
-
-  const onSelect = React.useCallback((emblaApi: CarouselApi) => {
-    if (!emblaApi) return;
-    setCanScrollPrev(emblaApi.canScrollPrev());
-    setCanScrollNext(emblaApi.canScrollNext());
-  }, []);
-
-  const scrollPrev = React.useCallback(() => {
-    api?.scrollPrev();
-  }, [api]);
-
-  const scrollNext = React.useCallback(() => {
-    api?.scrollNext();
-  }, [api]);
-
-  const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        scrollPrev();
-      } else if (event.key === "ArrowRight") {
-        event.preventDefault();
-        scrollNext();
-      }
-    },
-    [scrollPrev, scrollNext],
+  const scrollSnapshot = useSyncExternalStore(
+    (onStoreChange) => subscribeToCarousel(api, onStoreChange),
+    () => getCarouselScrollSnapshot(api),
+    getEmptyCarouselScrollSnapshot,
   );
+  const canScrollPrev = scrollSnapshot[0] === "1";
+  const canScrollNext = scrollSnapshot[1] === "1";
 
-  React.useEffect(() => {
-    if (!api || !setApi) {
-      return undefined;
+  const reportApi = useEffectEvent((nextApi: CarouselApi) => {
+    setApi?.(nextApi);
+  });
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      api?.scrollPrev();
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      api?.scrollNext();
     }
+  };
 
-    setApi(api);
-
-    return undefined;
-  }, [api, setApi]);
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (!api) {
       return undefined;
     }
 
-    onSelect(api);
-    api.on("reInit", onSelect);
-    api.on("select", onSelect);
+    // setApi is the public Embla escape hatch; consumers cannot derive it
+    // before the carousel ref initializes.
+    // react-doctor-disable-next-line react-doctor/no-pass-data-to-parent -- Embla creates api only after useEmblaCarousel initializes; preserving setApi keeps the shared primitive API stable for consumers that need the imperative carousel handle.
+    reportApi(api);
 
-    return () => {
-      api?.off("reInit", onSelect);
-      api?.off("select", onSelect);
-    };
-  }, [api, onSelect]);
+    return undefined;
+  }, [api]);
 
-  const contextValue = React.useMemo<CarouselContextProps>(
-    () => ({
-      carouselRef,
-      api,
-      opts,
-      orientation:
-        orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
-      scrollPrev,
-      scrollNext,
-      canScrollPrev,
-      canScrollNext,
-    }),
-    [
-      api,
-      canScrollNext,
-      canScrollPrev,
-      carouselRef,
-      opts,
-      orientation,
-      scrollNext,
-      scrollPrev,
-    ],
-  );
+  const contextValue: CarouselContextProps = {
+    carouselRef,
+    api,
+    opts,
+    orientation:
+      orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+    scrollPrev: () => {
+      api?.scrollPrev();
+    },
+    scrollNext: () => {
+      api?.scrollNext();
+    },
+    canScrollPrev,
+    canScrollNext,
+  };
 
   return (
+    // oxlint-disable-next-line react/jsx-no-constructed-context-values -- React Doctor flags this context useMemo as redundant under React Compiler.
     <CarouselContext value={contextValue}>
       {/* biome-ignore lint/a11y/useAriaPropsSupportedByRole: The carousel root follows the WAI carousel roledescription pattern. */}
       <section
@@ -146,46 +130,6 @@ function Carousel({
         {children}
       </section>
     </CarouselContext>
-  );
-}
-
-function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
-  const { carouselRef, orientation } = useCarousel();
-
-  return (
-    <div
-      ref={carouselRef}
-      className="overflow-hidden"
-      data-slot="carousel-content"
-    >
-      <div
-        className={cn(
-          "flex",
-          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
-          className,
-        )}
-        {...props}
-      />
-    </div>
-  );
-}
-
-function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
-  const { orientation } = useCarousel();
-
-  return (
-    // biome-ignore lint/a11y/useSemanticElements: Carousel slides use role=group per the WAI carousel pattern.
-    <div
-      role="group"
-      aria-roledescription="slide"
-      data-slot="carousel-item"
-      className={cn(
-        "min-w-0 shrink-0 grow-0 basis-full",
-        orientation === "horizontal" ? "pl-4" : "pt-4",
-        className,
-      )}
-      {...props}
-    />
   );
 }
 

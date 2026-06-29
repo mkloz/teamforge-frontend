@@ -27,6 +27,22 @@ import {
  */
 
 const DEFAULT_CONCURRENCY = 4;
+/** @type {ReadonlyMap<string, VerifyMode>} */
+const VERIFY_MODE_ALIASES = new Map([
+  ["fast", "changed"],
+  ["changed", "changed"],
+  ["local", "local"],
+  ["pr", "pr"],
+  ["release", "release"],
+]);
+const PR_BUILD_ENV_DEFAULTS = {
+  VITE_API_URL: "http://localhost:6969/api/v1",
+  VITE_APP_URL: "http://localhost:3000",
+  VITE_GIPHY_API_KEY: "ci-giphy-key",
+  VITE_GOOGLE_CLIENT_ID: "ci-google-client-id",
+  VITE_GOOGLE_MAPS_API_KEY: "ci-google-maps-key",
+  VITE_MEDIA_BASE_URL: "https://mkloz-teamforge.s3.us-east-1.amazonaws.com",
+};
 
 /**
  * @param {string[]} argv CLI arguments.
@@ -34,18 +50,10 @@ const DEFAULT_CONCURRENCY = 4;
  */
 function parseMode(argv) {
   const mode = argv[0] ?? "local";
+  const verifyMode = VERIFY_MODE_ALIASES.get(mode);
 
-  if (mode === "fast") {
-    return "changed";
-  }
-
-  if (
-    mode === "changed" ||
-    mode === "local" ||
-    mode === "pr" ||
-    mode === "release"
-  ) {
-    return mode;
+  if (verifyMode) {
+    return verifyMode;
   }
 
   throw new Error(`Unknown verify mode: ${mode}`);
@@ -253,18 +261,20 @@ function createBuildBundleTask(mode) {
  * @returns {NodeJS.ProcessEnv} Local-safe Vite env for PR bundle verification.
  */
 function getPrBuildEnv() {
-  return {
-    VITE_API_URL: process.env.VITE_API_URL ?? "http://localhost:6969/api/v1",
-    VITE_APP_URL: process.env.VITE_APP_URL ?? "http://localhost:3000",
-    VITE_GIPHY_API_KEY: process.env.VITE_GIPHY_API_KEY ?? "ci-giphy-key",
-    VITE_GOOGLE_CLIENT_ID:
-      process.env.VITE_GOOGLE_CLIENT_ID ?? "ci-google-client-id",
-    VITE_GOOGLE_MAPS_API_KEY:
-      process.env.VITE_GOOGLE_MAPS_API_KEY ?? "ci-google-maps-key",
-    VITE_MEDIA_BASE_URL:
-      process.env.VITE_MEDIA_BASE_URL ??
-      "https://mkloz-teamforge.s3.us-east-1.amazonaws.com",
-  };
+  return getEnvWithDefaults(PR_BUILD_ENV_DEFAULTS);
+}
+
+/**
+ * @param {Record<string, string>} defaults Env defaults by variable name.
+ * @returns {NodeJS.ProcessEnv} Env values using current process values first.
+ */
+function getEnvWithDefaults(defaults) {
+  return Object.fromEntries(
+    Object.entries(defaults).map(([key, fallback]) => [
+      key,
+      process.env[key] ?? fallback,
+    ]),
+  );
 }
 
 /**
@@ -720,6 +730,14 @@ async function writeReport(mode, results, concurrency) {
 }
 
 /**
+ * @param {unknown} error Error-like value.
+ * @returns {string} Error message.
+ */
+function getErrorMessage(error) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/**
  * Runs verification.
  *
  * @returns {Promise<void>}
@@ -749,8 +767,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  process.stderr.write(
-    `Verify failed: ${error instanceof Error ? error.message : String(error)}\n`,
-  );
+  process.stderr.write(`Verify failed: ${getErrorMessage(error)}\n`);
   process.exit(1);
 });

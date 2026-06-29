@@ -13,13 +13,13 @@ export function ActivityRealtimeSync({
   activeGroupId,
   activePlanId,
 }: ActivityRealtimeSyncProps) {
-  const currentUserQuery = useQuery(currentUserQueryOptions());
+  const { data: currentUser } = useQuery(currentUserQueryOptions());
 
   useActivityRealtimeSync({
     activeChatId,
     activeGroupId,
     activePlanId,
-    currentUser: currentUserQuery.data,
+    currentUser,
   });
 
   return null;

@@ -42,6 +42,29 @@ type EmptyStateMaskProps = {
   readonly maskWidth: string;
 };
 
+type SlicedEmptyStateMaskProps = Pick<
+  SlicedMaskRenderOptions,
+  "cutoutPaths" | "idPrefix" | "maskHeight" | "maskWidth"
+> & {
+  readonly path: MaskedEmptyStateVisiblePath;
+};
+
+type SlicedMaskedEmptyStatePathProps = Pick<
+  SlicedPathRenderOptions,
+  "cutoutPaths" | "idPrefix"
+> & {
+  readonly path: MaskedEmptyStateVisiblePath;
+};
+
+type EmptyStateCutoutShapeProps = {
+  readonly path: EmptyStateCutoutPath;
+};
+
+type EmptyStateVisiblePathProps = {
+  readonly mask?: string;
+  readonly path: TokenizedEmptyStateVisiblePath;
+};
+
 type SlicedMaskedEmptyStateSvgProps = SlicedMaskRenderOptions &
   EmptyStateVisualBaseProps & {
     readonly viewBox: string;
@@ -74,21 +97,27 @@ export function SlicedMaskedEmptyStateSvg({
   return (
     <EmptyStateSvg viewBox={viewBox} {...props}>
       <defs>
-        {renderSlicedEmptyStateMasks({
-          cutoutPaths,
-          idPrefix,
-          maskHeight,
-          maskWidth,
-          visiblePaths,
-        })}
+        {visiblePaths.map((path) => (
+          <SlicedEmptyStateMask
+            key={getMaskId(idPrefix, path.id, path.cutoutStart)}
+            cutoutPaths={cutoutPaths}
+            idPrefix={idPrefix}
+            maskHeight={maskHeight}
+            maskWidth={maskWidth}
+            path={path}
+          />
+        ))}
       </defs>
 
       <g stroke="none">
-        {renderSlicedMaskedEmptyStatePaths({
-          cutoutPaths,
-          idPrefix,
-          visiblePaths,
-        })}
+        {visiblePaths.map((path) => (
+          <SlicedMaskedEmptyStatePath
+            key={path.id}
+            cutoutPaths={cutoutPaths}
+            idPrefix={idPrefix}
+            path={path}
+          />
+        ))}
       </g>
     </EmptyStateSvg>
   );
@@ -127,62 +156,57 @@ export function TokenizedMaskedEmptyStateSvg({
         />
       </defs>
       <g mask={maskUrl} stroke="none">
-        {renderTokenizedEmptyStatePaths(visiblePaths)}
+        {visiblePaths.map((path) => (
+          <EmptyStateVisiblePath key={path.id} path={path} />
+        ))}
       </g>
     </svg>
   );
 }
 
-function renderSlicedEmptyStateMasks({
+function SlicedEmptyStateMask({
   cutoutPaths,
   idPrefix,
   maskHeight,
   maskWidth,
-  visiblePaths,
-}: SlicedMaskRenderOptions) {
-  return visiblePaths.map((path) =>
-    path.cutoutStart < cutoutPaths.length ? (
-      <EmptyStateMask
-        key={getMaskId(idPrefix, path.id, path.cutoutStart)}
-        cutoutPaths={cutoutPaths.slice(path.cutoutStart)}
-        id={getMaskId(idPrefix, path.id, path.cutoutStart)}
-        maskHeight={maskHeight}
-        maskWidth={maskWidth}
-      />
-    ) : null,
+  path,
+}: SlicedEmptyStateMaskProps) {
+  if (path.cutoutStart >= cutoutPaths.length) {
+    return null;
+  }
+
+  const maskId = getMaskId(idPrefix, path.id, path.cutoutStart);
+
+  return (
+    <EmptyStateMask
+      cutoutPaths={cutoutPaths.slice(path.cutoutStart)}
+      id={maskId}
+      maskHeight={maskHeight}
+      maskWidth={maskWidth}
+    />
   );
 }
 
-function renderSlicedMaskedEmptyStatePaths({
+function SlicedMaskedEmptyStatePath({
   cutoutPaths,
   idPrefix,
-  visiblePaths,
-}: SlicedPathRenderOptions) {
-  return visiblePaths.map((path) => {
-    const maskId =
-      path.cutoutStart < cutoutPaths.length
-        ? getMaskId(idPrefix, path.id, path.cutoutStart)
-        : undefined;
+  path,
+}: SlicedMaskedEmptyStatePathProps) {
+  const maskId =
+    path.cutoutStart < cutoutPaths.length
+      ? getMaskId(idPrefix, path.id, path.cutoutStart)
+      : undefined;
 
-    return renderEmptyStateVisiblePath(
-      path,
-      maskId ? `url(#${maskId})` : undefined,
-    );
-  });
+  return (
+    <EmptyStateVisiblePath
+      mask={maskId ? `url(#${maskId})` : undefined}
+      path={path}
+    />
+  );
 }
 
-function renderEmptyStateCutoutPaths(
-  cutoutPaths: readonly EmptyStateCutoutPath[],
-) {
-  return cutoutPaths.map((path) => (
-    <path key={path.id} d={path.d} fill="black" stroke="none" />
-  ));
-}
-
-function renderTokenizedEmptyStatePaths(
-  visiblePaths: readonly TokenizedEmptyStateVisiblePath[],
-) {
-  return visiblePaths.map((path) => renderEmptyStateVisiblePath(path));
+function EmptyStateCutoutShape({ path }: EmptyStateCutoutShapeProps) {
+  return <path d={path.d} fill="black" stroke="none" />;
 }
 
 function EmptyStateMask({
@@ -201,18 +225,15 @@ function EmptyStateMask({
       maskUnits="userSpaceOnUse"
     >
       <rect width={maskWidth} height={maskHeight} fill="white" stroke="none" />
-      {renderEmptyStateCutoutPaths(cutoutPaths)}
+      {cutoutPaths.map((path) => (
+        <EmptyStateCutoutShape key={path.id} path={path} />
+      ))}
     </mask>
   );
 }
 
-function renderEmptyStateVisiblePath(
-  path: TokenizedEmptyStateVisiblePath,
-  mask?: string,
-) {
-  return (
-    <path key={path.id} d={path.d} fill={getFillValue(path.fill)} mask={mask} />
-  );
+function EmptyStateVisiblePath({ mask, path }: EmptyStateVisiblePathProps) {
+  return <path d={path.d} fill={getFillValue(path.fill)} mask={mask} />;
 }
 
 function getFillValue(fill: string) {

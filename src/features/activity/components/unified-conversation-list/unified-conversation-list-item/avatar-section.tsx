@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { MyNotesAvatarVisual } from "@/features/activity/assets/special-conversation-avatars";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import {
@@ -12,29 +11,27 @@ import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { StatusIndicator } from "./status-indicator";
 
-export const AvatarSection = memo(
-  ({
-    item,
-    isGroup,
-    isCompact = false,
-  }: {
-    item: UnifiedConversation;
-    isGroup: boolean;
-    isCompact?: boolean;
-  }) => {
-    const viewState = getAvatarSectionViewState({ isCompact, item });
+export function AvatarSection({
+  item,
+  isGroup,
+  isCompact = false,
+}: {
+  item: UnifiedConversation;
+  isGroup: boolean;
+  isCompact?: boolean;
+}) {
+  const viewState = getAvatarSectionViewState({ isCompact, item });
 
-    return (
-      <div className="relative shrink-0">
-        <ConversationAvatar isGroup={isGroup} viewState={viewState} />
+  return (
+    <div className="relative shrink-0">
+      <ConversationAvatar isGroup={isGroup} viewState={viewState} />
 
-        <ConversationOnlineStatus isGroup={isGroup} viewState={viewState} />
+      <ConversationOnlineStatus isGroup={isGroup} viewState={viewState} />
 
-        <SecondaryGroupAvatar isGroup={isGroup} viewState={viewState} />
-      </div>
-    );
-  },
-);
+      <SecondaryGroupAvatar isGroup={isGroup} viewState={viewState} />
+    </div>
+  );
+}
 
 interface AvatarSectionViewState {
   avatarImageSize: number;

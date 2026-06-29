@@ -1,4 +1,5 @@
-import { type ReactNode, useCallback, useRef } from "react";
+import { type ReactNode, useRef } from "react";
+import { useEventCallback } from "usehooks-ts";
 
 import { useCollapsiblePanelHeader } from "@/features/activity/hooks/use-collapsible-panel-header";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
@@ -31,9 +32,9 @@ export function GroupPanelScrollArea({
       ref: scrollRef,
     });
 
-  const scrollToTop = useCallback(() => {
+  const scrollToTop = useEventCallback(() => {
     scrollElementToTop(scrollRef.current);
-  }, []);
+  });
 
   useResetScrollOnChange({
     enabled: Boolean(resetKey),

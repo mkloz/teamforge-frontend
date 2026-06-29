@@ -6,13 +6,8 @@ export function TemplateSuggestionsSkeleton() {
 
 function TemplateSuggestionsSkeletonContent() {
   return (
-    <div
-      aria-busy="true"
-      aria-label="Loading template suggestions"
-      className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
-      role="status"
-    >
-      <span className="sr-only">Loading template suggestions</span>
+    <div aria-busy="true" className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+      <output className="sr-only">Loading template suggestions</output>
       {["arts", "tech", "movement", "food"].map((item, index) => (
         <div
           key={item}

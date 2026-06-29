@@ -1,11 +1,12 @@
 import { useParams, useSearch } from "@tanstack/react-router";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense } from "react";
 import { usePublicProfile } from "@/features/profile/hooks/use-profile";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
 import { ProfilePageContent } from "@/features/profile/profile-page/profile-page-content";
 import { SkeletonButton } from "@/shared/components/loading/skeleton-patterns";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import type { User } from "@/shared/schemas";
 
 const USER_DETAIL_ROUTE = "/app-shell/users/$userId";
 const LazyProfilePageError = lazy(() =>
@@ -21,38 +22,83 @@ const LazyPublicProfileActions = lazy(() =>
 );
 
 export function UserDetailPage() {
+  const state = useUserDetailPageState();
+
+  usePageMetadata(state.pageMetadata);
+
+  return <UserDetailPageContent state={state} />;
+}
+
+type UserDetailPageState = ReturnType<typeof useUserDetailPageState>;
+
+function useUserDetailPageState() {
   const { userId } = useParams({ from: USER_DETAIL_ROUTE });
   const search = useSearch({ from: USER_DETAIL_ROUTE });
   const { profile, isLoading, error, refetch } = usePublicProfile(userId);
-  const pageMetadata = useMemo(
-    () =>
-      createTeamForgePageMetadata({
-        title: profile?.name ? `${profile.name}'s profile` : "Profile",
-        description: profile?.name
-          ? `View ${profile.name}'s TeamForge profile, interests, and social fit.`
-          : "View a TeamForge profile, interests, and social fit.",
-      }),
-    [profile?.name],
-  );
+  const pageMetadata = createTeamForgePageMetadata({
+    title: profile?.name ? `${profile.name}'s profile` : "Profile",
+    description: profile?.name
+      ? `View ${profile.name}'s TeamForge profile, interests, and social fit.`
+      : "View a TeamForge profile, interests, and social fit.",
+  });
 
-  usePageMetadata(pageMetadata);
+  return {
+    error,
+    isLoading,
+    pageMetadata,
+    profile,
+    refetch,
+    spotlightConnect: search.intent === "connect",
+  };
+}
 
-  if (error || !profile) {
-    if (isLoading) {
-      return <ProfilePageLoading mode="query" />;
-    }
-
+function UserDetailPageContent({ state }: { state: UserDetailPageState }) {
+  if (state.error || !state.profile) {
     return (
-      <Suspense fallback={<ProfilePageLoading mode="query" />}>
-        <LazyProfilePageError
-          title="Profile could not load"
-          description="This public profile could not be refreshed right now."
-          onRetry={() => void refetch()}
-        />
-      </Suspense>
+      <UserDetailUnavailableState
+        isLoading={state.isLoading}
+        onRetry={() => void state.refetch()}
+      />
     );
   }
 
+  return (
+    <UserDetailProfile
+      profile={state.profile}
+      spotlightConnect={state.spotlightConnect}
+    />
+  );
+}
+
+function UserDetailUnavailableState({
+  isLoading,
+  onRetry,
+}: {
+  isLoading: boolean;
+  onRetry: () => void;
+}) {
+  if (isLoading) {
+    return <ProfilePageLoading mode="query" />;
+  }
+
+  return (
+    <Suspense fallback={<ProfilePageLoading mode="query" />}>
+      <LazyProfilePageError
+        title="Profile could not load"
+        description="This public profile could not be refreshed right now."
+        onRetry={onRetry}
+      />
+    </Suspense>
+  );
+}
+
+function UserDetailProfile({
+  profile,
+  spotlightConnect,
+}: {
+  profile: User;
+  spotlightConnect: boolean;
+}) {
   return (
     <ProfilePageContent
       profile={profile}
@@ -63,7 +109,7 @@ export function UserDetailPage() {
         >
           <LazyPublicProfileActions
             user={profile}
-            spotlightConnect={search.intent === "connect"}
+            spotlightConnect={spotlightConnect}
           />
         </Suspense>
       )}
@@ -76,10 +122,11 @@ function PublicProfileActionsFallback({ userName }: { userName: string }) {
   return (
     <div
       aria-busy="true"
-      aria-label={`Loading profile actions for ${userName}`}
-      role="status"
       className="grid w-full grid-cols-1 xxs:grid-cols-2 items-center gap-2 pr-0 sm:flex sm:w-auto sm:flex-row sm:gap-3"
     >
+      <output className="sr-only">
+        Loading profile actions for {userName}
+      </output>
       <SkeletonButton className="h-11 w-full shrink-0 sm:w-32" tone="teal" />
       <SkeletonButton className="h-11 w-full sm:w-28" />
     </div>

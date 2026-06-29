@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { useLinkPreview } from "@/features/activity/hooks/use-link-preview";
 import { cn } from "@/shared/lib/utils";
 import type { LinkPreview as LinkPreviewData } from "@/shared/schemas";
@@ -76,10 +75,7 @@ function getLinkPreviewOwnerKey(isOwn: boolean): LinkPreviewOwnerKey {
   return isOwn ? "own" : "other";
 }
 
-export const LinkPreview = memo(function LinkPreview({
-  url,
-  isOwn = false,
-}: LinkPreviewProps) {
+export function LinkPreview({ url, isOwn = false }: LinkPreviewProps) {
   const { data, isLoading, isError } = useLinkPreview(url);
   const renderState = getLinkPreviewRenderState({
     data,
@@ -116,7 +112,7 @@ export const LinkPreview = memo(function LinkPreview({
       />
     </a>
   );
-});
+}
 
 function getLinkPreviewRenderState({
   data,

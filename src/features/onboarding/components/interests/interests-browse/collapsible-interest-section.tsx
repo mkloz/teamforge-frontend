@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ChevronDown, type LucideIcon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
@@ -38,7 +38,7 @@ export function CollapsibleInterestSection({
 
   return (
     <Collapsible open={open} onOpenChange={setOpen} asChild>
-      <motion.section
+      <m.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -74,20 +74,20 @@ export function CollapsibleInterestSection({
 
             <div className="ml-auto flex min-w-0 shrink-0 items-center gap-1.5">
               {trailing}
-              <motion.span
+              <m.span
                 animate={{ rotate: open ? 0 : -90 }}
                 transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                 className="text-slate-muted/50 transition-colors group-hover:text-slate-muted"
                 aria-hidden="true"
               >
                 <ChevronDown size={14} strokeWidth={2} />
-              </motion.span>
+              </m.span>
             </div>
           </Button>
         </CollapsibleTrigger>
 
         <CollapsibleContent>{children}</CollapsibleContent>
-      </motion.section>
+      </m.section>
     </Collapsible>
   );
 }

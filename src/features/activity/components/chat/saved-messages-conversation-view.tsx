@@ -6,13 +6,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import {
-  type KeyboardEvent,
-  type MouseEvent,
-  memo,
-  useMemo,
-  useState,
-} from "react";
+import { type KeyboardEvent, type MouseEvent, useState } from "react";
 import { NoSavedMessagesVisual } from "@/features/activity/assets/no-saved-messages";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
@@ -71,62 +65,60 @@ interface SavedMessagesContentProps {
 
 type SavedMessageLayoutState = ReturnType<typeof useMessageLayout>;
 
-export const SavedMessagesConversationView = memo(
-  function SavedMessagesConversationView({
-    conversations,
-    isError = false,
-    isLoading = false,
-    isRetrying = false,
-    savedMessages,
-    onBack,
-    onOpenMessage,
-    onRemoveMessage,
-    onRetry,
-  }: SavedMessagesConversationViewProps) {
-    const [searchQuery, setSearchQuery] = useState("");
-    const rows = useSavedMessageRows(savedMessages, conversations, searchQuery);
-    const savedMessagesCount = savedMessages.length;
-    const subtitle = getSavedMessagesSubtitle(savedMessagesCount);
+export function SavedMessagesConversationView({
+  conversations,
+  isError = false,
+  isLoading = false,
+  isRetrying = false,
+  savedMessages,
+  onBack,
+  onOpenMessage,
+  onRemoveMessage,
+  onRetry,
+}: SavedMessagesConversationViewProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const rows = getSavedMessageRows(savedMessages, conversations, searchQuery);
+  const savedMessagesCount = savedMessages.length;
+  const subtitle = getSavedMessagesSubtitle(savedMessagesCount);
 
-    return (
-      <div className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40">
-        <ChatBackground />
+  return (
+    <div className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40">
+      <ChatBackground />
 
-        <UnifiedChatHeader
-          kind="dm"
-          title={SAVED_MESSAGES_TITLE}
-          subtitle={subtitle}
-          avatarKind="saved"
-          showAction={false}
-          searchQuery={searchQuery}
-          searchResultLabel={
-            searchQuery.trim() ? `${rows.length} found` : undefined
-          }
-          isSearchNavigationDisabled
-          onBack={onBack}
-          onSearchQueryChange={setSearchQuery}
-          onToggleAction={() => {}}
-        />
+      <UnifiedChatHeader
+        kind="dm"
+        title={SAVED_MESSAGES_TITLE}
+        subtitle={subtitle}
+        avatarKind="saved"
+        showAction={false}
+        searchQuery={searchQuery}
+        searchResultLabel={
+          searchQuery.trim() ? `${rows.length} found` : undefined
+        }
+        isSearchNavigationDisabled
+        onBack={onBack}
+        onSearchQueryChange={setSearchQuery}
+        onToggleAction={() => {}}
+      />
 
-        <div className="relative min-h-0 flex-1 overflow-hidden">
-          <div className="relative z-10 h-full overflow-y-auto px-3 pt-4 pb-safe-bottom sm:px-5">
-            <SavedMessagesContent
-              isError={isError}
-              isLoading={isLoading}
-              isRetrying={isRetrying}
-              rows={rows}
-              savedMessagesCount={savedMessagesCount}
-              searchQuery={searchQuery}
-              onOpenMessage={onOpenMessage}
-              onRemoveMessage={onRemoveMessage}
-              onRetry={onRetry}
-            />
-          </div>
+      <div className="relative min-h-0 flex-1 overflow-hidden">
+        <div className="relative z-10 h-full overflow-y-auto px-3 pt-4 pb-safe-bottom sm:px-5">
+          <SavedMessagesContent
+            isError={isError}
+            isLoading={isLoading}
+            isRetrying={isRetrying}
+            rows={rows}
+            savedMessagesCount={savedMessagesCount}
+            searchQuery={searchQuery}
+            onOpenMessage={onOpenMessage}
+            onRemoveMessage={onRemoveMessage}
+            onRetry={onRetry}
+          />
         </div>
       </div>
-    );
-  },
-);
+    </div>
+  );
+}
 
 function SavedMessagesContent({
   isError,
@@ -190,16 +182,6 @@ function SavedMessagesResultList({
       ))}
     </div>
   );
-}
-
-function useSavedMessageRows(
-  savedMessages: SavedMessageSnapshot[],
-  conversations: UnifiedConversation[],
-  searchQuery: string,
-) {
-  return useMemo(() => {
-    return getSavedMessageRows(savedMessages, conversations, searchQuery);
-  }, [conversations, savedMessages, searchQuery]);
 }
 
 function SavedMessageBubble({
@@ -298,6 +280,7 @@ function SavedMessageOpenTarget({
     // biome-ignore lint/a11y/useSemanticElements: Saved bubbles contain nested action buttons, so they cannot be native buttons.
     <div
       tabIndex={0}
+      // react-doctor-disable-next-line react-doctor/prefer-tag-over-role -- Saved bubbles contain nested action buttons, so replacing this open target with a native button would create invalid interactive nesting.
       role="button"
       aria-label={`Open original saved message from ${viewState.senderName}`}
       className={cn(
@@ -372,15 +355,17 @@ function SavedMessageOpenTargetContents({
       <MessageFooter
         attachments={message.attachments}
         content={viewState.displayContent}
-        reactionGroups={reactionGroups}
-        isOwn={viewState.isOwn}
         createdAt={message.createdAt}
+        footerState={{
+          hasReply: Boolean(message.replyTo),
+          isEdited: message.isEdited,
+          isOwn: viewState.isOwn,
+          isPinned: message.isPinned,
+          isReadByOthers,
+          isSaved: true,
+        }}
+        reactionGroups={reactionGroups}
         status={message.status}
-        isReadByOthers={isReadByOthers}
-        isEdited={message.isEdited}
-        isPinned={message.isPinned}
-        isSaved
-        hasReply={Boolean(message.replyTo)}
       />
     </>
   );

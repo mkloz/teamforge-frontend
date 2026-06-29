@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 import {
   ANVIL_LOOP_TRANSITION,
@@ -9,7 +9,7 @@ import {
 export function AnvilSparks() {
   return (
     <>
-      <motion.path
+      <m.path
         className="origin-[110px_107.75px]"
         d="M99 107.75h22"
         stroke="var(--color-spark-amber)"
@@ -21,7 +21,7 @@ export function AnvilSparks() {
         transition={ANVIL_LOOP_TRANSITION}
       />
       {ANVIL_SPARK_ANIMATIONS.map((spark) => (
-        <motion.circle
+        <m.circle
           key={spark.id}
           cx="110"
           cy="108"

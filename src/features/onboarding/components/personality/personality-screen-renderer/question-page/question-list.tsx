@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 import {
   fadeUpItem,
@@ -27,7 +27,7 @@ export function QuestionList({
   totalQuestions,
 }: QuestionListProps) {
   return (
-    <motion.div
+    <m.div
       key={pageNumber}
       initial="hidden"
       animate="visible"
@@ -35,7 +35,7 @@ export function QuestionList({
       className="mb-7 flex flex-col gap-3"
     >
       {pageQuestions.map((question, index) => (
-        <motion.div key={question.id} variants={fadeUpItem}>
+        <m.div key={question.id} variants={fadeUpItem}>
           <QuestionCard
             question={question}
             index={startIndex + index}
@@ -43,8 +43,8 @@ export function QuestionList({
             value={answers[question.id]}
             onChange={onAnswer}
           />
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }

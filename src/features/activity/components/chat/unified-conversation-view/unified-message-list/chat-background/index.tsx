@@ -1,4 +1,4 @@
-import { lazy, memo, Suspense } from "react";
+import { lazy, Suspense } from "react";
 
 const LazyChatWallpaperArt = lazy(async () => {
   const wallpaperModule = await import("./chat-wallpaper-art");
@@ -28,7 +28,7 @@ const readingVeilClassName = [
   "max-md:dark:bg-[linear-gradient(90deg,color-mix(in_srgb,var(--color-canvas)_8%,transparent)_0%,color-mix(in_srgb,var(--color-canvas)_30%,transparent)_18%,color-mix(in_srgb,var(--color-canvas)_54%,transparent)_46%,color-mix(in_srgb,var(--color-canvas)_54%,transparent)_54%,color-mix(in_srgb,var(--color-canvas)_30%,transparent)_82%,color-mix(in_srgb,var(--color-canvas)_8%,transparent)_100%),linear-gradient(180deg,color-mix(in_srgb,var(--color-canvas)_62%,transparent)_0%,transparent_16%,transparent_78%,color-mix(in_srgb,var(--color-canvas)_62%,transparent)_100%)]",
 ].join(" ");
 
-export const ChatBackground = memo(function ChatBackground() {
+export function ChatBackground() {
   return (
     <div className={wallpaperCanvasClassName}>
       <Suspense fallback={null}>
@@ -37,4 +37,4 @@ export const ChatBackground = memo(function ChatBackground() {
       <div className={readingVeilClassName} />
     </div>
   );
-});
+}

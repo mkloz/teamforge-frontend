@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { CATEGORIES } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { CategoryFilterChip } from "@/shared/components/ui/category-filter-chip";
@@ -10,21 +10,7 @@ const INITIAL_VISIBLE_CATEGORY_COUNT = 5;
 export function CategoryFilter() {
   const { selectedCategories, setSelectedCategories } = useExploreRouteState();
   const [expanded, setExpanded] = useState(false);
-  const visibleCategories = useMemo(() => {
-    if (expanded) {
-      return CATEGORIES;
-    }
-
-    const starterCategories = CATEGORIES.slice(
-      0,
-      INITIAL_VISIBLE_CATEGORY_COUNT,
-    );
-    const selectedHiddenCategories = CATEGORIES.slice(
-      INITIAL_VISIBLE_CATEGORY_COUNT,
-    ).filter((category) => selectedCategories.includes(category.id));
-
-    return [...starterCategories, ...selectedHiddenCategories];
-  }, [expanded, selectedCategories]);
+  const visibleCategories = getVisibleCategories(expanded, selectedCategories);
   const hiddenCategoryCount = CATEGORIES.length - visibleCategories.length;
 
   const toggleCategory = (catId: PlanCategory | "ALL") => {
@@ -80,4 +66,20 @@ export function CategoryFilter() {
       ) : null}
     </div>
   );
+}
+
+function getVisibleCategories(
+  expanded: boolean,
+  selectedCategories: Array<PlanCategory | "ALL">,
+) {
+  if (expanded) {
+    return CATEGORIES;
+  }
+
+  const starterCategories = CATEGORIES.slice(0, INITIAL_VISIBLE_CATEGORY_COUNT);
+  const selectedHiddenCategories = CATEGORIES.slice(
+    INITIAL_VISIBLE_CATEGORY_COUNT,
+  ).filter((category) => selectedCategories.includes(category.id));
+
+  return [...starterCategories, ...selectedHiddenCategories];
 }

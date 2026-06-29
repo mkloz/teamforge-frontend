@@ -46,6 +46,13 @@ interface GroupPanelMainSectionsProps {
 
 type CurrentGroupPlan = NonNullable<Group["plan"]>;
 
+interface GroupPanelMembershipActionState {
+  isDisbanding: boolean;
+  isGroupLocked: boolean;
+  isLeaving: boolean;
+  isOnline: boolean;
+}
+
 export function GroupPanelMainSections({
   currentUserId,
   currentUserRole,
@@ -137,13 +144,15 @@ export function GroupPanelMainSections({
       />
 
       <GroupPanelMembershipControls
+        actionState={{
+          isDisbanding,
+          isGroupLocked,
+          isLeaving,
+          isOnline,
+        }}
         currentUserRole={currentUserRole}
         disbandGroup={disbandGroup}
         group={group}
-        isDisbanding={isDisbanding}
-        isGroupLocked={isGroupLocked}
-        isLeaving={isLeaving}
-        isOnline={isOnline}
         leaveGroup={leaveGroup}
       />
     </div>
@@ -276,25 +285,19 @@ function GroupPlanHistorySection({
 }
 
 function GroupPanelMembershipControls({
+  actionState,
   currentUserRole,
   disbandGroup,
   group,
-  isDisbanding,
-  isGroupLocked,
-  isLeaving,
-  isOnline,
   leaveGroup,
 }: {
+  actionState: GroupPanelMembershipActionState;
   currentUserRole: MemberRole;
   disbandGroup: () => Promise<void> | void;
   group: Group;
-  isDisbanding: boolean;
-  isGroupLocked: boolean;
-  isLeaving: boolean;
-  isOnline: boolean;
   leaveGroup: () => Promise<void> | void;
 }) {
-  if (isGroupLocked) {
+  if (actionState.isGroupLocked) {
     return <ArchivedGroupFooter status={group.status} />;
   }
 
@@ -302,9 +305,9 @@ function GroupPanelMembershipControls({
     <ActionsSection
       currentUserRole={currentUserRole}
       groupStatus={group.status}
-      isDisbanding={isDisbanding}
-      isOnline={isOnline}
-      isLeaving={isLeaving}
+      isDisbanding={actionState.isDisbanding}
+      isOnline={actionState.isOnline}
+      isLeaving={actionState.isLeaving}
       onDisbandGroup={disbandGroup}
       onLeaveGroup={leaveGroup}
     />

@@ -12,6 +12,7 @@ import {
   isRecord,
   parseFirstJsonObject,
   ROOT,
+  readRequiredOptionValue,
   renderBullets,
   renderKeyValues,
   renderMarkdownTable,
@@ -82,44 +83,144 @@ function parseArgs(argv) {
   };
 
   for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
-
-    if (isMode(arg)) {
-      options.mode = arg;
-      continue;
-    }
-
-    if (arg === "--quiet") {
-      options.quiet = true;
-      continue;
-    }
-
-    if (arg === "--report-dir") {
-      options.reportDir = readOptionValue(argv, index, arg);
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--temp-dir") {
-      options.tempDir = readOptionValue(argv, index, arg);
-      index += 1;
-      continue;
-    }
-
-    if (arg.startsWith("--report-dir=")) {
-      options.reportDir = arg.slice("--report-dir=".length);
-      continue;
-    }
-
-    if (arg.startsWith("--temp-dir=")) {
-      options.tempDir = arg.slice("--temp-dir=".length);
-      continue;
-    }
-
-    throw new Error(`Unknown quality-intelligence argument: ${arg}`);
+    index = applyCliArg(options, argv, index);
   }
 
   return options;
+}
+
+/**
+ * @param {CliOptions} options Mutable CLI options.
+ * @param {string[]} argv CLI arguments.
+ * @param {number} index Current argument index.
+ * @returns {number} Next argument index.
+ */
+function applyCliArg(options, argv, index) {
+  const arg = argv[index];
+
+  return (
+    applyModeArg(options, arg, index) ??
+    applyQuietArg(options, arg, index) ??
+    applyPathOptionArg(options, argv, index) ??
+    applyInlinePathOptionArg(options, arg, index) ??
+    rejectUnknownArg(arg)
+  );
+}
+
+/**
+ * @param {CliOptions} options Mutable CLI options.
+ * @param {string} arg CLI argument.
+ * @param {number} index Current argument index.
+ * @returns {number | null} Next argument index when handled.
+ */
+function applyModeArg(options, arg, index) {
+  if (!isMode(arg)) {
+    return null;
+  }
+
+  options.mode = arg;
+  return index;
+}
+
+/**
+ * @param {CliOptions} options Mutable CLI options.
+ * @param {string} arg CLI argument.
+ * @param {number} index Current argument index.
+ * @returns {number | null} Next argument index when handled.
+ */
+function applyQuietArg(options, arg, index) {
+  if (arg !== "--quiet") {
+    return null;
+  }
+
+  options.quiet = true;
+  return index;
+}
+
+/**
+ * @param {CliOptions} options Mutable CLI options.
+ * @param {string[]} argv CLI arguments.
+ * @param {number} index Current argument index.
+ * @returns {number | null} Next argument index when handled.
+ */
+function applyPathOptionArg(options, argv, index) {
+  const arg = argv[index];
+
+  if (!isPathOption(arg)) {
+    return null;
+  }
+
+  setPathOption(options, arg, readRequiredOptionValue(argv, index, arg));
+  return index + 1;
+}
+
+/**
+ * @param {CliOptions} options Mutable CLI options.
+ * @param {string} arg CLI argument.
+ * @param {number} index Current argument index.
+ * @returns {number | null} Next argument index when handled.
+ */
+function applyInlinePathOptionArg(options, arg, index) {
+  const inlineOption = parseInlinePathOption(arg);
+
+  if (!inlineOption) {
+    return null;
+  }
+
+  setPathOption(options, inlineOption.option, inlineOption.value);
+  return index;
+}
+
+/**
+ * @param {string} arg CLI argument.
+ * @returns {never} Always throws.
+ */
+function rejectUnknownArg(arg) {
+  throw new Error(`Unknown quality-intelligence argument: ${arg}`);
+}
+
+/**
+ * @param {string} value CLI argument.
+ * @returns {value is "--report-dir" | "--temp-dir"} Whether this is a path option.
+ */
+function isPathOption(value) {
+  return value === "--report-dir" || value === "--temp-dir";
+}
+
+/**
+ * @param {string} value CLI argument.
+ * @returns {{ option: "--report-dir" | "--temp-dir"; value: string } | null} Inline path option.
+ */
+function parseInlinePathOption(value) {
+  if (value.startsWith("--report-dir=")) {
+    return {
+      option: "--report-dir",
+      value: value.slice("--report-dir=".length),
+    };
+  }
+
+  if (value.startsWith("--temp-dir=")) {
+    return {
+      option: "--temp-dir",
+      value: value.slice("--temp-dir=".length),
+    };
+  }
+
+  return null;
+}
+
+/**
+ * @param {CliOptions} options Mutable CLI options.
+ * @param {"--report-dir" | "--temp-dir"} option Option name.
+ * @param {string} value Option value.
+ */
+function setPathOption(options, option, value) {
+  if (option === "--report-dir") {
+    options.reportDir = value;
+    return;
+  }
+
+  options.tempDir = value;
 }
 
 /**
@@ -128,22 +229,6 @@ function parseArgs(argv) {
  */
 function isMode(value) {
   return ["context", "local", "pr", "release"].includes(value);
-}
-
-/**
- * @param {string[]} argv Arguments.
- * @param {number} index Current index.
- * @param {string} option Option name.
- * @returns {string} Option value.
- */
-function readOptionValue(argv, index, option) {
-  const value = argv[index + 1];
-
-  if (!value) {
-    throw new Error(`Missing value for ${option}.`);
-  }
-
-  return value;
 }
 
 /**
@@ -276,37 +361,48 @@ function normalizeFallowFindings(fallowResults) {
  * @returns {NormalizedFinding[]} Normalized dead-code findings.
  */
 function normalizeDeadCodeFindings(payload) {
-  /** @type {NormalizedFinding[]} */
-  const findings = [];
+  return Object.entries(payload).flatMap(([key, value]) =>
+    normalizeDeadCodeEntry(key, value),
+  );
+}
 
-  for (const [key, value] of Object.entries(payload)) {
-    if (!Array.isArray(value) || !isDeadCodeFindingKey(key)) {
-      continue;
-    }
-
-    for (const item of value) {
-      if (!isRecord(item)) {
-        continue;
-      }
-
-      const filePath = getFallowFilePath(item);
-
-      if (!filePath) {
-        continue;
-      }
-
-      findings.push({
-        category: "dead code",
-        filePath,
-        message: formatDeadCodeMessage(key, item),
-        rule: `dead-code/${formatRuleName(key)}`,
-        severity: getDeadCodeSeverity(key),
-        source: "fallow",
-      });
-    }
+/**
+ * @param {string} key Dead-code finding key.
+ * @param {unknown} value Dead-code payload entry.
+ * @returns {NormalizedFinding[]} Normalized findings for this entry.
+ */
+function normalizeDeadCodeEntry(key, value) {
+  if (!Array.isArray(value) || !isDeadCodeFindingKey(key)) {
+    return [];
   }
 
-  return findings;
+  return value.filter(isRecord).flatMap((item) => {
+    const finding = normalizeDeadCodeFinding(key, item);
+
+    return finding ? [finding] : [];
+  });
+}
+
+/**
+ * @param {string} key Dead-code finding key.
+ * @param {JsonObject} item Dead-code item payload.
+ * @returns {NormalizedFinding | null} Normalized finding when a path exists.
+ */
+function normalizeDeadCodeFinding(key, item) {
+  const filePath = getFallowFilePath(item);
+
+  if (!filePath) {
+    return null;
+  }
+
+  return {
+    category: "dead code",
+    filePath,
+    message: formatDeadCodeMessage(key, item),
+    rule: `dead-code/${formatRuleName(key)}`,
+    severity: getDeadCodeSeverity(key),
+    source: "fallow",
+  };
 }
 
 /**
@@ -527,30 +623,30 @@ function getReactDoctorProjects(payload) {
  * @returns {NormalizedFinding} Normalized diagnostic.
  */
 function normalizeReactDoctorDiagnostic(project, diagnostic) {
-  const projectDirectory =
-    typeof project.directory === "string" ? project.directory : ROOT;
-  const rawFilePath =
-    typeof diagnostic.filePath === "string" ? diagnostic.filePath : "unknown";
-  const plugin =
-    typeof diagnostic.plugin === "string" ? diagnostic.plugin : "unknown";
-  const rule =
-    typeof diagnostic.rule === "string" ? diagnostic.rule : "unknown";
+  const projectDirectory = getString(project.directory, ROOT);
+  const rawFilePath = getString(diagnostic.filePath, "unknown");
+  const plugin = getString(diagnostic.plugin, "unknown");
+  const rule = getString(diagnostic.rule, "unknown");
 
   return {
-    category:
-      typeof diagnostic.category === "string"
-        ? diagnostic.category
-        : "Uncategorized",
+    category: getString(diagnostic.category, "Uncategorized"),
     filePath: toRepoRelativePath(rawFilePath, projectDirectory),
-    message:
-      typeof diagnostic.title === "string"
-        ? diagnostic.title
-        : getString(diagnostic.message, "React Doctor finding"),
+    message: getReactDoctorMessage(diagnostic),
     rule: `${plugin}/${rule}`,
-    severity:
-      typeof diagnostic.severity === "string" ? diagnostic.severity : "review",
+    severity: getString(diagnostic.severity, "review"),
     source: "react-doctor",
   };
+}
+
+/**
+ * @param {JsonObject} diagnostic React Doctor diagnostic.
+ * @returns {string} Diagnostic message.
+ */
+function getReactDoctorMessage(diagnostic) {
+  return getString(
+    diagnostic.title,
+    getString(diagnostic.message, "React Doctor finding"),
+  );
 }
 
 /**
@@ -676,125 +772,182 @@ function formatMarkdownReport(summary, elapsedMs, options) {
     "",
     `Generated: ${new Date().toISOString()}`,
     `Elapsed: ${formatDuration(elapsedMs)}`,
+    ...formatMarkdownOverviewSection(summary, allFiles.size),
+    ...formatBlockingPolicySection(blockingFindings.length),
+    ...formatTriageQueueSection(triageRows),
+    ...formatBreakdownSections(summary),
+    ...formatSignalByRuleSection(fallowRuleRows, reactDoctorRuleRows),
+    ...formatTopFilesSection(topFileRows),
+    ...formatSharedHotspotsSection(summary, sharedFindings),
+    ...formatToolSpecificSection(summary),
+    ...formatFallowAffectedFilesSection(fallowFindings),
+    ...formatReactDoctorDiagnosticsSection(reactDoctorFindings),
+    ...formatCommandExecutionSection(summary, elapsedMs, options),
+    "",
+  ].join("\n");
+}
+
+/**
+ * @param {QualitySummary} summary Quality summary.
+ * @param {number} allFileCount Combined affected file count.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatMarkdownOverviewSection(summary, allFileCount) {
+  return [
     "",
     "## Overview",
     "",
-    renderMarkdownBullets([
-      `Fallow: ${formatNumber(
-        summary.fallow.totalFindings,
-      )} repo-health findings across ${formatNumber(
-        summary.fallow.files.size,
-      )} files.`,
-      `React Doctor: ${formatNumber(
-        summary.reactDoctor.diagnostics,
-      )} React diagnostics across ${formatNumber(
-        summary.reactDoctor.affectedFiles.size,
-      )} files.`,
-      `Combined signal: ${formatNumber(
-        summary.fallow.totalFindings + summary.reactDoctor.diagnostics,
-      )} findings across ${formatNumber(allFiles.size)} files.`,
-      `Shared hotspots: ${formatNumber(
-        summary.sharedHotspots.length,
-      )} files were reported by both engines.`,
-    ]),
+    renderMarkdownBullets(getMarkdownOverview(summary, allFileCount)),
     "",
+  ];
+}
+
+/**
+ * @param {number} blockingCandidateCount Blocking candidate count.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatBlockingPolicySection(blockingCandidateCount) {
+  return [
     "## Calibrated Blocking Policy",
     "",
-    renderMarkdownBullets([
-      `Current mode: ${
-        shouldBlock
-          ? "blocking enabled through QUALITY_INTELLIGENCE_BLOCKING=true"
-          : "advisory; set QUALITY_INTELLIGENCE_BLOCKING=true to fail on calibrated blockers"
-      }.`,
-      `Blocking candidates in this run: ${formatNumber(
-        blockingFindings.length,
-      )}.`,
-      `Blocks on: Fallow structural complexity plus ${getReactDoctorBlockingPolicyText()}.`,
-      `Advisory only: CRAP coverage risk, duplication, broad performance advice such as ${[
-        ...ADVISORY_REACT_DOCTOR_RULES,
-      ]
-        .map(formatCodeValue)
-        .join(", ")}.`,
-    ]),
+    renderMarkdownBullets(getBlockingPolicyLines(blockingCandidateCount)),
     "",
+  ];
+}
+
+/**
+ * @param {TriageRow[]} triageRows Triage rows.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatTriageQueueSection(triageRows) {
+  return [
     "## Triage Queue",
     "",
     triageRows.length === 0
       ? "No triage rows were produced."
       : renderMarkdownTable(
           ["Priority", "File", "Why", "Sources", "Top Rules"],
-          triageRows.map((row) => [
-            formatTriagePriority(row),
-            row.filePath,
-            row.reasons.join("; "),
-            row.sources.join(", "),
-            formatTopRules(row.findings),
-          ]),
+          triageRows.map(formatTriageTableRow),
         ),
     "",
+  ];
+}
+
+/**
+ * @param {TriageRow} row Triage row.
+ * @returns {string[]} Markdown table row.
+ */
+function formatTriageTableRow(row) {
+  return [
+    formatTriagePriority(row),
+    row.filePath,
+    row.reasons.join("; "),
+    row.sources.join(", "),
+    formatTopRules(row.findings),
+  ];
+}
+
+/**
+ * @param {QualitySummary} summary Quality summary.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatBreakdownSections(summary) {
+  return [
     "## Fallow Breakdown",
     "",
-    renderMarkdownBullets([
-      `Cleanup issues: ${formatNumber(summary.fallow.cleanupIssues)}`,
-      `Clone groups: ${formatNumber(summary.fallow.cloneGroups)}`,
-      `Structural complexity: ${formatNumber(
-        summary.fallow.structuralComplexity,
-      )}`,
-      `Coverage risk / CRAP: ${formatNumber(summary.fallow.crapRisk)}`,
-      `Refactor targets: ${formatNumber(summary.fallow.refactorTargets)}`,
-      `Affected files: ${formatNumber(summary.fallow.files.size)}`,
-    ]),
+    renderMarkdownBullets(getFallowBreakdownLines(summary.fallow)),
     "",
     "## React Doctor Breakdown",
     "",
-    renderMarkdownBullets([
-      `Diagnostics: ${formatNumber(summary.reactDoctor.diagnostics)}`,
-      `Errors: ${formatNumber(summary.reactDoctor.errors)}`,
-      `Warnings: ${formatNumber(summary.reactDoctor.warnings)}`,
-      `Affected files: ${formatNumber(summary.reactDoctor.affectedFiles.size)}`,
-    ]),
+    renderMarkdownBullets(getReactDoctorBreakdownLines(summary.reactDoctor)),
     "",
+  ];
+}
+
+/**
+ * @param {RuleCountRow[]} fallowRuleRows Fallow rule rows.
+ * @param {RuleCountRow[]} reactDoctorRuleRows React Doctor rule rows.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatSignalByRuleSection(fallowRuleRows, reactDoctorRuleRows) {
+  return [
     "## Signal By Rule",
     "",
     "Fallow:",
     "",
-    fallowRuleRows.length === 0
-      ? "No Fallow rules reported affected files."
-      : renderMarkdownTable(
-          ["Rule", "Findings", "Category", "Severity"],
-          fallowRuleRows.map((row) => [
-            row.rule,
-            formatNumber(row.count),
-            row.categories.join(", "),
-            row.severities.join(", "),
-          ]),
-        ),
+    formatRuleCountTable(
+      fallowRuleRows,
+      "No Fallow rules reported affected files.",
+    ),
     "",
     "React Doctor:",
     "",
-    reactDoctorRuleRows.length === 0
-      ? "No React Doctor rules reported diagnostics."
-      : renderMarkdownTable(
-          ["Rule", "Findings", "Category", "Severity"],
-          reactDoctorRuleRows.map((row) => [
-            row.rule,
-            formatNumber(row.count),
-            row.categories.join(", "),
-            row.severities.join(", "),
-          ]),
-        ),
+    formatRuleCountTable(
+      reactDoctorRuleRows,
+      "No React Doctor rules reported diagnostics.",
+    ),
     "",
+  ];
+}
+
+/**
+ * @param {RuleCountRow[]} rows Rule rows.
+ * @param {string} emptyText Empty-state text.
+ * @returns {string} Markdown table or empty state.
+ */
+function formatRuleCountTable(rows, emptyText) {
+  return rows.length === 0
+    ? emptyText
+    : renderMarkdownTable(
+        ["Rule", "Findings", "Category", "Severity"],
+        rows.map(formatRuleCountTableRow),
+      );
+}
+
+/**
+ * @param {RuleCountRow} row Rule count row.
+ * @returns {string[]} Markdown table row.
+ */
+function formatRuleCountTableRow(row) {
+  return [
+    row.rule,
+    formatNumber(row.count),
+    row.categories.join(", "),
+    row.severities.join(", "),
+  ];
+}
+
+/**
+ * @param {FindingCountRow[]} topFileRows Top file rows.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatTopFilesSection(topFileRows) {
+  return [
     "## Top Files By Combined Signal",
     "",
     renderMarkdownTable(
       ["File", "Findings", "Sources"],
-      topFileRows.map((row) => [
-        row.filePath,
-        formatNumber(row.count),
-        row.sources.join(", "),
-      ]),
+      topFileRows.map(formatFindingCountTableRow),
     ),
     "",
+  ];
+}
+
+/**
+ * @param {FindingCountRow} row Finding count row.
+ * @returns {string[]} Markdown table row.
+ */
+function formatFindingCountTableRow(row) {
+  return [row.filePath, formatNumber(row.count), row.sources.join(", ")];
+}
+
+/**
+ * @param {QualitySummary} summary Quality summary.
+ * @param {NormalizedFinding[]} sharedFindings Shared hotspot findings.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatSharedHotspotsSection(summary, sharedFindings) {
+  return [
     "## Shared Hotspots",
     "",
     summary.sharedHotspots.length === 0
@@ -803,71 +956,221 @@ function formatMarkdownReport(summary, elapsedMs, options) {
     "",
     "## Shared Hotspot Findings",
     "",
-    sharedFindings.length === 0
-      ? "No shared hotspot findings were available."
-      : renderMarkdownTable(
-          ["Source", "Severity", "Category", "Rule", "File", "Message"],
-          sortFindings(sharedFindings).map((finding) => [
-            finding.source,
-            finding.severity,
-            finding.category,
-            finding.rule,
-            finding.filePath,
-            finding.message,
-          ]),
-        ),
+    formatFindingsTable(
+      sharedFindings,
+      ["Source", "Severity", "Category", "Rule", "File", "Message"],
+      formatSharedFindingTableRow,
+      "No shared hotspot findings were available.",
+    ),
     "",
+  ];
+}
+
+/**
+ * @param {QualitySummary} summary Quality summary.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatToolSpecificSection(summary) {
+  return [
     "## Tool-Specific Blind Spots",
     "",
     "Fallow-only files:",
     "",
     renderMarkdownBullets(
-      summary.toolSpecific.fallowOnly.length === 0
-        ? ["None."]
-        : summary.toolSpecific.fallowOnly.map(formatCodeValue),
+      formatOptionalCodeValues(summary.toolSpecific.fallowOnly),
     ),
     "",
     "React Doctor-only files:",
     "",
     renderMarkdownBullets(
-      summary.toolSpecific.reactDoctorOnly.length === 0
-        ? ["None."]
-        : summary.toolSpecific.reactDoctorOnly.map(formatCodeValue),
+      formatOptionalCodeValues(summary.toolSpecific.reactDoctorOnly),
     ),
     "",
+  ];
+}
+
+/**
+ * @param {string[]} values Code values.
+ * @returns {string[]} Formatted values or empty-state line.
+ */
+function formatOptionalCodeValues(values) {
+  return values.length === 0 ? ["None."] : values.map(formatCodeValue);
+}
+
+/**
+ * @param {NormalizedFinding[]} fallowFindings Fallow findings.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatFallowAffectedFilesSection(fallowFindings) {
+  return [
     "## Fallow Affected Files",
     "",
     fallowFindings.length === 0
       ? "Fallow did not report affected files."
       : renderMarkdownBullets(
-          sortFindings(fallowFindings).map(
-            (finding) =>
-              `${finding.category}: ${formatCodeValue(finding.filePath)}`,
-          ),
+          sortFindings(fallowFindings).map(formatFallowAffectedFileLine),
         ),
     "",
+  ];
+}
+
+/**
+ * @param {NormalizedFinding} finding Finding.
+ * @returns {string} Markdown bullet line.
+ */
+function formatFallowAffectedFileLine(finding) {
+  return `${finding.category}: ${formatCodeValue(finding.filePath)}`;
+}
+
+/**
+ * @param {NormalizedFinding[]} reactDoctorFindings React Doctor findings.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatReactDoctorDiagnosticsSection(reactDoctorFindings) {
+  return [
     "## React Doctor Diagnostics",
     "",
-    reactDoctorFindings.length === 0
-      ? "React Doctor did not report diagnostics."
-      : renderMarkdownTable(
-          ["Severity", "Category", "Rule", "File", "Message"],
-          sortFindings(reactDoctorFindings).map((finding) => [
-            finding.severity,
-            finding.category,
-            finding.rule,
-            finding.filePath,
-            finding.message,
-          ]),
-        ),
+    formatFindingsTable(
+      reactDoctorFindings,
+      ["Severity", "Category", "Rule", "File", "Message"],
+      formatReactDoctorFindingTableRow,
+      "React Doctor did not report diagnostics.",
+    ),
     "",
+  ];
+}
+
+/**
+ * @param {QualitySummary} summary Quality summary.
+ * @param {number} elapsedMs Elapsed time.
+ * @param {CliOptions} options CLI options.
+ * @returns {string[]} Markdown section lines.
+ */
+function formatCommandExecutionSection(summary, elapsedMs, options) {
+  return [
     "## Command Execution Summary",
     "",
     renderMarkdownBullets(
       getQualityCommandSummary(summary, elapsedMs, options),
     ),
-    "",
-  ].join("\n");
+  ];
+}
+
+/**
+ * @param {NormalizedFinding[]} findings Findings.
+ * @param {string[]} headers Table headers.
+ * @param {(finding: NormalizedFinding) => string[]} formatRow Row formatter.
+ * @param {string} emptyText Empty-state text.
+ * @returns {string} Markdown table or empty state.
+ */
+function formatFindingsTable(findings, headers, formatRow, emptyText) {
+  return findings.length === 0
+    ? emptyText
+    : renderMarkdownTable(headers, sortFindings(findings).map(formatRow));
+}
+
+/**
+ * @param {NormalizedFinding} finding Finding.
+ * @returns {string[]} Markdown table row.
+ */
+function formatSharedFindingTableRow(finding) {
+  return [
+    finding.source,
+    finding.severity,
+    finding.category,
+    finding.rule,
+    finding.filePath,
+    finding.message,
+  ];
+}
+
+/**
+ * @param {NormalizedFinding} finding Finding.
+ * @returns {string[]} Markdown table row.
+ */
+function formatReactDoctorFindingTableRow(finding) {
+  return [
+    finding.severity,
+    finding.category,
+    finding.rule,
+    finding.filePath,
+    finding.message,
+  ];
+}
+
+/**
+ * @param {QualitySummary} summary Quality summary.
+ * @param {number} allFileCount Combined affected file count.
+ * @returns {string[]} Overview bullets.
+ */
+function getMarkdownOverview(summary, allFileCount) {
+  return [
+    `Fallow: ${formatNumber(
+      summary.fallow.totalFindings,
+    )} repo-health findings across ${formatNumber(
+      summary.fallow.files.size,
+    )} files.`,
+    `React Doctor: ${formatNumber(
+      summary.reactDoctor.diagnostics,
+    )} React diagnostics across ${formatNumber(
+      summary.reactDoctor.affectedFiles.size,
+    )} files.`,
+    `Combined signal: ${formatNumber(
+      summary.fallow.totalFindings + summary.reactDoctor.diagnostics,
+    )} findings across ${formatNumber(allFileCount)} files.`,
+    `Shared hotspots: ${formatNumber(
+      summary.sharedHotspots.length,
+    )} files were reported by both engines.`,
+  ];
+}
+
+/**
+ * @param {number} blockingCandidateCount Blocking candidate count.
+ * @returns {string[]} Blocking policy bullets.
+ */
+function getBlockingPolicyLines(blockingCandidateCount) {
+  return [
+    `Current mode: ${
+      shouldBlock
+        ? "blocking enabled through QUALITY_INTELLIGENCE_BLOCKING=true"
+        : "advisory; set QUALITY_INTELLIGENCE_BLOCKING=true to fail on calibrated blockers"
+    }.`,
+    `Blocking candidates in this run: ${formatNumber(blockingCandidateCount)}.`,
+    `Blocks on: Fallow structural complexity plus ${getReactDoctorBlockingPolicyText()}.`,
+    `Advisory only: CRAP coverage risk, duplication, broad performance advice such as ${[
+      ...ADVISORY_REACT_DOCTOR_RULES,
+    ]
+      .map(formatCodeValue)
+      .join(", ")}.`,
+  ];
+}
+
+/**
+ * @param {FallowSummary} fallow Fallow summary.
+ * @returns {string[]} Fallow breakdown bullets.
+ */
+function getFallowBreakdownLines(fallow) {
+  return [
+    `Cleanup issues: ${formatNumber(fallow.cleanupIssues)}`,
+    `Clone groups: ${formatNumber(fallow.cloneGroups)}`,
+    `Structural complexity: ${formatNumber(fallow.structuralComplexity)}`,
+    `Coverage risk / CRAP: ${formatNumber(fallow.crapRisk)}`,
+    `Refactor targets: ${formatNumber(fallow.refactorTargets)}`,
+    `Affected files: ${formatNumber(fallow.files.size)}`,
+  ];
+}
+
+/**
+ * @param {ReactDoctorSummary} reactDoctor React Doctor summary.
+ * @returns {string[]} React Doctor breakdown bullets.
+ */
+function getReactDoctorBreakdownLines(reactDoctor) {
+  return [
+    `Diagnostics: ${formatNumber(reactDoctor.diagnostics)}`,
+    `Errors: ${formatNumber(reactDoctor.errors)}`,
+    `Warnings: ${formatNumber(reactDoctor.warnings)}`,
+    `Affected files: ${formatNumber(reactDoctor.affectedFiles.size)}`,
+  ];
 }
 
 /**
@@ -883,14 +1186,13 @@ function getFindingCountRows(findings) {
   const counts = new Map();
 
   for (const finding of findings) {
-    const current = counts.get(finding.filePath) ?? {
+    const current = getOrCreateMapEntry(counts, finding.filePath, () => ({
       count: 0,
       sources: new Set(),
-    };
+    }));
 
     current.count += 1;
     current.sources.add(finding.source);
-    counts.set(finding.filePath, current);
   }
 
   return [...counts.entries()]
@@ -932,16 +1234,15 @@ function getRuleCountRows(findings) {
   const counts = new Map();
 
   for (const finding of findings) {
-    const current = counts.get(finding.rule) ?? {
+    const current = getOrCreateMapEntry(counts, finding.rule, () => ({
       categories: new Set(),
       count: 0,
       severities: new Set(),
-    };
+    }));
 
     current.count += 1;
     current.categories.add(finding.category);
     current.severities.add(finding.severity);
-    counts.set(finding.rule, current);
   }
 
   return [...counts.entries()]
@@ -955,6 +1256,25 @@ function getRuleCountRows(findings) {
       (left, right) =>
         right.count - left.count || left.rule.localeCompare(right.rule),
     );
+}
+
+/**
+ * @template T
+ * @param {Map<string, T>} map Map to read from.
+ * @param {string} key Entry key.
+ * @param {() => T} createValue Factory for missing entries.
+ * @returns {T} Existing or newly stored entry.
+ */
+function getOrCreateMapEntry(map, key, createValue) {
+  const current = map.get(key);
+
+  if (current) {
+    return current;
+  }
+
+  const next = createValue();
+  map.set(key, next);
+  return next;
 }
 
 /**
@@ -1032,39 +1352,51 @@ function createTriageRow(filePath, findings, sharedHotspots) {
  * @returns {string[]} Triage reasons.
  */
 function getTriageReasons(filePath, findings, sharedHotspots) {
-  const reasons = [];
-
-  if (findings.some(isBlockingFinding)) {
-    reasons.push("blocking candidate");
-  }
-
-  if (sharedHotspots.includes(filePath)) {
-    reasons.push("shared hotspot");
-  }
-
-  if (
-    findings.some(
-      (finding) =>
-        finding.source === "fallow" &&
-        finding.category === "structural complexity",
-    )
-  ) {
-    reasons.push("structural complexity");
-  }
-
-  if (findings.some((finding) => finding.category === "Security")) {
-    reasons.push("security");
-  }
-
-  if (findings.some((finding) => finding.category === "duplication")) {
-    reasons.push("duplication");
-  }
-
-  if (findings.length >= 4) {
-    reasons.push(`${formatNumber(findings.length)} findings`);
-  }
+  const reasons = [
+    getReasonIf(findings.some(isBlockingFinding), "blocking candidate"),
+    getReasonIf(sharedHotspots.includes(filePath), "shared hotspot"),
+    getReasonIf(
+      hasFallowFindingCategory(findings, "structural complexity"),
+      "structural complexity",
+    ),
+    getReasonIf(hasFindingCategory(findings, "Security"), "security"),
+    getReasonIf(hasFindingCategory(findings, "duplication"), "duplication"),
+    getReasonIf(
+      findings.length >= 4,
+      `${formatNumber(findings.length)} findings`,
+    ),
+  ].filter((reason) => reason !== null);
 
   return reasons.length > 0 ? reasons : ["single-tool review"];
+}
+
+/**
+ * @param {boolean} condition Condition.
+ * @param {string} reason Reason.
+ * @returns {string | null} Reason when condition is true.
+ */
+function getReasonIf(condition, reason) {
+  return condition ? reason : null;
+}
+
+/**
+ * @param {NormalizedFinding[]} findings Findings.
+ * @param {string} category Category.
+ * @returns {boolean} Whether any finding has this category.
+ */
+function hasFindingCategory(findings, category) {
+  return findings.some((finding) => finding.category === category);
+}
+
+/**
+ * @param {NormalizedFinding[]} findings Findings.
+ * @param {string} category Category.
+ * @returns {boolean} Whether any Fallow finding has this category.
+ */
+function hasFallowFindingCategory(findings, category) {
+  return findings.some(
+    (finding) => finding.source === "fallow" && finding.category === category,
+  );
 }
 
 /**
@@ -1160,7 +1492,6 @@ function printSummary(summary, elapsedMs) {
     ...summary.fallow.files,
     ...summary.reactDoctor.affectedFiles,
   ]);
-  const blockingFindings = getBlockingFindings(summary);
   const triageRows = getTriageRows(summary).slice(0, 6);
   const hasReviewSignal =
     summary.fallow.totalFindings > 0 || summary.reactDoctor.diagnostics > 0;
@@ -1172,62 +1503,75 @@ function printSummary(summary, elapsedMs) {
     )} findings across ${formatNumber(allFiles.size)} files\n`,
   );
   process.stdout.write(
-    `${renderKeyValues([
-      {
-        label: "Fallow",
-        tone: summary.fallow.structuralComplexity > 0 ? "warning" : "success",
-        value: `${formatNumber(summary.fallow.totalFindings)} findings / ${formatNumber(
-          summary.fallow.files.size,
-        )} files (${formatNumber(
-          summary.fallow.cleanupIssues,
-        )} cleanup, ${formatNumber(
-          summary.fallow.cloneGroups,
-        )} clone groups, ${formatNumber(
-          summary.fallow.structuralComplexity,
-        )} structural, ${formatNumber(summary.fallow.crapRisk)} CRAP)`,
-      },
-      {
-        label: "React Doctor",
-        tone: summary.reactDoctor.errors > 0 ? "warning" : "success",
-        value: `${formatNumber(
-          summary.reactDoctor.diagnostics,
-        )} diagnostics / ${formatNumber(
-          summary.reactDoctor.affectedFiles.size,
-        )} files (${formatNumber(summary.reactDoctor.errors)} errors, ${formatNumber(
-          summary.reactDoctor.warnings,
-        )} warnings)`,
-      },
-      {
-        label: "Shared hotspots",
-        tone: summary.sharedHotspots.length > 0 ? "warning" : "success",
-        value: `${formatNumber(summary.sharedHotspots.length)} files reported by both engines`,
-      },
-      {
-        label: "Block candidates",
-        tone: blockingFindings.length > 0 ? "warning" : "success",
-        value: `${formatNumber(blockingFindings.length)} calibrated candidates (${shouldBlock ? "blocking" : "advisory"})`,
-      },
-      {
-        label: "Elapsed",
-        value: formatDuration(elapsedMs),
-      },
-    ])}\n`,
+    `${renderKeyValues(getConsoleSummaryRows(summary, elapsedMs))}\n`,
   );
 
   if (triageRows.length > 0) {
     process.stdout.write(`\n${colorText("Review first", "accent")}\n`);
     process.stdout.write(
-      `${renderBullets(
-        triageRows.map(
-          (row) =>
-            `${formatTriagePriority(row)} ${row.filePath} (${row.reasons.join(
-              "; ",
-            )})`,
-        ),
-        6,
-      )}\n`,
+      `${renderBullets(triageRows.map(formatTriageSummary), 6)}\n`,
     );
   }
+}
+
+/**
+ * @param {QualitySummary} summary Quality summary.
+ * @param {number} elapsedMs Elapsed time.
+ * @returns {{ label: string; tone?: "success" | "warning"; value: string }[]} Console summary rows.
+ */
+function getConsoleSummaryRows(summary, elapsedMs) {
+  const blockingFindings = getBlockingFindings(summary);
+
+  return [
+    {
+      label: "Fallow",
+      tone: summary.fallow.structuralComplexity > 0 ? "warning" : "success",
+      value: `${formatNumber(summary.fallow.totalFindings)} findings / ${formatNumber(
+        summary.fallow.files.size,
+      )} files (${formatNumber(
+        summary.fallow.cleanupIssues,
+      )} cleanup, ${formatNumber(
+        summary.fallow.cloneGroups,
+      )} clone groups, ${formatNumber(
+        summary.fallow.structuralComplexity,
+      )} structural, ${formatNumber(summary.fallow.crapRisk)} CRAP)`,
+    },
+    {
+      label: "React Doctor",
+      tone: summary.reactDoctor.errors > 0 ? "warning" : "success",
+      value: `${formatNumber(
+        summary.reactDoctor.diagnostics,
+      )} diagnostics / ${formatNumber(
+        summary.reactDoctor.affectedFiles.size,
+      )} files (${formatNumber(summary.reactDoctor.errors)} errors, ${formatNumber(
+        summary.reactDoctor.warnings,
+      )} warnings)`,
+    },
+    {
+      label: "Shared hotspots",
+      tone: summary.sharedHotspots.length > 0 ? "warning" : "success",
+      value: `${formatNumber(summary.sharedHotspots.length)} files reported by both engines`,
+    },
+    {
+      label: "Block candidates",
+      tone: blockingFindings.length > 0 ? "warning" : "success",
+      value: `${formatNumber(blockingFindings.length)} calibrated candidates (${shouldBlock ? "blocking" : "advisory"})`,
+    },
+    {
+      label: "Elapsed",
+      value: formatDuration(elapsedMs),
+    },
+  ];
+}
+
+/**
+ * @param {TriageRow} row Triage row.
+ * @returns {string} Console triage summary.
+ */
+function formatTriageSummary(row) {
+  return `${formatTriagePriority(row)} ${row.filePath} (${row.reasons.join(
+    "; ",
+  )})`;
 }
 
 /**

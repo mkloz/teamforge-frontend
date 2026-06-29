@@ -16,6 +16,7 @@ import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 interface UseRegisterFormOptions {
   onSuccess?: () => void | Promise<void>;
   onProgress?: (progress: number) => void;
+  onStepChange?: (step: Step) => void;
 }
 
 async function runOptionalSuccessCallback(
@@ -31,6 +32,7 @@ export type Step = 1 | 2 | 3;
 export function useRegisterForm({
   onSuccess,
   onProgress,
+  onStepChange,
 }: UseRegisterFormOptions) {
   const [step, setStep] = useState<Step>(1);
   const [direction, setDirection] = useState(1);
@@ -57,6 +59,11 @@ export function useRegisterForm({
 
   const values = useWatch({ control: form.control });
 
+  function changeStep(nextStep: Step) {
+    setStep(nextStep);
+    onStepChange?.(nextStep);
+  }
+
   useEffect(() => {
     onProgress?.(calculateRegisterProgress(values));
   }, [values, onProgress]);
@@ -66,7 +73,7 @@ export function useRegisterForm({
     const isValid = await form.trigger(["name", "email", "password"]);
     if (isValid) {
       setDirection(1);
-      setStep(2);
+      changeStep(2);
     }
   }
 
@@ -101,7 +108,7 @@ export function useRegisterForm({
         id: "auth-register-otp",
       });
       setDirection(1);
-      setStep(3);
+      changeStep(3);
       setLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authRegisterEmail, error, {
@@ -121,13 +128,13 @@ export function useRegisterForm({
   function goBackToStep1() {
     setRootError(null);
     setDirection(-1);
-    setStep(1);
+    changeStep(1);
   }
 
   function goBackToStep2() {
     setRootError(null);
     setDirection(-1);
-    setStep(2);
+    changeStep(2);
   }
 
   async function onSubmit(formValues: RegisterValues) {

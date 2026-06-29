@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { AlertCircle } from "lucide-react";
 
 import { Notice } from "@/shared/components/ui/notice";
@@ -16,7 +16,7 @@ export function FooterValidationHints({ fw }: ForgeFooterChildProps) {
   return (
     <AnimatePresence>
       {shouldShowPlanValidation && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 4 }}
@@ -33,7 +33,7 @@ export function FooterValidationHints({ fw }: ForgeFooterChildProps) {
           >
             <p>{planValidationMessage}</p>
           </Notice>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

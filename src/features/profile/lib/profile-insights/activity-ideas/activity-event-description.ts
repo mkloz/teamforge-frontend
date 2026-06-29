@@ -1,4 +1,5 @@
 import type { ActivityIdeaContext, LaneKey } from "../types";
+import { formatActivityIdeaList } from "./activity-idea-formatters";
 
 export function buildActivityEventDescription(
   context: ActivityIdeaContext,
@@ -82,7 +83,7 @@ function getAnchorSentence(anchors: string[]) {
     return null;
   }
 
-  return `Use ${formatList(anchors)} as inspiration, but keep the plan welcoming for people who only share the broader vibe.`;
+  return `Use ${formatActivityIdeaList(anchors)} as inspiration, but keep the plan welcoming for people who only share the broader vibe.`;
 }
 
 function getStructureSentence(context: ActivityIdeaContext) {
@@ -99,12 +100,4 @@ function getStructureSentence(context: ActivityIdeaContext) {
 
 function compactSentences(sentences: Array<string | null>) {
   return sentences.filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
-}
-
-function formatList(items: string[]) {
-  if (items.length <= 1) {
-    return items[0] ?? "";
-  }
-
-  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }

@@ -1,5 +1,6 @@
 import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import type { User } from "@/shared/schemas";
+import { getAvatarActionState } from "./avatar-action-state";
 import { AvatarActions } from "./avatar-actions";
 import { AvatarDropzones } from "./avatar-dropzones";
 import { AvatarIdentityHeader } from "./avatar-identity-header";
@@ -41,6 +42,14 @@ export function AvatarProfileSection({
     currentUser,
     isDeletingAvatar,
     isUploadingAvatar,
+  });
+  const avatarActionState = getAvatarActionState({
+    canDeleteSavedAvatar: renderState.canDeleteSavedAvatar,
+    isAvatarBusy: renderState.isAvatarBusy,
+    isDeletingAvatar,
+    isOnline,
+    isUploadingAvatar,
+    selectedAvatarFile,
   });
 
   async function uploadSelectedAvatar() {
@@ -100,12 +109,8 @@ export function AvatarProfileSection({
       ) : null}
 
       <AvatarActions
-        selectedAvatarFile={selectedAvatarFile}
-        isAvatarBusy={renderState.isAvatarBusy}
-        isUploadingAvatar={isUploadingAvatar}
         isDeletingAvatar={isDeletingAvatar}
-        isOnline={isOnline}
-        canDeleteSavedAvatar={renderState.canDeleteSavedAvatar}
+        actionState={avatarActionState}
         onUploadSelectedAvatar={() => {
           void uploadSelectedAvatar();
         }}

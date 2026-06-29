@@ -1,7 +1,6 @@
-import { motion } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 import { Pause, Play } from "lucide-react";
 import type { MouseEvent } from "react";
-import { memo } from "react";
 import { useAudioPlayer } from "@/features/activity/hooks/use-audio-player";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -77,7 +76,7 @@ function getWaveformBarTransition({
 /**
  * VoiceNote - Refined, interactive voice message component.
  */
-export const VoiceNote = memo(function VoiceNote({
+export function VoiceNote({
   url,
   duration = 120, // Default to 2 mins for demo
   isOwn = false,
@@ -139,7 +138,7 @@ export const VoiceNote = memo(function VoiceNote({
       />
     </div>
   );
-});
+}
 
 function VoiceNotePlayButton({
   hasError,
@@ -192,30 +191,32 @@ function VoiceNoteWaveform({
   onSeek: (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
   return (
-    <button
-      type="button"
-      aria-label="Seek voice note"
-      className="group/waveform relative flex h-10 flex-1 cursor-pointer items-center gap-0.5 border-0 bg-transparent p-0"
-      onClick={onSeek}
-    >
-      {bars.map((bar, index) => (
-        <VoiceNoteWaveformBar
-          key={bar.id}
-          bar={bar}
-          barCount={barCount}
-          index={index}
+    <LazyMotion features={domAnimation}>
+      <button
+        type="button"
+        aria-label="Seek voice note"
+        className="group/waveform relative flex h-10 flex-1 cursor-pointer items-center gap-0.5 border-0 bg-transparent p-0"
+        onClick={onSeek}
+      >
+        {bars.map((bar, index) => (
+          <VoiceNoteWaveformBar
+            key={bar.id}
+            bar={bar}
+            barCount={barCount}
+            index={index}
+            isOwn={isOwn}
+            isPlaying={isPlaying}
+            progress={progress}
+          />
+        ))}
+
+        <VoiceNoteProgressHead
           isOwn={isOwn}
           isPlaying={isPlaying}
           progress={progress}
         />
-      ))}
-
-      <VoiceNoteProgressHead
-        isOwn={isOwn}
-        isPlaying={isPlaying}
-        progress={progress}
-      />
-    </button>
+      </button>
+    </LazyMotion>
   );
 }
 
@@ -238,7 +239,7 @@ function VoiceNoteWaveformBar({
   const isActive = barProgress <= progress;
 
   return (
-    <motion.div
+    <m.div
       initial={false}
       animate={{
         height: `${bar.height}%`,
@@ -265,7 +266,7 @@ function VoiceNoteProgressHead({
   progress: number;
 }) {
   return (
-    <motion.div
+    <m.div
       className={cn(
         "pointer-events-none absolute top-0 bottom-0 z-10 w-0.5",
         isOwn

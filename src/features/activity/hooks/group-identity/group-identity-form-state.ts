@@ -8,6 +8,7 @@ import type {
   LocationMode,
   PlanCategory,
 } from "@/features/activity/lib/activity-contract";
+import { toDateTimeLocalValue } from "@/shared/lib/date-time-local";
 
 export interface GroupIdentityFormValues {
   avatar: string;
@@ -385,24 +386,4 @@ function normalizeOptionalText(value: string) {
   const trimmed = value.trim();
 
   return trimmed.length > 0 ? trimmed : null;
-}
-
-function padDateTimePart(part: number) {
-  return String(part).padStart(2, "0");
-}
-
-function toDateTimeLocalValue(value: string | null) {
-  if (!value) {
-    return "";
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  return `${date.getFullYear()}-${padDateTimePart(date.getMonth() + 1)}-${padDateTimePart(
-    date.getDate(),
-  )}T${padDateTimePart(date.getHours())}:${padDateTimePart(date.getMinutes())}`;
 }

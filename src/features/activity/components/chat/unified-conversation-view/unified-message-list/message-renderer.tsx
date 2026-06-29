@@ -1,48 +1,61 @@
-import { memo } from "react";
 import type {
   MessageRendererProps,
   SharedMessageRendererProps,
+  UnifiedMessageItemProps,
 } from "./message-renderer-props";
 import { ProposalMessage } from "./proposal-message";
 import { SystemMessage } from "./system-message";
 import { UnifiedMessageItem } from "./unified-message-item";
 
-export const MessageRenderer = memo(
-  ({
-    message,
-    showSender,
-    isHighlighted,
+export function MessageRenderer({
+  message,
+  renderState,
+  kind,
+  onActivateReplyTarget,
+  onStartSelection,
+  onToggleSelected,
+  searchQuery,
+}: MessageRendererProps) {
+  const {
+    isHighlighted = false,
     isSelectable = true,
     isSelected = false,
     isSelectionMode = false,
+    showSender,
+  } = renderState;
+
+  if (message.type === "SYSTEM") {
+    return <SystemMessage message={message} isHighlighted={isHighlighted} />;
+  }
+
+  const sharedMessageProps = {
+    message,
+    showSender,
+    isHighlighted,
+    isSelectable,
+    isSelected,
+    isSelectionMode,
     kind,
     onActivateReplyTarget,
     onStartSelection,
     onToggleSelected,
-    searchQuery,
-  }: MessageRendererProps) => {
-    if (message.type === "SYSTEM") {
-      return <SystemMessage message={message} isHighlighted={isHighlighted} />;
-    }
+  } satisfies SharedMessageRendererProps;
 
-    const sharedMessageProps = {
-      message,
+  if (message.type === "PLAN_UPDATE" && message.proposal) {
+    return <ProposalMessage {...sharedMessageProps} />;
+  }
+
+  const messageItemProps = {
+    kind,
+    message,
+    onActivateReplyTarget,
+    onStartSelection,
+    onToggleSelected,
+    renderState: {
+      ...renderState,
       showSender,
-      isHighlighted,
-      isSelectable,
-      isSelected,
-      isSelectionMode,
-      kind,
-      onActivateReplyTarget,
-      onStartSelection,
-      onToggleSelected,
-    } satisfies SharedMessageRendererProps;
+    },
+  } satisfies Omit<UnifiedMessageItemProps, "searchQuery">;
 
-    if (message.type === "PLAN_UPDATE" && message.proposal) {
-      return <ProposalMessage {...sharedMessageProps} />;
-    }
-    return (
-      <UnifiedMessageItem {...sharedMessageProps} searchQuery={searchQuery} />
-    );
-  },
-);
+  return <UnifiedMessageItem {...messageItemProps} searchQuery={searchQuery} />;
+}

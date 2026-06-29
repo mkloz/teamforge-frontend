@@ -29,7 +29,30 @@ interface SelectedGroupMemberProfile {
 type ActivityComposer = ReturnType<typeof useActivityComposer>;
 type SelectedGroup = NonNullable<ActivityWorkspace["selectedGroup"]>;
 type SelectedChat = NonNullable<ActivityWorkspace["selectedChat"]>;
-type SelectedConversationStageKind = "dm" | "empty" | "group" | "saved";
+type ConversationStageViewport = "desktop" | "mobile";
+type GroupDetailPanelSelection = ReturnType<
+  typeof useGroupDetailPanelSelection
+>;
+
+type SelectedConversationStage =
+  | { kind: "dm"; selectedChat: SelectedChat }
+  | { kind: "empty" }
+  | { kind: "group"; selectedGroup: SelectedGroup }
+  | { kind: "saved" };
+
+const EMPTY_SELECTED_CONVERSATION_STAGE: SelectedConversationStage = {
+  kind: "empty",
+};
+
+interface InitialMessageTimelineState {
+  isError: boolean;
+  isLoading: boolean;
+}
+
+interface ConversationStageRuntime {
+  isOnline: boolean;
+  messageTimeline: InitialMessageTimelineState;
+}
 
 function getSelectedGroupMemberId(
   selectedGroupMemberProfile: SelectedGroupMemberProfile | null,
@@ -137,82 +160,101 @@ export function ActivitySelectedConversationStage({
 }: ActivitySelectedConversationStageProps) {
   const composer = useActivityComposer();
   const groupMessageScrollHandleRef = useRef<MessageScrollHandle | null>(null);
-  const { isMessageInitialError, isMessageInitialLoading } =
-    getInitialMessageTimelineState(activity, isOnline);
-  const selectedStageKind = getSelectedConversationStageKind(activity);
-  const {
-    closeGroupDetailPanel,
-    openCurrentPlanInGroupPanel,
-    openGroupMemberProfile,
-    selectedGroupMemberId,
-    setSelectedGroupMemberId,
-    toggleGroupDetailPanel,
-  } = useGroupDetailPanelSelection(activity);
+  const runtime = getConversationStageRuntime(activity, isOnline);
+  const viewport: ConversationStageViewport = isMobile ? "mobile" : "desktop";
+  const selectedStage = getSelectedConversationStage(activity);
+  const groupDetailPanelSelection = useGroupDetailPanelSelection(activity);
 
-  function openDirectProfilePanel() {
-    if (!activity.direct.isProfilePanelOpen) {
-      activity.toggleProfilePanel();
-    }
+  return (
+    <SelectedConversationStageContent
+      activity={activity}
+      composer={composer}
+      groupDetailPanelSelection={groupDetailPanelSelection}
+      groupMessageScrollHandleRef={groupMessageScrollHandleRef}
+      runtime={runtime}
+      selectedStage={selectedStage}
+      viewport={viewport}
+    />
+  );
+}
+
+interface SelectedConversationStageContentProps {
+  activity: ActivityWorkspace;
+  composer: ActivityComposer;
+  groupDetailPanelSelection: GroupDetailPanelSelection;
+  groupMessageScrollHandleRef: RefObject<MessageScrollHandle | null>;
+  runtime: ConversationStageRuntime;
+  selectedStage: SelectedConversationStage;
+  viewport: ConversationStageViewport;
+}
+
+function SelectedConversationStageContent({
+  activity,
+  composer,
+  groupDetailPanelSelection,
+  groupMessageScrollHandleRef,
+  runtime,
+  selectedStage,
+  viewport,
+}: SelectedConversationStageContentProps) {
+  switch (selectedStage.kind) {
+    case "saved":
+      return (
+        <SavedMessagesStage
+          activity={activity}
+          onOpenMessage={(snapshot) => openSavedMessage(activity, snapshot)}
+        />
+      );
+
+    case "group":
+      return (
+        <GroupConversationStage
+          activity={activity}
+          composer={composer}
+          groupMessageScrollHandleRef={groupMessageScrollHandleRef}
+          runtime={runtime}
+          selectedGroup={selectedStage.selectedGroup}
+          selectedGroupMemberId={
+            groupDetailPanelSelection.selectedGroupMemberId
+          }
+          onCloseGroupDetailPanel={
+            groupDetailPanelSelection.closeGroupDetailPanel
+          }
+          onOpenCurrentPlanInGroupPanel={
+            groupDetailPanelSelection.openCurrentPlanInGroupPanel
+          }
+          onOpenGroupMemberProfile={
+            groupDetailPanelSelection.openGroupMemberProfile
+          }
+          onSelectedGroupMemberIdChange={
+            groupDetailPanelSelection.setSelectedGroupMemberId
+          }
+          onToggleGroupDetailPanel={
+            groupDetailPanelSelection.toggleGroupDetailPanel
+          }
+        />
+      );
+
+    case "dm":
+      return (
+        <DirectConversationStage
+          activity={activity}
+          composer={composer}
+          runtime={runtime}
+          selectedChat={selectedStage.selectedChat}
+          viewport={viewport}
+          onOpenDirectProfilePanel={() => openDirectProfilePanel(activity)}
+        />
+      );
+
+    case "empty":
+      return <EmptyConversationStage />;
   }
 
-  function openSavedMessage(snapshot: SavedMessageSnapshot) {
-    activity.handleSelectItem(
-      snapshot.conversationId,
-      snapshot.conversationKind,
-      {
-        messageId: snapshot.message.id,
-      },
-    );
-  }
+  return <EmptyConversationStage />;
+}
 
-  if (selectedStageKind === "saved") {
-    return (
-      <SavedMessagesStage
-        activity={activity}
-        onOpenMessage={openSavedMessage}
-      />
-    );
-  }
-
-  if (selectedStageKind === "group" && activity.selectedGroup) {
-    const selectedGroup = activity.selectedGroup;
-
-    return (
-      <GroupConversationStage
-        activity={activity}
-        composer={composer}
-        groupMessageScrollHandleRef={groupMessageScrollHandleRef}
-        isMessageInitialError={isMessageInitialError}
-        isMessageInitialLoading={isMessageInitialLoading}
-        isOnline={isOnline}
-        selectedGroup={selectedGroup}
-        selectedGroupMemberId={selectedGroupMemberId}
-        onCloseGroupDetailPanel={closeGroupDetailPanel}
-        onOpenCurrentPlanInGroupPanel={openCurrentPlanInGroupPanel}
-        onOpenGroupMemberProfile={openGroupMemberProfile}
-        onSelectedGroupMemberIdChange={setSelectedGroupMemberId}
-        onToggleGroupDetailPanel={toggleGroupDetailPanel}
-      />
-    );
-  }
-
-  if (selectedStageKind === "dm" && activity.selectedChat) {
-    const selectedChat = activity.selectedChat;
-
-    return (
-      <DirectConversationStage
-        activity={activity}
-        composer={composer}
-        isMessageInitialError={isMessageInitialError}
-        isMessageInitialLoading={isMessageInitialLoading}
-        isMobile={isMobile}
-        isOnline={isOnline}
-        selectedChat={selectedChat}
-        onOpenDirectProfilePanel={openDirectProfilePanel}
-      />
-    );
-  }
-
+function EmptyConversationStage() {
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-1">
       <ActivityEmptyState />
@@ -220,34 +262,68 @@ export function ActivitySelectedConversationStage({
   );
 }
 
-function getInitialMessageTimelineState(
+function getConversationStageRuntime(
   activity: ActivityWorkspace,
   isOnline: boolean,
-) {
+): ConversationStageRuntime {
   return {
-    isMessageInitialError:
-      activity.isMessageTimelineError ||
-      (!isOnline && activity.isMessageTimelineLoading),
-    isMessageInitialLoading: isOnline && activity.isMessageTimelineLoading,
+    isOnline,
+    messageTimeline: {
+      isError:
+        activity.isMessageTimelineError ||
+        (!isOnline && activity.isMessageTimelineLoading),
+      isLoading: isOnline && activity.isMessageTimelineLoading,
+    },
   };
 }
 
-function getSelectedConversationStageKind(
+function getSelectedConversationStage(
   activity: ActivityWorkspace,
-): SelectedConversationStageKind {
+): SelectedConversationStage {
+  return (
+    getSavedMessagesStage(activity) ??
+    getGroupConversationStage(activity) ??
+    getDirectConversationStage(activity) ??
+    EMPTY_SELECTED_CONVERSATION_STAGE
+  );
+}
+
+function getSavedMessagesStage(
+  activity: ActivityWorkspace,
+): SelectedConversationStage | null {
   if (isSavedMessagesStageSelected(activity)) {
-    return "saved";
+    return { kind: "saved" };
   }
 
-  if (isGroupStageSelected(activity)) {
-    return "group";
+  return null;
+}
+
+function getGroupConversationStage(
+  activity: ActivityWorkspace,
+): SelectedConversationStage | null {
+  if (
+    activity.selectedKind === "group" &&
+    activity.selectedId &&
+    activity.selectedGroup
+  ) {
+    return { kind: "group", selectedGroup: activity.selectedGroup };
   }
 
-  if (isDirectStageSelected(activity)) {
-    return "dm";
+  return null;
+}
+
+function getDirectConversationStage(
+  activity: ActivityWorkspace,
+): SelectedConversationStage | null {
+  if (
+    activity.selectedKind === "dm" &&
+    activity.selectedId &&
+    activity.selectedChat
+  ) {
+    return { kind: "dm", selectedChat: activity.selectedChat };
   }
 
-  return "empty";
+  return null;
 }
 
 function isSavedMessagesStageSelected(activity: ActivityWorkspace) {
@@ -257,19 +333,22 @@ function isSavedMessagesStageSelected(activity: ActivityWorkspace) {
   );
 }
 
-function isGroupStageSelected(activity: ActivityWorkspace) {
-  return Boolean(
-    activity.selectedKind === "group" &&
-      activity.selectedId &&
-      activity.selectedGroup,
-  );
+function openDirectProfilePanel(activity: ActivityWorkspace) {
+  if (!activity.direct.isProfilePanelOpen) {
+    activity.toggleProfilePanel();
+  }
 }
 
-function isDirectStageSelected(activity: ActivityWorkspace) {
-  return Boolean(
-    activity.selectedKind === "dm" &&
-      activity.selectedId &&
-      activity.selectedChat,
+function openSavedMessage(
+  activity: ActivityWorkspace,
+  snapshot: SavedMessageSnapshot,
+) {
+  activity.handleSelectItem(
+    snapshot.conversationId,
+    snapshot.conversationKind,
+    {
+      messageId: snapshot.message.id,
+    },
   );
 }
 
@@ -303,9 +382,7 @@ interface GroupConversationStageProps {
   activity: ActivityWorkspace;
   composer: ActivityComposer;
   groupMessageScrollHandleRef: RefObject<MessageScrollHandle | null>;
-  isMessageInitialError: boolean;
-  isMessageInitialLoading: boolean;
-  isOnline: boolean;
+  runtime: ConversationStageRuntime;
   selectedGroup: SelectedGroup;
   selectedGroupMemberId: string | null;
   onCloseGroupDetailPanel: () => void;
@@ -319,9 +396,7 @@ function GroupConversationStage({
   activity,
   composer,
   groupMessageScrollHandleRef,
-  isMessageInitialError,
-  isMessageInitialLoading,
-  isOnline,
+  runtime,
   selectedGroup,
   selectedGroupMemberId,
   onCloseGroupDetailPanel,
@@ -341,10 +416,10 @@ function GroupConversationStage({
           focusedMessageId={activity.focusedMessageId}
           firstUnreadMessageId={activity.firstUnreadMessageId}
           hasOlderMessages={activity.hasOlderMessages}
-          isLoadingMessages={isMessageInitialLoading}
+          isLoadingMessages={runtime.messageTimeline.isLoading}
           isLoadingOlderMessages={activity.isLoadingOlderMessages}
-          isMessageError={isMessageInitialError}
-          isOnline={isOnline}
+          isMessageError={runtime.messageTimeline.isError}
+          isOnline={runtime.isOnline}
           isActionOpen={activity.groups.isDetailPanelOpen}
           messageScrollHandleRef={groupMessageScrollHandleRef}
           onBack={activity.handleBack}
@@ -374,24 +449,22 @@ function GroupConversationStage({
 interface DirectConversationStageProps {
   activity: ActivityWorkspace;
   composer: ActivityComposer;
-  isMessageInitialError: boolean;
-  isMessageInitialLoading: boolean;
-  isMobile: boolean;
-  isOnline: boolean;
+  runtime: ConversationStageRuntime;
   selectedChat: SelectedChat;
+  viewport: ConversationStageViewport;
   onOpenDirectProfilePanel: () => void;
 }
 
 function DirectConversationStage({
   activity,
   composer,
-  isMessageInitialError,
-  isMessageInitialLoading,
-  isMobile,
-  isOnline,
+  runtime,
   selectedChat,
+  viewport,
   onOpenDirectProfilePanel,
 }: DirectConversationStageProps) {
+  const isMobile = viewport === "mobile";
+
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
       <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
@@ -403,10 +476,10 @@ function DirectConversationStage({
           focusedMessageId={activity.focusedMessageId}
           firstUnreadMessageId={activity.firstUnreadMessageId}
           hasOlderMessages={activity.hasOlderMessages}
-          isLoadingMessages={isMessageInitialLoading}
+          isLoadingMessages={runtime.messageTimeline.isLoading}
           isLoadingOlderMessages={activity.isLoadingOlderMessages}
-          isMessageError={isMessageInitialError}
-          isOnline={isOnline}
+          isMessageError={runtime.messageTimeline.isError}
+          isOnline={runtime.isOnline}
           isActionOpen={activity.direct.isProfilePanelOpen}
           openHeaderDetailsInPanel={isMobile}
           onBack={activity.handleBack}

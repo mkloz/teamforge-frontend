@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
   FilterChip,
@@ -66,7 +66,7 @@ const FILTERS: { key: FilterChip; label: string }[] = [
 
 const SEARCH_H = 56;
 
-export const UnifiedConversationList = memo(function UnifiedConversationList({
+export function UnifiedConversationList({
   items,
   savedMessages,
   selectedId,
@@ -124,9 +124,13 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
     onReset: resetFade,
   });
 
-  const [isFullListVisible, setIsFullListVisible] = useState(
-    !shouldStageConversationItems,
-  );
+  const stagedListRevealKey = scrollResetKey;
+  const [revealedStagedListKey, setRevealedStagedListKey] = useState<
+    string | null
+  >(null);
+  const isFullListVisible =
+    !shouldStageConversationItems ||
+    revealedStagedListKey === stagedListRevealKey;
   const renderedItems = getRenderedConversationItems({
     isFullListVisible,
     items,
@@ -134,24 +138,25 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   });
 
   useEffect(() => {
-    let timeoutId: number | undefined;
-
-    if (!shouldStageConversationItems) {
-      setIsFullListVisible(true);
-    } else {
-      setIsFullListVisible(false);
-
-      timeoutId = window.setTimeout(() => {
-        setIsFullListVisible(true);
-      }, FULL_LIST_REVEAL_DELAY_MS);
+    if (
+      !shouldStageConversationItems ||
+      revealedStagedListKey === stagedListRevealKey
+    ) {
+      return undefined;
     }
 
+    const timeoutId = window.setTimeout(() => {
+      setRevealedStagedListKey(stagedListRevealKey);
+    }, FULL_LIST_REVEAL_DELAY_MS);
+
     return () => {
-      if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
-      }
+      window.clearTimeout(timeoutId);
     };
-  }, [shouldStageConversationItems]);
+  }, [
+    revealedStagedListKey,
+    shouldStageConversationItems,
+    stagedListRevealKey,
+  ]);
 
   function openSavedMessagesChat() {
     if (searchQuery) {
@@ -247,4 +252,4 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
       </div>
     </div>
   );
-});
+}

@@ -1,4 +1,4 @@
-import { memo, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { extractFirstUrl } from "@/features/activity/lib/chat-utils";
 import { cn } from "@/shared/lib/utils";
 import { LinkPreview } from "./link-preview";
@@ -20,38 +20,36 @@ type MessageContentViewState =
       previewUrl: string | null;
     };
 
-export const MessageContent = memo(
-  ({
+export function MessageContent({
+  content,
+  hasReply = false,
+  isOwn,
+  reactionGroupsLength,
+  searchQuery = "",
+}: MessageContentProps) {
+  const viewState = getMessageContentViewState({
     content,
-    hasReply = false,
-    isOwn,
+    hasReply,
     reactionGroupsLength,
-    searchQuery = "",
-  }: MessageContentProps) => {
-    const viewState = getMessageContentViewState({
-      content,
-      hasReply,
-      reactionGroupsLength,
-      searchQuery,
-    });
+    searchQuery,
+  });
 
-    if (viewState.kind === "empty") return null;
+  if (viewState.kind === "empty") return null;
 
-    return (
-      <div className="relative flex min-w-0 max-w-full flex-col gap-2 px-2 py-1.5">
-        {/* Link preview — only rendered when a URL is detected in the content */}
-        <MessageContentLinkPreview
-          previewUrl={viewState.previewUrl}
-          isOwn={isOwn}
-        />
+  return (
+    <div className="relative flex min-w-0 max-w-full flex-col gap-2 px-2 py-1.5">
+      {/* Link preview — only rendered when a URL is detected in the content */}
+      <MessageContentLinkPreview
+        previewUrl={viewState.previewUrl}
+        isOwn={isOwn}
+      />
 
-        <p className={viewState.paragraphClassName}>
-          {viewState.highlightedContent}
-        </p>
-      </div>
-    );
-  },
-);
+      <p className={viewState.paragraphClassName}>
+        {viewState.highlightedContent}
+      </p>
+    </div>
+  );
+}
 
 function getMessageContentViewState({
   content,
@@ -146,12 +144,13 @@ function buildHighlightedContentFragments(
   content: string,
   normalizedQuery: string,
 ) {
-  const normalizedContent = content.toLocaleLowerCase();
+  const queryPattern = new RegExp(escapeRegExp(normalizedQuery), "gi");
   const fragments: ReactNode[] = [];
   let cursor = 0;
-  let matchIndex = normalizedContent.indexOf(normalizedQuery, cursor);
 
-  while (matchIndex !== -1) {
+  for (const match of content.matchAll(queryPattern)) {
+    const matchIndex = match.index ?? 0;
+
     if (matchIndex > cursor) {
       fragments.push(content.slice(cursor, matchIndex));
     }
@@ -165,7 +164,6 @@ function buildHighlightedContentFragments(
     );
 
     cursor = matchEnd;
-    matchIndex = normalizedContent.indexOf(normalizedQuery, cursor);
   }
 
   if (cursor < content.length) {
@@ -177,4 +175,8 @@ function buildHighlightedContentFragments(
 
 function getNormalizedSearchQuery(query: string) {
   return query.trim().toLocaleLowerCase();
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

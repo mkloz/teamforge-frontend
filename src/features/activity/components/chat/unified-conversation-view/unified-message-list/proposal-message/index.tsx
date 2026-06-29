@@ -1,9 +1,9 @@
 /* biome-ignore-all lint/a11y/noNoninteractiveElementInteractions: Message rows are focusable context-menu triggers. */
 /* biome-ignore-all lint/a11y/noNoninteractiveTabindex: Message rows are focusable context-menu triggers. */
 // oxlint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- Message rows are focusable context-menu triggers.
-import { motion } from "framer-motion";
+import { domMax, LazyMotion, m } from "framer-motion";
 import { Reply } from "lucide-react";
-import { memo, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import type { ProposalMessageProps } from "../message-renderer-props";
@@ -41,17 +41,19 @@ type ProposalMessageLayoutState =
 type ProposalMessageSwipeState =
   AvailableProposalMessageControllerState["swipeState"];
 
-export const ProposalMessage = memo(function ProposalMessage({
-  message,
-  showSender,
-  isHighlighted = false,
-  isSelectable = true,
-  isSelected = false,
-  isSelectionMode = false,
-  onActivateReplyTarget,
-  onStartSelection,
-  onToggleSelected,
-}: ProposalMessageProps) {
+export function ProposalMessage(props: ProposalMessageProps) {
+  const {
+    message,
+    showSender,
+    isHighlighted = false,
+    isSelectable = true,
+    isSelected = false,
+    isSelectionMode = false,
+    onActivateReplyTarget,
+    onStartSelection,
+    onToggleSelected,
+  } = props;
+
   const proposalMessage = useProposalMessageController({
     isHighlighted,
     isSelectable,
@@ -87,7 +89,7 @@ export const ProposalMessage = memo(function ProposalMessage({
       />
     </ProposalMessageContextMenu>
   );
-});
+}
 
 interface ProposalMessageContextMenuProps {
   children: ReactNode;
@@ -154,6 +156,7 @@ function ProposalMessageArticle({
   const { articleState, swipeState, viewState } = proposalMessage;
 
   return (
+    // react-doctor-disable-next-line react-doctor/no-noninteractive-element-interactions, react-doctor/no-noninteractive-tabindex -- Message rows keep article semantics and contain nested proposal action buttons, so replacing the frame with a native button would create invalid interactive nesting.
     <article
       tabIndex={0}
       aria-roledescription="message"
@@ -249,15 +252,15 @@ function ProposalMessageSwipeShell({
   const swipeShellState = getProposalSwipeShellStateForOwnership(message.isOwn);
 
   return (
-    <>
-      <motion.div
+    <LazyMotion features={domMax}>
+      <m.div
         style={{ opacity, scale, x: swipeShellState.replyIndicatorX }}
         className={swipeShellState.replyIndicatorClassName}
       >
         <Reply className="size-4" strokeWidth={2.5} />
-      </motion.div>
+      </m.div>
 
-      <motion.div
+      <m.div
         drag="x"
         dragConstraints={swipeShellState.dragConstraints}
         dragElastic={0.2}
@@ -266,8 +269,8 @@ function ProposalMessageSwipeShell({
         className={swipeShellState.dragSurfaceClassName}
       >
         {children}
-      </motion.div>
-    </>
+      </m.div>
+    </LazyMotion>
   );
 }
 

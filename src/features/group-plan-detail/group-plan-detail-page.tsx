@@ -1,5 +1,4 @@
 import { useParams, useSearch } from "@tanstack/react-router";
-import { useMemo } from "react";
 import { GroupPlanDetailPageLoading } from "@/features/group-plan-detail/group-plan-detail-page.loading";
 import { GroupPlanDetailPageContent } from "@/features/group-plan-detail/group-plan-detail-page-content";
 import { useGroupPlanDetail } from "@/features/group-plan-detail/hooks/use-group-plan-detail";
@@ -19,10 +18,7 @@ export function GroupPlanDetailPage() {
   const { groupId } = useParams({ from: GROUP_PLAN_DETAIL_ROUTE });
   const search = useSearch({ from: GROUP_PLAN_DETAIL_ROUTE });
   const detailQuery = useGroupPlanDetail(groupId);
-  const pageMetadata = useMemo(
-    () => getGroupPlanDetailPageMetadata(detailQuery.data),
-    [detailQuery.data],
-  );
+  const pageMetadata = getGroupPlanDetailPageMetadata(detailQuery.data);
 
   usePageMetadata(pageMetadata);
 

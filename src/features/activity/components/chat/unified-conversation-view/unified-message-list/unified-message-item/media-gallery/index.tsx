@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { useState } from "react";
 import type {
   UnifiedAttachment,
   UnifiedMessage,
@@ -42,7 +42,7 @@ type MediaGalleryTimeOverlayState =
  * MediaGallery - Adaptive collage layout with a high-performance lightbox.
  * Features organic transitions, glassmorphism, and intuitive navigation.
  */
-export const MediaGallery = memo(function MediaGallery({
+export function MediaGallery({
   attachments,
   isOwn = false,
   rounding,
@@ -93,7 +93,7 @@ export const MediaGallery = memo(function MediaGallery({
       />
     </div>
   );
-});
+}
 
 function getMediaGalleryViewState({
   attachments,

@@ -35,12 +35,14 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
       <ProfilePanelHeader onClose={onClose} />
       <ProfilePanelContent
         chat={chat}
-        blockActionDisabled={!safetyActions.canToggleBlock}
-        isBlockActionPending={safetyActions.isBlockActionPending}
-        isMuteActionDisabled={safetyActions.isMuteActionDisabled}
-        isMuteActionPending={safetyActions.isMuteActionPending}
-        onToggleMute={safetyActions.toggleMute}
-        onToggleBlock={safetyActions.toggleBlock}
+        safety={{
+          blockActionDisabled: !safetyActions.canToggleBlock,
+          blockActionPending: safetyActions.isBlockActionPending,
+          isMuteActionDisabled: safetyActions.isMuteActionDisabled,
+          muteActionPending: safetyActions.isMuteActionPending,
+          onToggleMute: safetyActions.toggleMute,
+          onToggleBlock: safetyActions.toggleBlock,
+        }}
       />
     </aside>
   );
@@ -65,13 +67,15 @@ export function ProfilePanelMobile({
         </DrawerHeader>
         <ProfilePanelContent
           chat={chat}
-          isMobile={true}
-          blockActionDisabled={!safetyActions.canToggleBlock}
-          isBlockActionPending={safetyActions.isBlockActionPending}
-          isMuteActionDisabled={safetyActions.isMuteActionDisabled}
-          isMuteActionPending={safetyActions.isMuteActionPending}
-          onToggleMute={safetyActions.toggleMute}
-          onToggleBlock={safetyActions.toggleBlock}
+          mode="mobile"
+          safety={{
+            blockActionDisabled: !safetyActions.canToggleBlock,
+            blockActionPending: safetyActions.isBlockActionPending,
+            isMuteActionDisabled: safetyActions.isMuteActionDisabled,
+            muteActionPending: safetyActions.isMuteActionPending,
+            onToggleMute: safetyActions.toggleMute,
+            onToggleBlock: safetyActions.toggleBlock,
+          }}
         />
       </DrawerContent>
     </Drawer>

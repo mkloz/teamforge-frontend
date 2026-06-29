@@ -41,6 +41,11 @@ interface SuggestionCandidateContext {
 }
 
 type SuggestionCandidate = [id: string, score: number];
+type ActiveLeafInterestVisitor = (
+  interest: Interest,
+  subcategory: Interest,
+  category: Interest,
+) => void;
 
 const EXPLICIT_CORRELATION_WEIGHT = 3;
 const SUBCATEGORY_SIBLING_WEIGHT = 1;
@@ -377,25 +382,9 @@ function compareSuggestionCandidates(
 function buildSubcategoryByLeafId(categories: Interest[]) {
   const subcategoryByLeafId = new Map<string, Interest>();
 
-  for (const category of categories) {
-    if (!category.isActive) {
-      continue;
-    }
-
-    for (const subcategory of getSubcategories(category)) {
-      if (!subcategory.isActive) {
-        continue;
-      }
-
-      for (const interest of getLeafInterests(subcategory)) {
-        if (!interest.isActive) {
-          continue;
-        }
-
-        subcategoryByLeafId.set(interest.id, subcategory);
-      }
-    }
-  }
+  forEachActiveLeafInterest(categories, (interest, subcategory) => {
+    subcategoryByLeafId.set(interest.id, subcategory);
+  });
 
   return subcategoryByLeafId;
 }
@@ -404,6 +393,18 @@ function buildCatalogOrderByLeafId(categories: Interest[]) {
   const catalogOrderByLeafId = new Map<string, number>();
   let order = 0;
 
+  forEachActiveLeafInterest(categories, (interest) => {
+    catalogOrderByLeafId.set(interest.id, order);
+    order++;
+  });
+
+  return catalogOrderByLeafId;
+}
+
+function forEachActiveLeafInterest(
+  categories: Interest[],
+  visit: ActiveLeafInterestVisitor,
+) {
   for (const category of categories) {
     if (!category.isActive) {
       continue;
@@ -419,13 +420,10 @@ function buildCatalogOrderByLeafId(categories: Interest[]) {
           continue;
         }
 
-        catalogOrderByLeafId.set(interest.id, order);
-        order++;
+        visit(interest, subcategory, category);
       }
     }
   }
-
-  return catalogOrderByLeafId;
 }
 
 function getKnownSelectedIds(selectedIds: string[], categories: Interest[]) {

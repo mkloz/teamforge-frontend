@@ -1,5 +1,4 @@
 import { ArrowLeft } from "lucide-react";
-import { memo } from "react";
 import type { ConversationDetailsNavigation } from "@/features/activity/hooks/use-conversation-data";
 import { useHeaderSearch } from "@/features/activity/hooks/use-header-search";
 import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
@@ -34,27 +33,28 @@ interface UnifiedChatHeaderProps {
  * UnifiedChatHeader - Shared header for both DMs and Groups.
  * Consolidates the layout of avatars, titles, and action buttons.
  */
-export const UnifiedChatHeader = memo(function UnifiedChatHeader({
-  title,
-  subtitle,
-  avatarUrl,
-  avatarKind = "default",
-  detailsNavigation,
-  kind,
-  onlineStatus,
-  isTyping,
-  typingText,
-  isActionOpen = false,
-  showAction = true,
-  searchQuery = "",
-  searchResultLabel,
-  isSearchNavigationDisabled = true,
-  onBack,
-  onSearchQueryChange,
-  onSearchNext,
-  onSearchPrevious,
-  onToggleAction,
-}: UnifiedChatHeaderProps) {
+export function UnifiedChatHeader(props: UnifiedChatHeaderProps) {
+  const {
+    title,
+    subtitle,
+    avatarUrl,
+    avatarKind = "default",
+    detailsNavigation,
+    kind,
+    onlineStatus,
+    isTyping,
+    typingText,
+    isActionOpen = false,
+    showAction = true,
+    searchQuery = "",
+    searchResultLabel,
+    isSearchNavigationDisabled = true,
+    onBack,
+    onSearchQueryChange,
+    onSearchNext,
+    onSearchPrevious,
+    onToggleAction,
+  } = props;
   const isGroup = kind === "group";
   const { isSearching, searchInputRef, toggleSearch } = useHeaderSearch({
     onClose: () => onSearchQueryChange?.(""),
@@ -113,4 +113,4 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
       />
     </header>
   );
-});
+}

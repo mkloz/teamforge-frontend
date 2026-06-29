@@ -1,5 +1,4 @@
 import { Reply } from "lucide-react";
-import { memo } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 
@@ -9,35 +8,37 @@ interface ReplyReferenceProps {
   onActivate?: (messageId: string) => void;
 }
 
-export const ReplyReference = memo(
-  ({ replyTo, isOwn, onActivate }: ReplyReferenceProps) => {
-    if (!replyTo) return null;
+export function ReplyReference({
+  replyTo,
+  isOwn,
+  onActivate,
+}: ReplyReferenceProps) {
+  if (!replyTo) return null;
 
-    const className = getReplyReferenceClassName({
-      isActionable: Boolean(onActivate),
-      isOwn,
-    });
+  const className = getReplyReferenceClassName({
+    isActionable: Boolean(onActivate),
+    isOwn,
+  });
 
-    if (onActivate) {
-      return (
-        <button
-          type="button"
-          aria-label="View original message"
-          className={className}
-          onClick={() => onActivate(replyTo.id)}
-        >
-          <ReplyReferenceContent replyTo={replyTo} />
-        </button>
-      );
-    }
-
+  if (onActivate) {
     return (
-      <div className={className}>
+      <button
+        type="button"
+        aria-label="View original message"
+        className={className}
+        onClick={() => onActivate(replyTo.id)}
+      >
         <ReplyReferenceContent replyTo={replyTo} />
-      </div>
+      </button>
     );
-  },
-);
+  }
+
+  return (
+    <div className={className}>
+      <ReplyReferenceContent replyTo={replyTo} />
+    </div>
+  );
+}
 
 function ReplyReferenceContent({
   replyTo,

@@ -1,5 +1,4 @@
 import { PencilLine, X } from "lucide-react";
-import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 
@@ -7,9 +6,7 @@ interface EditingMessageBannerProps {
   onCancel: () => void;
 }
 
-export const EditingMessageBanner = memo(function EditingMessageBanner({
-  onCancel,
-}: EditingMessageBannerProps) {
+export function EditingMessageBanner({ onCancel }: EditingMessageBannerProps) {
   return (
     <div className="flex items-center justify-between gap-3 border-border/60 border-b px-3 py-2 text-xs">
       <div className="flex min-w-0 items-center gap-2">
@@ -33,4 +30,4 @@ export const EditingMessageBanner = memo(function EditingMessageBanner({
       </Button>
     </div>
   );
-});
+}

@@ -95,6 +95,7 @@ export function AddressSuggestionsPanel({
     <div
       ref={panelRef}
       id={suggestionsId}
+      // react-doctor-disable-next-line react-doctor/prefer-tag-over-role -- This popup is the ARIA combobox listbox controlled by the text input via aria-controls/aria-activedescendant; there is no native HTML listbox element.
       role="listbox"
       style={portalState.panelStyle}
       className="z-100 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-black/10 shadow-xl"

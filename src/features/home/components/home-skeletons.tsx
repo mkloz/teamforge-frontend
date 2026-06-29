@@ -20,13 +20,8 @@ const GROUP_ROW_KEYS = ["first", "second", "third", "fourth"];
 
 export function HomeHeroSkeleton() {
   return (
-    <section
-      aria-busy="true"
-      aria-label="Loading home summary"
-      className="w-full"
-      role="status"
-    >
-      <span className="sr-only">Loading home summary</span>
+    <section aria-busy="true" className="w-full">
+      <output className="sr-only">Loading home summary</output>
       <div className="flex w-full flex-col gap-5">
         <div className="flex items-start justify-between gap-3">
           <SkeletonText
@@ -177,13 +172,8 @@ export function HomeAttentionQueueRowsSkeleton() {
 
 export function HomeUpcomingPlansSkeleton() {
   return (
-    <section
-      aria-busy="true"
-      aria-label="Loading upcoming plans"
-      className="flex w-full flex-col gap-4"
-      role="status"
-    >
-      <span className="sr-only">Loading upcoming plans</span>
+    <section aria-busy="true" className="flex w-full flex-col gap-4">
+      <output className="sr-only">Loading upcoming plans</output>
       <HomeSectionHeadingSkeleton actionWidth="w-14" />
       <ul className="border-border/55 border-y">
         {UPCOMING_PLAN_ROW_KEYS.map((item, index) => (
@@ -225,13 +215,8 @@ export function HomeUpcomingPlansSkeleton() {
 
 export function HomeRecommendedGroupsSkeleton() {
   return (
-    <section
-      aria-busy="true"
-      aria-label="Loading recommended groups"
-      className="flex w-full flex-col gap-5"
-      role="status"
-    >
-      <span className="sr-only">Loading recommended groups</span>
+    <section aria-busy="true" className="flex w-full flex-col gap-5">
+      <output className="sr-only">Loading recommended groups</output>
       <HomeSectionHeadingSkeleton actionWidth="w-16" />
       <div className="w-full overflow-hidden md:hidden">
         <HomeRecommendedGroupCardSkeleton className="w-full" />
@@ -249,13 +234,8 @@ export function HomeRecommendedGroupsSkeleton() {
 
 export function HomeGroupsSkeleton() {
   return (
-    <section
-      aria-busy="true"
-      aria-label="Loading active groups"
-      className="flex flex-col gap-4"
-      role="status"
-    >
-      <span className="sr-only">Loading active groups</span>
+    <section aria-busy="true" className="flex flex-col gap-4">
+      <output className="sr-only">Loading active groups</output>
       <HomeSectionHeadingSkeleton actionWidth="w-14" eyebrow={false} />
       <ul
         aria-label="Loading your groups"

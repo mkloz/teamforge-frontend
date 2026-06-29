@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { BadgeCheck } from "lucide-react";
 
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -7,7 +7,7 @@ import { completionFadeUp } from "./completion-blueprint-motion";
 
 export function CompletionBlueprintHeader() {
   return (
-    <motion.div variants={completionFadeUp} className="mb-12 text-center">
+    <m.div variants={completionFadeUp} className="mb-12 text-center">
       <StatusPill
         icon={BadgeCheck}
         tone="none"
@@ -19,6 +19,6 @@ export function CompletionBlueprintHeader() {
       <h1 className="font-extrabold font-sans text-4xl text-foreground leading-tight tracking-tight drop-shadow-lg">
         Your TeamForge profile is ready
       </h1>
-    </motion.div>
+    </m.div>
   );
 }

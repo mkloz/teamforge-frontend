@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { motion, useReducedMotion } from "framer-motion";
+import { domMax, LazyMotion, m, useReducedMotion } from "framer-motion";
 import { UsersRound } from "lucide-react";
-import { memo } from "react";
 import { EmptyConversationsVisual } from "@/features/activity/assets/empty-conversations";
 import { EmptyConversationsFilteredVisual } from "@/features/activity/assets/empty-conversations-filtered";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
@@ -26,7 +25,7 @@ interface EmptyStateProps {
   showExploreCta?: boolean;
 }
 
-export const EmptyState = memo(function EmptyState({
+export function EmptyState({
   label,
   description: descriptionProp,
   artwork = "default",
@@ -60,7 +59,7 @@ export const EmptyState = memo(function EmptyState({
       />
     </div>
   );
-});
+}
 
 function EmptyStateArtwork({ artwork }: { artwork: ConversationEmptyArtwork }) {
   if (artwork === "filtered") {
@@ -90,15 +89,17 @@ function EmptyStateActions({
   const motionProps = getEmptyActionsMotionProps(shouldReduceMotion);
 
   return (
-    <motion.div
-      initial={motionProps.initial}
-      animate={motionProps.animate}
-      transition={motionProps.transition}
-      className="mt-6 flex w-full max-w-44 flex-col items-stretch gap-2.5"
-    >
-      <ExploreEmptyStateAction isVisible={showExploreCta} />
-      <ForgeEmptyStateAction isVisible={showForgeCta} />
-    </motion.div>
+    <LazyMotion features={domMax}>
+      <m.div
+        initial={motionProps.initial}
+        animate={motionProps.animate}
+        transition={motionProps.transition}
+        className="mt-6 flex w-full max-w-44 flex-col items-stretch gap-2.5"
+      >
+        <ExploreEmptyStateAction isVisible={showExploreCta} />
+        <ForgeEmptyStateAction isVisible={showForgeCta} />
+      </m.div>
+    </LazyMotion>
   );
 }
 

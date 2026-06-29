@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useReducer, useRef } from "react";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { resolveNotificationDestination } from "@/features/notifications/lib/notification-destination";
 import {
@@ -13,6 +13,11 @@ import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-chang
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
 import {
+  INITIAL_NOTIFICATIONS_DRAWER_STATE,
+  notificationsDrawerReducer,
+  type PendingDetailAction,
+} from "./notifications-drawer-state";
+import {
   NotificationsDrawerBody,
   NotificationsDrawerHeader,
 } from "./notifications-drawer-view";
@@ -22,7 +27,6 @@ interface NotificationsDrawerProps {
   onClose: () => void;
 }
 
-type PendingDetailAction = "mark-read" | "mark-unread" | "open";
 type NotificationReadMutation = (id: string) => Promise<unknown>;
 
 export function NotificationsDrawer({
@@ -45,17 +49,17 @@ export function NotificationsDrawer({
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [pendingNotificationId, setPendingNotificationId] = useState<
-    string | null
-  >(null);
-  const [pendingDetailAction, setPendingDetailAction] =
-    useState<PendingDetailAction | null>(null);
-  const [pendingReadToggleNotificationId, setPendingReadToggleNotificationId] =
-    useState<string | null>(null);
-  const [selectedNotificationId, setSelectedNotificationId] = useState<
-    string | null
-  >(null);
-  const [markAllReadDialogOpen, setMarkAllReadDialogOpen] = useState(false);
+  const [drawerState, dispatchDrawerState] = useReducer(
+    notificationsDrawerReducer,
+    INITIAL_NOTIFICATIONS_DRAWER_STATE,
+  );
+  const {
+    markAllReadDialogOpen,
+    pendingDetailAction,
+    pendingNotificationId,
+    pendingReadToggleNotificationId,
+    selectedNotificationId,
+  } = drawerState;
   const selectedNotification = getSelectedNotification(
     items,
     selectedNotificationId,
@@ -67,25 +71,19 @@ export function NotificationsDrawer({
     resetKey: `${open ? "open" : "closed"}:${selectedNotificationId ?? "list"}`,
   });
 
-  useEffect(() => {
-    if (!open) {
-      resetNotificationsDrawerState({
-        setMarkAllReadDialogOpen,
-        setPendingDetailAction,
-        setPendingNotificationId,
-        setPendingReadToggleNotificationId,
-        setSelectedNotificationId,
-      });
-    }
-  }, [open]);
-
   function handleSelectNotification(notification: Notification) {
-    setSelectedNotificationId(notification.id);
+    dispatchDrawerState({
+      notificationId: notification.id,
+      type: "select-notification",
+    });
   }
 
   async function handleOpenNotification(notification: Notification) {
-    setPendingNotificationId(notification.id);
-    setPendingDetailAction("open");
+    dispatchDrawerState({
+      action: "open",
+      notificationId: notification.id,
+      type: "start-detail-action",
+    });
 
     try {
       await markNotificationReadBeforeOpen(
@@ -98,45 +96,44 @@ export function NotificationsDrawer({
 
       onClose();
       await navigate(destination);
-      setPendingNotificationId(null);
-      setPendingDetailAction(null);
+      dispatchDrawerState({ type: "clear-detail-action" });
     } catch (error) {
-      setPendingNotificationId(null);
-      setPendingDetailAction(null);
+      dispatchDrawerState({ type: "clear-detail-action" });
       throw error;
     }
   }
 
   async function handleToggleNotificationRead(notification: Notification) {
-    setPendingReadToggleNotificationId(notification.id);
+    dispatchDrawerState({
+      notificationId: notification.id,
+      type: "start-read-toggle",
+    });
 
-    try {
-      await toggleNotificationRead(
-        notification,
-        markReadAsync,
-        markUnreadAsync,
-      );
-    } finally {
-      setPendingReadToggleNotificationId(null);
-    }
+    await toggleNotificationRead(
+      notification,
+      markReadAsync,
+      markUnreadAsync,
+    ).finally(() => {
+      dispatchDrawerState({ type: "clear-read-toggle" });
+    });
   }
 
   async function handleToggleSelectedNotificationRead(
     notification: Notification,
   ) {
-    setPendingNotificationId(notification.id);
-    setPendingDetailAction(getNotificationReadToggleAction(notification));
+    dispatchDrawerState({
+      action: getNotificationReadToggleAction(notification),
+      notificationId: notification.id,
+      type: "start-detail-action",
+    });
 
-    try {
-      await toggleNotificationRead(
-        notification,
-        markReadAsync,
-        markUnreadAsync,
-      );
-    } finally {
-      setPendingNotificationId(null);
-      setPendingDetailAction(null);
-    }
+    await toggleNotificationRead(
+      notification,
+      markReadAsync,
+      markUnreadAsync,
+    ).finally(() => {
+      dispatchDrawerState({ type: "clear-detail-action" });
+    });
   }
 
   function handleRefreshNotifications() {
@@ -170,7 +167,12 @@ export function NotificationsDrawer({
           selectedNotification={selectedNotification}
           onClose={onClose}
           onMarkAllRead={markAllReadAsync}
-          onMarkAllReadDialogOpenChange={setMarkAllReadDialogOpen}
+          onMarkAllReadDialogOpenChange={(nextOpen) =>
+            dispatchDrawerState({
+              open: nextOpen,
+              type: "set-mark-all-read-dialog-open",
+            })
+          }
           onRefresh={handleRefreshNotifications}
         />
 
@@ -188,7 +190,7 @@ export function NotificationsDrawer({
             pendingNotificationId={pendingNotificationId}
             pendingReadToggleNotificationId={pendingReadToggleNotificationId}
             selectedNotification={selectedNotification}
-            onBackToList={() => setSelectedNotificationId(null)}
+            onBackToList={() => dispatchDrawerState({ type: "back-to-list" })}
             onOpenNotification={handleOpenNotification}
             onSelectNotification={handleSelectNotification}
             onToggleNotificationRead={handleToggleNotificationRead}
@@ -235,24 +237,4 @@ async function toggleNotificationRead(
   const mutation = notification.isRead ? markUnreadAsync : markReadAsync;
 
   await mutation(notification.id);
-}
-
-function resetNotificationsDrawerState({
-  setMarkAllReadDialogOpen,
-  setPendingDetailAction,
-  setPendingNotificationId,
-  setPendingReadToggleNotificationId,
-  setSelectedNotificationId,
-}: {
-  setMarkAllReadDialogOpen: (open: boolean) => void;
-  setPendingDetailAction: (action: PendingDetailAction | null) => void;
-  setPendingNotificationId: (id: string | null) => void;
-  setPendingReadToggleNotificationId: (id: string | null) => void;
-  setSelectedNotificationId: (id: string | null) => void;
-}) {
-  setPendingNotificationId(null);
-  setPendingDetailAction(null);
-  setPendingReadToggleNotificationId(null);
-  setSelectedNotificationId(null);
-  setMarkAllReadDialogOpen(false);
 }

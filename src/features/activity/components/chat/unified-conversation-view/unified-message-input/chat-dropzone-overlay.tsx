@@ -1,8 +1,7 @@
 import { Upload } from "lucide-react";
-import { memo } from "react";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 
-export const ChatDropzoneOverlay = memo(function ChatDropzoneOverlay() {
+export function ChatDropzoneOverlay() {
   return (
     <div
       className="pointer-events-none absolute inset-3 z-50 flex items-center justify-center rounded-2xl border-2 border-primary/70 border-dashed bg-canvas/92 p-4 text-center shadow-2xl backdrop-blur-md sm:inset-5"
@@ -28,4 +27,4 @@ export const ChatDropzoneOverlay = memo(function ChatDropzoneOverlay() {
       </div>
     </div>
   );
-});
+}

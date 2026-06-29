@@ -1,5 +1,6 @@
 import type { User } from "@/shared/schemas";
 import type { OceanScores } from "../../profile-contract";
+import { getLaneConfidenceCounts } from "../lane-confidence";
 import {
   PORTRAIT_HYBRID_MARGIN,
   PORTRAIT_MEDIUM_MARGIN,
@@ -31,12 +32,7 @@ export function getPortraitConfidence(
   lanes: ActivityLane[],
   candidates: ProfilePortraitCandidate[],
 ): ProfilePortraitInsight["confidence"] {
-  const clearLaneCount = lanes.filter(
-    (lane) => lane.confidence !== "soft",
-  ).length;
-  const strongLaneCount = lanes.filter(
-    (lane) => lane.confidence === "strong",
-  ).length;
+  const { clearLaneCount, strongLaneCount } = getLaneConfidenceCounts(lanes);
   const signalCount = [
     Boolean(user.personalityType),
     Boolean(oceanScores),

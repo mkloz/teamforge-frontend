@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
   AlertCircle,
@@ -29,6 +29,7 @@ import {
 } from "@/shared/components/ui/dialog";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Notice } from "@/shared/components/ui/notice";
+import { cn } from "@/shared/lib/utils";
 import type { PlanProposalField } from "@/shared/schemas/enums";
 
 // ── Per-field icon map ────────────────────────────────────────────────────────
@@ -75,6 +76,14 @@ const FIELD_HEADER_VISUALS = {
 
 type PlanProposalFieldOption = (typeof planProposalFieldOptions)[number];
 type PlanChangeFormState = ReturnType<typeof usePlanChangeForm>;
+
+interface PlanChangeFieldRenderState {
+  creating: boolean;
+  disabled: boolean;
+  last: boolean;
+  online: boolean;
+  open: boolean;
+}
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -150,70 +159,66 @@ export function PlanChangeDialog({
       </DialogTrigger>
 
       <DialogContent className="max-h-[90svh] overflow-y-auto rounded-3xl bg-canvas p-0 sm:max-w-sm [&>button]:hidden">
-        {/* ── Header ─────────────────────────────────────────────── */}
-        <div className="flex items-start justify-between px-5 pt-6 pb-4">
-          <div>
-            <h2 className="font-semibold text-base text-ink">
-              What would you change?
-            </h2>
-            <p className="mt-0.5 max-w-[22ch] text-slate-muted text-xs leading-relaxed">
-              Tap a detail. Your idea goes to a group vote.
-            </p>
+        <LazyMotion features={domAnimation}>
+          {/* ── Header ─────────────────────────────────────────────── */}
+          <div className="flex items-start justify-between px-5 pt-6 pb-4">
+            <div>
+              <h2 className="font-semibold text-base text-ink">
+                What would you change?
+              </h2>
+              <p className="mt-0.5 max-w-[22ch] text-slate-muted text-xs leading-relaxed">
+                Tap a detail. Your idea goes to a group vote.
+              </p>
+            </div>
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={() => handleOpenChange(false)}
+              className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-slate-muted transition-colors hover:bg-black/8 hover:text-ink"
+            >
+              <X className="size-3.5" strokeWidth={2.5} />
+            </button>
           </div>
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={() => handleOpenChange(false)}
-            className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-slate-muted transition-colors hover:bg-black/8 hover:text-ink"
-          >
-            <X className="size-3.5" strokeWidth={2.5} />
-          </button>
-        </div>
 
-        {/* ── Accordion field list ───────────────────────────────── */}
-        <ul aria-label="Plan fields" className="border-border/50 border-t">
-          {planProposalFieldOptions.map((option, index) => (
-            <PlanChangeFieldRow
-              key={option.value}
-              disabled={disabled}
-              form={form}
-              isCreating={isCreating}
-              isLast={index === planProposalFieldOptions.length - 1}
-              isOnline={isOnline}
-              isOpen={expanded === option.value}
-              option={option}
-              onCollapse={collapseField}
-              onToggle={() => toggleField(option.value)}
-            />
-          ))}
-        </ul>
+          {/* ── Accordion field list ───────────────────────────────── */}
+          <ul aria-label="Plan fields" className="border-border/50 border-t">
+            {planProposalFieldOptions.map((option, index) => (
+              <PlanChangeFieldRow
+                key={option.value}
+                form={form}
+                option={option}
+                renderState={{
+                  creating: isCreating,
+                  disabled,
+                  last: index === planProposalFieldOptions.length - 1,
+                  online: isOnline,
+                  open: expanded === option.value,
+                }}
+                onCollapse={collapseField}
+                onToggle={() => toggleField(option.value)}
+              />
+            ))}
+          </ul>
+        </LazyMotion>
       </DialogContent>
     </Dialog>
   );
 }
 
 interface PlanChangeFieldRowProps {
-  disabled: boolean;
   form: PlanChangeFormState;
-  isCreating: boolean;
-  isLast: boolean;
-  isOnline: boolean;
-  isOpen: boolean;
   onCollapse: () => void;
   onToggle: () => void;
   option: PlanProposalFieldOption;
+  renderState: PlanChangeFieldRenderState;
 }
 
 function PlanChangeFieldRow({
-  disabled,
   form,
-  isCreating,
-  isLast,
-  isOnline,
-  isOpen,
   onCollapse,
   onToggle,
   option,
+  renderState,
 }: PlanChangeFieldRowProps) {
   const Icon = FIELD_ICON[option.value];
   const currentValue = form.plan
@@ -222,28 +227,25 @@ function PlanChangeFieldRow({
 
   return (
     <li
-      className={[
+      className={cn(
         "relative transition-colors duration-150",
-        !isLast && "border-border/50 border-b",
-        isOpen && "bg-forge-teal/[0.035]",
-      ].join(" ")}
+        !renderState.last && "border-border/50 border-b",
+        renderState.open && "bg-forge-teal/[0.035]",
+      )}
     >
-      <PlanChangeFieldRail isOpen={isOpen} />
+      <PlanChangeFieldRail isOpen={renderState.open} />
       <PlanChangeFieldHeader
         currentValue={currentValue}
         icon={Icon}
-        isOpen={isOpen}
+        isOpen={renderState.open}
         option={option}
         onToggle={onToggle}
       />
       <PlanChangeFieldPanel
         currentValue={currentValue}
-        disabled={disabled}
         form={form}
-        isCreating={isCreating}
-        isOnline={isOnline}
-        isOpen={isOpen}
         option={option}
+        renderState={renderState}
         onCollapse={onCollapse}
       />
     </li>
@@ -253,10 +255,10 @@ function PlanChangeFieldRow({
 function PlanChangeFieldRail({ isOpen }: { isOpen: boolean }) {
   return (
     <div
-      className={[
-        "absolute top-0 bottom-0 left-0 w-[3px] rounded-r-full transition-all duration-300",
+      className={cn(
+        "absolute top-0 bottom-0 left-0 w-0.75 rounded-r-full transition-all duration-300",
         isOpen ? "bg-forge-teal opacity-100" : "opacity-0",
-      ].join(" ")}
+      )}
       aria-hidden="true"
     />
   );
@@ -303,7 +305,7 @@ function PlanChangeFieldHeader({
         />
       </span>
 
-      <motion.span
+      <m.span
         animate={{ rotate: visualState.rotate }}
         transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
         className="shrink-0"
@@ -313,7 +315,7 @@ function PlanChangeFieldHeader({
           className={visualState.chevronClassName}
           strokeWidth={1.75}
         />
-      </motion.span>
+      </m.span>
     </button>
   );
 }
@@ -346,29 +348,23 @@ function CollapsedFieldCurrentValue({
 
 interface PlanChangeFieldPanelProps {
   currentValue: string;
-  disabled: boolean;
   form: PlanChangeFormState;
-  isCreating: boolean;
-  isOnline: boolean;
-  isOpen: boolean;
   onCollapse: () => void;
   option: PlanProposalFieldOption;
+  renderState: PlanChangeFieldRenderState;
 }
 
 function PlanChangeFieldPanel({
   currentValue,
-  disabled,
   form,
-  isCreating,
-  isOnline,
-  isOpen,
   onCollapse,
   option,
+  renderState,
 }: PlanChangeFieldPanelProps) {
   return (
     <AnimatePresence initial={false}>
-      {isOpen && (
-        <motion.div
+      {renderState.open && (
+        <m.div
           id={`field-body-${option.value}`}
           role="region"
           aria-label={`Edit ${option.label}`}
@@ -396,14 +392,12 @@ function PlanChangeFieldPanel({
         >
           <PlanChangeFieldPanelContent
             currentValue={currentValue}
-            disabled={disabled}
             form={form}
-            isCreating={isCreating}
-            isOnline={isOnline}
             option={option}
+            renderState={renderState}
             onCollapse={onCollapse}
           />
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );
@@ -411,22 +405,18 @@ function PlanChangeFieldPanel({
 
 interface PlanChangeFieldPanelContentProps {
   currentValue: string;
-  disabled: boolean;
   form: PlanChangeFormState;
-  isCreating: boolean;
-  isOnline: boolean;
   onCollapse: () => void;
   option: PlanProposalFieldOption;
+  renderState: PlanChangeFieldRenderState;
 }
 
 function PlanChangeFieldPanelContent({
   currentValue,
-  disabled,
   form,
-  isCreating,
-  isOnline,
   onCollapse,
   option,
+  renderState,
 }: PlanChangeFieldPanelContentProps) {
   return (
     <div className="px-5 pt-1 pb-5">
@@ -476,9 +466,13 @@ function PlanChangeFieldPanelContent({
         <Button
           variant="primary"
           size="sm"
-          loading={isCreating}
-          disabled={disabled || !form.plan}
-          title={isOnline ? undefined : "Reconnect before suggesting changes."}
+          loading={renderState.creating}
+          disabled={renderState.disabled || !form.plan}
+          title={
+            renderState.online
+              ? undefined
+              : "Reconnect before suggesting changes."
+          }
           onClick={() => void form.submit()}
         >
           <SendHorizontal className="size-3.5" aria-hidden="true" />

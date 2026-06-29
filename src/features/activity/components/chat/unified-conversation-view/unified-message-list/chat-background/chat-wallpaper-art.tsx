@@ -1,12 +1,10 @@
-import { memo, type SVGProps } from "react";
+import type { SVGProps } from "react";
 
 import chatWallpaperArtUrl from "./chat-wallpaper-art.svg";
 
 type ChatWallpaperArtProps = Pick<SVGProps<SVGSVGElement>, "className">;
 
-export const ChatWallpaperArt = memo(function ChatWallpaperArt({
-  className,
-}: ChatWallpaperArtProps) {
+export function ChatWallpaperArt({ className }: ChatWallpaperArtProps) {
   return (
     <svg
       aria-hidden="true"
@@ -20,4 +18,4 @@ export const ChatWallpaperArt = memo(function ChatWallpaperArt({
       <use href={`${chatWallpaperArtUrl}#chat-wallpaper-art`} />
     </svg>
   );
-});
+}

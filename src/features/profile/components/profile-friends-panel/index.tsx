@@ -260,21 +260,21 @@ function PublicFriendsPanelContent({
   activeTab: TabValue;
   userId: string;
 }) {
-  const Content = getPublicFriendsPanelContent(activeTab);
-
   return (
     <div className="min-h-64">
-      <Content userId={userId} />
+      {activeTab === "friends" ? (
+        <MutualFriendsList userId={userId} />
+      ) : (
+        <PublicFriendsList userId={userId} />
+      )}
     </div>
   );
 }
 
 function SelfFriendsPanelContent({ activeTab }: { activeTab: TabValue }) {
-  const Content = getSelfFriendsPanelContent(activeTab);
-
   return (
     <div className="min-h-64">
-      <Content />
+      {activeTab === "friends" ? <FriendsList /> : <FriendRequestsList />}
     </div>
   );
 }
@@ -360,14 +360,6 @@ function getPublicFriendsCopy(activeTab: TabValue) {
   return activeTab === "friends"
     ? PUBLIC_FRIENDS_COPY.friends
     : PUBLIC_FRIENDS_COPY.public_friends;
-}
-
-function getPublicFriendsPanelContent(activeTab: TabValue) {
-  return activeTab === "friends" ? MutualFriendsList : PublicFriendsList;
-}
-
-function getSelfFriendsPanelContent(activeTab: TabValue) {
-  return activeTab === "friends" ? FriendsList : FriendRequestsList;
 }
 
 function getPublicFriendsPanelState({

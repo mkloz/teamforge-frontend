@@ -12,6 +12,8 @@ import { MethodSection } from "./method-section";
 import { PrivacySection } from "./privacy-section";
 import type { Step3GroupProps } from "./types";
 
+const EMPTY_GROUP_NAMES: string[] = [];
+
 export function Step3Group({
   forgeMode,
   onForgeModeChange,
@@ -39,7 +41,7 @@ export function Step3Group({
   onGroupDescriptionChange,
   manualInviteeIds,
   onManualInviteeToggle,
-  existingGroupNames = [],
+  existingGroupNames = EMPTY_GROUP_NAMES,
   selectedActivity,
 }: Step3GroupProps) {
   const [algorithmsExpanded, setAlgorithmsExpanded] = useState(false);

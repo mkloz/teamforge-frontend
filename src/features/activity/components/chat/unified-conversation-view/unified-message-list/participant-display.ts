@@ -1,4 +1,5 @@
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import { getAvatarInitials } from "@/shared/components/common/avatar";
 
 export function getParticipantDisplayName(
   participant?: ActivityParticipant | null,
@@ -9,12 +10,5 @@ export function getParticipantDisplayName(
 export function getParticipantInitials(
   participant?: ActivityParticipant | null,
 ) {
-  const initials = getParticipantDisplayName(participant)
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-
-  return initials || "TF";
+  return getAvatarInitials(getParticipantDisplayName(participant));
 }

@@ -5,7 +5,6 @@ import {
   type LucideIcon,
   OctagonAlert,
 } from "lucide-react";
-import { memo } from "react";
 import type { MessageStatus } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 
@@ -64,7 +63,7 @@ const MESSAGE_STATUS_ICON_CONFIG: Record<
   },
 };
 
-export const MessageStatusIcon = memo(function MessageStatusIcon({
+export function MessageStatusIcon({
   status,
   isOwn,
   isReadByOthers,
@@ -78,20 +77,17 @@ export const MessageStatusIcon = memo(function MessageStatusIcon({
   const Icon = iconState.Icon;
 
   return (
-    <div
-      aria-label={label}
-      className={cn("flex items-center", className)}
-      role="img"
-      title={label}
-    >
+    <span className={cn("flex items-center", className)} title={label}>
+      <span className="sr-only">{label}</span>
       <Icon
+        aria-hidden="true"
         size={10}
         className={iconState.className}
         strokeWidth={iconState.strokeWidth}
       />
-    </div>
+    </span>
   );
-});
+}
 
 function getMessageStatusLabel(
   status: MessageStatus,

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Check } from "lucide-react";
 import type { IpipQuestion } from "@/features/onboarding/data/ipip-questions";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -44,7 +44,7 @@ export function QuestionCard({
 
         <AnimatePresence>
           {answered && (
-            <motion.span
+            <m.span
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
@@ -60,7 +60,7 @@ export function QuestionCard({
               >
                 Done
               </StatusPill>
-            </motion.span>
+            </m.span>
           )}
         </AnimatePresence>
       </div>

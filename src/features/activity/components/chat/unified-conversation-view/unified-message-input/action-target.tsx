@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { Mic, Send, Trash2 } from "lucide-react";
-import { type KeyboardEvent, memo } from "react";
+import type { KeyboardEvent } from "react";
 import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
@@ -19,17 +19,17 @@ interface ActionTargetProps {
   disabled: boolean;
 }
 
-export const ActionTarget = memo(
-  ({
-    hasContent,
-    isRecording,
-    onSend,
-    onCancelRecording,
-    onStartRecording,
-    onStopRecording,
-    disabled,
-  }: ActionTargetProps) => {
-    return (
+export function ActionTarget({
+  hasContent,
+  isRecording,
+  onSend,
+  onCancelRecording,
+  onStartRecording,
+  onStopRecording,
+  disabled,
+}: ActionTargetProps) {
+  return (
+    <LazyMotion features={domAnimation}>
       <AnimatePresence mode="popLayout">
         {hasContent ? (
           <SendAction key="send" disabled={disabled} onSend={onSend} />
@@ -44,16 +44,16 @@ export const ActionTarget = memo(
           />
         )}
       </AnimatePresence>
-    );
-  },
-);
+    </LazyMotion>
+  );
+}
 
 function SendAction({
   disabled,
   onSend,
 }: Pick<ActionTargetProps, "disabled" | "onSend">) {
   return (
-    <motion.div
+    <m.div
       key="send"
       initial={{ opacity: 0, scale: 0.8, rotate: -15 }}
       animate={{ opacity: 1, scale: 1, rotate: 0 }}
@@ -75,7 +75,7 @@ function SendAction({
         </TooltipTrigger>
         <TooltipContent>Send message</TooltipContent>
       </Tooltip>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -87,7 +87,7 @@ function RecordingAction({
   onStopRecording,
 }: Omit<ActionTargetProps, "hasContent" | "onSend">) {
   return (
-    <motion.div
+    <m.div
       key="mic"
       initial={{ opacity: 0, scale: 0.8, rotate: 15 }}
       animate={{ opacity: 1, scale: 1, rotate: 0 }}
@@ -105,7 +105,7 @@ function RecordingAction({
         onStartRecording={onStartRecording}
         onStopRecording={onStopRecording}
       />
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -116,7 +116,7 @@ function CancelRecordingAction({
   return (
     <AnimatePresence>
       {isRecording && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.5, width: 0 }}
           animate={{ opacity: 1, scale: 1, width: "auto" }}
           exit={{ opacity: 0, scale: 0.5, width: 0 }}
@@ -136,7 +136,7 @@ function CancelRecordingAction({
             </TooltipTrigger>
             <TooltipContent>Cancel recording</TooltipContent>
           </Tooltip>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

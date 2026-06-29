@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 import { resultsContainer } from "@/features/onboarding/constants/motion";
 import type { PersonalityEvaluation } from "@/features/onboarding/lib/personality-evaluation";
@@ -31,7 +31,7 @@ export function PersonalityResults({
   const viewModel = getPersonalityResultViewModel(result, vector);
 
   return (
-    <motion.div
+    <m.div
       variants={resultsContainer}
       initial="hidden"
       animate="visible"
@@ -66,6 +66,6 @@ export function PersonalityResults({
         onContinue={onContinue}
         onRetake={onRetake}
       />
-    </motion.div>
+    </m.div>
   );
 }

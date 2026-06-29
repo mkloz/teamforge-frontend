@@ -10,22 +10,22 @@ export function ThemePreferencesRuntime() {
   const setThemePreferences = useThemeStore(
     (state) => state.setThemePreferences,
   );
-  const preferencesQuery = useQuery({
+  const { data: preferences } = useQuery({
     ...SettingsQueryFactory.notificationPreferences(),
     enabled: isAuthenticated,
   });
 
   useEffect(() => {
-    if (!preferencesQuery.data) {
+    if (!preferences) {
       return;
     }
 
     setThemePreferences({
-      themeAppearance: preferencesQuery.data.themeAppearance,
-      themeStyle: preferencesQuery.data.themeStyle,
-      themeColor: preferencesQuery.data.themeColor,
+      themeAppearance: preferences.themeAppearance,
+      themeStyle: preferences.themeStyle,
+      themeColor: preferences.themeColor,
     });
-  }, [preferencesQuery.data, setThemePreferences]);
+  }, [preferences, setThemePreferences]);
 
   return null;
 }

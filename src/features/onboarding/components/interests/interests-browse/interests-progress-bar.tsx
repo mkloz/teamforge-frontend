@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { MAX_INTERESTS } from "@/features/onboarding/data/interests-data";
 import { Button } from "@/shared/components/ui/button";
@@ -32,21 +32,24 @@ export function InterestsProgressBar({
   });
 
   return (
-    <div
-      className="w-full py-3.5"
-      role="progressbar"
-      aria-valuenow={selectedCount}
-      aria-valuemin={0}
-      aria-valuemax={MAX_INTERESTS}
-      aria-label="Interests selection progress"
-    >
+    <div className="w-full py-3.5">
+      <progress
+        aria-label="Interests selection progress"
+        className="sr-only"
+        value={selectedCount}
+        max={MAX_INTERESTS}
+      >
+        {selectedCount} / {MAX_INTERESTS}
+      </progress>
       <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-slate-muted/10">
-        <motion.div
-          className="size-full origin-left bg-forge-teal"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: pct / 100 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        />
+        <LazyMotion features={domAnimation}>
+          <m.div
+            className="size-full origin-left bg-forge-teal"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: pct / 100 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          />
+        </LazyMotion>
       </div>
       <div className="flex xs:flex-row flex-col xs:items-center xs:justify-between gap-3 xs:gap-4">
         <div className="min-w-0">

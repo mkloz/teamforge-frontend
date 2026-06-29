@@ -43,12 +43,8 @@ function OnboardingPageLoadingFixture({
 function ProfileBasicsLoadingFixture() {
   return (
     <OnboardingLoadingShell maxWidthClassName="max-w-sm">
-      <div
-        aria-label="Loading profile basics"
-        className="flex w-full flex-col"
-        role="status"
-      >
-        <span className="sr-only">Loading profile basics</span>
+      <div aria-busy="true" className="flex w-full flex-col">
+        <output className="sr-only">Loading profile basics</output>
         <div className="mb-6 flex flex-col items-center sm:mb-8">
           <Skeleton className="h-9 w-72 max-w-full sm:h-12" />
           <Skeleton className="mt-2 h-4 w-80 max-w-full" />
@@ -79,12 +75,8 @@ function PersonalityLoadingFixture() {
 
           <div className="relative flex min-h-full flex-col items-center justify-start px-4 pt-7 pb-4 sm:px-6 sm:pt-12">
             <div className="relative flex w-full max-w-xl flex-1 flex-col">
-              <div
-                aria-label="Loading personality"
-                className="flex flex-1 flex-col"
-                role="status"
-              >
-                <span className="sr-only">Loading personality</span>
+              <div aria-busy="true" className="flex flex-1 flex-col">
+                <output className="sr-only">Loading personality</output>
                 <div className="flex flex-1 flex-col justify-center py-8">
                   <Skeleton className="h-3 w-24" tone="teal" />
                   <Skeleton className="mt-4 h-10 w-full max-w-lg" />
@@ -151,13 +143,8 @@ function InterestsLoadingFixture() {
 
           <div className="flex min-h-full w-full flex-col items-center justify-start py-6 sm:py-0">
             <div className="relative w-full max-w-xl px-4 sm:px-5 lg:px-0">
-              <div
-                aria-busy="true"
-                aria-label="Loading interests"
-                className="relative w-full"
-                role="status"
-              >
-                <span className="sr-only">Loading interests</span>
+              <div aria-busy="true" className="relative w-full">
+                <output className="sr-only">Loading interests</output>
                 <InterestsIntroSkeleton />
               </div>
             </div>

@@ -1,35 +1,28 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Check, X } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { AvatarWithBadge } from "@/shared/components/common/avatar-with-badge";
-import { Button } from "@/shared/components/ui/button";
 
 import type { AttentionQueueInvitation } from "./attention-queue.types";
-import { AttentionQueueMeta } from "./attention-queue-meta";
-import { getInvitationQueueItemRenderState } from "./invitation-queue-item-render-state";
+import { AttentionQueueItemActions } from "./attention-queue-item-actions";
+import { AttentionQueueMetaList } from "./attention-queue-meta-list";
+import {
+  getInvitationQueueItemRenderState,
+  type InvitationQueueItemState,
+} from "./invitation-queue-item-render-state";
 
 interface InvitationQueueItemProps {
   invite: AttentionQueueInvitation;
-  isFocused: boolean;
-  acceptingInviteId: string | null;
-  decliningInviteId: string | null;
-  isAccepting: boolean;
-  isDeclining: boolean;
-  isOnline: boolean;
+  state: InvitationQueueItemState;
   onAccept: (inviteId: string) => Promise<void>;
   onDecline: (inviteId: string) => Promise<void>;
 }
 
 export function InvitationQueueItem({
-  acceptingInviteId,
-  decliningInviteId,
   invite,
-  isAccepting,
-  isDeclining,
-  isFocused,
-  isOnline,
   onAccept,
   onDecline,
+  state,
 }: InvitationQueueItemProps) {
   const {
     acceptButtonDisabled,
@@ -43,13 +36,8 @@ export function InvitationQueueItem({
     inviteMeta,
     rowClassName,
   } = getInvitationQueueItemRenderState({
-    acceptingInviteId,
-    decliningInviteId,
     invite,
-    isAccepting,
-    isDeclining,
-    isFocused,
-    isOnline,
+    state,
   });
 
   return (
@@ -82,41 +70,26 @@ export function InvitationQueueItem({
             <p className="mt-1 truncate font-medium text-muted-foreground text-xs">
               {invite.inviter?.name ?? "Someone"} invited you to join.
             </p>
-            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1.5">
-              {inviteMeta.map((item) => (
-                <AttentionQueueMeta key={item.label} icon={item.icon}>
-                  {item.label}
-                </AttentionQueueMeta>
-              ))}
-            </div>
+            <AttentionQueueMetaList items={inviteMeta} />
           </div>
         </Link>
-        <div className="flex shrink-0 items-center justify-end gap-1.5">
-          <Button
-            size="icon-xs"
-            className="sm:w-auto sm:px-3"
-            loading={acceptButtonLoading}
-            disabled={acceptButtonDisabled}
-            onClick={() => void onAccept(invite.id)}
-            aria-label={`Join ${invite.group.name}`}
-            title={acceptButtonTitle}
-          >
-            <Check className="size-3" />
-            <span className="hidden sm:inline">Join</span>
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            size="icon-xs"
-            loading={declineButtonLoading}
-            disabled={declineButtonDisabled}
-            onClick={() => void onDecline(invite.id)}
-            aria-label={`Decline invitation to ${invite.group.name}`}
-            title={declineButtonTitle}
-          >
-            <X className="size-3.5" />
-          </Button>
-        </div>
+        <AttentionQueueItemActions
+          accept={{
+            ariaLabel: `Join ${invite.group.name}`,
+            disabled: acceptButtonDisabled,
+            label: "Join",
+            loading: acceptButtonLoading,
+            onClick: () => void onAccept(invite.id),
+            title: acceptButtonTitle,
+          }}
+          decline={{
+            ariaLabel: `Decline invitation to ${invite.group.name}`,
+            disabled: declineButtonDisabled,
+            loading: declineButtonLoading,
+            onClick: () => void onDecline(invite.id),
+            title: declineButtonTitle,
+          }}
+        />
       </div>
     </li>
   );

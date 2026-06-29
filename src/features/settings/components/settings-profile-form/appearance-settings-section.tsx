@@ -79,6 +79,12 @@ interface GridOptionBoundaryState {
   isLastRowOnDesktop: boolean;
 }
 
+interface ThemeOptionStatus {
+  selected: boolean;
+  isDefault: boolean;
+  disabled: boolean;
+}
+
 interface GridOptionBoundaryClassRule {
   className: string;
   isActive: (state: GridOptionBoundaryState) => boolean;
@@ -929,12 +935,16 @@ function StyleTableGrid({
           label={option.label}
           description={option.description}
           icon={option.icon}
-          selected={selectedThemeStyle === option.value}
-          isDefault={option.value === DEFAULT_THEME_STYLE}
-          disabled={disabled}
-          isFirstColumnOnDesktop={index % 2 === 0}
-          isLastInGroup={index === STYLE_OPTIONS.length - 1}
-          isLastRowOnDesktop={index >= lastRowStartIndex}
+          status={{
+            selected: selectedThemeStyle === option.value,
+            isDefault: option.value === DEFAULT_THEME_STYLE,
+            disabled,
+          }}
+          boundaryState={{
+            isFirstColumnOnDesktop: index % 2 === 0,
+            isLastInGroup: index === STYLE_OPTIONS.length - 1,
+            isLastRowOnDesktop: index >= lastRowStartIndex,
+          }}
           onClick={() => onSelect(option.value)}
         />
       ))}
@@ -946,12 +956,8 @@ interface StyleOptionRowProps {
   label: string;
   description: string;
   icon: LucideIcon;
-  selected: boolean;
-  isDefault: boolean;
-  disabled: boolean;
-  isFirstColumnOnDesktop: boolean;
-  isLastInGroup: boolean;
-  isLastRowOnDesktop: boolean;
+  status: ThemeOptionStatus;
+  boundaryState: GridOptionBoundaryState;
   onClick: () => void;
 }
 
@@ -959,34 +965,28 @@ function StyleOptionRow({
   label,
   description,
   icon: Icon,
-  selected,
-  isDefault,
-  disabled,
-  isFirstColumnOnDesktop,
-  isLastInGroup,
-  isLastRowOnDesktop,
+  status,
+  boundaryState,
   onClick,
 }: StyleOptionRowProps) {
   const optionClassName = getStyleOptionRowClassName({
-    disabled,
-    isFirstColumnOnDesktop,
-    isLastInGroup,
-    isLastRowOnDesktop,
-    selected,
+    ...boundaryState,
+    disabled: status.disabled,
+    selected: status.selected,
   });
-  const iconClassName = getStyleOptionIconClassName(selected);
+  const iconClassName = getStyleOptionIconClassName(status.selected);
 
   return (
     <button
       type="button"
-      aria-pressed={selected}
-      disabled={disabled}
+      aria-pressed={status.selected}
+      disabled={status.disabled}
       onClick={onClick}
       className={optionClassName}
     >
       <IconTile
         icon={Icon}
-        tone={selected ? "teal" : "neutral"}
+        tone={status.selected ? "teal" : "neutral"}
         size="lg"
         bordered
         className={iconClassName}
@@ -999,9 +999,9 @@ function StyleOptionRow({
             <span className="truncate font-black text-inherit text-sm">
               {label}
             </span>
-            <PreferenceMarkers isDefault={isDefault} selected={false} />
+            <PreferenceMarkers isDefault={status.isDefault} selected={false} />
           </span>
-          {selected ? (
+          {status.selected ? (
             <Check
               className="size-4 shrink-0 text-primary"
               strokeWidth={2.5}
@@ -1092,12 +1092,16 @@ function ColorTableGrid({
                   label={option.label}
                   description={option.description}
                   swatches={getThemeColorSwatches(option, isDark)}
-                  selected={selectedThemeColor === option.value}
-                  isDefault={option.value === DEFAULT_THEME_COLOR}
-                  disabled={disabled}
-                  isFirstColumnOnDesktop={index % 2 === 0}
-                  isLastInGroup={index === group.options.length - 1}
-                  isLastRowOnDesktop={index >= lastRowStartIndex}
+                  status={{
+                    selected: selectedThemeColor === option.value,
+                    isDefault: option.value === DEFAULT_THEME_COLOR,
+                    disabled,
+                  }}
+                  boundaryState={{
+                    isFirstColumnOnDesktop: index % 2 === 0,
+                    isLastInGroup: index === group.options.length - 1,
+                    isLastRowOnDesktop: index >= lastRowStartIndex,
+                  }}
                   onClick={() => onSelect(option.value)}
                 />
               );
@@ -1134,12 +1138,8 @@ interface ColorOptionRowProps {
   label: string;
   description: string;
   swatches: readonly string[];
-  selected: boolean;
-  isDefault: boolean;
-  disabled: boolean;
-  isFirstColumnOnDesktop: boolean;
-  isLastInGroup: boolean;
-  isLastRowOnDesktop: boolean;
+  status: ThemeOptionStatus;
+  boundaryState: GridOptionBoundaryState;
   onClick: () => void;
 }
 
@@ -1147,27 +1147,21 @@ function ColorOptionRow({
   label,
   description,
   swatches,
-  selected,
-  isDefault,
-  disabled,
-  isFirstColumnOnDesktop,
-  isLastInGroup,
-  isLastRowOnDesktop,
+  status,
+  boundaryState,
   onClick,
 }: ColorOptionRowProps) {
   const optionClassName = getColorOptionRowClassName({
-    disabled,
-    isFirstColumnOnDesktop,
-    isLastInGroup,
-    isLastRowOnDesktop,
-    selected,
+    ...boundaryState,
+    disabled: status.disabled,
+    selected: status.selected,
   });
 
   return (
     <button
       type="button"
-      aria-pressed={selected}
-      disabled={disabled}
+      aria-pressed={status.selected}
+      disabled={status.disabled}
       onClick={onClick}
       className={optionClassName}
     >
@@ -1176,14 +1170,17 @@ function ColorOptionRow({
       <span className="min-w-0">
         <span className="flex min-w-0 items-baseline gap-2">
           <span className="truncate font-black text-ink text-sm">{label}</span>
-          <PreferenceMarkers isDefault={isDefault} selected={selected} />
+          <PreferenceMarkers
+            isDefault={status.isDefault}
+            selected={status.selected}
+          />
         </span>
         <span className="mt-0.5 block truncate text-slate-muted text-xs leading-relaxed">
           {description}
         </span>
       </span>
 
-      <ColorSelectionMark selected={selected} />
+      <ColorSelectionMark selected={status.selected} />
     </button>
   );
 }

@@ -9,6 +9,8 @@ const FOOTER_LINKS = [
   { to: "/terms", label: "Terms" },
 ] as const;
 
+const COPYRIGHT_YEAR = 2026;
+
 function normalizePathname(pathname: string) {
   if (pathname === "/") {
     return pathname;
@@ -47,7 +49,7 @@ export function Footer() {
 
           <FooterSeparator />
           <span className="font-sans text-sm text-text-dark-muted">
-            &copy; {new Date().getFullYear()}
+            &copy; {COPYRIGHT_YEAR}
           </span>
         </div>
       </div>

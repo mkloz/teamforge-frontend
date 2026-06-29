@@ -9,8 +9,8 @@ import { cn } from "@/shared/lib/utils";
 
 export function ExplorePageLoading(_props: PageLoadingProps = {}) {
   return (
-    <div aria-busy="true" aria-label="Loading explore" role="status">
-      <span className="sr-only">Loading explore</span>
+    <div aria-busy="true">
+      <output className="sr-only">Loading explore</output>
       <ExplorePageLoadingFixture />
     </div>
   );

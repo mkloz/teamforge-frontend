@@ -8,6 +8,7 @@ import {
   normalizeSettingsSection,
   settingsSectionValues,
 } from "@/features/settings/lib/settings-route";
+import { normalizeRouteSearch } from "@/shared/lib/route-search";
 import { type PersonalityType, personalityTypeSchema } from "@/shared/schemas";
 
 const onboardingFlowParsers = {
@@ -32,18 +33,6 @@ function isOnboardingReturnTarget(
 
 function isPersonalityType(value: string): value is PersonalityType {
   return personalityTypeSchema.safeParse(value).success;
-}
-
-function normalizeFlowSearch(value: string | null | undefined) {
-  if (!value) {
-    return null;
-  }
-
-  const normalized = new URLSearchParams(
-    value.startsWith("?") ? value.slice(1) : value,
-  ).toString();
-
-  return normalized.length > 0 ? normalized : null;
 }
 
 function resolveOnboardingReturnTo(
@@ -79,14 +68,15 @@ export function useOnboardingFlowState() {
     useQueryStates(onboardingFlowParsers, {
       history: "replace",
     });
+  const resolvedReturnTo = resolveOnboardingReturnTo(returnTo);
 
   return {
     mode,
     isEditMode: mode === "edit",
-    returnTo: resolveOnboardingReturnTo(returnTo),
-    returnSearch: normalizeFlowSearch(returnSearch),
+    returnTo: resolvedReturnTo,
+    returnSearch: normalizeRouteSearch(returnSearch),
     returnSection:
-      resolveOnboardingReturnTo(returnTo) === "/settings"
+      resolvedReturnTo === "/settings"
         ? normalizeSettingsSection(returnSection)
         : null,
     mbti: mbti && isPersonalityType(mbti) ? mbti : null,

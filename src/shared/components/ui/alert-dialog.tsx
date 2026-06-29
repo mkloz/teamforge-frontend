@@ -4,7 +4,7 @@
  * requiring an additional @radix-ui/react-alert-dialog dependency.
  */
 
-import React from "react";
+import type React from "react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "./button";
 import {
@@ -21,53 +21,69 @@ import {
 const AlertDialog = Dialog;
 const AlertDialogTrigger = DialogTrigger;
 
-const AlertDialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogContent>,
-  React.ComponentPropsWithoutRef<typeof DialogContent>
->(({ className, ...props }, ref) => (
-  <DialogContent
-    ref={ref}
-    className={cn("sm:max-w-lg", className)}
-    {...props}
-  />
-));
+function AlertDialogContent({
+  className,
+  ref,
+  ...props
+}: React.ComponentPropsWithRef<typeof DialogContent>) {
+  return (
+    <DialogContent
+      ref={ref}
+      className={cn("sm:max-w-lg", className)}
+      {...props}
+    />
+  );
+}
 AlertDialogContent.displayName = "AlertDialogContent";
 
 const AlertDialogHeader = DialogHeader;
 const AlertDialogFooter = DialogFooter;
 
-const AlertDialogTitle = React.forwardRef<
-  React.ElementRef<typeof DialogTitle>,
-  React.ComponentPropsWithoutRef<typeof DialogTitle>
->(({ className, ...props }, ref) => (
-  <DialogTitle
-    ref={ref}
-    className={cn("font-bold text-base", className)}
-    {...props}
-  />
-));
+function AlertDialogTitle({
+  className,
+  ref,
+  ...props
+}: React.ComponentPropsWithRef<typeof DialogTitle>) {
+  return (
+    <DialogTitle
+      ref={ref}
+      className={cn("font-bold text-base", className)}
+      {...props}
+    />
+  );
+}
 AlertDialogTitle.displayName = "AlertDialogTitle";
 
-const AlertDialogDescription = React.forwardRef<
-  React.ElementRef<typeof DialogDescription>,
-  React.ComponentPropsWithoutRef<typeof DialogDescription>
->(({ className, ...props }, ref) => (
-  <DialogDescription
-    ref={ref}
-    className={cn("text-sm", className)}
-    {...props}
-  />
-));
+function AlertDialogDescription({
+  className,
+  ref,
+  ...props
+}: React.ComponentPropsWithRef<typeof DialogDescription>) {
+  return (
+    <DialogDescription
+      ref={ref}
+      className={cn("text-sm", className)}
+      {...props}
+    />
+  );
+}
 AlertDialogDescription.displayName = "AlertDialogDescription";
 
-const AlertDialogCancel = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => (
-  <DialogClose asChild>
-    <Button ref={ref} variant="outline" className={className} {...props} />
-  </DialogClose>
-));
+type AlertDialogCancelProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  ref?: React.Ref<HTMLButtonElement>;
+};
+
+function AlertDialogCancel({
+  className,
+  ref,
+  ...props
+}: AlertDialogCancelProps) {
+  return (
+    <DialogClose asChild>
+      <Button ref={ref} variant="outline" className={className} {...props} />
+    </DialogClose>
+  );
+}
 AlertDialogCancel.displayName = "AlertDialogCancel";
 
 export {

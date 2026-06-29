@@ -1,6 +1,6 @@
 import { Share, X } from "lucide-react";
 import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { StyledQrCode } from "@/shared/components/styled-qr-code";
 import {
   Dialog,
@@ -177,16 +177,13 @@ export function QrShareDialog({
   trigger,
 }: QrShareDialogProps) {
   const contentRef = useRef<HTMLDivElement>(null);
-  const [canShare, setCanShare] = useState(false);
   const shareTitle = getQrShareTitle({ bottomText, title });
+  const shareData = getQrShareData(shareTitle, url);
+  const canShare = canShareBrowserData(shareData);
   const avatarImageSrc = getQrShareAvatarSrc(avatarSrc);
 
-  useEffect(() => {
-    setCanShare(canShareBrowserData(getQrShareData(shareTitle, url)));
-  }, [shareTitle, url]);
-
   const handleShare = async () => {
-    await shareBrowserData(getQrShareData(shareTitle, url));
+    await shareBrowserData(shareData);
   };
 
   return (

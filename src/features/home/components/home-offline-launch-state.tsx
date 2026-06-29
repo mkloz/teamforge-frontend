@@ -15,10 +15,8 @@ export function HomeOfflineLaunchState({
       aria-labelledby="home-offline-heading"
       className="mx-auto flex min-h-[calc(100dvh-5rem)] w-full max-w-screen-2xl items-center px-4 pt-3 pb-8 sm:px-5 md:pt-6 lg:px-8"
     >
-      <div
-        role="status"
-        className="mx-auto grid w-full max-w-3xl gap-6 px-2 py-6 sm:px-4 sm:py-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start"
-      >
+      <div className="mx-auto grid w-full max-w-3xl gap-6 px-2 py-6 sm:px-4 sm:py-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+        <output className="sr-only">Home needs the network to refresh.</output>
         <IconTile
           bordered
           shape="square"

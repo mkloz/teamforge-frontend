@@ -1,10 +1,8 @@
 import { Loader2 } from "lucide-react";
 import {
-  type Dispatch,
   type ImgHTMLAttributes,
   type ReactNode,
   type Ref,
-  type SetStateAction,
   type SyntheticEvent,
   useEffect,
   useRef,
@@ -79,26 +77,6 @@ function getInitialImageLoadingState({
   showLoadingState: boolean;
 }) {
   return showLoadingState && isSrcProvided && !hasLoadedImageSource(imageSrc);
-}
-
-function getResetImageLoadingState({
-  image,
-  imageSrc,
-  isSrcProvided,
-  showLoadingState,
-}: {
-  image: HTMLImageElement | null;
-  imageSrc?: string;
-  isSrcProvided: boolean;
-  showLoadingState: boolean;
-}) {
-  return (
-    getInitialImageLoadingState({
-      imageSrc,
-      isSrcProvided,
-      showLoadingState,
-    }) && !isCompleteImage(image)
-  );
 }
 
 function syncCompleteImage({
@@ -253,6 +231,21 @@ interface OptionalImageLoaderLayerProps extends ImageLoaderLayerProps {
   showLoader: boolean;
 }
 
+interface ImageStatusState {
+  error: boolean;
+  fallbackFailed: boolean;
+  imageSrc?: string;
+  isLoading: boolean;
+  isSrcProvided: boolean;
+  showLoadingState: boolean;
+}
+
+interface ImageStatusInput {
+  imageSrc?: string;
+  isSrcProvided: boolean;
+  showLoadingState: boolean;
+}
+
 interface ImageElementProps extends ImgHTMLAttributes<HTMLImageElement> {
   actualSrc?: string;
   alt: string;
@@ -277,20 +270,15 @@ function shouldRetryWithFallback({
 function updateImageErrorState({
   actualSrc,
   fallbackSrc,
-  setError,
-  setFallbackFailed,
 }: {
   actualSrc?: string;
   fallbackSrc?: string;
-  setError: Dispatch<SetStateAction<boolean>>;
-  setFallbackFailed: Dispatch<SetStateAction<boolean>>;
-}) {
+}): Pick<ImageStatusState, "error" | "fallbackFailed"> {
   if (shouldRetryWithFallback({ actualSrc, fallbackSrc })) {
-    setError(true);
-    return;
+    return { error: true, fallbackFailed: false };
   }
 
-  setFallbackFailed(true);
+  return { error: true, fallbackFailed: true };
 }
 
 function ImageElement({
@@ -388,6 +376,55 @@ function OptionalImageLoaderLayer({
   return showLoader ? <ImageLoaderLayer {...props} /> : null;
 }
 
+function getInitialImageStatusState({
+  imageSrc,
+  isSrcProvided,
+  showLoadingState,
+}: ImageStatusInput): ImageStatusState {
+  return {
+    error: false,
+    fallbackFailed: false,
+    imageSrc,
+    isLoading: getInitialImageLoadingState({
+      imageSrc,
+      isSrcProvided,
+      showLoadingState,
+    }),
+    isSrcProvided,
+    showLoadingState,
+  };
+}
+
+function getResetImageStatusState({
+  imageSrc,
+  isSrcProvided,
+  showLoadingState,
+}: ImageStatusInput): ImageStatusState {
+  return {
+    error: false,
+    fallbackFailed: false,
+    imageSrc,
+    isLoading: getInitialImageLoadingState({
+      imageSrc,
+      isSrcProvided,
+      showLoadingState,
+    }),
+    isSrcProvided,
+    showLoadingState,
+  };
+}
+
+function hasImageStatusInputChanged(
+  state: ImageStatusState,
+  input: ImageStatusInput,
+) {
+  return (
+    state.imageSrc !== input.imageSrc ||
+    state.isSrcProvided !== input.isSrcProvided ||
+    state.showLoadingState !== input.showLoadingState
+  );
+}
+
 export function Image({
   src,
   fallbackSrc,
@@ -410,16 +447,28 @@ export function Image({
 }: ImageProps) {
   const imageSrc = getImageSourceKey(src) ?? undefined;
   const isSrcProvided = Boolean(imageSrc);
-  const [isLoading, setIsLoading] = useState(() =>
-    getInitialImageLoadingState({
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const [imageState, setImageState] = useState(() =>
+    getInitialImageStatusState({
       imageSrc,
       isSrcProvided,
       showLoadingState,
     }),
   );
-  const [error, setError] = useState(false);
-  const [fallbackFailed, setFallbackFailed] = useState(false);
-  const imageRef = useRef<HTMLImageElement | null>(null);
+
+  let currentImageState = imageState;
+  const nextImageInput = {
+    imageSrc,
+    isSrcProvided,
+    showLoadingState,
+  };
+
+  if (hasImageStatusInputChanged(imageState, nextImageInput)) {
+    currentImageState = getResetImageStatusState(nextImageInput);
+    setImageState(currentImageState);
+  }
+
+  const { error, fallbackFailed, isLoading } = currentImageState;
   const { actualSrc, showFallback, showLoader } = getImageRenderState({
     error,
     fallbackFailed,
@@ -431,41 +480,32 @@ export function Image({
   const renderImage = shouldRenderImage({ fallbackFailed, isSrcProvided });
 
   useEffect(() => {
-    setError(false);
-    setFallbackFailed(false);
-    setIsLoading(
-      getResetImageLoadingState({
-        image: imageRef.current,
-        imageSrc,
-        isSrcProvided,
-        showLoadingState,
-      }),
-    );
-  }, [imageSrc, isSrcProvided, showLoadingState]);
-
-  useEffect(() => {
     syncCompleteMountedImage({
       actualSrc,
       image: imageRef.current,
       isSrcProvided,
-      onLoaded: () => setIsLoading(false),
+      onLoaded: () => {
+        setImageState((current) =>
+          current.isLoading ? { ...current, isLoading: false } : current,
+        );
+      },
     });
   }, [actualSrc, isSrcProvided]);
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
     rememberLoadedImage(event.currentTarget, actualSrc);
-    setIsLoading(false);
+    setImageState((current) =>
+      current.isLoading ? { ...current, isLoading: false } : current,
+    );
     onLoad?.(event);
   };
 
   const handleError = (event: SyntheticEvent<HTMLImageElement>) => {
-    setIsLoading(false);
-    updateImageErrorState({
-      actualSrc,
-      fallbackSrc,
-      setError,
-      setFallbackFailed,
-    });
+    setImageState((current) => ({
+      ...current,
+      ...updateImageErrorState({ actualSrc, fallbackSrc }),
+      isLoading: false,
+    }));
     onError?.(event);
   };
 
@@ -482,7 +522,9 @@ export function Image({
         isLoading={isLoading}
         loading={loading}
         onCompleteImageLoad={() =>
-          setIsLoading((current) => (current ? false : current))
+          setImageState((current) =>
+            current.isLoading ? { ...current, isLoading: false } : current,
+          )
         }
         onError={handleError}
         onLoad={handleLoad}

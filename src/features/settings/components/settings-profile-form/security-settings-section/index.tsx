@@ -8,15 +8,9 @@ import type { SecuritySettingsSectionProps } from "./types";
 export function SecuritySettingsSection({
   currentUser,
   sessions,
-  isOnline,
-  isLoadingSessions,
-  isSendingPasswordResetLink,
-  isRevokingOtherSessions,
-  isDeletingAccount,
   revokingSessionId,
-  securityError,
-  sessionsError,
-  deleteAccountError,
+  status,
+  errors,
   onSendPasswordResetLink,
   onRevokeSession,
   onRevokeOtherSessions,
@@ -37,7 +31,7 @@ export function SecuritySettingsSection({
 
         <SecuritySummary currentUser={currentUser} />
 
-        {!isOnline ? (
+        {!status.isOnline ? (
           <div className="mt-6">
             <OfflineSettingsNotice message="Reconnect before changing security settings." />
           </div>
@@ -45,29 +39,29 @@ export function SecuritySettingsSection({
 
         <PasswordRecoverySection
           currentUser={currentUser}
-          isOnline={isOnline}
-          isSendingPasswordResetLink={isSendingPasswordResetLink}
-          securityError={securityError}
+          isOnline={status.isOnline}
+          isSendingPasswordResetLink={status.isSendingPasswordResetLink}
+          securityError={errors.securityError}
           onSendPasswordResetLink={onSendPasswordResetLink}
         />
       </section>
 
       <ActiveSessionsSection
         sessions={sessions}
-        isOnline={isOnline}
-        isLoadingSessions={isLoadingSessions}
-        isRevokingOtherSessions={isRevokingOtherSessions}
+        isOnline={status.isOnline}
+        isLoadingSessions={status.isLoadingSessions}
+        isRevokingOtherSessions={status.isRevokingOtherSessions}
         revokingSessionId={revokingSessionId}
-        sessionsError={sessionsError}
+        sessionsError={errors.sessionsError}
         onRevokeSession={onRevokeSession}
         onRevokeOtherSessions={onRevokeOtherSessions}
       />
 
       <DeleteAccountSection
         currentUser={currentUser}
-        isOnline={isOnline}
-        isDeleting={isDeletingAccount}
-        error={deleteAccountError}
+        isOnline={status.isOnline}
+        isDeleting={status.isDeletingAccount}
+        error={errors.deleteAccountError}
         onDelete={onDeleteAccount}
       />
     </div>

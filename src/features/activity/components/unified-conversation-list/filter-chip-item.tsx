@@ -1,5 +1,4 @@
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
-import { memo } from "react";
 import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
 
@@ -12,7 +11,7 @@ interface FilterChipItemProps {
   badge: number | null;
 }
 
-export const FilterChipItem = memo(function FilterChipItem({
+export function FilterChipItem({
   ariaLabel,
   className,
   label,
@@ -52,7 +51,7 @@ export const FilterChipItem = memo(function FilterChipItem({
       ) : null}
     </RadioGroupPrimitive.Item>
   );
-});
+}
 
 function getFilterChipBadgeClassName(isActive: boolean) {
   return cn(

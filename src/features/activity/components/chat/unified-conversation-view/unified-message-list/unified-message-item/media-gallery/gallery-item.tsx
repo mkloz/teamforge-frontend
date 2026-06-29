@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { memo, useState } from "react";
+import { domMax, LazyMotion, m } from "framer-motion";
+import { useState } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { getCachedMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 import { useImageState } from "@/shared/hooks/use-image-state";
@@ -58,34 +58,39 @@ const GALLERY_ITEM_SHAPE_RULES: {
   },
 ];
 
-export const GalleryItem = memo(
-  ({ media, index, count, onClick }: GalleryItemProps) => {
-    const { state, onLoad, onError } = useImageState();
-    const [hasGifLoaded, setHasGifLoaded] = useState(false);
-    const [hasGifError, setHasGifError] = useState(false);
-    const cachedSize = getCachedMediaIntrinsicSize(media.id);
-    const {
-      ariaLabel,
-      isGif,
-      isLastVisible,
-      isVideo,
-      isVideoBackedGif,
-      shouldLoadImage,
-      singleAspectRatioStyle,
-      visibleState,
-    } = getGalleryItemViewState({
-      cachedSize,
-      count,
-      hasGifError,
-      hasGifLoaded,
-      imageState: state,
-      index,
-      media,
-    });
-    const canOpen = canOpenGalleryItem(visibleState);
+export function GalleryItem({
+  media,
+  index,
+  count,
+  onClick,
+}: GalleryItemProps) {
+  const { state, onLoad, onError } = useImageState();
+  const [hasGifLoaded, setHasGifLoaded] = useState(false);
+  const [hasGifError, setHasGifError] = useState(false);
+  const cachedSize = getCachedMediaIntrinsicSize(media.id);
+  const {
+    ariaLabel,
+    isGif,
+    isLastVisible,
+    isVideo,
+    isVideoBackedGif,
+    shouldLoadImage,
+    singleAspectRatioStyle,
+    visibleState,
+  } = getGalleryItemViewState({
+    cachedSize,
+    count,
+    hasGifError,
+    hasGifLoaded,
+    imageState: state,
+    index,
+    media,
+  });
+  const canOpen = canOpenGalleryItem(visibleState);
 
-    return (
-      <motion.button
+  return (
+    <LazyMotion features={domMax}>
+      <m.button
         type="button"
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -109,17 +114,19 @@ export const GalleryItem = memo(
         )}
 
         <GalleryItemMedia
-          hasGifLoaded={hasGifLoaded}
           imageState={state}
           index={index}
-          isGif={isGif}
-          isVideoBackedGif={isVideoBackedGif}
           media={media}
           onGifError={() => setHasGifError(true)}
           onGifLoaded={() => setHasGifLoaded(true)}
           onImageError={onError}
           onImageLoaded={onLoad}
-          shouldLoadImage={shouldLoadImage}
+          viewState={{
+            hasGifLoaded,
+            isGif,
+            isVideoBackedGif,
+            shouldLoadImage,
+          }}
         />
 
         {visibleState === "loaded" && (
@@ -129,10 +136,10 @@ export const GalleryItem = memo(
         {isLastVisible && visibleState === "loaded" && (
           <MoreOverlay count={count} />
         )}
-      </motion.button>
-    );
-  },
-);
+      </m.button>
+    </LazyMotion>
+  );
+}
 
 function canOpenGalleryItem(
   visibleState: ReturnType<typeof getGalleryItemViewState>["visibleState"],

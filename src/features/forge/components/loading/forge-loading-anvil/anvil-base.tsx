@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 import {
   ANVIL_ANIMATION_TIMING,
@@ -7,7 +7,7 @@ import {
 
 export function AnvilBase() {
   return (
-    <motion.g
+    <m.g
       className="origin-[110px_148px]"
       animate={{
         scaleY: [1, 1, 1, 0.965, 1.01, 1],
@@ -52,6 +52,6 @@ export function AnvilBase() {
         strokeLinecap="round"
         strokeWidth="3.5"
       />
-    </motion.g>
+    </m.g>
   );
 }

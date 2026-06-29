@@ -38,13 +38,12 @@ export function HeaderSearch({
           className="pr-18"
         />
         {resultLabel && (
-          <span
+          <output
             className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full bg-muted px-2 py-0.5 font-semibold text-micro text-slate-muted"
-            role="status"
             aria-live="polite"
           >
             {resultLabel}
-          </span>
+          </output>
         )}
       </div>
       <div className="flex shrink-0 items-center gap-1">

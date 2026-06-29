@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
 
@@ -21,7 +21,7 @@ interface UnifiedMessageInputProps {
   placeholder?: string;
 }
 
-export const UnifiedMessageInput = memo(function UnifiedMessageInput({
+export function UnifiedMessageInput({
   chatId = null,
   errorMessage = null,
   onSend,
@@ -30,8 +30,9 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
   disabled = false,
   placeholder = "Type a message...",
 }: UnifiedMessageInputProps) {
-  const inputRootRef = useRef<HTMLDivElement>(null);
-  const [dropzoneRoot, setDropzoneRoot] = useState<HTMLElement | null>(null);
+  const [inputRoot, setInputRoot] = useState<HTMLDivElement | null>(null);
+  const dropzoneRoot =
+    inputRoot?.closest<HTMLElement>("[data-chat-dropzone-root]") ?? null;
   const composer = useMessageComposer({
     chatId,
     disabled,
@@ -47,16 +48,9 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
     placeholder,
   });
 
-  useEffect(() => {
-    setDropzoneRoot(
-      inputRootRef.current?.closest<HTMLElement>("[data-chat-dropzone-root]") ??
-        null,
-    );
-  }, []);
-
   return (
     <div
-      ref={inputRootRef}
+      ref={setInputRoot}
       className="isolate z-30 min-h-16 shrink-0 overflow-visible border-border/60 border-t bg-canvas/90 px-2.5 pt-2 pb-safe-bottom backdrop-blur-xl sm:px-3"
     >
       <MessageInputDropzonePortal
@@ -84,4 +78,4 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
       </div>
     </div>
   );
-});
+}

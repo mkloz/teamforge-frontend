@@ -142,9 +142,3 @@ export const onboardingRoutes = [
   personalityRoute,
   interestsRoute,
 ];
-
-export const onboardingRouteModules = [
-  profileBasicsPageModule,
-  personalityTestPageModule,
-  interestsPageModule,
-];

@@ -40,30 +40,40 @@ const NotificationSettingsSection = lazy(() =>
   })),
 );
 
-type SettingsSectionRenderer = (props: SettingsProfileFormProps) => ReactNode;
-
-const SETTINGS_SECTION_RENDERERS = {
-  account: renderAccountSettingsSection,
-  appearance: renderAppearanceSettingsSection,
-  matching: renderMatchingSettingsSection,
-  notifications: renderNotificationSettingsSection,
-  privacy: renderPrivacySettingsSection,
-  safety: renderSafetySettingsSection,
-  security: renderSecuritySettingsSection,
-} satisfies Record<
-  SettingsProfileFormProps["activeSection"],
-  SettingsSectionRenderer
->;
-
 export function SettingsProfileForm(props: SettingsProfileFormProps) {
-  const renderActiveSection = SETTINGS_SECTION_RENDERERS[props.activeSection];
-
   return (
-    <div className="flex flex-col gap-6">{renderActiveSection(props)}</div>
+    <div className="flex flex-col gap-6">
+      <SettingsActiveSection {...props} />
+    </div>
   );
 }
 
-function renderAccountSettingsSection({ account }: SettingsProfileFormProps) {
+type SettingsPanelRenderer = (props: SettingsProfileFormProps) => ReactNode;
+
+const SETTINGS_PANEL_RENDERERS = {
+  account: ({ account }) => <AccountSettingsPanel account={account} />,
+  appearance: ({ appearance }) => (
+    <AppearanceSettingsPanel appearance={appearance} />
+  ),
+  matching: ({ matching }) => <MatchingSettingsPanel matching={matching} />,
+  notifications: ({ notifications }) => (
+    <NotificationSettingsPanel notifications={notifications} />
+  ),
+  privacy: ({ privacy }) => <PrivacySettingsPanel privacy={privacy} />,
+  safety: ({ safety }) => <SafetySettingsPanel safety={safety} />,
+  security: ({ security }) => <SecuritySettingsPanel security={security} />,
+} satisfies Record<
+  SettingsProfileFormProps["activeSection"],
+  SettingsPanelRenderer
+>;
+
+function SettingsActiveSection(props: SettingsProfileFormProps) {
+  return SETTINGS_PANEL_RENDERERS[props.activeSection](props);
+}
+
+function AccountSettingsPanel({
+  account,
+}: Pick<SettingsProfileFormProps, "account">) {
   return (
     <AccountSettingsSection
       currentUser={account.currentUser}
@@ -71,20 +81,24 @@ function renderAccountSettingsSection({ account }: SettingsProfileFormProps) {
       onSubmit={account.onSubmit}
       onAvatarSelect={account.onAvatarSelect}
       onAvatarDelete={account.onAvatarDelete}
-      isOnline={account.isOnline}
-      isSaving={account.isSaving}
-      isUploadingAvatar={account.isUploadingAvatar}
-      isDeletingAvatar={account.isDeletingAvatar}
-      saveError={account.saveError}
-      avatarError={account.avatarError}
       profileSummary={account.profileSummary}
+      status={{
+        isOnline: account.isOnline,
+        isSaving: account.isSaving,
+        isUploadingAvatar: account.isUploadingAvatar,
+        isDeletingAvatar: account.isDeletingAvatar,
+      }}
+      errors={{
+        saveError: account.saveError,
+        avatarError: account.avatarError,
+      }}
     />
   );
 }
 
-function renderAppearanceSettingsSection({
+function AppearanceSettingsPanel({
   appearance,
-}: SettingsProfileFormProps) {
+}: Pick<SettingsProfileFormProps, "appearance">) {
   return (
     <Suspense fallback={<SettingsPanelSkeleton />}>
       <AppearanceSettingsSection
@@ -106,7 +120,9 @@ function renderAppearanceSettingsSection({
   );
 }
 
-function renderMatchingSettingsSection({ matching }: SettingsProfileFormProps) {
+function MatchingSettingsPanel({
+  matching,
+}: Pick<SettingsProfileFormProps, "matching">) {
   return (
     <Suspense fallback={<SettingsPreferencesSkeleton />}>
       <MatchingSettingsSection
@@ -129,7 +145,9 @@ function renderMatchingSettingsSection({ matching }: SettingsProfileFormProps) {
   );
 }
 
-function renderPrivacySettingsSection({ privacy }: SettingsProfileFormProps) {
+function PrivacySettingsPanel({
+  privacy,
+}: Pick<SettingsProfileFormProps, "privacy">) {
   return (
     <Suspense fallback={<SettingsPreferencesSkeleton />}>
       <PrivacySettingsSection
@@ -151,21 +169,27 @@ function renderPrivacySettingsSection({ privacy }: SettingsProfileFormProps) {
   );
 }
 
-function renderSecuritySettingsSection({ security }: SettingsProfileFormProps) {
+function SecuritySettingsPanel({
+  security,
+}: Pick<SettingsProfileFormProps, "security">) {
   return (
     <Suspense fallback={<SettingsActiveSessionsSkeleton />}>
       <SecuritySettingsSection
         currentUser={security.currentUser}
         sessions={security.sessions}
-        isOnline={security.isOnline}
-        isLoadingSessions={security.isLoadingSessions}
-        isSendingPasswordResetLink={security.isSendingPasswordResetLink}
-        isRevokingOtherSessions={security.isRevokingOtherSessions}
-        isDeletingAccount={security.isDeletingAccount}
         revokingSessionId={security.revokingSessionId}
-        securityError={security.securityError}
-        sessionsError={security.sessionsError}
-        deleteAccountError={security.deleteAccountError}
+        status={{
+          isOnline: security.isOnline,
+          isLoadingSessions: security.isLoadingSessions,
+          isSendingPasswordResetLink: security.isSendingPasswordResetLink,
+          isRevokingOtherSessions: security.isRevokingOtherSessions,
+          isDeletingAccount: security.isDeletingAccount,
+        }}
+        errors={{
+          securityError: security.securityError,
+          sessionsError: security.sessionsError,
+          deleteAccountError: security.deleteAccountError,
+        }}
         onSendPasswordResetLink={security.onSendPasswordResetLink}
         onRevokeSession={security.onRevokeSession}
         onRevokeOtherSessions={security.onRevokeOtherSessions}
@@ -175,7 +199,9 @@ function renderSecuritySettingsSection({ security }: SettingsProfileFormProps) {
   );
 }
 
-function renderSafetySettingsSection({ safety }: SettingsProfileFormProps) {
+function SafetySettingsPanel({
+  safety,
+}: Pick<SettingsProfileFormProps, "safety">) {
   return (
     <Suspense fallback={<SettingsBlockedUsersSkeleton />}>
       <BlockedUsersSection
@@ -190,9 +216,9 @@ function renderSafetySettingsSection({ safety }: SettingsProfileFormProps) {
   );
 }
 
-function renderNotificationSettingsSection({
+function NotificationSettingsPanel({
   notifications,
-}: SettingsProfileFormProps) {
+}: Pick<SettingsProfileFormProps, "notifications">) {
   return (
     <Suspense fallback={<SettingsPreferencesSkeleton />}>
       <NotificationSettingsSection
@@ -215,10 +241,5 @@ function renderNotificationSettingsSection({
 }
 
 function SettingsPanelSkeleton() {
-  return (
-    <div aria-busy="true" aria-label="Loading settings panel" role="status">
-      <span className="sr-only">Loading settings panel</span>
-      <SettingsPreferencesSkeleton />
-    </div>
-  );
+  return <SettingsPreferencesSkeleton />;
 }

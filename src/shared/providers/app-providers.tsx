@@ -4,6 +4,7 @@ import {
   type CSSProperties,
   type ReactNode,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import type { ToasterProps } from "sonner";
@@ -64,6 +65,18 @@ const TOASTER_PROPS = {
   },
 } satisfies ToasterProps;
 
+async function loadReactQueryDevtoolsComponent() {
+  const { ReactQueryDevtools } = await import("@tanstack/react-query-devtools");
+
+  return ReactQueryDevtools;
+}
+
+async function loadToasterComponent() {
+  const { Toaster } = await import("sonner");
+
+  return Toaster as ComponentType<ToasterProps>;
+}
+
 export function AppProviders({ children }: { children: ReactNode }) {
   useInitializeTheme();
 
@@ -91,9 +104,7 @@ function DeferredReactQueryDevtools() {
 
     async function loadDevtools() {
       try {
-        const { ReactQueryDevtools } = await import(
-          "@tanstack/react-query-devtools"
-        );
+        const ReactQueryDevtools = await loadReactQueryDevtoolsComponent();
 
         if (!cancelled) {
           setDevtoolsComponent(() => ReactQueryDevtools);
@@ -138,52 +149,49 @@ function DeferredToaster() {
   const theme = useThemeStore((state) => state.theme);
   const [ToasterComponent, setToasterComponent] =
     useState<ComponentType<ToasterProps> | null>(null);
-  const [shouldLoadToaster, setShouldLoadToaster] = useState(false);
+  const shouldRequestToasterRef = useRef(true);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-
-    function requestToaster() {
-      setShouldLoadToaster(true);
-    }
-
-    window.addEventListener(APP_TOAST_HOST_REQUEST_EVENT, requestToaster);
-
-    return () => {
-      window.removeEventListener(APP_TOAST_HOST_REQUEST_EVENT, requestToaster);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!shouldLoadToaster || ToasterComponent) {
+    if (typeof window === "undefined" || ToasterComponent) {
       return undefined;
     }
 
     let cancelled = false;
+    let idleTask: ReturnType<typeof scheduleIdleTask> | undefined;
 
     async function loadToaster() {
       try {
-        const { Toaster } = await import("sonner");
+        const Toaster = await loadToasterComponent();
 
         if (!cancelled) {
-          setToasterComponent(() => Toaster as ComponentType<ToasterProps>);
+          setToasterComponent(() => Toaster);
         }
       } catch (error) {
         warnInDevelopment("Toast provider failed to initialize.", error);
       }
     }
 
-    const task = scheduleIdleTask(() => {
-      void loadToaster();
-    });
+    function requestToaster() {
+      if (!shouldRequestToasterRef.current) {
+        return;
+      }
+
+      shouldRequestToasterRef.current = false;
+      idleTask = scheduleIdleTask(() => {
+        void loadToaster();
+      });
+    }
+
+    window.addEventListener(APP_TOAST_HOST_REQUEST_EVENT, requestToaster);
 
     return () => {
       cancelled = true;
-      cancelIdleTask(task);
+      window.removeEventListener(APP_TOAST_HOST_REQUEST_EVENT, requestToaster);
+      if (idleTask) {
+        cancelIdleTask(idleTask);
+      }
     };
-  }, [shouldLoadToaster, ToasterComponent]);
+  }, [ToasterComponent]);
 
   return ToasterComponent ? (
     <ToasterComponent {...TOASTER_PROPS} theme={theme} />

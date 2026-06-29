@@ -3,7 +3,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { useId, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "@/shared/components/ui/button";
@@ -49,21 +49,40 @@ interface DateInputCalendarInput {
   value?: string | null;
 }
 
-type DateInputCalendarState = ReturnType<typeof useDateInputCalendar>;
 type DateInputControlProps = Omit<
   DateInputProps,
   "clearable" | "max" | "min" | "onValueChange" | "wrapperClassName"
 > & {
-  calendar: DateInputCalendarState;
+  onOpen: () => void;
+  open: boolean;
+  panelId: string;
 };
 
-interface DateInputPanelPortalProps {
-  calendar: DateInputCalendarState;
+type DateInputPanelProps = {
+  calendarPanelState: CalendarPanelState;
+  calendarView: CalendarView;
   clearable: boolean;
+  days: Date[];
   max?: string;
   min?: string;
+  onClear: () => void;
+  onMoveVisibleRange: (amount: number) => void;
+  onSelectDate: (date: Date) => void;
+  onSelectMonth: (month: number) => void;
+  onSelectYear: (year: number) => void;
+  onToggleCalendarView: () => void;
+  panelId: string;
+  panelRef: DateInputPanelRef;
+  panelStyle: DateInputPanelStyle;
+  todayValue: string;
   value?: string | null;
-}
+  visibleMonth: Date;
+  years: number[];
+};
+
+type DateInputPanelPortalProps = DateInputPanelProps & {
+  portalTarget: Element;
+};
 
 function DateInput({
   className,
@@ -77,42 +96,85 @@ function DateInput({
   wrapperClassName,
   ...props
 }: DateInputProps) {
-  const calendar = useDateInputCalendar({
+  const {
+    calendarPanelState,
+    calendarView,
+    clearDate,
+    days,
+    moveVisibleRange,
+    open,
+    openCalendar,
+    panelId,
+    panelRef,
+    panelStyle,
+    portalTarget,
+    selectDate,
+    selectMonth,
+    selectYear,
+    todayValue,
+    toggleCalendarView,
+    triggerRef,
+    visibleMonth,
+    years,
+  } = useDateInputCalendar({
     max,
     min,
     onValueChange,
     value,
   });
+  const panelState = getDateInputPanelState({
+    open,
+    panelStyle,
+    portalTarget,
+  });
 
   return (
-    <div
-      ref={calendar.triggerRef}
-      className={cn("relative w-full", wrapperClassName)}
-    >
+    <div ref={triggerRef} className={cn("relative w-full", wrapperClassName)}>
       <DateInputControl
         {...props}
-        calendar={calendar}
         className={className}
         disabled={disabled}
+        onOpen={openCalendar}
+        open={open}
+        panelId={panelId}
         placeholder={placeholder}
         value={value}
       />
 
-      <DateInputPanelPortal
-        calendar={calendar}
-        clearable={clearable}
-        max={max}
-        min={min}
-        value={value}
-      />
+      {panelState ? (
+        <DateInputPanelPortal
+          calendarPanelState={calendarPanelState}
+          calendarView={calendarView}
+          clearable={clearable}
+          days={days}
+          max={max}
+          min={min}
+          onClear={clearDate}
+          onMoveVisibleRange={moveVisibleRange}
+          onSelectDate={selectDate}
+          onSelectMonth={selectMonth}
+          onSelectYear={selectYear}
+          onToggleCalendarView={toggleCalendarView}
+          panelId={panelId}
+          panelRef={panelRef}
+          panelStyle={panelState.panelStyle}
+          portalTarget={panelState.portalTarget}
+          todayValue={todayValue}
+          value={value}
+          visibleMonth={visibleMonth}
+          years={years}
+        />
+      ) : null}
     </div>
   );
 }
 
 function DateInputControl({
-  calendar,
   className,
   disabled,
+  onOpen,
+  open,
+  panelId,
   placeholder,
   value,
   ...props
@@ -123,21 +185,21 @@ function DateInputControl({
       readOnly
       disabled={disabled}
       role="combobox"
-      aria-controls={calendar.open ? calendar.panelId : undefined}
-      aria-expanded={calendar.open}
+      aria-controls={open ? panelId : undefined}
+      aria-expanded={open}
       value={formatDisplayValue(value)}
       placeholder={placeholder}
       leftIcon={<CalendarIcon size={15} />}
       className={cn("cursor-pointer caret-transparent", className)}
       onClick={() => {
         if (!disabled) {
-          calendar.openCalendar();
+          onOpen();
         }
       }}
       onKeyDown={(event) => {
         if (!disabled && isCalendarOpenKey(event.key)) {
           event.preventDefault();
-          calendar.openCalendar();
+          onOpen();
         }
       }}
     />
@@ -145,39 +207,50 @@ function DateInputControl({
 }
 
 function DateInputPanelPortal({
-  calendar,
+  calendarPanelState,
+  calendarView,
   clearable,
+  days,
   max,
   min,
+  onClear,
+  onMoveVisibleRange,
+  onSelectDate,
+  onSelectMonth,
+  onSelectYear,
+  onToggleCalendarView,
+  panelId,
+  panelRef,
+  panelStyle,
+  portalTarget,
+  todayValue,
   value,
+  visibleMonth,
+  years,
 }: DateInputPanelPortalProps) {
-  if (!(calendar.open && calendar.panelStyle && calendar.portalTarget)) {
-    return null;
-  }
-
   return createPortal(
     <DateInputPanel
-      calendarPanelState={calendar.calendarPanelState}
-      calendarView={calendar.calendarView}
+      calendarPanelState={calendarPanelState}
+      calendarView={calendarView}
       clearable={clearable}
-      days={calendar.days}
+      days={days}
       max={max}
       min={min}
-      onClear={calendar.clearDate}
-      onMoveVisibleRange={calendar.moveVisibleRange}
-      onSelectDate={calendar.selectDate}
-      onSelectMonth={calendar.selectMonth}
-      onSelectYear={calendar.selectYear}
-      onToggleCalendarView={calendar.toggleCalendarView}
-      panelId={calendar.panelId}
-      panelRef={calendar.panelRef}
-      panelStyle={calendar.panelStyle}
-      todayValue={calendar.todayValue}
+      onClear={onClear}
+      onMoveVisibleRange={onMoveVisibleRange}
+      onSelectDate={onSelectDate}
+      onSelectMonth={onSelectMonth}
+      onSelectYear={onSelectYear}
+      onToggleCalendarView={onToggleCalendarView}
+      panelId={panelId}
+      panelRef={panelRef}
+      panelStyle={panelStyle}
+      todayValue={todayValue}
       value={value}
-      visibleMonth={calendar.visibleMonth}
-      years={calendar.years}
+      visibleMonth={visibleMonth}
+      years={years}
     />,
-    calendar.portalTarget,
+    portalTarget,
   );
 }
 
@@ -200,11 +273,8 @@ function useDateInputCalendar({
     calendarView,
     visibleMonth,
   });
-  const days = useMemo(() => getCalendarDays(visibleMonth), [visibleMonth]);
-  const years = useMemo(
-    () => getCalendarYears(calendarPanelState.yearRangeStart),
-    [calendarPanelState.yearRangeStart],
-  );
+  const days = getCalendarDays(visibleMonth);
+  const years = getCalendarYears(calendarPanelState.yearRangeStart);
 
   const openCalendar = () => {
     setVisibleMonth(selectedDate ?? new Date());
@@ -277,26 +347,20 @@ type DateInputPanelStyle = NonNullable<
 >;
 type CalendarPanelState = ReturnType<typeof getCalendarPanelViewState>;
 
-interface DateInputPanelProps {
-  calendarPanelState: CalendarPanelState;
-  calendarView: CalendarView;
-  clearable: boolean;
-  days: Date[];
-  max?: string;
-  min?: string;
-  onClear: () => void;
-  onMoveVisibleRange: (amount: number) => void;
-  onSelectDate: (date: Date) => void;
-  onSelectMonth: (month: number) => void;
-  onSelectYear: (year: number) => void;
-  onToggleCalendarView: () => void;
-  panelId: string;
-  panelRef: DateInputPanelRef;
-  panelStyle: DateInputPanelStyle;
-  todayValue: string;
-  value?: string | null;
-  visibleMonth: Date;
-  years: number[];
+function getDateInputPanelState({
+  open,
+  panelStyle,
+  portalTarget,
+}: {
+  open: boolean;
+  panelStyle: DateInputPanelStyle | null;
+  portalTarget: Element | null;
+}) {
+  if (!open || !panelStyle || !portalTarget) {
+    return null;
+  }
+
+  return { panelStyle, portalTarget };
 }
 
 function DateInputPanel({
@@ -620,6 +684,8 @@ function DateInputPanelFooter({
   onSelectDate,
   todayValue,
 }: DateInputPanelFooterProps) {
+  const selectToday = () => onSelectDate(new Date());
+
   return (
     <div className="mt-3 flex items-center justify-between border-border/70 border-t pt-3">
       <Button
@@ -627,7 +693,7 @@ function DateInputPanelFooter({
         variant="ghost"
         size="xs"
         disabled={isOutOfRange(todayValue, min, max)}
-        onClick={() => onSelectDate(new Date())}
+        onClick={selectToday}
       >
         Today
       </Button>

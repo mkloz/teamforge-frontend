@@ -92,25 +92,25 @@ function getCleanPwaLaunchHref(currentHref: string) {
   return `${url.pathname}${url.search}${url.hash}`;
 }
 
+function handleBeforeInstallPrompt(event: Event) {
+  event.preventDefault();
+
+  if (isBeforeInstallPromptEvent(event)) {
+    setPwaInstallPrompt(event);
+    trackPwaInstallPromptAvailable({
+      platformCount: event.platforms.length,
+      platforms: event.platforms.join(","),
+      source: "runtime",
+    });
+  }
+}
+
+function handleAppInstalled() {
+  clearPwaInstallPrompt();
+  trackPwaAppInstalled({ source: "runtime" });
+}
+
 function registerPwaInstallPromptCapture() {
-  function handleBeforeInstallPrompt(event: Event) {
-    event.preventDefault();
-
-    if (isBeforeInstallPromptEvent(event)) {
-      setPwaInstallPrompt(event);
-      trackPwaInstallPromptAvailable({
-        platformCount: event.platforms.length,
-        platforms: event.platforms.join(","),
-        source: "runtime",
-      });
-    }
-  }
-
-  function handleAppInstalled() {
-    clearPwaInstallPrompt();
-    trackPwaAppInstalled({ source: "runtime" });
-  }
-
   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
   window.addEventListener("appinstalled", handleAppInstalled);
 
@@ -277,14 +277,14 @@ function DeferredPwaAuthenticatedRuntime() {
 
 function OfflineConnectionBanner() {
   const isOnline = useNetworkStatus();
+
+  return isOnline ? null : <OfflineConnectionNotice />;
+}
+
+function OfflineConnectionNotice() {
   const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
-    if (isOnline) {
-      setIsExpanded(true);
-      return undefined;
-    }
-
     if (!isExpanded) {
       return undefined;
     }
@@ -296,16 +296,11 @@ function OfflineConnectionBanner() {
     return () => {
       window.clearTimeout(collapseTimer);
     };
-  }, [isExpanded, isOnline]);
-
-  if (isOnline) {
-    return null;
-  }
+  }, [isExpanded]);
 
   return (
     <div className="fixed top-safe-banner right-3 z-100 w-[min(calc(100vw-1.5rem),24rem)] sm:right-4">
-      <div
-        role="status"
+      <output
         aria-hidden={!isExpanded}
         className={cn(
           "flex origin-top-right items-center gap-3 rounded-2xl border border-spark-amber/45 bg-canvas px-4 py-3 font-medium text-ink text-sm shadow-2xl shadow-black/15 transition-[opacity,transform] duration-300 ease-out motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:transition-none",
@@ -326,7 +321,7 @@ function OfflineConnectionBanner() {
           You are offline. TeamForge will reconnect live activity when your
           connection returns.
         </span>
-      </div>
+      </output>
 
       <button
         type="button"

@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
@@ -24,6 +24,18 @@ interface HistoryTemplateActionStateInput {
   pendingTemplateId: string | null;
 }
 
+interface PlanHistoryViewState {
+  expandedPlanId: string | null;
+  isExpanded: boolean;
+  lastFocusRequestKey: string | null;
+}
+
+const INITIAL_PLAN_HISTORY_VIEW_STATE: PlanHistoryViewState = {
+  expandedPlanId: null,
+  isExpanded: false,
+  lastFocusRequestKey: null,
+};
+
 function getVisibleHistoryItems(
   history: PlanHistoryItem[],
   isExpanded: boolean,
@@ -42,6 +54,16 @@ function shouldExpandHistoryForFocusedItem(focusedHistoryIndex: number) {
   return focusedHistoryIndex > 1;
 }
 
+function getFocusRequestKey(
+  focusedPlanId: string | null,
+  focusedHistoryIndex: number,
+  historyCount: number,
+) {
+  return focusedPlanId !== null && focusedHistoryIndex !== -1
+    ? `${focusedPlanId}:${focusedHistoryIndex}:${historyCount}`
+    : null;
+}
+
 function getExpandedPlanIdAfterListCollapse(
   history: PlanHistoryItem[],
   currentItemId: string | null,
@@ -49,6 +71,34 @@ function getExpandedPlanIdAfterListCollapse(
   return history.slice(0, 2).some((item) => item.id === currentItemId)
     ? currentItemId
     : null;
+}
+
+function getViewStateAfterFocusRequest({
+  focusedHistoryIndex,
+  focusedPlanId,
+  focusRequestKey,
+  state,
+}: {
+  focusedHistoryIndex: number;
+  focusedPlanId: string | null;
+  focusRequestKey: string | null;
+  state: PlanHistoryViewState;
+}): PlanHistoryViewState {
+  if (focusedPlanId === null || focusedHistoryIndex === -1) {
+    return {
+      ...state,
+      lastFocusRequestKey: focusRequestKey,
+    };
+  }
+
+  return {
+    ...state,
+    expandedPlanId: focusedPlanId,
+    isExpanded:
+      state.isExpanded ||
+      shouldExpandHistoryForFocusedItem(focusedHistoryIndex),
+    lastFocusRequestKey: focusRequestKey,
+  };
 }
 
 function getHistoryTemplateActionState({
@@ -78,29 +128,33 @@ export function PlanHistorySection({
   isOnline = true,
   onUseAsTemplate,
 }: PlanHistorySectionProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [historyViewState, setHistoryViewState] = useState(
+    INITIAL_PLAN_HISTORY_VIEW_STATE,
+  );
   const [pendingTemplateId, setPendingTemplateId] = useState<string | null>(
     null,
   );
-  const [expandedPlanId, setExpandedPlanId] = useState<string | null>(
-    focusedPlanId,
-  );
-  const visibleHistory = getVisibleHistoryItems(history, isExpanded);
   const historyCount = history.length;
+  const focusedHistoryIndex = getFocusedHistoryIndex(history, focusedPlanId);
+  const focusRequestKey = getFocusRequestKey(
+    focusedPlanId,
+    focusedHistoryIndex,
+    historyCount,
+  );
+  let resolvedHistoryViewState = historyViewState;
 
-  useEffect(() => {
-    const focusedHistoryIndex = getFocusedHistoryIndex(history, focusedPlanId);
+  if (focusRequestKey !== historyViewState.lastFocusRequestKey) {
+    resolvedHistoryViewState = getViewStateAfterFocusRequest({
+      focusedHistoryIndex,
+      focusedPlanId,
+      focusRequestKey,
+      state: historyViewState,
+    });
+    setHistoryViewState(resolvedHistoryViewState);
+  }
 
-    if (focusedHistoryIndex === -1) {
-      return;
-    }
-
-    setExpandedPlanId(focusedPlanId);
-
-    if (shouldExpandHistoryForFocusedItem(focusedHistoryIndex)) {
-      setIsExpanded(true);
-    }
-  }, [focusedPlanId, history]);
+  const { expandedPlanId, isExpanded } = resolvedHistoryViewState;
+  const visibleHistory = getVisibleHistoryItems(history, isExpanded);
 
   if (historyCount === 0) return null;
 
@@ -121,31 +175,34 @@ export function PlanHistorySection({
         id: "plan-template-copied",
       });
     } catch (error) {
+      setPendingTemplateId(null);
       showAppErrorToast(error, {
         fallbackMessage: "We couldn't reuse that plan.",
       });
-    } finally {
-      setPendingTemplateId(null);
+      return;
     }
+
+    setPendingTemplateId(null);
   }
 
   function handleToggleHistoryItem(itemId: string) {
-    setExpandedPlanId((currentItemId) =>
-      currentItemId === itemId ? null : itemId,
-    );
+    setHistoryViewState((state) => ({
+      ...state,
+      expandedPlanId: state.expandedPlanId === itemId ? null : itemId,
+    }));
   }
 
   function handleToggleHistoryList() {
-    setIsExpanded((currentIsExpanded) => {
-      const nextIsExpanded = !currentIsExpanded;
+    setHistoryViewState((state) => {
+      const nextIsExpanded = !state.isExpanded;
 
-      if (!nextIsExpanded) {
-        setExpandedPlanId((currentItemId) =>
-          getExpandedPlanIdAfterListCollapse(history, currentItemId),
-        );
-      }
-
-      return nextIsExpanded;
+      return {
+        ...state,
+        expandedPlanId: nextIsExpanded
+          ? state.expandedPlanId
+          : getExpandedPlanIdAfterListCollapse(history, state.expandedPlanId),
+        isExpanded: nextIsExpanded,
+      };
     });
   }
 

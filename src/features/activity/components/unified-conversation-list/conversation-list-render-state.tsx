@@ -1,14 +1,7 @@
 import { Fragment, lazy, type ReactNode, Suspense } from "react";
-import type {
-  FilterChip,
-  UnifiedConversation,
-} from "@/features/activity/lib/activity-contract";
+import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import type { ActivityKind } from "@/features/activity/lib/activity-route";
-import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
-import {
-  getConversationIsNotes,
-  getMessagePreviewText,
-} from "@/features/activity/lib/unify-conversations";
+import type { ConversationListEmptyState } from "./conversation-list-view-state";
 import { ConversationListErrorState } from "./list-feedback-state";
 import { UnifiedConversationListItem } from "./unified-conversation-list-item";
 
@@ -17,42 +10,6 @@ const EmptyState = lazy(() =>
     default: module.EmptyState,
   })),
 );
-
-const emptyLabelsByFilter: Partial<Record<FilterChip, string>> = {
-  direct: "No direct messages found",
-  groups: "No groups found",
-  pinned: "No pinned chats yet",
-  unread: "No unread conversations",
-};
-
-const emptyDescriptionsByFilter: Partial<Record<FilterChip, string>> = {
-  pinned:
-    "Pin chats you return to often. My notes stays available as your private scratchpad.",
-  unread: "Everything is caught up right now.",
-};
-
-const filtersWithExploreCta = new Set<FilterChip>(["all", "groups", "unread"]);
-
-const filtersWithoutSavedMessagesChat = new Set<FilterChip>([
-  "groups",
-  "direct",
-  "unread",
-  "pinned",
-]);
-
-interface ConversationListEmptyState {
-  artwork: "default" | "filtered";
-  description: string | null;
-  label: string;
-  showExploreCta: boolean;
-  showForgeCta: boolean;
-}
-
-interface ConversationListLayout {
-  notesIndex: number;
-  savedChatIndex: number;
-  shouldShowPinnedNotesSeparator: boolean;
-}
 
 interface ConversationListBodyProps {
   emptyState: ConversationListEmptyState;
@@ -130,56 +87,6 @@ export function ConversationListBody(props: ConversationListBodyProps) {
   }
 
   return <ConversationRows {...getConversationRowsProps(props)} />;
-}
-
-export function getConversationListEmptyState(
-  activeFilter: FilterChip,
-  searchQuery: string,
-): ConversationListEmptyState {
-  return {
-    artwork: getEmptyArtwork(activeFilter, searchQuery),
-    description: getEmptyDescription(activeFilter, searchQuery),
-    label: getEmptyLabel(activeFilter, searchQuery),
-    showExploreCta: shouldShowExploreCta(activeFilter, searchQuery),
-    showForgeCta: shouldShowForgeCta(activeFilter, searchQuery),
-  };
-}
-
-export function getConversationListLayout(
-  items: UnifiedConversation[],
-): ConversationListLayout {
-  const notesIndex = items.findIndex(getConversationIsNotes);
-
-  return {
-    notesIndex,
-    savedChatIndex: notesIndex >= 0 ? notesIndex + 1 : 0,
-    shouldShowPinnedNotesSeparator: getShouldShowPinnedNotesSeparator(
-      items,
-      notesIndex,
-    ),
-  };
-}
-
-export function shouldShowSavedMessagesChat({
-  activeFilter,
-  savedMessages,
-  searchQuery,
-}: {
-  activeFilter: FilterChip;
-  savedMessages: SavedMessageSnapshot[];
-  searchQuery: string;
-}) {
-  if (filtersWithoutSavedMessagesChat.has(activeFilter)) {
-    return false;
-  }
-
-  const normalizedQuery = searchQuery.trim().toLowerCase();
-
-  if (!normalizedQuery) {
-    return activeFilter === "all" || activeFilter === "saved";
-  }
-
-  return getSavedMessagesSearchText(savedMessages).includes(normalizedQuery);
 }
 
 function ConversationRows({
@@ -305,27 +212,6 @@ function getConversationRowsProps({
   };
 }
 
-function getEmptyArtwork(
-  activeFilter: FilterChip,
-  searchQuery: string,
-): ConversationListEmptyState["artwork"] {
-  return searchQuery || activeFilter !== "all" ? "filtered" : "default";
-}
-
-function shouldShowExploreCta(
-  activeFilter: FilterChip,
-  searchQuery: string,
-): boolean {
-  return !searchQuery && filtersWithExploreCta.has(activeFilter);
-}
-
-function shouldShowForgeCta(
-  activeFilter: FilterChip,
-  searchQuery: string,
-): boolean {
-  return !searchQuery && activeFilter === "all";
-}
-
 function ConversationRow({
   index,
   item,
@@ -393,68 +279,6 @@ function shouldRenderPinnedNotesSeparator({
   return shouldPlacePinnedNotesSeparatorAfterSavedChat
     ? savedChatIndex === index + 1
     : index === notesIndex;
-}
-
-function getEmptyLabel(activeFilter: FilterChip, searchQuery: string) {
-  if (activeFilter === "saved") {
-    return searchQuery
-      ? "No saved messages match your search"
-      : "No saved messages yet";
-  }
-
-  const filterLabel = emptyLabelsByFilter[activeFilter];
-  if (filterLabel) {
-    return filterLabel;
-  }
-
-  return searchQuery
-    ? "No conversations match your search"
-    : "No conversations yet";
-}
-
-function getEmptyDescription(activeFilter: FilterChip, searchQuery: string) {
-  if (activeFilter === "saved") {
-    return searchQuery
-      ? "Try a sender, chat name, or a phrase from the message."
-      : "Use Save message from a message menu. Saved messages stay private and take you back to the original chat when it is still available.";
-  }
-
-  const filterDescription = emptyDescriptionsByFilter[activeFilter];
-  if (filterDescription) {
-    return filterDescription;
-  }
-
-  if (searchQuery) {
-    return "Try a group name, person, or message preview.";
-  }
-
-  return null;
-}
-
-function getShouldShowPinnedNotesSeparator(
-  items: UnifiedConversation[],
-  notesIndex: number,
-) {
-  if (notesIndex < 0 || !items[notesIndex]?.isPinned) {
-    return false;
-  }
-
-  return items.slice(notesIndex + 1).some((item) => item.isPinned);
-}
-
-function getSavedMessagesSearchText(
-  savedMessages: SavedMessageSnapshot[],
-): string {
-  return [
-    "saved messages",
-    "private bookmarks",
-    ...savedMessages.flatMap((snapshot) => [
-      snapshot.message.sender?.name ?? "",
-      getMessagePreviewText(snapshot.message),
-    ]),
-  ]
-    .join(" ")
-    .toLowerCase();
 }
 
 function PinnedNotesSeparator({ density }: { density: "default" | "compact" }) {

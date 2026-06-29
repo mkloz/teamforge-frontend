@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
-import { type ComponentType, memo, type ReactNode } from "react";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
+import type { ComponentType, ReactNode } from "react";
 import {
   MyNotesAvatarVisual,
   SavedMessagesAvatarVisual,
@@ -39,8 +39,8 @@ interface SpecialHeaderAvatarConfig {
   visualClassName: string;
 }
 
-export const HeaderInfo = memo(
-  ({
+export function HeaderInfo(props: HeaderInfoProps) {
+  const {
     title,
     subtitle,
     avatarUrl,
@@ -53,30 +53,30 @@ export const HeaderInfo = memo(
     isActionOpen = false,
     typingText,
     onToggle,
-  }: HeaderInfoProps) => {
-    return (
-      <HeaderInfoFrame
-        canToggleAction={canToggleAction}
-        detailsNavigation={detailsNavigation}
-        isActionOpen={isActionOpen}
+  } = props;
+
+  return (
+    <HeaderInfoFrame
+      canToggleAction={canToggleAction}
+      detailsNavigation={detailsNavigation}
+      isActionOpen={isActionOpen}
+      isGroup={isGroup}
+      onToggle={onToggle}
+      title={title}
+    >
+      <HeaderInfoContent
+        avatarKind={avatarKind}
+        avatarUrl={avatarUrl}
         isGroup={isGroup}
-        onToggle={onToggle}
+        isTyping={isTyping}
+        onlineStatus={onlineStatus}
+        subtitle={subtitle}
         title={title}
-      >
-        <HeaderInfoContent
-          avatarKind={avatarKind}
-          avatarUrl={avatarUrl}
-          isGroup={isGroup}
-          isTyping={isTyping}
-          onlineStatus={onlineStatus}
-          subtitle={subtitle}
-          title={title}
-          typingText={typingText}
-        />
-      </HeaderInfoFrame>
-    );
-  },
-);
+        typingText={typingText}
+      />
+    </HeaderInfoFrame>
+  );
+}
 
 function HeaderInfoFrame({
   canToggleAction,
@@ -221,37 +221,39 @@ function HeaderSubtitle({
   typingText,
 }: Pick<HeaderInfoProps, "isTyping" | "subtitle" | "typingText">) {
   return (
-    <AnimatePresence mode="wait">
-      {isTyping && typingText ? (
-        <motion.div
-          key="typing"
-          initial={{ opacity: 0, y: 3 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -3 }}
-          transition={{ duration: 0.2 }}
-          className="mt-0.5 flex min-w-0 items-center gap-1.5"
-        >
-          <p className="min-w-0 truncate font-bold text-primary text-xs leading-tight">
-            {typingText}
-          </p>
-          <UnifiedTypingIndicator
-            variant="minimal"
-            className="h-2.5 shrink-0 opacity-80"
-          />
-        </motion.div>
-      ) : subtitle ? (
-        <motion.p
-          key="subtitle"
-          initial={{ opacity: 0, y: 3 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -3 }}
-          transition={{ duration: 0.2 }}
-          className="mt-0.5 truncate font-medium text-slate-muted/80 text-xs leading-tight"
-        >
-          {subtitle}
-        </motion.p>
-      ) : null}
-    </AnimatePresence>
+    <LazyMotion features={domAnimation}>
+      <AnimatePresence mode="wait">
+        {isTyping && typingText ? (
+          <m.div
+            key="typing"
+            initial={{ opacity: 0, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -3 }}
+            transition={{ duration: 0.2 }}
+            className="mt-0.5 flex min-w-0 items-center gap-1.5"
+          >
+            <p className="min-w-0 truncate font-bold text-primary text-xs leading-tight">
+              {typingText}
+            </p>
+            <UnifiedTypingIndicator
+              variant="minimal"
+              className="h-2.5 shrink-0 opacity-80"
+            />
+          </m.div>
+        ) : subtitle ? (
+          <m.p
+            key="subtitle"
+            initial={{ opacity: 0, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -3 }}
+            transition={{ duration: 0.2 }}
+            className="mt-0.5 truncate font-medium text-slate-muted/80 text-xs leading-tight"
+          >
+            {subtitle}
+          </m.p>
+        ) : null}
+      </AnimatePresence>
+    </LazyMotion>
   );
 }
 

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -33,7 +33,7 @@ export function LengthOptionPrecision({
 
         {showProgress ? (
           <div className="h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-muted sm:w-28 dark:bg-white/10">
-            <motion.div
+            <m.div
               initial={{ width: 0 }}
               animate={{ width: `${viewModel.progressPercent}%` }}
               className="h-full bg-forge-teal"

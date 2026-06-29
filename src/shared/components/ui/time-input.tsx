@@ -3,16 +3,14 @@ import {
   type CSSProperties,
   type Dispatch,
   type KeyboardEvent,
-  type MutableRefObject,
   type ReactNode,
   type RefObject,
   type SetStateAction,
-  useCallback,
   useEffect,
   useId,
-  useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import { createPortal } from "react-dom";
 
@@ -43,11 +41,25 @@ const TIME_OPTION_KEY_OFFSETS: Record<string, number> = {
   ArrowUp: -1,
 };
 const TIME_INPUT_PANEL_OPEN_KEYS = new Set([" ", "ArrowDown", "Enter"]);
+const TIME_12_HOUR_DISPLAY_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  hour: "numeric",
+  hour12: true,
+  minute: "2-digit",
+});
+const TIME_24_HOUR_DISPLAY_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  hour: "2-digit",
+  hour12: false,
+  minute: "2-digit",
+});
+const LOCAL_TIME_FORMAT_OPTIONS = new Intl.DateTimeFormat().resolvedOptions();
+const LOCAL_NUMERIC_HOUR_FORMAT_OPTIONS = new Intl.DateTimeFormat(undefined, {
+  hour: "numeric",
+}).resolvedOptions();
+const EMPTY_TIME_SCROLL_SNAPSHOT = "00";
 
 interface ActiveTimeOptionRefs {
-  hour: HTMLButtonElement | null;
-  minute: HTMLButtonElement | null;
-  period: HTMLButtonElement | null;
+  hourRef: RefObject<HTMLButtonElement | null>;
+  minuteRef: RefObject<HTMLButtonElement | null>;
 }
 
 interface TimeInputPanelState {
@@ -55,9 +67,11 @@ interface TimeInputPanelState {
   portalTarget: Element;
 }
 
+type TimeScrollSnapshot = "00" | "01" | "10" | "11";
+
 function focusActiveTimeOptions(activeRefs: ActiveTimeOptionRefs) {
-  const hourOption = activeRefs.hour;
-  const minuteOption = activeRefs.minute;
+  const hourOption = activeRefs.hourRef.current;
+  const minuteOption = activeRefs.minuteRef.current;
 
   hourOption?.scrollIntoView({ block: "center" });
   minuteOption?.scrollIntoView({ block: "center" });
@@ -220,11 +234,13 @@ function formatTimeDisplay(
   const date = new Date();
   date.setHours(Math.floor(timeMinutes / 60), timeMinutes % 60, 0, 0);
 
-  return new Intl.DateTimeFormat(undefined, {
-    hour: useMeridiem ? "numeric" : "2-digit",
-    hour12: useMeridiem,
-    minute: "2-digit",
-  }).format(date);
+  return getTimeDisplayFormatter(useMeridiem).format(date);
+}
+
+function getTimeDisplayFormatter(useMeridiem: boolean) {
+  return useMeridiem
+    ? TIME_12_HOUR_DISPLAY_FORMATTER
+    : TIME_24_HOUR_DISPLAY_FORMATTER;
 }
 
 function getSafeInterval(intervalMinutes: number) {
@@ -252,16 +268,13 @@ function getCurrentTimeValue(intervalMinutes: number) {
 }
 
 function shouldUseMeridiemTime() {
-  const timeZone = new Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timeZone = LOCAL_TIME_FORMAT_OPTIONS.timeZone;
 
   if (timeZone === "Europe/London" || timeZone === "Europe/Belfast") {
     return true;
   }
 
-  return (
-    new Intl.DateTimeFormat(undefined, { hour: "numeric" }).resolvedOptions()
-      .hour12 === true
-  );
+  return LOCAL_NUMERIC_HOUR_FORMAT_OPTIONS.hour12 === true;
 }
 
 function getTimeParts(
@@ -319,76 +332,97 @@ function getNearestTimeOption(options: number[], value: number) {
   );
 }
 
+function getTimeScrollSnapshot(
+  node: HTMLDivElement | null,
+): TimeScrollSnapshot {
+  if (!node) {
+    return EMPTY_TIME_SCROLL_SNAPSHOT;
+  }
+
+  const maxScrollTop = node.scrollHeight - node.clientHeight;
+
+  return `${node.scrollTop > 2 ? "1" : "0"}${
+    node.scrollTop < maxScrollTop - 2 ? "1" : "0"
+  }` as TimeScrollSnapshot;
+}
+
+function getEmptyTimeScrollSnapshot() {
+  return EMPTY_TIME_SCROLL_SNAPSHOT;
+}
+
+function subscribeToTimeScrollNode(
+  node: HTMLDivElement | null,
+  onStoreChange: () => void,
+) {
+  if (!node) {
+    return () => {};
+  }
+
+  const resizeObserver =
+    typeof ResizeObserver === "function"
+      ? new ResizeObserver(onStoreChange)
+      : null;
+
+  node.addEventListener("scroll", onStoreChange, { passive: true });
+  resizeObserver?.observe(node);
+
+  return () => {
+    node.removeEventListener("scroll", onStoreChange);
+    resizeObserver?.disconnect();
+  };
+}
+
 interface TimeScrollColumnProps<T extends number | string> {
   activeRef?: (node: HTMLButtonElement | null) => void;
   ariaLabel: string;
-  currentValue: T;
   getKey?: (option: T) => string;
   isSelected: (option: T) => boolean;
   onKeyDown: (option: T, event: React.KeyboardEvent<HTMLButtonElement>) => void;
   onSelect: (option: T) => void;
   options: T[];
-  renderOption: (option: T) => ReactNode;
+  getOptionLabel: (option: T) => ReactNode;
   title: string;
 }
 
 function TimeScrollColumn<T extends number | string>({
   activeRef,
   ariaLabel,
-  currentValue,
   getKey = String,
+  getOptionLabel,
   isSelected,
   onKeyDown,
   onSelect,
   options,
-  renderOption,
   title,
 }: TimeScrollColumnProps<T>) {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [scrollState, setScrollState] = useState({
-    canScrollDown: false,
-    canScrollUp: false,
-  });
-
-  const updateScrollState = useCallback(() => {
-    const node = scrollRef.current;
-
-    if (!node) {
-      return;
-    }
-
-    const maxScrollTop = node.scrollHeight - node.clientHeight;
-
-    setScrollState({
-      canScrollDown: node.scrollTop < maxScrollTop - 2,
-      canScrollUp: node.scrollTop > 2,
-    });
-  }, []);
+  const [scrollNode, setScrollNode] = useState<HTMLDivElement | null>(null);
+  const scrollSnapshot = useSyncExternalStore(
+    (onStoreChange) => subscribeToTimeScrollNode(scrollNode, onStoreChange),
+    () => getTimeScrollSnapshot(scrollNode),
+    getEmptyTimeScrollSnapshot,
+  );
+  const canScrollUp = scrollSnapshot[0] === "1";
+  const canScrollDown = scrollSnapshot[1] === "1";
 
   const scrollByDirection = (direction: 1 | -1) => {
-    scrollRef.current?.scrollBy({
+    scrollNode?.scrollBy({
       behavior: "smooth",
       top: direction * 72,
     });
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: currentValue and options intentionally retrigger scroll-button state after list content changes.
-  useEffect(() => {
-    updateScrollState();
-  }, [currentValue, options, updateScrollState]);
-
   return (
-    <div className="flex min-w-0 flex-col px-1.5">
-      <p className="pb-2 text-center font-semibold text-slate-muted text-xs">
+    <fieldset
+      aria-label={ariaLabel}
+      className="m-0 flex min-w-0 flex-col border-0 px-1.5 py-0"
+    >
+      <legend className="w-full px-0 pb-2 text-center font-semibold text-slate-muted text-xs">
         {title}
-      </p>
+      </legend>
       <div className="relative flex min-h-56 flex-1 items-center">
         <div
-          ref={scrollRef}
-          role="listbox"
-          aria-label={ariaLabel}
+          ref={setScrollNode}
           className="[&::-webkit-scrollbar]:hidden! scrollbar-hide flex max-h-56 w-full flex-col gap-1 overflow-y-auto py-7 [&::-webkit-scrollbar]:w-0!"
-          onScroll={updateScrollState}
         >
           {options.map((option) => {
             const selected = isSelected(option);
@@ -404,8 +438,7 @@ function TimeScrollColumn<T extends number | string>({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  role="option"
-                  aria-selected={selected}
+                  aria-pressed={selected}
                   tabIndex={selected ? 0 : -1}
                   className={cn(
                     "h-8 w-full max-w-16 rounded-full text-xs tabular-nums",
@@ -415,7 +448,7 @@ function TimeScrollColumn<T extends number | string>({
                   onKeyDown={(event) => onKeyDown(option, event)}
                   onClick={() => onSelect(option)}
                 >
-                  {renderOption(option)}
+                  {getOptionLabel(option)}
                 </Button>
               </div>
             );
@@ -425,10 +458,10 @@ function TimeScrollColumn<T extends number | string>({
         <button
           type="button"
           aria-label={`Scroll ${title.toLowerCase()} up`}
-          disabled={!scrollState.canScrollUp}
+          disabled={!canScrollUp}
           className={cn(
             "absolute inset-x-0 top-0 z-10 flex h-10 items-start justify-center bg-linear-to-b from-card via-card/85 to-transparent pt-1 text-slate-muted transition-all duration-200",
-            scrollState.canScrollUp
+            canScrollUp
               ? "opacity-100"
               : "pointer-events-none -translate-y-1 opacity-0",
           )}
@@ -439,10 +472,10 @@ function TimeScrollColumn<T extends number | string>({
         <button
           type="button"
           aria-label={`Scroll ${title.toLowerCase()} down`}
-          disabled={!scrollState.canScrollDown}
+          disabled={!canScrollDown}
           className={cn(
             "absolute inset-x-0 bottom-0 z-10 flex h-10 items-end justify-center bg-linear-to-t from-card via-card/85 to-transparent pb-1 text-slate-muted transition-all duration-200",
-            scrollState.canScrollDown
+            canScrollDown
               ? "opacity-100"
               : "pointer-events-none translate-y-1 opacity-0",
           )}
@@ -454,7 +487,7 @@ function TimeScrollColumn<T extends number | string>({
           />
         </button>
       </div>
-    </div>
+    </fieldset>
   );
 }
 
@@ -470,15 +503,14 @@ function TimePeriodColumn({
   selectedPeriod,
 }: TimePeriodColumnProps) {
   return (
-    <div className="flex min-w-0 flex-col px-1.5">
-      <p className="pb-2 text-center font-semibold text-slate-muted text-xs">
+    <fieldset
+      aria-label="Choose period"
+      className="m-0 flex min-w-0 flex-col border-0 px-1.5 py-0"
+    >
+      <legend className="w-full px-0 pb-2 text-center font-semibold text-slate-muted text-xs">
         Period
-      </p>
-      <div
-        role="listbox"
-        aria-label="Choose period"
-        className="flex min-h-56 flex-1 flex-col justify-center gap-1"
-      >
+      </legend>
+      <div className="flex min-h-56 flex-1 flex-col justify-center gap-1">
         {TIME_PERIODS.map((period) => {
           const selected = selectedPeriod === period;
 
@@ -493,8 +525,7 @@ function TimePeriodColumn({
               type="button"
               variant="ghost"
               size="sm"
-              role="option"
-              aria-selected={selected}
+              aria-pressed={selected}
               tabIndex={selected ? 0 : -1}
               className={cn(
                 "mx-auto h-8 w-full max-w-14 rounded-full text-xs",
@@ -515,12 +546,14 @@ function TimePeriodColumn({
           );
         })}
       </div>
-    </div>
+    </fieldset>
   );
 }
 
 interface TimeInputPanelProps {
-  activeRefs: MutableRefObject<ActiveTimeOptionRefs>;
+  activeHourRef: (node: HTMLButtonElement | null) => void;
+  activeMinuteRef: (node: HTMLButtonElement | null) => void;
+  activePeriodRef: (node: HTMLButtonElement | null) => void;
   clearable: boolean;
   closePanel: () => void;
   commitParts: (parts: Partial<TimeParts>) => void;
@@ -538,7 +571,9 @@ interface TimeInputPanelProps {
 }
 
 function TimeInputPanel({
-  activeRefs,
+  activeHourRef,
+  activeMinuteRef,
+  activePeriodRef,
   clearable,
   closePanel,
   commitParts,
@@ -568,15 +603,13 @@ function TimeInputPanel({
         )}
       >
         <TimeScrollColumn
+          key={useMeridiem ? "hour-12" : "hour-24"}
           title="Hour"
           ariaLabel="Choose hour"
           options={hourOptions}
-          currentValue={selectedParts.hour}
           isSelected={(hour) => selectedParts.hour === hour}
-          activeRef={(node) => {
-            activeRefs.current.hour = node;
-          }}
-          renderOption={(hour) =>
+          activeRef={activeHourRef}
+          getOptionLabel={(hour) =>
             useMeridiem ? hour : String(hour).padStart(2, "0")
           }
           onKeyDown={(_, event) =>
@@ -591,15 +624,13 @@ function TimeInputPanel({
         />
 
         <TimeScrollColumn
+          key={`minute-${minuteOptions.join("-")}`}
           title="Minute"
           ariaLabel="Choose minute"
           options={minuteOptions}
-          currentValue={selectedMinute}
           isSelected={(minute) => selectedMinute === minute}
-          activeRef={(node) => {
-            activeRefs.current.minute = node;
-          }}
-          renderOption={(minute) => String(minute).padStart(2, "0")}
+          activeRef={activeMinuteRef}
+          getOptionLabel={(minute) => String(minute).padStart(2, "0")}
           onKeyDown={(_, event) =>
             handleColumnKeyDown(
               minuteOptions,
@@ -614,9 +645,7 @@ function TimeInputPanel({
         {useMeridiem ? (
           <TimePeriodColumn
             selectedPeriod={selectedParts.period}
-            activeRef={(node) => {
-              activeRefs.current.period = node;
-            }}
+            activeRef={activePeriodRef}
             onSelect={(period) => commitParts({ period })}
           />
         ) : null}
@@ -685,20 +714,12 @@ function TimeInput({
     panelHeight: 340,
     panelWidth: getTimePickerPanelWidth(useMeridiem),
   });
-  const activeRefs = useRef<ActiveTimeOptionRefs>({
-    hour: null,
-    minute: null,
-    period: null,
-  });
+  const activeHourRef = useRef<HTMLButtonElement | null>(null);
+  const activeMinuteRef = useRef<HTMLButtonElement | null>(null);
+  const activePeriodRef = useRef<HTMLButtonElement | null>(null);
   const selectedParts = getTimeParts(value, intervalMinutes, useMeridiem);
-  const hourOptions = useMemo(
-    () => buildHourOptions(useMeridiem),
-    [useMeridiem],
-  );
-  const minuteOptions = useMemo(
-    () => buildMinuteOptions(intervalMinutes),
-    [intervalMinutes],
-  );
+  const hourOptions = buildHourOptions(useMeridiem);
+  const minuteOptions = buildMinuteOptions(intervalMinutes);
   const panelState = getTimeInputPanelState({
     open,
     panelStyle,
@@ -727,7 +748,10 @@ function TimeInput({
     }
 
     const delay = scheduleDelay(() => {
-      focusActiveTimeOptions(activeRefs.current);
+      focusActiveTimeOptions({
+        hourRef: activeHourRef,
+        minuteRef: activeMinuteRef,
+      });
     }, 0);
 
     return () => {
@@ -758,7 +782,15 @@ function TimeInput({
 
       {panelState ? (
         <TimeInputPanel
-          activeRefs={activeRefs}
+          activeHourRef={(node) => {
+            activeHourRef.current = node;
+          }}
+          activeMinuteRef={(node) => {
+            activeMinuteRef.current = node;
+          }}
+          activePeriodRef={(node) => {
+            activePeriodRef.current = node;
+          }}
           clearable={clearable}
           closePanel={closePanel}
           commitParts={commitParts}

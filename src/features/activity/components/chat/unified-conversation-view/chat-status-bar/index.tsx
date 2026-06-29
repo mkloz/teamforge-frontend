@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { ChevronRight, X } from "lucide-react";
-import { type MouseEvent, memo } from "react";
+import type { MouseEvent } from "react";
 
 import type {
   Plan,
@@ -28,15 +28,17 @@ interface ChatStatusBarProps {
   onActivatePinnedMessage?: (messageId: string) => void;
 }
 
+const EMPTY_PINNED_MESSAGES: UnifiedMessage[] = [];
+
 /**
  * ChatStatusBar — slim, single-line cycling pinned bar.
  *
  * Shows one entry at a time. Click to cycle. The plan status is always
  * entry 0 and cannot be dismissed. User-pinned messages follow it.
  */
-export const ChatStatusBar = memo(function ChatStatusBar({
+export function ChatStatusBar({
   plan,
-  pinnedMessages = [],
+  pinnedMessages = EMPTY_PINNED_MESSAGES,
   onViewDetails,
   onUnpinPinnedMessage,
   onActivatePinnedMessage,
@@ -97,35 +99,41 @@ export const ChatStatusBar = memo(function ChatStatusBar({
         />
 
         <span className="min-w-0 flex-1 overflow-hidden">
-          <AnimatePresence mode="popLayout" initial={false} custom={direction}>
-            <motion.span
-              key={activeEntry.id}
+          <LazyMotion features={domAnimation}>
+            <AnimatePresence
+              mode="popLayout"
+              initial={false}
               custom={direction}
-              variants={statusEntryMotionVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.14, ease: [0.22, 1, 0.36, 1] }}
-              className="flex min-w-0 items-baseline gap-1.5"
             >
-              <span
-                className={cn(
-                  "shrink-0 font-semibold text-xs uppercase leading-none tracking-wider",
-                  activeEntry.colorClass,
-                )}
+              <m.span
+                key={activeEntry.id}
+                custom={direction}
+                variants={statusEntryMotionVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.14, ease: [0.22, 1, 0.36, 1] }}
+                className="flex min-w-0 items-baseline gap-1.5"
               >
-                {activeEntry.label}
-              </span>
+                <span
+                  className={cn(
+                    "shrink-0 font-semibold text-xs uppercase leading-none tracking-wider",
+                    activeEntry.colorClass,
+                  )}
+                >
+                  {activeEntry.label}
+                </span>
 
-              <span className="shrink-0 text-slate-muted/50 text-xs leading-none">
-                ·
-              </span>
+                <span className="shrink-0 text-slate-muted/50 text-xs leading-none">
+                  ·
+                </span>
 
-              <span className="truncate font-medium text-ink/75 text-xs leading-none dark:text-ink/65">
-                {activeEntry.body}
-              </span>
-            </motion.span>
-          </AnimatePresence>
+                <span className="truncate font-medium text-ink/75 text-xs leading-none dark:text-ink/65">
+                  {activeEntry.body}
+                </span>
+              </m.span>
+            </AnimatePresence>
+          </LazyMotion>
         </span>
       </Button>
 
@@ -137,7 +145,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
       </div>
     </div>
   );
-});
+}
 
 function StatusBarTrailingAction({
   activeEntry,

@@ -1,8 +1,8 @@
-import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { apiClient } from "@/shared/api/api";
+import { postExploreGroupJoin } from "@/shared/api/group-membership-api";
 import {
   createPaginatedSchema,
   exploreGroupSchema,
-  exploreJoinResultSchema,
   exploreViewInsightSchema,
 } from "@/shared/schemas";
 
@@ -24,10 +24,6 @@ export class ExploreApi {
   }
 
   static async joinGroup(groupId: string) {
-    const response = await apiClient.post(`explore/groups/${groupId}/join`);
-
-    return parseJsonWithRequestId(response, (value) =>
-      exploreJoinResultSchema.parse(value),
-    );
+    return postExploreGroupJoin(groupId);
   }
 }

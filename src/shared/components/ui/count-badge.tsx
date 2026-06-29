@@ -1,6 +1,12 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { type HTMLAttributes, useEffect, useState } from "react";
+import {
+  AnimatePresence,
+  domAnimation,
+  LazyMotion,
+  m,
+  useReducedMotion,
+} from "framer-motion";
+import { type HTMLAttributes, useState } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -38,6 +44,11 @@ export interface CountBadgeProps
 
 type CountDirection = -1 | 1;
 
+interface CountPreviousState {
+  count: number;
+  direction: CountDirection;
+}
+
 interface CountMotionState {
   direction: CountDirection;
   reducedMotion: boolean;
@@ -69,17 +80,24 @@ export function CountBadge({
   tone,
   ...props
 }: CountBadgeProps) {
-  const [previousCount, setPreviousCount] = useState(count);
+  const [previousState, setPreviousState] = useState<CountPreviousState>(
+    () => ({
+      count,
+      direction: 1,
+    }),
+  );
   const prefersReducedMotion = useReducedMotion();
-  const direction: CountDirection = count >= previousCount ? 1 : -1;
+  let direction = previousState.direction;
+
+  if (previousState.count !== count) {
+    direction = count >= previousState.count ? 1 : -1;
+    setPreviousState({ count, direction });
+  }
+
   const motionState: CountMotionState = {
     direction,
     reducedMotion: Boolean(prefersReducedMotion),
   };
-
-  useEffect(() => {
-    setPreviousCount(count);
-  }, [count]);
 
   if (count <= 0) {
     return null;
@@ -96,20 +114,22 @@ export function CountBadge({
       )}
       {...props}
     >
-      <AnimatePresence custom={motionState} initial={false} mode="popLayout">
-        <motion.span
-          key={displayValue}
-          animate="center"
-          className="col-start-1 row-start-1 flex h-full items-center justify-center leading-none"
-          custom={motionState}
-          exit="exit"
-          initial="enter"
-          transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-          variants={COUNT_VARIANTS}
-        >
-          {displayValue}
-        </motion.span>
-      </AnimatePresence>
+      <LazyMotion features={domAnimation}>
+        <AnimatePresence custom={motionState} initial={false} mode="popLayout">
+          <m.span
+            key={displayValue}
+            animate="center"
+            className="col-start-1 row-start-1 flex h-full items-center justify-center leading-none"
+            custom={motionState}
+            exit="exit"
+            initial="enter"
+            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            variants={COUNT_VARIANTS}
+          >
+            {displayValue}
+          </m.span>
+        </AnimatePresence>
+      </LazyMotion>
     </span>
   );
 }

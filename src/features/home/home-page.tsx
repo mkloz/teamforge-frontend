@@ -1,11 +1,4 @@
-import {
-  lazy,
-  type ReactNode,
-  Suspense,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { lazy, type ReactNode, Suspense, useEffect, useRef } from "react";
 import { AttentionQueue } from "@/features/home/components/attention-queue";
 import { GroupsGrid } from "@/features/home/components/groups-grid";
 import { HomeHero } from "@/features/home/components/home-hero";
@@ -20,6 +13,7 @@ import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeRouteState } from "@/features/home/hooks/use-home-route-state";
 import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
 import { PageErrorState } from "@/shared/components/page-error-state";
+import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
 
@@ -290,37 +284,7 @@ function DeferredHomePanel({
   fallback: ReactNode;
   rootMargin?: string;
 }) {
-  const [shouldRender, setShouldRender] = useState(false);
-  const panelRef = useRef<HTMLDivElement | null>(null);
+  const { sentinelRef, shouldRender } = useDeferredRender({ rootMargin });
 
-  useEffect(() => {
-    if (shouldRender) {
-      return undefined;
-    }
-
-    const node = panelRef.current;
-
-    if (!node || typeof window.IntersectionObserver !== "function") {
-      setShouldRender(true);
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) {
-          return;
-        }
-
-        setShouldRender(true);
-        observer.disconnect();
-      },
-      { rootMargin },
-    );
-
-    observer.observe(node);
-
-    return () => observer.disconnect();
-  }, [rootMargin, shouldRender]);
-
-  return <div ref={panelRef}>{shouldRender ? children : fallback}</div>;
+  return <div ref={sentinelRef}>{shouldRender ? children : fallback}</div>;
 }

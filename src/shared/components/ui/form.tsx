@@ -3,7 +3,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import type * as LabelPrimitive from "@radix-ui/react-label";
 import { Root as SlotRoot } from "@radix-ui/react-slot";
-import React from "react";
+import React, { use } from "react";
 import {
   Controller,
   type ControllerProps,
@@ -22,9 +22,7 @@ const Form = FormProvider;
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = {
-  name: TName;
-};
+> = TName;
 
 const FormFieldContext = React.createContext<FormFieldContextValue | null>(
   null,
@@ -36,21 +34,16 @@ const FormField = <
 >({
   ...props
 }: ControllerProps<TFieldValues, TName>) => {
-  const contextValue = React.useMemo(
-    () => ({ name: props.name }),
-    [props.name],
-  );
-
   return (
-    <FormFieldContext value={contextValue}>
+    <FormFieldContext value={props.name}>
       <Controller {...props} />
     </FormFieldContext>
   );
 };
 
 const useFormField = () => {
-  const fieldContext = React.useContext(FormFieldContext);
-  const itemContext = React.useContext(FormItemContext);
+  const fieldContext = use(FormFieldContext);
+  const itemContext = use(FormItemContext);
 
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>");
@@ -61,33 +54,28 @@ const useFormField = () => {
   }
 
   const { getFieldState } = useFormContext();
-  const formState = useFormState({ name: fieldContext.name });
-  const fieldState = getFieldState(fieldContext.name, formState);
-
-  const { id } = itemContext;
+  const formState = useFormState({ name: fieldContext });
+  const fieldState = getFieldState(fieldContext, formState);
 
   return {
-    id,
-    name: fieldContext.name,
-    formItemId: `${id}-form-item`,
-    formDescriptionId: `${id}-form-item-description`,
-    formMessageId: `${id}-form-item-message`,
+    id: itemContext,
+    name: fieldContext,
+    formItemId: `${itemContext}-form-item`,
+    formDescriptionId: `${itemContext}-form-item-description`,
+    formMessageId: `${itemContext}-form-item-message`,
     ...fieldState,
   };
 };
 
-type FormItemContextValue = {
-  id: string;
-};
+type FormItemContextValue = string;
 
 const FormItemContext = React.createContext<FormItemContextValue | null>(null);
 
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   const id = React.useId();
-  const contextValue = React.useMemo(() => ({ id }), [id]);
 
   return (
-    <FormItemContext value={contextValue}>
+    <FormItemContext value={id}>
       <div
         data-slot="form-item"
         className={cn("grid gap-2", className)}

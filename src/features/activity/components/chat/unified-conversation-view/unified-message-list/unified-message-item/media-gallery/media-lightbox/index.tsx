@@ -1,6 +1,6 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { AnimatePresence, motion } from "framer-motion";
-import { memo, type ReactNode } from "react";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
+import type { ReactNode } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import {
   Dialog,
@@ -20,7 +20,7 @@ interface MediaLightboxProps {
   setSelectedIndex: (index: number | null) => void;
 }
 
-export const MediaLightbox = memo(function MediaLightbox({
+export function MediaLightbox({
   isOpen,
   onOpenChange,
   attachments,
@@ -38,37 +38,39 @@ export const MediaLightbox = memo(function MediaLightbox({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <LightboxDialogContent>
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key="lightbox-container"
-            className="relative flex size-full flex-col"
-          >
-            <LightboxHeader
-              count={count}
-              currentMedia={currentMedia}
-              selectedIndex={selectedIndex}
-            />
-
-            <LightboxStage
-              count={count}
-              currentMedia={currentMedia}
-              onNext={handleNext}
-              onPrev={handlePrev}
-            />
-
-            {count > 1 && (
-              <ThumbnailStrip
-                attachments={attachments}
+        <LazyMotion features={domAnimation}>
+          <AnimatePresence mode="popLayout">
+            <m.div
+              key="lightbox-container"
+              className="relative flex size-full flex-col"
+            >
+              <LightboxHeader
+                count={count}
+                currentMedia={currentMedia}
                 selectedIndex={selectedIndex}
-                onSelect={setSelectedIndex}
               />
-            )}
-          </motion.div>
-        </AnimatePresence>
+
+              <LightboxStage
+                count={count}
+                currentMedia={currentMedia}
+                onNext={handleNext}
+                onPrev={handlePrev}
+              />
+
+              {count > 1 && (
+                <ThumbnailStrip
+                  attachments={attachments}
+                  selectedIndex={selectedIndex}
+                  onSelect={setSelectedIndex}
+                />
+              )}
+            </m.div>
+          </AnimatePresence>
+        </LazyMotion>
       </LightboxDialogContent>
     </Dialog>
   );
-});
+}
 
 function LightboxDialogContent({ children }: { children: ReactNode }) {
   return (

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { staggerContainer } from "@/features/onboarding/constants/motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import { ActionSection } from "./action-section";
@@ -40,7 +40,7 @@ export function IntermissionPage({
   });
 
   return (
-    <motion.div
+    <m.div
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
@@ -75,6 +75,6 @@ export function IntermissionPage({
         onContinue={handleContinue}
         onAdjustLength={onAdjustLength}
       />
-    </motion.div>
+    </m.div>
   );
 }

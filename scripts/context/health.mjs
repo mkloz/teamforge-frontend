@@ -42,6 +42,7 @@ const numberFormatter = new Intl.NumberFormat("en-US");
 const FILE_SIZE_LINE_LIMIT = 500;
 const FILE_SIZE_BYTE_LIMIT = 60 * 1024;
 const FILE_SIZE_DISPLAY_LIMIT = 12;
+const FILE_SIZE_CONSOLE_LIMIT = 8;
 
 /**
  * @param {string[]} args Git arguments.
@@ -297,23 +298,50 @@ async function runAuditSummary() {
  * @returns {string} Audit summary.
  */
 function getAuditSummary(stdout) {
-  if (!stdout.trim()) {
+  return stdout.trim() ? formatAuditMetadata(readAuditMetadata(stdout)) : "";
+}
+
+/**
+ * @param {{ vulnerabilities: Record<string, number> } | null} metadata Audit metadata.
+ * @returns {string} Audit summary.
+ */
+function formatAuditMetadata(metadata) {
+  if (!metadata) {
     return "";
   }
 
+  const counts = metadata.vulnerabilities;
+
+  return `${getAuditCount(counts, "total")} total (${getAuditCount(
+    counts,
+    "critical",
+  )} critical, ${getAuditCount(counts, "high")} high, ${getAuditCount(
+    counts,
+    "moderate",
+  )} moderate)`;
+}
+
+/**
+ * @param {Record<string, number>} counts Audit vulnerability counts.
+ * @param {string} key Count key.
+ * @returns {number} Count value.
+ */
+function getAuditCount(counts, key) {
+  return counts[key] ?? 0;
+}
+
+/**
+ * @param {string} stdout npm audit JSON stdout.
+ * @returns {{ vulnerabilities: Record<string, number> } | null} Audit metadata.
+ */
+function readAuditMetadata(stdout) {
   try {
     const payload = parseFirstJsonObject(stdout);
-    const vulnerabilities = payload.metadata;
+    const metadata = payload.metadata;
 
-    if (!isAuditMetadata(vulnerabilities)) {
-      return "";
-    }
-
-    const counts = vulnerabilities.vulnerabilities;
-
-    return `${counts.total ?? 0} total (${counts.critical ?? 0} critical, ${counts.high ?? 0} high, ${counts.moderate ?? 0} moderate)`;
+    return isAuditMetadata(metadata) ? metadata : null;
   } catch {
-    return "";
+    return null;
   }
 }
 
@@ -514,13 +542,11 @@ function formatReport(gitSummary, commandSummaries, fileSizeSummary) {
       ? "No oversized source files found."
       : renderMarkdownTable(
           ["File", "Lines", "Size"],
-          fileSizeSummary.oversized
-            .slice(0, FILE_SIZE_DISPLAY_LIMIT)
-            .map((row) => [
-              row.filePath,
-              formatNumber(row.lines),
-              formatBytes(row.bytes),
-            ]),
+          fileSizeSummary.oversized.map((row) => [
+            row.filePath,
+            formatNumber(row.lines),
+            formatBytes(row.bytes),
+          ]),
         ),
     "",
     "Largest tracked source/script files:",
@@ -574,25 +600,51 @@ function formatCommandDetail(summary) {
   return [
     `### ${summary.name}`,
     "",
-    renderMarkdownBullets([
-      `Status: ${
-        summary.badge ??
-        (summary.status === 0 ? "pass" : `status ${summary.status}`)
-      }`,
-      `Duration: ${formatDuration(summary.durationMs)}`,
-      `Command: \`${summary.commandLine ?? "-"}\``,
-      `Summary: ${summary.summary}`,
-    ]),
+    renderMarkdownBullets(getCommandDetailBullets(summary)),
     "",
-    ...(summary.details && summary.details.length > 0
-      ? ["Details:", "", ...summary.details.map((detail) => `- ${detail}`), ""]
-      : []),
+    ...formatCommandDetailLines(summary.details),
     "Captured output:",
     "",
     "```text",
     output,
     "```",
   ].join("\n");
+}
+
+/**
+ * @param {HealthCommandSummary} summary Command summary.
+ * @returns {string[]} Markdown detail bullets.
+ */
+function getCommandDetailBullets(summary) {
+  return [
+    `Status: ${getCommandStatusLabel(summary)}`,
+    `Duration: ${formatDuration(summary.durationMs)}`,
+    `Command: \`${summary.commandLine ?? "-"}\``,
+    `Summary: ${summary.summary}`,
+  ];
+}
+
+/**
+ * @param {HealthCommandSummary} summary Command summary.
+ * @returns {string} Display status.
+ */
+function getCommandStatusLabel(summary) {
+  return (
+    summary.badge ??
+    (summary.status === 0 ? "pass" : `status ${summary.status}`)
+  );
+}
+
+/**
+ * @param {string[] | undefined} details Command detail lines.
+ * @returns {string[]} Markdown lines.
+ */
+function formatCommandDetailLines(details) {
+  if (!details || details.length === 0) {
+    return [];
+  }
+
+  return ["Details:", "", ...details.map((detail) => `- ${detail}`), ""];
 }
 
 /**
@@ -664,6 +716,16 @@ function printSummary(gitSummary, commandSummaries, fileSizeSummary) {
     ])}\n\n`,
   );
 
+  printCommandSummaries(commandSummaries);
+  printChangedFiles(gitSummary.status);
+  printOversizedFiles(fileSizeSummary.oversized);
+  printReportPath();
+}
+
+/**
+ * @param {HealthCommandSummary[]} commandSummaries Command summaries.
+ */
+function printCommandSummaries(commandSummaries) {
   process.stdout.write(`${colorText("Checks", "accent")}\n`);
   for (const summary of commandSummaries) {
     process.stdout.write(
@@ -678,31 +740,60 @@ function printSummary(gitSummary, commandSummaries, fileSizeSummary) {
       process.stdout.write(`  - ${detail}\n`);
     }
   }
+}
 
-  if (gitSummary.status.length > 0) {
-    process.stdout.write(`\n${colorText("Changed files", "accent")}\n`);
-    process.stdout.write(`${renderBullets(gitSummary.status, 8)}\n`);
+/**
+ * @param {string[]} statusLines Git status lines.
+ */
+function printChangedFiles(statusLines) {
+  if (statusLines.length === 0) {
+    return;
   }
 
-  if (fileSizeSummary.oversized.length > 0) {
-    process.stdout.write(
-      `\n${colorText("Largest oversized files", "accent")}\n`,
-    );
-    process.stdout.write(
-      `${renderBullets(
-        fileSizeSummary.oversized
-          .slice(0, 8)
-          .map(
-            (row) =>
-              `${row.filePath} (${formatNumber(row.lines)} lines, ${formatBytes(
-                row.bytes,
-              )})`,
-          ),
-        8,
-      )}\n`,
-    );
+  process.stdout.write(`\n${colorText("Changed files", "accent")}\n`);
+  process.stdout.write(`${renderBullets(statusLines, 8)}\n`);
+}
+
+/**
+ * @param {FileSizeRow[]} oversizedFiles Oversized file rows.
+ */
+function printOversizedFiles(oversizedFiles) {
+  if (oversizedFiles.length === 0) {
+    return;
   }
 
+  const shownOversizedCount = Math.min(
+    FILE_SIZE_CONSOLE_LIMIT,
+    oversizedFiles.length,
+  );
+
+  process.stdout.write(
+    `\n${colorText(
+      `Oversized files (${formatNumber(
+        oversizedFiles.length,
+      )} total, showing ${formatNumber(shownOversizedCount)})`,
+      "accent",
+    )}\n`,
+  );
+  process.stdout.write(
+    `${renderBullets(
+      oversizedFiles.slice(0, FILE_SIZE_CONSOLE_LIMIT).map(formatFileSizeRow),
+      8,
+    )}\n`,
+  );
+}
+
+/**
+ * @param {FileSizeRow} row File size row.
+ * @returns {string} Console summary.
+ */
+function formatFileSizeRow(row) {
+  return `${row.filePath} (${formatNumber(row.lines)} lines, ${formatBytes(
+    row.bytes,
+  )})`;
+}
+
+function printReportPath() {
   process.stdout.write(
     `\n${colorText("Report", "accent")}\n  - ${toRepoRelativePath(REPORT_PATH)}\n`,
   );

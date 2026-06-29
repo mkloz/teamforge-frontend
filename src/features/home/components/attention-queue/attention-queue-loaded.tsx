@@ -224,12 +224,14 @@ function renderAttentionQueueItem(
       <InvitationQueueItem
         key={item.invite.id}
         invite={item.invite}
-        isFocused={context.focusedInviteId === item.invite.id}
-        acceptingInviteId={context.acceptingInviteId}
-        decliningInviteId={context.decliningInviteId}
-        isAccepting={context.isAcceptingInvite}
-        isDeclining={context.isDecliningInvite}
-        isOnline={context.isInviteActionOnline}
+        state={{
+          acceptingInviteId: context.acceptingInviteId,
+          decliningInviteId: context.decliningInviteId,
+          isAccepting: context.isAcceptingInvite,
+          isDeclining: context.isDecliningInvite,
+          isFocused: context.focusedInviteId === item.invite.id,
+          isOnline: context.isInviteActionOnline,
+        }}
         onAccept={context.acceptVisibleInvite}
         onDecline={context.declineVisibleInvite}
       />
@@ -241,12 +243,14 @@ function renderAttentionQueueItem(
       <FriendRequestQueueItem
         key={item.request.requesterId}
         request={item.request}
-        isFocused={context.focusedRequestId === item.request.requesterId}
-        acceptingRequestId={context.acceptingRequestId}
-        decliningRequestId={context.decliningRequestId}
-        isAccepting={context.isAccepting}
-        isDeclining={context.isDeclining}
-        isOnline={context.isFriendRequestOnline}
+        state={{
+          acceptingRequestId: context.acceptingRequestId,
+          decliningRequestId: context.decliningRequestId,
+          isAccepting: context.isAccepting,
+          isDeclining: context.isDeclining,
+          isFocused: context.focusedRequestId === item.request.requesterId,
+          isOnline: context.isFriendRequestOnline,
+        }}
         onAccept={context.acceptVisibleRequest}
         onDecline={context.declineVisibleRequest}
       />

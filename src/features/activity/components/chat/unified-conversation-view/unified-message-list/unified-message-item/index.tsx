@@ -1,4 +1,4 @@
-import { type ComponentProps, memo, useState } from "react";
+import { type ComponentProps, useState } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
@@ -118,19 +118,22 @@ interface MessageBubbleContentsProps {
 /**
  * UnifiedMessageItem - Orchestrates the rendering of individual chat messages.
  */
-export const UnifiedMessageItem = memo(function UnifiedMessageItem({
+export function UnifiedMessageItem({
   message,
-  showSender,
-  isHighlighted = false,
-  isSelectable = true,
-  isSelected = false,
-  isSelectionMode = false,
+  renderState,
   kind,
   onActivateReplyTarget,
   onStartSelection,
   onToggleSelected,
   searchQuery = "",
 }: UnifiedMessageItemProps) {
+  const {
+    isHighlighted = false,
+    isSelectable = true,
+    isSelected = false,
+    isSelectionMode = false,
+    showSender,
+  } = renderState;
   const controller = useMessageItemRenderController({
     isHighlighted,
     isSelectable,
@@ -150,7 +153,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
       <MessageItemFrame {...controller.frameProps} />
     </MessageContextMenu>
   );
-});
+}
 
 function useMessageItemRenderController({
   isHighlighted,
@@ -423,17 +426,19 @@ function MessageBubbleContents({
       <MessageFooter
         attachments={attachments}
         content={content}
-        reactionGroups={reactionGroups}
-        isOwn={isOwn}
         createdAt={timestamp}
-        status={status}
-        isReadByOthers={isReadByOthers}
+        footerState={{
+          hasReply: Boolean(replyTo),
+          isEdited: message.isEdited,
+          isOwn,
+          isPinned: message.isPinned,
+          isReadByOthers,
+          isSaved,
+        }}
+        reactionGroups={reactionGroups}
         readBy={message.readBy}
         readByCount={message.readByCount}
-        isEdited={message.isEdited}
-        isPinned={message.isPinned}
-        isSaved={isSaved}
-        hasReply={Boolean(replyTo)}
+        status={status}
         onToggleReaction={onToggleReaction}
       />
     </>

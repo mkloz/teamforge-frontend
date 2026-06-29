@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 import {
   ANVIL_ANIMATION_TIMING,
@@ -8,7 +8,7 @@ import {
 export function AnvilAmbientEffects() {
   return (
     <>
-      <motion.path
+      <m.path
         d="M58 160C75.5 151 143.5 151 162 160"
         stroke="var(--color-forge-teal)"
         strokeLinecap="round"
@@ -23,7 +23,7 @@ export function AnvilAmbientEffects() {
         }}
       />
 
-      <motion.ellipse
+      <m.ellipse
         cx="110"
         cy="156"
         rx="48"
@@ -39,7 +39,7 @@ export function AnvilAmbientEffects() {
         }}
       />
 
-      <motion.ellipse
+      <m.ellipse
         cx="110"
         cy="111"
         rx="24"

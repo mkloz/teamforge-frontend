@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import {
-  exploreJoinRequestCancelResultSchema,
-  exploreJoinResultSchema,
+  postExploreGroupJoin,
+  postExploreGroupJoinRequestCancel,
+} from "@/shared/api/group-membership-api";
+import {
   groupApiSchema,
   inviteSchema,
   planProposalFieldSchema,
@@ -37,21 +39,11 @@ export class GroupPlanDetailApi {
   }
 
   static async joinGroup(groupId: string) {
-    const response = await apiClient.post(`explore/groups/${groupId}/join`);
-
-    return parseJsonWithRequestId(response, (value) =>
-      exploreJoinResultSchema.parse(value),
-    );
+    return postExploreGroupJoin(groupId);
   }
 
   static async cancelJoinRequest(groupId: string) {
-    const response = await apiClient.post(
-      `explore/groups/${groupId}/cancel-request`,
-    );
-
-    return parseJsonWithRequestId(response, (value) =>
-      exploreJoinRequestCancelResultSchema.parse(value),
-    );
+    return postExploreGroupJoinRequestCancel(groupId);
   }
 
   static async acceptInvite(inviteId: string) {

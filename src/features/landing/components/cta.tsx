@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { motion, useReducedMotion } from "framer-motion";
+import { domAnimation, LazyMotion, m, useReducedMotion } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
 import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
 import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
@@ -33,45 +33,48 @@ export function CtaSection() {
         aria-hidden="true"
       />
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-        <motion.div
-          initial={revealInitial}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={CTA_VIEWPORT}
-          transition={getCtaRevealTransition(prefersReducedMotion, 0.1)}
-        >
-          <h2 className="mb-6 text-balance font-bold font-sans text-3xl text-white leading-tight sm:text-5xl">
-            Stop waiting for the right{" "}
-            <span className="text-forge-teal">group</span> to appear.
-          </h2>
-          <p className="mx-auto mb-12 max-w-xl text-pretty font-sans text-lg text-text-dark-secondary leading-relaxed">
-            The setup takes a little thought. That's the point. TeamForge uses
-            it to form one small group around something you actually want to do.
-          </p>
-        </motion.div>
-        <motion.div
-          initial={revealInitial}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={CTA_VIEWPORT}
-          transition={getCtaRevealTransition(prefersReducedMotion, 0.2)}
-          className="mb-6 flex flex-col items-center justify-center gap-4 sm:flex-row"
-        >
-          <CtaPrimaryActionButton
-            isResolvingAuthAction={isResolvingAuthAction}
-            primaryAction={primaryAction}
-          />
+        <LazyMotion features={domAnimation}>
+          <m.div
+            initial={revealInitial}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={CTA_VIEWPORT}
+            transition={getCtaRevealTransition(prefersReducedMotion, 0.1)}
+          >
+            <h2 className="mb-6 text-balance font-bold font-sans text-3xl text-white leading-tight sm:text-5xl">
+              Stop waiting for the right{" "}
+              <span className="text-forge-teal">group</span> to appear.
+            </h2>
+            <p className="mx-auto mb-12 max-w-xl text-pretty font-sans text-lg text-text-dark-secondary leading-relaxed">
+              The setup takes a little thought. That's the point. TeamForge uses
+              it to form one small group around something you actually want to
+              do.
+            </p>
+          </m.div>
+          <m.div
+            initial={revealInitial}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={CTA_VIEWPORT}
+            transition={getCtaRevealTransition(prefersReducedMotion, 0.2)}
+            className="mb-6 flex flex-col items-center justify-center gap-4 sm:flex-row"
+          >
+            <CtaPrimaryActionButton
+              isResolvingAuthAction={isResolvingAuthAction}
+              primaryAction={primaryAction}
+            />
 
-          <CtaDownloadButton />
-        </motion.div>
-        <motion.p
-          initial={prefersReducedMotion ? false : { opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={CTA_VIEWPORT}
-          transition={getCtaRevealTransition(prefersReducedMotion, 0.7)}
-          className="font-sans text-text-dark-muted text-xs"
-        >
-          Free to use &nbsp;&middot;&nbsp; No card required &nbsp;&middot;&nbsp;
-          No spam
-        </motion.p>
+            <CtaDownloadButton />
+          </m.div>
+          <m.p
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={CTA_VIEWPORT}
+            transition={getCtaRevealTransition(prefersReducedMotion, 0.7)}
+            className="font-sans text-text-dark-muted text-xs"
+          >
+            Free to use &nbsp;&middot;&nbsp; No card required
+            &nbsp;&middot;&nbsp; No spam
+          </m.p>
+        </LazyMotion>
       </div>
     </section>
   );

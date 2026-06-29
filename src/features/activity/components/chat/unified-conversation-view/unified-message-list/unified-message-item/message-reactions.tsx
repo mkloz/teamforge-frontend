@@ -1,5 +1,11 @@
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { memo, useEffect, useState } from "react";
+import {
+  AnimatePresence,
+  domAnimation,
+  LazyMotion,
+  m,
+  useReducedMotion,
+} from "framer-motion";
+import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -41,7 +47,7 @@ interface MessageReactionsProps {
   onToggleReaction?: (emoji: string) => void;
 }
 
-export const MessageReactions = memo(function MessageReactions({
+export function MessageReactions({
   reactions,
   isOwn,
   className,
@@ -87,7 +93,7 @@ export const MessageReactions = memo(function MessageReactions({
       })}
     </div>
   );
-});
+}
 
 function getReactionButtonTone({
   isActive,
@@ -108,7 +114,10 @@ function getReactionButtonTone({
 }
 
 function AnimatedReactionCount({ count }: { count: number }) {
-  const [previousCount, setPreviousCount] = useState(count);
+  const [lastAnimatedCount, setLastAnimatedCount] = useState<number | null>(
+    null,
+  );
+  const previousCount = lastAnimatedCount ?? count;
   const prefersReducedMotion = useReducedMotion();
   const direction: CountDirection = count >= previousCount ? 1 : -1;
   const isCounterMounted = count > 1 || previousCount > 1;
@@ -117,9 +126,9 @@ function AnimatedReactionCount({ count }: { count: number }) {
     reducedMotion: Boolean(prefersReducedMotion),
   };
 
-  useEffect(() => {
-    setPreviousCount(count);
-  }, [count]);
+  function rememberAnimatedCount() {
+    setLastAnimatedCount((current) => (current === count ? current : count));
+  }
 
   return (
     <span
@@ -128,22 +137,30 @@ function AnimatedReactionCount({ count }: { count: number }) {
         !isCounterMounted && "w-0 min-w-0",
       )}
     >
-      <AnimatePresence custom={motionState} initial={false} mode="popLayout">
-        {count > 1 && (
-          <motion.span
-            key={count}
-            animate="center"
-            className="col-start-1 row-start-1 flex h-full items-center justify-center leading-none opacity-95"
-            custom={motionState}
-            exit="exit"
-            initial="enter"
-            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-            variants={REACTION_COUNT_VARIANTS}
-          >
-            {count}
-          </motion.span>
-        )}
-      </AnimatePresence>
+      <LazyMotion features={domAnimation}>
+        <AnimatePresence
+          custom={motionState}
+          initial={false}
+          mode="popLayout"
+          onExitComplete={rememberAnimatedCount}
+        >
+          {count > 1 && (
+            <m.span
+              key={count}
+              animate="center"
+              className="col-start-1 row-start-1 flex h-full items-center justify-center leading-none opacity-95"
+              custom={motionState}
+              exit="exit"
+              initial="enter"
+              onAnimationComplete={rememberAnimatedCount}
+              transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+              variants={REACTION_COUNT_VARIANTS}
+            >
+              {count}
+            </m.span>
+          )}
+        </AnimatePresence>
+      </LazyMotion>
     </span>
   );
 }

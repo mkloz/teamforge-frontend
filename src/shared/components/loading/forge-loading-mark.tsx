@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { ForgeLoadingHammerShape } from "@/shared/components/loading/forge-loading-hammer-shape";
 import { cn } from "@/shared/lib/utils";
 
 interface ForgeLoadingMarkProps {
@@ -71,13 +72,12 @@ export function ForgeLoadingMark({
   } satisfies ForgeLoadingMarkStyle;
 
   return (
-    <div
+    <output
       className={cn(
         "forge-loading-mark flex select-none flex-col items-center justify-center gap-3 text-foreground",
         className,
       )}
       style={animationStyle}
-      role="status"
       aria-live="polite"
       aria-label={label}
     >
@@ -182,38 +182,13 @@ export function ForgeLoadingMark({
             strokeLinecap="round"
           />
         </g>
-        <g className="forge-loading-mark__hammer">
-          <g transform="translate(4 -9.5)">
-            <rect
-              x="112"
-              y="91"
-              width="52"
-              height="7"
-              rx="3.5"
-              fill="transparent"
-              stroke="currentColor"
-              strokeWidth="3.5"
-            />
-            <path
-              d="M101 78h12c2.761 0 5 2.239 5 5v24c0 2.761-2.239 5-5 5h-12c-2.761 0-5-2.239-5-5V83c0-2.761 2.239-5 5-5Z"
-              fill="var(--color-forge-teal)"
-              stroke="currentColor"
-              strokeWidth="3.5"
-            />
-            <path
-              d="M103 83v24"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeWidth="3"
-            />
-          </g>
-        </g>
+        <ForgeLoadingHammerShape className="forge-loading-mark__hammer" />
       </svg>
       {showLabel ? (
         <p className="font-black text-sm">{label}</p>
       ) : (
         <span className="sr-only">{label}</span>
       )}
-    </div>
+    </output>
   );
 }

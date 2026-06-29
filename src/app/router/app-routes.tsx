@@ -1,6 +1,10 @@
 import { createRoute } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
 
+import {
+  AppShellRouteComponent,
+  AppShellRouteLoading,
+} from "@/app/router/app-shell-route-components";
+import { loadAppShellWithNotifications } from "@/app/router/app-shell-route-loaders";
 import { createLazyPageRoute } from "@/app/router/lazy-page-route";
 import { createLazyRouteLoading } from "@/app/router/lazy-route-loading";
 import {
@@ -21,7 +25,6 @@ import { validateForgeRouteSearch } from "@/features/forge/lib/forge-route";
 import { validateHomeRouteSearch } from "@/features/home/lib/home-route";
 import { validateSettingsRouteSearch } from "@/features/settings/lib/settings-route";
 import { appQueryClient } from "@/shared/api/query-client";
-import { ForgeLoadingMark } from "@/shared/components/loading/forge-loading-mark";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
@@ -35,14 +38,6 @@ type SessionRestoredRoutePreload = () => Promise<void>;
 type SessionRestoredPreloadResolver = (
   pathname: string,
 ) => SessionRestoredRoutePreload | undefined;
-
-function loadAppShellWithNotifications() {
-  return import("@/app/router/app-shell-with-notifications").then((module) => ({
-    default: module.AppShellWithNotifications,
-  }));
-}
-
-const AppShellWithNotifications = lazy(loadAppShellWithNotifications);
 
 const homePageModule = createLazyRouteModule(() =>
   import("@/features/home/home-page").then((m) => ({ default: m.HomePage })),
@@ -431,23 +426,7 @@ function preloadMatchedAppRouteModule(pathname: string) {
   void matchedPreloader?.module.preload().catch(() => null);
 }
 
-function AppShellRouteComponent() {
-  return (
-    <Suspense fallback={<AppShellRouteLoading />}>
-      <AppShellWithNotifications />
-    </Suspense>
-  );
-}
-
-function AppShellRouteLoading() {
-  return (
-    <div className="loading-canvas-glow flex min-h-dvh items-center justify-center px-6 text-ink">
-      <ForgeLoadingMark label="Loading TeamForge" size="md" />
-    </div>
-  );
-}
-
-export const appShellRoute = createRoute({
+const appShellBaseRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
   beforeLoad: ({ location }) => {
@@ -463,7 +442,7 @@ export const appShellRoute = createRoute({
 });
 
 const homeRoute = createRoute({
-  getParentRoute: () => appShellRoute,
+  getParentRoute: () => appShellBaseRoute,
   path: "/home",
   validateSearch: validateHomeRouteSearch,
   loader: createRouteModuleLoader(homePageModule),
@@ -484,7 +463,7 @@ const homeRoute = createRoute({
 });
 
 const exploreRoute = createRoute({
-  getParentRoute: () => appShellRoute,
+  getParentRoute: () => appShellBaseRoute,
   path: "/explore",
   validateSearch: validateExploreRouteSearch,
   loader: createExploreRouteLoader(explorePageModule),
@@ -505,7 +484,7 @@ const exploreRoute = createRoute({
 });
 
 const groupPlanDetailRoute = createRoute({
-  getParentRoute: () => appShellRoute,
+  getParentRoute: () => appShellBaseRoute,
   path: "/groups/$groupId",
   validateSearch: validateGroupPlanDetailSearch,
   loader: createGroupPlanDetailRouteLoader(groupPlanDetailPageModule),
@@ -526,7 +505,7 @@ const groupPlanDetailRoute = createRoute({
 });
 
 const activityRoute = createRoute({
-  getParentRoute: () => appShellRoute,
+  getParentRoute: () => appShellBaseRoute,
   path: "/activity",
   validateSearch: validateActivityRouteSearch,
   loader: createActivityRouteLoader(activityPageModule),
@@ -547,7 +526,7 @@ const activityRoute = createRoute({
 });
 
 const profileRoute = createRoute({
-  getParentRoute: () => appShellRoute,
+  getParentRoute: () => appShellBaseRoute,
   path: "/profile",
   loader: createRouteModuleLoader(profilePageModule),
   staleTime: Number.POSITIVE_INFINITY,
@@ -567,7 +546,7 @@ const profileRoute = createRoute({
 });
 
 const userDetailRoute = createRoute({
-  getParentRoute: () => appShellRoute,
+  getParentRoute: () => appShellBaseRoute,
   path: "/users/$userId",
   validateSearch: validateUserDetailSearch,
   loader: createUserDetailRouteLoader(userDetailPageModule),
@@ -588,7 +567,7 @@ const userDetailRoute = createRoute({
 });
 
 const settingsRoute = createRoute({
-  getParentRoute: () => appShellRoute,
+  getParentRoute: () => appShellBaseRoute,
   path: "/settings",
   validateSearch: validateSettingsRouteSearch,
   loader: createRouteModuleLoader(settingsPageModule),
@@ -609,7 +588,7 @@ const settingsRoute = createRoute({
 });
 
 const forgeRoute = createRoute({
-  getParentRoute: () => appShellRoute,
+  getParentRoute: () => appShellBaseRoute,
   path: "/forge",
   validateSearch: validateForgeRouteSearch,
   loader: createRouteModuleLoader(forgePageModule),
@@ -628,7 +607,7 @@ const forgeRoute = createRoute({
   }),
 });
 
-export const appRoutes = [
+const appRoutes = [
   homeRoute,
   exploreRoute,
   groupPlanDetailRoute,
@@ -639,13 +618,4 @@ export const appRoutes = [
   forgeRoute,
 ];
 
-export const appRouteModules = [
-  homePageModule,
-  explorePageModule,
-  groupPlanDetailPageModule,
-  activityPageModule,
-  profilePageModule,
-  userDetailPageModule,
-  settingsPageModule,
-  forgePageModule,
-];
+export const appShellRoute = appShellBaseRoute.addChildren(appRoutes);

@@ -49,7 +49,7 @@ export function ErrorStateSvg({
   );
 }
 
-export function ErrorStateLayerMasks({
+function renderErrorStateLayerMasks({
   cutoutPaths,
   idPrefix,
   visiblePaths,
@@ -78,7 +78,7 @@ export function ErrorStateLayerMasks({
   );
 }
 
-export function ErrorStateLayeredPaths({
+function renderErrorStateLayeredPaths({
   cutoutPaths,
   idPrefix,
   visiblePaths,
@@ -103,3 +103,8 @@ export function ErrorStateLayeredPaths({
     </g>
   );
 }
+
+const ErrorStateLayerMasks = renderErrorStateLayerMasks;
+const ErrorStateLayeredPaths = renderErrorStateLayeredPaths;
+
+export { ErrorStateLayeredPaths, ErrorStateLayerMasks };

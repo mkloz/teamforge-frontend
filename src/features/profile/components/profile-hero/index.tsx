@@ -27,7 +27,7 @@ export function ProfileHero({
   user,
   archetype,
   socialRead,
-  renderActions = () => <ProfileActions />,
+  renderActions,
   showMissingDetailsAction = true,
   heroRowRef,
 }: ProfileHeroProps) {
@@ -37,6 +37,7 @@ export function ProfileHero({
   >("friends");
   const { data: currentUser } = useCurrentUserQuery();
   const isSelf = currentUser?.id === user.id;
+  const ProfileActionsSlot = renderActions ?? ProfileActions;
 
   return (
     <Sheet>
@@ -56,7 +57,7 @@ export function ProfileHero({
                 <ProfileIdentity
                   user={user}
                   archetype={archetype}
-                  actions={renderActions()}
+                  actions={<ProfileActionsSlot />}
                   showMissingDetailsAction={showMissingDetailsAction}
                   onOpenFriends={setFriendsTab}
                 />
@@ -69,7 +70,9 @@ export function ProfileHero({
             socialRead={socialRead}
             userBio={user.bio}
           >
-            <div className="lg:hidden">{renderActions()}</div>
+            <div className="lg:hidden">
+              <ProfileActionsSlot />
+            </div>
             <ProfileMobileSocialStats
               user={user}
               onOpenFriends={setFriendsTab}

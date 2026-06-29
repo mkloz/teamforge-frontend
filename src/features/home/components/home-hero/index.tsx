@@ -80,14 +80,16 @@ function useHomeHeroData(): HomeHeroLoadState {
     viewer,
     viewerLoading,
   });
-  const recommendationsQuery = useQuery({
+  const {
+    data: recommendations = EMPTY_RECOMMENDATIONS,
+    isLoading: isRecommendationsLoading,
+  } = useQuery({
     ...HomeQueryFactory.recommendations(),
     enabled: shouldLoadRecommendations,
   });
-  const recommendations = recommendationsQuery.data ?? EMPTY_RECOMMENDATIONS;
   const isHeroDataLoading = getIsHomeHeroDataLoading({
     isCoreHeroDataLoading,
-    isRecommendationsLoading: recommendationsQuery.isLoading,
+    isRecommendationsLoading,
     shouldLoadRecommendations,
   });
 
@@ -143,10 +145,10 @@ function getIsHomeHeroDataLoading({
 }
 
 function HomeHeroView({
-  compactNotificationButton = <HomeHeroNotificationButton />,
+  compactNotificationButton,
   groups,
   invitations,
-  notificationButton = <HomeHeroNotificationButton />,
+  notificationButton,
   plans,
   recommendations,
   stats,
@@ -173,7 +175,9 @@ function HomeHeroView({
     >
       <HomeHeroCompactHeader
         isVisible={isCompactVisible}
-        notificationButton={compactNotificationButton}
+        notificationButton={
+          compactNotificationButton ?? <HomeHeroNotificationButton />
+        }
         sub={compactCopy.sub}
         title={compactCopy.title}
       />
@@ -181,7 +185,9 @@ function HomeHeroView({
       <div className="flex w-full flex-col gap-5">
         <HomeHeroPrimaryHeader
           greeting={greeting}
-          notificationButton={notificationButton}
+          notificationButton={
+            notificationButton ?? <HomeHeroNotificationButton />
+          }
           sub={sub}
         />
 

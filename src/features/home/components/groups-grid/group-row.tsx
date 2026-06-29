@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { BellOff, type LucideIcon, Pin, Users } from "lucide-react";
+import { BellOff, Pin, Users } from "lucide-react";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import { Avatar } from "@/shared/components/common/avatar";
@@ -19,6 +19,8 @@ interface RelativeTimeParts {
   unit: "d" | "h" | "m" | "w";
   value: number;
 }
+
+type GroupMetaStatusKind = "muted" | "pinned";
 
 const RELATIVE_TIME_THRESHOLDS = [
   { maxMinutes: 60, minutesPerUnit: 1, unit: "m" },
@@ -107,13 +109,13 @@ function getInterestContextLine(group: HomeGroup) {
   return null;
 }
 
-function getMetaStatusIcon({ isMuted, isPinned }: GroupRowProps) {
+function getMetaStatusKind({ isMuted, isPinned }: GroupRowProps) {
   if (isMuted) {
-    return BellOff;
+    return "muted";
   }
 
   if (isPinned) {
-    return Pin;
+    return "pinned";
   }
 
   return null;
@@ -185,10 +187,10 @@ function GroupAvatar({
 
 function GroupMetaStatus({
   metaStatus,
-  MetaStatusIcon,
+  statusKind,
 }: {
   metaStatus: string | null;
-  MetaStatusIcon: LucideIcon | null;
+  statusKind: GroupMetaStatusKind | null;
 }) {
   if (!metaStatus) {
     return null;
@@ -198,13 +200,27 @@ function GroupMetaStatus({
     <>
       <span className="size-1 rounded-full bg-border" aria-hidden="true" />
       <span className="flex shrink-0 items-center gap-1 font-semibold text-slate-muted text-xs">
-        {MetaStatusIcon ? (
-          <MetaStatusIcon className="size-2.5" aria-hidden="true" />
-        ) : null}
+        <GroupMetaStatusIcon statusKind={statusKind} />
         {metaStatus}
       </span>
     </>
   );
+}
+
+function GroupMetaStatusIcon({
+  statusKind,
+}: {
+  statusKind: GroupMetaStatusKind | null;
+}) {
+  if (statusKind === "muted") {
+    return <BellOff className="size-2.5" aria-hidden="true" />;
+  }
+
+  if (statusKind === "pinned") {
+    return <Pin className="size-2.5" aria-hidden="true" />;
+  }
+
+  return null;
 }
 
 function GroupUnreadCountBadge({
@@ -227,15 +243,15 @@ export function GroupRow({
   group,
   isMuted = false,
   isPinned = false,
-  lastActivityAt = group.updatedAt,
+  lastActivityAt,
   messagePreview,
   unreadCount = 0,
 }: GroupRowProps) {
-  const lastActivity = formatRelativeTime(lastActivityAt);
+  const lastActivity = formatRelativeTime(lastActivityAt ?? group.updatedAt);
   const hasUnreadMessages = unreadCount > 0;
   const contextLine = getGroupContextLine(group, messagePreview);
   const metaStatus = formatMetaStatus({ group, isMuted, isPinned });
-  const MetaStatusIcon = getMetaStatusIcon({ group, isMuted, isPinned });
+  const metaStatusKind = getMetaStatusKind({ group, isMuted, isPinned });
 
   return (
     <li>
@@ -268,7 +284,7 @@ export function GroupRow({
             </span>
             <GroupMetaStatus
               metaStatus={metaStatus}
-              MetaStatusIcon={MetaStatusIcon}
+              statusKind={metaStatusKind}
             />
           </div>
         </div>

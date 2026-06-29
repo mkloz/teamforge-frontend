@@ -448,11 +448,13 @@ function MessageRowContent({
       >
         <MessageRenderer
           message={message}
-          showSender={rowState.isFirstInGroup}
-          isHighlighted={rowState.isHighlighted}
-          isSelectable={rowState.isSelectable}
-          isSelected={rowState.isSelected}
-          isSelectionMode={selectionState.isSelectionMode}
+          renderState={{
+            isHighlighted: rowState.isHighlighted,
+            isSelectable: rowState.isSelectable,
+            isSelected: rowState.isSelected,
+            isSelectionMode: selectionState.isSelectionMode,
+            showSender: rowState.isFirstInGroup,
+          }}
           kind={rendererProps.kind}
           onActivateReplyTarget={rendererProps.onActivateReplyTarget}
           onStartSelection={rendererProps.onStartSelection}

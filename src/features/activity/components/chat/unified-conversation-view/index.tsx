@@ -1,5 +1,5 @@
 import type { RefObject } from "react";
-import { memo, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { PlanChangeDialog } from "@/features/activity/components/groups/group-detail-panel/plan-section/plan-change-dialog";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import {
@@ -59,13 +59,16 @@ interface BaseConversationProps {
   onSendMessage: (input: ActivitySendMessageInput) => Promise<void> | void;
 }
 
+interface ConversationSearchState {
+  conversationId: string | null;
+  query: string;
+}
+
 /**
  * UnifiedConversationView - The flagship container for all conversations.
  * Consolidates Groups and Direct Chats into a single, high-performance UI.
  */
-export const UnifiedConversationView = memo(function UnifiedConversationView(
-  props: UnifiedConversationViewProps,
-) {
+export function UnifiedConversationView(props: UnifiedConversationViewProps) {
   const {
     messages,
     isTyping = false,
@@ -100,7 +103,14 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     isBlockedDirectChat,
     isNotesChat,
   } = getConversationViewState(props);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchState, setSearchState] = useState<ConversationSearchState>({
+    conversationId,
+    query: "",
+  });
+  const searchQuery = getActiveConversationSearchQuery(
+    searchState,
+    conversationId,
+  );
   const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -136,12 +146,6 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     query: searchQuery,
   });
 
-  useEffect(() => {
-    if (conversationId) {
-      setSearchQuery("");
-    }
-  }, [conversationId]);
-
   const {
     clearMessageSelection,
     isMessageSelectionMode,
@@ -150,6 +154,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     startMessageSelection,
     toggleMessageSelection,
   } = useConversationMessageSelection({ conversationId, messages });
+
   const searchResultLabel = getSearchResultLabel({
     activeMatchIndex,
     isSearching,
@@ -167,9 +172,13 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     allPinnedMessages,
     unpinMessage,
   });
-  const handleActivatePinnedMessage = createPinnedMessageActivateHandler(
-    activeMessageScrollHandleRef,
-  );
+  const handleActivatePinnedMessage = (messageId: string) => {
+    activeMessageScrollHandleRef.current?.scrollToMessage(messageId, {
+      highlight: true,
+    });
+  };
+  const handleSearchQueryChange = (query: string) =>
+    setSearchState(getNextConversationSearchState(conversationId, query));
 
   return (
     <div
@@ -204,7 +213,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         isSearchNavigationDisabled={matchCount === 0}
         showAction={!isNotesChat}
         onBack={onBack}
-        onSearchQueryChange={setSearchQuery}
+        onSearchQueryChange={handleSearchQueryChange}
         onSearchNext={goToNextMatch}
         onSearchPrevious={goToPreviousMatch}
         onToggleAction={getHeaderToggleHandler(isNotesChat, onToggleAction)}
@@ -236,19 +245,23 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         conversationId={conversationId}
         firstUnreadMessageId={firstUnreadMessageId}
         focusedMessageId={focusedMessageId}
-        hasOlderMessages={hasOlderMessages}
-        isLoadingMessages={isLoadingMessages}
-        isLoadingOlderMessages={isLoadingOlderMessages}
-        isMessageError={isMessageError}
-        isMessageSelectionMode={isMessageSelectionMode}
-        isNotesChat={isNotesChat}
-        isOnline={isOnline}
         kind={kind}
+        messageListStatus={{
+          hasOlderMessages,
+          isLoadingMessages,
+          isLoadingOlderMessages,
+          isMessageError,
+          isNotesChat,
+          isOnline,
+        }}
         messages={messages}
         messagesContainerRef={messagesContainerRef}
         messagesEndRef={messagesEndRef}
         normalizedQuery={normalizedQuery}
-        selectedMessageIds={selectedMessageIds}
+        selectionState={{
+          isSelectionMode: isMessageSelectionMode,
+          selectedMessageIds,
+        }}
         onLoadOlderMessages={onLoadOlderMessages}
         onRetryMessages={onRetryMessages}
         onShowParticipantProfile={onShowParticipantProfile}
@@ -273,7 +286,21 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       />
     </div>
   );
-});
+}
+
+function getActiveConversationSearchQuery(
+  searchState: ConversationSearchState,
+  conversationId: string | null,
+) {
+  return searchState.conversationId === conversationId ? searchState.query : "";
+}
+
+function getNextConversationSearchState(
+  conversationId: string | null,
+  query: string,
+): ConversationSearchState {
+  return { conversationId, query };
+}
 
 function ConversationPlanProposalDialog({
   activePlan,
@@ -387,15 +414,6 @@ function createPinnedMessageUnpinHandler({
 
     void unpinMessage(targetMessage);
   };
-}
-
-function createPinnedMessageActivateHandler(
-  activeMessageScrollHandleRef: RefObject<MessageScrollHandle | null>,
-) {
-  return (messageId: string) =>
-    activeMessageScrollHandleRef.current?.scrollToMessage(messageId, {
-      highlight: true,
-    });
 }
 
 function getConversationComposerGroup(

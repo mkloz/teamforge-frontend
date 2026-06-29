@@ -1,5 +1,5 @@
 import { Bookmark, Clock, UserStar, Vote } from "lucide-react";
-import { memo, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { PLAN_STATUS_CONFIG } from "@/features/activity/components/chat/unified-conversation-view/chat-status-bar/chat-status-plan-config";
 import type { Plan } from "@/features/activity/lib/activity-contract";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -26,7 +26,7 @@ interface GroupIndicatorsViewState {
   planStatusConfig: (typeof PLAN_STATUS_CONFIG)[Plan["status"]] | null;
 }
 
-export const GroupIndicators = memo(function GroupIndicators({
+export function GroupIndicators({
   action,
   countdown,
   pendingProposalCount = 0,
@@ -66,7 +66,7 @@ export const GroupIndicators = memo(function GroupIndicators({
       {action}
     </div>
   );
-});
+}
 
 function getGroupIndicatorsViewState({
   action,

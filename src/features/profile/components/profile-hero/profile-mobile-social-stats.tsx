@@ -1,13 +1,12 @@
 import { Link2, type LucideIcon, UserPlus, Users } from "lucide-react";
-import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
-import { useProfileFriendRequests } from "@/features/profile/hooks/use-profile-friend-requests";
-import { useProfileFriends } from "@/features/profile/hooks/use-profile-friends";
-import { useProfilePublicFriends } from "@/features/profile/hooks/use-profile-public-friends";
-import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { SheetTrigger } from "@/shared/components/ui/sheet";
 import type { User } from "@/shared/schemas";
+import {
+  type FriendsSheetTab,
+  type ProfileSocialSummary,
+  useProfileSocialSummary,
+} from "./use-profile-social-summary";
 
-type FriendsSheetTab = "friends" | "requests" | "public_friends";
 type SocialStatVariant = "amber" | "mutual" | "teal";
 
 interface ProfileMobileSocialStatsProps {
@@ -21,21 +20,6 @@ interface MobileSocialStat {
   label: string;
   tab: FriendsSheetTab;
   variant: SocialStatVariant;
-}
-
-interface MobileSocialStatsInput {
-  canShowPublicFriends: boolean;
-  commonFriendsCount: number;
-  friendsCount: number;
-  isSelf: boolean;
-  publicFriendsCount: number;
-  requestsCount: number;
-}
-
-interface MobileSocialQueryScope {
-  canShowPublicFriends: boolean;
-  commonFriendsUserId: string | undefined;
-  publicFriendsUserId: string;
 }
 
 type MobileSocialStatConfig = Omit<MobileSocialStat, "count">;
@@ -98,7 +82,7 @@ function getMobileSocialStats({
   isSelf,
   publicFriendsCount,
   requestsCount,
-}: MobileSocialStatsInput): MobileSocialStat[] {
+}: ProfileSocialSummary): MobileSocialStat[] {
   if (isSelf) {
     return getSelfMobileSocialStats({ friendsCount, requestsCount });
   }
@@ -113,7 +97,7 @@ function getMobileSocialStats({
 function getSelfMobileSocialStats({
   friendsCount,
   requestsCount,
-}: Pick<MobileSocialStatsInput, "friendsCount" | "requestsCount">) {
+}: Pick<ProfileSocialSummary, "friendsCount" | "requestsCount">) {
   const stats = [
     createMobileSocialStat(MOBILE_SOCIAL_STAT_CONFIGS.friends, friendsCount),
   ];
@@ -135,7 +119,7 @@ function getPublicMobileSocialStats({
   commonFriendsCount,
   publicFriendsCount,
 }: Pick<
-  MobileSocialStatsInput,
+  ProfileSocialSummary,
   "canShowPublicFriends" | "commonFriendsCount" | "publicFriendsCount"
 >) {
   const stats: MobileSocialStat[] = [];
@@ -207,7 +191,8 @@ export function ProfileMobileSocialStats({
   user,
   onOpenFriends,
 }: ProfileMobileSocialStatsProps) {
-  const socialStats = useMobileSocialStats(user);
+  const socialSummary = useProfileSocialSummary(user);
+  const socialStats = getMobileSocialStats(socialSummary);
 
   if (socialStats.length === 0) {
     return null;
@@ -224,49 +209,4 @@ export function ProfileMobileSocialStats({
       ))}
     </div>
   );
-}
-
-function useMobileSocialStats(user: User) {
-  const { data: currentUser } = useCurrentUserQuery();
-  const isSelf = getIsSelfProfile(currentUser?.id ?? null, user.id);
-  const queryScope = getMobileSocialQueryScope(user, isSelf);
-
-  const { friends } = useProfileFriends();
-  const { requests } = useProfileFriendRequests();
-  const { commonFriends } = useProfileCommonFriends(
-    queryScope.commonFriendsUserId,
-  );
-  const { publicFriends } = useProfilePublicFriends(
-    queryScope.publicFriendsUserId,
-  );
-
-  return getMobileSocialStats({
-    canShowPublicFriends: queryScope.canShowPublicFriends,
-    commonFriendsCount: getCollectionCount(commonFriends),
-    friendsCount: getCollectionCount(friends),
-    isSelf,
-    publicFriendsCount: getCollectionCount(publicFriends),
-    requestsCount: getCollectionCount(requests),
-  });
-}
-
-function getMobileSocialQueryScope(
-  user: User,
-  isSelf: boolean,
-): MobileSocialQueryScope {
-  const canShowPublicFriends = !isSelf && user.showFriendsListOnProfile;
-
-  return {
-    canShowPublicFriends,
-    commonFriendsUserId: isSelf ? undefined : user.id,
-    publicFriendsUserId: canShowPublicFriends ? user.id : "",
-  };
-}
-
-function getIsSelfProfile(currentUserId: string | null, profileUserId: string) {
-  return currentUserId === profileUserId;
-}
-
-function getCollectionCount(collection: { length: number } | null | undefined) {
-  return collection?.length ?? 0;
 }

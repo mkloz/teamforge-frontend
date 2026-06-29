@@ -4,6 +4,7 @@ import type {
   LaneKey,
 } from "../types";
 import { createActivityIdea } from "./activity-idea-factory";
+import { formatActivityIdeaList } from "./activity-idea-formatters";
 
 export function buildPrimaryLaneActivityIdea(
   context: ActivityIdeaContext,
@@ -73,7 +74,7 @@ export function buildSecondaryActivityIdeas(
 function buildPrimaryActivityDetail(context: ActivityIdeaContext) {
   const { anchors, primaryLane, secondaryLane } = context;
   const anchorPhrase =
-    anchors.length > 0 ? ` anchored by ${formatList(anchors)}` : "";
+    anchors.length > 0 ? ` anchored by ${formatActivityIdeaList(anchors)}` : "";
   const lanePhrase = secondaryLane
     ? `${primaryLane.label.toLowerCase()} with a ${secondaryLane.label.toLowerCase()} pull`
     : primaryLane.label.toLowerCase();
@@ -99,12 +100,4 @@ function getPlanPressureNote(context: ActivityIdeaContext) {
   }
 
   return "Simple enough to join, concrete enough to avoid a plain meet-up.";
-}
-
-function formatList(items: string[]) {
-  if (items.length <= 1) {
-    return items[0] ?? "";
-  }
-
-  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }

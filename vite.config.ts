@@ -556,6 +556,16 @@ function readTrimmedEnv(name: string) {
   return process.env[name]?.trim() || null;
 }
 
+function getOptionalTrimmedValue(value: string | undefined) {
+  const trimmedValue = value?.trim();
+
+  return trimmedValue ? trimmedValue : null;
+}
+
+function asOptionalPluginValue(value: string | null) {
+  return value === null ? undefined : value;
+}
+
 function getSentryReleaseName() {
   return (
     readTrimmedEnv("SENTRY_RELEASE") ??
@@ -564,25 +574,35 @@ function getSentryReleaseName() {
   );
 }
 
-function hasSentrySourcemapUploadConfig() {
-  return Boolean(
-    readTrimmedEnv("SENTRY_AUTH_TOKEN") &&
-      readTrimmedEnv("SENTRY_ORG") &&
-      readTrimmedEnv("SENTRY_PROJECT"),
-  );
+function getSentrySourcemapUploadConfig() {
+  const authToken = readTrimmedEnv("SENTRY_AUTH_TOKEN");
+  const org = readTrimmedEnv("SENTRY_ORG");
+  const project = readTrimmedEnv("SENTRY_PROJECT");
+
+  if (!authToken || !org || !project) {
+    return null;
+  }
+
+  return { authToken, org, project };
 }
 
 function getSentryBuildPlugins(command: string) {
-  if (command !== "build" || !hasSentrySourcemapUploadConfig()) {
+  if (command !== "build") {
+    return [];
+  }
+
+  const uploadConfig = getSentrySourcemapUploadConfig();
+
+  if (!uploadConfig) {
     return [];
   }
 
   return sentryVitePlugin({
-    authToken: readTrimmedEnv("SENTRY_AUTH_TOKEN") ?? undefined,
-    org: readTrimmedEnv("SENTRY_ORG") ?? undefined,
-    project: readTrimmedEnv("SENTRY_PROJECT") ?? undefined,
+    authToken: uploadConfig.authToken,
+    org: uploadConfig.org,
+    project: uploadConfig.project,
     release: {
-      name: getSentryReleaseName() ?? undefined,
+      name: asOptionalPluginValue(getSentryReleaseName()),
     },
     sourcemaps: {
       assets: "./dist/assets/**",
@@ -598,32 +618,69 @@ function getSentryBuildPlugins(command: string) {
   });
 }
 
+function hasRequiredPublicBuildEnv({
+  apiUrl,
+  appUrl,
+  mediaBaseUrl,
+}: {
+  apiUrl: string | null;
+  appUrl: string | null;
+  mediaBaseUrl: string | null;
+}) {
+  return Boolean(appUrl && apiUrl && mediaBaseUrl);
+}
+
+function assertRequiredPublicBuildEnv({
+  apiUrl,
+  appUrl,
+  command,
+  mediaBaseUrl,
+}: {
+  apiUrl: string | null;
+  appUrl: string | null;
+  command: string;
+  mediaBaseUrl: string | null;
+}) {
+  if (command !== "build") {
+    return;
+  }
+
+  if (hasRequiredPublicBuildEnv({ apiUrl, appUrl, mediaBaseUrl })) {
+    return;
+  }
+
+  throw new Error(
+    "VITE_APP_URL, VITE_API_URL, and VITE_MEDIA_BASE_URL must be set to build TeamForge.",
+  );
+}
+
+function getReactPluginOptions(command: string) {
+  if (command !== "build") {
+    return undefined;
+  }
+
+  return {
+    babel: {
+      plugins: ["babel-plugin-react-compiler"],
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const appUrl = normalizeBaseUrl(env.VITE_APP_URL);
   const apiUrl = normalizeBaseUrl(env.VITE_API_URL);
   const mediaBaseUrl = normalizeBaseUrl(env.VITE_MEDIA_BASE_URL);
-  const sentryDsn = env.VITE_SENTRY_DSN?.trim() || null;
-  const shouldUploadSentrySourcemaps = hasSentrySourcemapUploadConfig();
+  const sentryDsn = getOptionalTrimmedValue(env.VITE_SENTRY_DSN);
+  const shouldUploadSentrySourcemaps =
+    getSentrySourcemapUploadConfig() !== null;
 
-  if (command === "build" && (!appUrl || !apiUrl || !mediaBaseUrl)) {
-    throw new Error(
-      "VITE_APP_URL, VITE_API_URL, and VITE_MEDIA_BASE_URL must be set to build TeamForge.",
-    );
-  }
+  assertRequiredPublicBuildEnv({ apiUrl, appUrl, command, mediaBaseUrl });
 
   return {
     plugins: [
-      react(
-        command === "build"
-          ? {
-              babel: {
-                plugins: ["babel-plugin-react-compiler"],
-              },
-            }
-          : undefined,
-      ),
+      react(getReactPluginOptions(command)),
       tailwindcss(),
       teamForgePublicHostPlugin({ apiUrl, appUrl, mediaBaseUrl, sentryDsn }),
       teamForgeManifestDevPlugin(),

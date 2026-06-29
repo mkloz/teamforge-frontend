@@ -37,42 +37,41 @@ const inviteBadgeIconMap: Partial<
   FRIEND_INVITE: Handshake,
 };
 
-interface InvitationQueueItemRenderStateInput {
+export interface InvitationQueueItemState {
   acceptingInviteId: string | null;
   decliningInviteId: string | null;
-  invite: AttentionQueueInvitation;
   isAccepting: boolean;
   isDeclining: boolean;
   isFocused: boolean;
   isOnline: boolean;
 }
 
+interface InvitationQueueItemRenderStateInput {
+  invite: AttentionQueueInvitation;
+  state: InvitationQueueItemState;
+}
+
 export function getInvitationQueueItemRenderState({
-  acceptingInviteId,
-  decliningInviteId,
   invite,
-  isAccepting,
-  isDeclining,
-  isFocused,
-  isOnline,
+  state,
 }: InvitationQueueItemRenderStateInput) {
   const isActionDisabled = getQueueActionDisabled({
-    isAccepting,
-    isDeclining,
-    isOnline,
+    isAccepting: state.isAccepting,
+    isDeclining: state.isDeclining,
+    isOnline: state.isOnline,
   });
 
   return {
     acceptButtonDisabled: isActionDisabled,
-    acceptButtonLoading: acceptingInviteId === invite.id,
+    acceptButtonLoading: state.acceptingInviteId === invite.id,
     acceptButtonTitle: getQueueOfflineTitle(
-      isOnline,
+      state.isOnline,
       "Reconnect before accepting invites.",
     ),
     declineButtonDisabled: isActionDisabled,
-    declineButtonLoading: decliningInviteId === invite.id,
+    declineButtonLoading: state.decliningInviteId === invite.id,
     declineButtonTitle: getQueueOfflineTitle(
-      isOnline,
+      state.isOnline,
       "Reconnect before declining invites.",
     ),
     InviteBadgeIcon: getInviteBadgeIcon(invite.type),
@@ -80,7 +79,10 @@ export function getInvitationQueueItemRenderState({
       source: "invite",
     }),
     inviteMeta: getInviteMeta(invite),
-    rowClassName: getQueueItemClassName(isFocused, "hover:bg-forge-teal/5"),
+    rowClassName: getQueueItemClassName(
+      state.isFocused,
+      "hover:bg-forge-teal/5",
+    ),
   };
 }
 

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   getCategoryColorClass,
   getSubcategories,
@@ -61,13 +61,13 @@ export function CategorySection({
           </span>
         </div>
         {selectedInCategory > 0 && (
-          <motion.span
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
+          <m.span
+            initial={{ opacity: 0, scale: 0.75 }}
+            animate={{ opacity: 1, scale: 1 }}
             className="mr-2 ml-auto shrink-0"
           >
             <CountBadge count={selectedInCategory} size="md" tone="teal" />
-          </motion.span>
+          </m.span>
         )}
       </AccordionTrigger>
 

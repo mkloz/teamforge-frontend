@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 
-import { useActivityStore } from "@/features/activity/store/activity.store";
+import { useActivityComposerMessageState } from "@/features/activity/hooks/use-activity-composer-message-state";
 
 interface UseMessageComposerDraftOptions {
   errorMessage: string | null;
@@ -25,12 +25,8 @@ export function useMessageComposerDraft({
   );
   const previousEditingMessageIdRef = useRef<string | null>(null);
 
-  const replyingTo = useActivityStore((state) => state.replyingTo);
-  const editingMessage = useActivityStore((state) => state.editingMessage);
-  const setReplyingTo = useActivityStore((state) => state.setReplyingTo);
-  const setEditingMessage = useActivityStore(
-    (state) => state.setEditingMessage,
-  );
+  const { editingMessage, replyingTo, setEditingMessage, setReplyingTo } =
+    useActivityComposerMessageState();
 
   const editingMessageId = editingMessage?.id ?? null;
   const value = resolveDraftValue(draftValue, editingMessage);

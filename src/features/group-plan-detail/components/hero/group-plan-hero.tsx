@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, QrCode } from "lucide-react";
 import type { ReactNode } from "react";
-import {
-  getHeroCoverImage,
-  HeroCover,
-} from "@/features/group-plan-detail/components/hero/hero-cover";
+import { HeroCover } from "@/features/group-plan-detail/components/hero/hero-cover";
+import { getHeroCoverImage } from "@/features/group-plan-detail/components/hero/hero-cover-image";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import {
   formatCost,

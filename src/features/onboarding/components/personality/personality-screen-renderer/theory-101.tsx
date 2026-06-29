@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import {
   PersonalityScreenShell,
@@ -13,21 +13,21 @@ interface Theory101Props {
 export function Theory101({ onBack, onNext }: Theory101Props) {
   return (
     <PersonalityScreenShell className="max-w-lg">
-      <motion.p
+      <m.p
         variants={fadeUpItem}
         className="mb-3 text-center font-bold font-sans text-forge-teal text-xs"
       >
         How the read works
-      </motion.p>
+      </m.p>
 
-      <motion.h1
+      <m.h1
         variants={fadeUpItem}
         className="mb-5 text-balance text-center font-extrabold font-sans text-display-xs text-ink leading-tight sm:mb-6 sm:text-3xl"
       >
         You are not one fixed type
-      </motion.h1>
+      </m.h1>
 
-      <motion.div
+      <m.div
         variants={fadeUpItem}
         className="mb-8 flex flex-col gap-5 px-1 text-left leading-relaxed"
       >
@@ -75,7 +75,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
           remarkably accurate mathematical map of your personality. It's the
           gold standard in modern psychology, and the foundation of TeamForge.
         </p>
-      </motion.div>
+      </m.div>
 
       <StepNavigation
         onBack={onBack}

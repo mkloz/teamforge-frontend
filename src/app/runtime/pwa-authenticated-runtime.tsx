@@ -9,6 +9,7 @@ import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { realtimeClient } from "@/shared/api/realtime-client";
 import { useUnreadAppBadge } from "@/shared/hooks/use-unread-app-badge";
 import { useUnreadDocumentTitleBadge } from "@/shared/hooks/use-unread-document-title-badge";
+import { subscribeAppResumeEvents } from "@/shared/lib/app-resume-events";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import {
   isPwaServiceWorkerMessage,
@@ -196,37 +197,7 @@ function PwaResumeRefreshRuntime() {
       return undefined;
     }
 
-    function handleFocus() {
-      refreshPwaRuntimeSurfaces("window focus");
-    }
-
-    function handleOnline() {
-      refreshPwaRuntimeSurfaces("network reconnect");
-    }
-
-    function handlePageShow(event: PageTransitionEvent) {
-      if (event.persisted) {
-        refreshPwaRuntimeSurfaces("page restore");
-      }
-    }
-
-    function handleVisibilityChange() {
-      if (document.visibilityState === "visible") {
-        refreshPwaRuntimeSurfaces("app foreground");
-      }
-    }
-
-    window.addEventListener("focus", handleFocus);
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("pageshow", handlePageShow);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("pageshow", handlePageShow);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
+    return subscribeAppResumeEvents(refreshPwaRuntimeSurfaces);
   }, [isAuthenticated]);
 
   return null;

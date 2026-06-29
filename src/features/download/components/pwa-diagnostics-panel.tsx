@@ -10,7 +10,7 @@ import {
   Smartphone,
   Wifi,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile, type IconTileTone } from "@/shared/components/ui/icon-tile";
 import {
@@ -394,18 +394,7 @@ function getInstallPromptItem(
   };
 }
 
-function getSecureContextItem(isSecureContext: boolean | null): DiagnosticItem {
-  if (isSecureContext === null) {
-    return {
-      detail:
-        "Checking whether this page is running in a secure browser context.",
-      icon: KeyRound,
-      label: "Secure context",
-      tone: "neutral",
-      value: "Checking",
-    };
-  }
-
+function getSecureContextItem(isSecureContext: boolean): DiagnosticItem {
   if (isSecureContext) {
     return {
       detail:
@@ -447,7 +436,7 @@ function getDiagnosticItems({
   serviceWorker,
 }: {
   canPromptInstall: boolean;
-  isSecureContext: boolean | null;
+  isSecureContext: boolean;
   isStandalone: boolean;
   push: ReturnType<typeof useWebPushSubscription>;
   serviceWorker: ReturnType<typeof useServiceWorkerDiagnostics>;
@@ -494,17 +483,17 @@ function trackDiagnosticsRefreshError() {
   });
 }
 
+function getSecureContextSnapshot() {
+  return typeof window !== "undefined" && window.isSecureContext;
+}
+
 export function PwaDiagnosticsPanel() {
   const { isStandalone } = usePwaDisplayMode();
   const { canPromptInstall } = usePwaInstallPrompt();
   const serviceWorker = useServiceWorkerDiagnostics();
   const push = useWebPushSubscription();
-  const [isSecureContext, setIsSecureContext] = useState<boolean | null>(null);
+  const isSecureContext = getSecureContextSnapshot();
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  useEffect(() => {
-    setIsSecureContext(window.isSecureContext);
-  }, []);
 
   const diagnostics = getDiagnosticItems({
     canPromptInstall,
@@ -523,34 +512,35 @@ export function PwaDiagnosticsPanel() {
 
     trackDiagnosticsRefreshStarted(serviceWorker);
 
-    try {
-      const serviceWorkerRefresh = getServiceWorkerRefreshTask({
-        push,
-        serviceWorker,
-      });
-      const [serviceWorkerResult] = await Promise.allSettled([
-        serviceWorkerRefresh,
-        push.refreshBrowserSubscription(),
-      ]);
-
-      if (serviceWorkerResult.status !== "fulfilled") {
-        trackDiagnosticsRefreshError();
-        return;
-      }
-
-      if (serviceWorkerResult.value.status === "error") {
-        trackDiagnosticsRefreshError();
-      } else {
-        trackPwaServiceWorkerUpdateCheck({
-          isControlled: serviceWorkerResult.value.isControlled,
-          serviceWorkerStatus: serviceWorkerResult.value.status,
-          source: "download-diagnostics",
-          status: "success",
+    const refreshResults = await Promise.resolve()
+      .then(() => {
+        const serviceWorkerRefresh = getServiceWorkerRefreshTask({
+          push,
+          serviceWorker,
         });
-      }
-    } finally {
-      setIsRefreshing(false);
+
+        return Promise.allSettled([
+          serviceWorkerRefresh,
+          push.refreshBrowserSubscription(),
+        ]);
+      })
+      .catch(() => null);
+    const serviceWorkerResult = refreshResults?.[0];
+
+    if (!serviceWorkerResult || serviceWorkerResult.status !== "fulfilled") {
+      trackDiagnosticsRefreshError();
+    } else if (serviceWorkerResult.value.status === "error") {
+      trackDiagnosticsRefreshError();
+    } else {
+      trackPwaServiceWorkerUpdateCheck({
+        isControlled: serviceWorkerResult.value.isControlled,
+        serviceWorkerStatus: serviceWorkerResult.value.status,
+        source: "download-diagnostics",
+        status: "success",
+      });
     }
+
+    setIsRefreshing(false);
   }
 
   return (

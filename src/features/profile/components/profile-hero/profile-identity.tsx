@@ -18,11 +18,12 @@ interface ProfileIdentityProps {
 export function ProfileIdentity({
   user,
   archetype,
-  actions = <ProfileActions />,
+  actions,
   showMissingDetailsAction = true,
   onOpenFriends,
 }: ProfileIdentityProps) {
   const profileDetails = getProfileIdentityDetails(user);
+  const profileActions = actions ?? <ProfileActions />;
 
   return (
     <div className="flex min-w-0 flex-1 flex-col items-start justify-center pt-0">
@@ -43,7 +44,7 @@ export function ProfileIdentity({
           archetype={archetype}
           onOpenFriends={onOpenFriends}
         />
-        <div className="hidden lg:flex">{actions}</div>
+        <div className="hidden lg:flex">{profileActions}</div>
       </div>
     </div>
   );

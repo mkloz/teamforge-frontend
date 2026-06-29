@@ -1,10 +1,5 @@
 import { Slot } from "@radix-ui/react-slot";
-import {
-  type ComponentPropsWithoutRef,
-  isValidElement,
-  memo,
-  type Ref,
-} from "react";
+import { type ComponentPropsWithoutRef, isValidElement, type Ref } from "react";
 import { cn } from "@/shared/lib/utils";
 import { type ButtonVariants, buttonVariants } from "./button-variants";
 
@@ -125,7 +120,7 @@ function getButtonContentClassName({
  * TeamForge Unified Button (V2)
  * High-fidelity, mechanical-first design system component.
  */
-function ButtonComponent({
+function Button({
   className,
   variant,
   size,
@@ -200,9 +195,5 @@ function ButtonComponent({
     </Comp>
   );
 }
-
-const Button = memo(ButtonComponent);
-
-Button.displayName = "Button";
 
 export { Button };

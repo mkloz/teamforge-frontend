@@ -29,24 +29,32 @@ interface ConversationMessageAreaProps {
   conversationId: string;
   firstUnreadMessageId: string | null;
   focusedMessageId?: string | null;
-  hasOlderMessages: boolean;
-  isLoadingMessages: boolean;
-  isLoadingOlderMessages: boolean;
-  isMessageError: boolean;
-  isMessageSelectionMode: boolean;
-  isNotesChat: boolean;
-  isOnline: boolean;
   kind: "dm" | "group";
+  messageListStatus: ConversationMessageListStatus;
   messages: UnifiedMessage[];
   messagesContainerRef: RefObject<HTMLDivElement | null>;
   messagesEndRef: RefObject<HTMLDivElement | null>;
   normalizedQuery: string;
-  selectedMessageIds: ReadonlySet<string>;
+  selectionState: ConversationMessageSelectionState;
   onLoadOlderMessages?: () => Promise<void> | void;
   onRetryMessages?: () => Promise<void> | void;
   onShowParticipantProfile?: (participant: ActivityParticipant) => void;
   onStartSelection: (message: UnifiedMessage) => void;
   onToggleSelected: (message: UnifiedMessage) => void;
+}
+
+interface ConversationMessageListStatus {
+  hasOlderMessages: boolean;
+  isLoadingMessages: boolean;
+  isLoadingOlderMessages: boolean;
+  isMessageError: boolean;
+  isNotesChat: boolean;
+  isOnline: boolean;
+}
+
+interface ConversationMessageSelectionState {
+  isSelectionMode: boolean;
+  selectedMessageIds: ReadonlySet<string>;
 }
 
 interface ConversationComposerProps {
@@ -86,25 +94,29 @@ export function ConversationMessageArea({
   conversationId,
   firstUnreadMessageId,
   focusedMessageId,
-  hasOlderMessages,
-  isLoadingMessages,
-  isLoadingOlderMessages,
-  isMessageError,
-  isMessageSelectionMode,
-  isNotesChat,
-  isOnline,
   kind,
+  messageListStatus,
   messages,
   messagesContainerRef,
   messagesEndRef,
   normalizedQuery,
-  selectedMessageIds,
+  selectionState,
   onLoadOlderMessages,
   onRetryMessages,
   onShowParticipantProfile,
   onStartSelection,
   onToggleSelected,
 }: ConversationMessageAreaProps) {
+  const {
+    hasOlderMessages,
+    isLoadingMessages,
+    isLoadingOlderMessages,
+    isMessageError,
+    isNotesChat,
+    isOnline,
+  } = messageListStatus;
+  const { isSelectionMode, selectedMessageIds } = selectionState;
+
   return (
     <div className="relative z-10 flex-1 overflow-hidden">
       <UnifiedMessageList
@@ -116,12 +128,6 @@ export function ConversationMessageArea({
         emptyStateVariant={isNotesChat ? "my-notes" : "default"}
         focusedMessageId={focusedMessageId}
         firstUnreadMessageId={firstUnreadMessageId}
-        hasOlderMessages={hasOlderMessages}
-        isInitialLoading={isLoadingMessages}
-        isInitialError={isMessageError}
-        isOffline={!isOnline}
-        isSelectionMode={isMessageSelectionMode}
-        isLoadingOlderMessages={isLoadingOlderMessages}
         messagesEndRef={messagesEndRef}
         containerRef={messagesContainerRef}
         messageScrollHandleRef={activeMessageScrollHandleRef}
@@ -130,7 +136,17 @@ export function ConversationMessageArea({
         onStartSelection={onStartSelection}
         onToggleSelected={onToggleSelected}
         onShowParticipantProfile={onShowParticipantProfile}
-        selectedMessageIds={selectedMessageIds}
+        selectionState={{
+          isSelectionMode,
+          selectedMessageIds,
+        }}
+        status={{
+          hasOlderMessages,
+          isInitialError: isMessageError,
+          isInitialLoading: isLoadingMessages,
+          isLoadingOlderMessages,
+          isOffline: !isOnline,
+        }}
         typingUsers={activeTypingUsers}
       />
     </div>

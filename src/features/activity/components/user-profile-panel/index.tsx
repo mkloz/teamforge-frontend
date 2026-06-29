@@ -21,36 +21,55 @@ interface UserProfilePanelProps {
   chat?: UserProfilePanelChat;
   profileNavigation?: ProfileNavigation;
   mutualGroups?: MutualGroup[];
+  mode?: ProfilePanelMode;
+  safety?: ProfilePanelSafetyControls;
+  scope?: ProfilePanelScope;
+  onBack?: () => void;
+}
+
+type ProfilePanelMode = "desktop" | "mobile";
+type ProfilePanelScope = "direct-chat" | "group-member";
+
+interface ProfilePanelSafetyControls {
   isMuted?: boolean;
   isBlocked?: boolean;
   blockActionDisabled?: boolean;
-  isBlockActionPending?: boolean;
   isMuteActionDisabled?: boolean;
-  isMuteActionPending?: boolean;
-  isMobile?: boolean;
-  isDirectChat?: boolean;
-  onBack?: () => void;
+  blockActionPending?: boolean;
+  muteActionPending?: boolean;
   onToggleMute?: () => void;
   onToggleBlock?: () => void;
 }
+
+interface ProfilePanelSafetyState {
+  isMuted?: boolean;
+  isBlocked?: boolean;
+  blockActionDisabled: boolean;
+  isMuteActionDisabled: boolean;
+  blockActionPending: boolean;
+  muteActionPending: boolean;
+  onToggleMute?: () => void;
+  onToggleBlock?: () => void;
+}
+
+const DEFAULT_PROFILE_PANEL_SAFETY_CONTROLS: ProfilePanelSafetyControls = {
+  blockActionDisabled: false,
+  blockActionPending: false,
+  isMuteActionDisabled: false,
+  muteActionPending: false,
+};
 
 export function UserProfilePanel({
   participant: propParticipant,
   chat,
   profileNavigation,
   mutualGroups: propMutualGroups,
-  isMuted: propIsMuted,
-  isBlocked: propIsBlocked,
-  blockActionDisabled = false,
-  isBlockActionPending = false,
-  isMuteActionDisabled = false,
-  isMuteActionPending = false,
-  isMobile = false,
-  isDirectChat = true,
+  mode = "desktop",
+  safety,
+  scope = "direct-chat",
   onBack,
-  onToggleMute,
-  onToggleBlock,
 }: UserProfilePanelProps) {
+  const safetyState = getProfilePanelSafetyState(safety);
   const selectedParticipant = getProfilePanelParticipantCandidate({
     chat,
     participant: propParticipant,
@@ -80,8 +99,8 @@ export function UserProfilePanel({
     chat,
     participant,
     profileNavigation,
-    propIsBlocked,
-    propIsMuted,
+    propIsBlocked: safetyState.isBlocked,
+    propIsMuted: safetyState.isMuted,
     propMutualGroups,
   });
 
@@ -91,28 +110,40 @@ export function UserProfilePanel({
       onScroll={handlePanelScroll}
       className={getProfilePanelScrollContainerClassName({
         isCompactHeaderVisible,
-        isMobile,
+        isMobile: mode === "mobile",
         isPanelHeaderCollapsed,
       })}
     >
       <ProfilePanelContent
-        blockActionDisabled={blockActionDisabled}
-        compactHeaderVisible={isCompactHeaderVisible}
         contentState={contentState}
-        isBlockActionPending={isBlockActionPending}
-        isDirectChat={isDirectChat}
-        isHydratingProfile={isHydratingProfile}
-        isMobile={isMobile}
-        isMuteActionDisabled={isMuteActionDisabled}
-        isMuteActionPending={isMuteActionPending}
+        headerState={{
+          compactHeaderVisible: isCompactHeaderVisible,
+          isHydratingProfile,
+          onCompactHeaderClick: scrollPanelToTop,
+        }}
+        mode={mode}
         onBack={onBack}
-        onCompactHeaderClick={scrollPanelToTop}
-        onToggleBlock={onToggleBlock}
-        onToggleMute={onToggleMute}
         participant={participant}
+        safety={safetyState}
+        scope={scope}
       />
     </div>
   );
+}
+
+function getProfilePanelSafetyState(
+  safety = DEFAULT_PROFILE_PANEL_SAFETY_CONTROLS,
+): ProfilePanelSafetyState {
+  return {
+    isMuted: safety.isMuted,
+    isBlocked: safety.isBlocked,
+    blockActionDisabled: Boolean(safety.blockActionDisabled),
+    isMuteActionDisabled: Boolean(safety.isMuteActionDisabled),
+    blockActionPending: Boolean(safety.blockActionPending),
+    muteActionPending: Boolean(safety.muteActionPending),
+    onToggleMute: safety.onToggleMute,
+    onToggleBlock: safety.onToggleBlock,
+  };
 }
 
 function ProfilePanelUnavailableState() {
@@ -123,50 +154,39 @@ function ProfilePanelUnavailableState() {
   );
 }
 
-interface ProfilePanelContentProps
-  extends Pick<
-    UserProfilePanelProps,
-    | "blockActionDisabled"
-    | "isBlockActionPending"
-    | "isDirectChat"
-    | "isMobile"
-    | "isMuteActionDisabled"
-    | "isMuteActionPending"
-    | "onBack"
-    | "onToggleBlock"
-    | "onToggleMute"
-  > {
+interface ProfilePanelHeaderState {
   compactHeaderVisible: boolean;
-  contentState: ProfilePanelContentState;
   isHydratingProfile: boolean;
   onCompactHeaderClick: () => void;
+}
+
+interface ProfilePanelContentProps {
+  contentState: ProfilePanelContentState;
+  headerState: ProfilePanelHeaderState;
+  mode: ProfilePanelMode;
+  onBack?: () => void;
   participant: UserProfilePanelParticipant;
+  safety: ProfilePanelSafetyState;
+  scope: ProfilePanelScope;
 }
 
 function ProfilePanelContent({
-  blockActionDisabled,
-  compactHeaderVisible,
   contentState,
-  isBlockActionPending,
-  isDirectChat,
-  isHydratingProfile,
-  isMobile,
-  isMuteActionDisabled,
-  isMuteActionPending,
+  headerState,
+  mode,
   onBack,
-  onCompactHeaderClick,
-  onToggleBlock,
-  onToggleMute,
   participant,
+  safety,
+  scope,
 }: ProfilePanelContentProps) {
   return (
     <div className="flex-1">
       <ProfilePanelInfo
         participant={participant}
-        isHydratingProfile={isHydratingProfile}
+        isHydratingProfile={headerState.isHydratingProfile}
         chatNavigation={contentState.chatNavigation}
-        compactHeaderVisible={compactHeaderVisible}
-        onCompactHeaderClick={onCompactHeaderClick}
+        compactHeaderVisible={headerState.compactHeaderVisible}
+        onCompactHeaderClick={headerState.onCompactHeaderClick}
         profileNavigation={contentState.profileNavigation}
         onBack={onBack}
       />
@@ -174,61 +194,33 @@ function ProfilePanelContent({
       <MutualGroupsSection groups={contentState.mutualGroups} />
 
       <DirectChatSettingsSection
-        blockActionDisabled={blockActionDisabled}
         contentState={contentState}
-        isBlockActionPending={isBlockActionPending}
-        isDirectChat={isDirectChat}
-        isMobile={isMobile}
-        isMuteActionDisabled={isMuteActionDisabled}
-        isMuteActionPending={isMuteActionPending}
-        onToggleBlock={onToggleBlock}
-        onToggleMute={onToggleMute}
+        mode={mode}
+        safety={safety}
+        scope={scope}
       />
     </div>
   );
 }
 
-interface DirectChatSettingsSectionProps
-  extends Pick<
-    UserProfilePanelProps,
-    | "blockActionDisabled"
-    | "isBlockActionPending"
-    | "isDirectChat"
-    | "isMobile"
-    | "isMuteActionDisabled"
-    | "isMuteActionPending"
-    | "onToggleBlock"
-    | "onToggleMute"
-  > {
+interface DirectChatSettingsSectionProps {
   contentState: ProfilePanelContentState;
+  mode: ProfilePanelMode;
+  safety: ProfilePanelSafetyState;
+  scope: ProfilePanelScope;
 }
 
 function DirectChatSettingsSection({
-  blockActionDisabled,
   contentState,
-  isBlockActionPending,
-  isDirectChat,
-  isMobile,
-  isMuteActionDisabled,
-  isMuteActionPending,
-  onToggleBlock,
-  onToggleMute,
+  mode,
+  safety,
+  scope,
 }: DirectChatSettingsSectionProps) {
-  if (!isDirectChat) {
+  if (scope !== "direct-chat") {
     return null;
   }
 
   return (
-    <ProfilePanelSettings
-      isMuted={contentState.isMuted}
-      isBlocked={contentState.isBlocked}
-      blockActionDisabled={blockActionDisabled}
-      isBlockActionPending={isBlockActionPending}
-      isMuteActionDisabled={isMuteActionDisabled}
-      isMuteActionPending={isMuteActionPending}
-      isMobile={isMobile}
-      onToggleMute={onToggleMute}
-      onToggleBlock={onToggleBlock}
-    />
+    <ProfilePanelSettings content={contentState} mode={mode} safety={safety} />
   );
 }

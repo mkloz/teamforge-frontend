@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import {
   LANDING_SECTIONS,
   type LandingSectionId,
@@ -8,6 +8,7 @@ import {
   type LandingBelowFoldRequestDetail,
   scrollLandingElementToStart,
 } from "@/features/landing/lib/landing-scroll";
+import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 
 const LazyLandingBelowFoldSections = lazy(() =>
   import("@/features/landing/landing-below-fold-sections").then((module) => ({
@@ -49,14 +50,48 @@ function isTargetAligned(target: HTMLElement) {
   return top >= 0 && top <= MAX_ALIGNED_TARGET_TOP;
 }
 
+function startDeferredLandingScroll(request: LandingBelowFoldRequestDetail) {
+  let frame = 0;
+  let attempts = 0;
+  let alignedFrames = 0;
+
+  function retryScroll() {
+    const target = document.getElementById(request.targetId);
+
+    if (target) {
+      scrollLandingElementToStart(target, request.options);
+
+      if (isTargetAligned(target)) {
+        alignedFrames += 1;
+      } else {
+        alignedFrames = 0;
+      }
+    }
+
+    attempts += 1;
+
+    if (
+      alignedFrames < ALIGNED_FRAME_COUNT &&
+      attempts < MAX_DEFERRED_SCROLL_FRAMES
+    ) {
+      frame = requestAnimationFrame(retryScroll);
+    }
+  }
+
+  frame = requestAnimationFrame(retryScroll);
+
+  return () => {
+    cancelAnimationFrame(frame);
+  };
+}
+
 export function DeferredLandingBelowFoldSections() {
   const initialScrollRequest = getInitialScrollRequest();
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const [shouldRender, setShouldRender] = useState(
-    initialScrollRequest !== null,
-  );
-  const [pendingScrollRequest, setPendingScrollRequest] =
-    useState<LandingBelowFoldRequestDetail | null>(initialScrollRequest);
+  const initialScrollRequestRef = useRef(initialScrollRequest);
+  const cancelScrollRef = useRef<(() => void) | null>(null);
+  const { sentinelRef, setShouldRender, shouldRender } = useDeferredRender({
+    initialShouldRender: initialScrollRequest !== null,
+  });
 
   useEffect(() => {
     const handleRequest = (
@@ -68,8 +103,9 @@ export function DeferredLandingBelowFoldSections() {
         return;
       }
 
-      setPendingScrollRequest(detail);
       setShouldRender(true);
+      cancelScrollRef.current?.();
+      cancelScrollRef.current = startDeferredLandingScroll(detail);
     };
 
     window.addEventListener(LANDING_BELOW_FOLD_REQUEST_EVENT, handleRequest);
@@ -80,81 +116,28 @@ export function DeferredLandingBelowFoldSections() {
         handleRequest,
       );
     };
-  }, []);
+  }, [setShouldRender]);
 
   useEffect(() => {
-    if (shouldRender) {
+    const request = initialScrollRequestRef.current;
+
+    if (!shouldRender || !request) {
       return undefined;
     }
 
-    const sentinel = sentinelRef.current;
+    initialScrollRequestRef.current = null;
+    cancelScrollRef.current?.();
+    cancelScrollRef.current = startDeferredLandingScroll(request);
 
-    if (!sentinel || typeof IntersectionObserver === "undefined") {
-      setShouldRender(true);
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) {
-          return;
-        }
-
-        setShouldRender(true);
-        observer.disconnect();
-      },
-      { rootMargin: "0px" },
-    );
-
-    observer.observe(sentinel);
-
-    return () => {
-      observer.disconnect();
-    };
+    return undefined;
   }, [shouldRender]);
 
-  useEffect(() => {
-    if (!shouldRender || !pendingScrollRequest) {
-      return undefined;
-    }
-
-    const request = pendingScrollRequest;
-    let frame = 0;
-    let attempts = 0;
-    let alignedFrames = 0;
-
-    function retryScroll() {
-      const target = document.getElementById(request.targetId);
-
-      if (target) {
-        scrollLandingElementToStart(target, request.options);
-
-        if (isTargetAligned(target)) {
-          alignedFrames += 1;
-        } else {
-          alignedFrames = 0;
-        }
-      }
-
-      attempts += 1;
-
-      if (
-        alignedFrames < ALIGNED_FRAME_COUNT &&
-        attempts < MAX_DEFERRED_SCROLL_FRAMES
-      ) {
-        frame = requestAnimationFrame(retryScroll);
-        return;
-      }
-
-      setPendingScrollRequest(null);
-    }
-
-    frame = requestAnimationFrame(retryScroll);
-
-    return () => {
-      cancelAnimationFrame(frame);
-    };
-  }, [pendingScrollRequest, shouldRender]);
+  useEffect(
+    () => () => {
+      cancelScrollRef.current?.();
+    },
+    [],
+  );
 
   return (
     <>

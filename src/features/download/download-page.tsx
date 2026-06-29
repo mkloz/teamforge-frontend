@@ -15,7 +15,7 @@ import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
 import Share from "lucide-react/dist/esm/icons/share.js";
 import Smartphone from "lucide-react/dist/esm/icons/smartphone.js";
 import Wifi from "lucide-react/dist/esm/icons/wifi.js";
-import { Fragment, lazy, Suspense, useEffect, useRef, useState } from "react";
+import { Fragment, lazy, Suspense, useState } from "react";
 import {
   type DesktopBrowser,
   type DetectedPlatform,
@@ -31,6 +31,7 @@ import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
+import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
@@ -75,7 +76,6 @@ const DOWNLOAD_PREVIEW_IMAGES = {
   },
 } as const satisfies Record<SelectedDevice, DownloadPreviewImage>;
 
-const noop = () => {};
 const DOWNLOAD_AUTH_RETURN_TO = "/download";
 
 const DeferredPushNotificationBand = lazy(() =>
@@ -419,21 +419,13 @@ function getIosBrowserName(): string {
   );
 }
 
-function useDeviceDetection() {
-  const [detected, setDetected] = useState<DetectedPlatform>(() =>
-    detectPlatform(),
-  );
-  const [desktopBrowser, setDesktopBrowser] = useState<DesktopBrowser>(() =>
-    detectPlatform() === "desktop" ? detectDesktopBrowser() : "chrome",
-  );
+function getDeviceDetectionSnapshot() {
+  const detected = detectPlatform();
 
-  useEffect(() => {
-    const p = detectPlatform();
-    setDetected(p);
-    if (p === "desktop") setDesktopBrowser(detectDesktopBrowser());
-  }, []);
-
-  return { detected, desktopBrowser };
+  return {
+    desktopBrowser: detected === "desktop" ? detectDesktopBrowser() : "chrome",
+    detected,
+  };
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -459,69 +451,19 @@ function getSelectedDeviceStepConfig(
   return getDesktopConfig(desktopBrowser);
 }
 
-function useDeferredPwaSections() {
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const [shouldLoad, setShouldLoad] = useState(false);
-
-  useEffect(() => {
-    if (shouldLoad) {
-      return noop;
-    }
-
-    const sentinel = sentinelRef.current;
-
-    if (!sentinel) {
-      return noop;
-    }
-
-    if (typeof IntersectionObserver === "undefined") {
-      setShouldLoad(true);
-      return noop;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) {
-          return;
-        }
-
-        setShouldLoad(true);
-        observer.disconnect();
-      },
-      { rootMargin: "240px 0px" },
-    );
-
-    observer.observe(sentinel);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [shouldLoad]);
-
-  return { sentinelRef, shouldLoad };
-}
-
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export function DownloadPage() {
   usePageMetadata(DOWNLOAD_PAGE_METADATA);
 
-  const { detected, desktopBrowser } = useDeviceDetection();
+  const { detected, desktopBrowser } = getDeviceDetectionSnapshot();
   const { isStandalone } = usePwaDisplayMode();
   const { canPromptInstall, promptInstall } = usePwaInstallPrompt("download");
   const [installState, setInstallState] = useState<InstallState>("idle");
   const [selectedDevice, setSelectedDevice] = useState<SelectedDevice>(() =>
-    platformToDevice(detectPlatform()),
+    platformToDevice(detected),
   );
-  const pwaSections = useDeferredPwaSections();
   const downloadQrUrl = `${getCurrentBrowserOrigin()}/download`;
-
-  // Sync selected device once detection completes
-  useEffect(() => {
-    if (detected !== "unknown") {
-      setSelectedDevice(platformToDevice(detected));
-    }
-  }, [detected]);
 
   const viewState = getDownloadPageViewState({
     canPromptInstall,
@@ -581,7 +523,7 @@ export function DownloadPage() {
           viewState={viewState}
         />
 
-        <DeferredPwaSections pwaSections={pwaSections} />
+        <DeferredPwaSections />
 
         <InstallBenefitsSection />
       </main>
@@ -836,16 +778,16 @@ function InstallStepsContent({
   );
 }
 
-interface DeferredPwaSectionsProps {
-  pwaSections: ReturnType<typeof useDeferredPwaSections>;
-}
+function DeferredPwaSections() {
+  const { sentinelRef, shouldRender } = useDeferredRender({
+    rootMargin: "240px 0px",
+  });
 
-function DeferredPwaSections({ pwaSections }: DeferredPwaSectionsProps) {
   return (
     <>
-      <div ref={pwaSections.sentinelRef} aria-hidden="true" />
+      <div ref={sentinelRef} aria-hidden="true" />
 
-      {pwaSections.shouldLoad && (
+      {shouldRender && (
         <Suspense fallback={null}>
           <DeferredPushNotificationBand />
           <DeferredPwaDiagnosticsPanel />

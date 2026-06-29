@@ -1,4 +1,4 @@
-import { type HTMLAttributes, memo } from "react";
+import type { HTMLAttributes } from "react";
 import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
 
@@ -7,7 +7,7 @@ interface UnreadBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   isCompact?: boolean;
 }
 
-export const UnreadBadge = memo(function UnreadBadge({
+export function UnreadBadge({
   count,
   className,
   isCompact = false,
@@ -25,4 +25,4 @@ export const UnreadBadge = memo(function UnreadBadge({
       {...props}
     />
   );
-});
+}

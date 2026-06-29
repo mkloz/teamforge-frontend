@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Sprout, X } from "lucide-react";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ export function BalanceNudge() {
   const [dismissed, setDismissed] = useState(false);
   if (dismissed) return null;
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
@@ -42,6 +42,6 @@ export function BalanceNudge() {
         </TooltipTrigger>
         <TooltipContent>Dismiss</TooltipContent>
       </Tooltip>
-    </motion.div>
+    </m.div>
   );
 }

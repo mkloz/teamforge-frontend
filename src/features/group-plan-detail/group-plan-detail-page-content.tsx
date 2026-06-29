@@ -1,17 +1,17 @@
-import { lazy, type Ref, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, type Ref, Suspense, useRef } from "react";
 import { GroupSection } from "@/features/group-plan-detail/components/content/group-section";
 import { PitchSection } from "@/features/group-plan-detail/components/content/pitch-section";
 import { PlanSection } from "@/features/group-plan-detail/components/content/plan-section";
 import { GroupPlanHero } from "@/features/group-plan-detail/components/hero/group-plan-hero";
 import { DecisionRail } from "@/features/group-plan-detail/components/rail/decision-rail";
+import {
+  GroupPlanFitSectionSkeleton,
+  GroupPlanPeopleSectionSkeleton,
+} from "@/features/group-plan-detail/group-plan-detail-section-skeletons";
 import { useGroupPlanDetailCollapsibleHero } from "@/features/group-plan-detail/hooks/use-group-plan-detail-collapsible-hero";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import type { GroupPlanDetailRouteSearch } from "@/features/group-plan-detail/lib/group-plan-detail-route";
-import {
-  SkeletonAvatar,
-  SkeletonText,
-} from "@/shared/components/loading/skeleton-patterns";
-import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 
 const LazyGroupPlanDetailDeferredSections = lazy(() =>
   import(
@@ -126,39 +126,9 @@ function GroupPlanMainSections({
 }
 
 function DeferredMainSections({ detail }: { detail: GroupPlanDetail }) {
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const [shouldRender, setShouldRender] = useState(false);
-
-  useEffect(() => {
-    if (shouldRender) {
-      return undefined;
-    }
-
-    const sentinel = sentinelRef.current;
-
-    if (!sentinel || typeof IntersectionObserver === "undefined") {
-      setShouldRender(true);
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) {
-          return;
-        }
-
-        setShouldRender(true);
-        observer.disconnect();
-      },
-      { rootMargin: "240px 0px" },
-    );
-
-    observer.observe(sentinel);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [shouldRender]);
+  const { sentinelRef, shouldRender } = useDeferredRender({
+    rootMargin: "240px 0px",
+  });
 
   return (
     <>
@@ -177,74 +147,8 @@ function DeferredMainSections({ detail }: { detail: GroupPlanDetail }) {
 function DeferredMainSectionsSkeleton() {
   return (
     <>
-      <section className="border-border/70 border-b pb-9" aria-hidden="true">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div className="min-w-0">
-            <Skeleton className="h-8 w-64 max-w-full md:h-9" />
-            <SkeletonText
-              className="mt-2 max-w-2xl"
-              lines={2}
-              widths={["w-full", "w-3/4"]}
-            />
-          </div>
-          <Skeleton className="h-4 w-16" />
-        </div>
-        <div className="mt-6 grid gap-1.5 sm:grid-cols-2">
-          {["one", "two", "three", "four"].map((item, index) => (
-            <div
-              key={item}
-              className={`flex min-w-0 items-center gap-3 px-2 py-2 ${index === 0 ? "bg-forge-teal/5" : ""}`}
-            >
-              <SkeletonAvatar
-                className="size-10"
-                tone={index === 0 ? "teal" : "default"}
-              />
-              <SkeletonText
-                className="min-w-0 flex-1"
-                lines={2}
-                widths={["w-32", "w-36"]}
-              />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="border-border/70 border-b pb-9" aria-hidden="true">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div className="min-w-0">
-            <Skeleton className="h-8 w-72 max-w-full md:h-9" />
-            <SkeletonText
-              className="mt-2 max-w-2xl"
-              lines={2}
-              widths={["w-full", "w-3/4"]}
-            />
-          </div>
-          <Skeleton shape="pill" className="h-10 w-18" tone="teal" />
-        </div>
-        <div className="mt-6 grid gap-1 sm:grid-cols-2">
-          {["interests", "pace", "location", "reliability"].map(
-            (item, index) => (
-              <div
-                key={item}
-                className="flex items-start gap-3 rounded-xl p-2.5"
-              >
-                <Skeleton
-                  shape="circle"
-                  className="mt-0.5 size-4 shrink-0"
-                  tone={
-                    index === 0 ? "teal" : index === 1 ? "amber" : "default"
-                  }
-                />
-                <div className="min-w-0 flex-1">
-                  <Skeleton className="h-4 w-28" />
-                  <Skeleton className="mt-2 h-3 w-full" />
-                  <Skeleton className="mt-1.5 h-3 w-2/3" />
-                </div>
-              </div>
-            ),
-          )}
-        </div>
-      </section>
+      <GroupPlanPeopleSectionSkeleton aria-hidden />
+      <GroupPlanFitSectionSkeleton aria-hidden showStrengthDots={false} />
     </>
   );
 }

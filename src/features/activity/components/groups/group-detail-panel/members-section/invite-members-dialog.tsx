@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Search, UserPlus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { EmptyInviteCandidatesVisual } from "@/assets/empty-state/empty-invite-candidates";
 import { ErrorInviteSendFailedVisual } from "@/features/activity/assets/error-invite-send-failed";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
@@ -70,11 +70,7 @@ export function InviteMembersDialog({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [inviteError, setInviteError] = useState<string | null>(null);
-
-  const filteredCandidates = useMemo(
-    () => filterInviteCandidates(candidates, query),
-    [candidates, query],
-  );
+  const filteredCandidates = filterInviteCandidates(candidates, query);
 
   const handleInvite = async (inviteeId: string) => {
     if (disabled) {

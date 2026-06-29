@@ -5,6 +5,10 @@ import { cn } from "@/shared/lib/utils";
 
 import type { WeightSliderProps } from "./types";
 
+function formatDefaultWeightValue(nextValue: number) {
+  return `${nextValue}%`;
+}
+
 export function WeightSlider({
   label,
   value,
@@ -16,7 +20,7 @@ export function WeightSlider({
   subLabel,
   minLabel = "Low",
   maxLabel = "High",
-  formatValue = (nextValue) => `${nextValue}%`,
+  formatValue = formatDefaultWeightValue,
 }: WeightSliderProps) {
   const hasWarning = Boolean(warning);
   const pct = ((value - min) / (max - min)) * 100;

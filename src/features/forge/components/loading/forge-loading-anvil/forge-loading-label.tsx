@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 
 import type { ForgeLoadingLabelProps } from "./types";
 
@@ -10,7 +10,7 @@ export function ForgeLoadingLabel({
   return (
     <div className="flex min-h-12 flex-col items-center justify-center gap-1 text-center">
       <AnimatePresence mode="wait" initial={false}>
-        <motion.p
+        <m.p
           key={label ?? strikeCount}
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
@@ -19,12 +19,12 @@ export function ForgeLoadingLabel({
           className="font-black text-foreground text-sm"
         >
           {displayLabel}
-        </motion.p>
+        </m.p>
       </AnimatePresence>
       <p className="font-bold text-micro text-muted-foreground">Group forge</p>
       <div className="flex items-center gap-1.5 pt-1" aria-hidden="true">
         {[0, 1, 2].map((index) => (
-          <motion.span
+          <m.span
             key={index}
             className={
               index === 2

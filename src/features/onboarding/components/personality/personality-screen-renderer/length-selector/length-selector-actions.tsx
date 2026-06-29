@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
@@ -18,7 +18,7 @@ export function LengthSelectorActions({
   onBack,
 }: LengthSelectorActionsProps) {
   return (
-    <motion.div
+    <m.div
       variants={fadeUpItem}
       className="mt-auto flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-6"
     >
@@ -35,6 +35,6 @@ export function LengthSelectorActions({
         <span className="truncate">{actionLabel}</span>
         <ArrowRight size={18} strokeWidth={2.5} />
       </Button>
-    </motion.div>
+    </m.div>
   );
 }

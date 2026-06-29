@@ -6,14 +6,7 @@ import {
   type EmojiPickerListRowProps,
 } from "frimousse";
 import { ChevronLeft, Search } from "lucide-react";
-import {
-  type ChangeEvent,
-  createContext,
-  memo,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { type ChangeEvent, createContext, use, useState } from "react";
 
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -24,10 +17,9 @@ const EMOJI_SKELETON_CELLS = Array.from(
 );
 
 const COMPACT_REACTION_COLUMNS = 8;
-const EMPTY_SELECTED_EMOJIS = new Set<string>();
-const SelectedEmojiContext = createContext<ReadonlySet<string>>(
-  EMPTY_SELECTED_EMOJIS,
-);
+const EMPTY_EMOJI_OPTIONS: readonly string[] = [];
+const SelectedEmojiContext =
+  createContext<readonly string[]>(EMPTY_EMOJI_OPTIONS);
 
 interface ReactionEmoji {
   emoji: string;
@@ -426,21 +418,17 @@ interface ChatEmojiPickerPanelProps {
   suggestedEmojis?: readonly string[];
 }
 
-export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
+export function ChatEmojiPickerPanel({
   compact = false,
   height,
   onCollapse,
   onSelect,
   searchDisabled = false,
-  selectedEmojis = [],
+  selectedEmojis = EMPTY_EMOJI_OPTIONS,
   showPreview = false,
   skinTonesDisabled = true,
-  suggestedEmojis = [],
+  suggestedEmojis = EMPTY_EMOJI_OPTIONS,
 }: ChatEmojiPickerPanelProps) {
-  const selectedEmojiSet = useMemo(
-    () => new Set(selectedEmojis),
-    [selectedEmojis],
-  );
   const picker = compact ? (
     <CompactReactionEmojiPicker
       onSelect={onSelect}
@@ -458,11 +446,11 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
   );
 
   return (
-    <SelectedEmojiContext.Provider value={selectedEmojiSet}>
+    <SelectedEmojiContext.Provider value={selectedEmojis}>
       {picker}
     </SelectedEmojiContext.Provider>
   );
-});
+}
 
 function FullEmojiPickerPanel({
   height,
@@ -719,7 +707,7 @@ function CompactReactionEmojiGroup({
   group: ReactionEmojiGroup;
   onSelect: (emoji: string) => void;
 }) {
-  const selectedEmojiSet = useContext(SelectedEmojiContext);
+  const selectedEmojis = use(SelectedEmojiContext);
 
   return (
     <section>
@@ -733,7 +721,7 @@ function CompactReactionEmojiGroup({
             groupTitle={group.title}
             onSelect={onSelect}
             row={row}
-            selectedEmojiSet={selectedEmojiSet}
+            selectedEmojis={selectedEmojis}
           />
         ))}
       </div>
@@ -745,12 +733,12 @@ function CompactReactionEmojiRow({
   groupTitle,
   onSelect,
   row,
-  selectedEmojiSet,
+  selectedEmojis,
 }: {
   groupTitle: string;
   onSelect: (emoji: string) => void;
   row: readonly ReactionEmoji[];
-  selectedEmojiSet: ReadonlySet<string>;
+  selectedEmojis: readonly string[];
 }) {
   return (
     <div className="grid h-8 snap-start grid-cols-8 gap-0.5 px-1">
@@ -758,7 +746,7 @@ function CompactReactionEmojiRow({
         <CompactReactionEmojiButton
           key={`${groupTitle}-${emoji.emoji}-${emoji.label}`}
           emoji={emoji}
-          isSelected={selectedEmojiSet.has(emoji.emoji)}
+          isSelected={selectedEmojis.includes(emoji.emoji)}
           onSelect={onSelect}
         />
       ))}
@@ -835,15 +823,28 @@ function getFilteredReactionGroups(
     return groups;
   }
 
-  return groups
-    .map((group) => {
-      const emojis = group.emojis.filter((emoji) =>
-        getReactionEmojiSearchText(emoji).includes(normalizedSearch),
-      );
+  const filteredGroups: ReactionEmojiGroup[] = [];
+  const searchPattern = getReactionEmojiSearchPattern(normalizedSearch);
 
-      return { title: group.title, emojis };
-    })
-    .filter((group) => group.emojis.length > 0);
+  for (const group of groups) {
+    const emojis = group.emojis.filter((emoji) =>
+      searchPattern.test(getReactionEmojiSearchText(emoji)),
+    );
+
+    if (emojis.length > 0) {
+      filteredGroups.push({ title: group.title, emojis });
+    }
+  }
+
+  return filteredGroups;
+}
+
+function getReactionEmojiSearchPattern(normalizedSearch: string) {
+  return new RegExp(escapeRegExp(normalizedSearch), "u");
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function getReactionEmojiSearchText(emoji: ReactionEmoji) {
@@ -909,8 +910,8 @@ function EmojiButtonBase({
   emoji,
   ...props
 }: EmojiPickerListEmojiProps & { compact: boolean }) {
-  const selectedEmojiSet = useContext(SelectedEmojiContext);
-  const isSelected = selectedEmojiSet.has(emoji.emoji);
+  const selectedEmojis = use(SelectedEmojiContext);
+  const isSelected = selectedEmojis.includes(emoji.emoji);
 
   return (
     <button

@@ -5,13 +5,16 @@ import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-
 
 export function LazyPage({
   component: Component,
-  fallback = <RouteLoadingFallback />,
+  fallback,
 }: {
   component: ComponentType;
   fallback?: ReactNode;
 }) {
+  const suspenseFallback =
+    fallback === undefined ? <RouteLoadingFallback /> : fallback;
+
   return (
-    <Suspense fallback={fallback}>
+    <Suspense fallback={suspenseFallback}>
       <Component />
     </Suspense>
   );

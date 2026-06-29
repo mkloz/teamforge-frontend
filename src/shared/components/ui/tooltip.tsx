@@ -1,6 +1,6 @@
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import type React from "react";
-import { createContext, useContext } from "react";
+import { createContext, use } from "react";
 
 const TooltipProviderContext = createContext(false);
 
@@ -24,7 +24,7 @@ function TooltipProvider({
 function Tooltip({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
-  const hasProvider = useContext(TooltipProviderContext);
+  const hasProvider = use(TooltipProviderContext);
   const tooltip = <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
 
   return hasProvider ? tooltip : <TooltipProvider>{tooltip}</TooltipProvider>;

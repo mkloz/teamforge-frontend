@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 
 interface PageTitleProps {
   hideContextLabel?: boolean;
@@ -12,7 +12,7 @@ export function PageTitle({
   return (
     <AnimatePresence initial={false}>
       {!isSearching && (
-        <motion.div
+        <m.div
           initial={{ height: 0, opacity: 0, marginTop: 0 }}
           animate={{ height: "auto", opacity: 1, marginTop: 16 }}
           exit={{ height: 0, opacity: 0, marginTop: 0 }}
@@ -27,7 +27,7 @@ export function PageTitle({
           <h1 className="font-extrabold font-sans text-3xl text-ink tracking-tight">
             What do you love doing?
           </h1>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

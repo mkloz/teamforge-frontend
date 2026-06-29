@@ -1,4 +1,10 @@
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+  AnimatePresence,
+  domAnimation,
+  LazyMotion,
+  m,
+  useReducedMotion,
+} from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 interface BriefEntry {
@@ -93,35 +99,37 @@ export function AnimatedBriefCycler() {
       </div>
 
       {/* Rows */}
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.dl
-          key={currentIndex}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-          className="divide-y divide-forge-teal/15"
-        >
-          {brief.rows.map(({ label, value }, rowIndex) => (
-            <div key={label} className="flex items-baseline gap-4 px-4 py-3">
-              <dt className="w-16 shrink-0 font-semibold text-muted-foreground text-xs">
-                {label}
-              </dt>
-              <dd className="min-w-0 font-semibold text-foreground text-sm leading-relaxed">
-                {shouldReduceMotion ? (
-                  value
-                ) : (
-                  <AnimatedText
-                    text={value}
-                    briefIndex={currentIndex}
-                    delay={rowIndex * 0.06}
-                  />
-                )}
-              </dd>
-            </div>
-          ))}
-        </motion.dl>
-      </AnimatePresence>
+      <LazyMotion features={domAnimation}>
+        <AnimatePresence mode="wait" initial={false}>
+          <m.dl
+            key={currentIndex}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
+            className="divide-y divide-forge-teal/15"
+          >
+            {brief.rows.map(({ label, value }, rowIndex) => (
+              <div key={label} className="flex items-baseline gap-4 px-4 py-3">
+                <dt className="w-16 shrink-0 font-semibold text-muted-foreground text-xs">
+                  {label}
+                </dt>
+                <dd className="min-w-0 font-semibold text-foreground text-sm leading-relaxed">
+                  {shouldReduceMotion ? (
+                    value
+                  ) : (
+                    <AnimatedText
+                      text={value}
+                      briefIndex={currentIndex}
+                      delay={rowIndex * 0.06}
+                    />
+                  )}
+                </dd>
+              </div>
+            ))}
+          </m.dl>
+        </AnimatePresence>
+      </LazyMotion>
     </aside>
   );
 }
@@ -134,13 +142,13 @@ interface AnimatedTextProps {
 
 function AnimatedText({ text, briefIndex, delay }: AnimatedTextProps) {
   return (
-    <motion.span
+    <m.span
       key={`${briefIndex}-${text}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, delay, ease: "easeOut" }}
     >
       {text}
-    </motion.span>
+    </m.span>
   );
 }

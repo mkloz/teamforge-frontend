@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Target } from "lucide-react";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
@@ -22,7 +22,7 @@ export function ActionSection({
   const buttonLabel = getIntermissionActionLabel({ isDone, selectedUpgrade });
 
   return (
-    <motion.div
+    <m.div
       variants={fadeUpItem}
       className="mx-auto flex w-full max-w-xl xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-8 pb-6 sm:pb-8"
     >
@@ -51,6 +51,6 @@ export function ActionSection({
           <ArrowRight size={16} strokeWidth={2.5} />
         )}
       </Button>
-    </motion.div>
+    </m.div>
   );
 }

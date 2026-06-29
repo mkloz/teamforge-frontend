@@ -106,15 +106,15 @@ export function PlanCover({
   if (renderState.kind === "gradient") {
     return (
       <div
-        aria-label={alt}
         className={cn(
           "size-full bg-linear-to-br transition-transform duration-500",
           renderState.gradient,
           className,
           imageClassName,
         )}
-        role="img"
-      />
+      >
+        <span className="sr-only">{alt}</span>
+      </div>
     );
   }
 

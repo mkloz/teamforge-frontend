@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { FormLevelError } from "@/features/auth/components/form-level-error";
 import {
   type Step,
@@ -58,12 +58,7 @@ export function RegisterForm({
     goBackToStep2,
     onSubmit,
     resendOtp,
-  } = useRegisterForm({ onSuccess, onProgress });
-
-  // Handle step change for scroll-to-top actions
-  useEffect(() => {
-    onStepChange?.(step);
-  }, [step, onStepChange]);
+  } = useRegisterForm({ onSuccess, onProgress, onStepChange });
 
   return (
     <div className="flex w-full flex-col">

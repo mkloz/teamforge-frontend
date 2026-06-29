@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
+import { AuthTextField } from "@/features/auth/components/auth-text-field";
 import { FormLevelError } from "@/features/auth/components/form-level-error";
 import { useGoogleAuth } from "@/features/auth/hooks/use-google-auth";
 import { useLoginForm } from "@/features/auth/hooks/use-login-form";
@@ -105,23 +106,13 @@ function LoginRootError({ message }: { message?: string | null }) {
 
 function LoginEmailField({ form }: { form: LoginFormController["form"] }) {
   return (
-    <FormField
+    <AuthTextField
       control={form.control}
       name="email"
-      render={({ field }) => (
-        <FormItem className={authFormItemClassName}>
-          <FormLabel className={authFormLabelClassName}>Email</FormLabel>
-          <FormControl>
-            <Input
-              placeholder="you@example.com"
-              type="email"
-              autoComplete="email"
-              {...field}
-            />
-          </FormControl>
-          <FormMessage className={authFormMessageClassName} />
-        </FormItem>
-      )}
+      label="Email"
+      placeholder="you@example.com"
+      type="email"
+      autoComplete="email"
     />
   );
 }

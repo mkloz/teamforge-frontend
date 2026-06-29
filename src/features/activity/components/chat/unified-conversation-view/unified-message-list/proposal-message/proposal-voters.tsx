@@ -1,5 +1,4 @@
-import { motion } from "framer-motion";
-import { memo } from "react";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 
 import { Avatar } from "@/shared/components/common/avatar";
 import {
@@ -22,7 +21,7 @@ interface ProposalVotersProps {
   voters: ProposalVoter[];
 }
 
-export const ProposalVoters = memo(function ProposalVoters({
+export function ProposalVoters({
   progress,
   score,
   voters,
@@ -70,12 +69,14 @@ export const ProposalVoters = memo(function ProposalVoters({
         </span>
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-full border border-border/10 bg-muted/30">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          className="h-full bg-accent"
-        />
+        <LazyMotion features={domAnimation}>
+          <m.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            className="h-full bg-accent"
+          />
+        </LazyMotion>
       </div>
     </>
   );
-});
+}

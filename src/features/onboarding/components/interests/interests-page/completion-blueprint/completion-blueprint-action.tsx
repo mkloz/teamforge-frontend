@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
@@ -12,7 +12,7 @@ export function CompletionBlueprintAction({
   onEnter,
 }: CompletionBlueprintActionProps) {
   return (
-    <motion.div
+    <m.div
       variants={completionFadeUp}
       className="mt-12 flex w-full flex-col items-center"
     >
@@ -32,6 +32,6 @@ export function CompletionBlueprintAction({
       <p className="mt-6 max-w-50 text-center font-bold font-sans text-muted-foreground text-xs leading-relaxed drop-shadow-sm">
         Built from your personality and interests.
       </p>
-    </motion.div>
+    </m.div>
   );
 }

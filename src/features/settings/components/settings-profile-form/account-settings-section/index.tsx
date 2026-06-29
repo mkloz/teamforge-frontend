@@ -17,22 +17,18 @@ export function AccountSettingsSection({
   onSubmit,
   onAvatarSelect,
   onAvatarDelete,
-  isOnline,
-  isSaving,
-  isUploadingAvatar,
-  isDeletingAvatar,
-  saveError,
-  avatarError,
+  status,
+  errors,
 }: AccountSettingsSectionProps) {
   return (
     <div className="flex flex-col gap-9">
       <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start">
         <AvatarProfileSection
           currentUser={currentUser}
-          avatarError={avatarError}
-          isUploadingAvatar={isUploadingAvatar}
-          isDeletingAvatar={isDeletingAvatar}
-          isOnline={isOnline}
+          avatarError={errors.avatarError}
+          isUploadingAvatar={status.isUploadingAvatar}
+          isDeletingAvatar={status.isDeletingAvatar}
+          isOnline={status.isOnline}
           onAvatarSelect={onAvatarSelect}
           onAvatarDelete={onAvatarDelete}
         />
@@ -63,7 +59,7 @@ export function AccountSettingsSection({
             <AreaFields currentUser={currentUser} form={form} />
           </FormGroup>
 
-          {saveError && (
+          {errors.saveError && (
             <Notice
               role="alert"
               tone="danger"
@@ -74,17 +70,20 @@ export function AccountSettingsSection({
               className="items-center gap-3"
               iconClassName="mt-0"
             >
-              {saveError}
+              {errors.saveError}
             </Notice>
           )}
 
-          {!isOnline ? (
+          {!status.isOnline ? (
             <OfflineNotice withIcon={false} size="md" className="px-3">
               You are offline. Reconnect before saving profile changes.
             </OfflineNotice>
           ) : null}
 
-          <AccountFormFooter isOnline={isOnline} isSaving={isSaving} />
+          <AccountFormFooter
+            isOnline={status.isOnline}
+            isSaving={status.isSaving}
+          />
         </form>
       </Form>
     </div>

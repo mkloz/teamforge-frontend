@@ -106,13 +106,10 @@ function AttachmentNotice({ message }: { message: string | null }) {
   }
 
   return (
-    <div
-      role="status"
-      className="flex items-center gap-2 px-3 py-2.5 text-slate-muted"
-    >
+    <output className="flex items-center gap-2 px-3 py-2.5 text-slate-muted">
       <Paperclip className="size-4 shrink-0" aria-hidden="true" />
-      <p className="min-w-0 flex-1 font-medium text-xs">{message}</p>
-    </div>
+      <span className="min-w-0 flex-1 font-medium text-xs">{message}</span>
+    </output>
   );
 }
 

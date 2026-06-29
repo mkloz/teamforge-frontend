@@ -1,3 +1,4 @@
+/* biome-ignore-all lint/a11y/noNoninteractiveElementInteractions: Message rows keep article semantics while supporting selection and context-menu keyboard workflows. */
 /* biome-ignore-all lint/a11y/noNoninteractiveTabindex: Message rows are focusable context-menu triggers. */
 // oxlint-disable jsx-a11y/no-noninteractive-tabindex -- Message rows are focusable context-menu triggers.
 import { Forward } from "lucide-react";
@@ -23,7 +24,7 @@ export function MessageItemArticleFrame({
   shouldShowOuterFocus,
 }: MessageItemArticleFrameProps) {
   return (
-    // biome-ignore lint/a11y/noNoninteractiveElementInteractions: Message rows keep article semantics while supporting selection and context-menu keyboard workflows.
+    // react-doctor-disable-next-line react-doctor/no-noninteractive-element-interactions, react-doctor/no-noninteractive-tabindex -- Message rows keep article semantics and contain nested action buttons, so replacing the frame with a native button would create invalid interactive nesting.
     <article
       tabIndex={0}
       aria-roledescription="message"
@@ -170,15 +171,17 @@ interface MessageBubbleShellProps {
   usesInlineFooter: boolean;
 }
 
-export function MessageBubbleShell({
-  children,
-  content,
-  isHighlighted,
-  isInteractionFocused,
-  isOwn,
-  isSelected,
-  usesInlineFooter,
-}: MessageBubbleShellProps) {
+export function MessageBubbleShell(props: MessageBubbleShellProps) {
+  const {
+    children,
+    content,
+    isHighlighted,
+    isInteractionFocused,
+    isOwn,
+    isSelected,
+    usesInlineFooter,
+  } = props;
+
   return (
     <div
       className={getMessageBubbleShellClassName({

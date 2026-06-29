@@ -410,16 +410,3 @@ export const publicRoutes = [
   resetPasswordRoute,
   activateAccountRoute,
 ];
-
-export const publicRouteModules = [
-  landingPageModule,
-  downloadPageModule,
-  ...(import.meta.env.DEV ? [iconNoticeVariantsPageModule] : []),
-  privacyPageModule,
-  termsPageModule,
-  loginPageModule,
-  registerPageModule,
-  forgotPasswordPageModule,
-  resetPasswordPageModule,
-  activateAccountPageModule,
-];

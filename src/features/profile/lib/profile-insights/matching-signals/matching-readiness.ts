@@ -1,3 +1,4 @@
+import { getLaneConfidenceCounts } from "../lane-confidence";
 import type { MatchingSignalStrength, SocialProfileModel } from "../types";
 import { clamp } from "../utils";
 import {
@@ -14,12 +15,7 @@ export function getMatchingReadiness(socialProfile: SocialProfileModel): {
 } {
   const { confidence, context, secondaryCandidate } = socialProfile;
   const lanes = context.lanes;
-  const clearLaneCount = lanes.filter(
-    (lane) => lane.confidence !== "soft",
-  ).length;
-  const strongLaneCount = lanes.filter(
-    (lane) => lane.confidence === "strong",
-  ).length;
+  const { clearLaneCount, strongLaneCount } = getLaneConfidenceCounts(lanes);
   const signalCount =
     Math.min(countUniqueLaneInterests(lanes), 10) * 0.9 +
     clearLaneCount * 2 +

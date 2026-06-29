@@ -324,19 +324,22 @@ export function ActionDialog({
 
     setInternalLoading(true);
 
-    try {
-      await runActionDialogConfirm({
-        closeOnConfirm,
-        onConfirm: confirmState.onConfirm,
-        setDialogOpen,
-      });
-    } catch (error) {
-      captureException("ui.action-dialog.confirm", error, {
+    const confirmResult = await runActionDialogConfirm({
+      closeOnConfirm,
+      onConfirm: confirmState.onConfirm,
+      setDialogOpen,
+    }).then(
+      () => ({ ok: true as const }),
+      (error: unknown) => ({ error, ok: false as const }),
+    );
+
+    setInternalLoading(false);
+
+    if (!confirmResult.ok) {
+      captureException("ui.action-dialog.confirm", confirmResult.error, {
         title: getActionDialogTitleLabel(title),
       });
-      showAppErrorToast(error);
-    } finally {
-      setInternalLoading(false);
+      showAppErrorToast(confirmResult.error);
     }
   }
 

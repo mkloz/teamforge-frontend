@@ -26,8 +26,8 @@ const IDEA_CHIP_SKELETONS = [
 
 export function ForgePageLoading(_props: PageLoadingProps = {}) {
   return (
-    <div aria-busy="true" aria-label="Loading forge" role="status">
-      <span className="sr-only">Loading forge</span>
+    <div aria-busy="true">
+      <output className="sr-only">Loading forge</output>
       <ForgePageLoadingFixture />
     </div>
   );

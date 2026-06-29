@@ -9,11 +9,9 @@ function InterestsCatalogSkeletonContent() {
   return (
     <div
       aria-busy="true"
-      aria-label="Loading interests"
       className="mx-auto flex w-full max-w-xl flex-col pb-8"
-      role="status"
     >
-      <span className="sr-only">Loading interests</span>
+      <output className="sr-only">Loading interests</output>
       <div className="mt-4 mb-6 flex flex-col gap-2 overflow-hidden pt-4">
         <Skeleton className="h-3 w-28" tone="teal" />
         <Skeleton className="h-8 w-80 max-w-full" />

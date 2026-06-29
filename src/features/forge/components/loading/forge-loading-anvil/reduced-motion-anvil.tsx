@@ -20,9 +20,9 @@ export function ReducedMotionAnvil({
         "flex select-none flex-col items-center justify-center gap-4",
         className,
       )}
-      role="status"
-      aria-label={displayLabel}
+      aria-busy="true"
     >
+      <output className="sr-only">{displayLabel}</output>
       <div
         className="relative"
         style={{ width: size, height: size * ANVIL_STAGE_ASPECT_RATIO }}

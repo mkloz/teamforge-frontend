@@ -2,13 +2,12 @@ import { Link } from "@tanstack/react-router";
 import {
   Ban,
   CircleDashed,
-  type LucideIcon,
   MessageCircle,
   UserCheck,
   UserMinus,
   UserRoundPlus,
 } from "lucide-react";
-import { type ReactNode, type RefObject, useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 import { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
 import { usePublicProfileActions } from "@/features/profile/hooks/use-public-profile-actions";
 import { Button } from "@/shared/components/ui/button";
@@ -27,25 +26,10 @@ interface PublicProfileActionsProps {
 }
 
 type PublicProfileActionState = ReturnType<typeof usePublicProfileActions>;
-type ManagedConnectionLabel = "Connected" | "Requested";
-type ManagedConnectionMenu = (props: {
-  actionState: PublicProfileActionState;
-  ConnectIcon: LucideIcon;
-}) => ReactNode;
 
 const CONNECT_SPOTLIGHT_LABELS = new Set(["Connect", "Accept"]);
-const CONNECT_ICON_BY_LABEL = new Map<string, LucideIcon>([
-  ["Accept", UserCheck],
-  ["Connected", UserCheck],
-  ["Requested", CircleDashed],
-  ["Blocked", Ban],
-]);
 const PROFILE_ACTION_GROUP_CLASS_NAME =
   "grid w-full grid-cols-1 xxs:grid-cols-2 items-center gap-2 pr-0 sm:flex sm:w-auto sm:flex-row sm:gap-3";
-const MANAGED_CONNECTION_MENUS = {
-  Connected: ConnectedConnectionMenu,
-  Requested: RequestedConnectionMenu,
-} satisfies Record<ManagedConnectionLabel, ManagedConnectionMenu>;
 
 export function PublicProfileActions({
   spotlightConnect = false,
@@ -53,7 +37,6 @@ export function PublicProfileActions({
 }: PublicProfileActionsProps) {
   const connectButtonRef = useRef<HTMLButtonElement | null>(null);
   const actionState = usePublicProfileActions(user);
-  const ConnectIcon = getConnectIcon(actionState.connectLabel);
   const shouldSpotlightConnect = getShouldSpotlightConnect({
     connectLabel: actionState.connectLabel,
     isViewerProfile: actionState.isViewerProfile,
@@ -70,7 +53,6 @@ export function PublicProfileActions({
     <div className={PROFILE_ACTION_GROUP_CLASS_NAME}>
       <ConnectionAction
         actionState={actionState}
-        ConnectIcon={ConnectIcon}
         connectButtonRef={connectButtonRef}
         shouldSpotlightConnect={shouldSpotlightConnect}
         user={user}
@@ -92,7 +74,6 @@ function ViewerProfileActions() {
 
 interface ConnectionActionProps {
   actionState: PublicProfileActionState;
-  ConnectIcon: LucideIcon;
   connectButtonRef: RefObject<HTMLButtonElement | null>;
   shouldSpotlightConnect: boolean;
   user: User;
@@ -100,22 +81,16 @@ interface ConnectionActionProps {
 
 function ConnectionAction({
   actionState,
-  ConnectIcon,
   connectButtonRef,
   shouldSpotlightConnect,
   user,
 }: ConnectionActionProps) {
-  const ManagedConnectionMenu = getManagedConnectionMenu(
-    actionState.connectLabel,
-  );
+  if (actionState.connectLabel === "Connected") {
+    return <ConnectedConnectionMenu actionState={actionState} />;
+  }
 
-  if (ManagedConnectionMenu) {
-    return (
-      <ManagedConnectionMenu
-        ConnectIcon={ConnectIcon}
-        actionState={actionState}
-      />
-    );
+  if (actionState.connectLabel === "Requested") {
+    return <RequestedConnectionMenu actionState={actionState} />;
   }
 
   return (
@@ -137,18 +112,32 @@ function ConnectionAction({
       }
       data-connect-intent={shouldSpotlightConnect ? "true" : undefined}
     >
-      <ConnectIcon className="shrink-0" />
+      <ConnectionActionIcon label={actionState.connectLabel} />
       <span>{actionState.connectLabel}</span>
     </Button>
   );
 }
 
+function ConnectionActionIcon({ label }: { label: string }) {
+  if (label === "Accept" || label === "Connected") {
+    return <UserCheck className="shrink-0" aria-hidden="true" />;
+  }
+
+  if (label === "Requested") {
+    return <CircleDashed className="shrink-0" aria-hidden="true" />;
+  }
+
+  if (label === "Blocked") {
+    return <Ban className="shrink-0" aria-hidden="true" />;
+  }
+
+  return <UserRoundPlus className="shrink-0" aria-hidden="true" />;
+}
+
 function ConnectedConnectionMenu({
   actionState,
-  ConnectIcon,
 }: {
   actionState: PublicProfileActionState;
-  ConnectIcon: LucideIcon;
 }) {
   return (
     <DropdownMenu>
@@ -160,7 +149,7 @@ function ConnectedConnectionMenu({
           loading={actionState.unfriendLoading}
           aria-label="Manage connection"
         >
-          <ConnectIcon className="shrink-0" />
+          <ConnectionActionIcon label="Connected" />
           <span>Connected</span>
         </Button>
       </DropdownMenuTrigger>
@@ -179,10 +168,8 @@ function ConnectedConnectionMenu({
 
 function RequestedConnectionMenu({
   actionState,
-  ConnectIcon,
 }: {
   actionState: PublicProfileActionState;
-  ConnectIcon: LucideIcon;
 }) {
   return (
     <DropdownMenu>
@@ -193,7 +180,7 @@ function RequestedConnectionMenu({
           loading={actionState.withdrawLoading}
           aria-label="Manage connection request"
         >
-          <ConnectIcon className="shrink-0" />
+          <ConnectionActionIcon label="Requested" />
           <span>Requested</span>
         </Button>
       </DropdownMenuTrigger>
@@ -291,22 +278,4 @@ function getShouldSpotlightConnect({
 
 function isConnectSpotlightLabel(label: string) {
   return CONNECT_SPOTLIGHT_LABELS.has(label);
-}
-
-function getManagedConnectionMenu(label: string) {
-  if (!isManagedConnectionLabel(label)) {
-    return null;
-  }
-
-  return MANAGED_CONNECTION_MENUS[label];
-}
-
-function isManagedConnectionLabel(
-  label: string,
-): label is ManagedConnectionLabel {
-  return label === "Connected" || label === "Requested";
-}
-
-function getConnectIcon(label: string) {
-  return CONNECT_ICON_BY_LABEL.get(label) ?? UserRoundPlus;
 }

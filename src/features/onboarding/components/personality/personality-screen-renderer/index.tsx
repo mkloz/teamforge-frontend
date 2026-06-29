@@ -1,3 +1,4 @@
+import { domMax, LazyMotion } from "framer-motion";
 import { lazy, type ReactNode, Suspense } from "react";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
@@ -94,7 +95,11 @@ export function PersonalityScreenRenderer({
     state,
   });
 
-  return <Suspense fallback={null}>{renderedScreen}</Suspense>;
+  return (
+    <LazyMotion features={domMax}>
+      <Suspense fallback={null}>{renderedScreen}</Suspense>
+    </LazyMotion>
+  );
 }
 
 function renderPersonalityScreen(context: PersonalityScreenRenderContext) {

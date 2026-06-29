@@ -1,5 +1,5 @@
 import type { Transition } from "framer-motion";
-import { motion, useReducedMotion } from "framer-motion";
+import { domAnimation, LazyMotion, m, useReducedMotion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { useId } from "react";
 
@@ -129,68 +129,70 @@ export function SegmentedTabs<TValue extends string>({
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <div
-      role="tablist"
-      aria-label={ariaLabel}
-      className={getSegmentedTabsClassName({
-        className,
-        fill,
-        size,
-      })}
-    >
-      {options.map((option) => {
-        const active = value === option.id;
-        const Icon = option.icon;
+    <LazyMotion features={domAnimation}>
+      <div
+        role="tablist"
+        aria-label={ariaLabel}
+        className={getSegmentedTabsClassName({
+          className,
+          fill,
+          size,
+        })}
+      >
+        {options.map((option) => {
+          const active = value === option.id;
+          const Icon = option.icon;
 
-        return (
-          <button
-            key={option.id}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            disabled={disabled}
-            onClick={() => {
-              onChange(option.id);
-            }}
-            className={getSegmentedTabButtonClassName({
-              active,
-              disabled,
-              fill,
-              size,
-            })}
-          >
-            {active && (
-              <motion.span
-                layoutId={getActiveTabLayoutId({
-                  layoutId,
-                  prefersReducedMotion,
-                })}
-                transition={ACTIVE_TAB_TRANSITION}
-                className="absolute inset-0 -z-10 rounded-full bg-primary shadow-sm"
-              />
-            )}
-            {Icon && (
-              <Icon
-                className={getSegmentedTabIconClassName({ active, size })}
-                strokeWidth={active ? 2 : 1.5}
-                aria-hidden="true"
-              />
-            )}
-            <span
-              className={getSegmentedTabLabelClassName(
-                Boolean(option.shortLabel),
-              )}
+          return (
+            <button
+              key={option.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              disabled={disabled}
+              onClick={() => {
+                onChange(option.id);
+              }}
+              className={getSegmentedTabButtonClassName({
+                active,
+                disabled,
+                fill,
+                size,
+              })}
             >
-              {option.label}
-            </span>
-            {option.shortLabel && (
-              <span className="min-w-0 truncate sm:hidden">
-                {option.shortLabel}
+              {active && (
+                <m.span
+                  layoutId={getActiveTabLayoutId({
+                    layoutId,
+                    prefersReducedMotion,
+                  })}
+                  transition={ACTIVE_TAB_TRANSITION}
+                  className="absolute inset-0 -z-10 rounded-full bg-primary shadow-sm"
+                />
+              )}
+              {Icon && (
+                <Icon
+                  className={getSegmentedTabIconClassName({ active, size })}
+                  strokeWidth={active ? 2 : 1.5}
+                  aria-hidden="true"
+                />
+              )}
+              <span
+                className={getSegmentedTabLabelClassName(
+                  Boolean(option.shortLabel),
+                )}
+              >
+                {option.label}
               </span>
-            )}
-          </button>
-        );
-      })}
-    </div>
+              {option.shortLabel && (
+                <span className="min-w-0 truncate sm:hidden">
+                  {option.shortLabel}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </LazyMotion>
   );
 }

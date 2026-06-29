@@ -21,6 +21,10 @@ const realtimeRoutePrefixes = [
 
 const REALTIME_RESUME_SYNC_COOLDOWN_MS = 12_000;
 
+function loadAppRealtimeEvents() {
+  return import("@/app/runtime/app-realtime-events");
+}
+
 function useHasAuthSession() {
   return useSyncExternalStore(
     (listener) => authSession.subscribe(listener),
@@ -77,7 +81,7 @@ export function AppRealtimeSync() {
           reconnectRealtimeSession,
           subscribeAppRealtimeEvents,
           subscribeRealtimeSessionSync,
-        } = await import("@/app/runtime/app-realtime-events");
+        } = await loadAppRealtimeEvents();
 
         if (cancelled) {
           return;

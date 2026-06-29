@@ -1,5 +1,4 @@
 import { ImageOff, Play } from "lucide-react";
-import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import {
   isGifAttachment,
@@ -136,6 +135,7 @@ function ThumbnailVideo({
       <video
         src={media.url}
         poster={media.thumbnailUrl || undefined}
+        aria-label={getThumbnailAriaLabel(media, isGif)}
         autoPlay={isGif}
         loop={isGif}
         preload="metadata"
@@ -218,8 +218,12 @@ function getThumbnailAriaLabel(media: UnifiedAttachment, isGif: boolean) {
   return `Open ${mediaType} thumbnail`;
 }
 
-export const ThumbnailStrip = memo(
-  ({ attachments, selectedIndex, onSelect }: ThumbnailStripProps) => (
+export function ThumbnailStrip({
+  attachments,
+  selectedIndex,
+  onSelect,
+}: ThumbnailStripProps) {
+  return (
     <div className="pointer-events-none absolute inset-x-0 bottom-10 flex h-16 items-center justify-center px-10">
       <div className="scrollbar-hide pointer-events-auto flex gap-2 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-2 backdrop-blur-2xl">
         {attachments.map((media, i) => (
@@ -232,5 +236,5 @@ export const ThumbnailStrip = memo(
         ))}
       </div>
     </div>
-  ),
-);
+  );
+}

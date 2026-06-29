@@ -1,5 +1,4 @@
 import type React from "react";
-import { memo } from "react";
 import type { ActivityOutgoingGifAttachment } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import { AttachmentMenu } from "./attachment-menu";
@@ -24,25 +23,25 @@ interface InputRowProps {
   onSelectFiles: (files: File[]) => void;
 }
 
-export const InputRow = memo(
-  ({
-    value,
-    onChange,
-    onKeyDown,
-    onFocus,
-    onBlur,
-    textareaRef,
-    placeholder,
-    disabled,
-    controlsDisabled = disabled,
-    canAttach = true,
-    canSendGif = true,
-    onCreateProposal,
-    onInsertEmoji,
-    onSelectGif,
-    onSelectImages,
-    onSelectFiles,
-  }: InputRowProps) => (
+export function InputRow({
+  value,
+  onChange,
+  onKeyDown,
+  onFocus,
+  onBlur,
+  textareaRef,
+  placeholder,
+  disabled,
+  controlsDisabled = disabled,
+  canAttach = true,
+  canSendGif = true,
+  onCreateProposal,
+  onInsertEmoji,
+  onSelectGif,
+  onSelectImages,
+  onSelectFiles,
+}: InputRowProps) {
+  return (
     <>
       <div className="flex h-11 shrink-0 items-center gap-0.5 pl-1 sm:pl-1.5">
         <ExpressionPicker
@@ -83,5 +82,5 @@ export const InputRow = memo(
         />
       </div>
     </>
-  ),
-);
+  );
+}

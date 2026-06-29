@@ -23,13 +23,36 @@ export interface SharedMessageRendererProps
   kind: UnifiedMessageListKind;
 }
 
-export interface MessageRendererProps extends SharedMessageRendererProps {
-  isHighlighted: boolean;
+export interface MessageRenderState {
+  isHighlighted?: boolean;
+  isSelectable?: boolean;
+  isSelected?: boolean;
+  isSelectionMode?: boolean;
+  showSender: boolean;
+}
+
+export interface MessageRendererProps
+  extends MessageReplyTargetRendererProps,
+    Pick<
+      MessageSelectionRendererProps,
+      "onStartSelection" | "onToggleSelected"
+    > {
+  kind: UnifiedMessageListKind;
+  message: UnifiedMessage;
+  renderState: MessageRenderState;
   searchQuery: string;
 }
 
 export type ProposalMessageProps = SharedMessageRendererProps;
 
-export interface UnifiedMessageItemProps extends SharedMessageRendererProps {
+export interface UnifiedMessageItemProps
+  extends MessageReplyTargetRendererProps,
+    Pick<
+      MessageSelectionRendererProps,
+      "onStartSelection" | "onToggleSelected"
+    > {
+  kind: UnifiedMessageListKind;
+  message: UnifiedMessage;
+  renderState: MessageRenderState;
   searchQuery?: string;
 }

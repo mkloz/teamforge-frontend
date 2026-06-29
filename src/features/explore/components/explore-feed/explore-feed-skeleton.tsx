@@ -9,13 +9,8 @@ const EXPLORE_CARD_SKELETON_KEYS = ["primary", "secondary", "tertiary"];
 
 export function ExploreFeedSkeleton() {
   return (
-    <div
-      aria-busy="true"
-      aria-label="Loading explore groups"
-      className="flex flex-col gap-4 md:gap-5"
-      role="status"
-    >
-      <span className="sr-only">Loading explore groups</span>
+    <div aria-busy="true" className="flex flex-col gap-4 md:gap-5">
+      <output className="sr-only">Loading explore groups</output>
       <ExploreFeedSectionSkeleton
         detailWidth="w-28"
         titleWidth="w-40"

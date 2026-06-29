@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 import ky from "ky";
 import { Download, X } from "lucide-react";
-import { memo, useState } from "react";
+import { useState } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { isGifAttachment } from "@/features/activity/lib/gif-attachments";
 import { Button } from "@/shared/components/ui/button";
@@ -24,7 +24,7 @@ interface LightboxHeaderViewState {
   positionLabel: string;
 }
 
-export const LightboxHeader = memo(function LightboxHeader({
+export function LightboxHeader({
   count,
   currentMedia,
   selectedIndex,
@@ -45,29 +45,28 @@ export const LightboxHeader = memo(function LightboxHeader({
     }
 
     setIsDownloading(true);
-
-    try {
-      await downloadMedia(mediaToDownload);
-    } finally {
+    await downloadMedia(mediaToDownload).finally(() => {
       setIsDownloading(false);
-    }
+    });
   }
 
   return (
-    <motion.div
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      className="pointer-events-none absolute inset-x-0 top-0 z-50 flex h-18 items-center justify-between gap-4 bg-linear-to-b from-black/65 to-transparent px-6 sm:h-20 sm:px-8"
-    >
-      <LightboxHeaderTitle viewState={viewState} />
-      <LightboxHeaderActions
-        isDownloadDisabled={viewState.isDownloadDisabled}
-        isDownloading={isDownloading}
-        onDownload={handleDownload}
-      />
-    </motion.div>
+    <LazyMotion features={domAnimation}>
+      <m.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="pointer-events-none absolute inset-x-0 top-0 z-50 flex h-18 items-center justify-between gap-4 bg-linear-to-b from-black/65 to-transparent px-6 sm:h-20 sm:px-8"
+      >
+        <LightboxHeaderTitle viewState={viewState} />
+        <LightboxHeaderActions
+          isDownloadDisabled={viewState.isDownloadDisabled}
+          isDownloading={isDownloading}
+          onDownload={handleDownload}
+        />
+      </m.div>
+    </LazyMotion>
   );
-});
+}
 
 function getLightboxHeaderViewState({
   count,

@@ -12,6 +12,7 @@ import path from "node:path";
  * @typedef {(string | number | null | undefined)[]} TableRow
  * @typedef {"accent" | "danger" | "default" | "muted" | "strong" | "success" | "warning"} ConsoleTone
  * @typedef {{ label: string; tone?: ConsoleTone; value: unknown }} KeyValueRow
+ * @typedef {{ depth: number; escaped: boolean; inString: boolean }} JsonObjectScanState
  */
 
 export const ROOT = findRepositoryRoot();
@@ -30,6 +31,22 @@ const ANSI_PATTERN = new RegExp(
   `${ESCAPE_CHARACTER}\\[[0-?]*[ -/]*[@-~]`,
   "gu",
 );
+/** @type {Map<string, (value: unknown) => string>} */
+const CELL_VALUE_FORMATTERS = new Map([
+  ["bigint", String],
+  ["boolean", String],
+  ["function", stringifyFunctionCellValue],
+  ["number", String],
+  ["string", String],
+  ["symbol", stringifySymbolCellValue],
+]);
+/** @type {Map<string, (state: JsonObjectScanState, index: number) => number | null>} */
+const JSON_OBJECT_SCAN_HANDLERS = new Map([
+  ["\\", markEscapedJsonCharacter],
+  ['"', toggleJsonStringState],
+  ["{", incrementJsonObjectDepth],
+  ["}", decrementJsonObjectDepth],
+]);
 
 /**
  * Finds the current Git repository root.
@@ -403,6 +420,24 @@ export function tailLines(value, maxLines = 16, maxLength = 4000) {
 }
 
 /**
+ * Reads a required option value from an argv array.
+ *
+ * @param {string[]} argv Arguments.
+ * @param {number} index Current option index.
+ * @param {string} option Option name.
+ * @returns {string} Option value.
+ */
+export function readRequiredOptionValue(argv, index, option) {
+  const value = argv[index + 1];
+
+  if (value === undefined || value === "") {
+    throw new Error(`Missing value for ${option}.`);
+  }
+
+  return value;
+}
+
+/**
  * @param {string} label Status label.
  * @returns {ConsoleTone} Status tone.
  */
@@ -522,26 +557,36 @@ function stringifyCellValue(value) {
     return "-";
   }
 
-  if (typeof value === "string") {
-    return value;
-  }
+  return (CELL_VALUE_FORMATTERS.get(typeof value) ?? stringifyObjectCellValue)(
+    value,
+  );
+}
 
-  if (
-    typeof value === "number" ||
-    typeof value === "boolean" ||
-    typeof value === "bigint"
-  ) {
-    return `${value}`;
-  }
+/**
+ * @param {unknown} value Cell value.
+ * @returns {string} Printable symbol value.
+ */
+function stringifySymbolCellValue(value) {
+  const description = typeof value === "symbol" ? value.description : undefined;
 
-  if (typeof value === "symbol") {
-    return value.description ? `Symbol(${value.description})` : "Symbol()";
-  }
+  return description ? `Symbol(${description})` : "Symbol()";
+}
 
-  if (typeof value === "function") {
-    return value.name ? `[Function ${value.name}]` : "[Function]";
-  }
+/**
+ * @param {unknown} value Cell value.
+ * @returns {string} Printable function value.
+ */
+function stringifyFunctionCellValue(value) {
+  const functionName = typeof value === "function" ? value.name : "";
 
+  return functionName ? `[Function ${functionName}]` : "[Function]";
+}
+
+/**
+ * @param {unknown} value Cell value.
+ * @returns {string} Printable object value.
+ */
+function stringifyObjectCellValue(value) {
   try {
     return JSON.stringify(value) ?? "-";
   } catch {
@@ -617,51 +662,110 @@ export function parseFirstJsonObject(output) {
     throw new Error("Command output did not contain a JSON object.");
   }
 
-  let depth = 0;
-  let inString = false;
-  let escaped = false;
+  return parseJsonObjectSlice(
+    output,
+    startIndex,
+    findJsonObjectEndIndex(output, startIndex),
+  );
+}
+
+/**
+ * @param {string} output Command output.
+ * @param {number} startIndex Object start index.
+ * @returns {number} Object end index.
+ */
+function findJsonObjectEndIndex(output, startIndex) {
+  /** @type {JsonObjectScanState} */
+  const state = { depth: 0, escaped: false, inString: false };
 
   for (let index = startIndex; index < output.length; index += 1) {
-    const char = output[index];
+    const endIndex = scanJsonObjectCharacter(state, output[index], index);
 
-    if (escaped) {
-      escaped = false;
-      continue;
-    }
-
-    if (char === "\\") {
-      escaped = true;
-      continue;
-    }
-
-    if (char === '"') {
-      inString = !inString;
-      continue;
-    }
-
-    if (inString) {
-      continue;
-    }
-
-    if (char === "{") {
-      depth += 1;
-    } else if (char === "}") {
-      depth -= 1;
-
-      if (depth === 0) {
-        // oxlint-disable-next-line bensandee/no-unsafe-json-parse -- Tool JSON is validated as a record before callers use it.
-        const parsed = JSON.parse(output.slice(startIndex, index + 1));
-
-        if (!isRecord(parsed)) {
-          throw new TypeError("Parsed JSON payload must be an object.");
-        }
-
-        return parsed;
-      }
+    if (endIndex !== null) {
+      return endIndex;
     }
   }
 
   throw new Error("Command output contained an incomplete JSON object.");
+}
+
+/**
+ * @param {JsonObjectScanState} state Scan state.
+ * @param {string} char Current character.
+ * @param {number} index Current character index.
+ * @returns {number | null} Completed object end index.
+ */
+function scanJsonObjectCharacter(state, char, index) {
+  if (state.escaped) {
+    state.escaped = false;
+    return null;
+  }
+
+  return JSON_OBJECT_SCAN_HANDLERS.get(char)?.(state, index) ?? null;
+}
+
+/**
+ * @param {JsonObjectScanState} state Scan state.
+ * @returns {null} No object end index.
+ */
+function markEscapedJsonCharacter(state) {
+  state.escaped = true;
+
+  return null;
+}
+
+/**
+ * @param {JsonObjectScanState} state Scan state.
+ * @returns {null} No object end index.
+ */
+function toggleJsonStringState(state) {
+  state.inString = !state.inString;
+
+  return null;
+}
+
+/**
+ * @param {JsonObjectScanState} state Scan state.
+ * @returns {null} No object end index.
+ */
+function incrementJsonObjectDepth(state) {
+  if (!state.inString) {
+    state.depth += 1;
+  }
+
+  return null;
+}
+
+/**
+ * @param {JsonObjectScanState} state Scan state.
+ * @param {number} index Current character index.
+ * @returns {number | null} Completed object end index.
+ */
+function decrementJsonObjectDepth(state, index) {
+  if (state.inString) {
+    return null;
+  }
+
+  state.depth -= 1;
+
+  return state.depth === 0 ? index : null;
+}
+
+/**
+ * @param {string} output Command output.
+ * @param {number} startIndex Object start index.
+ * @param {number} endIndex Object end index.
+ * @returns {Record<string, unknown>} Parsed object.
+ */
+function parseJsonObjectSlice(output, startIndex, endIndex) {
+  // oxlint-disable-next-line bensandee/no-unsafe-json-parse -- Tool JSON is validated as a record before callers use it.
+  const parsed = JSON.parse(output.slice(startIndex, endIndex + 1));
+
+  if (!isRecord(parsed)) {
+    throw new TypeError("Parsed JSON payload must be an object.");
+  }
+
+  return parsed;
 }
 
 /**

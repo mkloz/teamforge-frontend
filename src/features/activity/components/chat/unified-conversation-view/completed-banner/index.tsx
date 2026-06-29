@@ -11,7 +11,7 @@ import {
   UserRoundPlus,
   UserStar,
 } from "lucide-react";
-import { memo, type ReactNode, useMemo } from "react";
+import type { ReactNode } from "react";
 import type {
   Group,
   GroupMember,
@@ -47,7 +47,7 @@ interface CompletedReviewGateViewState {
   submitTitle: string | undefined;
 }
 
-export const CompletedReviewGate = memo(function CompletedReviewGate({
+export function CompletedReviewGate({
   children,
   group,
 }: CompletedReviewGateProps) {
@@ -66,7 +66,7 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
       <CompletedReviewGateBody rating={rating} viewState={viewState} />
     </div>
   );
-});
+}
 
 function getCompletedReviewGateViewState(
   group: Group,
@@ -334,7 +334,6 @@ function CompletedReviewActions({
 }
 
 function ReviewMemberActions({ member }: { member: GroupMember }) {
-  const profileUser = useMemo(() => ({ id: member.userId }), [member.userId]);
   const {
     connectDisabled,
     connectLabel,
@@ -343,9 +342,8 @@ function ReviewMemberActions({ member }: { member: GroupMember }) {
     messageChatId,
     messageDisabled,
     onConnect,
-  } = usePublicProfileActions(profileUser);
+  } = usePublicProfileActions({ id: member.userId });
   const memberName = member.user?.name ?? "teammate";
-  const ConnectIcon = getConnectIcon(connectLabel);
 
   return (
     <div className="flex flex-wrap gap-2 sm:justify-end">
@@ -358,7 +356,7 @@ function ReviewMemberActions({ member }: { member: GroupMember }) {
         aria-label={`${connectLabel} with ${memberName}`}
         title={isOnline ? undefined : "Reconnect before changing connections."}
       >
-        <ConnectIcon className="size-3.5" />
+        <ConnectActionIcon label={connectLabel} />
         <span>{connectLabel}</span>
       </Button>
 
@@ -397,20 +395,20 @@ function ReviewMemberActions({ member }: { member: GroupMember }) {
   );
 }
 
-function getConnectIcon(label: string) {
+function ConnectActionIcon({ label }: { label: string }) {
   if (label === "Accept" || label === "Connected") {
-    return UserCheck;
+    return <UserCheck className="size-3.5" />;
   }
 
   if (label === "Requested") {
-    return CircleDashed;
+    return <CircleDashed className="size-3.5" />;
   }
 
   if (label === "Blocked") {
-    return Ban;
+    return <Ban className="size-3.5" />;
   }
 
-  return UserRoundPlus;
+  return <UserRoundPlus className="size-3.5" />;
 }
 
 function ReviewErrorState({ onRetry }: { onRetry: () => void }) {

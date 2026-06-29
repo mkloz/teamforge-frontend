@@ -1,10 +1,5 @@
 import type { ReactNode } from "react";
-import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
-import { useProfileFriendRequests } from "@/features/profile/hooks/use-profile-friend-requests";
-import { useProfileFriends } from "@/features/profile/hooks/use-profile-friends";
-import { useProfilePublicFriends } from "@/features/profile/hooks/use-profile-public-friends";
 import { TYPE_INFO } from "@/features/profile/lib/archetypes";
-import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import {
   Popover,
   PopoverContent,
@@ -15,23 +10,17 @@ import { normalizeTrustScore } from "@/shared/lib/user-psychometrics";
 import { cn } from "@/shared/lib/utils";
 import type { User } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
+import {
+  type FriendsSheetTab,
+  type ProfileSocialSummary,
+  useProfileSocialSummary,
+} from "../use-profile-social-summary";
 import { ProfileBadgeDivider } from "./profile-badge-divider";
-
-type FriendsSheetTab = "friends" | "requests" | "public_friends";
 
 interface ProfileBadgesProps {
   archetype: string;
   user: User;
   onOpenFriends?: (tab: FriendsSheetTab) => void;
-}
-
-interface SocialBadgeInput {
-  canShowPublicFriends: boolean;
-  commonFriendsCount: number;
-  friendsCount: number;
-  isSelf: boolean;
-  publicFriendsCount: number;
-  requestsCount: number;
 }
 
 interface SocialBadge {
@@ -42,12 +31,6 @@ interface SocialBadge {
 }
 
 type SocialBadgeConfig = Omit<SocialBadge, "value">;
-
-interface ProfileSocialQueryScope {
-  canShowPublicFriends: boolean;
-  commonFriendsUserId: string | undefined;
-  publicFriendsUserId: string;
-}
 
 const SOCIAL_BADGE_CONFIGS = {
   friends: {
@@ -76,7 +59,7 @@ function getSocialBadges({
   isSelf,
   publicFriendsCount,
   requestsCount,
-}: SocialBadgeInput): SocialBadge[] {
+}: ProfileSocialSummary): SocialBadge[] {
   if (isSelf) {
     return getSelfSocialBadges({ friendsCount, requestsCount });
   }
@@ -91,7 +74,7 @@ function getSocialBadges({
 function getSelfSocialBadges({
   friendsCount,
   requestsCount,
-}: Pick<SocialBadgeInput, "friendsCount" | "requestsCount">) {
+}: Pick<ProfileSocialSummary, "friendsCount" | "requestsCount">) {
   const badges = [
     createSocialBadge(SOCIAL_BADGE_CONFIGS.friends, friendsCount),
   ];
@@ -110,7 +93,7 @@ function getPublicSocialBadges({
   commonFriendsCount,
   publicFriendsCount,
 }: Pick<
-  SocialBadgeInput,
+  ProfileSocialSummary,
   "canShowPublicFriends" | "commonFriendsCount" | "publicFriendsCount"
 >) {
   const badges: SocialBadge[] = [];
@@ -148,7 +131,7 @@ export function ProfileBadges({
   const trustScore = normalizeTrustScore(user.trustScore);
   const trustLabel = getTrustLabel(trustScore);
   const groupMode = archetype.replace(/^The\s+/i, "");
-  const socialBadgeInput = useProfileSocialBadgeInput(user);
+  const socialBadgeInput = useProfileSocialSummary(user);
   const socialBadges = getSocialBadges(socialBadgeInput);
 
   return (
@@ -172,51 +155,6 @@ export function ProfileBadges({
       />
     </div>
   );
-}
-
-function useProfileSocialBadgeInput(user: User): SocialBadgeInput {
-  const { data: currentUser } = useCurrentUserQuery();
-  const isSelf = getIsSelfProfile(currentUser?.id ?? null, user.id);
-  const queryScope = getProfileSocialQueryScope(user, isSelf);
-
-  const { friends } = useProfileFriends();
-  const { requests } = useProfileFriendRequests();
-  const { commonFriends } = useProfileCommonFriends(
-    queryScope.commonFriendsUserId,
-  );
-  const { publicFriends } = useProfilePublicFriends(
-    queryScope.publicFriendsUserId,
-  );
-
-  return {
-    canShowPublicFriends: queryScope.canShowPublicFriends,
-    commonFriendsCount: getCollectionCount(commonFriends),
-    friendsCount: getCollectionCount(friends),
-    isSelf,
-    publicFriendsCount: getCollectionCount(publicFriends),
-    requestsCount: getCollectionCount(requests),
-  };
-}
-
-function getProfileSocialQueryScope(
-  user: User,
-  isSelf: boolean,
-): ProfileSocialQueryScope {
-  const canShowPublicFriends = !isSelf && user.showFriendsListOnProfile;
-
-  return {
-    canShowPublicFriends,
-    commonFriendsUserId: isSelf ? undefined : user.id,
-    publicFriendsUserId: canShowPublicFriends ? user.id : "",
-  };
-}
-
-function getIsSelfProfile(currentUserId: string | null, profileUserId: string) {
-  return currentUserId === profileUserId;
-}
-
-function getCollectionCount(collection: { length: number } | null | undefined) {
-  return collection?.length ?? 0;
 }
 
 function ProfileSocialBadges({

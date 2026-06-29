@@ -29,8 +29,8 @@ export function SelectedMemberProfile({
     <UserProfilePanel
       chat={memberChat}
       participant={participant}
-      isMobile={isMobile}
-      isDirectChat={false}
+      mode={isMobile ? "mobile" : "desktop"}
+      scope="group-member"
       onBack={onBack}
     />
   );

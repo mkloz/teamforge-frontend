@@ -185,70 +185,78 @@ function IncomingFriendRequestCard({
     <FriendCard
       user={user}
       actions={
-        <IncomingRequestActions
-          acceptRequest={acceptRequest}
-          declineRequest={declineRequest}
-          isOnline={isOnline}
-          userId={user.id}
-          {...actionState}
-        />
+        <>
+          <DeclineIncomingRequestButton
+            disabled={!isOnline || actionState.isActionPending}
+            loading={actionState.isDeclining}
+            onClick={() => declineRequest(user.id)}
+          />
+          <AcceptIncomingRequestButton
+            disabled={!isOnline || actionState.isActionPending}
+            loading={actionState.isAccepting}
+            onClick={() => acceptRequest(user.id)}
+          />
+        </>
       }
     />
   );
 }
 
-function IncomingRequestActions({
-  acceptRequest,
-  declineRequest,
-  isAccepting,
-  isActionPending,
-  isDeclining,
-  isOnline,
-  userId,
+function DeclineIncomingRequestButton({
+  disabled,
+  loading,
+  onClick,
 }: {
-  acceptRequest: (userId: string) => unknown;
-  declineRequest: (userId: string) => unknown;
-  isAccepting: boolean;
-  isActionPending: boolean;
-  isDeclining: boolean;
-  isOnline: boolean;
-  userId: string;
+  disabled: boolean;
+  loading: boolean;
+  onClick: () => unknown;
 }) {
   return (
-    <>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        disabled={!isOnline || isActionPending}
-        onClick={() => declineRequest(userId)}
-        aria-label="Decline request"
-        title="Decline"
-        className="size-8 text-muted-foreground hover:text-destructive"
-      >
-        {isDeclining ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <X className="size-4" />
-        )}
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        disabled={!isOnline || isActionPending}
-        onClick={() => acceptRequest(userId)}
-        aria-label="Accept request"
-        title="Accept"
-        className="size-8 text-muted-foreground hover:text-forge-teal"
-      >
-        {isAccepting ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <Check className="size-4" />
-        )}
-      </Button>
-    </>
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      disabled={disabled}
+      onClick={onClick}
+      aria-label="Decline request"
+      title="Decline"
+      className="size-8 text-muted-foreground hover:text-destructive"
+    >
+      {loading ? (
+        <Loader2 className="size-4 animate-spin" />
+      ) : (
+        <X className="size-4" />
+      )}
+    </Button>
+  );
+}
+
+function AcceptIncomingRequestButton({
+  disabled,
+  loading,
+  onClick,
+}: {
+  disabled: boolean;
+  loading: boolean;
+  onClick: () => unknown;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      disabled={disabled}
+      onClick={onClick}
+      aria-label="Accept request"
+      title="Accept"
+      className="size-8 text-muted-foreground hover:text-forge-teal"
+    >
+      {loading ? (
+        <Loader2 className="size-4 animate-spin" />
+      ) : (
+        <Check className="size-4" />
+      )}
+    </Button>
   );
 }
 

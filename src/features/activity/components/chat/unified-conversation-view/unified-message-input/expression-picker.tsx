@@ -2,7 +2,6 @@ import { Clapperboard, type LucideIcon, Smile } from "lucide-react";
 import {
   type KeyboardEvent,
   lazy,
-  memo,
   Suspense,
   startTransition,
   useEffect,
@@ -54,7 +53,7 @@ interface ExpressionPickerProps {
 
 type ExpressionMode = "emoji" | "gif";
 
-export const ExpressionPicker = memo(function ExpressionPicker({
+export function ExpressionPicker({
   canSendGif = true,
   disabled,
   onInsertEmoji,
@@ -71,11 +70,9 @@ export const ExpressionPicker = memo(function ExpressionPicker({
 
   useEffect(() => {
     if (!open || mode !== "emoji") {
-      setRenderEmojiPanel(false);
       return undefined;
     }
 
-    setRenderEmojiPanel(false);
     const timeoutId = window.setTimeout(() => {
       startTransition(() => setRenderEmojiPanel(true));
     }, EMOJI_PANEL_OPEN_DELAY_MS);
@@ -179,7 +176,7 @@ export const ExpressionPicker = memo(function ExpressionPicker({
                   height={EMOJI_PANEL_VIEWPORT_HEIGHT}
                   onSelect={(emoji) => {
                     onInsertEmoji(emoji);
-                    setOpen(false);
+                    handleOpenChange(false);
                   }}
                 />
               </Suspense>
@@ -192,7 +189,7 @@ export const ExpressionPicker = memo(function ExpressionPicker({
                 canSendGif={canSendGif}
                 onSelect={(gif) => {
                   onSelectGif(gif);
-                  setOpen(false);
+                  handleOpenChange(false);
                 }}
               />
             </Suspense>
@@ -201,7 +198,7 @@ export const ExpressionPicker = memo(function ExpressionPicker({
       </PopoverContent>
     </Popover>
   );
-});
+}
 
 function ExpressionTab({
   active,

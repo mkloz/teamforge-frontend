@@ -1,4 +1,10 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  domAnimation,
+  LazyMotion,
+  m,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import type { RefObject } from "react";
 
 import { InterestsBrowseHeader } from "@/features/onboarding/components/interests/interests-browse/interests-browse-header";
@@ -33,15 +39,17 @@ export function InterestsPersistentHeader({
       <div className="mx-auto max-w-xl px-4 sm:px-5 lg:px-0">
         {state.screen === "browse" && (
           <div className="mb-1 flex flex-col">
-            <motion.div style={{ opacity: headerOpacity }}>
-              <InterestsBrowseHeader
-                categories={state.categories}
-                searchQuery={state.searchQuery}
-                onSetSearch={state.setSearchQuery}
-                onQuickJumpCategory={state.jumpToCategory}
-                variant="pills"
-              />
-            </motion.div>
+            <LazyMotion features={domAnimation}>
+              <m.div style={{ opacity: headerOpacity }}>
+                <InterestsBrowseHeader
+                  categories={state.categories}
+                  searchQuery={state.searchQuery}
+                  onSetSearch={state.setSearchQuery}
+                  onQuickJumpCategory={state.jumpToCategory}
+                  variant="pills"
+                />
+              </m.div>
+            </LazyMotion>
 
             <InterestsBrowseHeader
               categories={state.categories}

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Tags, X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
@@ -38,7 +38,7 @@ export function SelectionShelf({
   return (
     <AnimatePresence mode="wait">
       {shelfState.showShelf && (
-        <motion.div
+        <m.div
           key={shelfState.key}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -62,7 +62,7 @@ export function SelectionShelf({
               youMightAlsoLike={youMightAlsoLike}
             />
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

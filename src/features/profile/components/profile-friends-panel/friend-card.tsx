@@ -99,14 +99,17 @@ function PresenceIndicator({ onlineStatus }: { onlineStatus?: OnlineStatus }) {
   }
 
   return (
-    <span
-      role="img"
-      title={getPresenceTitle(onlineStatus)}
-      className={cn(
-        "absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full ring-2 ring-background",
-        getPresenceClassName(onlineStatus),
-      )}
-    />
+    <>
+      <span
+        aria-hidden="true"
+        title={getPresenceTitle(onlineStatus)}
+        className={cn(
+          "absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full ring-2 ring-background",
+          getPresenceClassName(onlineStatus),
+        )}
+      />
+      <span className="sr-only">{getPresenceTitle(onlineStatus)}</span>
+    </>
   );
 }
 

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
 
 interface InsightSectionProps {
@@ -16,21 +16,21 @@ export function InsightSection({
 }: InsightSectionProps) {
   return (
     <>
-      <motion.h2
+      <m.h2
         variants={fadeUpItem}
         className="mb-4 font-black font-sans text-2xl text-ink leading-tight tracking-tight sm:text-4xl"
       >
         {title}
-      </motion.h2>
+      </m.h2>
 
-      <motion.p
+      <m.p
         variants={fadeUpItem}
         className="mx-auto mb-7 max-w-xl font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:mb-8 sm:text-chat-input"
       >
         {description}
-      </motion.p>
+      </m.p>
 
-      <motion.div
+      <m.div
         variants={fadeUpItem}
         className="mx-auto w-full max-w-xl border-forge-teal/25 border-l-2 py-1 pl-4 text-left sm:pl-6"
       >
@@ -40,7 +40,7 @@ export function InsightSection({
         <p className="font-sans text-muted-foreground text-sm leading-relaxed">
           {fact}
         </p>
-      </motion.div>
+      </m.div>
     </>
   );
 }

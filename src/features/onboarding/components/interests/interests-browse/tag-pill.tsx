@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
+import { domMax, LazyMotion, m } from "framer-motion";
 import { Check, X } from "lucide-react";
+import type { MouseEventHandler, ReactNode, Ref } from "react";
 import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
@@ -80,8 +81,6 @@ function TagPillContent({
   onReject,
   onToggle,
 }: TagPillContentProps) {
-  const TagWrapper = getTagPillWrapper(animated);
-
   return (
     <Button
       variant={viewState.variant}
@@ -93,9 +92,10 @@ function TagPillContent({
         viewState.surfaceClass,
       )}
     >
-      <TagWrapper
+      <TagPillInteractiveTarget
+        animated={animated}
+        motionProps={viewState.motionProps}
         onClick={onToggle}
-        {...viewState.motionProps}
         aria-pressed={selected}
         className="min-w-0 active:scale-100"
       >
@@ -105,8 +105,64 @@ function TagPillContent({
           selected={selected}
           slots={viewState.slots}
         />
-      </TagWrapper>
+      </TagPillInteractiveTarget>
     </Button>
+  );
+}
+
+interface TagPillInteractiveTargetProps {
+  "aria-busy"?: boolean;
+  "aria-disabled"?: boolean;
+  "aria-pressed"?: boolean;
+  "data-loading"?: boolean;
+  animated: boolean;
+  children: ReactNode;
+  className?: string;
+  disabled?: boolean;
+  motionProps: TagPillViewState["motionProps"];
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  ref?: Ref<HTMLButtonElement>;
+  type?: "button" | "submit" | "reset";
+}
+
+function TagPillInteractiveTarget({
+  "aria-busy": ariaBusy,
+  "aria-disabled": ariaDisabled,
+  "aria-pressed": ariaPressed,
+  "data-loading": dataLoading,
+  animated,
+  children,
+  className,
+  disabled,
+  motionProps,
+  onClick,
+  ref,
+  type = "button",
+}: TagPillInteractiveTargetProps) {
+  const commonProps = {
+    "aria-busy": ariaBusy,
+    "aria-disabled": ariaDisabled,
+    "aria-pressed": ariaPressed,
+    "data-loading": dataLoading,
+    className,
+    disabled,
+    onClick,
+  };
+
+  if (animated) {
+    return (
+      <LazyMotion features={domMax}>
+        <m.button ref={ref} type={type} {...commonProps} {...motionProps}>
+          {children}
+        </m.button>
+      </LazyMotion>
+    );
+  }
+
+  return (
+    <button ref={ref} type={type} {...commonProps}>
+      {children}
+    </button>
   );
 }
 
@@ -170,8 +226,4 @@ function RejectTagButton({ onReject }: { onReject: () => void }) {
       />
     </Button>
   );
-}
-
-function getTagPillWrapper(animated: boolean) {
-  return animated ? motion.button : "button";
 }

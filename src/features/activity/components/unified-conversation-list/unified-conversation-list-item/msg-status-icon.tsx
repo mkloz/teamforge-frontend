@@ -1,5 +1,4 @@
 import { Check, CheckCheck, type LucideIcon } from "lucide-react";
-import { memo } from "react";
 import type { MessageStatus } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 
@@ -27,31 +26,29 @@ const CHECK_ICON_CONFIG = {
   MsgStatusIconConfig | null
 >;
 
-export const MsgStatusIcon = memo(
-  ({
-    status,
-    isCompact = false,
-  }: {
-    status: MessageStatus;
-    isCompact?: boolean;
-  }) => {
-    const size = isCompact ? 10 : 12;
+export function MsgStatusIcon({
+  status,
+  isCompact = false,
+}: {
+  status: MessageStatus;
+  isCompact?: boolean;
+}) {
+  const size = isCompact ? 10 : 12;
 
-    if (status === "SENDING") {
-      return <SendingStatusIcon isCompact={isCompact} />;
-    }
+  if (status === "SENDING") {
+    return <SendingStatusIcon isCompact={isCompact} />;
+  }
 
-    const iconConfig = CHECK_ICON_CONFIG[status];
+  const iconConfig = CHECK_ICON_CONFIG[status];
 
-    if (!iconConfig) {
-      return null;
-    }
+  if (!iconConfig) {
+    return null;
+  }
 
-    const Icon = iconConfig.Icon;
+  const Icon = iconConfig.Icon;
 
-    return <Icon size={size} className={iconConfig.className} />;
-  },
-);
+  return <Icon size={size} className={iconConfig.className} />;
+}
 
 function SendingStatusIcon({ isCompact }: { isCompact: boolean }) {
   return (

@@ -1,4 +1,3 @@
-import { memo } from "react";
 import type {
   UnifiedAttachment,
   UnifiedMessage,
@@ -27,57 +26,55 @@ interface MessageMediaAttachmentGroups {
   visualAttachments: UnifiedAttachment[];
 }
 
-export const MessageMedia = memo(
-  ({
-    attachments,
-    isOwn,
-    content,
-    createdAt,
-    status,
-    isReadByOthers,
-    galleryRounding,
-    reactionGroupsLength,
-    replyTo,
-  }: MessageMediaProps) => {
-    if (!attachments || attachments.length === 0) return null;
+export function MessageMedia({
+  attachments,
+  isOwn,
+  content,
+  createdAt,
+  status,
+  isReadByOthers,
+  galleryRounding,
+  reactionGroupsLength,
+  replyTo,
+}: MessageMediaProps) {
+  if (!attachments || attachments.length === 0) return null;
 
-    const attachmentGroups = getMessageMediaAttachmentGroups(attachments);
+  const attachmentGroups = getMessageMediaAttachmentGroups(attachments);
 
-    return (
-      <div
-        className={cn(
-          "flex w-full min-w-0 max-w-full shrink-0 flex-col gap-1 overflow-hidden",
-          content ? "mb-1" : "",
-        )}
-      >
-        {/* Voice Notes */}
-        <VoiceNoteAttachments
-          attachments={attachmentGroups.audioAttachments}
-          isOwn={isOwn}
-        />
+  return (
+    <div
+      className={cn(
+        "flex w-full min-w-0 max-w-full shrink-0 flex-col gap-1 overflow-hidden",
+        content ? "mb-1" : "",
+      )}
+    >
+      {/* Voice Notes */}
+      <VoiceNoteAttachments
+        attachments={attachmentGroups.audioAttachments}
+        isOwn={isOwn}
+      />
 
-        {/* Documents */}
-        <DocumentAttachments
-          attachments={attachmentGroups.fileAttachments}
-          isOwn={isOwn}
-        />
+      {/* Documents */}
+      <DocumentAttachments
+        attachments={attachmentGroups.fileAttachments}
+        isOwn={isOwn}
+      />
 
-        {/* Visual media / Gallery */}
-        <VisualMediaAttachments
-          attachments={attachmentGroups.visualAttachments}
-          content={content}
-          createdAt={createdAt}
-          galleryRounding={galleryRounding}
-          isOwn={isOwn}
-          isReadByOthers={isReadByOthers}
-          reactionGroupsLength={reactionGroupsLength}
-          replyTo={replyTo}
-          status={status}
-        />
-      </div>
-    );
-  },
-);
+      {/* Visual media / Gallery */}
+      <VisualMediaAttachments
+        attachments={attachmentGroups.visualAttachments}
+        content={content}
+        createdAt={createdAt}
+        galleryRounding={galleryRounding}
+        isOwn={isOwn}
+        isReadByOthers={isReadByOthers}
+        reactionGroupsLength={reactionGroupsLength}
+        replyTo={replyTo}
+        status={status}
+      />
+    </div>
+  );
+}
 
 function getMessageMediaAttachmentGroups(
   attachments: UnifiedAttachment[],

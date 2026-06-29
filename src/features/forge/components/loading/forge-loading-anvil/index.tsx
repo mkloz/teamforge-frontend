@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducedMotion } from "framer-motion";
+import { domAnimation, LazyMotion, useReducedMotion } from "framer-motion";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -36,15 +36,17 @@ export function ForgeLoadingAnvil({
         "flex select-none flex-col items-center justify-center gap-4",
         className,
       )}
-      role="status"
-      aria-label={displayLabel}
+      aria-busy="true"
     >
-      <ForgeAnvilStage size={size} />
-      <ForgeLoadingLabel
-        displayLabel={displayLabel}
-        label={label}
-        strikeCount={strikeCount}
-      />
+      <output className="sr-only">{displayLabel}</output>
+      <LazyMotion features={domAnimation}>
+        <ForgeAnvilStage size={size} />
+        <ForgeLoadingLabel
+          displayLabel={displayLabel}
+          label={label}
+          strikeCount={strikeCount}
+        />
+      </LazyMotion>
     </div>
   );
 }

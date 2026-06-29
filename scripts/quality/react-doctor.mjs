@@ -12,6 +12,7 @@ import {
   formatStatusBadge,
   parseFirstJsonObject,
   ROOT,
+  readRequiredOptionValue,
   renderBullets,
   renderKeyValues,
   renderMarkdownTable,
@@ -25,6 +26,7 @@ import {
 import {
   ADVISORY_REACT_DOCTOR_RULES,
   getReactDoctorBlockingPolicyText,
+  getReactDoctorFalsePositive,
   getReactDoctorRuleId,
   isReactDoctorBlockingSignal,
 } from "./policy.mjs";
@@ -33,10 +35,16 @@ import {
  * @typedef {"changed" | "context" | "local" | "pr" | "release"} ReactDoctorMode
  * @typedef {"calibrated" | "error" | "none" | "warning"} ReactDoctorBlockingLevel
  * @typedef {{ blocking: ReactDoctorBlockingLevel; jsonFile: string; mode: ReactDoctorMode; projects: string[]; quiet: boolean; reportDir: string; scope: string }} CliOptions
- * @typedef {{ category?: string; filePath?: string; line?: number | string; message?: string; plugin?: string; rule?: string; severity?: string; title?: string }} ReactDoctorDiagnostic
+ * @typedef {{ category?: string; column?: number | string; filePath?: string; line?: number | string; message?: string; plugin?: string; rule?: string; severity?: string; title?: string }} ReactDoctorDiagnostic
+ * @typedef {ReactDoctorDiagnostic & { suppressionReason: string; suppressionTarget?: string }} SuppressedReactDoctorDiagnostic
  * @typedef {{ diagnostics?: ReactDoctorDiagnostic[]; directory?: string; summary?: Record<string, unknown> }} ReactDoctorProject
- * @typedef {{ elapsedMilliseconds?: number; ok?: boolean; projects?: ReactDoctorProject[]; version?: string }} ReactDoctorPayload
- * @typedef {{ affectedFileCount: number; blockerCount: number; diagnosticCount: number; errorCount: number; warningCount: number }} ReactDoctorSummary
+ * @typedef {{ elapsedMilliseconds?: number; ok?: boolean; projects?: ReactDoctorProject[]; suppressedDiagnostics?: SuppressedReactDoctorDiagnostic[]; version?: string }} ReactDoctorPayload
+ * @typedef {{ affectedFileCount: number; blockerCount: number; diagnosticCount: number; errorCount: number; suppressedCount: number; warningCount: number }} ReactDoctorSummary
+ * @typedef {{ diagnostic: ReactDoctorDiagnostic; suppressedDiagnostic?: SuppressedReactDoctorDiagnostic }} ClassifiedReactDoctorDiagnostic
+ * @typedef {{ project: ReactDoctorProject; suppressedDiagnostics: SuppressedReactDoctorDiagnostic[] }} FilteredReactDoctorProject
+ * @typedef {(options: CliOptions, value: string) => void} ReactDoctorValueOptionAssigner
+ * @typedef {{ assign: ReactDoctorValueOptionAssigner; prefix: string }} ReactDoctorInlineOption
+ * @typedef {{ categories: Set<string>; diagnosticCount: number; errorCount: number; warningCount: number }} MutableAffectedFileRow
  */
 
 const DEFAULT_REPORT_DIR = path.join(ROOT, "reports");
@@ -48,14 +56,44 @@ const DEFAULT_DIAGNOSTICS_DIR = path.join(
 );
 const SEVERITY_ORDER = ["error", "warning", "info"];
 const numberFormatter = new Intl.NumberFormat("en-US");
+/** @type {Map<string, ReactDoctorValueOptionAssigner>} */
+const REACT_DOCTOR_VALUE_OPTIONS = new Map([
+  ["--blocking", assignBlockingOption],
+  ["--json-file", assignJsonFileOption],
+  ["--project", assignProjectsOption],
+  ["--projects", assignProjectsOption],
+  ["--report-dir", assignReportDirOption],
+  ["--scope", assignScopeOption],
+]);
+/** @type {ReactDoctorInlineOption[]} */
+const REACT_DOCTOR_INLINE_OPTIONS = [
+  { assign: assignBlockingOption, prefix: "--blocking=" },
+  { assign: assignJsonFileOption, prefix: "--json-file=" },
+  { assign: assignProjectsOption, prefix: "--project=" },
+  { assign: assignProjectsOption, prefix: "--projects=" },
+  { assign: assignReportDirOption, prefix: "--report-dir=" },
+  { assign: assignScopeOption, prefix: "--scope=" },
+];
 
 /**
  * @param {string[]} argv CLI arguments.
  * @returns {CliOptions} Parsed options.
  */
 function parseArgs(argv) {
-  /** @type {CliOptions} */
-  const options = {
+  const options = getDefaultCliOptions();
+
+  for (let index = 0; index < argv.length; index += 1) {
+    index += applyReactDoctorArg(options, argv, index);
+  }
+
+  return options;
+}
+
+/**
+ * @returns {CliOptions} Default CLI options.
+ */
+function getDefaultCliOptions() {
+  return {
     blocking: getDefaultBlockingLevel(),
     jsonFile: process.env.REACT_DOCTOR_JSON_FILE ?? DEFAULT_JSON_FILE,
     mode: "local",
@@ -64,79 +102,89 @@ function parseArgs(argv) {
     reportDir: process.env.REACT_DOCTOR_REPORT_DIR ?? DEFAULT_REPORT_DIR,
     scope: process.env.REACT_DOCTOR_SCOPE ?? "full",
   };
+}
 
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
+/**
+ * @param {CliOptions} options Parsed options.
+ * @param {string[]} argv CLI arguments.
+ * @param {number} index Current index.
+ * @returns {number} Additional argv indexes consumed.
+ */
+function applyReactDoctorArg(options, argv, index) {
+  const arg = argv[index];
 
-    if (isMode(arg)) {
-      options.mode = arg;
-      continue;
-    }
-
-    if (arg === "--quiet") {
-      options.quiet = true;
-      continue;
-    }
-
-    if (arg === "--json-file") {
-      options.jsonFile = readOptionValue(argv, index, arg);
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--report-dir") {
-      options.reportDir = readOptionValue(argv, index, arg);
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--project" || arg === "--projects") {
-      options.projects = parseProjects(readOptionValue(argv, index, arg));
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--scope") {
-      options.scope = readOptionValue(argv, index, arg);
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--blocking") {
-      options.blocking = parseBlockingLevel(readOptionValue(argv, index, arg));
-      index += 1;
-      continue;
-    }
-
-    if (arg.startsWith("--json-file=")) {
-      options.jsonFile = arg.slice("--json-file=".length);
-      continue;
-    }
-
-    if (arg.startsWith("--report-dir=")) {
-      options.reportDir = arg.slice("--report-dir=".length);
-      continue;
-    }
-
-    if (arg.startsWith("--project=") || arg.startsWith("--projects=")) {
-      options.projects = parseProjects(arg.slice(arg.indexOf("=") + 1));
-      continue;
-    }
-
-    if (arg.startsWith("--scope=")) {
-      options.scope = arg.slice("--scope=".length);
-      continue;
-    }
-
-    if (arg.startsWith("--blocking=")) {
-      options.blocking = parseBlockingLevel(arg.slice("--blocking=".length));
-      continue;
-    }
-
-    throw new Error(`Unknown react-doctor wrapper argument: ${arg}`);
+  if (isMode(arg)) {
+    options.mode = arg;
+    return 0;
   }
 
-  return options;
+  if (arg === "--quiet") {
+    options.quiet = true;
+    return 0;
+  }
+
+  const valueOption = REACT_DOCTOR_VALUE_OPTIONS.get(arg);
+
+  if (valueOption) {
+    valueOption(options, readRequiredOptionValue(argv, index, arg));
+    return 1;
+  }
+
+  const inlineOption = REACT_DOCTOR_INLINE_OPTIONS.find((option) =>
+    arg.startsWith(option.prefix),
+  );
+
+  if (inlineOption) {
+    inlineOption.assign(options, arg.slice(inlineOption.prefix.length));
+    return 0;
+  }
+
+  throw new Error(`Unknown react-doctor wrapper argument: ${arg}`);
+}
+
+/**
+ * @param {CliOptions} options Parsed options.
+ * @param {string} value Option value.
+ * @returns {void}
+ */
+function assignBlockingOption(options, value) {
+  options.blocking = parseBlockingLevel(value);
+}
+
+/**
+ * @param {CliOptions} options Parsed options.
+ * @param {string} value Option value.
+ * @returns {void}
+ */
+function assignJsonFileOption(options, value) {
+  options.jsonFile = value;
+}
+
+/**
+ * @param {CliOptions} options Parsed options.
+ * @param {string} value Option value.
+ * @returns {void}
+ */
+function assignProjectsOption(options, value) {
+  options.projects = parseProjects(value);
+}
+
+/**
+ * @param {CliOptions} options Parsed options.
+ * @param {string} value Option value.
+ * @returns {void}
+ */
+function assignReportDirOption(options, value) {
+  options.reportDir = value;
+}
+
+/**
+ * @param {CliOptions} options Parsed options.
+ * @param {string} value Option value.
+ * @returns {void}
+ */
+function assignScopeOption(options, value) {
+  options.scope = value;
 }
 
 /**
@@ -171,22 +219,6 @@ function getDefaultProjects() {
  */
 function isMode(value) {
   return ["changed", "context", "local", "pr", "release"].includes(value);
-}
-
-/**
- * @param {string[]} argv Arguments.
- * @param {number} index Current index.
- * @param {string} option Option name.
- * @returns {string} Option value.
- */
-function readOptionValue(argv, index, option) {
-  const value = argv[index + 1];
-
-  if (!value) {
-    throw new Error(`Missing value for ${option}.`);
-  }
-
-  return value;
 }
 
 /**
@@ -297,17 +329,26 @@ function getDiagnostics(payload) {
   return (payload.projects ?? []).flatMap((project) => {
     const projectRoot = project.directory ?? ROOT;
 
-    return (project.diagnostics ?? []).map((diagnostic) => {
-      const normalizedDiagnostic = Object.assign({}, diagnostic);
-
-      normalizedDiagnostic.filePath = normalizeDiagnosticPath(
-        projectRoot,
-        diagnostic.filePath,
-      );
-
-      return normalizedDiagnostic;
-    });
+    return (project.diagnostics ?? []).map((diagnostic) =>
+      normalizeDiagnostic(projectRoot, diagnostic),
+    );
   });
+}
+
+/**
+ * @param {string} projectRoot Project root.
+ * @param {ReactDoctorDiagnostic} diagnostic Raw diagnostic.
+ * @returns {ReactDoctorDiagnostic} Normalized diagnostic.
+ */
+function normalizeDiagnostic(projectRoot, diagnostic) {
+  const normalizedDiagnostic = Object.assign({}, diagnostic);
+
+  normalizedDiagnostic.filePath = normalizeDiagnosticPath(
+    projectRoot,
+    diagnostic.filePath,
+  );
+
+  return normalizedDiagnostic;
 }
 
 /**
@@ -325,6 +366,84 @@ function normalizeDiagnosticPath(projectRoot, filePath) {
 
 /**
  * @param {ReactDoctorPayload} payload React Doctor payload.
+ * @returns {ReactDoctorPayload} Payload with confirmed false positives removed.
+ */
+function applyFalsePositiveSuppressions(payload) {
+  const filteredProjects = (payload.projects ?? []).map(
+    filterProjectFalsePositives,
+  );
+
+  return Object.assign({}, payload, {
+    projects: filteredProjects.map((result) => result.project),
+    suppressedDiagnostics: [
+      ...(payload.suppressedDiagnostics ?? []),
+      ...filteredProjects.flatMap((result) => result.suppressedDiagnostics),
+    ],
+  });
+}
+
+/**
+ * @param {ReactDoctorProject} project React Doctor project payload.
+ * @returns {FilteredReactDoctorProject} Filtered project payload.
+ */
+function filterProjectFalsePositives(project) {
+  const projectRoot = project.directory ?? ROOT;
+  const classifiedDiagnostics = (project.diagnostics ?? []).map((diagnostic) =>
+    classifyDiagnostic(projectRoot, diagnostic),
+  );
+  /** @type {ReactDoctorDiagnostic[]} */
+  const retainedDiagnostics = [];
+  /** @type {SuppressedReactDoctorDiagnostic[]} */
+  const suppressedDiagnostics = [];
+
+  for (const result of classifiedDiagnostics) {
+    if (result.suppressedDiagnostic) {
+      suppressedDiagnostics.push(result.suppressedDiagnostic);
+    } else {
+      retainedDiagnostics.push(result.diagnostic);
+    }
+  }
+
+  return {
+    project: Object.assign({}, project, {
+      diagnostics: retainedDiagnostics,
+    }),
+    suppressedDiagnostics,
+  };
+}
+
+/**
+ * @param {string} projectRoot Project root.
+ * @param {ReactDoctorDiagnostic} diagnostic Raw diagnostic.
+ * @returns {ClassifiedReactDoctorDiagnostic} Retained or suppressed diagnostic.
+ */
+function classifyDiagnostic(projectRoot, diagnostic) {
+  const normalizedDiagnostic = normalizeDiagnostic(projectRoot, diagnostic);
+  const falsePositive = getReactDoctorFalsePositive(normalizedDiagnostic);
+
+  return {
+    diagnostic,
+    suppressedDiagnostic: falsePositive
+      ? Object.assign({}, normalizedDiagnostic, {
+          suppressionReason: falsePositive.reason,
+          suppressionTarget: falsePositive.packageName
+            ? `package:${falsePositive.packageName}`
+            : undefined,
+        })
+      : undefined,
+  };
+}
+
+/**
+ * @param {ReactDoctorPayload} payload React Doctor payload.
+ * @returns {SuppressedReactDoctorDiagnostic[]} Suppressed diagnostics.
+ */
+function getSuppressedDiagnostics(payload) {
+  return [...(payload.suppressedDiagnostics ?? [])].sort(compareDiagnostics);
+}
+
+/**
+ * @param {ReactDoctorPayload} payload React Doctor payload.
  * @returns {ReactDoctorSummary} Summary.
  */
 function summarizePayload(payload) {
@@ -338,6 +457,7 @@ function summarizePayload(payload) {
     errorCount: diagnostics.filter(
       (diagnostic) => diagnostic.severity === "error",
     ).length,
+    suppressedCount: getSuppressedDiagnostics(payload).length,
     warningCount: diagnostics.filter(
       (diagnostic) => diagnostic.severity === "warning",
     ).length,
@@ -386,11 +506,14 @@ function getRuleRows(diagnostics) {
  * @returns {number} Sort order.
  */
 function compareDiagnostics(left, right) {
-  return (
-    getSeverityRank(left.severity) - getSeverityRank(right.severity) ||
-    (left.filePath ?? "").localeCompare(right.filePath ?? "") ||
-    (left.rule ?? "").localeCompare(right.rule ?? "")
-  );
+  return getFirstNonZeroComparison([
+    compareNumbers(
+      getSeverityRank(left.severity),
+      getSeverityRank(right.severity),
+    ),
+    compareStrings(getDiagnosticFilePath(left), getDiagnosticFilePath(right)),
+    compareStrings(getReactDoctorRuleId(left), getReactDoctorRuleId(right)),
+  ]);
 }
 
 /**
@@ -411,6 +534,7 @@ function getSeverityRank(severity) {
  */
 function formatMarkdownReport(payload, options, status) {
   const diagnostics = sortDiagnostics(getDiagnostics(payload));
+  const suppressedDiagnostics = getSuppressedDiagnostics(payload);
   const summary = summarizePayload(payload);
   const categories = getCategoryRows(diagnostics);
   const rules = getRuleRows(diagnostics);
@@ -440,6 +564,9 @@ function formatMarkdownReport(payload, options, status) {
       `Calibrated blockers: ${formatNumber(summary.blockerCount)}`,
       `Errors: ${formatNumber(summary.errorCount)}`,
       `Warnings: ${formatNumber(summary.warningCount)}`,
+      `Suppressed confirmed false positives: ${formatNumber(
+        summary.suppressedCount,
+      )}`,
       `Affected files: ${formatNumber(summary.affectedFileCount)}`,
     ]),
     "",
@@ -453,7 +580,12 @@ function formatMarkdownReport(payload, options, status) {
       ]
         .map(formatCodeValue)
         .join(", ")}.`,
+      "Confirmed false positives are suppressed only by exact file/plugin/rule/line/column evidence, with package diagnostics additionally matched by package name from the message.",
     ]),
+    "",
+    "## Suppressed Confirmed False Positives",
+    "",
+    formatSuppressedDiagnostics(suppressedDiagnostics),
     "",
     "## Categories By Count",
     "",
@@ -510,6 +642,28 @@ function formatMarkdownReport(payload, options, status) {
  */
 
 /**
+ * @param {SuppressedReactDoctorDiagnostic[]} diagnostics Suppressed diagnostics.
+ * @returns {string} Markdown details.
+ */
+function formatSuppressedDiagnostics(diagnostics) {
+  if (diagnostics.length === 0) {
+    return "No confirmed false positives suppressed.";
+  }
+
+  return renderMarkdownTable(
+    ["Rule", "File", "Line", "Column", "Target", "Reason"],
+    diagnostics.map((diagnostic) => [
+      getReactDoctorRuleId(diagnostic),
+      diagnostic.filePath ?? "-",
+      formatOptionalValue(diagnostic.line),
+      formatOptionalValue(diagnostic.column),
+      diagnostic.suppressionTarget ?? "-",
+      diagnostic.suppressionReason,
+    ]),
+  );
+}
+
+/**
  * @param {ReactDoctorDiagnostic[]} diagnostics Diagnostics.
  * @returns {ReactDoctorDiagnostic[]} Sorted diagnostics.
  */
@@ -522,44 +676,100 @@ function sortDiagnostics(diagnostics) {
  * @returns {AffectedFileRow[]} Affected file rows.
  */
 function getAffectedFileRows(diagnostics) {
-  /** @type {Map<string, { categories: Set<string>; diagnosticCount: number; errorCount: number; warningCount: number }>} */
+  /** @type {Map<string, MutableAffectedFileRow>} */
   const rows = new Map();
 
   for (const diagnostic of diagnostics) {
-    const filePath = diagnostic.filePath ?? "unknown";
-    const current = rows.get(filePath) ?? {
-      categories: new Set(),
-      diagnosticCount: 0,
-      errorCount: 0,
-      warningCount: 0,
-    };
-
-    current.diagnosticCount += 1;
-    current.categories.add(diagnostic.category ?? "Uncategorized");
-
-    if (diagnostic.severity === "error") {
-      current.errorCount += 1;
-    } else if (diagnostic.severity === "warning") {
-      current.warningCount += 1;
-    }
-
-    rows.set(filePath, current);
+    addAffectedFileDiagnostic(rows, diagnostic);
   }
 
   return [...rows.entries()]
-    .map(([filePath, row]) => ({
-      categories: [...row.categories].sort(compareStrings),
-      diagnosticCount: row.diagnosticCount,
-      errorCount: row.errorCount,
-      filePath,
-      warningCount: row.warningCount,
-    }))
-    .sort(
-      (left, right) =>
-        right.errorCount - left.errorCount ||
-        right.diagnosticCount - left.diagnosticCount ||
-        left.filePath.localeCompare(right.filePath),
-    );
+    .map(toAffectedFileRow)
+    .sort(compareAffectedFileRows);
+}
+
+/**
+ * @param {Map<string, MutableAffectedFileRow>} rows File row map.
+ * @param {ReactDoctorDiagnostic} diagnostic Diagnostic.
+ * @returns {void}
+ */
+function addAffectedFileDiagnostic(rows, diagnostic) {
+  const row = getMutableAffectedFileRow(
+    rows,
+    getDiagnosticFilePath(diagnostic),
+  );
+
+  row.diagnosticCount += 1;
+  row.categories.add(diagnostic.category ?? "Uncategorized");
+  incrementAffectedFileSeverity(row, diagnostic.severity);
+}
+
+/**
+ * @param {Map<string, MutableAffectedFileRow>} rows File row map.
+ * @param {string} filePath File path.
+ * @returns {MutableAffectedFileRow} Existing or new mutable row.
+ */
+function getMutableAffectedFileRow(rows, filePath) {
+  const row = rows.get(filePath) ?? createMutableAffectedFileRow();
+
+  rows.set(filePath, row);
+
+  return row;
+}
+
+/**
+ * @returns {MutableAffectedFileRow} Empty mutable affected file row.
+ */
+function createMutableAffectedFileRow() {
+  return {
+    categories: new Set(),
+    diagnosticCount: 0,
+    errorCount: 0,
+    warningCount: 0,
+  };
+}
+
+/**
+ * @param {MutableAffectedFileRow} row Mutable row.
+ * @param {string | undefined} severity Diagnostic severity.
+ * @returns {void}
+ */
+function incrementAffectedFileSeverity(row, severity) {
+  if (severity === "error") {
+    row.errorCount += 1;
+    return;
+  }
+
+  if (severity === "warning") {
+    row.warningCount += 1;
+  }
+}
+
+/**
+ * @param {[string, MutableAffectedFileRow]} entry File row map entry.
+ * @returns {AffectedFileRow} Report row.
+ */
+function toAffectedFileRow([filePath, row]) {
+  return {
+    categories: [...row.categories].sort(compareStrings),
+    diagnosticCount: row.diagnosticCount,
+    errorCount: row.errorCount,
+    filePath,
+    warningCount: row.warningCount,
+  };
+}
+
+/**
+ * @param {AffectedFileRow} left Left row.
+ * @param {AffectedFileRow} right Right row.
+ * @returns {number} Sort order.
+ */
+function compareAffectedFileRows(left, right) {
+  return getFirstNonZeroComparison([
+    compareNumbers(right.errorCount, left.errorCount),
+    compareNumbers(right.diagnosticCount, left.diagnosticCount),
+    compareStrings(left.filePath, right.filePath),
+  ]);
 }
 
 /**
@@ -569,6 +779,37 @@ function getAffectedFileRows(diagnostics) {
  */
 function compareStrings(left, right) {
   return left.localeCompare(right);
+}
+
+/**
+ * @param {number} left Left value.
+ * @param {number} right Right value.
+ * @returns {number} Sort order.
+ */
+function compareNumbers(left, right) {
+  return left - right;
+}
+
+/**
+ * @param {number[]} comparisons Ordered comparison results.
+ * @returns {number} First non-zero comparison or zero.
+ */
+function getFirstNonZeroComparison(comparisons) {
+  for (const comparison of comparisons) {
+    if (comparison !== 0) {
+      return comparison;
+    }
+  }
+
+  return 0;
+}
+
+/**
+ * @param {ReactDoctorDiagnostic} diagnostic Diagnostic.
+ * @returns {string} Printable file path.
+ */
+function getDiagnosticFilePath(diagnostic) {
+  return diagnostic.filePath ?? "unknown";
 }
 
 /**
@@ -602,6 +843,9 @@ function getReactDoctorCommandSummary(payload, summary, options, status) {
       options.projects,
     )}; blocking: ${options.blocking}`,
     `JSON artifact: \`${toRepoRelativePath(options.jsonFile)}\``,
+    `Suppressed confirmed false positives: ${formatNumber(
+      summary.suppressedCount,
+    )}.`,
     `Diagnostics in payload: ${formatNumber(
       summary.diagnosticCount,
     )} across ${formatNumber(summary.affectedFileCount)} files (${formatNumber(
@@ -617,7 +861,9 @@ function getReactDoctorCommandSummary(payload, summary, options, status) {
  * @returns {boolean} Whether the Markdown report adds useful detail.
  */
 function shouldWriteMarkdownReport(payload) {
-  return summarizePayload(payload).diagnosticCount > 0;
+  const summary = summarizePayload(payload);
+
+  return summary.diagnosticCount > 0 || summary.suppressedCount > 0;
 }
 
 /**
@@ -628,12 +874,8 @@ function shouldWriteMarkdownReport(payload) {
 function printSummary(payload, options) {
   const diagnostics = getDiagnostics(payload);
   const summary = summarizePayload(payload);
-  const categories = getCategoryRows(diagnostics)
-    .slice(0, 5)
-    .map(([category, count]) => `${category} (${formatNumber(count)})`);
-  const rules = getRuleRows(diagnostics)
-    .slice(0, 5)
-    .map(([rule, count]) => `${rule} (${formatNumber(count)})`);
+  const categories = formatTopCountRows(getCategoryRows(diagnostics));
+  const rules = formatTopCountRows(getRuleRows(diagnostics));
 
   process.stdout.write(`${sectionTitle("React Doctor")}\n`);
   process.stdout.write(
@@ -644,42 +886,80 @@ function printSummary(payload, options) {
     )} files\n`,
   );
   process.stdout.write(
-    `${renderKeyValues([
-      {
-        label: "Errors",
-        tone: summary.errorCount > 0 ? "warning" : "success",
-        value: formatNumber(summary.errorCount),
-      },
-      {
-        label: "Warnings",
-        tone: summary.warningCount > 0 ? "warning" : "success",
-        value: formatNumber(summary.warningCount),
-      },
-      {
-        label: "Blockers",
-        tone: summary.blockerCount > 0 ? "warning" : "success",
-        value: `${formatNumber(summary.blockerCount)} calibrated`,
-      },
-      {
-        label: "Scope",
-        value: `${options.scope}; projects ${formatProjects(options.projects)}`,
-      },
-      {
-        label: "Blocking",
-        tone: options.blocking === "none" ? "muted" : "warning",
-        value: options.blocking,
-      },
-      {
-        label: "Elapsed",
-        value: formatDuration(asNumber(payload.elapsedMilliseconds)),
-      },
-    ])}\n`,
+    `${renderKeyValues(getSummaryKeyValueRows(summary, payload, options))}\n`,
   );
 
   process.stdout.write(`\n${colorText("Top categories", "accent")}\n`);
   process.stdout.write(`${renderBullets(categories, 5)}\n`);
   process.stdout.write(`\n${colorText("Top rules", "accent")}\n`);
   process.stdout.write(`${renderBullets(rules, 5)}\n`);
+}
+
+/**
+ * @param {Array<[string, number]>} rows Count rows.
+ * @returns {string[]} Formatted rows.
+ */
+function formatTopCountRows(rows) {
+  return rows
+    .slice(0, 5)
+    .map(([label, count]) => `${label} (${formatNumber(count)})`);
+}
+
+/**
+ * @param {ReactDoctorSummary} summary Summary.
+ * @param {ReactDoctorPayload} payload Payload.
+ * @param {CliOptions} options CLI options.
+ * @returns {import("../shared/command-utils.mjs").KeyValueRow[]} Summary rows.
+ */
+function getSummaryKeyValueRows(summary, payload, options) {
+  return [
+    getCountSummaryRow("Errors", summary.errorCount),
+    getCountSummaryRow("Warnings", summary.warningCount),
+    {
+      label: "Blockers",
+      tone: getCountTone(summary.blockerCount),
+      value: `${formatNumber(summary.blockerCount)} calibrated`,
+    },
+    {
+      label: "Suppressed",
+      tone: summary.suppressedCount > 0 ? "muted" : "success",
+      value: formatNumber(summary.suppressedCount),
+    },
+    {
+      label: "Scope",
+      value: `${options.scope}; projects ${formatProjects(options.projects)}`,
+    },
+    {
+      label: "Blocking",
+      tone: options.blocking === "none" ? "muted" : "warning",
+      value: options.blocking,
+    },
+    {
+      label: "Elapsed",
+      value: formatDuration(asNumber(payload.elapsedMilliseconds)),
+    },
+  ];
+}
+
+/**
+ * @param {string} label Row label.
+ * @param {number} count Row count.
+ * @returns {import("../shared/command-utils.mjs").KeyValueRow} Summary row.
+ */
+function getCountSummaryRow(label, count) {
+  return {
+    label,
+    tone: getCountTone(count),
+    value: formatNumber(count),
+  };
+}
+
+/**
+ * @param {number} count Count.
+ * @returns {"success" | "warning"} Count tone.
+ */
+function getCountTone(count) {
+  return count > 0 ? "warning" : "success";
 }
 
 /**
@@ -730,7 +1010,8 @@ async function main() {
 
   await ensureDirectory(options.reportDir);
 
-  const { payload, status } = await runReactDoctor(options);
+  const { payload: rawPayload, status } = await runReactDoctor(options);
+  const payload = applyFalsePositiveSuppressions(rawPayload);
   const wrapperStatus = getWrapperStatus(payload, options, status);
   const reportPath = path.join(options.reportDir, "react-doctor.md");
   const writeMarkdownReport = shouldWriteMarkdownReport(payload);

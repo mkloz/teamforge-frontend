@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 import {
   popDownItem,
@@ -24,7 +24,7 @@ export function TypeSignature({ result, typeLabel }: TypeSignatureProps) {
   const letters = [...typeLetters, result.variant];
 
   return (
-    <motion.div
+    <m.div
       variants={resultsContainer}
       className="flex flex-wrap items-end gap-x-2 gap-y-2"
       aria-label={typeLabel}
@@ -35,27 +35,24 @@ export function TypeSignature({ result, typeLabel }: TypeSignatureProps) {
           className="flex items-end gap-2"
         >
           {index === typeLetters.length && (
-            <motion.span
+            <m.span
               variants={popDownItem}
               className="pb-5 font-black text-[2.4rem] text-muted-foreground/60 leading-none sm:pb-6 sm:text-[3rem]"
               aria-hidden="true"
             >
               -
-            </motion.span>
+            </m.span>
           )}
-          <motion.div
-            variants={popDownItem}
-            className="w-11 text-center sm:w-14"
-          >
+          <m.div variants={popDownItem} className="w-11 text-center sm:w-14">
             <span className="block font-black text-[3rem] text-ink leading-none tracking-tight sm:text-[3.85rem]">
               {letter}
             </span>
             <span className="mt-1 block font-bold text-muted-foreground text-xs">
               {TYPE_DIMENSION_LABELS[index]}
             </span>
-          </motion.div>
+          </m.div>
         </div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }

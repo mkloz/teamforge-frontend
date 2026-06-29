@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { domMax, LazyMotion, m } from "framer-motion";
 import type { ForgeMode } from "@/features/forge/lib/forge-contract";
 import { cn } from "@/shared/lib/utils";
 import type { Step } from "../hooks/use-forge-wizard";
@@ -86,6 +86,23 @@ function getProgressLabel(
   return isActive ? label : isComplete ? "✓" : "";
 }
 
+function getProgressValue(steps: ForgeProgressStep[], step: Step) {
+  const activeStepIndex = steps.findIndex(({ s }) => s === step);
+
+  if (activeStepIndex >= 0) {
+    return activeStepIndex + 1;
+  }
+
+  const firstStep = steps.at(0);
+  return firstStep && step < firstStep.s ? 0 : steps.length;
+}
+
+function getProgressText(progressValue: number, stepsCount: number) {
+  return progressValue > 0
+    ? `Step ${progressValue} of ${stepsCount}`
+    : "Forge progress not started";
+}
+
 export function ForgeProgressBar({
   forgeMode,
   step,
@@ -93,49 +110,64 @@ export function ForgeProgressBar({
   className,
 }: ForgeProgressBarProps) {
   const steps = getProgressSteps(isPreForge, forgeMode);
+  const progressValue = getProgressValue(steps, step);
+  const progressText = getProgressText(progressValue, steps.length);
 
   return (
-    <div
-      className={cn("flex w-full items-center gap-1.5", className)}
-      role="progressbar"
-      aria-label="Forge progress"
-    >
-      {steps.map(({ s, label }) => {
-        const { isActive, isComplete } = getProgressStepState(s, step);
+    <>
+      <progress
+        aria-label="Forge progress"
+        className="sr-only"
+        max={steps.length}
+        value={progressValue}
+      >
+        {progressText}
+      </progress>
+      <LazyMotion features={domMax}>
+        <div
+          aria-hidden="true"
+          className={cn("flex w-full items-center gap-1.5", className)}
+        >
+          {steps.map(({ s, label }) => {
+            const { isActive, isComplete } = getProgressStepState(s, step);
 
-        return (
-          <div
-            key={s}
-            className={getProgressStepClassName(isActive, isComplete)}
-          >
-            {/* Fill bar for completed */}
-            {isComplete && (
-              <motion.span
-                className="absolute inset-0 rounded-full bg-forge-teal/20"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-                style={{ transformOrigin: "left" }}
-              />
-            )}
+            return (
+              <div
+                key={s}
+                className={getProgressStepClassName(isActive, isComplete)}
+              >
+                {/* Fill bar for completed */}
+                {isComplete && (
+                  <m.span
+                    className="absolute inset-0 rounded-full bg-forge-teal/20"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+                    style={{ transformOrigin: "left" }}
+                  />
+                )}
 
-            {/* Active indicator dot */}
-            {isActive && (
-              <motion.span
-                layoutId="forge-active-pip"
-                className="absolute left-2 size-1.5 rounded-full bg-forge-teal"
-                transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-                style={{ background: FORGE_PROGRESS_ACCENT_COLOR }}
-              />
-            )}
+                {/* Active indicator dot */}
+                {isActive && (
+                  <m.span
+                    layoutId="forge-active-pip"
+                    className="absolute left-2 size-1.5 rounded-full bg-forge-teal"
+                    transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                    style={{ background: FORGE_PROGRESS_ACCENT_COLOR }}
+                  />
+                )}
 
-            {/* Label — shown only on active step; on mobile show step count */}
-            <span className={getProgressLabelClassName(isActive, isComplete)}>
-              {getProgressLabel(label, isActive, isComplete)}
-            </span>
-          </div>
-        );
-      })}
-    </div>
+                {/* Label — shown only on active step; on mobile show step count */}
+                <span
+                  className={getProgressLabelClassName(isActive, isComplete)}
+                >
+                  {getProgressLabel(label, isActive, isComplete)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </LazyMotion>
+    </>
   );
 }

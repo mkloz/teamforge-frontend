@@ -1,3 +1,4 @@
+import { SettingsSessionRowSkeleton } from "@/features/settings/components/settings-session-row-skeleton";
 import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
@@ -19,11 +20,9 @@ export function SettingsPageLoading({
   return (
     <div
       aria-busy="true"
-      aria-label="Loading settings"
       className="mx-auto grid w-full max-w-6xl gap-3 px-4 py-5 md:px-8 lg:grid-cols-[18rem_minmax(0,56rem)] lg:gap-6 lg:py-10 xl:gap-8"
-      role="status"
     >
-      <span className="sr-only">Loading settings</span>
+      <output className="sr-only">Loading settings</output>
       <aside className={cn("lg:block", isMobileDetailOpen && "hidden")}>
         <div className="lg:fixed lg:top-10 lg:max-h-[calc(100svh-5rem)] lg:w-72 lg:overflow-y-auto lg:pr-1">
           <div className="mb-5 border-border border-b pb-5 lg:border-b-0 lg:pb-0">
@@ -97,8 +96,8 @@ export function SettingsSectionContentLoading({
   activeSection: SettingsSection;
 }) {
   return (
-    <div aria-busy="true" aria-label="Loading settings section" role="status">
-      <span className="sr-only">Loading settings section</span>
+    <div aria-busy="true">
+      <output className="sr-only">Loading settings section</output>
       <SettingsSectionSkeleton activeSection={activeSection} />
     </div>
   );
@@ -447,38 +446,6 @@ function StatPillSkeleton() {
     <div className="border-border border-l pl-4">
       <Skeleton className="h-3 w-20" />
       <Skeleton className="mt-2 h-5 w-24" />
-    </div>
-  );
-}
-
-function SettingsSessionRowSkeleton({ active = false }: { active?: boolean }) {
-  return (
-    <div className="md:main-action-grid grid gap-4 border-border border-b py-5 last:border-b-0 md:items-center">
-      <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4">
-        <Skeleton
-          shape="circle"
-          className="size-10"
-          tone={active ? "teal" : "default"}
-        />
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-5 w-32" tone={active ? "teal" : "default"} />
-            {active ? (
-              <Skeleton shape="pill" className="h-5 w-16" tone="teal" />
-            ) : null}
-          </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-3">
-            {[0, 1, 2].map((metaItem) => (
-              <div key={metaItem} className="flex min-w-0 items-center gap-2">
-                <Skeleton shape="circle" className="size-3.5 shrink-0" />
-                <Skeleton className="h-3 min-w-0 flex-1" />
-              </div>
-            ))}
-          </div>
-          <Skeleton className="mt-3 h-3 w-full max-w-80" />
-        </div>
-      </div>
-      <SkeletonButton className="h-10 w-24" />
     </div>
   );
 }

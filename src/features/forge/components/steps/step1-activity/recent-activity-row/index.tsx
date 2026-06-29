@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { History } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { forgeRecentActivitiesQueryOptions } from "@/features/forge/api/forge-query-options";
 import { hasMatchingRecentActivity } from "@/features/forge/lib/recent-activity/activity-category";
@@ -28,10 +28,7 @@ export function RecentActivityRow({
   const { data = [], isLoading } = useQuery(
     forgeRecentActivitiesQueryOptions(),
   );
-  const recentActivities = useMemo(
-    () => buildRecentActivityItems(data, selectedActivity),
-    [data, selectedActivity],
-  );
+  const recentActivities = buildRecentActivityItems(data, selectedActivity);
   const pageCount = Math.max(
     1,
     Math.ceil(recentActivities.length / RECENT_ACTIVITIES_PER_PAGE),

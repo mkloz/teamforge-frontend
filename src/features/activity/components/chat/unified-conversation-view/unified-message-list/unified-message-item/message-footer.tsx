@@ -1,5 +1,4 @@
 import { Bookmark, Pin } from "lucide-react";
-import { memo } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import { isVisualAttachment } from "@/features/activity/lib/gif-attachments";
@@ -11,19 +10,32 @@ import { MessageStatusIcon } from "./message-status-icon";
 interface MessageFooterProps {
   attachments: UnifiedMessage["attachments"];
   content?: string;
+  footerState: MessageFooterState;
   reactionGroups: ReactionGroup[];
-  isOwn: boolean;
   createdAt: string;
   status: UnifiedMessage["status"];
-  isReadByOthers: boolean;
   readBy?: UnifiedMessage["readBy"];
   readByCount?: number;
-  isEdited?: boolean;
-  isPinned?: boolean;
-  isSaved?: boolean;
-  hasReply?: boolean;
   onToggleReaction?: (emoji: string) => void;
   reactionPlaceholderEmojis?: readonly string[];
+}
+
+interface MessageFooterState {
+  hasReply?: boolean;
+  isEdited?: boolean;
+  isOwn: boolean;
+  isPinned?: boolean;
+  isReadByOthers: boolean;
+  isSaved?: boolean;
+}
+
+interface MessageFooterMetadataState {
+  isEdited?: boolean;
+  isFailedOwnMessage: boolean;
+  isOwn: boolean;
+  isPinned: boolean;
+  isReadByOthers: boolean;
+  isSaved: boolean;
 }
 
 interface MessageFooterViewState {
@@ -34,71 +46,123 @@ interface MessageFooterViewState {
   visibleReactionPlaceholderEmojis: string[];
 }
 
-export const MessageFooter = memo(
-  ({
+interface MessageFooterViewStateInput {
+  attachments: UnifiedMessage["attachments"];
+  content?: string;
+  hasReply?: boolean;
+  isOwn: boolean;
+  reactionGroups: ReactionGroup[];
+  reactionPlaceholderEmojis: readonly string[];
+  status: UnifiedMessage["status"];
+}
+
+interface VisualMediaMessageInput {
+  attachments: UnifiedMessage["attachments"];
+  content?: string;
+  hasReactionContent: boolean;
+}
+
+interface FloatingFooterMetadataInput {
+  content?: string;
+  hasReactionContent: boolean;
+  hasReply?: boolean;
+  isFailedOwnMessage: boolean;
+}
+
+const EMPTY_MESSAGE_READERS: NonNullable<UnifiedMessage["readBy"]> = [];
+const EMPTY_REACTION_PLACEHOLDER_EMOJIS: readonly string[] = [];
+
+export function MessageFooter({
+  attachments,
+  content,
+  footerState,
+  reactionGroups,
+  createdAt,
+  status,
+  readBy,
+  readByCount,
+  onToggleReaction,
+  reactionPlaceholderEmojis,
+}: MessageFooterProps) {
+  const visibleReadBy = getMessageFooterReaders(readBy);
+  const visibleReadByCount = getMessageFooterReadByCount(
+    readByCount,
+    visibleReadBy,
+  );
+  const reactionPlaceholderEmojiOptions = getReactionPlaceholderEmojiOptions(
+    reactionPlaceholderEmojis,
+  );
+  const viewState = getMessageFooterViewState({
     attachments,
     content,
+    hasReply: footerState.hasReply,
+    isOwn: footerState.isOwn,
     reactionGroups,
-    isOwn,
-    createdAt,
+    reactionPlaceholderEmojis: reactionPlaceholderEmojiOptions,
     status,
-    isReadByOthers,
-    readBy = [],
-    readByCount = readBy.length,
-    isEdited,
-    isPinned = false,
-    isSaved = false,
-    hasReply = false,
-    onToggleReaction,
-    reactionPlaceholderEmojis = [],
-  }: MessageFooterProps) => {
-    const viewState = getMessageFooterViewState({
-      attachments,
-      content,
-      hasReply,
-      isOwn,
-      reactionGroups,
-      reactionPlaceholderEmojis,
-      status,
-    });
+  });
+  const metadataState = getMessageFooterMetadataState(footerState, viewState);
 
-    if (viewState.hasOnlyVisualMedia) return null;
+  if (viewState.hasOnlyVisualMedia) return null;
 
-    return (
-      <div
-        className={cn(
-          "flex min-h-5 items-center gap-2 px-2 pb-1",
-          viewState.hasReactionContent
-            ? "my-0.5 justify-between"
-            : "justify-end",
-          viewState.shouldFloatMetadata && "absolute right-2 bottom-1.5",
-        )}
-      >
-        <MessageFooterReactions
-          isOwn={isOwn}
-          onToggleReaction={onToggleReaction}
-          reactionGroups={reactionGroups}
-          visibleReactionPlaceholderEmojis={
-            viewState.visibleReactionPlaceholderEmojis
-          }
-        />
+  return (
+    <div
+      className={cn(
+        "flex min-h-5 items-center gap-2 px-2 pb-1",
+        viewState.hasReactionContent ? "my-0.5 justify-between" : "justify-end",
+        viewState.shouldFloatMetadata && "absolute right-2 bottom-1.5",
+      )}
+    >
+      <MessageFooterReactions
+        isOwn={footerState.isOwn}
+        onToggleReaction={onToggleReaction}
+        reactionGroups={reactionGroups}
+        visibleReactionPlaceholderEmojis={
+          viewState.visibleReactionPlaceholderEmojis
+        }
+      />
 
-        <MessageFooterMetadata
-          createdAt={createdAt}
-          isEdited={isEdited}
-          isFailedOwnMessage={viewState.isFailedOwnMessage}
-          isOwn={isOwn}
-          isPinned={isPinned}
-          isReadByOthers={isReadByOthers}
-          isSaved={isSaved}
-          readBy={readBy}
-          readByCount={readByCount}
-          status={status}
-        />
-      </div>
-    );
-  },
-);
+      <MessageFooterMetadata
+        createdAt={createdAt}
+        readBy={visibleReadBy}
+        readByCount={visibleReadByCount}
+        state={metadataState}
+        status={status}
+      />
+    </div>
+  );
+}
+
+function getMessageFooterReaders(readBy: UnifiedMessage["readBy"]) {
+  return readBy ?? EMPTY_MESSAGE_READERS;
+}
+
+function getMessageFooterReadByCount(
+  readByCount: number | undefined,
+  readBy: NonNullable<UnifiedMessage["readBy"]>,
+) {
+  return readByCount ?? readBy.length;
+}
+
+function getReactionPlaceholderEmojiOptions(
+  reactionPlaceholderEmojis: readonly string[] | undefined,
+) {
+  return reactionPlaceholderEmojis ?? EMPTY_REACTION_PLACEHOLDER_EMOJIS;
+}
+
+function getMessageFooterMetadataState(
+  footerState: MessageFooterState,
+  viewState: MessageFooterViewState,
+): MessageFooterMetadataState {
+  return {
+    isEdited: footerState.isEdited,
+    isFailedOwnMessage: viewState.isFailedOwnMessage,
+    isOwn: footerState.isOwn,
+    isPinned: Boolean(footerState.isPinned),
+    isReadByOthers: footerState.isReadByOthers,
+    isSaved: Boolean(footerState.isSaved),
+  };
+}
 
 function getMessageFooterViewState({
   attachments,
@@ -108,16 +172,7 @@ function getMessageFooterViewState({
   reactionGroups,
   reactionPlaceholderEmojis,
   status,
-}: Pick<
-  MessageFooterProps,
-  | "attachments"
-  | "content"
-  | "hasReply"
-  | "isOwn"
-  | "reactionGroups"
-  | "reactionPlaceholderEmojis"
-  | "status"
->): MessageFooterViewState {
+}: MessageFooterViewStateInput): MessageFooterViewState {
   const visibleReactionPlaceholderEmojis = getVisibleReactionPlaceholderEmojis(
     reactionPlaceholderEmojis,
     reactionGroups,
@@ -147,10 +202,10 @@ function getMessageFooterViewState({
 }
 
 function getVisibleReactionPlaceholderEmojis(
-  reactionPlaceholderEmojis: readonly string[] | undefined,
+  reactionPlaceholderEmojis: readonly string[],
   reactionGroups: ReactionGroup[],
 ) {
-  return (reactionPlaceholderEmojis ?? []).filter(
+  return reactionPlaceholderEmojis.filter(
     (emoji) => !reactionGroups.some((reaction) => reaction.emoji === emoji),
   );
 }
@@ -172,9 +227,7 @@ function hasOnlyVisualMediaMessage({
   attachments,
   content,
   hasReactionContent,
-}: Pick<MessageFooterProps, "attachments" | "content"> & {
-  hasReactionContent: boolean;
-}) {
+}: VisualMediaMessageInput) {
   return Boolean(
     attachments?.some(isVisualAttachment) && !content && !hasReactionContent,
   );
@@ -185,10 +238,7 @@ function shouldFloatMessageFooterMetadata({
   hasReactionContent,
   hasReply,
   isFailedOwnMessage,
-}: Pick<MessageFooterProps, "content" | "hasReply"> & {
-  hasReactionContent: boolean;
-  isFailedOwnMessage: boolean;
-}) {
+}: FloatingFooterMetadataInput) {
   return allConditionsPass([
     Boolean(content),
     !hasReply,
@@ -227,33 +277,23 @@ function MessageFooterReactions({
 
 function MessageFooterMetadata({
   createdAt,
-  isEdited,
-  isFailedOwnMessage,
-  isOwn,
-  isPinned,
-  isReadByOthers,
-  isSaved,
   readBy,
   readByCount,
+  state,
   status,
 }: {
   createdAt: string;
-  isEdited: boolean | undefined;
-  isFailedOwnMessage: boolean;
-  isOwn: boolean;
-  isPinned: boolean;
-  isReadByOthers: boolean;
-  isSaved: boolean;
   readBy: NonNullable<UnifiedMessage["readBy"]>;
   readByCount: number;
+  state: MessageFooterMetadataState;
   status: UnifiedMessage["status"];
 }) {
   return (
     <div className="flex shrink-0 items-center gap-1 whitespace-nowrap opacity-70">
-      <PinnedMessageIndicator isVisible={isPinned} />
-      <SavedMessageIndicator isVisible={isSaved} />
-      <FailedOwnMessageLabel isVisible={isFailedOwnMessage} />
-      <EditedMessageLabel isVisible={isEdited} />
+      <PinnedMessageIndicator isVisible={state.isPinned} />
+      <SavedMessageIndicator isVisible={state.isSaved} />
+      <FailedOwnMessageLabel isVisible={state.isFailedOwnMessage} />
+      <EditedMessageLabel isVisible={state.isEdited} />
       <span
         className={cn(
           "select-none font-bold text-nano text-slate-muted tabular-nums",
@@ -263,10 +303,10 @@ function MessageFooterMetadata({
       </span>
       <MessageStatusIcon
         status={status}
-        isOwn={isOwn}
-        isReadByOthers={isReadByOthers}
+        isOwn={state.isOwn}
+        isReadByOthers={state.isReadByOthers}
       />
-      {isOwn && readByCount > 0 ? (
+      {state.isOwn && readByCount > 0 ? (
         <ReadBySummary readers={readBy} readByCount={readByCount} />
       ) : null}
     </div>

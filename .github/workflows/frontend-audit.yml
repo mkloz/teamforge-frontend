@@ -47,33 +47,8 @@ jobs:
     timeout-minutes: 50
 
     env:
-      AUDIT_API_PROXY_PATH: /__audit_api
-      AUDIT_API_PROXY_TARGET: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
-      AUDIT_API_URL: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
-      AUDIT_BROWSER_API_URL: http://127.0.0.1:4173/__audit_api
-      AUDIT_LIGHTHOUSE_IGNORE_CERT_ERRORS: "true"
-      AUDIT_OUTPUT_ROOT: temp/browser-audit-${{ github.run_id }}
-      AUDIT_PIPELINE_REPORT_PATH: reports/browser-audit.md
-      AUDIT_PLAYWRIGHT_LANES: ${{ inputs.playwright_lanes || 'route-health,accessibility' }}
-      AUDIT_PLAYWRIGHT_ROUTE_SET: ${{ inputs.route_set || 'authenticated' }}
-      AUDIT_PREVIEW_HTTPS: "false"
-      AUDIT_PREVIEW_PORT: "4173"
-      AUDIT_PROFILE: ${{ inputs.audit_profile || 'nightly' }}
-      AUDIT_USER_EMAIL: ${{ secrets.AUDIT_USER_EMAIL }}
-      AUDIT_USER_PASSWORD: ${{ secrets.AUDIT_USER_PASSWORD }}
-      LIGHTHOUSE_ROUTE_SLUGS_INPUT: ${{ inputs.lighthouse_route_slugs }}
       NODE_OPTIONS: "--max-old-space-size=4096"
       NODE_VERSION: "24"
-      VITE_API_URL: ${{ vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
-      VITE_APP_URL: ${{ vars.VITE_APP_URL || 'https://teamforge.mkloz.com' }}
-      VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY || secrets.VITE_GIPHY_API_KEY }}
-      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID || secrets.VITE_GOOGLE_CLIENT_ID }}
-      VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY || secrets.VITE_GOOGLE_MAPS_API_KEY }}
-      VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL || 'https://mkloz-teamforge.s3.us-east-1.amazonaws.com' }}
-      VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
-      VITE_SENTRY_ENVIRONMENT: audit
-      VITE_SENTRY_RELEASE: ${{ github.sha }}
-      VITE_SENTRY_TRACES_SAMPLE_RATE: "0"
 
     steps:
       - name: Checkout
@@ -91,7 +66,39 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
+      - name: Build audit bundle
+        env:
+          VITE_API_URL: http://127.0.0.1:4173/__audit_api
+          VITE_APP_URL: ${{ vars.VITE_APP_URL || 'https://teamforge.mkloz.com' }}
+          VITE_AUDIT_AUTH_ENABLED: "true"
+          VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY }}
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY }}
+          VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL || 'https://mkloz-teamforge.s3.us-east-1.amazonaws.com' }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+          VITE_SENTRY_ENVIRONMENT: audit
+          VITE_SENTRY_RELEASE: ${{ github.sha }}
+          VITE_SENTRY_TRACES_SAMPLE_RATE: "0"
+        run: npm run build
+
       - name: Run browser audit
+        env:
+          AUDIT_API_PROXY_PATH: /__audit_api
+          AUDIT_API_PROXY_TARGET: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
+          AUDIT_API_URL: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
+          AUDIT_BROWSER_API_URL: http://127.0.0.1:4173/__audit_api
+          AUDIT_LIGHTHOUSE_IGNORE_CERT_ERRORS: "true"
+          AUDIT_OUTPUT_ROOT: temp/browser-audit-${{ github.run_id }}
+          AUDIT_PIPELINE_REPORT_PATH: reports/browser-audit.md
+          AUDIT_PLAYWRIGHT_LANES: ${{ inputs.playwright_lanes || 'route-health,accessibility' }}
+          AUDIT_PLAYWRIGHT_ROUTE_SET: ${{ inputs.route_set || 'authenticated' }}
+          AUDIT_PREVIEW_HTTPS: "false"
+          AUDIT_PREVIEW_PORT: "4173"
+          AUDIT_PROFILE: ${{ inputs.audit_profile || 'nightly' }}
+          AUDIT_RUN_BUILD: "false"
+          AUDIT_USER_EMAIL: ${{ secrets.AUDIT_USER_EMAIL }}
+          AUDIT_USER_PASSWORD: ${{ secrets.AUDIT_USER_PASSWORD }}
+          LIGHTHOUSE_ROUTE_SLUGS_INPUT: ${{ inputs.lighthouse_route_slugs }}
         run: |
           set -euo pipefail
 

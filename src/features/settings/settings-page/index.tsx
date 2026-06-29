@@ -1,5 +1,5 @@
 import { useRouterState } from "@tanstack/react-router";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense } from "react";
 import { useSettingsRouteState } from "@/features/settings/hooks/use-settings-route-state";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
@@ -18,18 +18,14 @@ const SettingsFormBridge = lazy(() =>
 export function SettingsPage() {
   const { activeSection } = useSettingsRouteState();
   const activeSectionMeta = getSettingsSectionMeta(activeSection);
-  const pageMetadata = useMemo(
-    () =>
-      createTeamForgePageMetadata({
-        title: activeSectionMeta
-          ? `${activeSectionMeta.label} settings`
-          : "Settings",
-        description:
-          activeSectionMeta?.summary ??
-          "Tune your TeamForge account, privacy, safety, notifications, and display settings.",
-      }),
-    [activeSectionMeta],
-  );
+  const pageMetadata = createTeamForgePageMetadata({
+    title: activeSectionMeta
+      ? `${activeSectionMeta.label} settings`
+      : "Settings",
+    description:
+      activeSectionMeta?.summary ??
+      "Tune your TeamForge account, privacy, safety, notifications, and display settings.",
+  });
 
   usePageMetadata(pageMetadata);
 

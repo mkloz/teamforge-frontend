@@ -16,6 +16,7 @@ export function FriendsInvitation() {
   const inviteLink = getCurrentBrowserOrigin();
   const displayInviteLink = inviteLink.replace(/^https?:\/\//, "");
 
+  // react-doctor-disable-next-line react-doctor/exhaustive-deps -- copiedTimeoutRef is a stable useRef object; cleanup only needs the latest .current on unmount.
   useEffect(() => {
     return () => {
       if (copiedTimeoutRef.current) {

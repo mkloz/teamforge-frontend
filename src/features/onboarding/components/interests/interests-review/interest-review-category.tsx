@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { X } from "lucide-react";
 import { getCategoryColorClass } from "@/features/onboarding/lib/interest-catalog";
 import { Button } from "@/shared/components/ui/button";
@@ -46,7 +46,7 @@ export function InterestReviewCategory({
               asChild
               className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-micro shadow-xs sm:px-2 sm:py-1"
             >
-              <motion.button
+              <m.button
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -62,7 +62,7 @@ export function InterestReviewCategory({
                   className="size-3 shrink-0 opacity-60 transition-opacity group-hover:opacity-100 sm:size-3.5"
                   strokeWidth={3}
                 />
-              </motion.button>
+              </m.button>
             </Button>
           );
         })}

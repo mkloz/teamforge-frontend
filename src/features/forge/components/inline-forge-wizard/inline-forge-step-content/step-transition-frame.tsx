@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { ReactNode } from "react";
 
 import type { ForgeWizardState } from "@/features/forge/hooks/use-forge-wizard";
@@ -15,7 +15,7 @@ export function StepTransitionFrame({
   step,
 }: StepTransitionFrameProps) {
   return (
-    <motion.div
+    <m.div
       key={step}
       initial={{
         opacity: 0,
@@ -30,6 +30,6 @@ export function StepTransitionFrame({
       className="flex w-full flex-col py-4"
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

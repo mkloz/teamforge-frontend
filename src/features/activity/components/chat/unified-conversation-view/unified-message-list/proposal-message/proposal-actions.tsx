@@ -1,10 +1,16 @@
 import { Check, Undo2, X } from "lucide-react";
-import { memo } from "react";
 
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 
 interface ProposalActionsProps {
+  state: ProposalActionsState;
+  onApprove: () => void;
+  onReject: () => void;
+  onWithdraw: () => Promise<void> | void;
+}
+
+interface ProposalActionsState {
   canVote: boolean;
   hasVoted: boolean;
   isPending: boolean;
@@ -12,42 +18,33 @@ interface ProposalActionsProps {
   isOnline: boolean;
   isVoting: boolean;
   isWithdrawing: boolean;
-  onApprove: () => void;
-  onReject: () => void;
-  onWithdraw: () => Promise<void> | void;
 }
 
-export const ProposalActions = memo(function ProposalActions({
-  canVote,
-  hasVoted,
-  isPending,
-  isProposer,
-  isOnline,
-  isVoting,
-  isWithdrawing,
+export function ProposalActions({
+  state,
   onApprove,
   onReject,
   onWithdraw,
 }: ProposalActionsProps) {
-  if (!isPending) {
+  if (!state.isPending) {
     return null;
   }
 
   const actionState = getProposalActionState({
-    hasVoted,
-    isOnline,
-    isVoting,
-    isWithdrawing,
+    hasVoted: state.hasVoted,
+    isOnline: state.isOnline,
+    isVoting: state.isVoting,
+    isWithdrawing: state.isWithdrawing,
   });
 
-  if (!canVote) {
+  if (!state.canVote) {
     return (
       <>
         <ProposalVoteStatus actionState={actionState} />
         <ProposalWithdrawAction
-          isOnline={isOnline}
-          isProposer={isProposer}
-          isWithdrawing={isWithdrawing}
+          isOnline={state.isOnline}
+          isProposer={state.isProposer}
+          isWithdrawing={state.isWithdrawing}
           onWithdraw={onWithdraw}
         />
       </>
@@ -66,7 +63,7 @@ export const ProposalActions = memo(function ProposalActions({
         title={actionState.voteTitle}
       >
         <Check size={14} />
-        {isVoting ? "Submitting..." : "Approve"}
+        {state.isVoting ? "Submitting..." : "Approve"}
       </Button>
       <Button
         variant="subtle"
@@ -80,14 +77,14 @@ export const ProposalActions = memo(function ProposalActions({
         Oppose
       </Button>
       <ProposalWithdrawAction
-        isOnline={isOnline}
-        isProposer={isProposer}
-        isWithdrawing={isWithdrawing}
+        isOnline={state.isOnline}
+        isProposer={state.isProposer}
+        isWithdrawing={state.isWithdrawing}
         onWithdraw={onWithdraw}
       />
     </>
   );
-});
+}
 
 interface ProposalActionState {
   isActionDisabled: boolean;
@@ -102,7 +99,7 @@ function getProposalActionState({
   isVoting,
   isWithdrawing,
 }: Pick<
-  ProposalActionsProps,
+  ProposalActionsState,
   "hasVoted" | "isOnline" | "isVoting" | "isWithdrawing"
 >): ProposalActionState {
   return {
@@ -133,9 +130,9 @@ function ProposalOfflineHint({ show }: { show: boolean }) {
   }
 
   return (
-    <div role="status" className={PROPOSAL_STATUS_CLASS_NAME}>
+    <output className={PROPOSAL_STATUS_CLASS_NAME}>
       Reconnect to update votes
-    </div>
+    </output>
   );
 }
 

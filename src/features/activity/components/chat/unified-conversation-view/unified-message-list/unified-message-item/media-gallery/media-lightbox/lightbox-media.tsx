@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { memo, useState } from "react";
+import { useState } from "react";
 import { ErrorMediaImageUnavailableVisual } from "@/features/activity/assets/error-media-image-unavailable";
 import { ErrorMediaVideoUnavailableVisual } from "@/features/activity/assets/error-media-video-unavailable";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
@@ -9,11 +9,7 @@ import { Image } from "@/shared/components/common/image";
 import { useImageState } from "@/shared/hooks/use-image-state";
 import { cn } from "@/shared/lib/utils";
 
-export const LightboxImage = memo(function LightboxImage({
-  media,
-}: {
-  media: UnifiedAttachment;
-}) {
+export function LightboxImage({ media }: { media: UnifiedAttachment }) {
   const { state, onLoad, onError } = useImageState();
   const viewState = getLightboxImageViewState(state);
 
@@ -49,13 +45,9 @@ export const LightboxImage = memo(function LightboxImage({
       />
     </div>
   );
-});
+}
 
-export const LightboxVideo = memo(function LightboxVideo({
-  media,
-}: {
-  media: UnifiedAttachment;
-}) {
+export function LightboxVideo({ media }: { media: UnifiedAttachment }) {
   const [hasMetadata, setHasMetadata] = useState(false);
   const [hasError, setHasError] = useState(false);
   const viewState = getLightboxVideoViewState({
@@ -76,6 +68,7 @@ export const LightboxVideo = memo(function LightboxVideo({
       <video
         src={media.url}
         poster={media.thumbnailUrl || undefined}
+        aria-label={getLightboxVideoLabel(media, viewState.isGif)}
         autoPlay={viewState.isGif}
         controls={!viewState.isGif}
         loop={viewState.isGif}
@@ -107,7 +100,7 @@ export const LightboxVideo = memo(function LightboxVideo({
       </video>
     </div>
   );
-});
+}
 
 type ImageLoadState = ReturnType<typeof useImageState>["state"];
 
@@ -139,6 +132,14 @@ function getLightboxVideoViewState({
 
 function getMediaOpacityClassName(isVisible: boolean) {
   return isVisible ? "opacity-100" : "opacity-0";
+}
+
+function getLightboxVideoLabel(media: UnifiedAttachment, isGif: boolean) {
+  if (media.name) {
+    return media.name;
+  }
+
+  return isGif ? "Shared GIF" : "Shared video";
 }
 
 function LightboxLoadingIndicator({ isVisible }: { isVisible: boolean }) {

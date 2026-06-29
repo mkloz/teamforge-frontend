@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { ComponentProps, ReactNode } from "react";
 
-type MotionDivProps = ComponentProps<typeof motion.div>;
+type MotionDivProps = ComponentProps<typeof m.div>;
 
 interface FooterActionMotionProps {
   children: ReactNode;
@@ -19,7 +19,7 @@ export function FooterActionMotion({
   onPointerDown,
 }: FooterActionMotionProps) {
   return (
-    <motion.div
+    <m.div
       key={motionKey}
       initial={{ opacity: 0, y: 10 }}
       animate={
@@ -33,6 +33,6 @@ export function FooterActionMotion({
       onPointerDown={onPointerDown}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

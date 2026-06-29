@@ -1,13 +1,5 @@
 import { Plus } from "lucide-react";
-import {
-  lazy,
-  memo,
-  type ReactNode,
-  Suspense,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { lazy, type ReactNode, Suspense, useRef, useState } from "react";
 import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
 import {
   ACTIVITY_MENU_ITEM_CLASS,
@@ -124,7 +116,9 @@ type MessageActionMenuInput = Pick<
   | "selectedReactionEmojis"
 >;
 
-export const MessageContextMenu = memo(function MessageContextMenu({
+const EMPTY_SELECTED_REACTION_EMOJIS: readonly string[] = [];
+
+export function MessageContextMenu({
   children,
   message,
   onDelete,
@@ -135,7 +129,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
   onForward,
   onToggleReaction,
   reactionPickerDisabled = false,
-  selectedReactionEmojis = [],
+  selectedReactionEmojis = EMPTY_SELECTED_REACTION_EMOJIS,
   onUnpin,
   isSaved = false,
   onToggleSaved,
@@ -216,7 +210,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
       ) : null}
     </>
   );
-});
+}
 
 function useMessageActionMenu({
   message,
@@ -234,37 +228,21 @@ function useMessageActionMenu({
 }: MessageActionMenuInput) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [forwardDialogOpen, setForwardDialogOpen] = useState(false);
-  const actionMenuState = useMemo(
-    () =>
-      getMessageActionMenuState({
-        isSaved,
-        message,
-        onForward,
-        onPin,
-        onReply,
-        onRetry,
-        onSelectMessage,
-        onStartEdit,
-        onToggleSaved,
-        onUnpin,
-        reactionPickerDisabled,
-        setDeleteDialogOpen,
-        setForwardDialogOpen,
-      }),
-    [
-      isSaved,
-      message,
-      onForward,
-      onPin,
-      onReply,
-      onRetry,
-      onSelectMessage,
-      onStartEdit,
-      onToggleSaved,
-      onUnpin,
-      reactionPickerDisabled,
-    ],
-  );
+  const actionMenuState = getMessageActionMenuState({
+    isSaved,
+    message,
+    onForward,
+    onPin,
+    onReply,
+    onRetry,
+    onSelectMessage,
+    onStartEdit,
+    onToggleSaved,
+    onUnpin,
+    reactionPickerDisabled,
+    setDeleteDialogOpen,
+    setForwardDialogOpen,
+  });
 
   return {
     ...actionMenuState,

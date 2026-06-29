@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
@@ -39,7 +39,7 @@ export function SubcategoryChip({
   const currentState = expanded ? "expanded" : "collapsed";
 
   return (
-    <motion.button
+    <m.button
       type="button"
       onClick={onToggle}
       whileTap={{ scale: 0.94 }}
@@ -54,13 +54,13 @@ export function SubcategoryChip({
           tone={expanded ? "teal" : "muted"}
         />
       )}
-      <motion.span
+      <m.span
         animate={{ rotate: expanded ? 90 : 0 }}
         transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
         className="opacity-60"
       >
         <ChevronRight size={14} strokeWidth={2.5} />
-      </motion.span>
-    </motion.button>
+      </m.span>
+    </m.button>
   );
 }

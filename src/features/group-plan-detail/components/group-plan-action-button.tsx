@@ -16,19 +16,20 @@ export function GroupPlanActionButton({
   action,
   ariaLabel,
   className,
-  label = action.label,
+  label,
   showIcon = true,
   size,
   variant = "primary",
 }: GroupPlanActionButtonProps) {
   const Icon = action.icon;
+  const actionLabel = label ?? action.label;
 
   if (action.kind === "link" && action.href) {
     return (
       <Button asChild variant={variant} size={size} className={className}>
         <Link {...action.href}>
           {showIcon ? <Icon className="size-4" aria-hidden="true" /> : null}
-          {label}
+          {actionLabel}
         </Link>
       </Button>
     );
@@ -46,7 +47,7 @@ export function GroupPlanActionButton({
       onClick={action.onClick}
     >
       {showIcon ? <Icon className="size-4" aria-hidden="true" /> : null}
-      {label}
+      {actionLabel}
     </Button>
   );
 }

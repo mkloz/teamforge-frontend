@@ -1,6 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { AlertCircle, ChevronDown } from "lucide-react";
-import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { CountBadge } from "@/shared/components/ui/count-badge";
 
@@ -24,34 +23,32 @@ const scrollToBottomMotion = {
   initial: { opacity: 0, scale: 0.8, y: 10 },
 } as const;
 
-export const ScrollActionButtons = memo(
-  ({
-    showScrollToBottom,
-    onScrollToBottom,
-    newMessageCount,
-    hasProposalShortcut,
-    onScrollToProposal,
-  }: ScrollActionButtonsProps) => {
-    return (
-      <>
-        <AnimatePresence mode="popLayout">
-          {hasProposalShortcut && (
-            <ProposalShortcutButton onScrollToProposal={onScrollToProposal} />
-          )}
-        </AnimatePresence>
+export function ScrollActionButtons({
+  showScrollToBottom,
+  onScrollToBottom,
+  newMessageCount,
+  hasProposalShortcut,
+  onScrollToProposal,
+}: ScrollActionButtonsProps) {
+  return (
+    <LazyMotion features={domAnimation}>
+      <AnimatePresence mode="popLayout">
+        {hasProposalShortcut && (
+          <ProposalShortcutButton onScrollToProposal={onScrollToProposal} />
+        )}
+      </AnimatePresence>
 
-        <AnimatePresence mode="popLayout">
-          {showScrollToBottom && (
-            <ScrollToBottomButton
-              newMessageCount={newMessageCount}
-              onScrollToBottom={onScrollToBottom}
-            />
-          )}
-        </AnimatePresence>
-      </>
-    );
-  },
-);
+      <AnimatePresence mode="popLayout">
+        {showScrollToBottom && (
+          <ScrollToBottomButton
+            newMessageCount={newMessageCount}
+            onScrollToBottom={onScrollToBottom}
+          />
+        )}
+      </AnimatePresence>
+    </LazyMotion>
+  );
+}
 
 function ProposalShortcutButton({
   onScrollToProposal,
@@ -59,7 +56,7 @@ function ProposalShortcutButton({
   onScrollToProposal: () => void;
 }) {
   return (
-    <motion.div
+    <m.div
       initial={proposalShortcutMotion.initial}
       animate={proposalShortcutMotion.animate}
       exit={proposalShortcutMotion.exit}
@@ -75,7 +72,7 @@ function ProposalShortcutButton({
         <AlertCircle className="size-3.5 animate-pulse motion-reduce:animate-none" />
         <span className="font-black text-xs tracking-wider">Vote</span>
       </Button>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -87,7 +84,7 @@ function ScrollToBottomButton({
   onScrollToBottom: () => void;
 }) {
   return (
-    <motion.div
+    <m.div
       initial={scrollToBottomMotion.initial}
       animate={scrollToBottomMotion.animate}
       exit={scrollToBottomMotion.exit}
@@ -111,7 +108,7 @@ function ScrollToBottomButton({
           />
         )}
       </Button>
-    </motion.div>
+    </m.div>
   );
 }
 

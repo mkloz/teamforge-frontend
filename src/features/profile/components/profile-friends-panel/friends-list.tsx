@@ -1,9 +1,11 @@
-import { Loader2, UserMinus, Users } from "lucide-react";
+import { Loader2, UserMinus } from "lucide-react";
 import { useProfileFriends } from "@/features/profile/hooks/use-profile-friends";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { FriendCard } from "./friend-card";
 import { FriendMessageAction } from "./friend-message-action";
+import { FriendsListEmptyState } from "./friendship-list-helpers";
+import { getFriendshipMessageChatId } from "./friendship-list-utils";
 
 type FriendListItem = ReturnType<typeof useProfileFriends>["friends"][number];
 
@@ -36,16 +38,7 @@ export function FriendsList() {
 
   if (friends.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-border border-dashed py-16 text-center">
-        <div className="rounded-full bg-muted/50 p-3">
-          <Users className="size-6 text-muted-foreground" />
-        </div>
-        <h3 className="mt-4 font-bold text-foreground">No friends yet</h3>
-        <p className="mt-1 max-w-sm text-muted-foreground text-sm">
-          When you accept friend requests or people accept yours, they will
-          appear here.
-        </p>
-      </div>
+      <FriendsListEmptyState description="When you accept friend requests or people accept yours, they will appear here." />
     );
   }
 
@@ -151,10 +144,6 @@ function FriendListActions({
       <FriendMessageAction chatId={messageChatId} />
     </>
   );
-}
-
-function getFriendshipMessageChatId(friendship: FriendListItem) {
-  return friendship.privateChat?.id ?? friendship.privateChatId;
 }
 
 function isRemovingFriend({

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Eye, Globe2, ShieldCheck, UserCircle } from "lucide-react";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import { IconTile } from "@/shared/components/ui/icon-tile";
@@ -38,29 +38,29 @@ const GUIDELINES = [
 export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
   return (
     <PersonalityScreenShell className="max-w-md">
-      <motion.p
+      <m.p
         variants={fadeUpItem}
         className="mb-3 text-center font-bold font-sans text-forge-teal text-xs"
       >
         Before you begin
-      </motion.p>
+      </m.p>
 
-      <motion.h1
+      <m.h1
         variants={fadeUpItem}
         className="mb-5 text-balance text-center font-extrabold font-sans text-display-xs text-ink leading-tight sm:text-display-sm"
       >
         Answer as yourself
-      </motion.h1>
+      </m.h1>
 
-      <motion.p
+      <m.p
         variants={fadeUpItem}
         className="mb-7 text-center font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-base"
       >
         A quick reminder before the questions: answer from ordinary life, not
         from the version of yourself you think you should be.
-      </motion.p>
+      </m.p>
 
-      <motion.div
+      <m.div
         variants={fadeUpItem}
         className="mb-8 flex w-full flex-col gap-4 pl-1 sm:pl-3"
       >
@@ -83,7 +83,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
             </div>
           </div>
         ))}
-      </motion.div>
+      </m.div>
 
       <StepNavigation
         backLabel="Back to theory"

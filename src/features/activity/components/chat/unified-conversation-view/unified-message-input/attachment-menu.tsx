@@ -5,7 +5,7 @@ import {
   type LucideIcon,
   Paperclip,
 } from "lucide-react";
-import { memo, useRef } from "react";
+import { useRef } from "react";
 import {
   ACTIVITY_MENU_ITEM_CLASS,
   getActivityMenuContentClass,
@@ -35,7 +35,7 @@ function toFiles(fileList: FileList | null) {
   return fileList ? Array.from(fileList) : [];
 }
 
-export const AttachmentMenu = memo(function AttachmentMenu({
+export function AttachmentMenu({
   disabled,
   onCreateProposal,
   onSelectImages,
@@ -50,6 +50,7 @@ export const AttachmentMenu = memo(function AttachmentMenu({
         ref={imageInputRef}
         type="file"
         name="chat-images"
+        aria-label="Choose photos"
         accept="image/*"
         multiple
         className="hidden"
@@ -62,6 +63,7 @@ export const AttachmentMenu = memo(function AttachmentMenu({
         ref={fileInputRef}
         type="file"
         name="chat-files"
+        aria-label="Choose documents"
         multiple
         className="hidden"
         onChange={(event) => {
@@ -122,7 +124,7 @@ export const AttachmentMenu = memo(function AttachmentMenu({
       </DropdownMenu>
     </>
   );
-});
+}
 
 function AttachmentMenuRow({
   icon: Icon,

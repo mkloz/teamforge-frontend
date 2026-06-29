@@ -1,6 +1,5 @@
-import { motion } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 import { MoreVertical, Search, X } from "lucide-react";
-import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
@@ -20,15 +19,15 @@ interface HeaderActionsProps {
 
 const headerButtonIconStrokeWidth = 2.5;
 
-export const HeaderActions = memo(
-  ({
-    actionLabel,
-    isSearching,
-    isActionOpen,
-    showAction = true,
-    onToggleSearch,
-    onToggleAction,
-  }: HeaderActionsProps) => (
+export function HeaderActions({
+  actionLabel,
+  isSearching,
+  isActionOpen,
+  showAction = true,
+  onToggleSearch,
+  onToggleAction,
+}: HeaderActionsProps) {
+  return (
     <div className="flex items-center gap-1 pr-0.5 md:gap-1.5 md:pr-1">
       {isSearching ? (
         <CloseSearchButton
@@ -51,8 +50,8 @@ export const HeaderActions = memo(
         </>
       )}
     </div>
-  ),
-);
+  );
+}
 
 function CloseSearchButton({
   isSearching,
@@ -62,26 +61,28 @@ function CloseSearchButton({
   onToggleSearch: (state: boolean) => void;
 }) {
   return (
-    <motion.div
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-    >
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="accentGhost"
-            size="icon-sm"
-            onClick={() => onToggleSearch(false)}
-            className="shrink-0"
-            aria-label="Close conversation search"
-            aria-expanded={isSearching}
-          >
-            <X className="size-4" strokeWidth={headerButtonIconStrokeWidth} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Cancel search</TooltipContent>
-      </Tooltip>
-    </motion.div>
+    <LazyMotion features={domAnimation}>
+      <m.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+      >
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="accentGhost"
+              size="icon-sm"
+              onClick={() => onToggleSearch(false)}
+              className="shrink-0"
+              aria-label="Close conversation search"
+              aria-expanded={isSearching}
+            >
+              <X className="size-4" strokeWidth={headerButtonIconStrokeWidth} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Cancel search</TooltipContent>
+        </Tooltip>
+      </m.div>
+    </LazyMotion>
   );
 }
 

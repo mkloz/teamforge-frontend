@@ -56,8 +56,12 @@ function getResendLabel(resendLoading: boolean) {
 function OtpSlotGroup({ slots }: { slots: readonly number[] }) {
   return (
     <InputOTPGroup className="flex-1 justify-between gap-1 sm:gap-2">
-      {slots.map((idx) => (
-        <InputOTPSlot key={idx} index={idx} className={OTP_SLOT_CLASS} />
+      {slots.map((slotIndex) => (
+        <InputOTPSlot
+          key={`otp-slot-${slotIndex}`}
+          index={slotIndex}
+          className={OTP_SLOT_CLASS}
+        />
       ))}
     </InputOTPGroup>
   );

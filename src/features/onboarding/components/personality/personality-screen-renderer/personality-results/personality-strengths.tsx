@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Check } from "lucide-react";
 
 import { popDownItem } from "@/features/onboarding/constants/motion";
@@ -28,12 +28,12 @@ export function PersonalityStrengths({ strengths }: PersonalityStrengthsProps) {
 
 function StrengthItem({ children }: { children: string }) {
   return (
-    <motion.div
+    <m.div
       variants={popDownItem}
       className="flex items-start gap-3 font-semibold text-ink/86 text-sm leading-snug"
     >
       <Check size={15} className="mt-0.5 shrink-0 text-forge-teal" />
       <span>{children}</span>
-    </motion.div>
+    </m.div>
   );
 }

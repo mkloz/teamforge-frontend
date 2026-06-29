@@ -1,12 +1,11 @@
 import { ArrowRight } from "lucide-react";
-import { memo } from "react";
 
 interface ProposalComparisonProps {
   current: string;
   proposed: string;
 }
 
-export const ProposalComparison = memo(function ProposalComparison({
+export function ProposalComparison({
   current,
   proposed,
 }: ProposalComparisonProps) {
@@ -32,4 +31,4 @@ export const ProposalComparison = memo(function ProposalComparison({
       </div>
     </div>
   );
-});
+}

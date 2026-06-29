@@ -163,12 +163,8 @@ function AuthLoadingShell({
 
 function AuthFormSkeleton({ variant }: { variant: AuthFormLoadingVariant }) {
   return (
-    <div
-      aria-label={`Loading ${variant}`}
-      className="flex w-full flex-col"
-      role="status"
-    >
-      <span className="sr-only">Loading {variant}</span>
+    <div aria-busy="true" className="flex w-full flex-col">
+      <output className="sr-only">Loading {variant}</output>
 
       <div className="mb-8 flex flex-col items-center text-center">
         <Skeleton className="h-3 w-24" tone="teal" />
@@ -234,13 +230,8 @@ function SupportLoadingFixture({ kind }: { kind: SupportLoadingKind }) {
         />
       </div>
 
-      <div
-        aria-busy="true"
-        aria-label={`Loading ${kind}`}
-        className="mt-6 flex flex-col gap-4"
-        role="status"
-      >
-        <span className="sr-only">Loading {kind}</span>
+      <div aria-busy="true" className="mt-6 flex flex-col gap-4">
+        <output className="sr-only">Loading {kind}</output>
         {kind === "activate" ? (
           <div className="flex min-h-64 flex-col justify-center gap-4 rounded-xl border border-border bg-background px-4 py-6 text-center">
             <Skeleton shape="circle" className="mx-auto size-12" tone="teal" />

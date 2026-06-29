@@ -1,40 +1,21 @@
 import { Trash2, Upload, X } from "lucide-react";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
-import {
-  type AvatarActionState,
-  getAvatarActionState,
-} from "./avatar-action-state";
+import type { AvatarActionState } from "./avatar-action-state";
 
 interface AvatarActionsProps {
-  selectedAvatarFile: File | null;
-  isAvatarBusy: boolean;
-  isUploadingAvatar: boolean;
   isDeletingAvatar: boolean;
-  isOnline: boolean;
-  canDeleteSavedAvatar: boolean;
+  actionState: AvatarActionState;
   onUploadSelectedAvatar: () => void;
   onDeleteOrReset: () => void;
 }
 
 export function AvatarActions({
-  selectedAvatarFile,
-  isAvatarBusy,
-  isUploadingAvatar,
   isDeletingAvatar,
-  isOnline,
-  canDeleteSavedAvatar,
+  actionState,
   onUploadSelectedAvatar,
   onDeleteOrReset,
 }: AvatarActionsProps) {
-  const actionState = getAvatarActionState({
-    canDeleteSavedAvatar,
-    isAvatarBusy,
-    isDeletingAvatar,
-    isOnline,
-    isUploadingAvatar,
-    selectedAvatarFile,
-  });
   const deleteOrResetButton = renderDeleteOrResetButton({
     actionState,
     onDeleteOrReset,
