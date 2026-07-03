@@ -1,6 +1,18 @@
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 const BAR_COUNT = 38;
+const AUDIO_BARS = Array.from({ length: BAR_COUNT }, (_, i) => {
+  const mid = BAR_COUNT / 2;
+  const distFromMid = Math.abs(i - mid);
+  const envelope = Math.exp(-(distFromMid ** 2) / (2 * (BAR_COUNT / 4) ** 2));
+  const noise = 0.4 + Math.abs(Math.sin(i * 12.9898 + 78.233)) * 0.4;
+  const height = (20 + envelope * 60) * noise;
+
+  return {
+    id: `voice-note-bar-${i}`,
+    height: Math.min(Math.max(height, 15), 100),
+  };
+});
 
 function formatTime(seconds: number) {
   const mins = Math.floor(seconds / 60);
@@ -148,30 +160,12 @@ export function useAudioPlayer(url: string) {
     });
   }
 
-  const bars = useMemo(
-    () =>
-      Array.from({ length: BAR_COUNT }, (_, i) => {
-        const mid = BAR_COUNT / 2;
-        const distFromMid = Math.abs(i - mid);
-        const envelope = Math.exp(
-          -(distFromMid ** 2) / (2 * (BAR_COUNT / 4) ** 2),
-        );
-        const noise = 0.4 + Math.abs(Math.sin(i * 12.9898 + 78.233)) * 0.4;
-        const height = (20 + envelope * 60) * noise;
-        return {
-          id: `voice-note-bar-${i}`,
-          height: Math.min(Math.max(height, 15), 100),
-        };
-      }),
-    [],
-  );
-
   return {
     isPlaying,
     hasError,
     progress,
     playbackSpeed,
-    bars,
+    bars: AUDIO_BARS,
     barCount: BAR_COUNT,
     durationSeconds,
     togglePlay,

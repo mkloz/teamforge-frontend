@@ -3,26 +3,8 @@
 
 import path from "node:path";
 import ts from "typescript";
-import {
-  colorText,
-  formatDuration,
-  formatStatusBadge,
-  ROOT,
-  renderBullets,
-  renderKeyValues,
-  renderMarkdownTable,
-  sectionTitle,
-  toRepoRelativePath,
-  writeJsonFile,
-  writeTextFile,
-} from "../shared/command-utils.mjs";
-import {
-  collectTypeScriptSourceFiles,
-  getTopReferenceFiles,
-  parseQualityScanArgs,
-  readTypeScriptSourceFile,
-  renderMarkdownBullets,
-} from "./quality-scan-utils.mjs";
+import { formatDuration, ROOT } from "../shared/command-utils.mjs";
+import * as qualityScan from "./quality-scan-utils.mjs";
 
 /**
  * @typedef {"as" | "angle"} TypeAssertionKind
@@ -46,88 +28,48 @@ const DEFAULT_JSON_FILE = path.join(
   "type-assertion-usage-summary.json",
 );
 const ASSERTIONS_DISPLAY_LIMIT = 80;
-/** @type {Map<string, import("./quality-scan-utils.mjs").BooleanOptionSetter>} */
-const BOOLEAN_OPTIONS = new Map([
-  [
-    "--advisory",
-    (options) => {
-      options.strict = false;
-    },
-  ],
-  [
-    "--quiet",
-    (options) => {
-      options.quiet = true;
-    },
-  ],
-  [
-    "--strict",
-    (options) => {
-      options.strict = true;
-    },
-  ],
-]);
-
-/**
- * @param {string[]} argv CLI arguments.
- * @returns {CliOptions} Parsed options.
- */
-function parseArgs(argv) {
-  return parseQualityScanArgs(argv, {
-    booleanOptions: BOOLEAN_OPTIONS,
-    defaults: {
-      jsonFile: DEFAULT_JSON_FILE,
-      quiet: false,
-      reportFile: DEFAULT_REPORT_FILE,
-      strict: true,
-    },
-    scriptName: "type-assertion-usage",
-  });
-}
+const parseArgs = qualityScan.createQualityScanArgsParser({
+  booleanOptions: qualityScan.createQualityBooleanOptions([
+    [
+      "--advisory",
+      (options) => {
+        options.strict = false;
+      },
+    ],
+  ]),
+  defaults: {
+    jsonFile: DEFAULT_JSON_FILE,
+    quiet: false,
+    reportFile: DEFAULT_REPORT_FILE,
+    strict: true,
+  },
+  scriptName: "type-assertion-usage",
+});
 
 /**
  * @param {CliOptions} options Parsed options.
  * @returns {Promise<number>} Exit status.
  */
 async function run(options) {
-  const startedAt = performance.now();
-  const sourceFiles = await collectAllSourceFiles();
-  const references = await scanSourceFiles(sourceFiles);
-  const summary = createSummary(sourceFiles.length, references);
-
-  await Promise.all([
-    writeJsonFile(options.jsonFile, summary),
-    writeTextFile(
-      options.reportFile,
-      formatReport(summary, references, performance.now() - startedAt),
-    ),
-  ]);
-
-  if (!options.quiet) {
-    printSummary(summary, options.reportFile, performance.now() - startedAt);
-  }
-
-  return options.strict && summary.counts.assertions > 0 ? 1 : 0;
+  return qualityScan.runQualityReferenceScan({
+    collectSourceFiles: collectAllSourceFiles,
+    createSummary,
+    formatReport,
+    getFailureCount: (summary) => summary.counts.assertions,
+    options,
+    printSummary,
+    scanSourceFile,
+  });
 }
 
 /**
  * @returns {Promise<string[]>} Repo-relative source files.
  */
-async function collectAllSourceFiles() {
-  return collectTypeScriptSourceFiles({
+function collectAllSourceFiles() {
+  return qualityScan.collectTypeScriptSourceFiles({
     rootFiles: ROOT_SOURCE_FILES,
     sourceRoots: SOURCE_ROOTS,
   });
-}
-
-/**
- * @param {string[]} sourceFiles Repo-relative source files.
- * @returns {Promise<TypeAssertionReference[]>} Type assertion references.
- */
-async function scanSourceFiles(sourceFiles) {
-  const references = await Promise.all(sourceFiles.map(scanSourceFile));
-
-  return references.flat();
 }
 
 /**
@@ -135,7 +77,7 @@ async function scanSourceFiles(sourceFiles) {
  * @returns {Promise<TypeAssertionReference[]>} Type assertion references.
  */
 async function scanSourceFile(filePath) {
-  const { lines, sourceFile } = await readTypeScriptSourceFile(filePath);
+  const parsedSource = await qualityScan.readTypeScriptSourceFile(filePath);
   /** @type {TypeAssertionReference[]} */
   const references = [];
 
@@ -144,23 +86,16 @@ async function scanSourceFile(filePath) {
    */
   function visit(node) {
     if (ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) {
-      const typeText = node.type.getText(sourceFile);
+      const typeText = node.type.getText(parsedSource.sourceFile);
 
       if (typeText === "const") {
         ts.forEachChild(node, visit);
         return;
       }
 
-      const { line, character } = sourceFile.getLineAndCharacterOfPosition(
-        node.getStart(sourceFile),
-      );
-
       references.push({
-        column: character + 1,
-        context: lines[line]?.trim() ?? "",
-        filePath,
+        ...qualityScan.getSourceReferenceLocation(parsedSource, node, filePath),
         kind: ts.isAsExpression(node) ? "as" : "angle",
-        line: line + 1,
         typeText,
       });
     }
@@ -168,7 +103,7 @@ async function scanSourceFile(filePath) {
     ts.forEachChild(node, visit);
   }
 
-  visit(sourceFile);
+  visit(parsedSource.sourceFile);
 
   return references;
 }
@@ -209,7 +144,7 @@ function getCounts(scannedFiles, references) {
  * @returns {FileAssertionSummary[]} Top files.
  */
 function getTopFiles(references) {
-  return getTopReferenceFiles(
+  return qualityScan.getTopReferenceFiles(
     references,
     "types",
     (reference) => reference.typeText,
@@ -223,65 +158,42 @@ function getTopFiles(references) {
  * @returns {string} Markdown report.
  */
 function formatReport(summary, references, durationMs) {
-  const shownAssertions = references.slice(0, ASSERTIONS_DISPLAY_LIMIT);
-  const remainingAssertions = references.length - shownAssertions.length;
-
-  return [
-    "# Type Assertion Usage",
-    "",
-    `Generated: ${summary.generatedAt}`,
-    "",
-    "## Summary",
-    "",
-    renderMarkdownBullets([
+  return qualityScan.formatLimitedReferenceReport({
+    generatedAt: summary.generatedAt,
+    policyItems: [
+      "Use typed declarations, `satisfies`, const-generic helpers, validation, or type guards instead of TypeScript assertions.",
+      "Import aliases such as `import { Foo as Bar }` are not assertion expressions and are not reported.",
+      "`as const` is an allowed literal-inference assertion and is intentionally ignored.",
+    ],
+    referenceSection: {
+      displayLimit: ASSERTIONS_DISPLAY_LIMIT,
+      emptyText: "No assertions.",
+      getRow: (reference) =>
+        qualityScan.createLocatedReferenceRows([reference], (row) => [
+          row.kind,
+          row.typeText,
+        ])[0] ?? [],
+      headers: ["File", "Line", "Kind", "Type", "Context"],
+      label: "assertions",
+      references,
+      title: "Assertions",
+    },
+    summaryItems: [
       `Scanned files: ${summary.counts.scannedFiles}`,
       `Type assertions: ${summary.counts.assertions}`,
       `Files with assertions: ${summary.filesWithAssertions}`,
       `As expressions: ${summary.counts.asExpressions}`,
       `Angle assertions: ${summary.counts.angle}`,
       `Duration: ${formatDuration(durationMs)}`,
-    ]),
-    "",
-    "## Top Assertion Files",
-    "",
-    summary.topFiles.length === 0
-      ? "No type assertions found."
-      : renderMarkdownTable(
-          ["File", "Assertions", "Types"],
-          summary.topFiles.map((row) => [
-            row.filePath,
-            String(row.count),
-            row.types,
-          ]),
-        ),
-    "",
-    "## Assertions",
-    "",
-    shownAssertions.length === 0
-      ? "No assertions."
-      : renderMarkdownTable(
-          ["File", "Line", "Kind", "Type", "Context"],
-          shownAssertions.map((reference) => [
-            reference.filePath,
-            `${reference.line}:${reference.column}`,
-            reference.kind,
-            reference.typeText,
-            reference.context,
-          ]),
-        ),
-    remainingAssertions > 0
-      ? `\n${remainingAssertions} additional assertions omitted from this table.`
-      : "",
-    "",
-    "## Policy",
-    "",
-    renderMarkdownBullets([
-      "Use typed declarations, `satisfies`, const-generic helpers, validation, or type guards instead of TypeScript assertions.",
-      "Import aliases such as `import { Foo as Bar }` are not assertion expressions and are not reported.",
-      "`as const` is an allowed literal-inference assertion and is intentionally ignored.",
-    ]),
-    "",
-  ].join("\n");
+    ],
+    title: "Type Assertion Usage",
+    topSection: {
+      emptyText: "No type assertions found.",
+      headers: ["File", "Assertions", "Types"],
+      rows: qualityScan.createTopReferenceRows(summary.topFiles, "types"),
+      title: "Top Assertion Files",
+    },
+  });
 }
 
 /**
@@ -292,42 +204,23 @@ function formatReport(summary, references, durationMs) {
 function printSummary(summary, reportFile, durationMs) {
   const hasAssertions = summary.counts.assertions > 0;
 
-  process.stdout.write(`${sectionTitle("Type Assertion Usage")}\n`);
-  process.stdout.write(
-    `${formatStatusBadge(hasAssertions ? "fail" : "pass")} ${summary.counts.assertions} assertions in ${summary.filesWithAssertions} files\n`,
-  );
-  process.stdout.write(
-    `${renderKeyValues([
+  qualityScan.printQualityScanSummary({
+    headline: `${summary.counts.assertions} assertions in ${summary.filesWithAssertions} files`,
+    keyValues: [
       { label: "Scanned files", value: summary.counts.scannedFiles },
       { label: "As expressions", value: summary.counts.asExpressions },
       { label: "Angle assertions", value: summary.counts.angle },
-      { label: "Duration", value: formatDuration(durationMs) },
-      { label: "Report", value: toRepoRelativePath(reportFile) },
-    ])}\n`,
-  );
-
-  if (summary.topFiles.length > 0) {
-    process.stdout.write(`\n${colorText("Top files", "accent")}\n`);
-    process.stdout.write(
-      `${renderBullets(
-        summary.topFiles.map(
-          (row) => `${row.filePath} (${row.count}: ${row.types})`,
-        ),
-        8,
-      )}\n`,
-    );
-  }
+      qualityScan.createDurationKeyValue(durationMs),
+    ],
+    reportFile,
+    status: hasAssertions ? "fail" : "pass",
+    title: "Type Assertion Usage",
+    topItems: qualityScan.createTopReferenceItems(summary.topFiles, "types"),
+  });
 }
 
-run(parseArgs(process.argv.slice(2)))
-  .then((status) => {
-    process.exitCode = status;
-    return undefined;
-  })
-  .catch((error) => {
-    process.stderr.write(
-      `Type assertion usage scan failed: ${error instanceof Error ? error.message : String(error)}\n`,
-    );
-    process.exitCode = 1;
-    return undefined;
-  });
+qualityScan.runQualityScanCli({
+  errorLabel: "Type assertion usage scan",
+  parseArgs,
+  run,
+});

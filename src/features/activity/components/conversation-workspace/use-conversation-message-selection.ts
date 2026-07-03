@@ -26,15 +26,15 @@ export function useConversationMessageSelection({
     setSelectedMessageIds(new Set());
   }, []);
 
-  const startMessageSelection = useCallback((message: UnifiedMessage) => {
+  function startMessageSelection(message: UnifiedMessage) {
     if (!canSelectChatMessage(message)) {
       return;
     }
 
     setSelectedMessageIds(new Set([message.id]));
-  }, []);
+  }
 
-  const toggleMessageSelection = useCallback((message: UnifiedMessage) => {
+  function toggleMessageSelection(message: UnifiedMessage) {
     if (!canSelectChatMessage(message)) {
       return;
     }
@@ -50,7 +50,7 @@ export function useConversationMessageSelection({
 
       return next;
     });
-  }, []);
+  }
 
   const selectedMessages = useMemo(
     () =>

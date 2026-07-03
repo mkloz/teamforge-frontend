@@ -377,32 +377,86 @@ function normalizeDeadCodeEntry(key, value) {
   }
 
   return value.filter(isRecord).flatMap((item) => {
-    const finding = normalizeDeadCodeFinding(key, item);
-
-    return finding ? [finding] : [];
+    return normalizeDeadCodeFinding(key, item);
   });
 }
 
 /**
  * @param {string} key Dead-code finding key.
  * @param {JsonObject} item Dead-code item payload.
- * @returns {NormalizedFinding | null} Normalized finding when a path exists.
+ * @returns {NormalizedFinding[]} Normalized findings when paths exist.
  */
 function normalizeDeadCodeFinding(key, item) {
-  const filePath = getFallowFilePath(item);
+  const filePaths = getDeadCodeFilePaths(key, item);
 
-  if (!filePath) {
-    return null;
+  if (filePaths.length === 0) {
+    return [];
   }
 
-  return {
+  return filePaths.map((filePath) => ({
     category: "dead code",
     filePath,
     message: formatDeadCodeMessage(key, item),
     rule: `dead-code/${formatRuleName(key)}`,
     severity: getDeadCodeSeverity(key),
     source: "fallow",
-  };
+  }));
+}
+
+/**
+ * @param {string} key Dead-code finding key.
+ * @param {JsonObject} item Dead-code item payload.
+ * @returns {string[]} Repo-relative paths for the finding.
+ */
+function getDeadCodeFilePaths(key, item) {
+  const directPath = getFallowFilePath(item);
+
+  if (directPath) {
+    return [directPath];
+  }
+
+  if (key !== "duplicate_exports") {
+    return [];
+  }
+
+  return getFallowLocationFilePaths(item.locations);
+}
+
+/**
+ * @param {unknown} locations Fallow source locations.
+ * @returns {string[]} Unique repo-relative file paths.
+ */
+function getFallowLocationFilePaths(locations) {
+  if (!Array.isArray(locations)) {
+    return [];
+  }
+
+  return [
+    ...new Set(
+      locations.flatMap((location) => {
+        const filePath = getFallowLocationFilePath(location);
+
+        return filePath ? [filePath] : [];
+      }),
+    ),
+  ].sort(compareStrings);
+}
+
+/**
+ * @param {unknown} value Fallow location value.
+ * @returns {string | null} Repo-relative file path when present.
+ */
+function getFallowLocationFilePath(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const locationMatch = value.match(
+    /^(.+\.(?:[cm]?[jt]sx?|css|json|ya?ml|md))(?::\d+){0,2}$/iu,
+  );
+  const pathCandidate = locationMatch ? locationMatch[1] : value;
+
+  return normalizeFilePathCandidate(pathCandidate);
 }
 
 /**

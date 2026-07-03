@@ -1,5 +1,5 @@
 import { redirect } from "@tanstack/react-router";
-import type { RouteLocationLike } from "@/app/router/route-guards/types";
+import type { RouteGuardLocationLike } from "@/app/router/route-guards/types";
 import {
   validateGroupPlanDetailSearch,
   validateUserDetailSearch,
@@ -40,7 +40,9 @@ const DYNAMIC_CANONICAL_SEARCH_VALIDATORS = [
   },
 ] as const;
 
-export function buildGuardReturnHref(location: RouteLocationLike | undefined) {
+export function buildGuardReturnHref(
+  location: RouteGuardLocationLike | undefined,
+) {
   if (!location) {
     return null;
   }
@@ -48,7 +50,7 @@ export function buildGuardReturnHref(location: RouteLocationLike | undefined) {
   return buildCanonicalRouteHref(location) ?? buildRouteLocationHref(location);
 }
 
-export function redirectToCanonicalRouteHref(location: RouteLocationLike) {
+export function redirectToCanonicalRouteHref(location: RouteGuardLocationLike) {
   const canonicalHref = buildCanonicalRouteHref(location);
   const currentHref = buildRouteLocationHref(location);
   const canonicalSearchStr = canonicalHref?.slice(location.pathname.length);
@@ -218,7 +220,7 @@ function getCanonicalRouteSearch(
   return dynamicValidator ? dynamicValidator.validate(search) : null;
 }
 
-function buildCanonicalRouteHref(location: RouteLocationLike) {
+function buildCanonicalRouteHref(location: RouteGuardLocationLike) {
   const rawSearch = parseReturnSearch(location.searchStr);
   const canonicalSearch = getCanonicalRouteSearch(location.pathname, rawSearch);
 

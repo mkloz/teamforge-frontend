@@ -17,10 +17,10 @@ export async function getFriendships() {
   );
 }
 
-export async function blockUser(userId: string) {
+export async function blockActivityUser(userId: string) {
   return sharedBlockUser(userId);
 }
 
-export async function unblockUser(userId: string) {
+export async function unblockActivityUser(userId: string) {
   return sharedUnblockUser(userId);
 }

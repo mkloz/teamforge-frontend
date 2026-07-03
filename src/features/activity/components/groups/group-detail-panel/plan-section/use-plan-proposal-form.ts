@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { useCreatePlanProposal } from "@/features/activity/hooks/use-create-plan-proposal";
 import type { Plan } from "@/features/activity/lib/activity-contract";
@@ -68,10 +68,7 @@ export function usePlanProposalForm(
       },
     });
 
-  const currentValue = useMemo(
-    () => getCurrentProposalValue(plan, field),
-    [field, plan],
-  );
+  const currentValue = getCurrentProposalValue(plan, field);
 
   const handleFieldChange = (nextField: ProposalField) => {
     setField(nextField);

@@ -1,4 +1,4 @@
-export interface RouteLocationLike {
+export interface RouteGuardLocationLike {
   pathname: string;
   searchStr: string;
 }

@@ -1,4 +1,4 @@
-import { startTransition, useMemo, useOptimistic, useState } from "react";
+import { startTransition, useOptimistic, useState } from "react";
 
 import { getRateableReviewMembers } from "@/features/activity/hooks/activity-review-waiting-state";
 import { useGroupRatings } from "@/features/activity/hooks/use-group-ratings";
@@ -49,19 +49,15 @@ export function useCompletedGroupRating(group: Group) {
     (current, userId: string) => new Set([...current, userId]),
   );
 
-  const rateableMembers = useMemo(
-    () => getRateableReviewMembers(group.members, currentUserId),
-    [currentUserId, group.members],
+  const rateableMembers = getRateableReviewMembers(
+    group.members,
+    currentUserId,
   );
-  const pendingMembers = useMemo(
-    () =>
-      getPendingReviewMembers({
-        optimisticRatedUserIds,
-        pendingUserIds,
-        rateableMembers,
-      }),
-    [optimisticRatedUserIds, pendingUserIds, rateableMembers],
-  );
+  const pendingMembers = getPendingReviewMembers({
+    optimisticRatedUserIds,
+    pendingUserIds,
+    rateableMembers,
+  });
   const nextMember = getNextPendingReviewMember({
     optimisticRatedUserIds,
     pendingMembers,

@@ -30,14 +30,14 @@ export async function getGroup(groupId: string) {
   return sharedGetGroupById(groupId);
 }
 
-export async function updateGroup(
+export async function updateActivityGroup(
   groupId: string,
   payload: UpdateGroupPayload,
 ): Promise<GroupMutationResult> {
   return sharedUpdateGroup(groupId, payload);
 }
 
-export async function leaveGroup(groupId: string) {
+export async function leaveActivityGroup(groupId: string) {
   return sharedLeaveGroup(groupId);
 }
 

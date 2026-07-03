@@ -126,7 +126,7 @@ function Carousel({
   };
 
   return (
-    // oxlint-disable-next-line react/jsx-no-constructed-context-values -- React Doctor flags this context useMemo as redundant under React Compiler.
+    // oxlint-disable-next-line react/jsx-no-constructed-context-values -- React Compiler handles the constructed context value here.
     <CarouselContext value={contextValue}>
       {/* biome-ignore lint/a11y/useAriaPropsSupportedByRole: The carousel root follows the WAI carousel roledescription pattern. */}
       <section

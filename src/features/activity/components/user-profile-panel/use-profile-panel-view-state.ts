@@ -99,9 +99,9 @@ export function useProfilePanelViewState({
     });
   }, [applyPanelHeaderState]);
 
-  const scrollPanelToTop = useCallback(() => {
+  function scrollPanelToTop() {
     scrollElementToTop(scrollRef.current);
-  }, []);
+  }
 
   useEffect(() => {
     if (lastProfileScrollResetKeyRef.current === resetKey) {

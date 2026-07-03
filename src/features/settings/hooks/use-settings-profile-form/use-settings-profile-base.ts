@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import {
@@ -102,13 +102,7 @@ export function useSettingsProfileBase() {
     await profileMutation.mutateAsync(buildSettingsProfilePayload(values));
   });
 
-  const profileSummary = useMemo(() => {
-    if (!currentUser) {
-      return [];
-    }
-
-    return buildProfileSummary(currentUser);
-  }, [currentUser]);
+  const profileSummary = currentUser ? buildProfileSummary(currentUser) : [];
 
   return {
     currentUser,

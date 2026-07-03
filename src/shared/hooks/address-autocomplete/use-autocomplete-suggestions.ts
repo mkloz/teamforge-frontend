@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { SuggestionNavigationDirection } from "@/shared/hooks/use-address-autocomplete-state";
 import {
   getActiveSuggestionIndexForVisibleState,
@@ -104,9 +104,10 @@ export function useAutocompleteSuggestions({
   >([]);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
-  const visibleSuggestions = useMemo(
-    () => getVisibleAutocompleteSuggestions(mapsReady, inputValue, suggestions),
-    [inputValue, mapsReady, suggestions],
+  const visibleSuggestions = getVisibleAutocompleteSuggestions(
+    mapsReady,
+    inputValue,
+    suggestions,
   );
 
   const resetSuggestions = useCallback(() => {

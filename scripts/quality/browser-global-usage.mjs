@@ -3,26 +3,8 @@
 
 import path from "node:path";
 import ts from "typescript";
-import {
-  colorText,
-  formatDuration,
-  formatStatusBadge,
-  ROOT,
-  renderBullets,
-  renderKeyValues,
-  renderMarkdownTable,
-  sectionTitle,
-  toRepoRelativePath,
-  writeJsonFile,
-  writeTextFile,
-} from "../shared/command-utils.mjs";
-import {
-  collectTypeScriptSourceFiles,
-  getTopReferenceFiles,
-  parseQualityScanArgs,
-  readTypeScriptSourceFile,
-  renderMarkdownBullets,
-} from "./quality-scan-utils.mjs";
+import { formatDuration, ROOT } from "../shared/command-utils.mjs";
+import * as qualityScan from "./quality-scan-utils.mjs";
 
 /**
  * @typedef {"allowed" | "finding" | "guard" | "type-only"} BrowserGlobalKind
@@ -51,74 +33,67 @@ const BROWSER_GLOBALS = ["document", "navigator", "window"];
 const BROWSER_GLOBAL_SET = new Set(BROWSER_GLOBALS);
 const ALLOWED_DIRECTORIES = ["src/shared/lib/browser-environment/"];
 const ALLOWED_FILES = new Set(["src/main.tsx"]);
-/** @type {Map<string, import("./quality-scan-utils.mjs").BooleanOptionSetter>} */
-const BOOLEAN_OPTIONS = new Map([
-  [
-    "--quiet",
-    (options) => {
-      options.quiet = true;
-    },
-  ],
-  [
-    "--strict",
-    (options) => {
-      options.strict = true;
-    },
-  ],
+const DECLARATION_NAME_KINDS = new Set([
+  ts.SyntaxKind.BindingElement,
+  ts.SyntaxKind.ClassDeclaration,
+  ts.SyntaxKind.FunctionDeclaration,
+  ts.SyntaxKind.InterfaceDeclaration,
+  ts.SyntaxKind.Parameter,
+  ts.SyntaxKind.PropertyDeclaration,
+  ts.SyntaxKind.PropertySignature,
+  ts.SyntaxKind.TypeAliasDeclaration,
+  ts.SyntaxKind.VariableDeclaration,
 ]);
-
-/**
- * @param {string[]} argv CLI arguments.
- * @returns {CliOptions} Parsed options.
- */
-function parseArgs(argv) {
-  return parseQualityScanArgs(argv, {
-    booleanOptions: BOOLEAN_OPTIONS,
-    defaults: {
-      jsonFile: DEFAULT_JSON_FILE,
-      quiet: false,
-      reportFile: DEFAULT_REPORT_FILE,
-      strict: false,
-    },
-    scriptName: "browser-global-usage",
-  });
-}
+const TYPE_ONLY_REFERENCE_KINDS = new Set([
+  ts.SyntaxKind.ExpressionWithTypeArguments,
+  ts.SyntaxKind.ImportType,
+  ts.SyntaxKind.InterfaceDeclaration,
+  ts.SyntaxKind.TypeAliasDeclaration,
+  ts.SyntaxKind.TypeQuery,
+  ts.SyntaxKind.TypeReference,
+]);
+const TRANSPARENT_TYPE_REFERENCE_KINDS = new Set([
+  ts.SyntaxKind.ArrayType,
+  ts.SyntaxKind.IndexedAccessType,
+  ts.SyntaxKind.LiteralType,
+  ts.SyntaxKind.ParenthesizedType,
+  ts.SyntaxKind.TypeLiteral,
+  ts.SyntaxKind.UnionType,
+]);
+const parseArgs = qualityScan.createQualityScanArgsParser({
+  booleanOptions: qualityScan.createQualityBooleanOptions(),
+  defaults: {
+    jsonFile: DEFAULT_JSON_FILE,
+    quiet: false,
+    reportFile: DEFAULT_REPORT_FILE,
+    strict: false,
+  },
+  scriptName: "browser-global-usage",
+});
 
 /**
  * @param {CliOptions} options Parsed options.
  * @returns {Promise<number>} Exit status.
  */
 async function run(options) {
-  const startedAt = performance.now();
-  const sourceFiles = await collectTypeScriptSourceFiles({
-    sourceRoots: SOURCE_ROOTS,
+  return qualityScan.runQualityReferenceScan({
+    collectSourceFiles,
+    createSummary,
+    formatReport,
+    getFailureCount: (summary) => summary.counts.findings,
+    options,
+    printSummary,
+    scanSourceFile,
   });
-  const references = await scanSourceFiles(sourceFiles);
-  const summary = createSummary(sourceFiles.length, references);
-
-  await Promise.all([
-    writeJsonFile(options.jsonFile, summary),
-    writeTextFile(
-      options.reportFile,
-      formatReport(summary, references, performance.now() - startedAt),
-    ),
-  ]);
-
-  if (!options.quiet) {
-    printSummary(summary, options.reportFile, performance.now() - startedAt);
-  }
-
-  return options.strict && summary.counts.findings > 0 ? 1 : 0;
 }
 
 /**
- * @param {string[]} sourceFiles Repo-relative source files.
- * @returns {Promise<BrowserGlobalReference[]>} Browser global references.
+ * @returns {Promise<string[]>} Repo-relative source files.
  */
-async function scanSourceFiles(sourceFiles) {
-  const references = await Promise.all(sourceFiles.map(scanSourceFile));
-
-  return references.flat();
+function collectSourceFiles() {
+  return qualityScan.collectTypeScriptSourceFiles({
+    sourceRoots: SOURCE_ROOTS,
+  });
 }
 
 /**
@@ -126,7 +101,7 @@ async function scanSourceFiles(sourceFiles) {
  * @returns {Promise<BrowserGlobalReference[]>} Browser global references.
  */
 async function scanSourceFile(filePath) {
-  const { lines, sourceFile } = await readTypeScriptSourceFile(filePath);
+  const parsedSource = await qualityScan.readTypeScriptSourceFile(filePath);
   /** @type {BrowserGlobalReference[]} */
   const references = [];
 
@@ -135,24 +110,17 @@ async function scanSourceFile(filePath) {
    */
   function visit(node) {
     if (isBrowserGlobalIdentifier(node) && shouldTrackIdentifier(node)) {
-      const { line, character } = sourceFile.getLineAndCharacterOfPosition(
-        node.getStart(sourceFile),
-      );
-
       references.push({
-        column: character + 1,
-        context: lines[line]?.trim() ?? "",
-        filePath,
+        ...qualityScan.getSourceReferenceLocation(parsedSource, node, filePath),
         global: node.text,
         kind: classifyBrowserGlobalReference(filePath, node),
-        line: line + 1,
       });
     }
 
     ts.forEachChild(node, visit);
   }
 
-  visit(sourceFile);
+  visit(parsedSource.sourceFile);
 
   return references;
 }
@@ -184,18 +152,7 @@ function shouldTrackIdentifier(node) {
 function isDeclarationName(node) {
   const parent = node.parent;
 
-  return (
-    (ts.isBindingElement(parent) ||
-      ts.isClassDeclaration(parent) ||
-      ts.isFunctionDeclaration(parent) ||
-      ts.isInterfaceDeclaration(parent) ||
-      ts.isParameter(parent) ||
-      ts.isPropertyDeclaration(parent) ||
-      ts.isPropertySignature(parent) ||
-      ts.isTypeAliasDeclaration(parent) ||
-      ts.isVariableDeclaration(parent)) &&
-    parent.name === node
-  );
+  return DECLARATION_NAME_KINDS.has(parent.kind) && parent.name === node;
 }
 
 /**
@@ -278,25 +235,11 @@ function isTypeOnlyReference(node) {
   while (current.parent) {
     const parent = current.parent;
 
-    if (
-      ts.isExpressionWithTypeArguments(parent) ||
-      ts.isImportTypeNode(parent) ||
-      ts.isInterfaceDeclaration(parent) ||
-      ts.isTypeAliasDeclaration(parent) ||
-      ts.isTypeQueryNode(parent) ||
-      ts.isTypeReferenceNode(parent)
-    ) {
+    if (TYPE_ONLY_REFERENCE_KINDS.has(parent.kind)) {
       return true;
     }
 
-    if (
-      ts.isArrayTypeNode(parent) ||
-      ts.isIndexedAccessTypeNode(parent) ||
-      ts.isLiteralTypeNode(parent) ||
-      ts.isParenthesizedTypeNode(parent) ||
-      ts.isTypeLiteralNode(parent) ||
-      ts.isUnionTypeNode(parent)
-    ) {
+    if (TRANSPARENT_TYPE_REFERENCE_KINDS.has(parent.kind)) {
       current = parent;
       continue;
     }
@@ -384,7 +327,11 @@ function countReferences(references, kind) {
  * @returns {FileFindingSummary[]} Top files.
  */
 function getTopFiles(findings) {
-  return getTopReferenceFiles(findings, "globals", (finding) => finding.global);
+  return qualityScan.getTopReferenceFiles(
+    findings,
+    "globals",
+    (finding) => finding.global,
+  );
 }
 
 /**
@@ -397,17 +344,27 @@ function formatReport(summary, references, durationMs) {
   const findings = references.filter(
     (reference) => reference.kind === "finding",
   );
-  const shownFindings = findings.slice(0, FINDINGS_DISPLAY_LIMIT);
-  const remainingFindings = findings.length - shownFindings.length;
 
-  return [
-    "# Browser Global Usage",
-    "",
-    `Generated: ${summary.generatedAt}`,
-    "",
-    "## Summary",
-    "",
-    renderMarkdownBullets([
+  return qualityScan.formatLimitedReferenceReport({
+    generatedAt: summary.generatedAt,
+    policyItems: [
+      "Product code should use `src/shared/lib/browser-environment/` helpers instead of direct browser globals.",
+      "`typeof window/document/navigator` checks are recorded as guards and kept separate from findings.",
+      "`src/main.tsx` and the browser-environment helper modules are approved browser boundaries.",
+    ],
+    referenceSection: {
+      displayLimit: FINDINGS_DISPLAY_LIMIT,
+      emptyText: "No findings.",
+      getRow: (reference) =>
+        qualityScan.createLocatedReferenceRows([reference], (row) => [
+          row.global,
+        ])[0] ?? [],
+      headers: ["File", "Line", "Global", "Context"],
+      label: "findings",
+      references: findings,
+      title: "Findings",
+    },
+    summaryItems: [
       `Scanned files: ${summary.counts.scannedFiles}`,
       `Direct browser global references: ${summary.counts.direct}`,
       `Findings outside approved browser boundaries: ${summary.counts.findings}`,
@@ -416,47 +373,15 @@ function formatReport(summary, references, durationMs) {
       `Approved boundary references: ${summary.counts.allowed}`,
       `Type-only references: ${summary.counts.typeOnly}`,
       `Duration: ${formatDuration(durationMs)}`,
-    ]),
-    "",
-    "## Top Finding Files",
-    "",
-    summary.topFiles.length === 0
-      ? "No non-boundary browser global findings."
-      : renderMarkdownTable(
-          ["File", "Findings", "Globals"],
-          summary.topFiles.map((row) => [
-            row.filePath,
-            String(row.count),
-            row.globals,
-          ]),
-        ),
-    "",
-    "## Findings",
-    "",
-    shownFindings.length === 0
-      ? "No findings."
-      : renderMarkdownTable(
-          ["File", "Line", "Global", "Context"],
-          shownFindings.map((reference) => [
-            reference.filePath,
-            `${reference.line}:${reference.column}`,
-            reference.global,
-            reference.context,
-          ]),
-        ),
-    remainingFindings > 0
-      ? `\n${remainingFindings} additional findings omitted from this table.`
-      : "",
-    "",
-    "## Policy",
-    "",
-    renderMarkdownBullets([
-      "Product code should use `src/shared/lib/browser-environment/` helpers instead of direct browser globals.",
-      "`typeof window/document/navigator` checks are recorded as guards and kept separate from findings.",
-      "`src/main.tsx` and the browser-environment helper modules are approved browser boundaries.",
-    ]),
-    "",
-  ].join("\n");
+    ],
+    title: "Browser Global Usage",
+    topSection: {
+      emptyText: "No non-boundary browser global findings.",
+      headers: ["File", "Findings", "Globals"],
+      rows: qualityScan.createTopReferenceRows(summary.topFiles, "globals"),
+      title: "Top Finding Files",
+    },
+  });
 }
 
 /**
@@ -467,12 +392,9 @@ function formatReport(summary, references, durationMs) {
 function printSummary(summary, reportFile, durationMs) {
   const hasFindings = summary.counts.findings > 0;
 
-  process.stdout.write(`${sectionTitle("Browser Global Usage")}\n`);
-  process.stdout.write(
-    `${formatStatusBadge(hasFindings ? "review" : "pass")} ${summary.counts.findings} findings in ${summary.filesWithFindings} files\n`,
-  );
-  process.stdout.write(
-    `${renderKeyValues([
+  qualityScan.printQualityScanSummary({
+    headline: `${summary.counts.findings} findings in ${summary.filesWithFindings} files`,
+    keyValues: [
       { label: "Scanned files", value: summary.counts.scannedFiles },
       { label: "Direct refs", value: summary.counts.direct },
       {
@@ -481,33 +403,17 @@ function printSummary(summary, reportFile, durationMs) {
         value: summary.counts.allowed,
       },
       { label: "Guards", tone: "muted", value: summary.counts.guards },
-      { label: "Duration", value: formatDuration(durationMs) },
-      { label: "Report", value: toRepoRelativePath(reportFile) },
-    ])}\n`,
-  );
-
-  if (summary.topFiles.length > 0) {
-    process.stdout.write(`\n${colorText("Top files", "accent")}\n`);
-    process.stdout.write(
-      `${renderBullets(
-        summary.topFiles.map(
-          (row) => `${row.filePath} (${row.count}: ${row.globals})`,
-        ),
-        8,
-      )}\n`,
-    );
-  }
+      qualityScan.createDurationKeyValue(durationMs),
+    ],
+    reportFile,
+    status: hasFindings ? "review" : "pass",
+    title: "Browser Global Usage",
+    topItems: qualityScan.createTopReferenceItems(summary.topFiles, "globals"),
+  });
 }
 
-run(parseArgs(process.argv.slice(2)))
-  .then((status) => {
-    process.exitCode = status;
-    return undefined;
-  })
-  .catch((error) => {
-    process.stderr.write(
-      `Browser global usage scan failed: ${error instanceof Error ? error.message : String(error)}\n`,
-    );
-    process.exitCode = 1;
-    return undefined;
-  });
+qualityScan.runQualityScanCli({
+  errorLabel: "Browser global usage scan",
+  parseArgs,
+  run,
+});

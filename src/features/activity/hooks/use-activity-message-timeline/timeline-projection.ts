@@ -72,10 +72,7 @@ export function useTimelineUnreadProjection({
   currentUserId,
   selectedTimelineMessages,
 }: TimelineUnreadProjectionInput) {
-  const chatSummary = useMemo(
-    () => chats?.find((chat) => chat.id === chatId) ?? null,
-    [chatId, chats],
-  );
+  const chatSummary = chats?.find((chat) => chat.id === chatId) ?? null;
   const computedFirstUnreadMessageId = useMemo(
     () =>
       getFirstUnreadMessageId({

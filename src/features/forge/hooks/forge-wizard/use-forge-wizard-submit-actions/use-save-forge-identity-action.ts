@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { ForgeCommands } from "@/features/forge/api/forge-commands";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
@@ -18,7 +18,7 @@ export function useSaveForgeIdentityAction({
   const [isSavingIdentity, setIsSavingIdentity] = useState(false);
   const { guardOfflineAction } = useOfflineActionGuard();
 
-  const handleSaveIdentityAndContinue = useCallback(async () => {
+  async function handleSaveIdentityAndContinue() {
     if (
       guardOfflineAction({
         id: "forge-identity-save-offline",
@@ -48,16 +48,7 @@ export function useSaveForgeIdentityAction({
       goNext();
       setIsSavingIdentity(false);
     }
-  }, [
-    goNext,
-    state.avatarImage,
-    state.coverImage,
-    state.groupDescription,
-    state.groupId,
-    state.groupName,
-    state.planId,
-    guardOfflineAction,
-  ]);
+  }
 
   return {
     handleSaveIdentityAndContinue,

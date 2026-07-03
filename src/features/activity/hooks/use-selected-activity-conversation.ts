@@ -28,10 +28,7 @@ export function useSelectedActivityConversation() {
     groupSelection: groupQuery.data,
     selectedKind,
   });
-  const selectedChatSummary = useMemo(
-    () => findSelectedChatSummary(chatsQuery.data, chatId),
-    [chatId, chatsQuery.data],
-  );
+  const selectedChatSummary = findSelectedChatSummary(chatsQuery.data, chatId);
   const selectedParticipants = useMemo(
     () =>
       getSelectedConversationParticipants({

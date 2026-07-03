@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { ForgeCommands } from "@/features/forge/api/forge-commands";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
@@ -26,7 +26,7 @@ export function useSendForgeInvitesAction({
   const { guardOfflineAction } = useOfflineActionGuard();
   const { forgeMode, groupId, manualInviteeIds, planName } = state;
 
-  const handleSendInvites = useCallback(async () => {
+  async function handleSendInvites() {
     if (!groupId) {
       captureMissingForgeGroup();
       return;
@@ -53,14 +53,7 @@ export function useSendForgeInvitesAction({
       });
       setIsSendingInvites(false);
     }
-  }, [
-    forgeMode,
-    groupId,
-    guardOfflineAction,
-    manualInviteeIds,
-    planName,
-    setField,
-  ]);
+  }
 
   return {
     handleSendInvites,

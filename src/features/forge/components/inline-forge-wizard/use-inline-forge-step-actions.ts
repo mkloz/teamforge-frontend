@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-
 import type { ForgeWizardState } from "@/features/forge/hooks/use-forge-wizard";
 
 type ActivityTemplate = Parameters<
@@ -23,40 +21,37 @@ export function useInlineForgeStepActions({
     setForgeMode,
   } = fw;
 
-  const toggleRecentActivityTemplate = useCallback(
-    (templateId: string, template: ActivityTemplate) => {
-      if (appliedTemplateId === templateId) {
-        clearActivityTemplate();
-        return;
-      }
+  function toggleRecentActivityTemplate(
+    templateId: string,
+    template: ActivityTemplate,
+  ) {
+    if (appliedTemplateId === templateId) {
+      clearActivityTemplate();
+      return;
+    }
 
-      applyActivityTemplate(templateId, template);
-    },
-    [appliedTemplateId, applyActivityTemplate, clearActivityTemplate],
-  );
+    applyActivityTemplate(templateId, template);
+  }
 
-  const toggleStepTemplate = useCallback(
-    (templateId: string, template: ActivityTemplate) => {
-      if (appliedTemplateId === templateId) {
-        clearActivityTemplate();
-        return;
-      }
+  function toggleStepTemplate(templateId: string, template: ActivityTemplate) {
+    if (appliedTemplateId === templateId) {
+      clearActivityTemplate();
+      return;
+    }
 
-      applyActivityTemplate(templateId, template);
-      goToStep(3);
-    },
-    [appliedTemplateId, applyActivityTemplate, clearActivityTemplate, goToStep],
-  );
+    applyActivityTemplate(templateId, template);
+    goToStep(3);
+  }
 
-  const startBlankPlan = useCallback(() => {
+  function startBlankPlan() {
     clearActivityTemplate();
     goNext();
-  }, [clearActivityTemplate, goNext]);
+  }
 
-  const switchFailedForgeToManual = useCallback(() => {
+  function switchFailedForgeToManual() {
     handleReforge();
     setForgeMode("MANUAL");
-  }, [handleReforge, setForgeMode]);
+  }
 
   return {
     startBlankPlan,

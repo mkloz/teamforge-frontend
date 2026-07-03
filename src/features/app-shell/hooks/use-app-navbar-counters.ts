@@ -38,11 +38,11 @@ async function loadChatsForNavbarCounters() {
 }
 
 async function loadUnreadNotificationCount() {
-  const { getUnreadNotificationCount } = await import(
+  const { getAppNavbarUnreadNotificationCount } = await import(
     "@/features/app-shell/api/app-navbar-counters-query-options"
   );
 
-  return getUnreadNotificationCount();
+  return getAppNavbarUnreadNotificationCount();
 }
 
 function countUnreadChatMessages(chats: ChatApi[]) {

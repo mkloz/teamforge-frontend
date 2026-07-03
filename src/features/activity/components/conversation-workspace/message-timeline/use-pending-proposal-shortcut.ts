@@ -1,4 +1,4 @@
-import { type RefObject, useMemo } from "react";
+import type { RefObject } from "react";
 
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import type { ScrollToMessageOptions } from "./message-scroll.types";
@@ -16,14 +16,9 @@ export function usePendingProposalShortcut({
   messages,
   scrollToMessage,
 }: UsePendingProposalShortcutInput) {
-  const pendingProposalMessages = useMemo(
-    () =>
-      messages.filter(
-        (message) =>
-          message.type === "PLAN_UPDATE" &&
-          message.proposal?.status === "PENDING",
-      ),
-    [messages],
+  const pendingProposalMessages = messages.filter(
+    (message) =>
+      message.type === "PLAN_UPDATE" && message.proposal?.status === "PENDING",
   );
 
   function scrollToClosestProposal() {

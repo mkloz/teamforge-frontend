@@ -16,7 +16,7 @@ import {
 } from "@/shared/api/plan-membership-api";
 import { planSchema } from "@/shared/schemas";
 
-export async function updatePlan(
+export async function updateActivityPlan(
   planId: string,
   payload: UpdatePlanPayload,
 ): Promise<PlanMutationResult> {
@@ -51,7 +51,7 @@ export async function getPlanProposals(planId: string) {
   return planProposalsSchema.parse(response);
 }
 
-export async function createPlanProposal(
+export async function createActivityPlanProposal(
   planId: string,
   payload: CreatePlanProposalDto,
 ) {
@@ -63,7 +63,7 @@ export async function createPlanProposal(
   return result.data;
 }
 
-export async function votePlanProposal(
+export async function voteActivityPlanProposal(
   proposalId: string,
   payload: VotePlanProposalDto,
 ) {
@@ -72,7 +72,7 @@ export async function votePlanProposal(
   return result.data;
 }
 
-export async function withdrawPlanProposal(proposalId: string) {
+export async function withdrawActivityPlanProposal(proposalId: string) {
   const result = await sharedWithdrawPlanProposal(proposalId);
 
   return result.data;

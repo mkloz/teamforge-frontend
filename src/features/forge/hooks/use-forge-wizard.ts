@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useReducer,
-  useRef,
-} from "react";
+import { useEffect, useLayoutEffect, useReducer, useRef } from "react";
 import { useForgeWizardFieldActions } from "@/features/forge/hooks/forge-wizard/field-actions";
 import { useForgeWizardDerivedState } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-derived-state";
 import { useForgeWizardRouteSync } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-route-sync";
@@ -120,18 +114,18 @@ export function useForgeWizard({
     saveDraft(state);
   }, [saveDraft, state]);
 
-  const reset = useCallback(() => {
+  function reset() {
     skipNextDraftPersistRef.current = true;
     clearDraft();
     dispatch({ type: "reset" });
-  }, [clearDraft]);
+  }
 
-  const close = useCallback(() => {
+  function close() {
     reset();
     onClose();
-  }, [onClose, reset]);
+  }
 
-  const goNext = useCallback(() => {
+  function goNext() {
     const nextStep = getNextStep(stepRef.current);
 
     dispatch({
@@ -140,9 +134,9 @@ export function useForgeWizard({
       navDirection: "forward",
     });
     syncStep(nextStep, { history: "push" });
-  }, [stepRef, syncStep]);
+  }
 
-  const goBack = useCallback(() => {
+  function goBack() {
     const previousStep =
       state.forgeMode === "MANUAL" &&
       stepRef.current === 6 &&
@@ -156,38 +150,35 @@ export function useForgeWizard({
       navDirection: "back",
     });
     syncStep(previousStep, { history: "push" });
-  }, [state.forgeMode, state.forgeResult, stepRef, syncStep]);
+  }
 
-  const goToStep = useCallback(
-    (step: Step) => {
-      dispatch({
-        type: "set-step",
-        step,
-        navDirection: step > stepRef.current ? "forward" : "back",
-      });
-      syncStep(step, { history: "push" });
-    },
-    [stepRef, syncStep],
-  );
+  function goToStep(step: Step) {
+    dispatch({
+      type: "set-step",
+      step,
+      navDirection: step > stepRef.current ? "forward" : "back",
+    });
+    syncStep(step, { history: "push" });
+  }
 
-  const handleRemoveParticipant = useCallback((id: string) => {
+  function handleRemoveParticipant(id: string) {
     dispatch({ type: "remove-participant", userId: id });
-  }, []);
+  }
 
-  const handleRestoreParticipant = useCallback((id: string) => {
+  function handleRestoreParticipant(id: string) {
     dispatch({ type: "restore-participant", userId: id });
-  }, []);
+  }
 
-  const handleReforge = useCallback(() => {
+  function handleReforge() {
     dispatch({ type: "reforge" });
     syncTargets({
       activityId: null,
       groupId: null,
     });
     syncStep(4, { history: "push" });
-  }, [syncStep, syncTargets]);
+  }
 
-  const handleCopyLink = useCallback(() => {
+  function handleCopyLink() {
     setField("inviteCopied", true);
     if (inviteCopiedTimeoutRef.current) {
       clearTimeout(inviteCopiedTimeoutRef.current);
@@ -197,7 +188,7 @@ export function useForgeWizard({
       setField("inviteCopied", false);
       inviteCopiedTimeoutRef.current = null;
     }, 2000);
-  }, [setField]);
+  }
 
   const submitActions = useForgeWizardSubmitActions({
     close,

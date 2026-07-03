@@ -7,6 +7,6 @@ export async function getChatsForNavbarCounters() {
   return getActivityFeedChats(NAVBAR_CHATS_LIMIT);
 }
 
-export async function getUnreadNotificationCount() {
+export async function getAppNavbarUnreadNotificationCount() {
   return sharedGetUnreadNotificationCount();
 }

@@ -17,7 +17,7 @@ import {
 import type {
   PublicAuthRouteLoadContext,
   RequireAuthenticatedUserOptions,
-  RouteLocationLike,
+  RouteGuardLocationLike,
 } from "@/app/router/route-guards/types";
 import { authSession } from "@/shared/api/auth-session";
 import {
@@ -51,7 +51,7 @@ async function redirectAuthenticatedUser({
 }
 
 async function requireAuthenticatedUser(
-  location?: RouteLocationLike,
+  location?: RouteGuardLocationLike,
   options?: RequireAuthenticatedUserOptions,
 ) {
   const returnHref = buildGuardReturnHref(location);
@@ -68,7 +68,7 @@ async function requireAuthenticatedUser(
 }
 
 async function requireCanonicalAppRoute(
-  location: RouteLocationLike,
+  location: RouteGuardLocationLike,
   options?: RequireAuthenticatedUserOptions,
 ) {
   const currentUser = await requireAuthenticatedUser(location, options);
@@ -87,7 +87,7 @@ async function requireCanonicalAppRoute(
 }
 
 async function requireCanonicalOnboardingRoute(
-  location: RouteLocationLike,
+  location: RouteGuardLocationLike,
   expectedDestination:
     | "/onboarding/profile"
     | "/onboarding/personality"
@@ -107,7 +107,7 @@ async function requireCanonicalOnboardingRoute(
 }
 
 async function requireEditableOnboardingRoute(
-  location: RouteLocationLike,
+  location: RouteGuardLocationLike,
   expectedDestination: "/onboarding/personality" | "/onboarding/interests",
 ) {
   const currentUser = await requireAuthenticatedUser(location);

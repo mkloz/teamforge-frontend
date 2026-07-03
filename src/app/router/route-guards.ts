@@ -1,17 +1,8 @@
-interface RouteLocationLike {
-  pathname: string;
-  searchStr: string;
-}
-
-interface RequireAuthenticatedUserOptions {
-  onSessionRestored?: () => void | Promise<void>;
-}
-
-interface PublicAuthRouteLoadContext {
-  location: {
-    searchStr: string;
-  };
-}
+import type {
+  PublicAuthRouteLoadContext,
+  RequireAuthenticatedUserOptions,
+  RouteGuardLocationLike,
+} from "@/app/router/route-guards/types";
 
 export async function redirectAuthenticatedUser({
   location,
@@ -24,7 +15,7 @@ export async function redirectAuthenticatedUser({
 }
 
 export async function requireCanonicalAppRoute(
-  location: RouteLocationLike,
+  location: RouteGuardLocationLike,
   options?: RequireAuthenticatedUserOptions,
 ) {
   const { routeGuardImplementations } = await import(
@@ -35,7 +26,7 @@ export async function requireCanonicalAppRoute(
 }
 
 export async function requireCanonicalOnboardingRoute(
-  location: RouteLocationLike,
+  location: RouteGuardLocationLike,
   expectedDestination:
     | "/onboarding/profile"
     | "/onboarding/personality"
@@ -52,7 +43,7 @@ export async function requireCanonicalOnboardingRoute(
 }
 
 export async function requireEditableOnboardingRoute(
-  location: RouteLocationLike,
+  location: RouteGuardLocationLike,
   expectedDestination: "/onboarding/personality" | "/onboarding/interests",
 ) {
   const { routeGuardImplementations } = await import(

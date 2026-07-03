@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-
 import type {
   ForgeWizardData,
   ForgeWizardField,
@@ -20,15 +18,12 @@ export function useForgeWizardFieldActions({
   state,
   syncMode,
 }: UseForgeWizardFieldActionsOptions): ForgeWizardFieldActions {
-  const setField = useCallback(
-    <Field extends ForgeWizardField>(
-      field: Field,
-      value: ForgeWizardData[Field],
-    ) => {
-      dispatch(createSetFieldAction(field, value));
-    },
-    [dispatch],
-  );
+  function setField<Field extends ForgeWizardField>(
+    field: Field,
+    value: ForgeWizardData[Field],
+  ) {
+    dispatch(createSetFieldAction(field, value));
+  }
 
   const activityActions = useActivityFieldActions({
     dispatch,

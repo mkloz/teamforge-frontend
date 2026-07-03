@@ -1,70 +1,61 @@
-import { useCallback } from "react";
-
 import type { LocationType } from "@/features/forge/lib/forge-contract";
 
 import type { BaseFieldActionOptions } from "./types";
 
 export function usePlanFieldActions({ setField }: BaseFieldActionOptions) {
-  const setPlanName = useCallback(
-    (value: string) => setField("planName", value),
-    [setField],
-  );
-  const setPlanDescription = useCallback(
-    (value: string) => setField("planDescription", value),
-    [setField],
-  );
-  const setPlanDate = useCallback(
-    (value: string) => setField("planDate", value),
-    [setField],
-  );
-  const setPlanTime = useCallback(
-    (value: string) => setField("planTime", value),
-    [setField],
-  );
-  const setPlanLocation = useCallback(
-    (value: string) => setField("planLocation", value),
-    [setField],
-  );
-  const setPlanLocationCoordinates = useCallback(
-    (lat: number | null, lng: number | null) => {
-      setField("planLocationLat", lat);
-      setField("planLocationLng", lng);
-    },
-    [setField],
-  );
-  const setLocationType = useCallback(
-    (value: LocationType) => {
-      setField("locationType", value);
+  function setPlanName(value: string) {
+    setField("planName", value);
+  }
 
-      if (value !== "IN_PERSON") {
-        setField("planLocationLat", null);
-        setField("planLocationLng", null);
-      }
+  function setPlanDescription(value: string) {
+    setField("planDescription", value);
+  }
 
-      if (value === "TBD") {
-        setField("planLocation", "");
-      }
-    },
-    [setField],
-  );
-  const setPlanCost = useCallback(
-    (value: "FREE" | "PAID") => {
-      setField("planCost", value);
+  function setPlanDate(value: string) {
+    setField("planDate", value);
+  }
 
-      if (value === "FREE") {
-        setField("planCostAmount", "");
-      }
-    },
-    [setField],
-  );
-  const setPlanCostAmount = useCallback(
-    (value: string) => setField("planCostAmount", value),
-    [setField],
-  );
-  const setPlanCostDetails = useCallback(
-    (value: string) => setField("planCostDetails", value),
-    [setField],
-  );
+  function setPlanTime(value: string) {
+    setField("planTime", value);
+  }
+
+  function setPlanLocation(value: string) {
+    setField("planLocation", value);
+  }
+
+  function setPlanLocationCoordinates(lat: number | null, lng: number | null) {
+    setField("planLocationLat", lat);
+    setField("planLocationLng", lng);
+  }
+
+  function setLocationType(value: LocationType) {
+    setField("locationType", value);
+
+    if (value !== "IN_PERSON") {
+      setField("planLocationLat", null);
+      setField("planLocationLng", null);
+    }
+
+    if (value === "TBD") {
+      setField("planLocation", "");
+    }
+  }
+
+  function setPlanCost(value: "FREE" | "PAID") {
+    setField("planCost", value);
+
+    if (value === "FREE") {
+      setField("planCostAmount", "");
+    }
+  }
+
+  function setPlanCostAmount(value: string) {
+    setField("planCostAmount", value);
+  }
+
+  function setPlanCostDetails(value: string) {
+    setField("planCostDetails", value);
+  }
 
   return {
     setLocationType,

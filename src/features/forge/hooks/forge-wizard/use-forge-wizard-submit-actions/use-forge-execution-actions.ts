@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { ZodError } from "zod";
 
 import {
@@ -86,59 +85,48 @@ export function useForgeExecutionActions({
 }: UseForgeExecutionActionsOptions) {
   const { guardOfflineAction } = useOfflineActionGuard();
 
-  const executeForge = useCallback(
-    (mode: ForgeExecutionMode) => {
-      if (
-        guardOfflineAction({
-          id: "forge-execution-offline",
-          description: "Reconnect before forming a TeamForge group.",
-        })
-      ) {
-        return;
-      }
+  function executeForge(mode: ForgeExecutionMode) {
+    if (
+      guardOfflineAction({
+        id: "forge-execution-offline",
+        description: "Reconnect before forming a TeamForge group.",
+      })
+    ) {
+      return;
+    }
 
-      const mutationName = getForgeMutationName(mode);
-      const validation = getForgeExecutionValidationForMode(mode, state);
+    const mutationName = getForgeMutationName(mode);
+    const validation = getForgeExecutionValidationForMode(mode, state);
 
-      if (validation && !validation.canSubmit) {
-        handleForgePlanValidationBlock(validation, {
-          dispatch,
-          syncStep,
-        });
-        return;
-      }
-
-      runForgeAnimation(async () => {
-        await runForgeExecution({
-          dispatch,
-          markSearchKept,
-          mode,
-          mutationName,
-          state,
-          syncStep,
-          syncTargets,
-          validation,
-        });
+    if (validation && !validation.canSubmit) {
+      handleForgePlanValidationBlock(validation, {
+        dispatch,
+        syncStep,
       });
-    },
-    [
-      dispatch,
-      guardOfflineAction,
-      markSearchKept,
-      runForgeAnimation,
-      state,
-      syncStep,
-      syncTargets,
-    ],
-  );
+      return;
+    }
 
-  const handleManualForge = useCallback(() => {
+    runForgeAnimation(async () => {
+      await runForgeExecution({
+        dispatch,
+        markSearchKept,
+        mode,
+        mutationName,
+        state,
+        syncStep,
+        syncTargets,
+        validation,
+      });
+    });
+  }
+
+  function handleManualForge() {
     executeForge("MANUAL");
-  }, [executeForge]);
+  }
 
-  const handleAutoForge = useCallback(() => {
+  function handleAutoForge() {
     executeForge("AUTO");
-  }, [executeForge]);
+  }
 
   return {
     handleAutoForge,
