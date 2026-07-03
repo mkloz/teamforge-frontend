@@ -8,20 +8,20 @@ type PageLoadingModule<Props extends PageLoadingProps> = {
 };
 
 export type LazyRouteLoadingComponent = ComponentType & {
-  preload: () => Promise<unknown>;
+  preload: () => Promise<void>;
 };
 
 export function createLazyRouteLoading<
   Props extends PageLoadingProps = PageLoadingProps,
 >(load: () => Promise<PageLoadingModule<Props>>, props: Props) {
-  let preloadPromise: Promise<PageLoadingModule<Props>> | null = null;
+  let preloadPromise: Promise<void> | null = null;
   let LoadedComponent: ComponentType<Props> | null = null;
 
   function preload() {
     preloadPromise ??= load().then((module) => {
       LoadedComponent = module.default;
 
-      return module;
+      return undefined;
     });
 
     return preloadPromise;

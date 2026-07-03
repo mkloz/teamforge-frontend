@@ -42,4 +42,6 @@ jobs:
         run: npm ci
 
       - name: Run frontend quality gate
+        env:
+          VERIFY_MAX_PARALLEL: "2"
         run: npm run check:pr

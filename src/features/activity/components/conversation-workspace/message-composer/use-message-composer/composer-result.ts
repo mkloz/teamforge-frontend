@@ -4,6 +4,7 @@ import type { useComposerAttachmentActions } from "@/features/activity/component
 import type { useMessageComposerAttachments } from "@/features/activity/components/conversation-workspace/message-composer/use-message-composer-attachments";
 import type { useMessageComposerDraft } from "@/features/activity/components/conversation-workspace/message-composer/use-message-composer-draft";
 import type { useMessageComposerSubmit } from "@/features/activity/components/conversation-workspace/message-composer/use-message-composer-submit";
+import type { RecordingError } from "@/features/activity/hooks/voice-recording/voice-recording.types";
 import type { ActivityOutgoingGifAttachment } from "@/features/activity/lib/activity-contract";
 
 interface MessageComposerResultInput {
@@ -21,7 +22,7 @@ interface MessageComposerResultInput {
   isFocused: boolean;
   isOnline: boolean;
   isRecording: boolean;
-  recordingError: string | null;
+  recordingError: RecordingError | null;
   recordingTime: number;
   sendGif: (gif: ActivityOutgoingGifAttachment) => Promise<void>;
   setIsFocused: (isFocused: boolean) => void;

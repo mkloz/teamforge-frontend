@@ -324,6 +324,16 @@ const PWA_SOURCE_MARKER_TARGETS = [
       "PWA_RESUME_REFRESH_COOLDOWN_MS",
       'refetchType: "active"',
       "PwaServiceWorkerMessageRuntime",
+      "subscribeAppResumeEvents",
+    ]),
+    relativePath: path.relative(
+      ROOT_DIR,
+      path.join(SRC_DIR, "app/runtime/pwa-authenticated-runtime.tsx"),
+    ),
+  },
+  {
+    markers: toNamedMarkers([
+      "subscribeAppResumeEvents",
       "visibilitychange",
       "pageshow",
       "online",
@@ -331,7 +341,7 @@ const PWA_SOURCE_MARKER_TARGETS = [
     ]),
     relativePath: path.relative(
       ROOT_DIR,
-      path.join(SRC_DIR, "app/runtime/pwa-authenticated-runtime.tsx"),
+      path.join(SRC_DIR, "shared/lib/app-resume-events.ts"),
     ),
   },
   {
@@ -348,16 +358,47 @@ const PWA_SOURCE_MARKER_TARGETS = [
   },
 ];
 
-const DIAGNOSTICS_PANEL_MARKERS = [
-  "DIAGNOSTIC_CHECK_COUNT = 8",
-  "Display mode",
-  "Install prompt",
-  "Secure context",
-  "Service worker",
-  "Push support",
-  "Permission",
-  "Backend push",
-  "This device",
+/** @type {readonly SourceMarkerTarget[]} */
+const DIAGNOSTICS_PANEL_MARKER_TARGETS = [
+  {
+    markers: toNamedMarkers(["DIAGNOSTIC_CHECK_COUNT = 8"]),
+    relativePath: path.relative(
+      ROOT_DIR,
+      path.join(
+        SRC_DIR,
+        "features/download/components/pwa-diagnostics-panel/diagnostic-copy.ts",
+      ),
+    ),
+  },
+  {
+    markers: toNamedMarkers([
+      "Display mode",
+      "Install prompt",
+      "Secure context",
+      "Service worker",
+      "Push support",
+      "Permission",
+      "Backend push",
+      "This device",
+    ]),
+    relativePath: path.relative(
+      ROOT_DIR,
+      path.join(
+        SRC_DIR,
+        "features/download/components/pwa-diagnostics-panel/diagnostic-view-model.ts",
+      ),
+    ),
+  },
+  {
+    markers: toNamedMarkers(["data-diagnostic-count={DIAGNOSTIC_CHECK_COUNT}"]),
+    relativePath: path.relative(
+      ROOT_DIR,
+      path.join(
+        SRC_DIR,
+        "features/download/components/pwa-diagnostics-panel/diagnostics-grid.tsx",
+      ),
+    ),
+  },
 ];
 
 const STALE_DIAGNOSTIC_MARKERS = [
@@ -847,11 +888,10 @@ function validatePwaPackageScripts(packageJson) {
 
 async function validateProductionEnvScriptMarkers() {
   await validateSourceMarkers("Deploy Guards", PWA_PRODUCTION_ENV_SCRIPT, [
-    "VITE_APP_URL uses HTTPS",
+    "validateProductionUrlShape",
+    'url.protocol === "https:"',
     "PRODUCTION_API_URL",
-    "VITE_MEDIA_BASE_URL uses HTTPS",
     "EXPECTED_PRODUCTION_SOCKET_PATH",
-    "VITE_API_URL uses HTTPS",
     "VITE_API_URL includes API prefix",
   ]);
 }
@@ -1784,19 +1824,19 @@ async function validatePwaSourceRuntime() {
     PWA_SOURCE_MARKER_TARGETS,
   );
 
-  const diagnosticsPanelSource = await validateSourceMarkers(
-    "PWA Source",
-    path.relative(
-      ROOT_DIR,
-      path.join(
-        SRC_DIR,
-        "features/download/components/pwa-diagnostics-panel.tsx",
+  const diagnosticsPanelSources = await DIAGNOSTICS_PANEL_MARKER_TARGETS.reduce(
+    (previous, target) =>
+      previous.then((sources) =>
+        validateSourceMarkerTarget("PWA Source", target).then((source) => {
+          sources.push(source);
+
+          return sources;
+        }),
       ),
-    ),
-    DIAGNOSTICS_PANEL_MARKERS,
+    /** @type {Promise<string[]>} */ (Promise.resolve([])),
   );
 
-  validateDiagnosticsPanelExclusions(diagnosticsPanelSource);
+  validateDiagnosticsPanelExclusions(diagnosticsPanelSources.join("\n"));
 }
 
 function validateDiagnosticsPanelExclusions(diagnosticsPanelSource) {
