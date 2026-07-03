@@ -129,7 +129,7 @@ export const REACT_DOCTOR_FALSE_POSITIVES = [
   {
     column: 9,
     filePath: "src/app/router/route-guards.impl.ts",
-    line: 379,
+    line: 50,
     plugin: "react-doctor",
     reason:
       "returnTo is relative-only and route-allowlisted; generated headers also set frame-ancestors 'none' and X-Frame-Options: DENY.",

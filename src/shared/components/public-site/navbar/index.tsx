@@ -4,7 +4,7 @@ import X from "lucide-react/dist/esm/icons/x.js";
 import type { MouseEvent } from "react";
 import { useState } from "react";
 import { scrollToLandingSection } from "@/shared/components/public-site/landing-scroll";
-import { useLandingAuthActions } from "@/shared/components/public-site/use-landing-auth-actions";
+import { usePublicSiteAuthActions } from "@/shared/components/public-site/use-public-site-auth-actions";
 import { Button } from "@/shared/components/ui/button";
 import { useWindowScrollThreshold } from "@/shared/hooks/use-window-scroll-threshold";
 import { cn } from "@/shared/lib/utils";
@@ -116,7 +116,7 @@ export function Navbar({
     isResolvingAuthAction,
     primaryAction,
     secondaryAction,
-  } = useLandingAuthActions(
+  } = usePublicSiteAuthActions(
     authActionConfig.primaryLabel,
     authActionConfig.secondaryLabel,
     authActionConfig.returnTo,

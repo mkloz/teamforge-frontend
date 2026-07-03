@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
-import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
+import { settingsQueries } from "@/features/settings/api/settings-queries";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -9,7 +9,7 @@ import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 export function useSettingsBlockedUsers(enabled: boolean) {
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const blockedUsersQuery = useQuery({
-    ...SettingsQueryFactory.blockedUsers(),
+    ...settingsQueries.blockedUsers(),
     enabled,
   });
 

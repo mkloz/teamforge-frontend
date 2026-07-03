@@ -1,31 +1,31 @@
-import { ActivityQueryOptions } from "@/features/activity/api/activity-query-options";
+import { activityQueryOptions } from "@/features/activity/api/activity-query-options";
 
 export const ActivityBaseQueryFactory = {
   groups() {
-    return ActivityQueryOptions.groups();
+    return activityQueryOptions.groups();
   },
 
   chats() {
-    return ActivityQueryOptions.chats();
+    return activityQueryOptions.chats();
   },
 
   friendships() {
-    return ActivityQueryOptions.friendships();
+    return activityQueryOptions.friendships();
   },
 
   savedMessages() {
-    return ActivityQueryOptions.savedMessages();
+    return activityQueryOptions.savedMessages();
   },
 
   groupRatings(groupId: string) {
-    return ActivityQueryOptions.groupRatings(groupId);
+    return activityQueryOptions.groupRatings(groupId);
   },
 
   groupReviewState(groupId: string) {
-    return ActivityQueryOptions.groupReviewState(groupId);
+    return activityQueryOptions.groupReviewState(groupId);
   },
 
   linkPreview(url: string) {
-    return ActivityQueryOptions.linkPreview(url);
+    return activityQueryOptions.linkPreview(url);
   },
 };

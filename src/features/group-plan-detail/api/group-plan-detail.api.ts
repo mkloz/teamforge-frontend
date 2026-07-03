@@ -1,33 +1,25 @@
-import { z } from "zod";
-import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { apiClient } from "@/shared/api/api";
 import {
   postExploreGroupJoin,
   postExploreGroupJoinRequestCancel,
+  leaveGroup as sharedLeaveGroup,
 } from "@/shared/api/group-membership-api";
 import {
-  groupApiSchema,
-  inviteSchema,
-  planProposalFieldSchema,
-  planProposalSchema,
-} from "@/shared/schemas";
+  acceptInvite as sharedAcceptInvite,
+  declineInvite as sharedDeclineInvite,
+} from "@/shared/api/invite-membership-api";
+import {
+  type CreatePlanProposalPayload,
+  createPlanProposal as sharedCreatePlanProposal,
+  votePlanProposal as sharedVotePlanProposal,
+  withdrawPlanProposal as sharedWithdrawPlanProposal,
+  type VotePlanProposalPayload,
+} from "@/shared/api/plan-membership-api";
 
 import { groupPlanDetailSchema } from "../schemas/group-plan-detail.schema";
 
-const createGroupPlanProposalPayloadSchema = z.object({
-  field: planProposalFieldSchema,
-  proposedValue: z.string().trim().min(1),
-});
-
-const voteGroupPlanProposalPayloadSchema = z.object({
-  vote: z.enum(["APPROVE", "REJECT"]),
-});
-
-export type CreateGroupPlanProposalPayload = z.infer<
-  typeof createGroupPlanProposalPayloadSchema
->;
-export type VoteGroupPlanProposalPayload = z.infer<
-  typeof voteGroupPlanProposalPayloadSchema
->;
+export type CreateGroupPlanProposalPayload = CreatePlanProposalPayload;
+export type VoteGroupPlanProposalPayload = VotePlanProposalPayload;
 
 export class GroupPlanDetailApi {
   static async getDetail(groupId: string) {
@@ -47,60 +39,32 @@ export class GroupPlanDetailApi {
   }
 
   static async acceptInvite(inviteId: string) {
-    const response = await apiClient.post(`invites/${inviteId}/accept`);
-
-    return parseJsonWithRequestId(response, (value) =>
-      inviteSchema.parse(value),
-    );
+    return sharedAcceptInvite(inviteId);
   }
 
   static async declineInvite(inviteId: string) {
-    const response = await apiClient.post(`invites/${inviteId}/decline`);
-
-    return parseJsonWithRequestId(response, (value) =>
-      inviteSchema.parse(value),
-    );
+    return sharedDeclineInvite(inviteId);
   }
 
   static async createPlanProposal(
     planId: string,
     payload: CreateGroupPlanProposalPayload,
   ) {
-    const response = await apiClient.post(`plans/${planId}/proposals`, {
-      json: createGroupPlanProposalPayloadSchema.parse(payload),
-    });
-
-    return parseJsonWithRequestId(response, (value) =>
-      planProposalSchema.parse(value),
-    );
+    return sharedCreatePlanProposal(planId, payload);
   }
 
   static async votePlanProposal(
     proposalId: string,
     payload: VoteGroupPlanProposalPayload,
   ) {
-    const response = await apiClient.post(`proposals/${proposalId}/vote`, {
-      json: voteGroupPlanProposalPayloadSchema.parse(payload),
-    });
-
-    return parseJsonWithRequestId(response, (value) =>
-      planProposalSchema.parse(value),
-    );
+    return sharedVotePlanProposal(proposalId, payload);
   }
 
   static async withdrawPlanProposal(proposalId: string) {
-    const response = await apiClient.delete(`proposals/${proposalId}`);
-
-    return parseJsonWithRequestId(response, (value) =>
-      planProposalSchema.parse(value),
-    );
+    return sharedWithdrawPlanProposal(proposalId);
   }
 
   static async leaveGroup(groupId: string) {
-    const response = await apiClient.post(`groups/${groupId}/leave`);
-
-    return parseJsonWithRequestId(response, (value) =>
-      groupApiSchema.parse(value),
-    );
+    return sharedLeaveGroup(groupId);
   }
 }

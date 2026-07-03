@@ -1,6 +1,8 @@
-import { ActivityCommands } from "@/features/activity/api/activity-commands";
-import { ActivityRealtimeHandlers } from "@/features/activity/api/activity-realtime-handlers";
-import { NotificationsRealtimeHandlers } from "@/features/notifications/api/notifications-realtime-handlers";
+import {
+  applyActivityGroupUpdate,
+  invalidateActivityGroupSurfaces,
+} from "@/features/activity/public/activity-app-realtime";
+import { addIncomingNotification } from "@/features/notifications/public/notification-realtime";
 import { authSession } from "@/shared/api/auth-session";
 import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
@@ -25,7 +27,7 @@ function handleNotificationPayload(payload: unknown) {
     return;
   }
 
-  NotificationsRealtimeHandlers.addIncomingNotification(parsed.notification);
+  addIncomingNotification(parsed.notification);
 }
 
 function handleGroupUpdatedPayload(payload: unknown) {
@@ -38,11 +40,11 @@ function handleGroupUpdatedPayload(payload: unknown) {
   const currentUser = getCachedCurrentUser();
 
   if (!currentUser) {
-    void ActivityCommands.invalidateGroupSurfaces();
+    void invalidateActivityGroupSurfaces();
     return;
   }
 
-  ActivityRealtimeHandlers.applyGroupUpdate(currentUser.id, parsed.group);
+  applyActivityGroupUpdate(currentUser.id, parsed.group);
 }
 
 function syncRealtimeSession() {

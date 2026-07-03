@@ -1,5 +1,5 @@
 import type { InfiniteData } from "@tanstack/react-query";
-import type { ExploreGroupsQueryData } from "@/features/explore/api/explore-query-options";
+import type { ExploreGroupsQueryData } from "@/features/explore/api/explore-queries";
 import type { ApiResponseWithRequestId } from "@/shared/api/api";
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";

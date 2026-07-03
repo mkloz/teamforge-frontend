@@ -5,7 +5,6 @@ import {
   type ForwardMessagePayload,
   forwardMessagePayloadSchema,
   type GetChatMessagesParams,
-  paginatedChatsSchema,
   paginatedMessagesSchema,
   paginatedSavedMessagesSchema,
   type SearchChatMessagesParams,
@@ -14,6 +13,7 @@ import {
   type UpdateMessagePayload,
   updateMessagePayloadSchema,
 } from "@/features/activity/api/activity-api-contracts";
+import { getActivityFeedChats } from "@/shared/api/activity-feed-chat-api";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import { clampApiLimit, clampApiPage } from "@/shared/api/api-constraints";
 import { FileUploadApi } from "@/shared/api/file-upload";
@@ -25,15 +25,7 @@ import {
 import { publicHttpUrlSchema } from "@/shared/validators/url.validator";
 
 export async function getChats() {
-  const response = await apiClient
-    .get("chats/activity-feed", {
-      searchParams: {
-        limit: DEFAULT_ACTIVITY_API_LIMIT,
-      },
-    })
-    .json<unknown>();
-
-  return paginatedChatsSchema.parse(response).items;
+  return getActivityFeedChats(DEFAULT_ACTIVITY_API_LIMIT);
 }
 
 export async function getChat(chatId: string) {

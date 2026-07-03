@@ -1,9 +1,7 @@
 import { domAnimation, LazyMotion, m } from "framer-motion";
-import ky from "ky";
 import { Download, X } from "lucide-react";
 import { useState } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
-import { isGifAttachment } from "@/features/activity/lib/gif-attachments";
 import { Button } from "@/shared/components/ui/button";
 import { DialogClose } from "@/shared/components/ui/dialog";
 import {
@@ -11,17 +9,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import {
+  downloadMedia,
+  getDownloadCandidate,
+} from "./lightbox-header-download";
+import { getLightboxHeaderViewState } from "./lightbox-header-view-state";
 
 interface LightboxHeaderProps {
   count: number;
   currentMedia: UnifiedAttachment | null;
   selectedIndex: number | null;
-}
-
-interface LightboxHeaderViewState {
-  isDownloadDisabled: boolean;
-  mediaTitle: string;
-  positionLabel: string;
 }
 
 export function LightboxHeader({
@@ -68,28 +65,10 @@ export function LightboxHeader({
   );
 }
 
-function getLightboxHeaderViewState({
-  count,
-  currentMedia,
-  isDownloading,
-  selectedIndex,
-}: {
-  count: number;
-  currentMedia: UnifiedAttachment | null;
-  isDownloading: boolean;
-  selectedIndex: number | null;
-}): LightboxHeaderViewState {
-  return {
-    isDownloadDisabled: !getDownloadCandidate(currentMedia, isDownloading),
-    mediaTitle: currentMedia?.name || getFallbackMediaTitle(currentMedia),
-    positionLabel: `${getSelectedMediaPosition(selectedIndex)} / ${count}`,
-  };
-}
-
 function LightboxHeaderTitle({
   viewState,
 }: {
-  viewState: LightboxHeaderViewState;
+  viewState: ReturnType<typeof getLightboxHeaderViewState>;
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
@@ -149,86 +128,4 @@ function LightboxHeaderActions({
       </DialogClose>
     </div>
   );
-}
-
-function getDownloadCandidate(
-  media: UnifiedAttachment | null,
-  isDownloading: boolean,
-) {
-  if (isDownloading) {
-    return null;
-  }
-
-  return media;
-}
-
-function getFallbackMediaTitle(media: UnifiedAttachment | null) {
-  return media && isGifAttachment(media) ? "Shared GIF" : "Shared media";
-}
-
-function getSelectedMediaPosition(selectedIndex: number | null) {
-  return selectedIndex === null ? 0 : selectedIndex + 1;
-}
-
-async function downloadMedia(media: UnifiedAttachment) {
-  const fileName = getDownloadFileName(media);
-
-  try {
-    const blob = await ky.get(media.url, { timeout: 30_000 }).blob();
-    const objectUrl = URL.createObjectURL(blob);
-
-    triggerDownload(objectUrl, fileName);
-    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-  } catch {
-    triggerDownload(media.url, fileName, { openInNewTab: true });
-  }
-}
-
-function triggerDownload(
-  url: string,
-  fileName: string,
-  options: { openInNewTab?: boolean } = {},
-) {
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = fileName;
-  link.rel = "noopener noreferrer";
-
-  if (options.openInNewTab) {
-    link.target = "_blank";
-  }
-
-  document.body.append(link);
-  link.click();
-  link.remove();
-}
-
-function getDownloadFileName(media: UnifiedAttachment) {
-  const name = media.name?.trim();
-  const extension = getExtensionFromMimeType(media.mimeType);
-
-  if (name) {
-    return hasFileExtension(name) ? name : `${name}${extension}`;
-  }
-
-  return `teamforge-media-${media.id}${extension}`;
-}
-
-function hasFileExtension(name: string) {
-  return /\.[a-z0-9]{2,5}$/i.test(name);
-}
-
-function getExtensionFromMimeType(mimeType: string | null) {
-  if (!mimeType) {
-    return "";
-  }
-
-  const subtype = mimeType.split("/")[1]?.split(";")[0]?.trim();
-
-  if (!subtype) {
-    return "";
-  }
-
-  return `.${subtype === "jpeg" ? "jpg" : subtype}`;
 }

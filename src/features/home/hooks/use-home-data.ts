@@ -1,75 +1,16 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { HomeQueryFactory } from "@/features/home/api/home-query-factory";
-import { EMPTY_HOME_STATS } from "@/features/home/lib/home-stats";
-import { isApiNetworkError } from "@/shared/api/api-network-error";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  getActiveHomeQueries,
+  getHomeAvailabilityState,
+  getHomeLoadingState,
+} from "@/features/home/hooks/use-home-data/home-data-state";
+import { getHomeDataValues } from "@/features/home/hooks/use-home-data/home-data-values";
+import { getIncludedHomeData } from "@/features/home/hooks/use-home-data/home-include-state";
+import type { UseHomeDataOptions } from "@/features/home/hooks/use-home-data/home-types";
+import { useHomeQueries } from "@/features/home/hooks/use-home-data/use-home-queries";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
-const EMPTY_PLANS: never[] = [];
-const EMPTY_GROUPS: never[] = [];
-const EMPTY_INVITATIONS: never[] = [];
-const EMPTY_RECOMMENDATIONS: never[] = [];
-
-type HomeDataSlice =
-  | "groups"
-  | "invitations"
-  | "plans"
-  | "recommendations"
-  | "sentInvitations"
-  | "stats";
-
-interface UseHomeDataOptions {
-  include?: Partial<Record<HomeDataSlice, boolean>>;
-}
-
-const ALL_HOME_DATA: Record<HomeDataSlice, boolean> = {
-  groups: true,
-  invitations: true,
-  plans: true,
-  recommendations: true,
-  sentInvitations: true,
-  stats: true,
-};
-
-const NO_HOME_DATA: Record<HomeDataSlice, boolean> = {
-  groups: false,
-  invitations: false,
-  plans: false,
-  recommendations: false,
-  sentInvitations: false,
-  stats: false,
-};
-
-type IncludedHomeData = Record<HomeDataSlice, boolean>;
-type HomeLoadingSlice =
-  | "groups"
-  | "invitations"
-  | "plans"
-  | "recommendations"
-  | "sentInvitations"
-  | "stats";
-
-interface HomeQueryState {
-  data: unknown;
-  error: unknown;
-  isError: boolean;
-  isLoading: boolean;
-}
-
-interface HomeQueryEntry {
-  enabled: boolean;
-  query: HomeQueryState;
-}
-
-function getIncludedHomeData(options?: UseHomeDataOptions) {
-  if (!options?.include) {
-    return ALL_HOME_DATA;
-  }
-
-  return {
-    ...NO_HOME_DATA,
-    ...options.include,
-  };
-}
+export type { UseHomeDataOptions } from "@/features/home/hooks/use-home-data/home-types";
 
 export function useHomeData(options?: UseHomeDataOptions) {
   const include = getIncludedHomeData(options);
@@ -89,141 +30,5 @@ export function useHomeData(options?: UseHomeDataOptions) {
         queryKey: APP_QUERY_KEYS.home.all,
         type: "active",
       }),
-  };
-}
-
-function useHomeQueries(include: IncludedHomeData) {
-  const statsQuery = useQuery({
-    ...HomeQueryFactory.stats(),
-    enabled: include.stats,
-  });
-  const plansQuery = useQuery({
-    ...HomeQueryFactory.plans(),
-    enabled: include.plans,
-  });
-  const groupsQuery = useQuery({
-    ...HomeQueryFactory.groups(),
-    enabled: include.groups,
-  });
-  const invitationsQuery = useQuery({
-    ...HomeQueryFactory.invitations(),
-    enabled: include.invitations,
-  });
-  const sentInvitationsQuery = useQuery({
-    ...HomeQueryFactory.sentInvitations(),
-    enabled: include.sentInvitations,
-  });
-  const recommendationsQuery = useQuery({
-    ...HomeQueryFactory.recommendations(),
-    enabled: include.recommendations,
-  });
-
-  return {
-    groups: groupsQuery,
-    invitations: invitationsQuery,
-    plans: plansQuery,
-    recommendations: recommendationsQuery,
-    sentInvitations: sentInvitationsQuery,
-    stats: statsQuery,
-  };
-}
-
-type HomeQueries = ReturnType<typeof useHomeQueries>;
-
-function getHomeDataValues(queries: HomeQueries) {
-  return {
-    stats: getQueryDataOrDefault(queries.stats.data, EMPTY_HOME_STATS),
-    plans: getQueryDataOrDefault(queries.plans.data, EMPTY_PLANS),
-    groups: getQueryDataOrDefault(queries.groups.data, EMPTY_GROUPS),
-    invitations: getQueryDataOrDefault(
-      queries.invitations.data,
-      EMPTY_INVITATIONS,
-    ),
-    sentInvitations: getQueryDataOrDefault(
-      queries.sentInvitations.data,
-      EMPTY_INVITATIONS,
-    ),
-    recommendations: getQueryDataOrDefault(
-      queries.recommendations.data,
-      EMPTY_RECOMMENDATIONS,
-    ),
-  };
-}
-
-function getQueryDataOrDefault<Data>(data: Data | undefined, fallback: Data) {
-  return data ?? fallback;
-}
-
-function getHomeQueryEntries(
-  include: IncludedHomeData,
-  queries: HomeQueries,
-): HomeQueryEntry[] {
-  return [
-    { enabled: include.stats, query: queries.stats },
-    { enabled: include.plans, query: queries.plans },
-    { enabled: include.groups, query: queries.groups },
-    { enabled: include.invitations, query: queries.invitations },
-    { enabled: include.sentInvitations, query: queries.sentInvitations },
-    { enabled: include.recommendations, query: queries.recommendations },
-  ];
-}
-
-function getActiveHomeQueries(
-  include: IncludedHomeData,
-  queries: HomeQueries,
-): HomeQueryEntry[] {
-  return getHomeQueryEntries(include, queries).filter(({ enabled }) => enabled);
-}
-
-function getHomeLoadingState(include: IncludedHomeData, queries: HomeQueries) {
-  const loadingState = {
-    isStatsLoading: isHomeSliceLoading(include, queries, "stats"),
-    isPlansLoading: isHomeSliceLoading(include, queries, "plans"),
-    isGroupsLoading: isHomeSliceLoading(include, queries, "groups"),
-    isInvitationsLoading: isHomeSliceLoading(include, queries, "invitations"),
-    isSentInvitationsLoading: isHomeSliceLoading(
-      include,
-      queries,
-      "sentInvitations",
-    ),
-    isRecommendationsLoading: isHomeSliceLoading(
-      include,
-      queries,
-      "recommendations",
-    ),
-  };
-
-  return {
-    ...loadingState,
-    isLoading: Object.values(loadingState).some(Boolean),
-  };
-}
-
-function isHomeSliceLoading(
-  include: IncludedHomeData,
-  queries: HomeQueries,
-  slice: HomeLoadingSlice,
-) {
-  return include[slice] && queries[slice].isLoading;
-}
-
-function getHomeAvailabilityState(activeQueries: HomeQueryEntry[]) {
-  const hasAllIncludedData = activeQueries.every(
-    ({ query }) => query.data !== undefined,
-  );
-  const isBlockingError = activeQueries.some(
-    ({ query }) => query.isError && query.data === undefined,
-  );
-  const isOfflineUnavailable = activeQueries.some(
-    ({ query }) =>
-      query.isError &&
-      query.data === undefined &&
-      isApiNetworkError(query.error),
-  );
-
-  return {
-    hasAllIncludedData,
-    isError: isBlockingError,
-    isOfflineUnavailable,
   };
 }

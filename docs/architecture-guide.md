@@ -106,10 +106,11 @@ src/
 │   ├── settings/           # Account settings
 │   └── user-menu/          # User dropdown menu
 ├── shared/                 # Cross-cutting concerns
-│   ├── api/                # Configured HTTP client, session, query client
+│   ├── api/                # HTTP client, session, query client, shared API seams
 │   ├── components/         # Reusable UI components
 │   ├── hooks/              # Shared hooks
 │   ├── lib/                # Shared utilities and mappers
+│   ├── navigation/         # Route builders and route-search contracts
 │   ├── providers/          # App-wide providers
 │   ├── schemas/            # Canonical backend-aligned domain schemas
 │   └── store/              # Shared UI stores
@@ -144,7 +145,10 @@ src/features/<feature-name>/
 - No cross-feature imports of internal modules
 - Shared code goes in `src/shared/`
 - Page components are thin - business logic lives in hooks
-- Backend-facing data seams should live in feature-local `api/` modules
+- Feature API modules own feature query keys, query options, cache helpers,
+  projection adapters, and feature-facing commands
+- Cross-feature backend adapters live in `src/shared/api/` when several
+  features need the same endpoint family
 
 ### Module Interface Vocabulary
 
@@ -159,7 +163,15 @@ Use these boundaries for cross-module work:
   never export a whole feature through a public barrel.
 - **Shared navigation contract:** `src/shared/navigation/*` owns
   feature-independent route builders, route-search parsers, and auth return
-  helpers. It must not import feature code.
+  helpers. It must not import feature code. Canonical group and profile search
+  validators live here so notifications, app shell, route definitions, and
+  feature pages share one serializable route contract.
+- **Shared API seam:** `src/shared/api/*` owns endpoint adapters that are reused
+  across feature boundaries, such as current-user commands, friendship and
+  membership commands, notification counts, Activity feed chat summaries,
+  explore group summaries, group/invite/plan adapters, and public user lookups.
+  These modules stay backend-facing and should not contain React component
+  logic, UI state, query hook orchestration, or feature-specific projections.
 - **Shared primitive:** `src/shared/*` owns feature-agnostic API clients, UI
   primitives, hooks, schemas, stores, validators, and utilities.
 - **App composition:** `src/app/*` and `src/router.tsx` own providers, router
@@ -174,6 +186,23 @@ The blocking feature seam scanner can be run with:
 
 ```bash
 npm run lint:feature-seams
+```
+
+The advisory API contract inventory can be run with:
+
+```bash
+npm run api:contracts
+```
+
+It scans frontend `apiClient` calls against `docs/open-api.yaml`, reports
+missing operations, duplicate endpoint families, dynamic calls, and shared API
+seam coverage, then writes `reports/api-contract-inventory.md` and
+`temp/api-contract-inventory.json`. Use this report to guide API cleanup, but
+review each item against product behavior before changing code. Use strict mode
+only when the API surface needs to block on unresolved gaps:
+
+```bash
+npm run api:contracts -- --strict
 ```
 
 ### Current Frontend Notes

@@ -4,7 +4,6 @@ import {
   SearchX,
   UsersRound,
 } from "lucide-react";
-import whyDifferentVisual from "@/features/landing/assets/why-different-visual-ai-text.png";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 
@@ -48,7 +47,7 @@ export function WhyDifferentSection() {
         <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
           <div className="order-2 overflow-hidden border-white/10 border-y lg:order-1 lg:col-span-7">
             <img
-              src={whyDifferentVisual}
+              src="/landing/why-different-visual-ai-text.png"
               alt="One TeamForge group room in focus while browsing cards move into the background"
               width={1536}
               height={1024}

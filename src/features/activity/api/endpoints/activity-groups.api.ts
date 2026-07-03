@@ -4,10 +4,14 @@ import {
   type GroupMutationResult,
   paginatedGroupsSchema,
   type UpdateGroupPayload,
-  updateGroupPayloadSchema,
   updatePlanPayloadSchema,
 } from "@/features/activity/api/activity-api-contracts";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import {
+  getGroupById as sharedGetGroupById,
+  leaveGroup as sharedLeaveGroup,
+  updateGroup as sharedUpdateGroup,
+} from "@/shared/api/group-membership-api";
 import { groupApiSchema } from "@/shared/schemas";
 
 export async function getGroups() {
@@ -23,30 +27,18 @@ export async function getGroups() {
 }
 
 export async function getGroup(groupId: string) {
-  const response = await apiClient.get(`groups/${groupId}`).json<unknown>();
-
-  return groupApiSchema.parse(response);
+  return sharedGetGroupById(groupId);
 }
 
 export async function updateGroup(
   groupId: string,
   payload: UpdateGroupPayload,
 ): Promise<GroupMutationResult> {
-  const response = await apiClient.patch(`groups/${groupId}`, {
-    json: updateGroupPayloadSchema.parse(payload),
-  });
-
-  return parseJsonWithRequestId(response, (value) =>
-    groupApiSchema.parse(value),
-  );
+  return sharedUpdateGroup(groupId, payload);
 }
 
 export async function leaveGroup(groupId: string) {
-  const response = await apiClient.post(`groups/${groupId}/leave`);
-
-  return parseJsonWithRequestId(response, (value) =>
-    groupApiSchema.parse(value),
-  );
+  return sharedLeaveGroup(groupId);
 }
 
 export async function removeGroupMember(groupId: string, memberId: string) {

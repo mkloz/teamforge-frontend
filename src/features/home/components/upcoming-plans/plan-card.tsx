@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, MapPinned, Tag, Wifi } from "lucide-react";
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
 import {
@@ -10,6 +9,7 @@ import {
 } from "@/features/home/lib/home-plan-presenters";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
+import { buildGroupPlanDetailNavigation } from "@/shared/navigation";
 import { getPlanCalendarParts, planStatusConfig } from "./plan-card-model";
 
 interface PlanCardProps {

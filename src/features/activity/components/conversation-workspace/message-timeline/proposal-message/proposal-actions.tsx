@@ -1,5 +1,11 @@
 import { Check, Undo2, X } from "lucide-react";
 
+import {
+  getProposalActionState,
+  getWithdrawProposalState,
+  PROPOSAL_STATUS_CLASS_NAME,
+  type ProposalActionState,
+} from "@/features/activity/components/conversation-workspace/message-timeline/proposal-message/proposal-action-state";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 
@@ -84,30 +90,6 @@ export function ProposalActions({
       />
     </>
   );
-}
-
-interface ProposalActionState {
-  isActionDisabled: boolean;
-  showOfflineHint: boolean;
-  statusLabel: string;
-  voteTitle: string | undefined;
-}
-
-function getProposalActionState({
-  hasVoted,
-  isOnline,
-  isVoting,
-  isWithdrawing,
-}: Pick<
-  ProposalActionsState,
-  "hasVoted" | "isOnline" | "isVoting" | "isWithdrawing"
->): ProposalActionState {
-  return {
-    isActionDisabled: !isOnline || isVoting || isWithdrawing,
-    showOfflineHint: !isOnline,
-    statusLabel: hasVoted ? "Vote recorded" : "Waiting for group votes",
-    voteTitle: isOnline ? undefined : "Reconnect before voting.",
-  };
 }
 
 function ProposalVoteStatus({
@@ -201,18 +183,3 @@ function WithdrawProposalButton({
     />
   );
 }
-
-function getWithdrawProposalState({
-  isOnline,
-  isWithdrawing,
-}: Pick<WithdrawProposalButtonProps, "isOnline" | "isWithdrawing">) {
-  return {
-    buttonLabel: isWithdrawing ? "Withdrawing..." : "Withdraw",
-    confirmLabel: isWithdrawing ? "Withdrawing..." : "Withdraw proposal",
-    isDisabled: !isOnline || isWithdrawing,
-    title: isOnline ? "Withdraw proposal" : "Reconnect before withdrawing.",
-  };
-}
-
-const PROPOSAL_STATUS_CLASS_NAME =
-  "inline-flex h-8 min-w-0 flex-1 items-center justify-center rounded-lg bg-muted px-3 font-bold text-micro text-muted-foreground";

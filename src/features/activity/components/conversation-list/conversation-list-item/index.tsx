@@ -6,6 +6,7 @@ import {
   Pin,
   PinOff,
 } from "lucide-react";
+import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
 import {
   ACTIVITY_MENU_ITEM_CLASS,
   ACTIVITY_MENU_SEPARATOR_CLASS,
@@ -16,7 +17,6 @@ import {
   getConversationIsMuted,
   getConversationTitle,
 } from "@/features/activity/lib/unify-conversations";
-import { ActivityMenuIcon } from "@/features/activity/public/activity-menu-icon";
 import {
   ContextMenu,
   ContextMenuContent,

@@ -10,8 +10,8 @@ import {
 } from "@/features/group-plan-detail/group-plan-detail-section-skeletons";
 import { useGroupPlanDetailCollapsibleHero } from "@/features/group-plan-detail/hooks/use-group-plan-detail-collapsible-hero";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
-import type { GroupPlanDetailRouteSearch } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
+import type { GroupPlanDetailRouteSearch } from "@/shared/navigation";
 
 const LazyGroupPlanDetailDeferredSections = lazy(() =>
   import(

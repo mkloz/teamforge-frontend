@@ -1,4 +1,4 @@
-import { apiClient } from "@/shared/api/api";
+import { getExploreGroupsResponse } from "@/shared/api/explore-groups-api";
 import { postExploreGroupJoin } from "@/shared/api/group-membership-api";
 import {
   createPaginatedSchema,
@@ -14,11 +14,7 @@ const paginatedExploreGroupsSchema = createPaginatedSchema(
 
 export class ExploreApi {
   static async getGroups(searchParams: URLSearchParams) {
-    const response = await apiClient
-      .get("explore/groups", {
-        searchParams,
-      })
-      .json<unknown>();
+    const response = await getExploreGroupsResponse(searchParams);
 
     return paginatedExploreGroupsSchema.parse(response);
   }

@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
+import { buildGroupPlanDetailNavigation } from "@/shared/navigation";
 
 export interface MutualGroup {
   id: string;

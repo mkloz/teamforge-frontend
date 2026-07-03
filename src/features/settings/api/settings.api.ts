@@ -8,21 +8,24 @@ import {
   IMAGE_UPLOAD_ACCEPTED_TYPES,
   IMAGE_UPLOAD_MAX_SIZE_BYTES,
 } from "@/shared/api/api-constraints";
+import { sendResetPasswordLink as sharedSendResetPasswordLink } from "@/shared/api/auth-session-commands";
+import { patchCurrentUser } from "@/shared/api/current-user-commands";
 import {
   assertAcceptedFile,
   buildFileUploadBody,
 } from "@/shared/api/file-upload";
+import {
+  getBlockedFriends as sharedGetBlockedFriends,
+  unblockUser as sharedUnblockUser,
+} from "@/shared/api/friendship-membership-api";
 import type { NotificationPreferences } from "@/shared/schemas";
 import {
   authSessionListSchema,
-  createPaginatedSchema,
-  friendshipApiSchema,
   fullUserResponseSchema,
   notificationPreferencesSchema,
 } from "@/shared/schemas";
 
 const DEFAULT_LIMIT = "100";
-const paginatedFriendshipsSchema = createPaginatedSchema(friendshipApiSchema);
 
 export interface UpdateSettingsProfileDto {
   name: string;
@@ -38,13 +41,7 @@ export type UpdateNotificationPreferencesDto = NotificationPreferences;
 
 export class SettingsApi {
   static async updateProfile(payload: UpdateSettingsProfileDto) {
-    const response = await apiClient.patch("users/me", {
-      json: payload,
-    });
-
-    return parseJsonWithRequestId(response, (value) =>
-      fullUserResponseSchema.parse(value),
-    );
+    return patchCurrentUser(payload);
   }
 
   static async uploadAvatar(file: File) {
@@ -73,18 +70,7 @@ export class SettingsApi {
   }
 
   static async sendResetPasswordLink(email: string) {
-    const response = await apiClient.post("auth/send-reset-password-link", {
-      json: { email },
-      context: {
-        auth: "none",
-        retryOnUnauthorized: false,
-      },
-    });
-
-    return {
-      data: null,
-      requestId: getResponseRequestId(response),
-    };
+    return sharedSendResetPasswordLink(email);
   }
 
   static async getNotificationPreferences() {
@@ -112,23 +98,11 @@ export class SettingsApi {
   }
 
   static async getBlockedUsers() {
-    const response = await apiClient
-      .get("friends/blocked", {
-        searchParams: {
-          limit: DEFAULT_LIMIT,
-        },
-      })
-      .json<unknown>();
-
-    return paginatedFriendshipsSchema.parse(response).items;
+    return sharedGetBlockedFriends(DEFAULT_LIMIT);
   }
 
   static async unblockUser(userId: string) {
-    const response = await apiClient.delete(`friends/${userId}/block`);
-
-    return parseJsonWithRequestId(response, (value) =>
-      friendshipApiSchema.parse(value),
-    );
+    return sharedUnblockUser(userId);
   }
 
   static async revokeSession(sessionId: string) {

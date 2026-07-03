@@ -1,0 +1,223 @@
+import type { TemplateSeed } from "@/features/forge/data/forge-template-seed-types";
+import { buildMediaUrl } from "@/shared/lib/media-url";
+
+export const TECH_TEMPLATES: TemplateSeed[] = [
+  {
+    id: "build",
+    title: "Build night",
+    description: "Make visible progress on a prototype or side project.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/build/original.webp",
+    ),
+    groupName: "Build Circle",
+    groupDescription: "A group for builders, experiments, and practical ideas.",
+    fixedSize: 4,
+    interestHints: ["coding", "hackathon", "ai", "startup"],
+  },
+  {
+    id: "brainstorm",
+    title: "Product brainstorm",
+    description: "Stress-test an idea before anyone overbuilds it.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/brainstorm/original.webp",
+    ),
+    groupName: "Product Brainstorm",
+    groupDescription: "A group for product ideas and technical collaboration.",
+    fixedSize: 5,
+    interestHints: ["product", "startup", "technology", "design"],
+  },
+  {
+    id: "demo-night",
+    title: "Demo night",
+    description: "Show what you are building and get specific feedback.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/demo-night/original.webp",
+    ),
+    groupName: "Demo Night",
+    groupDescription: "A group for demos, experiments, and practical critique.",
+    fixedSize: 5,
+    interestHints: ["coding", "startup", "product", "design"],
+  },
+  {
+    id: "ai-lab",
+    title: "AI workflow lab",
+    description: "Try tools on real tasks and compare what actually helps.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/ai-lab/original.webp",
+    ),
+    groupName: "AI Lab",
+    groupDescription: "A group for practical AI experiments and ideas.",
+    fixedSize: 4,
+    interestHints: ["ai", "technology", "coding"],
+  },
+  {
+    id: "career-sprint",
+    title: "Tech career lab",
+    description: "Polish a portfolio, prep interviews, or review a CV.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/career-sprint/original.webp",
+    ),
+    groupName: "Tech Career Lab",
+    groupDescription:
+      "A group for technical portfolios and sharper next steps.",
+    fixedSize: 4,
+    interestHints: ["career", "coding", "portfolio", "interview"],
+  },
+  {
+    id: "code-review",
+    title: "Code review table",
+    description: "Bring a branch, snippet, or architecture question.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/code-review/original.webp",
+    ),
+    groupName: "Code Review Table",
+    groupDescription: "A group for technical feedback and cleaner builds.",
+    fixedSize: 4,
+    interestHints: ["coding", "technology", "startup"],
+  },
+  {
+    id: "founder-chat",
+    title: "Founder chat",
+    description: "Compare ideas, early customers, and the next honest move.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/founder-chat/original.webp",
+    ),
+    groupName: "Founder Chat",
+    groupDescription: "A group for startups, product thinking, and momentum.",
+    fixedSize: 5,
+    interestHints: ["startup", "product", "tech", "business"],
+  },
+  {
+    id: "tool-share",
+    title: "Tool share",
+    description: "Swap workflows, apps, plugins, and shortcuts worth stealing.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/tool-share/original.webp",
+    ),
+    groupName: "Tool Share",
+    groupDescription: "A group for useful tools and practical tech habits.",
+    fixedSize: 5,
+    interestHints: ["technology", "tools", "coding", "product"],
+  },
+  {
+    id: "hack-night",
+    title: "Tiny hack night",
+    description: "Build something rough enough to exist by the end.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/hack-night/original.webp",
+    ),
+    groupName: "Hack Night",
+    groupDescription: "A group for coding, prototypes, and quick experiments.",
+    fixedSize: 4,
+    interestHints: ["hackathon", "coding", "startup"],
+  },
+  {
+    id: "app-teardown",
+    title: "App teardown",
+    description: "Pick a product and dissect what works, breaks, and converts.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/app-teardown/original.webp",
+    ),
+    groupName: "App Teardown",
+    groupDescription: "A group for product thinking and practical critique.",
+    fixedSize: 5,
+    interestHints: ["product", "design", "startup"],
+  },
+  {
+    id: "ai-tool-test",
+    title: "AI tool test",
+    description:
+      "Run the same task through different tools and compare results.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/ai-tool-test/original.webp",
+    ),
+    groupName: "AI Tool Test",
+    groupDescription: "A group for practical AI workflows and experiments.",
+    fixedSize: 4,
+    interestHints: ["ai", "tools", "technology"],
+  },
+  {
+    id: "portfolio-build",
+    title: "Portfolio build",
+    description: "Make progress on a site, case study, or demo.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/portfolio-build/original.webp",
+    ),
+    groupName: "Portfolio Build",
+    groupDescription: "A group for focused portfolio work and feedback.",
+    fixedSize: 4,
+    interestHints: ["portfolio", "coding", "design", "career"],
+  },
+  {
+    id: "startup-reading",
+    title: "Startup case table",
+    description: "Discuss one product story, teardown, or strategy idea.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/startup-reading/original.webp",
+    ),
+    groupName: "Startup Case Table",
+    groupDescription: "A group for product judgment and founder thinking.",
+    fixedSize: 5,
+    interestHints: ["startup", "product", "strategy", "case study"],
+  },
+  {
+    id: "no-code-build",
+    title: "No-code build",
+    description: "Prototype something useful without turning it into a stack.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/no-code-build/original.webp",
+    ),
+    groupName: "No-Code Build",
+    groupDescription: "A group for practical tools and fast prototypes.",
+    fixedSize: 4,
+    interestHints: ["no-code", "tools", "startup", "product"],
+  },
+  {
+    id: "robotics-table",
+    title: "Robotics table",
+    description: "Talk hardware, sensors, kits, or project ideas.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/robotics-table/original.webp",
+    ),
+    groupName: "Robotics Table",
+    groupDescription: "A group for hardware ideas and technical curiosity.",
+    fixedSize: 5,
+    interestHints: ["robotics", "hardware", "technology"],
+  },
+  {
+    id: "design-systems",
+    title: "Design systems",
+    description: "Compare components, tokens, and the tradeoffs underneath.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/design-systems/original.webp",
+    ),
+    groupName: "Design Systems",
+    groupDescription: "A group for UI systems and product craft.",
+    fixedSize: 4,
+    interestHints: ["design", "product", "technology"],
+  },
+  {
+    id: "data-night",
+    title: "Data night",
+    description: "Explore a small dataset and turn it into a useful view.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/data-night/original.webp",
+    ),
+    groupName: "Data Night",
+    groupDescription: "A group for data projects and shared analysis.",
+    fixedSize: 4,
+    interestHints: ["data", "coding", "technology"],
+  },
+  {
+    id: "security-basics",
+    title: "Security tool check",
+    description: "Compare safer habits, tools, and realistic threat models.",
+    coverImageSource: buildMediaUrl(
+      "/uploads/seed-media/template-covers/tech/security-basics/original.webp",
+    ),
+    groupName: "Security Tool Check",
+    groupDescription: "A group for practical security habits and tools.",
+    fixedSize: 4,
+    interestHints: ["security", "technology", "tools"],
+  },
+];

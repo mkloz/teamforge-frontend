@@ -6,3 +6,5 @@ export interface ScrollToMessageOptions {
 export interface MessageScrollHandle {
   scrollToMessage: (id: string, options?: ScrollToMessageOptions) => void;
 }
+
+export type ScrollToMessage = MessageScrollHandle["scrollToMessage"];

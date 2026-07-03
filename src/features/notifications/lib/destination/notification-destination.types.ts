@@ -1,10 +1,12 @@
-import type { ExploreRouteSearch } from "@/features/explore/public/explore-navigation";
-import type { GroupPlanDetailRouteSearch } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
-import type { ActivityRouteSearch } from "@/shared/navigation/activity-navigation";
-import type { ForgeRouteSearch } from "@/shared/navigation/forge-navigation";
-import type { HomeRouteSearch } from "@/shared/navigation/home-navigation";
-import type { ProfileNavigation } from "@/shared/navigation/profile-navigation";
-import type { SettingsSection } from "@/shared/navigation/settings-navigation";
+import type {
+  ActivityRouteSearch,
+  ExploreRouteSearch,
+  ForgeRouteSearch,
+  GroupPlanDetailRouteSearch,
+  HomeRouteSearch,
+  ProfileNavigation,
+  SettingsSection,
+} from "@/shared/navigation";
 import type { Notification } from "@/shared/schemas";
 
 export interface LegacyLinkContext {

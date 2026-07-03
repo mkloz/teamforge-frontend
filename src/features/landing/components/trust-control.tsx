@@ -5,7 +5,6 @@ import {
   ShieldCheck,
   UserCheck,
 } from "lucide-react";
-import trustControlVisual from "@/features/landing/assets/trust-control-visual-ai-cutout.png";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 
@@ -80,7 +79,7 @@ export function TrustControlSection() {
 
           <div className="relative lg:col-span-7 lg:-mr-6 xl:-mr-12">
             <img
-              src={trustControlVisual}
+              src="/landing/trust-control-visual-ai-cutout.png"
               alt="TeamForge group review screen with controls to review, decline, leave, and report"
               width={1637}
               height={961}

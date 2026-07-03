@@ -2,7 +2,6 @@ import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import type { AvailableProposalMessageControllerState } from "./proposal-message-controller";
 
-const PROPOSAL_QUICK_REACTIONS = ["👍", "👀"] as const;
 const PROPOSAL_SWIPE_SHELL_STATE_BY_OWNERSHIP = {
   own: {
     dragConstraints: { left: -100, right: 0 },
@@ -34,10 +33,6 @@ type ProposalMessageArticleState =
   AvailableProposalMessageControllerState["articleState"];
 type ProposalMessageInteractionState =
   AvailableProposalMessageControllerState["bubbleState"];
-type ProposalMessageLayoutState =
-  AvailableProposalMessageControllerState["layoutState"];
-type ProposalPlanActions =
-  AvailableProposalMessageControllerState["proposalActions"];
 type ProposalSwipeShellOwnershipState =
   (typeof PROPOSAL_SWIPE_SHELL_STATE_BY_OWNERSHIP)[keyof typeof PROPOSAL_SWIPE_SHELL_STATE_BY_OWNERSHIP];
 
@@ -148,70 +143,4 @@ function getProposalMessageBubbleFocusClassName({
   return interactionState.isInteractionFocused
     ? "message-action-focus"
     : undefined;
-}
-
-interface ProposalMessageDetailsActionStateInput {
-  proposalActions: ProposalPlanActions;
-  proposalId: string;
-}
-
-export function getProposalMessageDetailsActionState({
-  proposalActions,
-  proposalId,
-}: ProposalMessageDetailsActionStateInput) {
-  return {
-    isVoting: proposalActions.isVoting,
-    isWithdrawing: proposalActions.isWithdrawing,
-    onApprove: () => {
-      void proposalActions.approveProposal(proposalId);
-    },
-    onReject: () => {
-      void proposalActions.rejectProposal(proposalId);
-    },
-    onWithdraw: async () => {
-      await proposalActions.withdrawProposal(proposalId);
-    },
-    isOnline: proposalActions.isOnline,
-  };
-}
-
-interface ProposalMessageFooterStateInput {
-  interactionState: ProposalMessageInteractionState;
-  layoutState: ProposalMessageLayoutState;
-  message: UnifiedMessage;
-  onToggleReaction: (emoji: string) => void;
-}
-
-export function getProposalMessageFooterState({
-  interactionState,
-  layoutState,
-  message,
-  onToggleReaction,
-}: ProposalMessageFooterStateInput) {
-  return {
-    attachments: message.attachments,
-    content: message.content,
-    createdAt: message.createdAt,
-    footerState: {
-      hasReply: Boolean(message.replyTo),
-      isEdited: message.isEdited,
-      isOwn: message.isOwn,
-      isPinned: message.isPinned,
-      isReadByOthers: layoutState.isReadByOthers,
-      isSaved: interactionState.isSaved,
-    },
-    reactionGroups: layoutState.reactionGroups,
-    readBy: message.readBy,
-    readByCount: message.readByCount,
-    status: message.status,
-    onToggleReaction,
-    reactionPlaceholderEmojis:
-      getProposalReactionPlaceholders(interactionState),
-  };
-}
-
-function getProposalReactionPlaceholders({
-  canShowQuickReactions,
-}: ProposalMessageInteractionState) {
-  return canShowQuickReactions ? PROPOSAL_QUICK_REACTIONS : undefined;
 }

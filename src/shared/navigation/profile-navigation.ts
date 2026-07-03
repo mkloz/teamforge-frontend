@@ -10,12 +10,27 @@ export type ProfileNavigation =
       readonly search?: UserDetailRouteSearch;
     };
 
-export const userDetailIntentValues = ["connect"] as const;
+const userDetailIntentValues = ["connect"] as const;
 
 export type UserDetailIntent = (typeof userDetailIntentValues)[number];
 
 export interface UserDetailRouteSearch {
   intent?: UserDetailIntent;
+}
+
+function isUserDetailIntent(value: unknown): value is UserDetailIntent {
+  return (
+    typeof value === "string" &&
+    userDetailIntentValues.some((intent) => intent === value)
+  );
+}
+
+export function validateUserDetailSearch(
+  search: Record<string, unknown>,
+): UserDetailRouteSearch {
+  return {
+    intent: isUserDetailIntent(search.intent) ? search.intent : undefined,
+  };
 }
 
 export function buildPublicProfilePath(

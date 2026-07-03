@@ -1,17 +1,17 @@
 import { Bell } from "lucide-react";
 import { lazy, Suspense } from "react";
-import { AppLayout } from "@/features/app-shell/app-layout";
+import { AppLayout } from "@/features/app-shell/public/app-layout";
 import { useNotificationsDrawerState } from "@/features/notifications/public/notification-drawer";
 import { Button } from "@/shared/components/ui/button";
 
 const NotificationsDrawer = lazy(() =>
-  import("@/features/notifications/components/notifications-drawer").then(
+  import("@/features/notifications/public/notification-shell").then(
     (module) => ({ default: module.NotificationsDrawer }),
   ),
 );
 
 const NotificationsBellTrigger = lazy(() =>
-  import("@/features/notifications/components/notifications-bell-trigger").then(
+  import("@/features/notifications/public/notification-shell").then(
     (module) => ({ default: module.NotificationsBellTrigger }),
   ),
 );

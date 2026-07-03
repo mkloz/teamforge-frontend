@@ -1,6 +1,7 @@
-import type { SettingsSection } from "@/shared/navigation/settings-navigation";
-
-import type { OnboardingReturnTarget } from "./onboarding-route";
+import type {
+  OnboardingReturnTarget,
+  SettingsSection,
+} from "@/shared/navigation";
 
 const returnTargetLabels: Record<OnboardingReturnTarget, string> = {
   "/activity": "activity",

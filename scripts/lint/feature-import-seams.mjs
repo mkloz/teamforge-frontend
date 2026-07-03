@@ -11,6 +11,16 @@ const SRC_DIRECTORY = path.join(ROOT, "src");
 const FEATURES_DIRECTORY = path.join(SRC_DIRECTORY, "features");
 const SOURCE_EXTENSIONS = new Set([".js", ".jsx", ".mjs", ".ts", ".tsx"]);
 const SKIPPED_DIRECTORIES = new Set(["node_modules", "dist", "coverage"]);
+const ROUTE_CONTRACT_FEATURES = new Set([
+  "activity",
+  "explore",
+  "forge",
+  "group-plan-detail",
+  "home",
+  "onboarding",
+  "profile",
+  "settings",
+]);
 const IMPORT_PATTERN =
   /(?:import|export)\s+(?:type\s+)?(?:[\s\S]*?\s+from\s+)?["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)/gu;
 
@@ -25,7 +35,7 @@ if (options.strict && violations.length > 0) {
 }
 
 /**
- * @typedef {{ fromFeature: string; importer: string; line: number; specifier: string; target: string; toFeature: string }} FeatureImportViolation
+ * @typedef {{ fromFeature: string; importer: string; line: number; reason: string; specifier: string; target: string; toFeature: string }} FeatureImportViolation
  * @typedef {{ maxExamples: number; strict: boolean }} CliOptions
  */
 
@@ -129,18 +139,29 @@ function createFeatureImportViolation(importer, fromFeature, importRecord) {
   const target = resolveImportTarget(importRecord.specifier, importer);
   const toFeature = target ? getFeatureName(target) : null;
 
-  if (
-    !toFeature ||
-    toFeature === fromFeature ||
-    isFeaturePublicSeam(target, toFeature)
-  ) {
+  if (!toFeature || toFeature === fromFeature) {
     return null;
+  }
+
+  if (isFeaturePublicSeam(target, toFeature)) {
+    return isFeaturePublicNavigationShim(target, toFeature)
+      ? {
+          fromFeature,
+          importer,
+          line: importRecord.line,
+          reason: "navigation contracts must come from src/shared/navigation",
+          specifier: importRecord.specifier,
+          target,
+          toFeature,
+        }
+      : null;
   }
 
   return {
     fromFeature,
     importer,
     line: importRecord.line,
+    reason: "feature internals are private",
     specifier: importRecord.specifier,
     target,
     toFeature,
@@ -272,6 +293,18 @@ function isFeaturePublicSeam(target, featureName) {
 }
 
 /**
+ * @param {string} target Repo-relative target path.
+ * @param {string} featureName Target feature name.
+ * @returns {boolean} Whether the public seam is a route/navigation shim that should live in shared/navigation.
+ */
+function isFeaturePublicNavigationShim(target, featureName) {
+  return (
+    ROUTE_CONTRACT_FEATURES.has(featureName) &&
+    /(?:^|\/)[^/]*navigation(?:\.[^.]+)?$/u.test(target)
+  );
+}
+
+/**
  * @param {string} filePath Absolute or repo-relative file path.
  * @returns {string} Slash-separated repo path.
  */
@@ -316,7 +349,7 @@ function printReport(found) {
 
   for (const violation of found.slice(0, options.maxExamples)) {
     process.stdout.write(
-      `- ${violation.importer}:${violation.line} ${violation.fromFeature} -> ${violation.toFeature} (${violation.specifier})\n`,
+      `- ${violation.importer}:${violation.line} ${violation.fromFeature} -> ${violation.toFeature} (${violation.specifier}) - ${violation.reason}\n`,
     );
   }
 
@@ -332,8 +365,8 @@ function printReport(found) {
  */
 function getModeMessage() {
   return options.strict
-    ? "Feature-to-feature imports must use public seams.\n"
-    : "These are advisory until the migration to feature public seams is complete.\n";
+    ? "Feature-to-feature imports must use public seams, and route contracts must use shared navigation.\n"
+    : "These are advisory until the migration to feature public seams and shared navigation is complete.\n";
 }
 
 /**

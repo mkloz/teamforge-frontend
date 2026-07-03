@@ -1,10 +1,10 @@
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
+import { normalizeRouteSearch } from "@/shared/lib/route-search";
 import {
   type OnboardingReturnTarget,
   onboardingModeValues,
   onboardingReturnTargets,
-} from "@/features/onboarding/public/onboarding-navigation";
-import { normalizeRouteSearch } from "@/shared/lib/route-search";
+} from "@/shared/navigation";
 import {
   normalizeSettingsSection,
   settingsSectionValues,

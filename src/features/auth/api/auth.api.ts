@@ -9,6 +9,7 @@ import {
   getResponseRequestId,
   parseJsonWithRequestId,
 } from "@/shared/api/api";
+import { sendResetPasswordLink as sharedSendResetPasswordLink } from "@/shared/api/auth-session-commands";
 import type { GoogleAuthIntent } from "./auth.types";
 
 interface RegisterDto {
@@ -145,15 +146,7 @@ export class AuthApi {
   }
 
   static async sendResetPasswordLink(email: string) {
-    const response = await apiClient.post("auth/send-reset-password-link", {
-      json: { email },
-      context: {
-        auth: "none",
-        retryOnUnauthorized: false,
-      },
-    });
-
-    return createEmptyAuthMutationResult(response);
+    return sharedSendResetPasswordLink(email);
   }
 
   static async resetPassword(token: string, password: string) {

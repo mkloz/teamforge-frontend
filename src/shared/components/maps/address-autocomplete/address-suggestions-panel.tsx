@@ -11,7 +11,7 @@ import type {
   AddressSuggestionScrollState,
 } from "./address-autocomplete-types";
 
-interface AddressSuggestionsPanelProps {
+export interface AddressSuggestionsPanelProps {
   activeSuggestionIndex: number;
   listRef: RefObject<HTMLDivElement | null>;
   onActiveSuggestionChange: (index: number) => void;

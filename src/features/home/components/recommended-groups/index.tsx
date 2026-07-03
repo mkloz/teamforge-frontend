@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { buildExploreNavigation } from "@/features/explore/public/explore-navigation";
 import { EmptyRecommendationsVisual } from "@/features/home/assets/empty-recommendations";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeRecommendedGroupsSkeleton } from "@/features/home/components/home-skeletons";
@@ -12,6 +11,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/shared/components/ui/carousel";
+import { buildExploreNavigation } from "@/shared/navigation";
 import type { ExploreGroup } from "@/shared/schemas";
 
 import { RecommendedGroupCard } from "./recommended-group-card";

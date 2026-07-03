@@ -1,10 +1,13 @@
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
-import type { FriendshipApi } from "@/shared/schemas";
 import {
-  createPaginatedSchema,
-  friendshipApiSchema,
-  publicUserResponseSchema,
-} from "@/shared/schemas";
+  getBlockedFriends as sharedGetBlockedFriends,
+  getFriends as sharedGetFriends,
+  getIncomingFriendRequests as sharedGetIncomingFriendRequests,
+  getOutgoingFriendRequests as sharedGetOutgoingFriendRequests,
+} from "@/shared/api/friendship-membership-api";
+import { getPublicUserById as sharedGetPublicUserById } from "@/shared/api/public-user-api";
+import type { FriendshipApi } from "@/shared/schemas";
+import { createPaginatedSchema, friendshipApiSchema } from "@/shared/schemas";
 
 const paginatedFriendshipsSchema = createPaginatedSchema(friendshipApiSchema);
 const FRIENDSHIP_LOOKUP_LIMIT = "100";
@@ -16,31 +19,17 @@ function findFriendshipWithUser(friendships: FriendshipApi[], userId: string) {
   );
 }
 
-async function getFriendshipPage(path: string) {
-  const response = await apiClient
-    .get(path, {
-      searchParams: {
-        limit: FRIENDSHIP_LOOKUP_LIMIT,
-      },
-    })
-    .json<unknown>();
-
-  return paginatedFriendshipsSchema.parse(response).items;
-}
-
 export class ProfileApi {
   static async getUserProfile(userId: string) {
-    const response = await apiClient.get(`users/${userId}`).json<unknown>();
-
-    return publicUserResponseSchema.parse(response);
+    return sharedGetPublicUserById(userId);
   }
 
   static async getFriendshipWithUser(userId: string) {
     const friendshipPages = await Promise.all([
-      getFriendshipPage("friends"),
-      getFriendshipPage("friends/requests/incoming"),
-      getFriendshipPage("friends/requests/outgoing"),
-      getFriendshipPage("friends/blocked"),
+      sharedGetFriends(FRIENDSHIP_LOOKUP_LIMIT),
+      sharedGetIncomingFriendRequests(FRIENDSHIP_LOOKUP_LIMIT),
+      sharedGetOutgoingFriendRequests(FRIENDSHIP_LOOKUP_LIMIT),
+      sharedGetBlockedFriends(FRIENDSHIP_LOOKUP_LIMIT),
     ]);
 
     return findFriendshipWithUser(friendshipPages.flat(), userId);
@@ -85,39 +74,15 @@ export class ProfileApi {
   }
 
   static async getIncomingFriendRequests() {
-    const response = await apiClient
-      .get("friends/requests/incoming", {
-        searchParams: {
-          limit: 20,
-        },
-      })
-      .json<unknown>();
-
-    return paginatedFriendshipsSchema.parse(response).items;
+    return sharedGetIncomingFriendRequests(20);
   }
 
   static async getOutgoingFriendRequests() {
-    const response = await apiClient
-      .get("friends/requests/outgoing", {
-        searchParams: {
-          limit: 20,
-        },
-      })
-      .json<unknown>();
-
-    return paginatedFriendshipsSchema.parse(response).items;
+    return sharedGetOutgoingFriendRequests(20);
   }
 
   static async getFriends() {
-    const response = await apiClient
-      .get("friends", {
-        searchParams: {
-          limit: 50,
-        },
-      })
-      .json<unknown>();
-
-    return paginatedFriendshipsSchema.parse(response).items;
+    return sharedGetFriends(50);
   }
 
   static async getCommonFriends(userId: string) {

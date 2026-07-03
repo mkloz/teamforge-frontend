@@ -1,0 +1,24 @@
+@media (prefers-reduced-motion: reduce) {
+  .forge-loading-mark__hammer,
+  .forge-loading-mark__anvil,
+  .forge-loading-mark__spark-core,
+  .forge-loading-mark__spark,
+  .forge-loading-mark__swoosh-top,
+  .forge-loading-mark__swoosh-mid,
+  .forge-loading-mark__swoosh-bot {
+    animation: none;
+  }
+
+  .forge-loading-mark__spark {
+    opacity: 0;
+  }
+
+  .message-search-focus {
+    animation: none;
+    box-shadow:
+      inset 0 0 0 1px
+      color-mix(in srgb, var(--color-spark-amber) 36%, transparent),
+      inset 0 0 0 999px
+      color-mix(in srgb, var(--color-spark-amber) 3%, transparent);
+  }
+}

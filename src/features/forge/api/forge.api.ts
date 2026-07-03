@@ -1,28 +1,24 @@
 import { z } from "zod";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { getFriends as sharedGetFriends } from "@/shared/api/friendship-membership-api";
+import {
+  getGroupById as sharedGetGroupById,
+  updateGroup as sharedUpdateGroup,
+} from "@/shared/api/group-membership-api";
+import { createInvite as sharedCreateInvite } from "@/shared/api/invite-membership-api";
+import { updatePlanCoverImage as sharedUpdatePlanCoverImage } from "@/shared/api/plan-membership-api";
 import {
   activitySchema,
   activityVisibilitySchema,
   costTypeSchema,
   createActivityInputSchema,
-  createInvitePayloadSchema,
   createPaginatedSchema,
   forgeActivityInputSchema,
   forgeActivityResultSchema,
   forgeModeSchema,
-  friendshipApiSchema,
-  groupApiSchema,
-  inviteSchema,
   locationModeSchema,
   planCategorySchema,
-  planSchema,
-  updateGroupPayloadSchema,
 } from "@/shared/schemas";
-import { managedAssetReferenceSchema } from "@/shared/validators/url.validator";
-
-const updatePlanPayloadSchema = z.object({
-  coverImage: managedAssetReferenceSchema.nullable().optional(),
-});
 
 const recentActivityPlanSchema = z.object({
   title: z.string(),
@@ -68,15 +64,7 @@ export type RecentForgeActivity = z.infer<typeof recentActivitySchema>;
 
 export class ForgeApi {
   static async getFriends() {
-    const response = await apiClient
-      .get("friends", {
-        searchParams: {
-          limit: 50,
-        },
-      })
-      .json<unknown>();
-
-    return createPaginatedSchema(friendshipApiSchema).parse(response).items;
+    return sharedGetFriends(50);
   }
 
   static async getRecentActivities() {
@@ -145,36 +133,18 @@ export class ForgeApi {
   }
 
   static async getGroup(groupId: string) {
-    const response = await apiClient.get(`groups/${groupId}`).json<unknown>();
-
-    return groupApiSchema.parse(response);
+    return sharedGetGroupById(groupId);
   }
 
   static async updateGroup(groupId: string, payload: unknown) {
-    const response = await apiClient.patch(`groups/${groupId}`, {
-      json: updateGroupPayloadSchema.parse(payload),
-    });
-
-    return parseJsonWithRequestId(response, (value) =>
-      groupApiSchema.parse(value),
-    );
+    return sharedUpdateGroup(groupId, payload);
   }
 
   static async updatePlan(planId: string, payload: unknown) {
-    const response = await apiClient.patch(`plans/${planId}`, {
-      json: updatePlanPayloadSchema.parse(payload),
-    });
-
-    return parseJsonWithRequestId(response, (value) => planSchema.parse(value));
+    return sharedUpdatePlanCoverImage(planId, payload);
   }
 
   static async createInvite(payload: unknown) {
-    const response = await apiClient.post("invites", {
-      json: createInvitePayloadSchema.parse(payload),
-    });
-
-    return parseJsonWithRequestId(response, (value) =>
-      inviteSchema.parse(value),
-    );
+    return sharedCreateInvite(payload);
   }
 }

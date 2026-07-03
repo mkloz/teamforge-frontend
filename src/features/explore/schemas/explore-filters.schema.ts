@@ -1,31 +1,25 @@
 import { z } from "zod";
 
-import { planCategorySchema } from "@/shared/schemas/enums";
+import {
+  type ExploreAccessMode,
+  type ExploreCategory,
+  type ExploreLocationMode,
+  type ExploreSortOption,
+  type ExploreTimeWindow,
+  exploreAccessModeSchema,
+  exploreCategorySchema,
+  exploreLocationModeSchema,
+  exploreSortOptionSchema,
+  exploreTimeWindowSchema,
+} from "@/shared/navigation/explore-filter-values";
 
-const exploreAccessModeSchema = z.enum(["ALL", "OPEN", "BY_REQUEST"]);
-export type ExploreAccessMode = z.infer<typeof exploreAccessModeSchema>;
-
-const exploreSortOptionSchema = z.enum(["MATCH", "SOONEST", "NEWEST"]);
-export type ExploreSortOption = z.infer<typeof exploreSortOptionSchema>;
-
-const exploreTimeWindowSchema = z.enum([
-  "ALL",
-  "TODAY",
-  "TOMORROW",
-  "THIS_WEEK",
-  "THIS_WEEKEND",
-]);
-export type ExploreTimeWindow = z.infer<typeof exploreTimeWindowSchema>;
-
-const exploreLocationModeSchema = z.union([
-  z.literal("ALL"),
-  z.literal("IN_PERSON"),
-  z.literal("ONLINE"),
-]);
-export type ExploreLocationMode = z.infer<typeof exploreLocationModeSchema>;
-
-const exploreCategorySchema = z.union([z.literal("ALL"), planCategorySchema]);
-export type ExploreCategory = z.infer<typeof exploreCategorySchema>;
+export type {
+  ExploreAccessMode,
+  ExploreCategory,
+  ExploreLocationMode,
+  ExploreSortOption,
+  ExploreTimeWindow,
+};
 
 const exploreFiltersSchema = z.object({
   selectedCategories: z.array(exploreCategorySchema).min(1),

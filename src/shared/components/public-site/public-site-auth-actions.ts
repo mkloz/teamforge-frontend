@@ -16,7 +16,7 @@ function buildGuestLandingAction(
   } as const;
 }
 
-export function getLandingPrimaryAction(
+export function getPublicSitePrimaryAction(
   isAuthenticated: boolean,
   user: User | null | undefined,
   guestLabel: string,
@@ -43,7 +43,7 @@ export function getLandingPrimaryAction(
   };
 }
 
-export function getLandingSecondaryAction(
+export function getPublicSiteSecondaryAction(
   isAuthenticated: boolean,
   guestLabel: string,
   returnTo?: string | null,

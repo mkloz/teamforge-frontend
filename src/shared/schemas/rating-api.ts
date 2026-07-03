@@ -29,6 +29,7 @@ export const ratingEntitySchema = z
     planId: rating.planId ?? null,
   }));
 
+// fallow-ignore-next-line unused-export
 export const createRatingPayloadSchema = z.object({
   groupId: z.string().min(1),
   planId: z.string().min(1),
@@ -43,6 +44,7 @@ const reviewDeferralReasonSchema = z.enum(["NOT_PRESENT", "NEED_MORE_TIME"]);
 
 export type ReviewDeferralReason = z.infer<typeof reviewDeferralReasonSchema>;
 
+// fallow-ignore-next-line unused-export
 export const deferGroupReviewPayloadSchema = z.object({
   planId: z.string().min(1),
   reason: reviewDeferralReasonSchema,

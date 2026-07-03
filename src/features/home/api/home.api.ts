@@ -1,10 +1,15 @@
 import { homeGroupSchema } from "@/features/home/schemas/home-group.schema";
-import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { apiClient } from "@/shared/api/api";
 import { EXPLORE_DEFAULT_DISTANCE_KM } from "@/shared/api/api-constraints";
+import { getExploreGroupsResponse } from "@/shared/api/explore-groups-api";
+import { postExploreGroupJoin } from "@/shared/api/group-membership-api";
+import {
+  acceptInvite,
+  declineInvite,
+} from "@/shared/api/invite-membership-api";
 import {
   createPaginatedSchema,
   exploreGroupSchema,
-  exploreJoinResultSchema,
   inviteSchema,
 } from "@/shared/schemas";
 
@@ -47,40 +52,26 @@ export class HomeApi {
   }
 
   static async getRecommendations() {
-    const response = await apiClient
-      .get("explore/groups", {
-        searchParams: {
-          limit: 6,
-          maxDistanceKm: EXPLORE_DEFAULT_DISTANCE_KM,
-          sortBy: "MATCH",
-        },
-      })
-      .json<unknown>();
+    const response = await getExploreGroupsResponse({
+      limit: 6,
+      maxDistanceKm: EXPLORE_DEFAULT_DISTANCE_KM,
+      sortBy: "MATCH",
+    });
 
     return createPaginatedSchema(exploreGroupSchema).parse(response).items;
   }
 
   static async acceptInvitation(inviteId: string) {
-    const response = await apiClient
-      .post(`invites/${inviteId}/accept`)
-      .json<unknown>();
-
-    return inviteSchema.parse(response);
+    const result = await acceptInvite(inviteId);
+    return result.data;
   }
 
   static async declineInvitation(inviteId: string) {
-    const response = await apiClient
-      .post(`invites/${inviteId}/decline`)
-      .json<unknown>();
-
-    return inviteSchema.parse(response);
+    const result = await declineInvite(inviteId);
+    return result.data;
   }
 
   static async joinRecommendedGroup(groupId: string) {
-    const response = await apiClient.post(`explore/groups/${groupId}/join`);
-
-    return parseJsonWithRequestId(response, (value) =>
-      exploreJoinResultSchema.parse(value),
-    );
+    return postExploreGroupJoin(groupId);
   }
 }

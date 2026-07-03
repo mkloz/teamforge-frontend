@@ -6,9 +6,9 @@ Accepted
 
 ## Context
 
-TeamForge uses feature colocation under `src/features/<feature>/`, but several features currently import another feature's internal modules. That makes folders look isolated while coupling them through route helpers, UI actions, query helpers, and domain utilities.
+TeamForge uses feature colocation under `src/features/<feature>/`, but feature folders are only useful boundaries when their internals stay private. The frontend refactor plan identified cross-feature imports of route helpers, query helpers, UI actions, and domain utilities as a source of hidden coupling.
 
-The architecture guide already says feature internals should not be imported across features. The missing piece is an explicit public seam vocabulary and a migration path that does not force a large all-at-once move.
+The architecture guide already says feature internals should not be imported across features. The missing decision record is the explicit public seam vocabulary and the migration path that lets the codebase move gradually instead of through one large folder reshuffle.
 
 ## Decision
 
@@ -18,7 +18,7 @@ Each feature owns its internals by default. Cross-feature imports must use one o
 - `src/shared/navigation/*` for feature-independent route and route-search contracts.
 - `src/shared/*` for genuinely reusable feature-agnostic primitives.
 
-Feature public seams should expose only stable contracts that other features need. They must not become barrels that export everything from the feature.
+Feature public seams expose only stable contracts another feature needs: route-facing helpers, query summaries, action entry points, public types, or projections. They must not become broad barrels that export a whole feature.
 
 Allowed examples:
 
@@ -30,13 +30,15 @@ import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 Disallowed examples:
 
 ```ts
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
+import { ActivityBaseQueryFactory } from "@/features/activity/api/query-factory/activity-base-query-factory";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 ```
+
+Temporary re-export shims are acceptable during migration when they keep a refactor reviewable. Each shim should have an obvious removal point once callers have moved to the public seam.
 
 ## Consequences
 
 - Feature internals can be renamed or split without surprising unrelated callers.
-- Large features such as Activity can still offer a small public contract before any folder reshaping.
-- Dependency enforcement can start as advisory and later become blocking after violations are migrated.
-- Temporary re-export shims are acceptable during migration, but they should have a clear removal point.
+- Large features such as Activity can expose a small public contract before any folder reshaping.
+- Dependency enforcement can start as advisory and become blocking after violations are migrated.
+- Public seams need active review; if a seam starts exporting arbitrary internals, move the behavior back into the owning feature or promote only the genuinely shared contract.

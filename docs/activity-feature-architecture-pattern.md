@@ -195,7 +195,8 @@ Activity is now suitable as the feature architecture template.
 
 - Components do not import Activity API public interfaces directly.
 - Query, command, and realtime public interfaces are split:
-  - `api/activity-query-factory.ts`
+  - `api/activity-queries.ts`
+  - `api/query-factory/*`
   - `api/activity-commands.ts`
   - `api/activity-realtime-handlers.ts`
 - Message query keys are stable by `chatId`; participant-aware mapping happens

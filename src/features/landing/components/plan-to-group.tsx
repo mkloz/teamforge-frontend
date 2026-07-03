@@ -1,5 +1,4 @@
 import { CalendarClock, MessageCircle, MousePointer2 } from "lucide-react";
-import planToGroupVisual from "@/features/landing/assets/plan-to-group-visual-ai-cutout.png";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 
@@ -58,7 +57,7 @@ export function PlanToGroupSection() {
       <div className="relative mx-auto mt-12 max-w-7xl px-6 md:mt-14">
         <div className="overflow-hidden border-white/10 border-y">
           <img
-            src={planToGroupVisual}
+            src="/landing/plan-to-group-visual-ai-cutout.png"
             alt="Three-step TeamForge flow from activity idea to plan details to one small group room"
             width={1775}
             height={886}

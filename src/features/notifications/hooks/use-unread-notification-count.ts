@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { NotificationsQueryFactory } from "@/features/notifications/api/notifications-query-factory";
+import { notificationQueries } from "@/features/notifications/api/notifications-queries";
 
 interface UseUnreadNotificationCountOptions {
   enabled?: boolean;
@@ -10,7 +10,7 @@ export function useUnreadNotificationCount({
   enabled = true,
 }: UseUnreadNotificationCountOptions = {}) {
   const unreadCountQuery = useQuery({
-    ...NotificationsQueryFactory.unreadCount(),
+    ...notificationQueries.unreadCount(),
     enabled,
   });
 

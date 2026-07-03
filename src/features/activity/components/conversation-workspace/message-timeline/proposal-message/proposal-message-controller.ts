@@ -1,15 +1,14 @@
 import { useState } from "react";
 
-import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
-import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
-import { usePlanProposalActions } from "@/features/activity/hooks/use-plan-proposal-actions";
-import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
-import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
+import { createMessageItemInteractionHandlers } from "@/features/activity/components/conversation-workspace/message-timeline/message-item/message-item-interactions";
+import { getProposalMessageInteractionState } from "@/features/activity/components/conversation-workspace/message-timeline/proposal-message/proposal-message-interaction-state";
+import {
+  type AvailableProposalMessageRuntimeState,
+  hasProposalMessageViewState,
+  type ProposalMessageRuntimeState,
+  useProposalMessageRuntime,
+} from "@/features/activity/components/conversation-workspace/message-timeline/proposal-message/proposal-message-runtime";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-import { useCurrentUserQuery } from "@/shared/api/current-user-query";
-import { createMessageItemInteractionHandlers } from "../message-item/message-item-interactions";
-import { getProposalMessageInteractionState } from "./proposal-message-interaction-state";
-import { getProposalMessageViewState } from "./proposal-message-view-model";
 
 interface UseProposalMessageControllerInput {
   isHighlighted: boolean;
@@ -21,19 +20,21 @@ interface UseProposalMessageControllerInput {
 }
 
 type AvailableProposalMessageViewState = NonNullable<
-  ReturnType<typeof getProposalMessageViewState>
+  AvailableProposalMessageRuntimeState["viewState"]
 >;
-type ProposalMessageActions = ReturnType<typeof useActivityMessageActions>;
-type ProposalPlanActions = ReturnType<typeof usePlanProposalActions>;
+type ProposalMessageActions = ProposalMessageRuntimeState["messageActions"];
+type ProposalPlanActions = ProposalMessageRuntimeState["proposalActions"];
 type ProposalMessageInteractionState = ReturnType<
   typeof getProposalMessageInteractionState
 >;
-type ProposalMessageLayoutState = ReturnType<typeof useMessageLayout>;
-type ProposalMessageSwipeState = ReturnType<typeof useSwipeToReply>;
+type ProposalMessageLayoutState = Pick<
+  ProposalMessageRuntimeState,
+  "isReadByOthers" | "reactionGroups"
+>;
+type ProposalMessageSwipeState = ProposalMessageRuntimeState["swipeState"];
 type ProposalMessageInteractionHandlers = ReturnType<
   typeof createMessageItemInteractionHandlers
 >;
-type SavedMessageIds = ReturnType<typeof useSavedMessageIds>;
 
 interface MissingProposalMessageController {
   isAvailable: false;
@@ -79,21 +80,6 @@ export type ProposalMessageController =
 export type AvailableProposalMessageControllerState =
   AvailableProposalMessageController;
 
-interface ProposalMessageRuntimeState {
-  isReadByOthers: ProposalMessageLayoutState["isReadByOthers"];
-  messageActions: ProposalMessageActions;
-  proposalActions: ProposalPlanActions;
-  reactionGroups: ProposalMessageLayoutState["reactionGroups"];
-  savedMessageIds: SavedMessageIds;
-  swipeState: ProposalMessageSwipeState;
-  viewState: ReturnType<typeof getProposalMessageViewState>;
-}
-
-interface AvailableProposalMessageRuntimeState
-  extends ProposalMessageRuntimeState {
-  viewState: AvailableProposalMessageViewState;
-}
-
 interface ProposalMessageControllerBuilderInput {
   interactionHandlers: ProposalMessageInteractionHandlers;
   interactionState: ProposalMessageInteractionState;
@@ -133,39 +119,6 @@ export function useProposalMessageController(
     setIsContextMenuOpen,
     toggleExpanded: () => setIsExpanded((value) => !value),
   });
-}
-
-function useProposalMessageRuntime(
-  message: UnifiedMessage,
-): ProposalMessageRuntimeState {
-  const { data: currentUser } = useCurrentUserQuery();
-  const viewState = getProposalMessageViewState(message, currentUser?.id);
-  const { reactionGroups, isReadByOthers } = useMessageLayout({
-    message,
-    isOwn: message.isOwn,
-  });
-  const swipeState = useSwipeToReply(message, message.isOwn);
-  const messageActions = useActivityMessageActions();
-  const savedMessageIds = useSavedMessageIds();
-  const proposalActions = usePlanProposalActions({
-    mutationKeyScope: `message-${viewState?.proposal.id ?? "missing"}`,
-  });
-
-  return {
-    isReadByOthers,
-    messageActions,
-    proposalActions,
-    reactionGroups,
-    savedMessageIds,
-    swipeState,
-    viewState,
-  };
-}
-
-function hasProposalMessageViewState(
-  runtime: ProposalMessageRuntimeState,
-): runtime is AvailableProposalMessageRuntimeState {
-  return Boolean(runtime.viewState);
 }
 
 function getMissingProposalMessageController(): MissingProposalMessageController {

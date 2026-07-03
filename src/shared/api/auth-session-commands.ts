@@ -1,6 +1,21 @@
-import { apiClient } from "@/shared/api/api";
+import { apiClient, getResponseRequestId } from "@/shared/api/api";
 import { authSession } from "@/shared/api/auth-session";
 import { clearCurrentUserCache } from "@/shared/api/current-user-query";
+
+export async function sendResetPasswordLink(email: string) {
+  const response = await apiClient.post("auth/send-reset-password-link", {
+    json: { email },
+    context: {
+      auth: "none",
+      retryOnUnauthorized: false,
+    },
+  });
+
+  return {
+    data: null,
+    requestId: getResponseRequestId(response),
+  };
+}
 
 export async function logoutCurrentSession() {
   try {

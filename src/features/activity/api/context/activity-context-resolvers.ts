@@ -1,5 +1,5 @@
 import type { ActivityQueryOptionsContext } from "@/features/activity/api/activity-query-options";
-import { ActivityQueryOptions } from "@/features/activity/api/activity-query-options";
+import { activityQueryOptions } from "@/features/activity/api/activity-query-options";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
@@ -12,9 +12,9 @@ import {
 export async function ensureBaseData() {
   const [currentUser, groups, chats, friendships] = await Promise.all([
     appQueryClient.ensureQueryData(currentUserQueryOptions()),
-    appQueryClient.ensureQueryData(ActivityQueryOptions.groups()),
-    appQueryClient.ensureQueryData(ActivityQueryOptions.chats()),
-    appQueryClient.ensureQueryData(ActivityQueryOptions.friendships()),
+    appQueryClient.ensureQueryData(activityQueryOptions.groups()),
+    appQueryClient.ensureQueryData(activityQueryOptions.chats()),
+    appQueryClient.ensureQueryData(activityQueryOptions.friendships()),
   ]);
 
   return {
@@ -34,7 +34,7 @@ export async function resolveParticipants(
 ) {
   if (kind === "group") {
     const selection = await appQueryClient.ensureQueryData(
-      ActivityQueryOptions.groupSelection(context, selectedId),
+      activityQueryOptions.groupSelection(context, selectedId),
     );
 
     return selection.group
@@ -43,7 +43,7 @@ export async function resolveParticipants(
   }
 
   const selection = await appQueryClient.ensureQueryData(
-    ActivityQueryOptions.directSelection(context, selectedId),
+    activityQueryOptions.directSelection(context, selectedId),
   );
 
   return (
@@ -62,7 +62,7 @@ export async function resolveChatId(kind: "group" | "dm", selectedId: string) {
   }
 
   const chats = await appQueryClient.ensureQueryData(
-    ActivityQueryOptions.chats(),
+    activityQueryOptions.chats(),
   );
 
   return chats.find((chat) => chat.groupId === selectedId)?.id ?? null;

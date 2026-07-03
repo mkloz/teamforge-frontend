@@ -1,5 +1,6 @@
 import { ChevronRight, MessageCircle, Trash2 } from "lucide-react";
 import { SavedMessagesAvatarVisual } from "@/features/activity/assets/special-conversation-avatars";
+import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
 import {
   ACTIVITY_MENU_ITEM_CLASS,
   ACTIVITY_MENU_SEPARATOR_CLASS,
@@ -12,7 +13,6 @@ import {
   SAVED_MESSAGES_TITLE,
 } from "@/features/activity/lib/saved-messages-identity";
 import { getMessagePreviewText } from "@/features/activity/lib/unify-conversations";
-import { ActivityMenuIcon } from "@/features/activity/public/activity-menu-icon";
 import {
   ContextMenu,
   ContextMenuContent,

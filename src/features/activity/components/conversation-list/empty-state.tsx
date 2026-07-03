@@ -3,9 +3,11 @@ import { domMax, LazyMotion, m, useReducedMotion } from "framer-motion";
 import { UsersRound } from "lucide-react";
 import { EmptyConversationsVisual } from "@/features/activity/assets/empty-conversations";
 import { EmptyConversationsFilteredVisual } from "@/features/activity/assets/empty-conversations-filtered";
-import { buildExploreNavigation } from "@/features/explore/public/explore-navigation";
 import { Button } from "@/shared/components/ui/button";
-import { buildForgeLaunchNavigation } from "@/shared/navigation/forge-navigation";
+import {
+  buildExploreNavigation,
+  buildForgeLaunchNavigation,
+} from "@/shared/navigation";
 
 type ConversationEmptyArtwork = "default" | "filtered";
 

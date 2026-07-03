@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
+import { settingsQueries } from "@/features/settings/api/settings-queries";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import { useThemeStore } from "@/shared/store/theme.store";
 
@@ -11,7 +11,7 @@ export function ThemePreferencesRuntime() {
     (state) => state.setThemePreferences,
   );
   const { data: preferences } = useQuery({
-    ...SettingsQueryFactory.notificationPreferences(),
+    ...settingsQueries.notificationPreferences(),
     enabled: isAuthenticated,
   });
 

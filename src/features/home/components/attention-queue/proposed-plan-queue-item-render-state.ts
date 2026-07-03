@@ -10,7 +10,7 @@ import {
   Tag,
 } from "lucide-react";
 
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
+import { buildGroupPlanDetailNavigation } from "@/shared/navigation";
 
 import type { AttentionQueuePlan } from "./attention-queue.types";
 import {

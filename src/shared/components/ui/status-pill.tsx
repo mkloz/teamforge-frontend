@@ -112,9 +112,6 @@ const iconSizeClassNames = {
 export type StatusPillTone = NonNullable<
   VariantProps<typeof statusPillVariants>["tone"]
 >;
-export type StatusPillSize = NonNullable<
-  VariantProps<typeof statusPillVariants>["size"]
->;
 
 export interface StatusPillProps
   extends HTMLAttributes<HTMLSpanElement>,

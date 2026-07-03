@@ -1,6 +1,3 @@
-import type { RefObject } from "react";
-import { useEffect, useRef, useState } from "react";
-
 import { useChatTypingSignal } from "@/features/activity/hooks/use-chat-typing-signal";
 import { useVoiceRecording } from "@/features/activity/hooks/use-voice-recording";
 import type {
@@ -9,27 +6,21 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { useAutoResize } from "@/shared/hooks/use-auto-resize";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
-import { warnInDevelopment } from "@/shared/lib/development-warning";
 
-import {
-  getMessageComposerInteractionState,
-  shouldFocusComposerAction,
-} from "./message-composer-interaction-state";
+import { getMessageComposerInteractionState } from "./message-composer-interaction-state";
 import { MAX_TEXTAREA_HEIGHT } from "./message-composer-utils";
-import {
-  type MessageComposerAppendAttachmentOptions,
-  useMessageComposerAttachments,
-  useMessageComposerDropzone,
-} from "./use-message-composer-attachments";
+import { useComposerActionFocus } from "./use-message-composer/action-focus";
+import { useComposerAttachmentActions } from "./use-message-composer/attachment-actions";
+import { getMessageComposerResult } from "./use-message-composer/composer-result";
+import { insertComposerEmoji } from "./use-message-composer/emoji-caret";
+import { sendComposerGif } from "./use-message-composer/gif-send";
+import { useComposerLocalState } from "./use-message-composer/local-state";
+import { guardComposerMessageOffline } from "./use-message-composer/offline-actions";
+import { getMessageReferenceId } from "./use-message-composer/state";
+import { useComposerVoiceNoteSender } from "./use-message-composer/voice-note-send";
+import { useMessageComposerAttachments } from "./use-message-composer-attachments";
 import { useMessageComposerDraft } from "./use-message-composer-draft";
 import { useMessageComposerSubmit } from "./use-message-composer-submit";
-import { useVoiceNoteSender } from "./use-voice-note-sender";
-
-const OFFLINE_MESSAGE_DESCRIPTION =
-  "Reconnect before sending messages or adding attachments.";
-const OFFLINE_UPLOAD_DESCRIPTION =
-  "Reconnect before adding files to this message.";
-const EMOJI_CARET_RESTORE_DELAY_MS = 80;
 
 interface UseMessageComposerOptions {
   chatId: string | null;
@@ -40,14 +31,6 @@ interface UseMessageComposerOptions {
   onSend: (input: ActivitySendMessageInput) => Promise<void> | void;
 }
 
-type OfflineActionGuard = ReturnType<
-  typeof useOfflineActionGuard
->["guardOfflineAction"];
-
-interface MessageReference {
-  id: string;
-}
-
 export function useMessageComposer({
   chatId,
   disabled,
@@ -56,10 +39,15 @@ export function useMessageComposer({
   onClearError,
   onSend,
 }: UseMessageComposerOptions) {
-  const [isFocused, setIsFocused] = useState(false);
-  const [isSendingVoiceNote, setIsSendingVoiceNote] = useState(false);
-  const [isSendingGif, setIsSendingGif] = useState(false);
-  const previousActionFocusKeyRef = useRef<string | null>(null);
+  const localState = useComposerLocalState();
+  const {
+    isFocused,
+    isSendingGif,
+    isSendingVoiceNote,
+    previousActionFocusKeyRef,
+    setIsSendingGif,
+    setIsSendingVoiceNote,
+  } = localState;
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const {
@@ -91,12 +79,7 @@ export function useMessageComposer({
     isOnline,
     isEditing: editingActive,
     onClearComposer: draft.clearComposer,
-    onOfflineSubmit: () => {
-      guardOfflineAction({
-        id: "chat-message-offline",
-        description: OFFLINE_MESSAGE_DESCRIPTION,
-      });
-    },
+    onOfflineSubmit: () => guardComposerMessageOffline(guardOfflineAction),
     onSend,
     pendingAttachments: attachments.pendingAttachments,
     value: draft.value,
@@ -127,26 +110,11 @@ export function useMessageComposer({
     value: draft.value,
   });
 
-  function appendAttachments(
-    files: File[],
-    options?: MessageComposerAppendAttachmentOptions,
-  ) {
-    appendComposerAttachments({
-      appendAttachments: attachments.appendAttachments,
-      files,
-      guardOfflineAction,
-      options,
-    });
-  }
-
-  function appendImageAttachments(files: File[]) {
-    appendAttachments(files, { selectionKind: "image" });
-  }
-
-  const dropzone = useMessageComposerDropzone({
-    appendAttachments,
+  const attachmentActions = useComposerAttachmentActions({
+    appendAttachments: attachments.appendAttachments,
     dropzoneRoot,
-    isDisabled: isDropzoneDisabled,
+    guardOfflineAction,
+    isDropzoneDisabled,
     isEditing: editingActive,
   });
 
@@ -156,14 +124,12 @@ export function useMessageComposer({
   });
 
   function insertEmoji(emoji: string) {
-    const { nextCaretPosition, nextValue } = getEmojiInsertion({
+    insertComposerEmoji({
       emoji,
-      textarea: textareaRef.current,
+      onValueChange: draft.handleValueChange,
+      textareaRef,
       value: draft.value,
     });
-
-    draft.handleValueChange(nextValue);
-    restoreTextareaCaret(textareaRef, nextCaretPosition);
   }
 
   async function sendGif(gif: ActivityOutgoingGifAttachment) {
@@ -184,23 +150,16 @@ export function useMessageComposer({
     text: draft.value,
   });
 
-  const handleStopRecording = useVoiceNoteSender({
-    isDisabled: isVoiceNoteSendDisabled({
-      disabled,
-      isSendingVoiceNote,
-      submitIsSubmitting: submit.isSubmitting,
-    }),
+  const handleStopRecording = useComposerVoiceNoteSender({
+    disabled,
+    guardOfflineAction,
     isOnline,
+    isSendingVoiceNote,
     onSend,
-    onOfflineSubmit: () => {
-      guardOfflineAction({
-        id: "chat-voice-note-offline",
-        description: OFFLINE_MESSAGE_DESCRIPTION,
-      });
-    },
     onSent: draft.clearReply,
-    setIsSubmitting: setIsSendingVoiceNote,
+    setIsSendingVoiceNote,
     stopRecording,
+    submitIsSubmitting: submit.isSubmitting,
   });
 
   useComposerActionFocus({
@@ -212,284 +171,27 @@ export function useMessageComposer({
     textareaRef,
   });
 
-  return {
-    appendAttachments,
-    appendImageAttachments,
-    attachmentNotice: attachments.attachmentNotice,
+  return getMessageComposerResult({
     areNetworkActionsDisabled,
-    cancelEditing: draft.cancelEditing,
+    attachmentActions,
+    attachments,
     cancelRecording,
-    clearReply: draft.clearReply,
-    editingMessage: draft.editingMessage,
+    draft,
+    editingActive,
     formatRecordingTime,
-    handleDragLeave: dropzone.handleDragLeave,
-    handleDragEnter: dropzone.handleDragEnter,
-    handleDragOver: dropzone.handleDragOver,
-    handleDrop: dropzone.handleDrop,
-    handleKeyDown: submit.handleKeyDown,
     handleStopRecording,
-    handleSubmit: submit.handleSubmit,
-    handleValueChange: draft.handleValueChange,
-    insertEmoji,
-    sendGif,
     hasDraft,
+    insertEmoji,
     isDisabled,
-    isDraggingFiles: dropzone.isDraggingFiles,
-    isEditing: editingActive,
     isFocused,
     isOnline,
     isRecording,
-    pendingAttachments: attachments.pendingAttachments,
     recordingError,
     recordingTime,
-    removeAttachment: attachments.removeAttachment,
-    replyingTo: draft.replyingTo,
-    setIsFocused,
+    sendGif,
+    setIsFocused: localState.setIsFocused,
     startRecording,
+    submit,
     textareaRef,
-    value: draft.value,
-  };
-}
-
-function getMessageReferenceId(message: MessageReference | null) {
-  if (message === null) {
-    return undefined;
-  }
-
-  return message.id;
-}
-
-function isVoiceNoteSendDisabled({
-  disabled,
-  isSendingVoiceNote,
-  submitIsSubmitting,
-}: {
-  disabled: boolean;
-  isSendingVoiceNote: boolean;
-  submitIsSubmitting: boolean;
-}) {
-  return hasAnyComposerBlocker(
-    disabled,
-    submitIsSubmitting,
-    isSendingVoiceNote,
-  );
-}
-
-function hasAnyComposerBlocker(...blockers: boolean[]) {
-  return blockers.includes(true);
-}
-
-function appendComposerAttachments({
-  appendAttachments,
-  files,
-  guardOfflineAction,
-  options,
-}: {
-  appendAttachments: (
-    files: File[],
-    options?: MessageComposerAppendAttachmentOptions,
-  ) => void;
-  files: File[];
-  guardOfflineAction: OfflineActionGuard;
-  options?: MessageComposerAppendAttachmentOptions;
-}) {
-  if (files.length === 0) {
-    return;
-  }
-
-  if (
-    guardOfflineAction({
-      id: "chat-attachments-offline",
-      description: OFFLINE_UPLOAD_DESCRIPTION,
-    })
-  ) {
-    return;
-  }
-
-  appendAttachments(files, options);
-}
-
-async function sendComposerGif({
-  gif,
-  guardOfflineAction,
-  isGifSendDisabled,
-  onSend,
-  onSent,
-  setIsSendingGif,
-}: {
-  gif: ActivityOutgoingGifAttachment;
-  guardOfflineAction: OfflineActionGuard;
-  isGifSendDisabled: boolean;
-  onSend: (input: ActivitySendMessageInput) => Promise<void> | void;
-  onSent: () => void;
-  setIsSendingGif: (isSendingGif: boolean) => void;
-}) {
-  if (
-    guardOfflineAction({
-      id: "chat-gif-offline",
-      description: OFFLINE_MESSAGE_DESCRIPTION,
-    })
-  ) {
-    return;
-  }
-
-  if (isGifSendDisabled) {
-    return;
-  }
-
-  setIsSendingGif(true);
-
-  try {
-    await onSend({
-      content: "",
-      gif,
-    });
-    onSent();
-  } catch (error) {
-    warnInDevelopment("GIF message send failed.", error);
-  } finally {
-    setIsSendingGif(false);
-  }
-}
-
-function getEmojiInsertion({
-  emoji,
-  textarea,
-  value,
-}: {
-  emoji: string;
-  textarea: HTMLTextAreaElement | null;
-  value: string;
-}) {
-  const { selectionEnd, selectionStart } = getTextareaSelection({
-    fallbackPosition: value.length,
-    textarea,
   });
-
-  return {
-    nextCaretPosition: selectionStart + emoji.length,
-    nextValue: insertTextAtSelection({
-      insertion: emoji,
-      selectionEnd,
-      selectionStart,
-      value,
-    }),
-  };
-}
-
-function getTextareaSelection({
-  fallbackPosition,
-  textarea,
-}: {
-  fallbackPosition: number;
-  textarea: HTMLTextAreaElement | null;
-}) {
-  if (!textarea) {
-    return {
-      selectionEnd: fallbackPosition,
-      selectionStart: fallbackPosition,
-    };
-  }
-
-  return {
-    selectionEnd: textarea.selectionEnd,
-    selectionStart: textarea.selectionStart,
-  };
-}
-
-function insertTextAtSelection({
-  insertion,
-  selectionEnd,
-  selectionStart,
-  value,
-}: {
-  insertion: string;
-  selectionEnd: number;
-  selectionStart: number;
-  value: string;
-}) {
-  return `${value.slice(0, selectionStart)}${insertion}${value.slice(selectionEnd)}`;
-}
-
-function restoreTextareaCaret(
-  textareaRef: RefObject<HTMLTextAreaElement | null>,
-  caretPosition: number,
-) {
-  setTimeout(() => {
-    textareaRef.current?.focus();
-    textareaRef.current?.setSelectionRange(caretPosition, caretPosition);
-  }, EMOJI_CARET_RESTORE_DELAY_MS);
-}
-
-function useComposerActionFocus({
-  composerActionFocusKey,
-  isDisabled,
-  isRecording,
-  previousActionFocusKeyRef,
-  shouldMoveActionCaretToEnd,
-  textareaRef,
-}: {
-  composerActionFocusKey: string | null;
-  isDisabled: boolean;
-  isRecording: boolean;
-  previousActionFocusKeyRef: RefObject<string | null>;
-  shouldMoveActionCaretToEnd: boolean;
-  textareaRef: RefObject<HTMLTextAreaElement | null>;
-}) {
-  useEffect(() => {
-    if (!composerActionFocusKey) {
-      previousActionFocusKeyRef.current = null;
-      return undefined;
-    }
-
-    if (
-      !shouldFocusComposerAction({
-        composerActionFocusKey,
-        isDisabled,
-        isRecording,
-        previousActionFocusKey: previousActionFocusKeyRef.current,
-      })
-    ) {
-      return undefined;
-    }
-
-    previousActionFocusKeyRef.current = composerActionFocusKey;
-
-    const timeoutId = window.setTimeout(() => {
-      focusComposerActionTextarea({
-        shouldMoveActionCaretToEnd,
-        textarea: textareaRef.current,
-      });
-    }, 0);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [
-    composerActionFocusKey,
-    isDisabled,
-    isRecording,
-    previousActionFocusKeyRef,
-    shouldMoveActionCaretToEnd,
-    textareaRef,
-  ]);
-}
-
-function focusComposerActionTextarea({
-  shouldMoveActionCaretToEnd,
-  textarea,
-}: {
-  shouldMoveActionCaretToEnd: boolean;
-  textarea: HTMLTextAreaElement | null;
-}) {
-  if (!textarea || textarea.disabled) {
-    return;
-  }
-
-  textarea.focus({ preventScroll: true });
-
-  if (shouldMoveActionCaretToEnd) {
-    const caretPosition = textarea.value.length;
-    textarea.setSelectionRange(caretPosition, caretPosition);
-  }
 }

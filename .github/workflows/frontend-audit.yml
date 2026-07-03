@@ -71,9 +71,9 @@ jobs:
           VITE_API_URL: http://127.0.0.1:4173/__audit_api
           VITE_APP_URL: ${{ vars.VITE_APP_URL || 'https://teamforge.mkloz.com' }}
           VITE_AUDIT_AUTH_ENABLED: "true"
-          VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY }}
-          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
-          VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY }}
+          VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY || 'ci-giphy-key' }}
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID || 'ci-google-client-id' }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY || 'ci-google-maps-key' }}
           VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL || 'https://mkloz-teamforge.s3.us-east-1.amazonaws.com' }}
           VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
           VITE_SENTRY_ENVIRONMENT: audit
@@ -103,11 +103,14 @@ jobs:
           set -euo pipefail
 
           if [[ -z "${AUDIT_USER_EMAIL:-}" || -z "${AUDIT_USER_PASSWORD:-}" ]]; then
-            echo "::error::Set AUDIT_USER_EMAIL and AUDIT_USER_PASSWORD repository secrets before running browser audits."
-            exit 1
-          fi
-
-          if [[ -n "${LIGHTHOUSE_ROUTE_SLUGS_INPUT:-}" ]]; then
+            echo "::warning::AUDIT_USER_EMAIL and AUDIT_USER_PASSWORD are not set; running public Lighthouse audit only."
+            export AUDIT_RUN_LOADED="false"
+            export AUDIT_RUN_PLAYWRIGHT="false"
+            export AUDIT_RUN_SQUIRREL="false"
+            export AUDIT_RUN_LIGHTHOUSE="true"
+            export AUDIT_LIGHTHOUSE_AUTH_REQUIRED="false"
+            export AUDIT_LIGHTHOUSE_ROUTE_SLUGS="${LIGHTHOUSE_ROUTE_SLUGS_INPUT:-01-landing,02-download}"
+          elif [[ -n "${LIGHTHOUSE_ROUTE_SLUGS_INPUT:-}" ]]; then
             export AUDIT_LIGHTHOUSE_ROUTE_SLUGS="$LIGHTHOUSE_ROUTE_SLUGS_INPUT"
           fi
 

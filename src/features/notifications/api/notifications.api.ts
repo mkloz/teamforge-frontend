@@ -1,4 +1,5 @@
 import { apiClient } from "@/shared/api/api";
+import { getUnreadNotificationCount } from "@/shared/api/notification-count-api";
 import {
   createPaginatedSchema,
   notificationSchema,
@@ -30,11 +31,7 @@ export class NotificationsApi {
   }
 
   static async getUnreadCount() {
-    const response = await apiClient
-      .get("notifications/unread-count")
-      .json<unknown>();
-
-    return notificationUnreadCountSchema.parse(response).unreadCount;
+    return getUnreadNotificationCount();
   }
 
   static async markRead(id: string) {

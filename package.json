@@ -15,6 +15,7 @@
     "check:local": "node scripts/verify/index.mjs local",
     "check:pr": "node scripts/verify/index.mjs pr",
     "check:release": "node scripts/verify/index.mjs release",
+    "api:contracts": "node scripts/quality/api-contract-inventory.mjs",
     "agent:health": "node scripts/context/health.mjs",
     "agent:pack": "node scripts/context/pack.mjs",
     "pwa:release": "node scripts/pwa/release.mjs",

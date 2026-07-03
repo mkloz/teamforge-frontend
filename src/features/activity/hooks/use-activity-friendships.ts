@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
+import { activityQueries } from "@/features/activity/api/activity-queries";
 
 export function useActivityFriendships() {
-  return useQuery(ActivityQueryFactory.friendships());
+  return useQuery(activityQueries.friendships());
 }

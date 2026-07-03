@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
+import { exploreQueries } from "@/features/explore/api/explore-queries";
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { useDebouncedValue } from "@/shared/hooks/use-debounced-value";
@@ -39,6 +39,6 @@ export function useExploreGroups() {
   const debouncedSearchQuery = useDebouncedValue(state.searchQuery, 300);
 
   return useInfiniteQuery(
-    ExploreQueryFactory.groups(debouncedFilters, debouncedSearchQuery),
+    exploreQueries.groups(debouncedFilters, debouncedSearchQuery),
   );
 }

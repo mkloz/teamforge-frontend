@@ -4,8 +4,8 @@ import {
   useRestoreAuthSessionQuery,
 } from "@/shared/api/current-user-query";
 import {
-  getLandingPrimaryAction,
-  getLandingSecondaryAction,
+  getPublicSitePrimaryAction,
+  getPublicSiteSecondaryAction,
 } from "@/shared/components/public-site/public-site-auth-actions";
 
 export function useResolvedLandingAuthActions(
@@ -26,13 +26,13 @@ export function useResolvedLandingAuthActions(
   return {
     isAuthenticated,
     isResolvingAuthAction,
-    primaryAction: getLandingPrimaryAction(
+    primaryAction: getPublicSitePrimaryAction(
       isAuthenticated,
       currentUserQuery.data,
       primaryGuestLabel,
       returnTo,
     ),
-    secondaryAction: getLandingSecondaryAction(
+    secondaryAction: getPublicSiteSecondaryAction(
       isAuthenticated,
       secondaryGuestLabel,
       returnTo,

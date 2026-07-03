@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import type { ActivityGroupChatState } from "@/features/activity/public/activity-group-chat-state";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { getActiveGroupPreview } from "@/features/home/lib/home-insights";
@@ -8,11 +9,10 @@ import { Button } from "@/shared/components/ui/button";
 import { buildActivityNavigation } from "@/shared/navigation/activity-navigation";
 
 import { BrowseGroupsRow } from "./browse-groups-row";
-import type { GroupChatState } from "./group-chat-state";
 import { GroupRow } from "./group-row";
 import { GroupsGridEmpty } from "./groups-grid-empty";
 
-const EMPTY_GROUP_CHAT_STATE: GroupChatState = {
+const EMPTY_GROUP_CHAT_STATE: ActivityGroupChatState = {
   lastActivityByGroupId: new Map(),
   messagePreviewsByGroupId: new Map(),
   statusesByGroupId: new Map(),
@@ -21,7 +21,7 @@ const EMPTY_GROUP_CHAT_STATE: GroupChatState = {
 
 interface GroupsGridViewProps {
   groups: HomeGroup[];
-  groupChatState?: GroupChatState;
+  groupChatState?: ActivityGroupChatState;
   isGroupsLoading?: boolean;
 }
 

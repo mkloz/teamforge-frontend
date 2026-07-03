@@ -2,7 +2,7 @@ import type { HomeViewer } from "@/features/home/lib/home-contract";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
-} from "@/features/onboarding/public/onboarding-navigation";
+} from "@/shared/navigation";
 import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
 export function getProfileStepNavigation(

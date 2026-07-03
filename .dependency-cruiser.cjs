@@ -59,6 +59,32 @@ module.exports = {
         path: "^src/app/",
       },
     },
+    {
+      name: "no-app-to-app-shell-internals",
+      severity: "error",
+      comment:
+        "App composition must use app-shell public seams; app-shell internals stay feature-owned.",
+      from: {
+        path: "^src/app/",
+      },
+      to: {
+        path: "^src/features/app-shell/",
+        pathNot: "^src/features/app-shell/public(?:/|$)",
+      },
+    },
+    {
+      name: "no-app-to-notifications-internals",
+      severity: "error",
+      comment:
+        "App composition must use notifications public seams; notification internals stay feature-owned.",
+      from: {
+        path: "^src/app/",
+      },
+      to: {
+        path: "^src/features/notifications/",
+        pathNot: "^src/features/notifications/public(?:/|$)",
+      },
+    },
   ],
   options: {
     doNotFollow: {

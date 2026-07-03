@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { activityQueries } from "@/features/activity/api/activity-queries";
 import type { Group } from "@/features/activity/lib/activity-contract";
-import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import {
   getIsReviewWaiting,
@@ -13,12 +13,12 @@ export function useIsReviewWaiting(group?: Group | null) {
   const groupState = getReviewWaitingGroupState(group);
 
   const reviewStateQuery = useQuery({
-    ...ActivityQueryFactory.groupReviewState(groupState.groupId),
+    ...activityQueries.groupReviewState(groupState.groupId),
     enabled: groupState.isReviewQueryEnabled,
   });
 
   const ratingsQuery = useQuery({
-    ...ActivityQueryFactory.groupRatings(groupState.groupId),
+    ...activityQueries.groupRatings(groupState.groupId),
     enabled: groupState.isReviewQueryEnabled,
   });
 

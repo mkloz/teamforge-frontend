@@ -1,32 +1,15 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
-import type {
-  ActivityParticipant,
-  UnifiedMessage,
-} from "@/features/activity/lib/activity-contract";
-import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
-import type { ActivityKind } from "@/shared/navigation/activity-navigation";
+import { getTimelineResumeRefetchResetKey } from "@/features/activity/hooks/use-activity-message-timeline/read-state";
 import {
-  canLoadMessageTimeline,
-  getFirstUnreadMessageId,
-  getMessageTimelineQueryState,
-  getSelectedDirectMessages,
-  getSelectedGroupMessages,
-  getSelectedTimelineMessages,
-} from "./activity-message-timeline-state";
+  useTimelineMessagesProjection,
+  useTimelineUnreadProjection,
+} from "@/features/activity/hooks/use-activity-message-timeline/timeline-projection";
+import type { UseActivityMessageTimelineInput } from "@/features/activity/hooks/use-activity-message-timeline/types";
+import { useActivityMessageTimelineQueries } from "@/features/activity/hooks/use-activity-message-timeline/use-timeline-queries";
 import {
   useFirstUnreadMessageId,
   useMarkLatestMessageRead,
   useTimelineResumeRefetch,
-} from "./use-activity-message-timeline-effects";
-
-interface UseActivityMessageTimelineInput {
-  chatId: string | null;
-  currentUserId: string | null;
-  proposalMessages: UnifiedMessage[];
-  selectedKind: ActivityKind | null;
-  selectedParticipants: ActivityParticipant[];
-}
+} from "@/features/activity/hooks/use-activity-message-timeline-effects";
 
 export function useActivityMessageTimeline({
   chatId,
@@ -35,76 +18,36 @@ export function useActivityMessageTimeline({
   selectedKind,
   selectedParticipants,
 }: UseActivityMessageTimelineInput) {
-  const chatsQuery = useQuery(ActivityQueryFactory.chats());
-  const canLoadTimeline = canLoadMessageTimeline({
+  const {
+    canLoadTimeline,
+    chatsQuery,
+    isMessageTimelineError,
+    isMessageTimelineLoading,
+    messagesQuery,
+  } = useActivityMessageTimelineQueries({
     chatId,
     currentUserId,
     selectedParticipantCount: selectedParticipants.length,
   });
-  const messagesQuery = useInfiniteQuery({
-    ...ActivityQueryFactory.conversationMessages(chatId ?? "__missing__"),
-    enabled: canLoadTimeline,
+  const {
+    flattenedMessages,
+    selectedDirectMessages,
+    selectedGroupMessages,
+    selectedTimelineMessages,
+  } = useTimelineMessagesProjection({
+    currentUserId,
+    messagesData: messagesQuery.data,
+    proposalMessages,
+    selectedKind,
+    selectedParticipants,
   });
-  const { isMessageTimelineError, isMessageTimelineLoading } =
-    getMessageTimelineQueryState({
-      canLoadTimeline,
-      hasMessageData: Boolean(messagesQuery.data),
-      isError: messagesQuery.isError,
-      isLoading: messagesQuery.isLoading,
+  const { chatSummary, computedFirstUnreadMessageId } =
+    useTimelineUnreadProjection({
+      chatId,
+      chats: chatsQuery.data,
+      currentUserId,
+      selectedTimelineMessages,
     });
-
-  const flattenedApiMessages = useMemo(
-    () => ActivityQueryFactory.flattenMessagePages(messagesQuery.data),
-    [messagesQuery.data],
-  );
-  const flattenedMessages = useMemo(
-    () =>
-      ActivityQueryFactory.mapMessages(
-        flattenedApiMessages,
-        selectedParticipants,
-        currentUserId,
-      ),
-    [currentUserId, flattenedApiMessages, selectedParticipants],
-  );
-  const selectedGroupMessages = useMemo(
-    () =>
-      getSelectedGroupMessages({
-        flattenedMessages,
-        proposalMessages,
-        selectedKind,
-      }),
-    [flattenedMessages, proposalMessages, selectedKind],
-  );
-  const selectedDirectMessages = useMemo(
-    () =>
-      getSelectedDirectMessages({
-        flattenedMessages,
-        selectedKind,
-      }),
-    [flattenedMessages, selectedKind],
-  );
-  const selectedTimelineMessages = useMemo(
-    () =>
-      getSelectedTimelineMessages(
-        selectedKind,
-        selectedGroupMessages,
-        selectedDirectMessages,
-      ),
-    [selectedDirectMessages, selectedGroupMessages, selectedKind],
-  );
-  const chatSummary = useMemo(
-    () => chatsQuery.data?.find((chat) => chat.id === chatId) ?? null,
-    [chatId, chatsQuery.data],
-  );
-  const computedFirstUnreadMessageId = useMemo(
-    () =>
-      getFirstUnreadMessageId({
-        chatSummary,
-        currentUserId,
-        messages: selectedTimelineMessages,
-      }),
-    [chatSummary, currentUserId, selectedTimelineMessages],
-  );
 
   const latestReadableMessageId =
     flattenedMessages[flattenedMessages.length - 1]?.id ?? null;
@@ -151,12 +94,4 @@ export function useActivityMessageTimeline({
     loadOlderMessages,
     retryMessageTimeline,
   };
-}
-
-function getTimelineResumeRefetchResetKey(
-  chatId: string | null,
-  currentUserId: string | null,
-  selectedParticipantCount: number,
-) {
-  return `${chatId ?? ""}:${currentUserId ?? ""}:${selectedParticipantCount}`;
 }

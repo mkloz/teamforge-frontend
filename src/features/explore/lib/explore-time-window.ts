@@ -1,6 +1,8 @@
 import type { ExploreTimeWindow } from "@/features/explore/schemas/explore-filters.schema";
-
-const DATE_VALUE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+import {
+  isValidLocalDateValue,
+  parseLocalDateValue,
+} from "@/shared/lib/local-date-value";
 
 export function getCustomExploreTimeRange(input: {
   startsAfter: string | null;
@@ -17,7 +19,7 @@ export function getCustomExploreTimeRange(input: {
 }
 
 export function isValidExploreDateValue(value: string | null | undefined) {
-  return parseLocalDateValue(value) !== null;
+  return isValidLocalDateValue(value);
 }
 
 export function getExploreTimeWindowRange(
@@ -101,29 +103,4 @@ function startOfNextSaturday(value: Date) {
   const daysUntilSaturday = (6 - date.getDay() + 7) % 7;
 
   return addDays(date, daysUntilSaturday);
-}
-
-function parseLocalDateValue(value: string | null | undefined) {
-  const match = value?.match(DATE_VALUE_PATTERN);
-
-  if (!match) {
-    return null;
-  }
-
-  const [, yearText, monthText, dayText] = match;
-  const year = Number(yearText);
-  const month = Number(monthText);
-  const day = Number(dayText);
-  const date = new Date(year, month - 1, day);
-
-  if (
-    Number.isNaN(date.getTime()) ||
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
-  ) {
-    return null;
-  }
-
-  return { day, month, year };
 }

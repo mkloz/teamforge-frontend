@@ -1,7 +1,3 @@
-export {
-  buildGroupPlanDetailNavigation,
-  type GroupPlanDetailRouteSearch,
-  type GroupPlanDetailSource,
-  getGroupPlanDetailBackLink,
-  groupPlanDetailSourceValues,
-} from "@/features/group-plan-detail/lib/group-plan-detail-route";
+export type { GroupPlanDetailRouteSearch } from "@/shared/navigation";
+
+export { getGroupPlanDetailBackLink } from "../lib/group-plan-detail-route";

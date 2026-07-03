@@ -1,10 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Brain, Tags } from "lucide-react";
 import {
-  buildInterestsEditNavigation,
-  buildPersonalityEditNavigation,
-} from "@/features/onboarding/public/onboarding-navigation";
-import {
   OfflineSettingsNotice,
   PreferenceStatusMessage,
   SectionHeading,
@@ -17,6 +13,10 @@ import {
 import { normalizeTrustScore } from "@/features/settings/components/settings-profile-form/settings-formatters";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import {
+  buildInterestsEditNavigation,
+  buildPersonalityEditNavigation,
+} from "@/shared/navigation";
 import type { NotificationPreferences, User } from "@/shared/schemas";
 
 interface MatchingSettingsSectionProps {

@@ -2,7 +2,7 @@ import {
   ACTIVITY_QUERY_OPTIONS_CONTEXT,
   mergeActivityConversationTimeline,
 } from "@/features/activity/api/activity-context";
-import { ActivityQueryOptions } from "@/features/activity/api/activity-query-options";
+import { activityQueryOptions } from "@/features/activity/api/activity-query-options";
 import type { ActivityMessagesInfiniteData } from "@/features/activity/api/messages/message-cache-types";
 import { flattenMessagePages } from "@/features/activity/api/messages/message-mappers";
 import type {
@@ -13,7 +13,7 @@ import type { MessageApi } from "@/shared/schemas";
 
 export const ActivityMessageQueryFactory = {
   conversationMessages(chatId: string) {
-    return ActivityQueryOptions.conversationMessages(chatId);
+    return activityQueryOptions.conversationMessages(chatId);
   },
 
   flattenMessagePages(data: ActivityMessagesInfiniteData | undefined) {

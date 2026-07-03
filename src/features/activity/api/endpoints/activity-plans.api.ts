@@ -8,17 +8,19 @@ import {
   type VotePlanProposalDto,
 } from "@/features/activity/api/activity-api-contracts";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
-import { planProposalSchema, planSchema } from "@/shared/schemas";
+import {
+  createPlanProposal as sharedCreatePlanProposal,
+  updatePlan as sharedUpdatePlan,
+  votePlanProposal as sharedVotePlanProposal,
+  withdrawPlanProposal as sharedWithdrawPlanProposal,
+} from "@/shared/api/plan-membership-api";
+import { planSchema } from "@/shared/schemas";
 
 export async function updatePlan(
   planId: string,
   payload: UpdatePlanPayload,
 ): Promise<PlanMutationResult> {
-  const response = await apiClient.patch(`plans/${planId}`, {
-    json: updatePlanPayloadSchema.parse(payload),
-  });
-
-  return parseJsonWithRequestId(response, (value) => planSchema.parse(value));
+  return sharedUpdatePlan(planId, updatePlanPayloadSchema.parse(payload));
 }
 
 export async function confirmPlan(planId: string): Promise<PlanMutationResult> {
@@ -53,32 +55,25 @@ export async function createPlanProposal(
   planId: string,
   payload: CreatePlanProposalDto,
 ) {
-  const response = await apiClient
-    .post(`plans/${planId}/proposals`, {
-      json: createPlanProposalPayloadSchema.parse(payload),
-    })
-    .json<unknown>();
+  const result = await sharedCreatePlanProposal(
+    planId,
+    createPlanProposalPayloadSchema.parse(payload),
+  );
 
-  return planProposalSchema.parse(response);
+  return result.data;
 }
 
 export async function votePlanProposal(
   proposalId: string,
   payload: VotePlanProposalDto,
 ) {
-  const response = await apiClient
-    .post(`proposals/${proposalId}/vote`, {
-      json: payload,
-    })
-    .json<unknown>();
+  const result = await sharedVotePlanProposal(proposalId, payload);
 
-  return planProposalSchema.parse(response);
+  return result.data;
 }
 
 export async function withdrawPlanProposal(proposalId: string) {
-  const response = await apiClient
-    .delete(`proposals/${proposalId}`)
-    .json<unknown>();
+  const result = await sharedWithdrawPlanProposal(proposalId);
 
-  return planProposalSchema.parse(response);
+  return result.data;
 }

@@ -75,7 +75,6 @@ export const routeErrorScopes = {
   userDetail: "user-detail",
   settings: "settings",
   forge: "forge",
-  designSystem: "design-system",
 } as const;
 
 export type TrackedMutationName =

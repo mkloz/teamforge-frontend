@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
-import { buildExploreNavigation } from "@/features/explore/public/explore-navigation";
+import { buildExploreNavigation } from "@/shared/navigation";
 
 export function BrowseGroupsRow() {
   return (

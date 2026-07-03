@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { ActivityQueryFactory } from "@/features/activity/public/activity-query-factory";
+import { activityQueries } from "@/features/activity/api/activity-queries";
 
 export function useLinkPreview(url: string | null | undefined) {
   return useQuery({
-    ...ActivityQueryFactory.linkPreview(url ?? "__missing__"),
+    ...activityQueries.linkPreview(url ?? "__missing__"),
     enabled: !!url,
   });
 }

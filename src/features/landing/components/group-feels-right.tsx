@@ -4,7 +4,6 @@ import {
   MessageCircle,
   ShieldCheck,
 } from "lucide-react";
-import groupFeelsRightVisual from "@/features/landing/assets/group-feels-right-visual-ai-cutout.png";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 
@@ -64,7 +63,7 @@ export function GroupFeelsRightSection() {
 
         <div className="relative mt-8 mb-6 overflow-hidden border-white/10 border-t md:mt-10">
           <img
-            src={groupFeelsRightVisual}
+            src="/landing/group-feels-right-visual-ai-cutout.png"
             alt="Shared interests, social style, practical fit, and follow-through signals flowing into one TeamForge group room"
             width={2194}
             height={717}

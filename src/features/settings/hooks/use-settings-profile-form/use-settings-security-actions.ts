@@ -1,97 +1,46 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
 import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
-import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
+import { settingsQueries } from "@/features/settings/api/settings-queries";
+import { useSettingsSecurityActionState } from "@/features/settings/hooks/use-settings-profile-form/use-settings-security-actions/action-state";
+import type { UseSettingsSecurityActionsOptions } from "@/features/settings/hooks/use-settings-profile-form/use-settings-security-actions/types";
+import { useSettingsSecurityMutations } from "@/features/settings/hooks/use-settings-profile-form/use-settings-security-actions/use-security-mutations";
 import { buildSettingsLoginNavigation } from "@/features/settings/lib/settings-auth-navigation";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import type { AuthSession, User } from "@/shared/schemas";
-
-interface UseSettingsSecurityActionsOptions {
-  currentUser: User | undefined;
-  enabled: boolean;
-}
+import type { AuthSession } from "@/shared/schemas";
 
 export function useSettingsSecurityActions({
   currentUser,
-  enabled,
+  enabled = true,
 }: UseSettingsSecurityActionsOptions) {
   const navigate = useNavigate();
   const currentLocation = useRouterState({
     select: (state) => state.location,
   });
-  const [securityError, setSecurityError] = useState<string | null>(null);
-  const [revokingSessionId, setRevokingSessionId] = useState<string | null>(
-    null,
-  );
+  const {
+    revokingSessionId,
+    securityError,
+    setRevokingSessionId,
+    setSecurityError,
+  } = useSettingsSecurityActionState();
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const sessionsQuery = useQuery({
-    ...SettingsQueryFactory.sessions(),
+    ...settingsQueries.sessions(),
     enabled: Boolean(currentUser) && enabled,
   });
 
-  const passwordResetMutation = useMutation({
-    meta: {
-      errorToastMessage: "We couldn't send the reset link right now.",
-    },
-    mutationFn: (email: string) =>
-      SettingsCommands.sendResetPasswordLink(email),
-    onSuccess: () => {
-      setSecurityError(null);
-      showAppSuccessToast("Password reset link sent to your email.", {
-        id: "settings-password-reset-link",
-      });
-    },
-    onError: (error) => {
-      setSecurityError(
-        getApiErrorMessage(error, "We couldn't send the reset link right now."),
-      );
-    },
-  });
-
-  const revokeSessionMutation = useMutation({
-    meta: {
-      errorToastMessage: "We couldn't revoke that session right now.",
-      telemetryName: trackedMutationNames.settingsRevokeSession,
-    },
-    mutationFn: (sessionId: string) =>
-      SettingsCommands.revokeSession(sessionId),
-  });
-
-  const revokeOtherSessionsMutation = useMutation({
-    meta: {
-      errorToastMessage: "We couldn't revoke the other sessions right now.",
-      telemetryName: trackedMutationNames.settingsRevokeOtherSessions,
-    },
-    mutationFn: () => SettingsCommands.revokeOtherSessions(),
-    onSuccess: async (result) => {
-      await SettingsCache.invalidateSessions();
-      setSecurityError(null);
-      showAppSuccessToast("Other devices were signed out.", {
-        id: "settings-session-revoked",
-      });
-      trackMutationOutcome(
-        trackedMutationNames.settingsRevokeOtherSessions,
-        "success",
-        {
-          requestId: result.requestId,
-        },
-      );
-    },
-    onError: (error) => {
-      setSecurityError(
-        getApiErrorMessage(
-          error,
-          "We couldn't revoke the other sessions right now.",
-        ),
-      );
-    },
+  const {
+    passwordResetMutation,
+    revokeOtherSessionsMutation,
+    revokeSessionMutation,
+  } = useSettingsSecurityMutations({
+    setSecurityError,
   });
 
   async function sendPasswordResetLink() {

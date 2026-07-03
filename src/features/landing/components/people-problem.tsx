@@ -1,5 +1,4 @@
 import { ClipboardList, MousePointer2, UsersRound } from "lucide-react";
-import darkVisual from "@/features/landing/assets/people-problem-visual-ai-cutout.png";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 
@@ -62,7 +61,7 @@ export function PeopleProblemSection() {
 
           <div className="relative lg:col-span-7 lg:-mr-12 xl:-mr-20">
             <img
-              src={darkVisual}
+              src="/landing/people-problem-visual-ai-cutout.png"
               alt="Activity cards connected to one TeamForge group room, with an open seat highlighted"
               width={1672}
               height={941}

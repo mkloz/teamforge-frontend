@@ -16,7 +16,7 @@ import {
 
 export type { ActivityQueryOptionsContext } from "@/features/activity/api/query-options/activity-query-options-context";
 
-export const ActivityQueryOptions = {
+export const activityQueryOptions = {
   groups() {
     return groupsQueryOptions();
   },
