@@ -1,7 +1,10 @@
 import { Bell } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { AppLayout } from "@/features/app-shell/public/app-layout";
-import { useNotificationsDrawerState } from "@/features/notifications/public/notification-drawer";
+import {
+  NotificationsDrawerLoading,
+  useNotificationsDrawerState,
+} from "@/features/notifications/public/notification-drawer";
 import { Button } from "@/shared/components/ui/button";
 
 const NotificationsDrawer = lazy(() =>
@@ -34,7 +37,14 @@ export function AppShellWithNotifications() {
       }
       notificationDrawer={
         open ? (
-          <Suspense fallback={null}>
+          <Suspense
+            fallback={
+              <NotificationsDrawerLoading
+                open={open}
+                onClose={() => void closeDrawer()}
+              />
+            }
+          >
             <NotificationsDrawer
               open={open}
               onClose={() => void closeDrawer()}

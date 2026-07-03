@@ -1,4 +1,7 @@
-import { hasBrowserDocument } from "@/shared/lib/browser-environment";
+import {
+  getBrowserDocument,
+  getBrowserWindow,
+} from "@/shared/lib/browser-environment";
 import { isGooglePlacesReady } from "@/shared/lib/maps/google-maps-loader";
 import { locationFromPlace } from "@/shared/lib/maps/google-place-mappers";
 import type {
@@ -14,7 +17,7 @@ const PLACE_DETAIL_FIELDS = [
 ];
 
 function requireGoogleMaps() {
-  const maps = window.google?.maps;
+  const maps = getBrowserWindow()?.google?.maps;
 
   if (!isGooglePlacesReady() || !maps?.places) {
     throw new Error("Google Maps is unavailable.");
@@ -48,12 +51,16 @@ export function getPlacePredictions(input: string) {
 export function resolvePlacePrediction(
   prediction: GoogleAutocompletePrediction,
 ) {
-  if (!hasBrowserDocument()) {
+  const browserDocument = getBrowserDocument();
+
+  if (!browserDocument) {
     return Promise.reject(new Error("Google Places requires a browser."));
   }
 
   const maps = requireGoogleMaps();
-  const service = new maps.places.PlacesService(document.createElement("div"));
+  const service = new maps.places.PlacesService(
+    browserDocument.createElement("div"),
+  );
 
   return new Promise<LocationValue>((resolve, reject) => {
     service.getDetails(

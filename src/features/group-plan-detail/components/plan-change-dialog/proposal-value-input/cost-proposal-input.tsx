@@ -14,18 +14,19 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import { Textarea } from "@/shared/components/ui/textarea";
-import type { CostType } from "@/shared/schemas/enums";
+
+const DEFAULT_PLAN_COST_VALUE = {
+  cost: "FREE",
+  costAmount: null,
+  costDetails: null,
+} satisfies PlanCostValue;
 
 export function CostProposalInput({
   costValue,
   labelId,
   onCostChange,
 }: ProposalValueInputProps) {
-  const nextCost = costValue ?? {
-    cost: "FREE" as CostType,
-    costAmount: null,
-    costDetails: null,
-  };
+  const nextCost = costValue ?? DEFAULT_PLAN_COST_VALUE;
 
   return (
     <fieldset

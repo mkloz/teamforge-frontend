@@ -7,7 +7,14 @@ import { router } from "@/router";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
-import { scheduleDelay } from "@/shared/lib/browser-scheduling";
+import {
+  addBrowserWindowEventListener,
+  getBrowserLocationHref,
+  getBrowserLocationOrigin,
+  isBrowserDocumentVisible,
+  reloadBrowserLocation,
+} from "@/shared/lib/browser-environment";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import {
   type BeforeInstallPromptEvent,
@@ -52,7 +59,7 @@ function reloadForPwaUpdate() {
   }
 
   hasReloadedForPwaUpdate = true;
-  window.location.reload();
+  reloadBrowserLocation();
 }
 
 function RefreshToastActionLabel() {
@@ -73,7 +80,8 @@ function isPwaLaunchSourceValue(value: string) {
 }
 
 function getCleanPwaLaunchHref(currentHref: string) {
-  const url = new URL(currentHref, window.location.origin);
+  const origin = getBrowserLocationOrigin();
+  const url = origin ? new URL(currentHref, origin) : new URL(currentHref);
   const sourceValues = url.searchParams.getAll("source");
   const hasPwaLaunchSource = sourceValues.some(isPwaLaunchSourceValue);
 
@@ -111,15 +119,18 @@ function handleAppInstalled() {
 }
 
 function registerPwaInstallPromptCapture() {
-  window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-  window.addEventListener("appinstalled", handleAppInstalled);
+  const cleanupBeforeInstallPrompt = addBrowserWindowEventListener(
+    "beforeinstallprompt",
+    handleBeforeInstallPrompt,
+  );
+  const cleanupAppInstalled = addBrowserWindowEventListener(
+    "appinstalled",
+    handleAppInstalled,
+  );
 
   return () => {
-    window.removeEventListener(
-      "beforeinstallprompt",
-      handleBeforeInstallPrompt,
-    );
-    window.removeEventListener("appinstalled", handleAppInstalled);
+    cleanupBeforeInstallPrompt();
+    cleanupAppInstalled();
   };
 }
 
@@ -208,7 +219,7 @@ function registerPwaServiceWorker() {
       trackPwaServiceWorkerOfflineReady({ source: "runtime" });
 
       scheduleDelay(() => {
-        if (document.visibilityState === "hidden") {
+        if (!isBrowserDocumentVisible()) {
           return;
         }
 
@@ -249,7 +260,13 @@ export function PwaRuntime() {
 
 function PwaLaunchSourceCleanupRuntime() {
   useEffect(() => {
-    const cleanHref = getCleanPwaLaunchHref(window.location.href);
+    const currentHref = getBrowserLocationHref();
+
+    if (!currentHref) {
+      return;
+    }
+
+    const cleanHref = getCleanPwaLaunchHref(currentHref);
 
     if (!cleanHref) {
       return;
@@ -289,12 +306,12 @@ function OfflineConnectionNotice() {
       return undefined;
     }
 
-    const collapseTimer = window.setTimeout(() => {
+    const collapseTimer = scheduleDelay(() => {
       setIsExpanded(false);
     }, OFFLINE_BANNER_COLLAPSE_DELAY_MS);
 
     return () => {
-      window.clearTimeout(collapseTimer);
+      cancelDelay(collapseTimer);
     };
   }, [isExpanded]);
 

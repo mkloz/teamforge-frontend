@@ -4,7 +4,10 @@ import {
   useLayoutEffect,
   useRef,
 } from "react";
-import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+import {
+  hasBrowserWindow,
+  scrollBrowserTo,
+} from "@/shared/lib/browser-environment";
 
 interface UseResetScrollOnChangeOptions<TElement extends HTMLElement> {
   behavior?: ScrollBehavior;
@@ -65,7 +68,7 @@ function resetScrollPosition<TElement extends HTMLElement>({
     return;
   }
 
-  window.scrollTo(scrollOptions);
+  scrollBrowserTo(scrollOptions);
 }
 
 function shouldRunScrollReset({

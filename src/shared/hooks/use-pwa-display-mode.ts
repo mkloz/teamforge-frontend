@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 
+import {
+  getBrowserMediaQuery,
+  getBrowserNavigator,
+} from "@/shared/lib/browser-environment";
+
 function getIsIosStandalone() {
-  if (typeof navigator === "undefined") {
+  const browserNavigator = getBrowserNavigator();
+
+  if (!browserNavigator) {
     return false;
   }
 
-  return (
-    (navigator as Navigator & { standalone?: boolean }).standalone === true
-  );
+  return browserNavigator.standalone === true;
 }
 
 function getIsStandaloneDisplayMode() {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
   return (
-    window.matchMedia?.("(display-mode: standalone)").matches ||
+    getBrowserMediaQuery("(display-mode: standalone)")?.matches ||
     getIsIosStandalone()
   );
 }
@@ -25,7 +26,7 @@ export function usePwaDisplayMode() {
   const [isStandalone, setIsStandalone] = useState(getIsStandaloneDisplayMode);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia?.("(display-mode: standalone)");
+    const mediaQuery = getBrowserMediaQuery("(display-mode: standalone)");
 
     function handleDisplayModeChange() {
       setIsStandalone(getIsStandaloneDisplayMode());

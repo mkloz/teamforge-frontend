@@ -1,4 +1,8 @@
 import { config } from "@/config/config";
+import {
+  getBrowserLocation,
+  replaceBrowserLocation,
+} from "@/shared/lib/browser-environment";
 
 function getApiHostname() {
   if (!config.apiUrl) {
@@ -13,7 +17,9 @@ function getApiHostname() {
 }
 
 export function redirectLocalIpToLocalhost() {
-  if (window.location.hostname !== "127.0.0.1") {
+  const browserLocation = getBrowserLocation();
+
+  if (!browserLocation || browserLocation.hostname !== "127.0.0.1") {
     return false;
   }
 
@@ -21,9 +27,9 @@ export function redirectLocalIpToLocalhost() {
     return false;
   }
 
-  const nextUrl = new URL(window.location.href);
+  const nextUrl = new URL(browserLocation.href);
   nextUrl.hostname = "localhost";
-  window.location.replace(nextUrl);
+  replaceBrowserLocation(nextUrl);
 
   return true;
 }

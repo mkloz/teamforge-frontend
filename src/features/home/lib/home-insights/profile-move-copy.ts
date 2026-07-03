@@ -45,14 +45,5 @@ export function getProfileMoveCopy(
       };
   }
 
-  const fallbackStep = nextStep as NonNullable<HomeViewer["nextStep"]>;
-
-  return {
-    eyebrow: "Finish your profile",
-    title: fallbackStep.title,
-    body: "A clearer profile gives invites and group suggestions a better first read.",
-    primaryLabel: fallbackStep.label,
-    secondaryLabel: "Open profile",
-    signal,
-  };
+  throw new Error("Unsupported profile next step.");
 }

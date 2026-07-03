@@ -3,7 +3,11 @@ import {
   type CollapsibleRenderState,
   useCollapsibleScrollState,
 } from "@/shared/hooks/use-collapsible-scroll-state";
-import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+import {
+  getBrowserComputedStyle,
+  getBrowserScrollY,
+  getBrowserWindow,
+} from "@/shared/lib/browser-environment";
 import {
   type CssPropertyPair,
   getCollapsedCssValue,
@@ -44,7 +48,7 @@ export function useProfileCollapsibleHeader<TElement extends HTMLElement>({
     ({ collapsed }: CollapsibleRenderState) => {
       const element = ref.current;
 
-      if (!element || !hasBrowserWindow()) {
+      if (!element || !getBrowserWindow()) {
         return false;
       }
 
@@ -149,23 +153,33 @@ function getProfileHeaderStyleProperties(
 }
 
 function getScrollTarget(element: HTMLElement | null) {
+  const browserWindow = getBrowserWindow();
+
   if (!element) {
-    return window;
+    return browserWindow;
   }
 
   const scrollContainer = getScrollContainer(element);
 
   if (!scrollContainer || isViewportElement(scrollContainer)) {
-    return window;
+    return browserWindow;
   }
 
   return scrollContainer;
 }
 
-function getScrollTop(scrollTarget: HTMLElement | Window) {
-  return scrollTarget instanceof Window
-    ? window.scrollY
-    : scrollTarget.scrollTop;
+function getScrollTop(scrollTarget: HTMLElement | Window | null) {
+  if (!scrollTarget || isWindowScrollTarget(scrollTarget)) {
+    return getBrowserScrollY();
+  }
+
+  return scrollTarget.scrollTop;
+}
+
+function isWindowScrollTarget(
+  scrollTarget: HTMLElement | Window,
+): scrollTarget is Window {
+  return scrollTarget === getBrowserWindow();
 }
 
 function getScrollContainer(element: HTMLElement) {
@@ -195,7 +209,7 @@ function isElementScrollContainer(element: HTMLElement) {
 }
 
 function isScrollable(element: HTMLElement) {
-  const overflowY = window.getComputedStyle(element).overflowY;
+  const overflowY = getBrowserComputedStyle(element)?.overflowY ?? "";
   const canScroll = /(auto|scroll|overlay)/.test(overflowY);
 
   return canScroll && element.scrollHeight > element.clientHeight;

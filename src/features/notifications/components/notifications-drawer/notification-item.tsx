@@ -11,6 +11,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import { scheduleDelay } from "@/shared/lib/browser-scheduling";
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
 import { getTypeConfig, relativeTime } from "./notification-display";
@@ -244,7 +245,7 @@ function isHorizontalReadSwipe({ x, y }: { x: number; y: number }) {
 }
 
 function resetSwipeSelectionGuard(didSwipeRef: MutableRefObject<boolean>) {
-  window.setTimeout(() => {
+  scheduleDelay(() => {
     didSwipeRef.current = false;
   }, 0);
 }

@@ -47,7 +47,8 @@ function isGoogleAuthFlowError(
   return (
     error instanceof Error &&
     error.name === "GoogleAuthFlowError" &&
-    typeof (error as Partial<GoogleAuthFlowErrorLike>).phase === "string"
+    "phase" in error &&
+    typeof error.phase === "string"
   );
 }
 

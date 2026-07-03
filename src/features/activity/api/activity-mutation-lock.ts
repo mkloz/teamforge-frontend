@@ -12,14 +12,9 @@ export function runExclusiveActivityMutation<T>(
   key: string,
   mutation: () => Promise<T> | T,
 ): Promise<T> {
-  const activeMutation = activeActivityMutations.get(key);
-
-  if (activeMutation) {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- A key always represents one mutation result shape while it is in flight.
-    return activeMutation as Promise<T>;
-  }
-
-  const mutationPromise = Promise.resolve()
+  const previousMutation = activeActivityMutations.get(key);
+  const mutationPromise = Promise.resolve(previousMutation)
+    .catch(() => undefined)
     .then(mutation)
     .finally(() => {
       if (activeActivityMutations.get(key) === mutationPromise) {

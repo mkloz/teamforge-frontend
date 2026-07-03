@@ -1,4 +1,4 @@
-import { hasBrowserDocument } from "@/shared/lib/browser-environment";
+import { getBrowserDocument } from "@/shared/lib/browser-environment";
 
 export type MetaDescriptor =
   | {
@@ -43,20 +43,26 @@ function formatDocumentTitle(title: string) {
   return `(${badgeLabel}) ${baseTitle}`;
 }
 
-function findMetaElement(descriptor: MetaDescriptor) {
+function findMetaElement(
+  browserDocument: Document,
+  descriptor: MetaDescriptor,
+) {
   const [attributeName, attributeValue] =
     descriptor.name !== undefined
       ? (["name", descriptor.name] as const)
       : (["property", descriptor.property] as const);
 
-  return Array.from(document.head.querySelectorAll("meta")).find(
+  return Array.from(browserDocument.head.querySelectorAll("meta")).find(
     (element) => element.getAttribute(attributeName) === attributeValue,
   );
 }
 
-function applyMetaDescriptor(descriptor: MetaDescriptor): MetadataSnapshot {
-  const existingElement = findMetaElement(descriptor);
-  const element = existingElement ?? document.createElement("meta");
+function applyMetaDescriptor(
+  browserDocument: Document,
+  descriptor: MetaDescriptor,
+): MetadataSnapshot {
+  const existingElement = findMetaElement(browserDocument, descriptor);
+  const element = existingElement ?? browserDocument.createElement("meta");
   const [attributeName, attributeValue] =
     descriptor.name !== undefined
       ? (["name", descriptor.name] as const)
@@ -64,7 +70,7 @@ function applyMetaDescriptor(descriptor: MetaDescriptor): MetadataSnapshot {
 
   if (!existingElement) {
     element.setAttribute(attributeName, attributeValue);
-    document.head.appendChild(element);
+    browserDocument.head.appendChild(element);
   }
 
   const snapshot = {
@@ -79,17 +85,22 @@ function applyMetaDescriptor(descriptor: MetaDescriptor): MetadataSnapshot {
 }
 
 export function applyDocumentMetadata(metadata: PageMetadata) {
-  if (!hasBrowserDocument()) {
+  const browserDocument = getBrowserDocument();
+
+  if (!browserDocument) {
     return () => {};
   }
 
-  const previousTitle = stripDocumentTitleBadge(document.title);
-  const snapshots = metadata.meta?.map(applyMetaDescriptor) ?? [];
+  const previousTitle = stripDocumentTitleBadge(browserDocument.title);
+  const snapshots =
+    metadata.meta?.map((descriptor) =>
+      applyMetaDescriptor(browserDocument, descriptor),
+    ) ?? [];
 
-  document.title = formatDocumentTitle(metadata.title);
+  browserDocument.title = formatDocumentTitle(metadata.title);
 
   return () => {
-    document.title = formatDocumentTitle(previousTitle);
+    browserDocument.title = formatDocumentTitle(previousTitle);
 
     snapshots.forEach(({ element, previousContent, created }) => {
       if (created) {
@@ -108,10 +119,12 @@ export function applyDocumentMetadata(metadata: PageMetadata) {
 }
 
 export function setDocumentTitleBadge(unreadCount: number) {
-  if (!hasBrowserDocument()) {
+  const browserDocument = getBrowserDocument();
+
+  if (!browserDocument) {
     return;
   }
 
   documentTitleBadgeCount = Math.max(0, Math.trunc(unreadCount));
-  document.title = formatDocumentTitle(document.title);
+  browserDocument.title = formatDocumentTitle(browserDocument.title);
 }

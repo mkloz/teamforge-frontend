@@ -1,3 +1,4 @@
+import { getBrowserNavigator } from "@/shared/lib/browser-environment";
 import type { PushCopy, PushState } from "./types";
 
 type PushCopyRule = {
@@ -90,11 +91,13 @@ const PUSH_DENIED_HELP_RULES: readonly PushDeniedHelpRule[] = [
 ] as const;
 
 export function getPushDeniedHelp(): string {
-  if (typeof navigator === "undefined") {
+  const browserNavigator = getBrowserNavigator();
+
+  if (!browserNavigator) {
     return "Open your browser's site settings and allow notifications for TeamForge.";
   }
 
-  return getBrowserPushDeniedHelp(navigator.userAgent);
+  return getBrowserPushDeniedHelp(browserNavigator.userAgent);
 }
 
 function getBrowserPushDeniedHelp(userAgent: string) {

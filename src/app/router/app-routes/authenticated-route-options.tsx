@@ -38,7 +38,7 @@ import { validateSettingsRouteSearch } from "@/shared/navigation/settings-naviga
 export const homeRouteOptions = {
   path: "/home" as const,
   validateSearch: validateHomeRouteSearch,
-  loader: createRouteModuleLoader(homePageModule),
+  loader: createRouteModuleLoader(homePageModule, HomeRouteLoading),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: HomeRouteLoading,
   component: createLazyPageRoute(
@@ -58,7 +58,7 @@ export const homeRouteOptions = {
 export const exploreRouteOptions = {
   path: "/explore" as const,
   validateSearch: validateExploreRouteSearch,
-  loader: createExploreRouteLoader(explorePageModule),
+  loader: createExploreRouteLoader(explorePageModule, ExploreRouteLoading),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: ExploreRouteLoading,
   component: createLazyPageRoute(
@@ -78,7 +78,10 @@ export const exploreRouteOptions = {
 export const groupPlanDetailRouteOptions = {
   path: "/groups/$groupId" as const,
   validateSearch: validateGroupPlanDetailSearch,
-  loader: createGroupPlanDetailRouteLoader(groupPlanDetailPageModule),
+  loader: createGroupPlanDetailRouteLoader(
+    groupPlanDetailPageModule,
+    GroupPlanDetailRouteLoading,
+  ),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: GroupPlanDetailRouteLoading,
   component: createLazyPageRoute(
@@ -98,7 +101,7 @@ export const groupPlanDetailRouteOptions = {
 export const activityRouteOptions = {
   path: "/activity" as const,
   validateSearch: validateActivityRouteSearch,
-  loader: createActivityRouteLoader(activityPageModule),
+  loader: createActivityRouteLoader(activityPageModule, ActivityRouteLoading),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: ActivityRouteLoading,
   component: createLazyPageRoute(
@@ -117,7 +120,7 @@ export const activityRouteOptions = {
 
 export const profileRouteOptions = {
   path: "/profile" as const,
-  loader: createRouteModuleLoader(profilePageModule),
+  loader: createRouteModuleLoader(profilePageModule, ProfileRouteLoading),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: ProfileRouteLoading,
   component: createLazyPageRoute(
@@ -137,7 +140,10 @@ export const profileRouteOptions = {
 export const userDetailRouteOptions = {
   path: "/users/$userId" as const,
   validateSearch: validateUserDetailSearch,
-  loader: createUserDetailRouteLoader(userDetailPageModule),
+  loader: createUserDetailRouteLoader(
+    userDetailPageModule,
+    ProfileRouteLoading,
+  ),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: ProfileRouteLoading,
   component: createLazyPageRoute(
@@ -157,7 +163,7 @@ export const userDetailRouteOptions = {
 export const settingsRouteOptions = {
   path: "/settings" as const,
   validateSearch: validateSettingsRouteSearch,
-  loader: createRouteModuleLoader(settingsPageModule),
+  loader: createRouteModuleLoader(settingsPageModule, SettingsRouteLoading),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: SettingsRouteLoading,
   component: createLazyPageRoute(
@@ -177,7 +183,7 @@ export const settingsRouteOptions = {
 export const forgeRouteOptions = {
   path: "/forge" as const,
   validateSearch: validateForgeRouteSearch,
-  loader: createRouteModuleLoader(forgePageModule),
+  loader: createRouteModuleLoader(forgePageModule, ForgeRouteLoading),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: ForgeRouteLoading,
   component: createLazyPageRoute(

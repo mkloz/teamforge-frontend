@@ -8,6 +8,8 @@ import type {
   OceanScores,
 } from "@/features/profile/lib/profile-contract";
 import type { ProfileInsightModel } from "@/features/profile/lib/profile-insights";
+import { getBrowserWindow } from "@/shared/lib/browser-environment";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 
 const PsychometricsSidebar = lazy(() =>
   import("@/features/profile/components/psychometrics-sidebar").then(
@@ -58,21 +60,19 @@ function ProfilePsychometricsPanel({
 
   useEffect(() => {
     const element = panelRef.current;
+    const IntersectionObserverCtor = getBrowserWindow()?.IntersectionObserver;
 
-    if (!element || shouldRender || typeof window === "undefined") {
+    if (!element || shouldRender) {
       return undefined;
     }
 
-    if (!("IntersectionObserver" in window)) {
-      const fallbackTimer = globalThis.setTimeout(
-        () => setShouldRender(true),
-        800,
-      );
+    if (!IntersectionObserverCtor) {
+      const fallbackTimer = scheduleDelay(() => setShouldRender(true), 800);
 
-      return () => globalThis.clearTimeout(fallbackTimer);
+      return () => cancelDelay(fallbackTimer);
     }
 
-    const observer = new IntersectionObserver(
+    const observer = new IntersectionObserverCtor(
       ([entry]) => {
         if (!entry?.isIntersecting) {
           return;

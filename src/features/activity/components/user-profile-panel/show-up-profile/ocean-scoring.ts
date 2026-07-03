@@ -51,9 +51,13 @@ export function getParticipantOceanScores(
     return null;
   }
 
-  return Object.fromEntries(
-    scores.map(({ score, trait }) => [trait, score]),
-  ) as Partial<OceanScores>;
+  const oceanScores: Partial<OceanScores> = {};
+
+  for (const { score, trait } of scores) {
+    oceanScores[trait] = score;
+  }
+
+  return oceanScores;
 }
 
 export function rankOceanSignal(

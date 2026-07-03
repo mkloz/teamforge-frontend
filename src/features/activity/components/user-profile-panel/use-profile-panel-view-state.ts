@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
+import {
+  cancelScheduledAnimationFrame,
+  type ScheduledAnimationFrameHandle,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
 import { scrollElementToTop } from "@/shared/lib/scroll-to-top";
 
 const PANEL_COLLAPSE_SCROLL_TRIGGER = 32;
@@ -43,7 +48,7 @@ export function useProfilePanelViewState({
   resetKey,
 }: ProfilePanelViewStateInput) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const frameRef = useRef<number | null>(null);
+  const frameRef = useRef<ScheduledAnimationFrameHandle | null>(null);
   const isPanelHeaderCollapsedRef = useRef(false);
   const isCompactHeaderVisibleRef = useRef(false);
   const compactRestingScrollTopRef = useRef(0);
@@ -88,7 +93,7 @@ export function useProfilePanelViewState({
       return;
     }
 
-    frameRef.current = window.requestAnimationFrame(() => {
+    frameRef.current = scheduleAnimationFrame(() => {
       frameRef.current = null;
       applyPanelHeaderState();
     });
@@ -114,7 +119,7 @@ export function useProfilePanelViewState({
   useEffect(() => {
     return () => {
       if (frameRef.current !== null) {
-        window.cancelAnimationFrame(frameRef.current);
+        cancelScheduledAnimationFrame(frameRef.current);
       }
     };
   }, []);

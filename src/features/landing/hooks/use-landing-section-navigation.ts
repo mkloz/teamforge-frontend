@@ -8,6 +8,16 @@ import {
   LANDING_SECTIONS,
   type LandingSectionId,
 } from "@/shared/components/public-site/landing-sections";
+import {
+  getBrowserDocumentBody,
+  getBrowserScrollY,
+  hasBrowserDocument,
+} from "@/shared/lib/browser-environment";
+import {
+  cancelDelay,
+  type ScheduledDelayHandle,
+  scheduleDelay,
+} from "@/shared/lib/browser-scheduling";
 import { getElementById } from "@/shared/lib/browser-scroll";
 
 function isLandingSectionId(id: string): id is LandingSectionId {
@@ -19,21 +29,18 @@ const TOP_SCROLL_Y_THRESHOLD = 96;
 
 export function useLandingSectionNavigation() {
   const [activeSection, setActiveSection] = useState<LandingSectionId>("hero");
-  const topScrollCorrectionRef = useRef<number | null>(null);
+  const topScrollCorrectionRef = useRef<ScheduledDelayHandle | null>(null);
 
   useEffect(() => {
     return () => {
       if (topScrollCorrectionRef.current !== null) {
-        window.clearTimeout(topScrollCorrectionRef.current);
+        cancelDelay(topScrollCorrectionRef.current);
       }
     };
   }, []);
 
   useEffect(() => {
-    if (
-      typeof document === "undefined" ||
-      typeof IntersectionObserver === "undefined"
-    ) {
+    if (!hasBrowserDocument() || typeof IntersectionObserver === "undefined") {
       return undefined;
     }
 
@@ -78,10 +85,14 @@ export function useLandingSectionNavigation() {
         ? null
         : new MutationObserver(observeLandingSections);
 
-    mutationObserver?.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+    const body = getBrowserDocumentBody();
+
+    if (body) {
+      mutationObserver?.observe(body, {
+        childList: true,
+        subtree: true,
+      });
+    }
 
     return () => {
       mutationObserver?.disconnect();
@@ -98,16 +109,12 @@ export function useLandingSectionNavigation() {
     setActiveSection("hero");
     scrollToLandingTop();
 
-    if (typeof window === "undefined") {
-      return;
-    }
-
     if (topScrollCorrectionRef.current !== null) {
-      window.clearTimeout(topScrollCorrectionRef.current);
+      cancelDelay(topScrollCorrectionRef.current);
     }
 
-    topScrollCorrectionRef.current = window.setTimeout(() => {
-      if (window.scrollY <= TOP_SCROLL_Y_THRESHOLD) {
+    topScrollCorrectionRef.current = scheduleDelay(() => {
+      if (getBrowserScrollY() <= TOP_SCROLL_Y_THRESHOLD) {
         setActiveSection("hero");
       }
 

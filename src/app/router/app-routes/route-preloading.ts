@@ -1,16 +1,26 @@
 import {
+  ActivityRouteLoading,
   activityPageModule,
+  ExploreRouteLoading,
   explorePageModule,
+  ForgeRouteLoading,
   forgePageModule,
+  GroupPlanDetailRouteLoading,
   groupPlanDetailPageModule,
+  HomeRouteLoading,
   homePageModule,
+  ProfileRouteLoading,
   profilePageModule,
+  SettingsRouteLoading,
   settingsPageModule,
   userDetailPageModule,
 } from "@/app/router/app-routes/route-modules";
+import type { LazyRouteLoadingComponent } from "@/app/router/lazy-route-loading";
 import type { LazyRouteModule } from "@/app/router/lazy-route-module";
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
+import { getBrowserDocument } from "@/shared/lib/browser-environment";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 
 interface PreloadableGroupPlanDetail {
@@ -19,46 +29,74 @@ interface PreloadableGroupPlanDetail {
   members: { avatar?: string | null }[];
 }
 
+interface AppRouteModulePreloader {
+  matches: (pathname: string) => boolean;
+  module: LazyRouteModule;
+  loading?: LazyRouteLoadingComponent;
+  preloadData?: (pathname: string) => Promise<void>;
+}
+
 type SessionRestoredRoutePreload = () => Promise<void>;
 type SessionRestoredPreloadResolver = (
   pathname: string,
 ) => SessionRestoredRoutePreload | undefined;
 
-export function createRouteModuleLoader(module: LazyRouteModule) {
+export function createRouteModuleLoader(
+  module: LazyRouteModule,
+  loading?: LazyRouteLoadingComponent,
+) {
   return async () => {
-    await module.preload();
-  };
-}
-
-export function createExploreRouteLoader(module: LazyRouteModule) {
-  return async () => {
-    const exploreGroupsTask = preloadDefaultExploreGroups().catch(() => null);
-
-    await Promise.all([module.preload(), exploreGroupsTask]);
-  };
-}
-
-export function createActivityRouteLoader(module: LazyRouteModule) {
-  return async () => {
-    void preloadActivityFeed().catch(() => null);
+    startRouteLoadingPreload(loading);
 
     await module.preload();
   };
 }
 
-export function createGroupPlanDetailRouteLoader(module: LazyRouteModule) {
+export function createExploreRouteLoader(
+  module: LazyRouteModule,
+  loading?: LazyRouteLoadingComponent,
+) {
+  return async () => {
+    startRouteLoadingPreload(loading);
+    startRouteDataPreload(preloadDefaultExploreGroups);
+
+    await module.preload();
+  };
+}
+
+export function createActivityRouteLoader(
+  module: LazyRouteModule,
+  loading?: LazyRouteLoadingComponent,
+) {
+  return async () => {
+    startRouteLoadingPreload(loading);
+    startRouteDataPreload(preloadActivityFeed);
+
+    await module.preload();
+  };
+}
+
+export function createGroupPlanDetailRouteLoader(
+  module: LazyRouteModule,
+  loading?: LazyRouteLoadingComponent,
+) {
   return async ({ params }: { params: { groupId: string } }) => {
-    const detailTask = preloadGroupPlanDetail(params.groupId).catch(() => null);
+    startRouteLoadingPreload(loading);
+    startRouteDataPreload(() => preloadGroupPlanDetail(params.groupId));
 
-    await Promise.all([module.preload(), detailTask]);
+    await module.preload();
   };
 }
 
-export function createUserDetailRouteLoader(module: LazyRouteModule) {
+export function createUserDetailRouteLoader(
+  module: LazyRouteModule,
+  loading?: LazyRouteLoadingComponent,
+) {
   return async ({ params }: { params: { userId: string } }) => {
-    const userTask = preloadUserDetail(params.userId).catch(() => null);
+    startRouteLoadingPreload(loading);
+    startRouteDataPreload(() => preloadUserDetail(params.userId));
 
-    await Promise.all([module.preload(), userTask]);
+    await module.preload();
   };
 }
 
@@ -71,7 +109,76 @@ export function preloadMatchedAppRouteModule(pathname: string) {
     preloader.matches(pathname),
   );
 
+  startRouteLoadingPreload(matchedPreloader?.loading);
   void matchedPreloader?.module.preload().catch(() => null);
+}
+
+let authenticatedAppRouteWarmupPromise: Promise<void> | null = null;
+
+export function warmAuthenticatedAppRoutes(pathname: string) {
+  authenticatedAppRouteWarmupPromise ??=
+    warmAuthenticatedAppRoutesOnce(pathname);
+
+  return authenticatedAppRouteWarmupPromise;
+}
+
+async function warmAuthenticatedAppRoutesOnce(pathname: string) {
+  const warmupTargets = getAppRouteWarmupTargets(pathname);
+
+  await preloadAppRouteLoadingComponents(warmupTargets);
+  await preloadAppRoutePageModules(warmupTargets);
+  await preloadAppRouteData(warmupTargets, pathname);
+}
+
+async function preloadAppRouteLoadingComponents(
+  warmupTargets: readonly AppRouteModulePreloader[],
+) {
+  const preloadTasks = warmupTargets.flatMap((target) =>
+    target.loading ? [target.loading.preload()] : [],
+  );
+
+  await Promise.allSettled(preloadTasks);
+}
+
+async function preloadAppRoutePageModules(
+  warmupTargets: readonly AppRouteModulePreloader[],
+) {
+  await Promise.allSettled(
+    warmupTargets.map((target) => target.module.preload()),
+  );
+}
+
+async function preloadAppRouteData(
+  warmupTargets: readonly AppRouteModulePreloader[],
+  pathname: string,
+) {
+  const preloadTasks = warmupTargets.flatMap((target) =>
+    target.preloadData ? [target.preloadData(pathname)] : [],
+  );
+
+  await Promise.allSettled(preloadTasks);
+}
+
+function getAppRouteWarmupTargets(pathname: string) {
+  const currentIndex = APP_ROUTE_MODULE_PRELOADERS.findIndex((preloader) =>
+    preloader.matches(pathname),
+  );
+
+  if (currentIndex < 0) {
+    return APP_ROUTE_MODULE_PRELOADERS;
+  }
+
+  return APP_ROUTE_MODULE_PRELOADERS.filter(
+    (_preloader, index) => index !== currentIndex,
+  );
+}
+
+function startRouteLoadingPreload(loading?: LazyRouteLoadingComponent) {
+  void loading?.preload().catch(() => null);
+}
+
+function startRouteDataPreload(preloadData: () => Promise<void>) {
+  void preloadData().catch(() => null);
 }
 
 async function preloadDefaultExploreGroups() {
@@ -93,13 +200,54 @@ async function preloadActivityFeed() {
   const { getActivityFeedPreloadQueries } = await import(
     "@/features/activity/public/activity-feed-preload"
   );
-  const [groupsQuery, chatsQuery, friendshipsQuery] =
+  const [groupsQuery, chatsQuery, friendshipsQuery, savedMessagesQuery] =
     getActivityFeedPreloadQueries();
 
   await Promise.allSettled([
     appQueryClient.prefetchQuery(groupsQuery),
     appQueryClient.prefetchQuery(chatsQuery),
     appQueryClient.prefetchQuery(friendshipsQuery),
+    appQueryClient.prefetchQuery(savedMessagesQuery),
+  ]);
+}
+
+async function preloadHomeRouteData() {
+  const { homeQueries } = await import("@/features/home/api/home-queries");
+
+  await Promise.allSettled([
+    appQueryClient.prefetchQuery(homeQueries.groups()),
+    appQueryClient.prefetchQuery(homeQueries.invitations()),
+    appQueryClient.prefetchQuery(homeQueries.plans()),
+    appQueryClient.prefetchQuery(homeQueries.stats()),
+    appQueryClient.prefetchQuery(homeQueries.recommendations()),
+  ]);
+}
+
+async function preloadProfileRouteData() {
+  await appQueryClient.prefetchQuery(currentUserQueryOptions());
+}
+
+async function preloadSettingsRouteData() {
+  const { settingsQueries } = await import(
+    "@/features/settings/api/settings-queries"
+  );
+
+  await Promise.allSettled([
+    appQueryClient.prefetchQuery(settingsQueries.notificationPreferences()),
+    appQueryClient.prefetchQuery(settingsQueries.sessions()),
+    appQueryClient.prefetchQuery(settingsQueries.blockedUsers()),
+  ]);
+}
+
+async function preloadForgeRouteData() {
+  const {
+    forgeFriendCandidatesQueryOptions,
+    forgeRecentActivitiesQueryOptions,
+  } = await import("@/features/forge/api/forge-query-options");
+
+  await Promise.allSettled([
+    appQueryClient.prefetchQuery(forgeFriendCandidatesQueryOptions()),
+    appQueryClient.prefetchQuery(forgeRecentActivitiesQueryOptions()),
   ]);
 }
 
@@ -142,29 +290,31 @@ function canPreloadRouteImage(src: string | null | undefined): src is string {
 }
 
 function preloadRouteImageLink(src: string) {
-  if (typeof document !== "undefined") {
-    appendRouteImagePreloadLink(src);
+  const browserDocument = getBrowserDocument();
+
+  if (browserDocument) {
+    appendRouteImagePreloadLink(browserDocument, src);
   }
 }
 
-function appendRouteImagePreloadLink(src: string) {
-  if (hasRouteImagePreloadLink(src)) {
+function appendRouteImagePreloadLink(browserDocument: Document, src: string) {
+  if (hasRouteImagePreloadLink(browserDocument, src)) {
     return;
   }
 
-  const link = document.createElement("link");
+  const link = browserDocument.createElement("link");
   link.rel = "preload";
   link.as = "image";
   link.href = src;
   link.setAttribute("fetchpriority", "high");
-  document.head.append(link);
+  browserDocument.head.append(link);
 }
 
-function hasRouteImagePreloadLink(src: string) {
-  const absoluteSrc = new URL(src, document.baseURI).href;
+function hasRouteImagePreloadLink(browserDocument: Document, src: string) {
+  const absoluteSrc = new URL(src, browserDocument.baseURI).href;
 
   return Array.from(
-    document.head.querySelectorAll<HTMLLinkElement>(
+    browserDocument.head.querySelectorAll<HTMLLinkElement>(
       'link[rel="preload"][as="image"]',
     ),
   ).some((link) => link.href === absoluteSrc);
@@ -272,35 +422,59 @@ const APP_ROUTE_MODULE_PRELOADERS = [
   {
     matches: (pathname: string) => pathname === "/home",
     module: homePageModule,
+    loading: HomeRouteLoading,
+    preloadData: preloadHomeRouteData,
   },
   {
     matches: (pathname: string) => pathname === "/explore",
     module: explorePageModule,
+    loading: ExploreRouteLoading,
+    preloadData: preloadDefaultExploreGroups,
   },
   {
     matches: (pathname: string) =>
       pathname === "/activity" || pathname.startsWith("/activity/"),
     module: activityPageModule,
+    loading: ActivityRouteLoading,
+    preloadData: preloadActivityFeed,
   },
   {
     matches: (pathname: string) => pathname === "/profile",
     module: profilePageModule,
+    loading: ProfileRouteLoading,
+    preloadData: preloadProfileRouteData,
   },
   {
     matches: (pathname: string) => pathname.startsWith("/users/"),
     module: userDetailPageModule,
+    loading: ProfileRouteLoading,
+    preloadData: (pathname: string) => {
+      const userId = getUserIdFromPathname(pathname);
+
+      return userId ? preloadUserDetail(userId) : Promise.resolve();
+    },
   },
   {
     matches: (pathname: string) =>
       pathname === "/settings" || pathname.startsWith("/settings/"),
     module: settingsPageModule,
+    loading: SettingsRouteLoading,
+    preloadData: preloadSettingsRouteData,
   },
   {
     matches: (pathname: string) => pathname === "/forge",
     module: forgePageModule,
+    loading: ForgeRouteLoading,
+    preloadData: preloadForgeRouteData,
   },
   {
     matches: (pathname: string) => pathname.startsWith("/groups/"),
     module: groupPlanDetailPageModule,
+    loading: GroupPlanDetailRouteLoading,
+    preloadData: (pathname: string) => {
+      const groupId = getGroupPlanIdFromPathname(pathname);
+
+      return groupId ? preloadGroupPlanDetail(groupId) : Promise.resolve();
+    },
   },
-] as const;
+] satisfies readonly AppRouteModulePreloader[];

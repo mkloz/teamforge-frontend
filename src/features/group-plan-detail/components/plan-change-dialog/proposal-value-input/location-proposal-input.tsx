@@ -35,17 +35,19 @@ const EMPTY_SELECTED_ADDRESS_LOCATION = {
   locationLng: null,
 } satisfies Pick<PlanLocationValue, "location" | "locationLat" | "locationLng">;
 
+const DEFAULT_PLAN_LOCATION_VALUE = {
+  location: "",
+  locationLat: null,
+  locationLng: null,
+  locationMode: "TBD",
+} satisfies PlanLocationValue;
+
 export function LocationProposalInput({
   labelId,
   locationValue,
   onLocationChange,
 }: ProposalValueInputProps) {
-  const nextLocation = locationValue ?? {
-    location: "",
-    locationLat: null,
-    locationLng: null,
-    locationMode: "TBD" as LocationMode,
-  };
+  const nextLocation = locationValue ?? DEFAULT_PLAN_LOCATION_VALUE;
 
   return (
     <fieldset

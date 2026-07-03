@@ -1,37 +1,15 @@
+import {
+  getBrowserDocument,
+  getBrowserWindow,
+} from "@/shared/lib/browser-environment";
+
 export type GoogleAuthPhase = "gsi-load" | "oauth-popup" | "oauth-response";
-
-interface GoogleCodeResponse {
-  code?: string;
-  error?: string;
-  error_description?: string;
-  error_uri?: string;
-}
-
-interface GoogleNonOAuthError {
-  type: "popup_failed_to_open" | "popup_closed" | "unknown";
-}
-
-interface GoogleCodeClient {
-  requestCode: () => void;
-}
-
-interface GoogleIdentityServices {
-  accounts?: {
-    oauth2?: {
-      initCodeClient: (config: {
-        callback: (response: GoogleCodeResponse) => void;
-        client_id: string;
-        error_callback: (error: GoogleNonOAuthError) => void;
-        scope: string;
-      }) => GoogleCodeClient;
-    };
-  };
-}
 
 const GOOGLE_GSI_SCRIPT_SRC = "https://accounts.google.com/gsi/client";
 const GOOGLE_AUTH_SCOPE = "openid profile email";
 
-let googleIdentityScriptPromise: Promise<GoogleIdentityServices> | null = null;
+let googleIdentityScriptPromise: Promise<GoogleIdentityServicesGlobal> | null =
+  null;
 
 class GoogleAuthFlowError extends Error {
   phase: GoogleAuthPhase;
@@ -44,13 +22,13 @@ class GoogleAuthFlowError extends Error {
 }
 
 function getGoogleIdentityServices() {
-  if (typeof window === "undefined") {
+  const browserWindow = getBrowserWindow();
+
+  if (!browserWindow) {
     return null;
   }
 
-  return (
-    (window as Window & { google?: GoogleIdentityServices }).google ?? null
-  );
+  return browserWindow.google ?? null;
 }
 
 function loadGoogleIdentityScript() {
@@ -64,7 +42,9 @@ function loadGoogleIdentityScript() {
     return googleIdentityScriptPromise;
   }
 
-  if (typeof document === "undefined") {
+  const browserDocument = getBrowserDocument();
+
+  if (!browserDocument) {
     return Promise.reject(
       new GoogleAuthFlowError(
         "Google sign-in needs a browser window. Please try again.",
@@ -74,10 +54,10 @@ function loadGoogleIdentityScript() {
   }
 
   googleIdentityScriptPromise = new Promise((resolve, reject) => {
-    const existingScript = document.querySelector<HTMLScriptElement>(
+    const existingScript = browserDocument.querySelector<HTMLScriptElement>(
       `script[src^="${GOOGLE_GSI_SCRIPT_SRC}"]`,
     );
-    const script = existingScript ?? document.createElement("script");
+    const script = existingScript ?? browserDocument.createElement("script");
 
     const handleLoad = () => {
       const google = getGoogleIdentityServices();
@@ -114,7 +94,7 @@ function loadGoogleIdentityScript() {
       script.async = true;
       script.defer = true;
       script.dataset.teamforgeGoogleIdentity = "true";
-      document.body.appendChild(script);
+      browserDocument.body.appendChild(script);
     }
   });
 

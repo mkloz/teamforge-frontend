@@ -10,10 +10,18 @@ export function getTimeScrollSnapshot(
   }
 
   const maxScrollTop = node.scrollHeight - node.clientHeight;
+  const canScrollUp = node.scrollTop > 2;
+  const canScrollDown = node.scrollTop < maxScrollTop - 2;
 
-  return `${node.scrollTop > 2 ? "1" : "0"}${
-    node.scrollTop < maxScrollTop - 2 ? "1" : "0"
-  }` as TimeScrollSnapshot;
+  if (canScrollUp && canScrollDown) {
+    return "11";
+  }
+
+  if (canScrollUp) {
+    return "10";
+  }
+
+  return canScrollDown ? "01" : "00";
 }
 
 export function getEmptyTimeScrollSnapshot() {

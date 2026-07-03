@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 
+import { getBrowserViewportSize } from "@/shared/lib/browser-environment";
+
 interface AnchoredPanelPositionOptions {
   gap?: number;
   panelHeight: number;
@@ -31,16 +33,17 @@ export function getAnchoredPanelPosition(
   }: AnchoredPanelPositionOptions,
 ): ScrollablePanelStyle {
   const rect = anchor.getBoundingClientRect();
-  const availableWidth = window.innerWidth - viewportPadding * 2;
+  const viewport = getBrowserViewportSize();
+  const availableWidth = viewport.width - viewportPadding * 2;
   const resolvedWidth = Math.min(
     availableWidth,
     Math.max(panelWidth, rect.width),
   );
   const left = Math.min(
     Math.max(viewportPadding, rect.left),
-    window.innerWidth - resolvedWidth - viewportPadding,
+    viewport.width - resolvedWidth - viewportPadding,
   );
-  const hasRoomBelow = rect.bottom + gap + panelHeight < window.innerHeight;
+  const hasRoomBelow = rect.bottom + gap + panelHeight < viewport.height;
   const top = hasRoomBelow
     ? rect.bottom + gap
     : Math.max(viewportPadding, rect.top - panelHeight - gap);
@@ -68,13 +71,13 @@ export function getAnchoredScrollablePanelPosition(
   }: AnchoredScrollablePanelPositionOptions,
 ): CSSProperties {
   const rect = anchor.getBoundingClientRect();
-  const availableWidth = window.innerWidth - viewportPadding * 2;
+  const viewport = getBrowserViewportSize();
+  const availableWidth = viewport.width - viewportPadding * 2;
   const resolvedWidth = Math.min(
     availableWidth,
     Math.max(panelWidth, rect.width),
   );
-  const availableBelow =
-    window.innerHeight - rect.bottom - gap - viewportPadding;
+  const availableBelow = viewport.height - rect.bottom - gap - viewportPadding;
   const availableAbove = rect.top - gap - viewportPadding;
   const shouldOpenBelow =
     availableBelow >= preferredMinimumBelow || availableBelow >= availableAbove;
@@ -85,7 +88,7 @@ export function getAnchoredScrollablePanelPosition(
   );
   const left = Math.min(
     Math.max(viewportPadding, rect.left),
-    window.innerWidth - resolvedWidth - viewportPadding,
+    viewport.width - resolvedWidth - viewportPadding,
   );
   const top = shouldOpenBelow
     ? rect.bottom + gap

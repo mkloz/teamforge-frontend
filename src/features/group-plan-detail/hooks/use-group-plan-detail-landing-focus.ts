@@ -1,5 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import { getBrowserMediaQuery } from "@/shared/lib/browser-environment";
+import {
+  cancelDelay,
+  cancelScheduledAnimationFrame,
+  type ScheduledAnimationFrameHandle,
+  type ScheduledDelayHandle,
+  scheduleAnimationFrame,
+  scheduleDelay,
+} from "@/shared/lib/browser-scheduling";
 
 type HighlightedTarget = "plan" | "planning" | null;
 type LandingFocusTarget = Exclude<HighlightedTarget, null>;
@@ -30,8 +39,8 @@ export function useGroupPlanDetailLandingFocus({
   >(null);
 
   useEffect(() => {
-    let frameId: number | null = null;
-    let timeoutId: number | null = null;
+    let frameId: ScheduledAnimationFrameHandle | null = null;
+    let timeoutId: ScheduledDelayHandle | null = null;
 
     const focusRequest = getLandingFocusRequest({
       planElement: planSectionRef.current,
@@ -44,10 +53,10 @@ export function useGroupPlanDetailLandingFocus({
     if (focusRequest) {
       setHighlightedTarget(focusRequest.highlightedTarget);
       setHighlightedProposalId(focusRequest.highlightedProposalId);
-      frameId = window.requestAnimationFrame(() => {
+      frameId = scheduleAnimationFrame(() => {
         scrollLandingFocusTarget(focusRequest.element);
       });
-      timeoutId = window.setTimeout(() => {
+      timeoutId = scheduleDelay(() => {
         setHighlightedTarget(null);
         setHighlightedProposalId(null);
       }, 3600);
@@ -58,11 +67,11 @@ export function useGroupPlanDetailLandingFocus({
 
     return () => {
       if (frameId !== null) {
-        window.cancelAnimationFrame(frameId);
+        cancelScheduledAnimationFrame(frameId);
       }
 
       if (timeoutId !== null) {
-        window.clearTimeout(timeoutId);
+        cancelDelay(timeoutId);
       }
     };
   }, [detail.planning.proposals, planId, proposalId]);
@@ -129,9 +138,8 @@ function isProposalVisible(
 }
 
 function scrollLandingFocusTarget(target: HTMLElement | null) {
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
+  const prefersReducedMotion =
+    getBrowserMediaQuery("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
   target?.scrollIntoView({
     behavior: prefersReducedMotion ? "auto" : "smooth",

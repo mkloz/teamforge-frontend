@@ -16,6 +16,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import {
+  cancelScheduledAnimationFrame,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
 import { cn } from "@/shared/lib/utils";
 import { buildActivityDmNavigation } from "@/shared/navigation/activity-navigation";
 import type { User } from "@/shared/schemas";
@@ -240,7 +244,7 @@ function useSpotlightConnectButton(
       return undefined;
     }
 
-    const frame = window.requestAnimationFrame(() => {
+    const frame = scheduleAnimationFrame(() => {
       const button = connectButtonRef.current;
 
       if (!button || button.getClientRects().length === 0) {
@@ -255,7 +259,7 @@ function useSpotlightConnectButton(
     });
 
     return () => {
-      window.cancelAnimationFrame(frame);
+      cancelScheduledAnimationFrame(frame);
     };
   }, [connectButtonRef, shouldSpotlightConnect]);
 }

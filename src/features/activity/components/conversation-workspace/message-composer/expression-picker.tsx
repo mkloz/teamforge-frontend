@@ -21,6 +21,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import { getBrowserElementById } from "@/shared/lib/browser-environment";
+import {
+  cancelDelay,
+  scheduleAnimationFrame,
+  scheduleDelay,
+} from "@/shared/lib/browser-scheduling";
 import { cn } from "@/shared/lib/utils";
 
 const LazyChatEmojiPickerPanel = lazy(() =>
@@ -73,12 +79,12 @@ export function ExpressionPicker({
       return undefined;
     }
 
-    const timeoutId = window.setTimeout(() => {
+    const timeoutId = scheduleDelay(() => {
       startTransition(() => setRenderEmojiPanel(true));
     }, EMOJI_PANEL_OPEN_DELAY_MS);
 
     return () => {
-      window.clearTimeout(timeoutId);
+      cancelDelay(timeoutId);
     };
   }, [open, mode]);
 
@@ -105,8 +111,8 @@ export function ExpressionPicker({
     const nextTabId = nextMode === "emoji" ? emojiTabId : gifTabId;
 
     handleModeChange(nextMode);
-    window.requestAnimationFrame(() => {
-      document.getElementById(nextTabId)?.focus();
+    scheduleAnimationFrame(() => {
+      getBrowserElementById(nextTabId)?.focus();
     });
   };
 

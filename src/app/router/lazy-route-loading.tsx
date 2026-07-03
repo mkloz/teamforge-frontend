@@ -1,4 +1,4 @@
-import { type ComponentType, lazy, Suspense } from "react";
+import { type ComponentType, createElement, Suspense } from "react";
 
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-fallback";
@@ -7,16 +7,42 @@ type PageLoadingModule<Props extends PageLoadingProps> = {
   default: ComponentType<Props>;
 };
 
+export type LazyRouteLoadingComponent = ComponentType & {
+  preload: () => Promise<unknown>;
+};
+
 export function createLazyRouteLoading<
   Props extends PageLoadingProps = PageLoadingProps,
 >(load: () => Promise<PageLoadingModule<Props>>, props: Props) {
-  const Loading = lazy(load);
+  let preloadPromise: Promise<PageLoadingModule<Props>> | null = null;
+  let LoadedComponent: ComponentType<Props> | null = null;
 
-  return function LazyRouteLoading() {
-    return (
-      <Suspense fallback={<RouteLoadingFallback />}>
-        <Loading {...props} />
-      </Suspense>
-    );
-  };
+  function preload() {
+    preloadPromise ??= load().then((module) => {
+      LoadedComponent = module.default;
+
+      return module;
+    });
+
+    return preloadPromise;
+  }
+
+  function LoadingContent() {
+    if (LoadedComponent) {
+      return createElement(LoadedComponent, props);
+    }
+
+    throw preload();
+  }
+
+  return Object.assign(
+    function LazyRouteLoading() {
+      return (
+        <Suspense fallback={<RouteLoadingFallback />}>
+          <LoadingContent />
+        </Suspense>
+      );
+    },
+    { preload },
+  ) satisfies LazyRouteLoadingComponent;
 }

@@ -6,7 +6,19 @@ import {
   useState,
 } from "react";
 
-import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+import {
+  addBrowserWindowEventListener,
+  getBrowserScrollY,
+  getBrowserWindow,
+} from "@/shared/lib/browser-environment";
+import {
+  cancelDelay,
+  cancelScheduledAnimationFrame,
+  type ScheduledAnimationFrameHandle,
+  type ScheduledDelayHandle,
+  scheduleAnimationFrame,
+  scheduleDelay,
+} from "@/shared/lib/browser-scheduling";
 import {
   applyCollapsedStateTransition,
   getNextCollapsedState,
@@ -35,11 +47,11 @@ interface ApplyScrollStateOptions {
 }
 
 function getWindowScrollPosition() {
-  return window.scrollY;
+  return getBrowserScrollY();
 }
 
 function shouldDelayCompactReveal() {
-  return hasBrowserWindow() && !getPrefersReducedMotion();
+  return Boolean(getBrowserWindow()) && !getPrefersReducedMotion();
 }
 
 export function useCollapsibleScrollState({
@@ -52,8 +64,8 @@ export function useCollapsibleScrollState({
   getScrollTarget,
   listenForResize = false,
 }: UseCollapsibleScrollStateOptions) {
-  const frameRef = useRef<number | null>(null);
-  const compactRevealTimeoutRef = useRef<number | null>(null);
+  const frameRef = useRef<ScheduledAnimationFrameHandle | null>(null);
+  const compactRevealTimeoutRef = useRef<ScheduledDelayHandle | null>(null);
   const isCollapsedRef = useRef(false);
   const isCompactVisibleRef = useRef(false);
   const [isCompactVisible, setIsCompactVisible] = useState(false);
@@ -75,11 +87,11 @@ export function useCollapsibleScrollState({
   );
 
   const clearCompactRevealTimeout = useCallback(() => {
-    if (compactRevealTimeoutRef.current === null || !hasBrowserWindow()) {
+    if (compactRevealTimeoutRef.current === null) {
       return;
     }
 
-    window.clearTimeout(compactRevealTimeoutRef.current);
+    cancelDelay(compactRevealTimeoutRef.current);
     compactRevealTimeoutRef.current = null;
   }, []);
 
@@ -90,7 +102,7 @@ export function useCollapsibleScrollState({
 
   const scheduleCompactReveal = useCallback(() => {
     if (shouldDelayCompactReveal()) {
-      compactRevealTimeoutRef.current = window.setTimeout(
+      compactRevealTimeoutRef.current = scheduleDelay(
         revealCompactState,
         compactRevealDelayMs,
       );
@@ -150,7 +162,7 @@ export function useCollapsibleScrollState({
 
   const applyCurrentScrollState = useCallback(
     (options?: ApplyScrollStateOptions) => {
-      if (!hasBrowserWindow()) {
+      if (!getBrowserWindow()) {
         return;
       }
 
@@ -160,22 +172,22 @@ export function useCollapsibleScrollState({
   );
 
   const handleScroll = useCallback(() => {
-    if (!hasBrowserWindow() || frameRef.current !== null) {
+    if (!getBrowserWindow() || frameRef.current !== null) {
       return;
     }
 
-    frameRef.current = window.requestAnimationFrame(() => {
+    frameRef.current = scheduleAnimationFrame(() => {
       frameRef.current = null;
       applyCurrentScrollState();
     });
   }, [applyCurrentScrollState]);
 
   const cancelPendingFrame = useCallback(() => {
-    if (frameRef.current === null || !hasBrowserWindow()) {
+    if (frameRef.current === null) {
       return;
     }
 
-    window.cancelAnimationFrame(frameRef.current);
+    cancelScheduledAnimationFrame(frameRef.current);
     frameRef.current = null;
   }, []);
 
@@ -188,11 +200,13 @@ export function useCollapsibleScrollState({
   }, [applyCurrentScrollState]);
 
   useEffect(() => {
-    if (!hasBrowserWindow()) {
+    const browserWindow = getBrowserWindow();
+
+    if (!browserWindow) {
       return undefined;
     }
 
-    const scrollTarget = getScrollTarget?.() ?? window;
+    const scrollTarget = getScrollTarget?.() ?? browserWindow;
 
     if (!scrollTarget) {
       return () => {
@@ -203,16 +217,13 @@ export function useCollapsibleScrollState({
 
     scrollTarget.addEventListener("scroll", handleScroll, { passive: true });
 
-    if (listenForResize) {
-      window.addEventListener("resize", handleScroll);
-    }
+    const cleanupResize = listenForResize
+      ? addBrowserWindowEventListener("resize", handleScroll)
+      : null;
 
     return () => {
       scrollTarget.removeEventListener("scroll", handleScroll);
-
-      if (listenForResize) {
-        window.removeEventListener("resize", handleScroll);
-      }
+      cleanupResize?.();
 
       cancelPendingFrame();
       clearCompactRevealTimeout();

@@ -8,9 +8,10 @@ import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
 import { useServiceWorkerDiagnostics } from "@/shared/hooks/use-service-worker-diagnostics";
 import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
+import { isBrowserSecureContext } from "@/shared/lib/browser-environment";
 
 function getSecureContextSnapshot() {
-  return typeof window !== "undefined" && window.isSecureContext;
+  return isBrowserSecureContext();
 }
 
 export function PwaDiagnosticsPanel() {

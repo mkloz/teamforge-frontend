@@ -1,5 +1,7 @@
 import ky from "ky";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
+import { getBrowserDocument } from "@/shared/lib/browser-environment";
+import { scheduleDelay } from "@/shared/lib/browser-scheduling";
 
 export function getDownloadCandidate(
   media: UnifiedAttachment | null,
@@ -20,7 +22,7 @@ export async function downloadMedia(media: UnifiedAttachment) {
     const objectUrl = URL.createObjectURL(blob);
 
     triggerDownload(objectUrl, fileName);
-    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    scheduleDelay(() => URL.revokeObjectURL(objectUrl), 1000);
   } catch {
     triggerDownload(media.url, fileName, { openInNewTab: true });
   }
@@ -31,7 +33,13 @@ function triggerDownload(
   fileName: string,
   options: { openInNewTab?: boolean } = {},
 ) {
-  const link = document.createElement("a");
+  const browserDocument = getBrowserDocument();
+
+  if (!browserDocument) {
+    return;
+  }
+
+  const link = browserDocument.createElement("a");
 
   link.href = url;
   link.download = fileName;
@@ -41,7 +49,7 @@ function triggerDownload(
     link.target = "_blank";
   }
 
-  document.body.append(link);
+  browserDocument.body.append(link);
   link.click();
   link.remove();
 }

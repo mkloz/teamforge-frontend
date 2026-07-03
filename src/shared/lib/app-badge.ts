@@ -1,25 +1,13 @@
+import { getBrowserNavigator } from "@/shared/lib/browser-environment";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 
-interface AppBadgeApi {
-  clearAppBadge?: () => Promise<void>;
-  setAppBadge?: (contents?: number) => Promise<void>;
-}
-
-interface ClearAppBadgeApi {
+type ClearAppBadgeApi = Navigator & {
   clearAppBadge: () => Promise<void>;
-}
+};
 
-interface SyncAppBadgeApi extends ClearAppBadgeApi {
+type SyncAppBadgeApi = ClearAppBadgeApi & {
   setAppBadge: (contents?: number) => Promise<void>;
-}
-
-function getBadgeNavigator(): AppBadgeApi | null {
-  if (typeof navigator === "undefined") {
-    return null;
-  }
-
-  return navigator as AppBadgeApi;
-}
+};
 
 function getAppBadgeCount(unreadCount: number) {
   if (!Number.isFinite(unreadCount)) {
@@ -30,13 +18,13 @@ function getAppBadgeCount(unreadCount: number) {
 }
 
 function hasClearAppBadgeApi(
-  badgeNavigator: AppBadgeApi | null,
+  badgeNavigator: Navigator | null,
 ): badgeNavigator is ClearAppBadgeApi {
   return typeof badgeNavigator?.clearAppBadge === "function";
 }
 
 function hasSyncAppBadgeApi(
-  badgeNavigator: AppBadgeApi | null,
+  badgeNavigator: Navigator | null,
 ): badgeNavigator is SyncAppBadgeApi {
   return (
     typeof badgeNavigator?.clearAppBadge === "function" &&
@@ -45,13 +33,13 @@ function hasSyncAppBadgeApi(
 }
 
 function getClearAppBadgeApi() {
-  const badgeNavigator = getBadgeNavigator();
+  const badgeNavigator = getBrowserNavigator();
 
   return hasClearAppBadgeApi(badgeNavigator) ? badgeNavigator : null;
 }
 
 function getSyncAppBadgeApi() {
-  const badgeNavigator = getBadgeNavigator();
+  const badgeNavigator = getBrowserNavigator();
 
   return hasSyncAppBadgeApi(badgeNavigator) ? badgeNavigator : null;
 }

@@ -1,14 +1,20 @@
 import { DOWNLOAD_PREVIEW_IMAGES } from "@/features/download/data/download-preview-images";
+import {
+  getBrowserDocument,
+  getBrowserNavigator,
+} from "@/shared/lib/browser-environment";
 
 type DownloadPreviewDevice = keyof typeof DOWNLOAD_PREVIEW_IMAGES;
 
 export function preloadDownloadPreviewImage() {
-  if (typeof document === "undefined") {
+  const browserDocument = getBrowserDocument();
+
+  if (!browserDocument) {
     return;
   }
 
   const image = getDownloadPreviewImageForDevice();
-  const existingPreload = document.head.querySelector(
+  const existingPreload = browserDocument.head.querySelector(
     `link[rel="preload"][as="image"][href="${image.src}"]`,
   );
 
@@ -16,18 +22,18 @@ export function preloadDownloadPreviewImage() {
     return;
   }
 
-  const link = document.createElement("link");
+  const link = browserDocument.createElement("link");
   link.rel = "preload";
   link.setAttribute("as", "image");
   link.setAttribute("href", image.src);
   link.setAttribute("imagesrcset", image.srcSet);
   link.setAttribute("imagesizes", image.sizes);
   link.setAttribute("fetchpriority", "high");
-  document.head.appendChild(link);
+  browserDocument.head.appendChild(link);
 }
 
 function getDownloadPreviewImageForDevice() {
-  if (typeof navigator === "undefined") {
+  if (!getBrowserNavigator()) {
     return DOWNLOAD_PREVIEW_IMAGES.desktop;
   }
 
@@ -47,7 +53,7 @@ function getDownloadPreviewDevice(): DownloadPreviewDevice {
 }
 
 function getNavigatorUserAgent() {
-  return navigator.userAgent;
+  return getBrowserNavigator()?.userAgent ?? "";
 }
 
 function isIosLikeDevice() {
@@ -61,7 +67,10 @@ function isIosUserAgent(userAgent: string) {
 }
 
 function isTouchMac(userAgent: string) {
-  return userAgent.includes("Macintosh") && navigator.maxTouchPoints > 1;
+  return (
+    userAgent.includes("Macintosh") &&
+    (getBrowserNavigator()?.maxTouchPoints ?? 0) > 1
+  );
 }
 
 function isAndroidDevice() {

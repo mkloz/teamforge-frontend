@@ -1,5 +1,11 @@
 import { useEffect } from "react";
 
+import {
+  cancelDelay,
+  type ScheduledDelayHandle,
+  scheduleDelay,
+} from "@/shared/lib/browser-scheduling";
+
 const FEED_ENHANCEMENT_DELAY_MS = 2500;
 
 export function useFeedEnhancementDelay(
@@ -7,19 +13,19 @@ export function useFeedEnhancementDelay(
   setShouldLoadFeedEnhancements: (shouldLoad: boolean) => void,
 ) {
   useEffect(() => {
-    let timeoutId: number | undefined;
+    let timeoutId: ScheduledDelayHandle | undefined;
 
     if (!hasLoadedBaseData) {
       setShouldLoadFeedEnhancements(false);
     } else {
-      timeoutId = window.setTimeout(() => {
+      timeoutId = scheduleDelay(() => {
         setShouldLoadFeedEnhancements(true);
       }, FEED_ENHANCEMENT_DELAY_MS);
     }
 
     return () => {
       if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
+        cancelDelay(timeoutId);
       }
     };
   }, [hasLoadedBaseData, setShouldLoadFeedEnhancements]);

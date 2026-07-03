@@ -2,6 +2,17 @@ import {
   LANDING_SECTION_IDS,
   type LandingSectionId,
 } from "@/shared/components/public-site/landing-sections";
+import {
+  getBrowserDocumentElement,
+  getBrowserScrollY,
+  getBrowserWindow,
+  scrollBrowserTo,
+} from "@/shared/lib/browser-environment";
+import {
+  cancelDelay,
+  type ScheduledDelayHandle,
+  scheduleDelay,
+} from "@/shared/lib/browser-scheduling";
 import { getElementById, scrollToPageTop } from "@/shared/lib/browser-scroll";
 
 export const LANDING_BELOW_FOLD_REQUEST_EVENT =
@@ -27,28 +38,29 @@ const LANDING_PROGRAMMATIC_SCROLL_CLASS = "landing-programmatic-scroll";
 const LANDING_SCROLL_OFFSET_PX = 64;
 const PROGRAMMATIC_SCROLL_SNAP_RESTORE_MS = 1200;
 
-let restoreScrollSnapTimeout = 0;
+let restoreScrollSnapTimeout: ScheduledDelayHandle | null = null;
 
 function getScrollBehavior(options: ScrollIntoViewOptions) {
   return options.behavior ?? DEFAULT_SCROLL_OPTIONS.behavior;
 }
 
 function disableScrollSnapForProgrammaticScroll(behavior: ScrollBehavior) {
-  if (typeof document === "undefined" || typeof window === "undefined") {
+  const root = getBrowserDocumentElement();
+
+  if (!root) {
     return;
   }
 
-  const root = document.documentElement;
   root.classList.add(LANDING_PROGRAMMATIC_SCROLL_CLASS);
 
   if (restoreScrollSnapTimeout) {
-    window.clearTimeout(restoreScrollSnapTimeout);
+    cancelDelay(restoreScrollSnapTimeout);
   }
 
-  restoreScrollSnapTimeout = window.setTimeout(
+  restoreScrollSnapTimeout = scheduleDelay(
     () => {
       root.classList.remove(LANDING_PROGRAMMATIC_SCROLL_CLASS);
-      restoreScrollSnapTimeout = 0;
+      restoreScrollSnapTimeout = null;
     },
     behavior === "smooth" ? PROGRAMMATIC_SCROLL_SNAP_RESTORE_MS : 120,
   );
@@ -58,21 +70,17 @@ export function scrollLandingElementToStart(
   element: HTMLElement,
   options: ScrollIntoViewOptions,
 ) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
   const behavior = getScrollBehavior(options);
   const top =
     element.id === "hero"
       ? 0
       : element.getBoundingClientRect().top +
-        window.scrollY -
+        getBrowserScrollY() -
         LANDING_SCROLL_OFFSET_PX;
 
   disableScrollSnapForProgrammaticScroll(behavior);
 
-  window.scrollTo({
+  scrollBrowserTo({
     behavior,
     top: Math.max(0, top),
   });
@@ -89,12 +97,14 @@ export function scrollToLandingSection(
     return;
   }
 
-  if (typeof window === "undefined") {
+  const browserWindow = getBrowserWindow();
+
+  if (!browserWindow) {
     return;
   }
 
-  window.dispatchEvent(
-    new CustomEvent<LandingBelowFoldRequestDetail>(
+  browserWindow.dispatchEvent(
+    new browserWindow.CustomEvent<LandingBelowFoldRequestDetail>(
       LANDING_BELOW_FOLD_REQUEST_EVENT,
       {
         detail: {

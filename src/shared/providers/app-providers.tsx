@@ -11,7 +11,13 @@ import type { ToasterProps } from "sonner";
 
 import { appQueryClient } from "@/shared/api/query-client";
 import {
+  addBrowserWindowEventListener,
+  hasBrowserWindow,
+} from "@/shared/lib/browser-environment";
+import {
+  cancelDelay,
   cancelIdleTask,
+  scheduleDelay,
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
@@ -73,8 +79,9 @@ async function loadReactQueryDevtoolsComponent() {
 
 async function loadToasterComponent() {
   const { Toaster } = await import("sonner");
+  const ToasterComponent: ComponentType<ToasterProps> = Toaster;
 
-  return Toaster as ComponentType<ToasterProps>;
+  return ToasterComponent;
 }
 
 export function AppProviders({ children }: { children: ReactNode }) {
@@ -94,7 +101,7 @@ function DeferredReactQueryDevtools() {
     useState<ComponentType<ReactQueryDevtoolsProps> | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || DevtoolsComponent) {
+    if (!hasBrowserWindow() || DevtoolsComponent) {
       return undefined;
     }
 
@@ -120,22 +127,29 @@ function DeferredReactQueryDevtools() {
       }
 
       requested = true;
-      window.clearTimeout(delayTask);
+      cancelDelay(delayTask);
       idleTask = scheduleIdleTask(() => {
         void loadDevtools();
       });
     }
 
-    const delayTask = window.setTimeout(requestDevtools, 60_000);
-
-    window.addEventListener("keydown", requestDevtools, { once: true });
-    window.addEventListener("pointerdown", requestDevtools, { once: true });
+    const delayTask = scheduleDelay(requestDevtools, 60_000);
+    const cleanupKeydown = addBrowserWindowEventListener(
+      "keydown",
+      requestDevtools,
+      { once: true },
+    );
+    const cleanupPointerDown = addBrowserWindowEventListener(
+      "pointerdown",
+      requestDevtools,
+      { once: true },
+    );
 
     return () => {
       cancelled = true;
-      window.clearTimeout(delayTask);
-      window.removeEventListener("keydown", requestDevtools);
-      window.removeEventListener("pointerdown", requestDevtools);
+      cancelDelay(delayTask);
+      cleanupKeydown();
+      cleanupPointerDown();
       if (idleTask) {
         cancelIdleTask(idleTask);
       }
@@ -152,7 +166,7 @@ function DeferredToaster() {
   const shouldRequestToasterRef = useRef(true);
 
   useEffect(() => {
-    if (typeof window === "undefined" || ToasterComponent) {
+    if (!hasBrowserWindow() || ToasterComponent) {
       return undefined;
     }
 
@@ -182,11 +196,14 @@ function DeferredToaster() {
       });
     }
 
-    window.addEventListener(APP_TOAST_HOST_REQUEST_EVENT, requestToaster);
+    const cleanupRequestListener = addBrowserWindowEventListener(
+      APP_TOAST_HOST_REQUEST_EVENT,
+      requestToaster,
+    );
 
     return () => {
       cancelled = true;
-      window.removeEventListener(APP_TOAST_HOST_REQUEST_EVENT, requestToaster);
+      cleanupRequestListener();
       if (idleTask) {
         cancelIdleTask(idleTask);
       }

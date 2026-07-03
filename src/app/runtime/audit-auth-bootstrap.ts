@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { authApi } from "@/shared/api/api";
 import type { AuthTokens } from "@/shared/api/auth-session";
+import { getBrowserWindow } from "@/shared/lib/browser-environment";
 
 const AUDIT_AUTH_TOKENS_PATH = "/audit-auth-tokens.json";
 const auditTokensSchema = z
@@ -9,10 +10,6 @@ const auditTokensSchema = z
     refreshToken: z.string().optional(),
   })
   .passthrough();
-
-type AuditAuthWindow = Window & {
-  __TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED?: boolean;
-};
 
 function parseAuditTokens(payload: unknown): AuthTokens | null {
   const parsedPayload = auditTokensSchema.safeParse(payload);
@@ -28,11 +25,11 @@ function isAuditAuthEnabled() {
   return import.meta.env.VITE_AUDIT_AUTH_ENABLED === "true";
 }
 
-function markAuditAuthBootstrapped(auditWindow: AuditAuthWindow) {
+function markAuditAuthBootstrapped(auditWindow: Window) {
   auditWindow.__TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED = true;
 }
 
-function hasAuditAuthBootstrapped(auditWindow: AuditAuthWindow) {
+function hasAuditAuthBootstrapped(auditWindow: Window) {
   return auditWindow.__TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED === true;
 }
 
@@ -65,7 +62,11 @@ export async function bootstrapAuditAuthSession() {
     return;
   }
 
-  const auditWindow = window as AuditAuthWindow;
+  const auditWindow = getBrowserWindow();
+
+  if (!auditWindow) {
+    return;
+  }
 
   if (hasAuditAuthBootstrapped(auditWindow)) {
     return;

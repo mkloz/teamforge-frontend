@@ -1,3 +1,4 @@
+import { isBrowserSecureContext } from "@/shared/lib/browser-environment";
 import type {
   Coordinates,
   LocationValue,
@@ -84,7 +85,7 @@ function isGeolocationPositionError(
     typeof error === "object" &&
     error !== null &&
     "code" in error &&
-    typeof (error as { code?: unknown }).code === "number"
+    typeof error.code === "number"
   );
 }
 
@@ -173,7 +174,7 @@ const SUGGESTION_KEYBOARD_ACTION_RESOLVERS: Partial<
 };
 
 export function getCurrentAreaErrorMessage(error: unknown) {
-  if (!window.isSecureContext) {
+  if (!isBrowserSecureContext()) {
     return CURRENT_AREA_ERROR_MESSAGES.secureContextRequired;
   }
 

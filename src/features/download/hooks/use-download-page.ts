@@ -10,6 +10,7 @@ import {
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
 import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
+import { getBrowserNavigator } from "@/shared/lib/browser-environment";
 
 const DESKTOP_BROWSER_RULES = [
   { browser: "edge", pattern: /edg\//i },
@@ -91,14 +92,13 @@ function detectDesktopBrowser(): DesktopBrowser {
 }
 
 function getNavigatorUserAgent() {
-  return typeof navigator === "undefined" ? null : navigator.userAgent;
+  return getBrowserNavigator()?.userAgent ?? null;
 }
 
 function isIosDevice(ua: string, uaLower: string) {
   const isTouchMac =
     ua.includes("Macintosh") &&
-    typeof navigator !== "undefined" &&
-    navigator.maxTouchPoints > 1;
+    (getBrowserNavigator()?.maxTouchPoints ?? 0) > 1;
 
   return /iphone|ipad|ipod/.test(uaLower) || isTouchMac;
 }

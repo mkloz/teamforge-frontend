@@ -26,9 +26,18 @@ function getCarouselScrollSnapshot(api: CarouselApi): CarouselScrollSnapshot {
     return EMPTY_CAROUSEL_SCROLL_SNAPSHOT;
   }
 
-  return `${api.canScrollPrev() ? "1" : "0"}${
-    api.canScrollNext() ? "1" : "0"
-  }` as CarouselScrollSnapshot;
+  const canScrollPrev = api.canScrollPrev();
+  const canScrollNext = api.canScrollNext();
+
+  if (canScrollPrev && canScrollNext) {
+    return "11";
+  }
+
+  if (canScrollPrev) {
+    return "10";
+  }
+
+  return canScrollNext ? "01" : "00";
 }
 
 function getEmptyCarouselScrollSnapshot() {

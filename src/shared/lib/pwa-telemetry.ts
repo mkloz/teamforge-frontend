@@ -1,3 +1,9 @@
+import {
+  getBrowserMediaQuery,
+  getBrowserNavigator,
+  hasBrowserWindow,
+  isBrowserSecureContext,
+} from "@/shared/lib/browser-environment";
 import { trackedEventNames } from "@/shared/lib/telemetry-contract";
 import {
   getBrowserNotificationPermission,
@@ -23,21 +29,21 @@ export type PwaPushSubscriptionAction = "disable" | "enable";
 export type PwaTelemetryStatus = "error" | "started" | "success";
 
 function getIsIosStandalone() {
-  if (typeof navigator === "undefined") {
+  const browserNavigator = getBrowserNavigator();
+
+  if (!browserNavigator) {
     return false;
   }
 
-  return (
-    (navigator as Navigator & { standalone?: boolean }).standalone === true
-  );
+  return browserNavigator.standalone === true;
 }
 
 function getPwaDisplayMode() {
-  if (typeof window === "undefined") {
+  if (!hasBrowserWindow()) {
     return "unknown";
   }
 
-  return window.matchMedia?.("(display-mode: standalone)").matches ||
+  return getBrowserMediaQuery("(display-mode: standalone)")?.matches ||
     getIsIosStandalone()
     ? "standalone"
     : "browser";
@@ -49,8 +55,7 @@ function getPwaTelemetryContext(context: PwaTelemetryContext = {}) {
 
   return {
     displayMode,
-    isSecureContext:
-      typeof window === "undefined" ? null : window.isSecureContext,
+    isSecureContext: hasBrowserWindow() ? isBrowserSecureContext() : null,
     isStandalone: displayMode === "standalone",
     notificationPermission: getBrowserNotificationPermission(),
     pushSupported: pushSupport.isSupported,

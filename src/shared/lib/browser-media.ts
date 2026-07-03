@@ -1,3 +1,5 @@
+import { getBrowserNavigator } from "@/shared/lib/browser-environment";
+
 const SUPPORTED_AUDIO_MIME_TYPES = [
   "audio/webm;codecs=opus",
   "audio/webm",
@@ -6,7 +8,9 @@ const SUPPORTED_AUDIO_MIME_TYPES = [
 ];
 
 function canRequestAudioStream() {
-  return typeof navigator.mediaDevices?.getUserMedia === "function";
+  return (
+    typeof getBrowserNavigator()?.mediaDevices?.getUserMedia === "function"
+  );
 }
 
 export function canRecordAudio() {
@@ -14,7 +18,13 @@ export function canRecordAudio() {
 }
 
 export async function requestAudioStream() {
-  return navigator.mediaDevices.getUserMedia({ audio: true });
+  const mediaDevices = getBrowserNavigator()?.mediaDevices;
+
+  if (!mediaDevices) {
+    throw new Error("Audio recording is unavailable in this browser.");
+  }
+
+  return mediaDevices.getUserMedia({ audio: true });
 }
 
 function getSupportedAudioRecordingMimeType() {

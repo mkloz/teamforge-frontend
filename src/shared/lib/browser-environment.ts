@@ -1,20 +1,45 @@
 export {
+  addBrowserDocumentEventListener,
+  createBrowserElement,
   getBrowserActiveElement,
+  getBrowserDocument,
   getBrowserDocumentBody,
   getBrowserDocumentElement,
+  getBrowserElementById,
+  getBrowserVisibilityState,
   hasBrowserDocument,
+  isBrowserDocumentVisible,
 } from "@/shared/lib/browser-environment/document";
-export { hasBrowserNavigator } from "@/shared/lib/browser-environment/navigator";
+export {
+  getBrowserNavigator,
+  getBrowserServiceWorker,
+  hasBrowserNavigator,
+  hasBrowserServiceWorker,
+  isBrowserOnline,
+} from "@/shared/lib/browser-environment/navigator";
 export {
   getBrowserSessionStorageItem,
   setBrowserSessionStorageItem,
 } from "@/shared/lib/browser-environment/session-storage";
 export {
   addBrowserWindowEventListener,
+  decodeBrowserBase64,
+  dispatchBrowserWindowEvent,
   getBrowserComputedStyle,
   getBrowserDevicePixelRatio,
+  getBrowserLocation,
+  getBrowserLocationHash,
+  getBrowserLocationHref,
+  getBrowserLocationOrigin,
   getBrowserMediaQuery,
   getBrowserScrollY,
+  getBrowserViewportSize,
+  getBrowserWindow,
   hasBrowserWindow,
+  hasBrowserWindowFeature,
+  isBrowserSecureContext,
+  openBrowserWindow,
   reloadBrowserLocation,
+  replaceBrowserLocation,
+  scrollBrowserTo,
 } from "@/shared/lib/browser-environment/window";

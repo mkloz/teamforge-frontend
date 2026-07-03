@@ -8,6 +8,7 @@ import type {
 } from "@/features/download/download-page-view-state";
 import { usePublicSiteAuthActions } from "@/shared/components/public-site/public-site-shell";
 import { Button } from "@/shared/components/ui/button";
+import { getBrowserElementById } from "@/shared/lib/browser-environment";
 
 interface HeroCTAButtonsProps {
   canUseNativePrompt: boolean;
@@ -171,7 +172,7 @@ function getHeroStepsCtaLabel({
 }
 
 function scrollToSteps() {
-  document
-    .getElementById("install-steps")
-    ?.scrollIntoView({ behavior: "smooth" });
+  getBrowserElementById("install-steps")?.scrollIntoView({
+    behavior: "smooth",
+  });
 }

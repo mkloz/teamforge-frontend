@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { LANDING_NAV_LINKS } from "@/shared/components/public-site/landing-sections";
+import {
+  getBrowserDocumentBody,
+  getBrowserElementById,
+} from "@/shared/lib/browser-environment";
 import type { LandingNavLinkId } from "./navbar-types";
 
 function isLandingNavLinkId(id: string): id is LandingNavLinkId {
@@ -42,7 +46,7 @@ export function useActiveLandingSection(isLandingPage: boolean) {
           return;
         }
 
-        const element = document.getElementById(link.id);
+        const element = getBrowserElementById(link.id);
 
         if (!element) {
           return;
@@ -56,10 +60,14 @@ export function useActiveLandingSection(isLandingPage: boolean) {
     observeLandingSections();
 
     const mutationObserver = new MutationObserver(observeLandingSections);
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+    const body = getBrowserDocumentBody();
+
+    if (body) {
+      mutationObserver.observe(body, {
+        childList: true,
+        subtree: true,
+      });
+    }
 
     return () => {
       mutationObserver.disconnect();

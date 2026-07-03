@@ -106,12 +106,14 @@ function EmptyStateActions({
 }
 
 function getEmptyActionsMotionProps(shouldReduceMotion: boolean | null) {
+  const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
   return {
     initial: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 3 },
     animate: shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 },
     transition: {
       duration: shouldReduceMotion ? 0.08 : 0.12,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+      ease,
     },
   };
 }

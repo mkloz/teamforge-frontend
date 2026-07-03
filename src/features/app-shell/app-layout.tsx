@@ -4,7 +4,6 @@ import { AppBottomNav } from "@/features/app-shell/components/app-bottom-nav";
 import { AppRouteTransition } from "@/features/app-shell/components/app-route-transition";
 import { useAppNavbarCounters } from "@/features/app-shell/hooks/use-app-navbar-counters";
 import { useAppShellScrollReset } from "@/features/app-shell/hooks/use-app-shell-scroll-reset";
-import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-fallback";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { cn } from "@/shared/lib/utils";
 import { useUiStore } from "@/shared/store/ui.store";
@@ -58,9 +57,7 @@ export function AppLayout({
       >
         <div>
           <AppRouteTransition>
-            <Suspense fallback={<RouteLoadingFallback />}>
-              <Outlet />
-            </Suspense>
+            <Outlet />
           </AppRouteTransition>
         </div>
       </main>

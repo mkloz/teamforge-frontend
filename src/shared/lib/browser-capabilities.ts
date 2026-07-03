@@ -1,7 +1,7 @@
 import { getAppBaseUrl } from "@/shared/lib/app-url";
 import {
-  hasBrowserNavigator,
-  hasBrowserWindow,
+  getBrowserNavigator,
+  openBrowserWindow,
 } from "@/shared/lib/browser-environment";
 
 export interface BrowserShareData {
@@ -21,12 +21,14 @@ export function getCurrentBrowserOrigin(fallback?: string) {
 }
 
 export function canShareBrowserData(shareData: BrowserShareData) {
-  if (!hasBrowserNavigator() || typeof navigator.share !== "function") {
+  const browserNavigator = getBrowserNavigator();
+
+  if (!browserNavigator || typeof browserNavigator.share !== "function") {
     return false;
   }
 
-  return typeof navigator.canShare === "function"
-    ? navigator.canShare(shareData)
+  return typeof browserNavigator.canShare === "function"
+    ? browserNavigator.canShare(shareData)
     : true;
 }
 
@@ -38,7 +40,7 @@ export async function shareBrowserData(
   }
 
   try {
-    await navigator.share(shareData);
+    await getBrowserNavigator()?.share(shareData);
     return "shared";
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
@@ -50,15 +52,17 @@ export async function shareBrowserData(
 }
 
 export async function copyTextToClipboard(value: string) {
+  const browserNavigator = getBrowserNavigator();
+
   if (
-    !hasBrowserNavigator() ||
-    typeof navigator.clipboard?.writeText !== "function"
+    !browserNavigator ||
+    typeof browserNavigator.clipboard?.writeText !== "function"
   ) {
     return false;
   }
 
   try {
-    await navigator.clipboard.writeText(value);
+    await browserNavigator.clipboard.writeText(value);
     return true;
   } catch {
     return false;
@@ -66,9 +70,5 @@ export async function copyTextToClipboard(value: string) {
 }
 
 export function openExternalUrl(url: string) {
-  if (!hasBrowserWindow()) {
-    return false;
-  }
-
-  return window.open(url, "_blank", "noopener,noreferrer") !== null;
+  return openBrowserWindow(url, "_blank", "noopener,noreferrer") !== null;
 }

@@ -10,6 +10,11 @@ import { realtimeClient } from "@/shared/api/realtime-client";
 import { useUnreadAppBadge } from "@/shared/hooks/use-unread-app-badge";
 import { useUnreadDocumentTitleBadge } from "@/shared/hooks/use-unread-document-title-badge";
 import { subscribeAppResumeEvents } from "@/shared/lib/app-resume-events";
+import {
+  getBrowserServiceWorker,
+  isBrowserDocumentVisible,
+  isBrowserOnline,
+} from "@/shared/lib/browser-environment";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import {
   isPwaServiceWorkerMessage,
@@ -66,7 +71,9 @@ function PwaServiceWorkerMessageRuntime() {
   const { isAuthenticated } = useAuthSessionState();
 
   useEffect(() => {
-    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) {
+    const serviceWorker = getBrowserServiceWorker();
+
+    if (!serviceWorker) {
       return undefined;
     }
 
@@ -98,16 +105,10 @@ function PwaServiceWorkerMessageRuntime() {
         });
     }
 
-    navigator.serviceWorker.addEventListener(
-      "message",
-      handleServiceWorkerMessage,
-    );
+    serviceWorker.addEventListener("message", handleServiceWorkerMessage);
 
     return () => {
-      navigator.serviceWorker.removeEventListener(
-        "message",
-        handleServiceWorkerMessage,
-      );
+      serviceWorker.removeEventListener("message", handleServiceWorkerMessage);
     };
   }, [isAuthenticated]);
 
@@ -115,7 +116,7 @@ function PwaServiceWorkerMessageRuntime() {
 }
 
 function isAppVisibleAndOnline() {
-  return document.visibilityState !== "hidden" && navigator.onLine;
+  return isBrowserDocumentVisible() && isBrowserOnline();
 }
 
 function resetPwaRuntimeSurfaceRefresh() {

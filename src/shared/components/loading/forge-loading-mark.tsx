@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { ForgeLoadingHammerShape } from "@/shared/components/loading/forge-loading-hammer-shape";
+import { getBrowserWindow } from "@/shared/lib/browser-environment";
 import { cn } from "@/shared/lib/utils";
 
 interface ForgeLoadingMarkProps {
@@ -35,16 +36,14 @@ type SparkStyle = CSSProperties &
 type ForgeLoadingMarkStyle = CSSProperties &
   Record<"--forge-loading-animation-offset", string>;
 
-type BootWindow = Window & {
-  __TEAMFORGE_BOOT_STARTED_AT?: number;
-};
-
 function getSyncedAnimationOffset() {
-  if (typeof window === "undefined") {
+  const browserWindow = getBrowserWindow();
+
+  if (!browserWindow) {
     return "0ms";
   }
 
-  const bootStartedAt = (window as BootWindow).__TEAMFORGE_BOOT_STARTED_AT;
+  const bootStartedAt = browserWindow.__TEAMFORGE_BOOT_STARTED_AT;
 
   if (typeof bootStartedAt !== "number") {
     return "0ms";

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
+
 interface UseDeferredRenderOptions {
   delayMs?: number;
   initialShouldRender?: boolean;
@@ -19,11 +21,11 @@ export function useDeferredRender({
       return undefined;
     }
 
-    const timeoutId = window.setTimeout(() => {
+    const timeoutId = scheduleDelay(() => {
       setShouldRender(true);
     }, delayMs);
 
-    return () => window.clearTimeout(timeoutId);
+    return () => cancelDelay(timeoutId);
   }, [delayMs, shouldRender]);
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { createLazyRouteLoading } from "@/app/router/lazy-route-loading";
 import { createLazyRouteModule } from "@/app/router/lazy-route-module";
+import { AuthPageLoading } from "@/features/auth/auth-page.loading";
 
 export const landingPageModule = createLazyRouteModule(() =>
   import("@/features/landing/landing-page").then((m) => ({
@@ -55,13 +56,9 @@ export const loginPageModule = createLazyRouteModule(() =>
   })),
 );
 
-export const LoginRouteLoading = createLazyRouteLoading(
-  () =>
-    import("@/features/auth/auth-page.loading").then((m) => ({
-      default: m.AuthPageLoading,
-    })),
-  { mode: "route", variant: "login" },
-);
+export function LoginRouteLoading() {
+  return <AuthPageLoading mode="route" variant="login" />;
+}
 
 export const registerPageModule = createLazyRouteModule(() =>
   import("@/features/auth/register-page").then((m) => ({
@@ -69,13 +66,9 @@ export const registerPageModule = createLazyRouteModule(() =>
   })),
 );
 
-export const RegisterRouteLoading = createLazyRouteLoading(
-  () =>
-    import("@/features/auth/auth-page.loading").then((m) => ({
-      default: m.AuthPageLoading,
-    })),
-  { mode: "route", variant: "register" },
-);
+export function RegisterRouteLoading() {
+  return <AuthPageLoading mode="route" variant="register" />;
+}
 
 export const forgotPasswordPageModule = createLazyRouteModule(() =>
   import("@/features/auth/forgot-password-page").then((m) => ({
@@ -83,13 +76,9 @@ export const forgotPasswordPageModule = createLazyRouteModule(() =>
   })),
 );
 
-export const ForgotPasswordRouteLoading = createLazyRouteLoading(
-  () =>
-    import("@/features/auth/auth-page.loading").then((m) => ({
-      default: m.AuthPageLoading,
-    })),
-  { mode: "route", variant: "forgot-password" },
-);
+export function ForgotPasswordRouteLoading() {
+  return <AuthPageLoading mode="route" variant="forgot-password" />;
+}
 
 export const resetPasswordPageModule = createLazyRouteModule(() =>
   import("@/features/auth/reset-password-page").then((m) => ({
@@ -97,13 +86,9 @@ export const resetPasswordPageModule = createLazyRouteModule(() =>
   })),
 );
 
-export const ResetPasswordRouteLoading = createLazyRouteLoading(
-  () =>
-    import("@/features/auth/auth-page.loading").then((m) => ({
-      default: m.AuthPageLoading,
-    })),
-  { mode: "route", variant: "reset-password" },
-);
+export function ResetPasswordRouteLoading() {
+  return <AuthPageLoading mode="route" variant="reset-password" />;
+}
 
 export const activateAccountPageModule = createLazyRouteModule(() =>
   import("@/features/auth/activate-account-page").then((m) => ({
@@ -111,10 +96,6 @@ export const activateAccountPageModule = createLazyRouteModule(() =>
   })),
 );
 
-export const ActivateAccountRouteLoading = createLazyRouteLoading(
-  () =>
-    import("@/features/auth/auth-page.loading").then((m) => ({
-      default: m.AuthPageLoading,
-    })),
-  { mode: "route", variant: "activate" },
-);
+export function ActivateAccountRouteLoading() {
+  return <AuthPageLoading mode="route" variant="activate" />;
+}

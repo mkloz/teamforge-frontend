@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { getBrowserMediaQuery } from "@/shared/lib/browser-environment";
+
 /**
  * Custom hook to track the state of a media query.
  * @param query The media query string to track.
@@ -9,15 +11,13 @@ export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(() => matchesMediaQuery(query));
 
   useEffect(() => {
-    if (
-      typeof window === "undefined" ||
-      typeof window.matchMedia !== "function"
-    ) {
+    const mediaQuery = getBrowserMediaQuery(query);
+
+    if (!mediaQuery) {
       setMatches(false);
       return undefined;
     }
 
-    const mediaQuery = window.matchMedia(query);
     const syncMatches = () => setMatches(mediaQuery.matches);
 
     syncMatches();
@@ -32,14 +32,7 @@ export function useMediaQuery(query: string): boolean {
 }
 
 function matchesMediaQuery(query: string) {
-  if (
-    typeof window === "undefined" ||
-    typeof window.matchMedia !== "function"
-  ) {
-    return false;
-  }
-
-  return window.matchMedia(query).matches;
+  return getBrowserMediaQuery(query)?.matches ?? false;
 }
 
 function addMediaQueryListener(

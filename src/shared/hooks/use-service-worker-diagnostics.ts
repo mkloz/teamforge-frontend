@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import {
+  addBrowserDocumentEventListener,
+  addBrowserWindowEventListener,
+  getBrowserServiceWorker,
+  getBrowserVisibilityState,
+  hasBrowserServiceWorker,
+} from "@/shared/lib/browser-environment";
+
 type ServiceWorkerDiagnosticsStatus =
   | "active"
   | "checking"
@@ -33,7 +41,7 @@ const UNSUPPORTED_SNAPSHOT: ServiceWorkerDiagnosticsSnapshot = {
 };
 
 function getIsServiceWorkerSupported() {
-  return typeof navigator !== "undefined" && "serviceWorker" in navigator;
+  return hasBrowserServiceWorker();
 }
 
 async function withDiagnosticsTimeout<T>(promise: Promise<T>, fallback: T) {
@@ -63,7 +71,7 @@ function getRegistrationWorker(
 }
 
 function getIsServiceWorkerControlled() {
-  return Boolean(navigator.serviceWorker.controller);
+  return Boolean(getBrowserServiceWorker()?.controller);
 }
 
 function getNotRegisteredSnapshot(): ServiceWorkerDiagnosticsSnapshot {
@@ -116,12 +124,14 @@ function toSnapshot(
 }
 
 async function readServiceWorkerSnapshot() {
-  if (!getIsServiceWorkerSupported()) {
+  const serviceWorker = getBrowserServiceWorker();
+
+  if (!serviceWorker) {
     return UNSUPPORTED_SNAPSHOT;
   }
 
   const registration = await withDiagnosticsTimeout(
-    navigator.serviceWorker.getRegistration(),
+    serviceWorker.getRegistration(),
     undefined,
   );
 
@@ -131,12 +141,14 @@ async function readServiceWorkerSnapshot() {
 async function updateServiceWorkerRegistrationIfNeeded(
   checkForUpdate: boolean,
 ) {
-  if (!checkForUpdate) {
+  const serviceWorker = getBrowserServiceWorker();
+
+  if (!checkForUpdate || !serviceWorker) {
     return;
   }
 
   const registration = await withDiagnosticsTimeout(
-    navigator.serviceWorker.getRegistration(),
+    serviceWorker.getRegistration(),
     undefined,
   );
 
@@ -224,7 +236,7 @@ export function useServiceWorkerDiagnostics() {
     }
 
     function handleVisibilityChange() {
-      if (document.visibilityState === "visible") {
+      if (getBrowserVisibilityState() === "visible") {
         void syncSnapshot();
       }
     }
@@ -234,20 +246,29 @@ export function useServiceWorkerDiagnostics() {
     }
 
     void syncSnapshot();
-    void navigator.serviceWorker.ready.then(syncSnapshot);
+    const serviceWorker = getBrowserServiceWorker();
 
-    window.addEventListener("focus", handleFocus);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    navigator.serviceWorker.addEventListener(
-      "controllerchange",
-      handleControllerChange,
+    if (!serviceWorker) {
+      commitSnapshot(UNSUPPORTED_SNAPSHOT);
+      return () => {
+        isActive = false;
+      };
+    }
+
+    void serviceWorker.ready.then(syncSnapshot);
+
+    const cleanupFocus = addBrowserWindowEventListener("focus", handleFocus);
+    const cleanupVisibilityChange = addBrowserDocumentEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
     );
+    serviceWorker.addEventListener("controllerchange", handleControllerChange);
 
     return () => {
       isActive = false;
-      window.removeEventListener("focus", handleFocus);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      navigator.serviceWorker.removeEventListener(
+      cleanupFocus();
+      cleanupVisibilityChange();
+      serviceWorker.removeEventListener(
         "controllerchange",
         handleControllerChange,
       );

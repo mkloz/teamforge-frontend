@@ -7,6 +7,7 @@ import type {
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 import { SAVED_MESSAGES_CONVERSATION_ID } from "@/features/activity/lib/saved-messages-identity";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import type { ActivityKind } from "@/shared/navigation/activity-navigation";
 import { ConversationListBody } from "./conversation-list-render-state";
 import {
@@ -145,12 +146,12 @@ export function ConversationList({
       return undefined;
     }
 
-    const timeoutId = window.setTimeout(() => {
+    const timeoutId = scheduleDelay(() => {
       setRevealedStagedListKey(stagedListRevealKey);
     }, FULL_LIST_REVEAL_DELAY_MS);
 
     return () => {
-      window.clearTimeout(timeoutId);
+      cancelDelay(timeoutId);
     };
   }, [
     revealedStagedListKey,

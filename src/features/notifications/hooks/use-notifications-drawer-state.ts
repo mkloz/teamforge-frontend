@@ -1,14 +1,28 @@
 import { parseAsBoolean, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 
 export function useNotificationsDrawerState() {
-  const [open, setOpen] = useQueryState(
+  const [urlOpen, setUrlOpen] = useQueryState(
     "notifications",
     parseAsBoolean.withDefault(false).withOptions({ history: "replace" }),
   );
+  const [open, setOpen] = useState(urlOpen);
+
+  useEffect(() => {
+    setOpen(urlOpen);
+  }, [urlOpen]);
 
   return {
     open,
-    openDrawer: () => setOpen(true),
-    closeDrawer: () => setOpen(false),
+    openDrawer: () => {
+      setOpen(true);
+
+      return setUrlOpen(true);
+    },
+    closeDrawer: () => {
+      setOpen(false);
+
+      return setUrlOpen(false);
+    },
   };
 }

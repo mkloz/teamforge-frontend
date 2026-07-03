@@ -2,8 +2,44 @@ export type TeamForgeGoogleMapsTypes = never;
 
 declare global {
   interface Window {
-    google?: GoogleMapsGlobal;
+    google?: Partial<GoogleMapsGlobal> & GoogleIdentityServicesGlobal;
     __teamforgeGoogleMapsPromise?: Promise<void>;
+    __TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED?: boolean;
+    __TEAMFORGE_BOOT_STARTED_AT?: number;
+  }
+
+  interface Navigator {
+    clearAppBadge?: () => Promise<void>;
+    setAppBadge?: (contents?: number) => Promise<void>;
+    standalone?: boolean;
+  }
+
+  interface GoogleIdentityServicesGlobal {
+    accounts?: {
+      oauth2?: {
+        initCodeClient: (config: {
+          callback: (response: GoogleCodeResponse) => void;
+          client_id: string;
+          error_callback: (error: GoogleNonOAuthError) => void;
+          scope: string;
+        }) => GoogleCodeClient;
+      };
+    };
+  }
+
+  interface GoogleCodeResponse {
+    code?: string;
+    error?: string;
+    error_description?: string;
+    error_uri?: string;
+  }
+
+  interface GoogleNonOAuthError {
+    type: "popup_failed_to_open" | "popup_closed" | "unknown";
+  }
+
+  interface GoogleCodeClient {
+    requestCode: () => void;
   }
 
   interface GoogleMapsGlobal {

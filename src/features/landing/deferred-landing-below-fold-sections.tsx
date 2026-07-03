@@ -9,6 +9,16 @@ import {
   type LandingSectionId,
 } from "@/shared/components/public-site/landing-sections";
 import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
+import {
+  addBrowserWindowEventListener,
+  getBrowserElementById,
+  getBrowserLocationHash,
+} from "@/shared/lib/browser-environment";
+import {
+  cancelScheduledAnimationFrame,
+  type ScheduledAnimationFrameHandle,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
 
 const LazyLandingBelowFoldSections = lazy(() =>
   import("@/features/landing/landing-below-fold-sections").then((module) => ({
@@ -25,11 +35,7 @@ function isLandingSectionId(id: string): id is LandingSectionId {
 }
 
 function getInitialScrollRequest() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const targetId = window.location.hash.slice(1);
+  const targetId = getBrowserLocationHash().slice(1);
 
   if (!isLandingSectionId(targetId) || targetId === "hero") {
     return null;
@@ -51,12 +57,12 @@ function isTargetAligned(target: HTMLElement) {
 }
 
 function startDeferredLandingScroll(request: LandingBelowFoldRequestDetail) {
-  let frame = 0;
+  let frame: ScheduledAnimationFrameHandle | null = null;
   let attempts = 0;
   let alignedFrames = 0;
 
   function retryScroll() {
-    const target = document.getElementById(request.targetId);
+    const target = getBrowserElementById(request.targetId);
 
     if (target) {
       scrollLandingElementToStart(target, request.options);
@@ -74,14 +80,16 @@ function startDeferredLandingScroll(request: LandingBelowFoldRequestDetail) {
       alignedFrames < ALIGNED_FRAME_COUNT &&
       attempts < MAX_DEFERRED_SCROLL_FRAMES
     ) {
-      frame = requestAnimationFrame(retryScroll);
+      frame = scheduleAnimationFrame(retryScroll);
     }
   }
 
-  frame = requestAnimationFrame(retryScroll);
+  frame = scheduleAnimationFrame(retryScroll);
 
   return () => {
-    cancelAnimationFrame(frame);
+    if (frame) {
+      cancelScheduledAnimationFrame(frame);
+    }
   };
 }
 
@@ -108,13 +116,13 @@ export function DeferredLandingBelowFoldSections() {
       cancelScrollRef.current = startDeferredLandingScroll(detail);
     };
 
-    window.addEventListener(LANDING_BELOW_FOLD_REQUEST_EVENT, handleRequest);
+    const cleanupRequestListener = addBrowserWindowEventListener(
+      LANDING_BELOW_FOLD_REQUEST_EVENT,
+      handleRequest,
+    );
 
     return () => {
-      window.removeEventListener(
-        LANDING_BELOW_FOLD_REQUEST_EVENT,
-        handleRequest,
-      );
+      cleanupRequestListener();
     };
   }, [setShouldRender]);
 

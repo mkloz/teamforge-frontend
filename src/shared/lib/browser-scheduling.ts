@@ -1,4 +1,4 @@
-import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+import { getBrowserWindow } from "@/shared/lib/browser-environment";
 
 export type ScheduledDelayHandle = ReturnType<typeof globalThis.setTimeout>;
 export type ScheduledIdleTaskHandle =
@@ -30,9 +30,11 @@ export function cancelDelay(handle: ScheduledDelayHandle) {
 }
 
 export function scheduleIdleTask(callback: () => void) {
-  if (hasBrowserWindow() && typeof window.requestIdleCallback === "function") {
+  const browserWindow = getBrowserWindow();
+
+  if (typeof browserWindow?.requestIdleCallback === "function") {
     return {
-      id: window.requestIdleCallback(callback, { timeout: 5_000 }),
+      id: browserWindow.requestIdleCallback(callback, { timeout: 5_000 }),
       type: "idle-callback",
     } satisfies ScheduledIdleTaskHandle;
   }
@@ -44,8 +46,13 @@ export function scheduleIdleTask(callback: () => void) {
 }
 
 export function cancelIdleTask(handle: ScheduledIdleTaskHandle) {
-  if (handle.type === "idle-callback" && hasBrowserWindow()) {
-    window.cancelIdleCallback(handle.id);
+  const browserWindow = getBrowserWindow();
+
+  if (
+    handle.type === "idle-callback" &&
+    typeof browserWindow?.cancelIdleCallback === "function"
+  ) {
+    browserWindow.cancelIdleCallback(handle.id);
     return;
   }
 
@@ -59,12 +66,11 @@ function getCurrentTimeMs() {
 }
 
 export function scheduleAnimationFrame(callback: FrameRequestCallback) {
-  if (
-    hasBrowserWindow() &&
-    typeof window.requestAnimationFrame === "function"
-  ) {
+  const browserWindow = getBrowserWindow();
+
+  if (typeof browserWindow?.requestAnimationFrame === "function") {
     return {
-      id: window.requestAnimationFrame(callback),
+      id: browserWindow.requestAnimationFrame(callback),
       type: "animation-frame",
     } satisfies ScheduledAnimationFrameHandle;
   }
@@ -78,8 +84,13 @@ export function scheduleAnimationFrame(callback: FrameRequestCallback) {
 export function cancelScheduledAnimationFrame(
   handle: ScheduledAnimationFrameHandle,
 ) {
-  if (handle.type === "animation-frame" && hasBrowserWindow()) {
-    window.cancelAnimationFrame(handle.id);
+  const browserWindow = getBrowserWindow();
+
+  if (
+    handle.type === "animation-frame" &&
+    typeof browserWindow?.cancelAnimationFrame === "function"
+  ) {
+    browserWindow.cancelAnimationFrame(handle.id);
     return;
   }
 

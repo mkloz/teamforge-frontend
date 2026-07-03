@@ -1,11 +1,15 @@
-import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+import {
+  getBrowserMediaQuery,
+  hasBrowserWindow,
+  scrollBrowserTo,
+} from "@/shared/lib/browser-environment";
 
 export function scrollWindowToTop() {
   if (!hasBrowserWindow()) {
     return;
   }
 
-  window.scrollTo({ top: 0, behavior: getScrollBehavior() });
+  scrollBrowserTo({ top: 0, behavior: getScrollBehavior() });
 }
 
 export function scrollElementToTop(element: HTMLElement | null) {
@@ -17,7 +21,7 @@ export function scrollElementToTop(element: HTMLElement | null) {
 }
 
 function getScrollBehavior(): ScrollBehavior {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  return getBrowserMediaQuery("(prefers-reduced-motion: reduce)")?.matches
     ? "auto"
     : "smooth";
 }

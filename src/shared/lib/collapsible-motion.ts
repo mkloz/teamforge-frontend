@@ -1,4 +1,7 @@
-import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+import {
+  getBrowserComputedStyle,
+  getBrowserMediaQuery,
+} from "@/shared/lib/browser-environment";
 
 export type CssPropertyPair = readonly [string, string];
 
@@ -73,7 +76,12 @@ export function getCssCollapseRange(
     expandedProperty,
   }: CssCollapseRangeOptions,
 ) {
-  const styles = window.getComputedStyle(element);
+  const styles = getBrowserComputedStyle(element);
+
+  if (!styles) {
+    return Math.max(expandedFallback - collapsedFallback, 1);
+  }
+
   const expandedHeight = getCssPixelValue(
     styles,
     expandedProperty,
@@ -90,8 +98,7 @@ export function getCssCollapseRange(
 
 export function getPrefersReducedMotion() {
   return (
-    hasBrowserWindow() &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    getBrowserMediaQuery("(prefers-reduced-motion: reduce)")?.matches ?? false
   );
 }
 

@@ -9,6 +9,11 @@ import {
   type LandingSectionId,
 } from "@/shared/components/public-site/landing-sections";
 import { Navbar } from "@/shared/components/public-site/public-site-shell";
+import { getBrowserLocationHash } from "@/shared/lib/browser-environment";
+import {
+  cancelScheduledAnimationFrame,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
 
 function isLandingSectionId(id: string): id is LandingSectionId {
   return LANDING_SECTIONS.some((section) => section.id === id);
@@ -18,17 +23,13 @@ export function LandingPageContent() {
   useLandingScrollSnap();
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-
-    const targetId = window.location.hash.slice(1);
+    const targetId = getBrowserLocationHash().slice(1);
 
     if (!isLandingSectionId(targetId)) {
       return undefined;
     }
 
-    const frame = window.requestAnimationFrame(() => {
+    const frame = scheduleAnimationFrame(() => {
       scrollToLandingSection(targetId, {
         behavior: "auto",
         block: "start",
@@ -36,7 +37,7 @@ export function LandingPageContent() {
     });
 
     return () => {
-      window.cancelAnimationFrame(frame);
+      cancelScheduledAnimationFrame(frame);
     };
   }, []);
 

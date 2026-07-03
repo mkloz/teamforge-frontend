@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { addBrowserWindowEventListener } from "@/shared/lib/browser-environment";
 
 interface UseConversationMessageSelectionInput {
   conversationId: string;
@@ -88,8 +89,7 @@ export function useConversationMessageSelection({
       }
     }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return addBrowserWindowEventListener("keydown", handleKeyDown);
   }, [clearMessageSelection, isMessageSelectionMode]);
 
   return {

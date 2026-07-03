@@ -38,6 +38,16 @@ const QUALITY_SUMMARY_PATH = path.join(
   "temp",
   "quality-intelligence-summary.json",
 );
+const BROWSER_GLOBAL_SUMMARY_PATH = path.join(
+  ROOT,
+  "temp",
+  "browser-global-usage-summary.json",
+);
+const TYPE_ASSERTION_SUMMARY_PATH = path.join(
+  ROOT,
+  "temp",
+  "type-assertion-usage-summary.json",
+);
 const numberFormatter = new Intl.NumberFormat("en-US");
 const FILE_SIZE_LINE_LIMIT = 500;
 const FILE_SIZE_BYTE_LIMIT = 60 * 1024;
@@ -213,6 +223,78 @@ async function runQualityIntelligence() {
       result.durationMs,
       [result.stdout, result.stderr],
       "quality summary unavailable",
+    ),
+    commandLine: result.commandLine,
+  };
+}
+
+/**
+ * @returns {Promise<HealthCommandSummary>} Browser global usage summary.
+ */
+async function runBrowserGlobalUsageSummary() {
+  const result = await runCommand({
+    args: ["--quiet"],
+    name: "browser globals",
+    spec: resolveNodeScript("scripts/quality/browser-global-usage.mjs"),
+  });
+  const browserGlobalSummary = readBrowserGlobalHealthSummary();
+
+  if (browserGlobalSummary) {
+    return {
+      badge: browserGlobalSummary.hasFindings ? "review" : "pass",
+      commandLine: result.commandLine,
+      details: browserGlobalSummary.details,
+      durationMs: result.durationMs,
+      name: result.name,
+      output: `${result.stdout}${result.stderr}`,
+      status: result.status,
+      summary: browserGlobalSummary.summary,
+    };
+  }
+
+  return {
+    ...summarizeCommand(
+      result.name,
+      result.status,
+      result.durationMs,
+      [result.stdout, result.stderr],
+      "browser global summary unavailable",
+    ),
+    commandLine: result.commandLine,
+  };
+}
+
+/**
+ * @returns {Promise<HealthCommandSummary>} Type assertion usage summary.
+ */
+async function runTypeAssertionUsageSummary() {
+  const result = await runCommand({
+    args: ["--quiet"],
+    name: "type assertions",
+    spec: resolveNodeScript("scripts/quality/type-assertion-usage.mjs"),
+  });
+  const typeAssertionSummary = readTypeAssertionHealthSummary();
+
+  if (typeAssertionSummary) {
+    return {
+      badge: typeAssertionSummary.hasFindings ? "review" : "pass",
+      commandLine: result.commandLine,
+      details: typeAssertionSummary.details,
+      durationMs: result.durationMs,
+      name: result.name,
+      output: `${result.stdout}${result.stderr}`,
+      status: result.status,
+      summary: typeAssertionSummary.summary,
+    };
+  }
+
+  return {
+    ...summarizeCommand(
+      result.name,
+      result.status,
+      result.durationMs,
+      [result.stdout, result.stderr],
+      "type assertion summary unavailable",
     ),
     commandLine: result.commandLine,
   };
@@ -407,6 +489,151 @@ function readQualityHealthSummary() {
 }
 
 /**
+ * @returns {{ details: string[]; hasFindings: boolean; summary: string } | null} Browser global health summary.
+ */
+function readBrowserGlobalHealthSummary() {
+  try {
+    const payload = readJsonObject(BROWSER_GLOBAL_SUMMARY_PATH);
+    const counts = getRecord(payload, "counts");
+    const findings = getNumber(counts, "findings");
+    const filesWithFindings = getNumber(payload, "filesWithFindings");
+    const direct = getNumber(counts, "direct");
+    const guards = getNumber(counts, "guards");
+    const allowed = getNumber(counts, "allowed");
+    const topFiles = getBrowserGlobalTopFileDetails(payload);
+
+    return {
+      details: [
+        `Direct refs: ${formatNumber(direct)} (${formatNumber(
+          findings,
+        )} findings, ${formatNumber(guards)} guards, ${formatNumber(
+          allowed,
+        )} approved boundary refs)`,
+        ...topFiles,
+      ],
+      hasFindings: findings > 0,
+      summary: `${formatNumber(findings)} findings across ${formatNumber(
+        filesWithFindings,
+      )} files`,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @returns {{ details: string[]; hasFindings: boolean; summary: string } | null} Type assertion health summary.
+ */
+function readTypeAssertionHealthSummary() {
+  try {
+    const payload = readJsonObject(TYPE_ASSERTION_SUMMARY_PATH);
+    const counts = getRecord(payload, "counts");
+    const assertions = getNumber(counts, "assertions");
+    const filesWithAssertions = getNumber(payload, "filesWithAssertions");
+    const asExpressions = getNumber(counts, "asExpressions");
+    const angle = getNumber(counts, "angle");
+    const topFiles = getTypeAssertionTopFileDetails(payload);
+
+    return {
+      details: [
+        `Assertions: ${formatNumber(assertions)} (${formatNumber(
+          asExpressions,
+        )} as-expressions, ${formatNumber(angle)} angle assertions; as-const ignored)`,
+        ...topFiles,
+      ],
+      hasFindings: assertions > 0,
+      summary: `${formatNumber(assertions)} assertions across ${formatNumber(
+        filesWithAssertions,
+      )} files`,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @param {Record<string, unknown>} payload Type assertion summary payload.
+ * @returns {string[]} Top file details.
+ */
+function getTypeAssertionTopFileDetails(payload) {
+  const topFiles = payload.topFiles;
+
+  if (!Array.isArray(topFiles)) {
+    return [];
+  }
+
+  return topFiles
+    .map(formatTypeAssertionTopFile)
+    .filter((detail) => detail !== null)
+    .slice(0, 5);
+}
+
+/**
+ * @param {unknown} value Candidate top file row.
+ * @returns {string | null} Formatted top file detail.
+ */
+function formatTypeAssertionTopFile(value) {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const filePath = value.filePath;
+  const count = Number(value.count);
+  const types = value.types;
+
+  if (
+    typeof filePath !== "string" ||
+    !Number.isFinite(count) ||
+    typeof types !== "string"
+  ) {
+    return null;
+  }
+
+  return `${filePath}: ${formatNumber(count)} assertions (${types})`;
+}
+
+/**
+ * @param {Record<string, unknown>} payload Browser global summary payload.
+ * @returns {string[]} Top file details.
+ */
+function getBrowserGlobalTopFileDetails(payload) {
+  const topFiles = payload.topFiles;
+
+  if (!Array.isArray(topFiles)) {
+    return [];
+  }
+
+  return topFiles
+    .map(formatBrowserGlobalTopFile)
+    .filter((detail) => detail !== null)
+    .slice(0, 5);
+}
+
+/**
+ * @param {unknown} value Candidate top file row.
+ * @returns {string | null} Formatted top file detail.
+ */
+function formatBrowserGlobalTopFile(value) {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const filePath = value.filePath;
+  const count = Number(value.count);
+  const globals = value.globals;
+
+  if (
+    typeof filePath !== "string" ||
+    !Number.isFinite(count) ||
+    typeof globals !== "string"
+  ) {
+    return null;
+  }
+
+  return `${filePath}: ${formatNumber(count)} refs (${globals})`;
+}
+
+/**
  * @param {Record<string, unknown>} record Source record.
  * @param {string} key Field key.
  * @returns {Record<string, unknown>} Nested record.
@@ -586,7 +813,11 @@ function formatReport(gitSummary, commandSummaries, fileSizeSummary) {
     "",
     renderMarkdownBullets([
       "`reports/quality-intelligence.md`: detailed Fallow and React Doctor correlation report.",
+      "`reports/browser-global-usage.md`: direct browser global usage inventory consumed by agent health.",
+      "`reports/type-assertion-usage.md`: TypeScript assertion inventory consumed by agent health.",
       "`temp/quality-intelligence-summary.json`: machine-readable quality metrics consumed by agent health.",
+      "`temp/browser-global-usage-summary.json`: machine-readable browser global metrics consumed by agent health.",
+      "`temp/type-assertion-usage-summary.json`: machine-readable type assertion metrics consumed by agent health.",
       "`reports/react-doctor.md`: detailed React Doctor diagnostics when diagnostics exist.",
     ]),
     "",
@@ -831,6 +1062,8 @@ async function main() {
   const fileSizeSummary = getFileSizeSummary();
   const commandSummaries = await Promise.all([
     runQualityIntelligence(),
+    runBrowserGlobalUsageSummary(),
+    runTypeAssertionUsageSummary(),
     runArchitectureSummary(),
     runFeatureImportSeamsSummary(),
     runKnipSummary(),

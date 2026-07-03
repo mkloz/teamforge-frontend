@@ -1,5 +1,12 @@
 import { useSyncExternalStore } from "react";
 
+import {
+  addBrowserDocumentEventListener,
+  addBrowserWindowEventListener,
+  getBrowserVisibilityState,
+  isBrowserOnline,
+} from "@/shared/lib/browser-environment";
+
 type NetworkStatusListener = () => void;
 
 const networkStatusListeners = new Set<NetworkStatusListener>();
@@ -7,11 +14,7 @@ let unsubscribeBrowserEvents: (() => void) | null = null;
 let onlineSnapshot = readOnlineStatus();
 
 function readOnlineStatus() {
-  if (typeof navigator === "undefined") {
-    return true;
-  }
-
-  return navigator.onLine;
+  return isBrowserOnline();
 }
 
 function emitNetworkStatusChange() {
@@ -32,28 +35,43 @@ function syncOnlineSnapshot() {
 }
 
 function subscribeBrowserNetworkEvents() {
-  if (typeof window === "undefined" || unsubscribeBrowserEvents) {
+  if (unsubscribeBrowserEvents) {
     return;
   }
 
   function handleVisibilityChange() {
-    if (document.visibilityState === "visible") {
+    if (getBrowserVisibilityState() === "visible") {
       syncOnlineSnapshot();
     }
   }
 
-  window.addEventListener("focus", syncOnlineSnapshot);
-  window.addEventListener("online", syncOnlineSnapshot);
-  window.addEventListener("offline", syncOnlineSnapshot);
-  window.addEventListener("pageshow", syncOnlineSnapshot);
-  document.addEventListener("visibilitychange", handleVisibilityChange);
+  const cleanupFocus = addBrowserWindowEventListener(
+    "focus",
+    syncOnlineSnapshot,
+  );
+  const cleanupOnline = addBrowserWindowEventListener(
+    "online",
+    syncOnlineSnapshot,
+  );
+  const cleanupOffline = addBrowserWindowEventListener(
+    "offline",
+    syncOnlineSnapshot,
+  );
+  const cleanupPageShow = addBrowserWindowEventListener(
+    "pageshow",
+    syncOnlineSnapshot,
+  );
+  const cleanupVisibilityChange = addBrowserDocumentEventListener(
+    "visibilitychange",
+    handleVisibilityChange,
+  );
 
   unsubscribeBrowserEvents = () => {
-    window.removeEventListener("focus", syncOnlineSnapshot);
-    window.removeEventListener("online", syncOnlineSnapshot);
-    window.removeEventListener("offline", syncOnlineSnapshot);
-    window.removeEventListener("pageshow", syncOnlineSnapshot);
-    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    cleanupFocus();
+    cleanupOnline();
+    cleanupOffline();
+    cleanupPageShow();
+    cleanupVisibilityChange();
     unsubscribeBrowserEvents = null;
   };
 }

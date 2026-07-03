@@ -1,5 +1,5 @@
 import { config } from "@/config/config";
-import { hasBrowserWindow } from "@/shared/lib/browser-environment";
+import { getBrowserLocationOrigin } from "@/shared/lib/browser-environment";
 import { normalizeBaseUrl } from "@/shared/lib/url-normalization";
 
 export function getAppBaseUrl(fallback?: string | null) {
@@ -9,11 +9,7 @@ export function getAppBaseUrl(fallback?: string | null) {
     return configuredUrl;
   }
 
-  if (hasBrowserWindow()) {
-    return window.location.origin;
-  }
-
-  return normalizeBaseUrl(fallback) ?? "";
+  return getBrowserLocationOrigin() || normalizeBaseUrl(fallback) || "";
 }
 
 export function buildAppUrl(path = "/", fallback?: string | null) {

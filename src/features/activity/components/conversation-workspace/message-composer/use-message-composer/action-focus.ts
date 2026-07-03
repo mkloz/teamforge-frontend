@@ -1,5 +1,6 @@
 import type { RefObject } from "react";
 import { useEffect } from "react";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import { shouldFocusComposerAction } from "../message-composer-interaction-state";
 
 export function useComposerActionFocus({
@@ -36,7 +37,7 @@ export function useComposerActionFocus({
 
     previousActionFocusKeyRef.current = composerActionFocusKey;
 
-    const timeoutId = window.setTimeout(() => {
+    const timeoutId = scheduleDelay(() => {
       focusComposerActionTextarea({
         shouldMoveActionCaretToEnd,
         textarea: textareaRef.current,
@@ -44,7 +45,7 @@ export function useComposerActionFocus({
     }, 0);
 
     return () => {
-      window.clearTimeout(timeoutId);
+      cancelDelay(timeoutId);
     };
   }, [
     composerActionFocusKey,

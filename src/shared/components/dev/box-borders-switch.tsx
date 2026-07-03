@@ -2,19 +2,26 @@ import { Box } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 import { Button } from "@/shared/components/ui/button";
+import { getBrowserDocument } from "@/shared/lib/browser-environment";
 
 const BOX_BORDERS_STYLE_ID = "teamforge-dev-box-borders";
 
 function removeBoxBordersStyle() {
-  document.getElementById(BOX_BORDERS_STYLE_ID)?.remove();
+  getBrowserDocument()?.getElementById(BOX_BORDERS_STYLE_ID)?.remove();
 }
 
 function applyBoxBordersStyle() {
-  if (document.getElementById(BOX_BORDERS_STYLE_ID)) {
+  const browserDocument = getBrowserDocument();
+
+  if (!browserDocument?.head) {
     return;
   }
 
-  const style = document.createElement("style");
+  if (browserDocument.getElementById(BOX_BORDERS_STYLE_ID)) {
+    return;
+  }
+
+  const style = browserDocument.createElement("style");
   style.id = BOX_BORDERS_STYLE_ID;
   style.textContent = `
  * {
@@ -23,7 +30,7 @@ function applyBoxBordersStyle() {
  }
  `;
 
-  document.head.append(style);
+  browserDocument.head.append(style);
 }
 
 export function BoxBordersSwitch() {

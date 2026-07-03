@@ -5,6 +5,8 @@ import {
   ContextMenuContent,
   ContextMenuTrigger,
 } from "@/shared/components/ui/context-menu";
+import { getBrowserDocument } from "@/shared/lib/browser-environment";
+import { scheduleDelay } from "@/shared/lib/browser-scheduling";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { DeleteMessageDialog } from "./delete-message-dialog";
 import { ForwardMessageDialog } from "./forward-message-dialog";
@@ -66,9 +68,10 @@ export function MessageContextMenu({
   };
   const requestClose = () => {
     handleOpenChange(false);
-    window.setTimeout(() => {
+    scheduleDelay(() => {
       const menuElement =
-        contentRef.current ?? document.querySelector("[role='menu']");
+        contentRef.current ??
+        getBrowserDocument()?.querySelector("[role='menu']");
 
       menuElement?.dispatchEvent(
         new KeyboardEvent("keydown", {

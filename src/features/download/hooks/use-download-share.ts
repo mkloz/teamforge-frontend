@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { buildAppUrl } from "@/shared/lib/app-url";
+import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
+import { getBrowserLocationHref } from "@/shared/lib/browser-environment";
 
 const DOWNLOAD_PAGE_LINK_COPY_RESET_MS = 2500;
 
@@ -7,7 +9,7 @@ export function useDownloadPageLinkCopy() {
   const [copied, setCopied] = useState(false);
 
   async function copyCurrentPageUrl() {
-    await navigator.clipboard.writeText(window.location.href);
+    await copyTextToClipboard(getDownloadPageLink());
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
@@ -18,7 +20,5 @@ export function useDownloadPageLinkCopy() {
 }
 
 export function getDownloadPageLink() {
-  return typeof window !== "undefined"
-    ? window.location.href
-    : buildAppUrl("/download");
+  return getBrowserLocationHref() || buildAppUrl("/download");
 }

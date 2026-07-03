@@ -1,3 +1,9 @@
+import {
+  addBrowserDocumentEventListener,
+  addBrowserWindowEventListener,
+  getBrowserVisibilityState,
+} from "@/shared/lib/browser-environment";
+
 type AppResumeReason =
   | "app foreground"
   | "network reconnect"
@@ -7,10 +13,6 @@ type AppResumeReason =
 type AppResumeListener = (reason: AppResumeReason) => void;
 
 export function subscribeAppResumeEvents(listener: AppResumeListener) {
-  if (typeof window === "undefined" || typeof document === "undefined") {
-    return () => undefined;
-  }
-
   function handleFocus() {
     listener("window focus");
   }
@@ -26,20 +28,26 @@ export function subscribeAppResumeEvents(listener: AppResumeListener) {
   }
 
   function handleVisibilityChange() {
-    if (document.visibilityState === "visible") {
+    if (getBrowserVisibilityState() === "visible") {
       listener("app foreground");
     }
   }
 
-  window.addEventListener("focus", handleFocus);
-  window.addEventListener("online", handleOnline);
-  window.addEventListener("pageshow", handlePageShow);
-  document.addEventListener("visibilitychange", handleVisibilityChange);
+  const cleanupFocus = addBrowserWindowEventListener("focus", handleFocus);
+  const cleanupOnline = addBrowserWindowEventListener("online", handleOnline);
+  const cleanupPageShow = addBrowserWindowEventListener(
+    "pageshow",
+    handlePageShow,
+  );
+  const cleanupVisibilityChange = addBrowserDocumentEventListener(
+    "visibilitychange",
+    handleVisibilityChange,
+  );
 
   return () => {
-    window.removeEventListener("focus", handleFocus);
-    window.removeEventListener("online", handleOnline);
-    window.removeEventListener("pageshow", handlePageShow);
-    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    cleanupFocus();
+    cleanupOnline();
+    cleanupPageShow();
+    cleanupVisibilityChange();
   };
 }

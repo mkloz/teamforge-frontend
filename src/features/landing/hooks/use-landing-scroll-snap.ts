@@ -1,14 +1,17 @@
 import { useEffect } from "react";
 
+import { getBrowserDocumentElement } from "@/shared/lib/browser-environment";
+
 const LANDING_SCROLL_SNAP_CLASS = "landing-scroll-snap";
 
 export function useLandingScrollSnap() {
   useEffect(() => {
-    if (typeof document === "undefined") {
+    const root = getBrowserDocumentElement();
+
+    if (!root) {
       return undefined;
     }
 
-    const root = document.documentElement;
     root.classList.add(LANDING_SCROLL_SNAP_CLASS);
 
     return () => {

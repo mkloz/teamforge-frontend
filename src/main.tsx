@@ -18,10 +18,6 @@ const FAST_BOOT_PUBLIC_PATH_PREFIXES = [
 ] as const;
 const PWA_LAUNCH_SOURCE = "pwa";
 
-type BootWindow = Window & {
-  __TEAMFORGE_BOOT_STARTED_AT?: number;
-};
-
 const isRedirectingToLocalhost = redirectLocalIpToLocalhost();
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -35,8 +31,7 @@ function isAuditAuthEnabled() {
 }
 
 function getBootRenderDelay() {
-  const bootStartedAt =
-    (window as BootWindow).__TEAMFORGE_BOOT_STARTED_AT ?? performance.now();
+  const bootStartedAt = window.__TEAMFORGE_BOOT_STARTED_AT ?? performance.now();
   const bootElapsedMs = performance.now() - bootStartedAt;
   const minimumBootDurationMs = getMinimumBootDurationMs();
 

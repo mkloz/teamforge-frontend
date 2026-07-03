@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { subscribeAppResumeEvents } from "@/shared/lib/app-resume-events";
+import {
+  isBrowserDocumentVisible,
+  isBrowserOnline,
+} from "@/shared/lib/browser-environment";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import type { ChatApi } from "@/shared/schemas";
 import { getChatUnreadCount } from "./activity-message-timeline-state";
@@ -149,8 +153,8 @@ function shouldSkipResumeRefetch(
   resumeRefetchInFlight: Promise<void> | null,
 ) {
   return (
-    document.visibilityState === "hidden" ||
-    !navigator.onLine ||
+    !isBrowserDocumentVisible() ||
+    !isBrowserOnline() ||
     isFetchingMessages ||
     Boolean(resumeRefetchInFlight)
   );

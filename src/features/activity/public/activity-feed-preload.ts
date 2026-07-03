@@ -5,5 +5,6 @@ export function getActivityFeedPreloadQueries() {
     activityQueries.groups(),
     activityQueries.chats(),
     activityQueries.friendships(),
+    activityQueries.savedMessages(),
   ] as const;
 }

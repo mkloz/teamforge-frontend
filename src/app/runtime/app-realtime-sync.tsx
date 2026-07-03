@@ -3,6 +3,13 @@ import { useEffect, useSyncExternalStore } from "react";
 import { router } from "@/router";
 import { authSession } from "@/shared/api/auth-session";
 import {
+  addBrowserDocumentEventListener,
+  addBrowserWindowEventListener,
+  getBrowserVisibilityState,
+  isBrowserDocumentVisible,
+  isBrowserOnline,
+} from "@/shared/lib/browser-environment";
+import {
   cancelIdleTask,
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
@@ -50,7 +57,7 @@ function getRealtimeRouteDelayMs(pathname: string) {
 }
 
 function isAppVisibleAndOnline() {
-  return document.visibilityState !== "hidden" && navigator.onLine;
+  return isBrowserDocumentVisible() && isBrowserOnline();
 }
 
 function useRealtimeRouteDelayMs() {
@@ -119,31 +126,43 @@ export function AppRealtimeSync() {
           }
         };
         const handleVisibilityChange = () => {
-          if (document.visibilityState === "hidden") {
+          if (getBrowserVisibilityState() === "hidden") {
             disconnectRealtimeSession();
             return;
           }
 
-          if (document.visibilityState === "visible") {
+          if (getBrowserVisibilityState() === "visible") {
             reconnectRealtimeWhenReady();
           }
         };
 
-        window.addEventListener("focus", handleFocus);
-        window.addEventListener("online", handleOnline);
-        window.addEventListener("pagehide", handlePageHide);
-        window.addEventListener("pageshow", handlePageShow);
-        document.addEventListener("visibilitychange", handleVisibilityChange);
+        const cleanupFocus = addBrowserWindowEventListener(
+          "focus",
+          handleFocus,
+        );
+        const cleanupOnline = addBrowserWindowEventListener(
+          "online",
+          handleOnline,
+        );
+        const cleanupPageHide = addBrowserWindowEventListener(
+          "pagehide",
+          handlePageHide,
+        );
+        const cleanupPageShow = addBrowserWindowEventListener(
+          "pageshow",
+          handlePageShow,
+        );
+        const cleanupVisibilityChange = addBrowserDocumentEventListener(
+          "visibilitychange",
+          handleVisibilityChange,
+        );
 
         cleanup = () => {
-          window.removeEventListener("focus", handleFocus);
-          window.removeEventListener("online", handleOnline);
-          window.removeEventListener("pagehide", handlePageHide);
-          window.removeEventListener("pageshow", handlePageShow);
-          document.removeEventListener(
-            "visibilitychange",
-            handleVisibilityChange,
-          );
+          cleanupFocus();
+          cleanupOnline();
+          cleanupPageHide();
+          cleanupPageShow();
+          cleanupVisibilityChange();
           unsubscribeRealtimeEvents();
           unsubscribeSession();
           disconnectRealtimeSession();

@@ -33,9 +33,13 @@ function questionSet(itemsPerDimension: number): IpipQuestion[] {
 }
 
 function answersFor(questions: IpipQuestion[], value: RawAnswers[number]) {
-  return Object.fromEntries(
-    questions.map((item) => [item.id, value]),
-  ) as RawAnswers;
+  const answers: RawAnswers = {};
+
+  for (const item of questions) {
+    answers[item.id] = value;
+  }
+
+  return answers;
 }
 
 describe("calculateVector", () => {

@@ -1,4 +1,13 @@
 import type { WebPushSubscriptionPayload } from "@/shared/api/web-push";
+import {
+  decodeBrowserBase64,
+  getBrowserNavigator,
+  hasBrowserNavigator,
+  hasBrowserServiceWorker,
+  hasBrowserWindow,
+  hasBrowserWindowFeature,
+  isBrowserSecureContext,
+} from "@/shared/lib/browser-environment";
 
 export type BrowserNotificationPermission =
   | NotificationPermission
@@ -51,24 +60,23 @@ interface CompletePushSubscriptionSerializationParts {
 
 const WEB_PUSH_SUPPORT_CHECKS: readonly WebPushSupportCheck[] = [
   {
-    isUnavailable: () =>
-      typeof window === "undefined" || typeof navigator === "undefined",
+    isUnavailable: () => !hasBrowserWindow() || !hasBrowserNavigator(),
     reason: "window-unavailable",
   },
   {
-    isUnavailable: () => !window.isSecureContext,
+    isUnavailable: () => !isBrowserSecureContext(),
     reason: "insecure-context",
   },
   {
-    isUnavailable: () => !("serviceWorker" in navigator),
+    isUnavailable: () => !hasBrowserServiceWorker(),
     reason: "service-worker-unavailable",
   },
   {
-    isUnavailable: () => !("PushManager" in window),
+    isUnavailable: () => !hasBrowserWindowFeature("PushManager"),
     reason: "push-manager-unavailable",
   },
   {
-    isUnavailable: () => !("Notification" in window),
+    isUnavailable: () => !hasBrowserWindowFeature("Notification"),
     reason: "notifications-unavailable",
   },
 ];
@@ -94,7 +102,7 @@ export function getWebPushSupport(): WebPushSupport {
 }
 
 export function getBrowserNotificationPermission(): BrowserNotificationPermission {
-  if (typeof window === "undefined" || !("Notification" in window)) {
+  if (!hasBrowserWindowFeature("Notification")) {
     return "unsupported";
   }
 
@@ -177,8 +185,14 @@ function assertNotificationPermissionGranted(
 }
 
 async function getReadableServiceWorkerRegistration() {
+  const browserNavigator = getBrowserNavigator();
+
+  if (!browserNavigator || !("serviceWorker" in browserNavigator)) {
+    return null;
+  }
+
   const registration = await withServiceWorkerTimeout(
-    navigator.serviceWorker.getRegistration(),
+    browserNavigator.serviceWorker.getRegistration(),
     undefined,
   );
 
@@ -186,7 +200,7 @@ async function getReadableServiceWorkerRegistration() {
     return registration;
   }
 
-  return withServiceWorkerTimeout(navigator.serviceWorker.ready, null);
+  return withServiceWorkerTimeout(browserNavigator.serviceWorker.ready, null);
 }
 
 async function getRequiredServiceWorkerRegistration() {
@@ -289,7 +303,7 @@ export function serializeBrowserPushSubscription(
 function urlBase64ToUint8Array(value: string) {
   const padding = "=".repeat((4 - (value.length % 4)) % 4);
   const base64 = `${value}${padding}`.replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
+  const rawData = decodeBrowserBase64(base64);
   const output = new Uint8Array(rawData.length);
 
   for (let index = 0; index < rawData.length; index += 1) {

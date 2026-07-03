@@ -25,9 +25,7 @@ function isRecord(value: unknown): value is Record<PropertyKey, unknown> {
   return Boolean(value) && typeof value === "object";
 }
 
-function hasRequiredPwaMessageFields(
-  candidate: Partial<PwaServiceWorkerMessage>,
-) {
+function hasRequiredPwaMessageFields(candidate: Record<PropertyKey, unknown>) {
   return (
     isMessageType(candidate.type) &&
     typeof candidate.route === "string" &&
@@ -43,7 +41,5 @@ export function isPwaServiceWorkerMessage(
     return false;
   }
 
-  const candidate = value as Partial<PwaServiceWorkerMessage>;
-
-  return hasRequiredPwaMessageFields(candidate);
+  return hasRequiredPwaMessageFields(value);
 }

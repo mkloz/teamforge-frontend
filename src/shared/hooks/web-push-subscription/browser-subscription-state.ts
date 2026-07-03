@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  addBrowserDocumentEventListener,
+  addBrowserWindowEventListener,
+  getBrowserVisibilityState,
+} from "@/shared/lib/browser-environment";
+import {
   type BrowserNotificationPermission,
   getBrowserNotificationPermission,
   getBrowserPushSubscription,
@@ -54,20 +59,26 @@ export function useBrowserPushSubscriptionState(): BrowserPushSubscriptionState 
     }
 
     function handleVisibilityChange() {
-      if (document.visibilityState === "visible") {
+      if (getBrowserVisibilityState() === "visible") {
         void syncBrowserState();
       }
     }
 
     void syncBrowserState();
 
-    window.addEventListener("focus", syncBrowserState);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const cleanupFocus = addBrowserWindowEventListener(
+      "focus",
+      syncBrowserState,
+    );
+    const cleanupVisibilityChange = addBrowserDocumentEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
+    );
 
     return () => {
       isActive = false;
-      window.removeEventListener("focus", syncBrowserState);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      cleanupFocus();
+      cleanupVisibilityChange();
     };
   }, [refreshBrowserSubscription]);
 

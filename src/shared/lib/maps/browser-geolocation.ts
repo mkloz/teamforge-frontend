@@ -1,21 +1,19 @@
-import { hasBrowserNavigator } from "@/shared/lib/browser-environment";
+import { getBrowserNavigator } from "@/shared/lib/browser-environment";
 import type { Coordinates } from "@/shared/lib/maps/location.types";
 
 export function isGeolocationAvailable() {
-  if (!hasBrowserNavigator()) {
-    return false;
-  }
-
-  return Boolean(navigator.geolocation);
+  return Boolean(getBrowserNavigator()?.geolocation);
 }
 
 export function getCurrentCoordinates() {
-  if (!isGeolocationAvailable()) {
+  const geolocation = getBrowserNavigator()?.geolocation;
+
+  if (!geolocation) {
     return Promise.reject(new Error("Geolocation is unavailable."));
   }
 
   return new Promise<Coordinates>((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
+    geolocation.getCurrentPosition(
       (position) => {
         resolve({
           lat: position.coords.latitude,
