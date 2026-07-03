@@ -69,6 +69,17 @@ function getConcurrency() {
 }
 
 /**
+ * @returns {string[]} Optional Oxlint thread arguments.
+ */
+function getOxlintThreadArgs() {
+  const value = Number(process.env.OXLINT_THREADS);
+
+  return Number.isInteger(value) && value > 0
+    ? ["--threads", String(value)]
+    : [];
+}
+
+/**
  * @param {VerifyMode} mode Verify mode.
  * @returns {TaskSpec[]} Tasks.
  */
@@ -126,6 +137,7 @@ function createOxlintTask() {
       "--format",
       "stylish",
       "--no-error-on-unmatched-pattern",
+      ...getOxlintThreadArgs(),
       ".",
     ],
   };
