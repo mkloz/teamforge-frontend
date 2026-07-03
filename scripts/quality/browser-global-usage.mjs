@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 // @ts-check
 
-import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
 import {
@@ -9,7 +8,6 @@ import {
   formatDuration,
   formatStatusBadge,
   ROOT,
-  readRequiredOptionValue,
   renderBullets,
   renderKeyValues,
   renderMarkdownTable,
@@ -18,6 +16,13 @@ import {
   writeJsonFile,
   writeTextFile,
 } from "../shared/command-utils.mjs";
+import {
+  collectTypeScriptSourceFiles,
+  getTopReferenceFiles,
+  parseQualityScanArgs,
+  readTypeScriptSourceFile,
+  renderMarkdownBullets,
+} from "./quality-scan-utils.mjs";
 
 /**
  * @typedef {"allowed" | "finding" | "guard" | "type-only"} BrowserGlobalKind
@@ -27,11 +32,9 @@ import {
  * @typedef {{ count: number; filePath: string; globals: string }} FileFindingSummary
  * @typedef {{ allowed: number; direct: number; findings: number; guards: number; scannedFiles: number; typeOnly: number }} BrowserGlobalCounts
  * @typedef {{ counts: BrowserGlobalCounts; filesWithFindings: number; generatedAt: string; topFiles: FileFindingSummary[] }} BrowserGlobalSummary
- * @typedef {(options: CliOptions) => void} BooleanOptionSetter
- * @typedef {(options: CliOptions, value: string) => void} ValueOptionSetter
  */
 
-const SOURCE_ROOT = path.join(ROOT, "src");
+const SOURCE_ROOTS = [path.join(ROOT, "src")];
 const DEFAULT_REPORT_FILE = path.join(
   ROOT,
   "reports",
@@ -43,21 +46,12 @@ const DEFAULT_JSON_FILE = path.join(
   "browser-global-usage-summary.json",
 );
 const FINDINGS_DISPLAY_LIMIT = 80;
-const SOURCE_EXTENSIONS = new Set([".ts", ".tsx"]);
 /** @type {readonly BrowserGlobalName[]} */
 const BROWSER_GLOBALS = ["document", "navigator", "window"];
 const BROWSER_GLOBAL_SET = new Set(BROWSER_GLOBALS);
 const ALLOWED_DIRECTORIES = ["src/shared/lib/browser-environment/"];
 const ALLOWED_FILES = new Set(["src/main.tsx"]);
-const SKIPPED_DIRECTORIES = new Set([
-  ".git",
-  "coverage",
-  "dist",
-  "node_modules",
-  "reports",
-  "temp",
-]);
-/** @type {Map<string, BooleanOptionSetter>} */
+/** @type {Map<string, import("./quality-scan-utils.mjs").BooleanOptionSetter>} */
 const BOOLEAN_OPTIONS = new Map([
   [
     "--quiet",
@@ -72,81 +66,22 @@ const BOOLEAN_OPTIONS = new Map([
     },
   ],
 ]);
-/** @type {Map<string, ValueOptionSetter>} */
-const VALUE_OPTIONS = new Map([
-  ["--json-file", assignJsonFile],
-  ["--report-file", assignReportFile],
-]);
 
 /**
  * @param {string[]} argv CLI arguments.
  * @returns {CliOptions} Parsed options.
  */
 function parseArgs(argv) {
-  /** @type {CliOptions} */
-  const options = {
-    jsonFile: DEFAULT_JSON_FILE,
-    quiet: false,
-    reportFile: DEFAULT_REPORT_FILE,
-    strict: false,
-  };
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const consumed = applyArg(options, argv, index);
-    index += consumed;
-  }
-
-  return options;
-}
-
-/**
- * @param {CliOptions} options Mutable options.
- * @param {string[]} argv CLI arguments.
- * @param {number} index Current argv index.
- * @returns {number} Additional argv indexes consumed.
- */
-function applyArg(options, argv, index) {
-  const arg = argv[index];
-  const booleanSetter = BOOLEAN_OPTIONS.get(arg);
-
-  if (booleanSetter) {
-    booleanSetter(options);
-    return 0;
-  }
-
-  const valueSetter = VALUE_OPTIONS.get(arg);
-
-  if (valueSetter) {
-    valueSetter(options, readRequiredOptionValue(argv, index, arg));
-    return 1;
-  }
-
-  for (const [option, setter] of VALUE_OPTIONS) {
-    const prefix = `${option}=`;
-
-    if (arg.startsWith(prefix)) {
-      setter(options, arg.slice(prefix.length));
-      return 0;
-    }
-  }
-
-  throw new Error(`Unknown browser-global-usage argument: ${arg}`);
-}
-
-/**
- * @param {CliOptions} options Mutable options.
- * @param {string} value JSON output path.
- */
-function assignJsonFile(options, value) {
-  options.jsonFile = value;
-}
-
-/**
- * @param {CliOptions} options Mutable options.
- * @param {string} value Report output path.
- */
-function assignReportFile(options, value) {
-  options.reportFile = value;
+  return parseQualityScanArgs(argv, {
+    booleanOptions: BOOLEAN_OPTIONS,
+    defaults: {
+      jsonFile: DEFAULT_JSON_FILE,
+      quiet: false,
+      reportFile: DEFAULT_REPORT_FILE,
+      strict: false,
+    },
+    scriptName: "browser-global-usage",
+  });
 }
 
 /**
@@ -155,7 +90,9 @@ function assignReportFile(options, value) {
  */
 async function run(options) {
   const startedAt = performance.now();
-  const sourceFiles = await collectSourceFiles(SOURCE_ROOT);
+  const sourceFiles = await collectTypeScriptSourceFiles({
+    sourceRoots: SOURCE_ROOTS,
+  });
   const references = await scanSourceFiles(sourceFiles);
   const summary = createSummary(sourceFiles.length, references);
 
@@ -175,49 +112,6 @@ async function run(options) {
 }
 
 /**
- * @param {string} directory Absolute directory.
- * @returns {Promise<string[]>} Repo-relative source files.
- */
-async function collectSourceFiles(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const fileGroups = await Promise.all(
-    entries.map((entry) => collectSourceEntryFiles(directory, entry)),
-  );
-
-  return fileGroups.flat().toSorted();
-}
-
-/**
- * @param {string} directory Absolute parent directory.
- * @param {import("node:fs").Dirent} entry Directory entry.
- * @returns {Promise<string[]>} Repo-relative source files.
- */
-async function collectSourceEntryFiles(directory, entry) {
-  const absolutePath = path.join(directory, entry.name);
-  const relativePath = toRepoRelativePath(absolutePath);
-
-  if (entry.isDirectory()) {
-    if (SKIPPED_DIRECTORIES.has(entry.name)) {
-      return [];
-    }
-
-    return collectSourceFiles(absolutePath);
-  }
-
-  return isSourceFile(relativePath) ? [relativePath] : [];
-}
-
-/**
- * @param {string} filePath Repo-relative file path.
- * @returns {boolean} Whether this is a TypeScript source file.
- */
-function isSourceFile(filePath) {
-  const extension = path.extname(filePath);
-
-  return SOURCE_EXTENSIONS.has(extension);
-}
-
-/**
  * @param {string[]} sourceFiles Repo-relative source files.
  * @returns {Promise<BrowserGlobalReference[]>} Browser global references.
  */
@@ -232,16 +126,7 @@ async function scanSourceFiles(sourceFiles) {
  * @returns {Promise<BrowserGlobalReference[]>} Browser global references.
  */
 async function scanSourceFile(filePath) {
-  const absolutePath = path.join(ROOT, filePath);
-  const text = await readFile(absolutePath, "utf8");
-  const sourceFile = ts.createSourceFile(
-    filePath,
-    text,
-    ts.ScriptTarget.Latest,
-    true,
-    filePath.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
-  );
-  const lines = text.split(/\r?\n/u);
+  const { lines, sourceFile } = await readTypeScriptSourceFile(filePath);
   /** @type {BrowserGlobalReference[]} */
   const references = [];
 
@@ -499,28 +384,7 @@ function countReferences(references, kind) {
  * @returns {FileFindingSummary[]} Top files.
  */
 function getTopFiles(findings) {
-  /** @type {Map<string, BrowserGlobalReference[]>} */
-  const findingsByFile = new Map();
-
-  for (const finding of findings) {
-    const fileFindings = findingsByFile.get(finding.filePath) ?? [];
-    fileFindings.push(finding);
-    findingsByFile.set(finding.filePath, fileFindings);
-  }
-
-  return [...findingsByFile]
-    .map(([filePath, fileFindings]) => ({
-      count: fileFindings.length,
-      filePath,
-      globals: [...new Set(fileFindings.map((finding) => finding.global))]
-        .toSorted()
-        .join(", "),
-    }))
-    .toSorted(
-      (left, right) =>
-        right.count - left.count || left.filePath.localeCompare(right.filePath),
-    )
-    .slice(0, 12);
+  return getTopReferenceFiles(findings, "globals", (finding) => finding.global);
 }
 
 /**
@@ -593,14 +457,6 @@ function formatReport(summary, references, durationMs) {
     ]),
     "",
   ].join("\n");
-}
-
-/**
- * @param {string[]} items Summary items.
- * @returns {string} Markdown bullets.
- */
-function renderMarkdownBullets(items) {
-  return items.map((item) => `- ${item}`).join("\n");
 }
 
 /**

@@ -61,7 +61,7 @@ function TrustPopoverContent({
   ];
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       <div>
         <p className="font-semibold text-sm text-white">Trust score</p>
         <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
@@ -70,7 +70,7 @@ function TrustPopoverContent({
         </p>
       </div>
 
-      <div className="space-y-1.5">
+      <div className="flex flex-col gap-1.5">
         {tiers.map((tier) => (
           <div
             key={tier.label}

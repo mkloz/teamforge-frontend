@@ -28,8 +28,8 @@ function getActionButtonShadowClassName(isPrimary: boolean) {
 
 function getStaticPublicThemeButtonClassName(isPrimary: boolean) {
   return isPrimary
-    ? "border-forge-teal bg-forge-teal text-white hover:shadow-[0_4px_0_#042f2e] focus-visible:ring-forge-teal"
-    : "border-white bg-transparent text-white hover:shadow-[0_4px_0_rgba(242,245,241,0.88)] focus-visible:ring-white";
+    ? "border-forge-teal bg-forge-teal text-white hover:shadow-button-primary focus-visible:ring-forge-teal"
+    : "border-white bg-transparent text-white hover:shadow-button-outline-dark focus-visible:ring-white";
 }
 
 export function actionButtonClassName({

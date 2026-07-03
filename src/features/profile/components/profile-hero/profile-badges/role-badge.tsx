@@ -55,7 +55,7 @@ export function RoleBadge({
         sideOffset={10}
         className="w-64 border-white/8 bg-ink p-4"
       >
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <div>
             <p className="font-semibold text-sm text-white">{archetype}</p>
             <p className="mt-0.5 text-slate-muted text-xs">

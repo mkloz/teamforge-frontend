@@ -8,17 +8,13 @@ import {
   LANDING_SECTIONS,
   type LandingSectionId,
 } from "@/shared/components/public-site/landing-sections";
-import {
-  getBrowserDocumentBody,
-  getBrowserScrollY,
-  hasBrowserDocument,
-} from "@/shared/lib/browser-environment";
+import { useObservedLandingSection } from "@/shared/components/public-site/use-observed-landing-section";
+import { getBrowserScrollY } from "@/shared/lib/browser-environment";
 import {
   cancelDelay,
   type ScheduledDelayHandle,
   scheduleDelay,
 } from "@/shared/lib/browser-scheduling";
-import { getElementById } from "@/shared/lib/browser-scroll";
 
 function isLandingSectionId(id: string): id is LandingSectionId {
   return LANDING_SECTIONS.some((section) => section.id === id);
@@ -39,66 +35,11 @@ export function useLandingSectionNavigation() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!hasBrowserDocument() || typeof IntersectionObserver === "undefined") {
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && isLandingSectionId(entry.target.id)) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      {
-        root: null,
-        rootMargin: "-45% 0px -45% 0px",
-        threshold: 0,
-      },
-    );
-
-    const observedSectionIds = new Set<LandingSectionId>();
-
-    function observeLandingSections() {
-      LANDING_SECTIONS.forEach((section) => {
-        if (observedSectionIds.has(section.id)) {
-          return;
-        }
-
-        const element = getElementById(section.id);
-
-        if (!element) {
-          return;
-        }
-
-        observer.observe(element);
-        observedSectionIds.add(section.id);
-      });
-    }
-
-    observeLandingSections();
-
-    const mutationObserver =
-      typeof MutationObserver === "undefined"
-        ? null
-        : new MutationObserver(observeLandingSections);
-
-    const body = getBrowserDocumentBody();
-
-    if (body) {
-      mutationObserver?.observe(body, {
-        childList: true,
-        subtree: true,
-      });
-    }
-
-    return () => {
-      mutationObserver?.disconnect();
-      observer.disconnect();
-    };
-  }, []);
+  useObservedLandingSection({
+    isSectionId: isLandingSectionId,
+    onActiveSectionChange: setActiveSection,
+    sections: LANDING_SECTIONS,
+  });
 
   const scrollToSection = useEventCallback((id: LandingSectionId) => {
     setActiveSection(id);

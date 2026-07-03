@@ -1,11 +1,7 @@
 const noopBrowserCleanup = () => undefined;
 
-export function hasBrowserDocument() {
-  return typeof document !== "undefined";
-}
-
 export function getBrowserDocument() {
-  return hasBrowserDocument() ? document : null;
+  return typeof document !== "undefined" ? document : null;
 }
 
 export function getBrowserDocumentBody() {
@@ -30,12 +26,6 @@ export function isBrowserDocumentVisible() {
 
 export function getBrowserElementById(id: string) {
   return getBrowserDocument()?.getElementById(id) ?? null;
-}
-
-export function createBrowserElement<K extends keyof HTMLElementTagNameMap>(
-  tagName: K,
-) {
-  return getBrowserDocument()?.createElement(tagName) ?? null;
 }
 
 export function addBrowserDocumentEventListener<

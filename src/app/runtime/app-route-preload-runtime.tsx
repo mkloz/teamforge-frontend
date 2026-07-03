@@ -84,11 +84,13 @@ export function AppRoutePreloadRuntime() {
         return;
       }
 
-      unsubscribeQueryCache ??= appQueryClient.getQueryCache().subscribe(() => {
-        if (appQueryClient.isFetching({ type: "active" }) === 0) {
-          waitForActiveQueriesToSettle();
-        }
-      });
+      if (!unsubscribeQueryCache) {
+        unsubscribeQueryCache = appQueryClient.getQueryCache().subscribe(() => {
+          if (appQueryClient.isFetching({ type: "active" }) === 0) {
+            waitForActiveQueriesToSettle();
+          }
+        });
+      }
     }
 
     function scheduleAfterCurrentRouteSettles() {

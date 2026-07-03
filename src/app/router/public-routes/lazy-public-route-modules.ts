@@ -1,3 +1,5 @@
+import { createElement } from "react";
+
 import { createLazyRouteLoading } from "@/app/router/lazy-route-loading";
 import { createLazyRouteModule } from "@/app/router/lazy-route-module";
 import { AuthPageLoading } from "@/features/auth/auth-page.loading";
@@ -24,7 +26,9 @@ export const downloadPageModule = createLazyRouteModule(() =>
 
 export const privacyPageModule = createLazyRouteModule(() =>
   import("@/features/legal/legal-page").then((m) => ({
-    default: () => <m.LegalPage kind="privacy" />,
+    default: function PrivacyPageRoute() {
+      return createElement(m.LegalPage, { kind: "privacy" });
+    },
   })),
 );
 
@@ -38,7 +42,9 @@ export const PrivacyRouteLoading = createLazyRouteLoading(
 
 export const termsPageModule = createLazyRouteModule(() =>
   import("@/features/legal/legal-page").then((m) => ({
-    default: () => <m.LegalPage kind="terms" />,
+    default: function TermsPageRoute() {
+      return createElement(m.LegalPage, { kind: "terms" });
+    },
   })),
 );
 
@@ -57,7 +63,7 @@ export const loginPageModule = createLazyRouteModule(() =>
 );
 
 export function LoginRouteLoading() {
-  return <AuthPageLoading mode="route" variant="login" />;
+  return createElement(AuthPageLoading, { mode: "route", variant: "login" });
 }
 
 export const registerPageModule = createLazyRouteModule(() =>
@@ -67,7 +73,10 @@ export const registerPageModule = createLazyRouteModule(() =>
 );
 
 export function RegisterRouteLoading() {
-  return <AuthPageLoading mode="route" variant="register" />;
+  return createElement(AuthPageLoading, {
+    mode: "route",
+    variant: "register",
+  });
 }
 
 export const forgotPasswordPageModule = createLazyRouteModule(() =>
@@ -77,7 +86,10 @@ export const forgotPasswordPageModule = createLazyRouteModule(() =>
 );
 
 export function ForgotPasswordRouteLoading() {
-  return <AuthPageLoading mode="route" variant="forgot-password" />;
+  return createElement(AuthPageLoading, {
+    mode: "route",
+    variant: "forgot-password",
+  });
 }
 
 export const resetPasswordPageModule = createLazyRouteModule(() =>
@@ -87,7 +99,10 @@ export const resetPasswordPageModule = createLazyRouteModule(() =>
 );
 
 export function ResetPasswordRouteLoading() {
-  return <AuthPageLoading mode="route" variant="reset-password" />;
+  return createElement(AuthPageLoading, {
+    mode: "route",
+    variant: "reset-password",
+  });
 }
 
 export const activateAccountPageModule = createLazyRouteModule(() =>
@@ -97,5 +112,8 @@ export const activateAccountPageModule = createLazyRouteModule(() =>
 );
 
 export function ActivateAccountRouteLoading() {
-  return <AuthPageLoading mode="route" variant="activate" />;
+  return createElement(AuthPageLoading, {
+    mode: "route",
+    variant: "activate",
+  });
 }

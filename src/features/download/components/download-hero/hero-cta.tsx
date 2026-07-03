@@ -47,9 +47,9 @@ export function HeroCTAButtons({
   onInstallClick,
 }: HeroCTAButtonsProps) {
   const btnBase =
-    "w-full border-forge-teal bg-forge-teal text-white hover:-translate-y-1 hover:shadow-[0_4px_0_#042f2e] focus-visible:ring-forge-teal active:translate-y-0 active:shadow-none sm:w-auto";
+    "w-full border-forge-teal bg-forge-teal text-white hover:-translate-y-1 hover:shadow-button-primary focus-visible:ring-forge-teal active:translate-y-0 active:shadow-none sm:w-auto";
   const outlineBase =
-    "w-full border-white bg-transparent text-white hover:shadow-[0_4px_0_rgba(242,245,241,0.88)] focus-visible:ring-white sm:w-auto";
+    "w-full border-white bg-transparent text-white hover:shadow-button-outline-dark focus-visible:ring-white sm:w-auto";
   const row = "flex w-full flex-col gap-3 sm:w-auto sm:flex-row";
   const { isResolvingAuthAction, secondaryAction } = usePublicSiteAuthActions(
     "Get started",

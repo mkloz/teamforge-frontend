@@ -1,13 +1,11 @@
 export {
   addBrowserDocumentEventListener,
-  createBrowserElement,
   getBrowserActiveElement,
   getBrowserDocument,
   getBrowserDocumentBody,
   getBrowserDocumentElement,
   getBrowserElementById,
   getBrowserVisibilityState,
-  hasBrowserDocument,
   isBrowserDocumentVisible,
 } from "@/shared/lib/browser-environment/document";
 export {

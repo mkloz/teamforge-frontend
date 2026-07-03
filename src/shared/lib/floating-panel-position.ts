@@ -23,15 +23,11 @@ interface AnchoredScrollablePanelPositionOptions {
 
 type ScrollablePanelStyle = CSSProperties & Record<string, string | number>;
 
-export function getAnchoredPanelPosition(
+function getAnchoredPanelGeometry(
   anchor: HTMLElement,
-  {
-    gap = 8,
-    panelHeight,
-    panelWidth,
-    viewportPadding = 8,
-  }: AnchoredPanelPositionOptions,
-): ScrollablePanelStyle {
+  panelWidth: number,
+  viewportPadding: number,
+) {
   const rect = anchor.getBoundingClientRect();
   const viewport = getBrowserViewportSize();
   const availableWidth = viewport.width - viewportPadding * 2;
@@ -42,6 +38,24 @@ export function getAnchoredPanelPosition(
   const left = Math.min(
     Math.max(viewportPadding, rect.left),
     viewport.width - resolvedWidth - viewportPadding,
+  );
+
+  return { left, rect, resolvedWidth, viewport };
+}
+
+export function getAnchoredPanelPosition(
+  anchor: HTMLElement,
+  {
+    gap = 8,
+    panelHeight,
+    panelWidth,
+    viewportPadding = 8,
+  }: AnchoredPanelPositionOptions,
+): ScrollablePanelStyle {
+  const { left, rect, resolvedWidth, viewport } = getAnchoredPanelGeometry(
+    anchor,
+    panelWidth,
+    viewportPadding,
   );
   const hasRoomBelow = rect.bottom + gap + panelHeight < viewport.height;
   const top = hasRoomBelow
@@ -70,12 +84,10 @@ export function getAnchoredScrollablePanelPosition(
     viewportPadding = 8,
   }: AnchoredScrollablePanelPositionOptions,
 ): CSSProperties {
-  const rect = anchor.getBoundingClientRect();
-  const viewport = getBrowserViewportSize();
-  const availableWidth = viewport.width - viewportPadding * 2;
-  const resolvedWidth = Math.min(
-    availableWidth,
-    Math.max(panelWidth, rect.width),
+  const { left, rect, resolvedWidth, viewport } = getAnchoredPanelGeometry(
+    anchor,
+    panelWidth,
+    viewportPadding,
   );
   const availableBelow = viewport.height - rect.bottom - gap - viewportPadding;
   const availableAbove = rect.top - gap - viewportPadding;
@@ -85,10 +97,6 @@ export function getAnchoredScrollablePanelPosition(
   const panelHeight = Math.max(
     minListHeight + panelChromeHeight,
     Math.min(preferredPanelHeight, availableHeight, estimatedContentHeight),
-  );
-  const left = Math.min(
-    Math.max(viewportPadding, rect.left),
-    viewport.width - resolvedWidth - viewportPadding,
   );
   const top = shouldOpenBelow
     ? rect.bottom + gap

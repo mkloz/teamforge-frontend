@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 // @ts-check
 
-import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
 import {
@@ -9,7 +8,6 @@ import {
   formatDuration,
   formatStatusBadge,
   ROOT,
-  readRequiredOptionValue,
   renderBullets,
   renderKeyValues,
   renderMarkdownTable,
@@ -18,6 +16,13 @@ import {
   writeJsonFile,
   writeTextFile,
 } from "../shared/command-utils.mjs";
+import {
+  collectTypeScriptSourceFiles,
+  getTopReferenceFiles,
+  parseQualityScanArgs,
+  readTypeScriptSourceFile,
+  renderMarkdownBullets,
+} from "./quality-scan-utils.mjs";
 
 /**
  * @typedef {"as" | "angle"} TypeAssertionKind
@@ -26,8 +31,6 @@ import {
  * @typedef {{ count: number; filePath: string; types: string }} FileAssertionSummary
  * @typedef {{ angle: number; assertions: number; asExpressions: number; scannedFiles: number }} TypeAssertionCounts
  * @typedef {{ counts: TypeAssertionCounts; filesWithAssertions: number; generatedAt: string; topFiles: FileAssertionSummary[] }} TypeAssertionSummary
- * @typedef {(options: CliOptions) => void} BooleanOptionSetter
- * @typedef {(options: CliOptions, value: string) => void} ValueOptionSetter
  */
 
 const SOURCE_ROOTS = [path.join(ROOT, "src"), path.join(ROOT, "test")];
@@ -43,16 +46,7 @@ const DEFAULT_JSON_FILE = path.join(
   "type-assertion-usage-summary.json",
 );
 const ASSERTIONS_DISPLAY_LIMIT = 80;
-const SOURCE_EXTENSIONS = new Set([".ts", ".tsx"]);
-const SKIPPED_DIRECTORIES = new Set([
-  ".git",
-  "coverage",
-  "dist",
-  "node_modules",
-  "reports",
-  "temp",
-]);
-/** @type {Map<string, BooleanOptionSetter>} */
+/** @type {Map<string, import("./quality-scan-utils.mjs").BooleanOptionSetter>} */
 const BOOLEAN_OPTIONS = new Map([
   [
     "--advisory",
@@ -73,81 +67,22 @@ const BOOLEAN_OPTIONS = new Map([
     },
   ],
 ]);
-/** @type {Map<string, ValueOptionSetter>} */
-const VALUE_OPTIONS = new Map([
-  ["--json-file", assignJsonFile],
-  ["--report-file", assignReportFile],
-]);
 
 /**
  * @param {string[]} argv CLI arguments.
  * @returns {CliOptions} Parsed options.
  */
 function parseArgs(argv) {
-  /** @type {CliOptions} */
-  const options = {
-    jsonFile: DEFAULT_JSON_FILE,
-    quiet: false,
-    reportFile: DEFAULT_REPORT_FILE,
-    strict: true,
-  };
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const consumed = applyArg(options, argv, index);
-    index += consumed;
-  }
-
-  return options;
-}
-
-/**
- * @param {CliOptions} options Mutable options.
- * @param {string[]} argv CLI arguments.
- * @param {number} index Current argv index.
- * @returns {number} Additional argv indexes consumed.
- */
-function applyArg(options, argv, index) {
-  const arg = argv[index];
-  const booleanSetter = BOOLEAN_OPTIONS.get(arg);
-
-  if (booleanSetter) {
-    booleanSetter(options);
-    return 0;
-  }
-
-  const valueSetter = VALUE_OPTIONS.get(arg);
-
-  if (valueSetter) {
-    valueSetter(options, readRequiredOptionValue(argv, index, arg));
-    return 1;
-  }
-
-  for (const [option, setter] of VALUE_OPTIONS) {
-    const prefix = `${option}=`;
-
-    if (arg.startsWith(prefix)) {
-      setter(options, arg.slice(prefix.length));
-      return 0;
-    }
-  }
-
-  throw new Error(`Unknown type-assertion-usage argument: ${arg}`);
-}
-
-/**
- * @param {CliOptions} options Mutable options.
- * @param {string} value JSON output path.
- */
-function assignJsonFile(options, value) {
-  options.jsonFile = value;
-}
-
-/**
- * @param {CliOptions} options Mutable options.
- * @param {string} value Report output path.
- */
-function assignReportFile(options, value) {
-  options.reportFile = value;
+  return parseQualityScanArgs(argv, {
+    booleanOptions: BOOLEAN_OPTIONS,
+    defaults: {
+      jsonFile: DEFAULT_JSON_FILE,
+      quiet: false,
+      reportFile: DEFAULT_REPORT_FILE,
+      strict: true,
+    },
+    scriptName: "type-assertion-usage",
+  });
 }
 
 /**
@@ -179,53 +114,10 @@ async function run(options) {
  * @returns {Promise<string[]>} Repo-relative source files.
  */
 async function collectAllSourceFiles() {
-  const sourceGroups = await Promise.all(SOURCE_ROOTS.map(collectSourceFiles));
-  const rootFiles = ROOT_SOURCE_FILES.filter(isSourceFile);
-
-  return [...sourceGroups.flat(), ...rootFiles].toSorted();
-}
-
-/**
- * @param {string} directory Absolute directory.
- * @returns {Promise<string[]>} Repo-relative source files.
- */
-async function collectSourceFiles(directory) {
-  const entries = await readdir(directory, { withFileTypes: true }).catch(
-    () => [],
-  );
-  const fileGroups = await Promise.all(
-    entries.map((entry) => collectSourceEntryFiles(directory, entry)),
-  );
-
-  return fileGroups.flat().toSorted();
-}
-
-/**
- * @param {string} directory Absolute parent directory.
- * @param {import("node:fs").Dirent} entry Directory entry.
- * @returns {Promise<string[]>} Repo-relative source files.
- */
-async function collectSourceEntryFiles(directory, entry) {
-  const absolutePath = path.join(directory, entry.name);
-  const relativePath = toRepoRelativePath(absolutePath);
-
-  if (entry.isDirectory()) {
-    if (SKIPPED_DIRECTORIES.has(entry.name)) {
-      return [];
-    }
-
-    return collectSourceFiles(absolutePath);
-  }
-
-  return isSourceFile(relativePath) ? [relativePath] : [];
-}
-
-/**
- * @param {string} filePath Repo-relative file path.
- * @returns {boolean} Whether this is a TypeScript source file.
- */
-function isSourceFile(filePath) {
-  return SOURCE_EXTENSIONS.has(path.extname(filePath));
+  return collectTypeScriptSourceFiles({
+    rootFiles: ROOT_SOURCE_FILES,
+    sourceRoots: SOURCE_ROOTS,
+  });
 }
 
 /**
@@ -243,16 +135,7 @@ async function scanSourceFiles(sourceFiles) {
  * @returns {Promise<TypeAssertionReference[]>} Type assertion references.
  */
 async function scanSourceFile(filePath) {
-  const absolutePath = path.join(ROOT, filePath);
-  const text = await readFile(absolutePath, "utf8");
-  const sourceFile = ts.createSourceFile(
-    filePath,
-    text,
-    ts.ScriptTarget.Latest,
-    true,
-    filePath.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
-  );
-  const lines = text.split(/\r?\n/u);
+  const { lines, sourceFile } = await readTypeScriptSourceFile(filePath);
   /** @type {TypeAssertionReference[]} */
   const references = [];
 
@@ -326,28 +209,11 @@ function getCounts(scannedFiles, references) {
  * @returns {FileAssertionSummary[]} Top files.
  */
 function getTopFiles(references) {
-  /** @type {Map<string, TypeAssertionReference[]>} */
-  const referencesByFile = new Map();
-
-  for (const reference of references) {
-    const fileReferences = referencesByFile.get(reference.filePath) ?? [];
-    fileReferences.push(reference);
-    referencesByFile.set(reference.filePath, fileReferences);
-  }
-
-  return [...referencesByFile]
-    .map(([filePath, fileReferences]) => ({
-      count: fileReferences.length,
-      filePath,
-      types: [...new Set(fileReferences.map((reference) => reference.typeText))]
-        .toSorted()
-        .join(", "),
-    }))
-    .toSorted(
-      (left, right) =>
-        right.count - left.count || left.filePath.localeCompare(right.filePath),
-    )
-    .slice(0, 12);
+  return getTopReferenceFiles(
+    references,
+    "types",
+    (reference) => reference.typeText,
+  );
 }
 
 /**
@@ -416,14 +282,6 @@ function formatReport(summary, references, durationMs) {
     ]),
     "",
   ].join("\n");
-}
-
-/**
- * @param {string[]} items Summary items.
- * @returns {string} Markdown bullets.
- */
-function renderMarkdownBullets(items) {
-  return items.map((item) => `- ${item}`).join("\n");
 }
 
 /**

@@ -77,7 +77,7 @@ export function TypeBadge({
         sideOffset={10}
         className="w-64 border-white/8 bg-ink p-4"
       >
-        <div className="space-y-2.5">
+        <div className="flex flex-col gap-2.5">
           <div className="flex items-start justify-between gap-2">
             <div>
               <p className="font-semibold text-sm text-white">

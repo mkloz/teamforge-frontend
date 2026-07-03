@@ -2,16 +2,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { useReducer, useRef } from "react";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { resolveNotificationDestination } from "@/features/notifications/lib/destination";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/shared/components/ui/drawer";
-import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
-import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
+import { NotificationsDrawerShell } from "./notifications-drawer-shell";
 import {
   INITIAL_NOTIFICATIONS_DRAWER_STATE,
   notificationsDrawerReducer,
@@ -46,7 +39,6 @@ export function NotificationsDrawer({
     count,
     isOnline,
   } = useNotifications({ enabled: open });
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [drawerState, dispatchDrawerState] = useReducer(
@@ -141,66 +133,49 @@ export function NotificationsDrawer({
   }
 
   return (
-    <Drawer
-      open={open}
-      onOpenChange={(isOpen) => !isOpen && onClose()}
-      direction={isDesktop ? "right" : "bottom"}
-    >
-      <DrawerContent
-        className={cn(
-          "border-border bg-canvas text-ink shadow-none",
-          isDesktop
-            ? "lg:w-96 lg:rounded-l-2xl lg:border-l"
-            : "max-lg:max-h-screen max-lg:rounded-t-2xl max-lg:border-t",
-        )}
+    <NotificationsDrawerShell open={open} onClose={onClose}>
+      <NotificationsDrawerHeader
+        count={count}
+        isMarkingAllRead={isMarkingAllRead}
+        isOnline={isOnline}
+        isRefreshing={isRefreshing}
+        markAllReadDialogOpen={markAllReadDialogOpen}
+        selectedNotification={selectedNotification}
+        onClose={onClose}
+        onMarkAllRead={markAllReadAsync}
+        onMarkAllReadDialogOpenChange={(nextOpen) =>
+          dispatchDrawerState({
+            open: nextOpen,
+            type: "set-mark-all-read-dialog-open",
+          })
+        }
+        onRefresh={handleRefreshNotifications}
+      />
+
+      {/* Scrollable list */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto overscroll-contain"
       >
-        <DrawerHeader className="sr-only">
-          <DrawerTitle>Notifications</DrawerTitle>
-        </DrawerHeader>
-
-        <NotificationsDrawerHeader
-          count={count}
-          isMarkingAllRead={isMarkingAllRead}
+        <NotificationsDrawerBody
+          isLoading={isLoading}
           isOnline={isOnline}
-          isRefreshing={isRefreshing}
-          markAllReadDialogOpen={markAllReadDialogOpen}
+          items={items}
+          notificationGroups={notificationGroups}
+          pendingDetailAction={pendingDetailAction}
+          pendingNotificationId={pendingNotificationId}
+          pendingReadToggleNotificationId={pendingReadToggleNotificationId}
           selectedNotification={selectedNotification}
-          onClose={onClose}
-          onMarkAllRead={markAllReadAsync}
-          onMarkAllReadDialogOpenChange={(nextOpen) =>
-            dispatchDrawerState({
-              open: nextOpen,
-              type: "set-mark-all-read-dialog-open",
-            })
+          onBackToList={() => dispatchDrawerState({ type: "back-to-list" })}
+          onOpenNotification={handleOpenNotification}
+          onSelectNotification={handleSelectNotification}
+          onToggleNotificationRead={handleToggleNotificationRead}
+          onToggleSelectedNotificationRead={
+            handleToggleSelectedNotificationRead
           }
-          onRefresh={handleRefreshNotifications}
         />
-
-        {/* Scrollable list */}
-        <div
-          ref={scrollRef}
-          className="flex-1 overflow-y-auto overscroll-contain"
-        >
-          <NotificationsDrawerBody
-            isLoading={isLoading}
-            isOnline={isOnline}
-            items={items}
-            notificationGroups={notificationGroups}
-            pendingDetailAction={pendingDetailAction}
-            pendingNotificationId={pendingNotificationId}
-            pendingReadToggleNotificationId={pendingReadToggleNotificationId}
-            selectedNotification={selectedNotification}
-            onBackToList={() => dispatchDrawerState({ type: "back-to-list" })}
-            onOpenNotification={handleOpenNotification}
-            onSelectNotification={handleSelectNotification}
-            onToggleNotificationRead={handleToggleNotificationRead}
-            onToggleSelectedNotificationRead={
-              handleToggleSelectedNotificationRead
-            }
-          />
-        </div>
-      </DrawerContent>
-    </Drawer>
+      </div>
+    </NotificationsDrawerShell>
   );
 }
 
