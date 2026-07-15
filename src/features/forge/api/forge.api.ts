@@ -18,6 +18,7 @@ import {
   forgeModeSchema,
   locationModeSchema,
   planCategorySchema,
+  planScheduleModeSchema,
 } from "@/shared/schemas";
 
 const recentActivityPlanSchema = z.object({
@@ -25,6 +26,7 @@ const recentActivityPlanSchema = z.object({
   description: z.string().nullable().optional(),
   coverImage: z.string().nullable().optional(),
   category: planCategorySchema.nullable().optional(),
+  scheduleMode: planScheduleModeSchema.nullish(),
   locationMode: locationModeSchema,
   location: z.string().nullable().optional(),
   locationLat: z.number().nullable().optional(),

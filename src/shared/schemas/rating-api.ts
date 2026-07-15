@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { planStatusSchema } from "./enums";
+import { planScheduleModeSchema, planStatusSchema } from "./enums";
 
 const ratingUserEntitySchema = z.object({
   id: z.string(),
@@ -58,6 +58,7 @@ const groupReviewPlanSchema = z.object({
   id: z.string(),
   title: z.string(),
   status: planStatusSchema,
+  scheduleMode: planScheduleModeSchema.nullish(),
   completedAt: z.string().datetime().nullable(),
 });
 

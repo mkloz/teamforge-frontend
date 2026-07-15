@@ -84,6 +84,7 @@ describe("forge activity builders", () => {
     const forgeInput = buildForgeActivityInput(input);
 
     expect(forgeActivityInputSchema.safeParse(forgeInput).success).toBe(true);
+    expect(forgeInput.plan).not.toHaveProperty("scheduleMode");
     expect(forgeInput).toMatchObject({
       groupDescription: "Useful people only",
       groupName: "Tool crew",

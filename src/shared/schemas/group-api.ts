@@ -22,6 +22,7 @@ import {
   locationModeSchema,
   personalityTypeSchema,
   planCategorySchema,
+  planScheduleModeSchema,
   planStatusSchema,
 } from "./enums";
 import { exploreInterestSchema } from "./explore";
@@ -45,6 +46,7 @@ const groupPlanSummarySchema = z.object({
   coverImage: z.string().nullable().optional(),
   coverImageMedia: imageMediaSchema.nullable().optional(),
   status: planStatusSchema,
+  scheduleMode: planScheduleModeSchema.nullish(),
   dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
   location: z.string().nullable(),

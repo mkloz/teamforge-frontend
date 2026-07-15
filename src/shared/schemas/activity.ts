@@ -13,6 +13,7 @@ import {
   groupStatusSchema,
   locationModeSchema,
   planCategorySchema,
+  planScheduleModeSchema,
   planStatusSchema,
 } from "./enums";
 
@@ -169,6 +170,7 @@ const forgePlanInputSchema = z
     description: z.string().trim().min(1).max(1000).nullable().optional(),
     coverImage: managedAssetReferenceSchema.nullable().optional(),
     category: planCategorySchema,
+    scheduleMode: planScheduleModeSchema.optional(),
     dateTime: z.string().datetime(),
     locationMode: locationModeSchema,
     location: z.string().trim().min(1).max(200).nullable().optional(),
@@ -232,6 +234,7 @@ const forgedPlanSchema = z.object({
   coverImage: z.string().nullable(),
   category: planCategorySchema,
   status: planStatusSchema,
+  scheduleMode: planScheduleModeSchema.nullish(),
   locationMode: locationModeSchema,
   cost: costTypeSchema,
 });

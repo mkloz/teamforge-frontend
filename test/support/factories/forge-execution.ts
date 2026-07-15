@@ -7,6 +7,7 @@ export function createAutoForgeExecutionInput(
     selectedActivity: "Tech & Build",
     planName: "AI tool test",
     planDescription: "Compare small tools over coffee.",
+    planScheduleMode: "FIXED",
     planDate: "2099-01-02",
     planTime: "18:30",
     planLocation: "Makers Cafe",

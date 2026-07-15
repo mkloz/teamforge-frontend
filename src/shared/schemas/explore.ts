@@ -13,6 +13,7 @@ import {
   locationModeSchema,
   personalityTypeSchema,
   planCategorySchema,
+  planScheduleModeSchema,
 } from "./enums";
 
 export const exploreInterestSchema = z.object({
@@ -44,6 +45,7 @@ const explorePlanSchema = z.object({
   id: z.string(),
   title: z.string(),
   category: planCategorySchema,
+  scheduleMode: planScheduleModeSchema.nullish(),
   dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
   cost: costTypeSchema,

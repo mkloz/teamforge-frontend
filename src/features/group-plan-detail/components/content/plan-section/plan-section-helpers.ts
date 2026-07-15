@@ -18,6 +18,11 @@ interface EventTimeParts {
 
 export function getTimeUntilEvent(dateTime: string): string | undefined {
   const eventDate = new Date(dateTime);
+
+  if (Number.isNaN(eventDate.getTime())) {
+    return undefined;
+  }
+
   const now = new Date();
   const diff = eventDate.getTime() - now.getTime();
 

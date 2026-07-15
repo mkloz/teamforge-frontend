@@ -70,6 +70,7 @@ function mapSelectionPlan(plan: Group["plan"]): GroupApi["plan"] {
     coverImage: plan.coverImage,
     coverImageMedia: plan.coverImageMedia,
     status: plan.status,
+    scheduleMode: plan.scheduleMode,
     dateTime: plan.dateTime,
     locationMode: plan.locationMode,
     location: plan.location,

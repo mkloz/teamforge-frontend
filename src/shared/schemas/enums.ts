@@ -70,6 +70,9 @@ export const planStatusSchema = z.enum([
 ]);
 export type PlanStatus = z.infer<typeof planStatusSchema>;
 
+export const planScheduleModeSchema = z.enum(["TO_BE_DECIDED", "FIXED"]);
+export type PlanScheduleMode = z.infer<typeof planScheduleModeSchema>;
+
 export const planProposalFieldSchema = z.enum([
   "TITLE",
   "DESCRIPTION",

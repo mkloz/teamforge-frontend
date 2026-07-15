@@ -4225,6 +4225,12 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
         dateTime:
           format: date-time
           type: string
@@ -4292,6 +4298,7 @@ components:
         - title
         - category
         - status
+        - scheduleMode
         - locationMode
         - cost
         - createdAt
@@ -4493,9 +4500,15 @@ components:
             - WELLNESS
             - TRAVEL
             - OTHER
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
         dateTime:
           type: string
           example: 2099-05-02T18:30:00.000Z
+          nullable: true
         locationMode:
           type: string
           enum:
@@ -4525,7 +4538,6 @@ components:
       required:
         - title
         - category
-        - dateTime
         - locationMode
         - cost
     ForgeMatchingPreferencesDto:
@@ -4678,6 +4690,12 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
         locationMode:
           type: string
           enum:
@@ -4695,6 +4713,7 @@ components:
         - coverImage
         - category
         - status
+        - scheduleMode
         - locationMode
         - cost
     ForgeActivityResultEntity:
@@ -5072,7 +5091,7 @@ components:
           example: 0.74
         onlineStatus:
           type: string
-          enum: &a39
+          enum: &a40
             - ONLINE
             - AWAY
             - OFFLINE
@@ -5281,6 +5300,12 @@ components:
           type: string
           example: 2026-04-30T18:30:00.000Z
           nullable: true
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
         locationMode:
           type: string
           enum:
@@ -5296,6 +5321,7 @@ components:
         - id
         - title
         - category
+        - scheduleMode
         - locationMode
         - cost
     ExploreMemberEntity:
@@ -5586,13 +5612,19 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        scheduleMode:
+          type: string
+          enum: &a37
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
         dateTime:
           format: date-time
           type: string
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: &a37
+          enum: &a38
             - IN_PERSON
             - ONLINE
             - TBD
@@ -5607,7 +5639,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: &a38
+          enum: &a39
             - FREE
             - PAID
       required:
@@ -5615,6 +5647,7 @@ components:
         - title
         - category
         - status
+        - scheduleMode
         - locationMode
         - cost
     GroupPlanHistoryItemEntity:
@@ -5632,13 +5665,17 @@ components:
         status:
           type: string
           enum: *a36
+        scheduleMode:
+          type: string
+          enum: *a37
+          nullable: true
         dateTime:
           format: date-time
           type: string
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: *a37
+          enum: *a38
         location:
           type: string
           example: Regents Park Courts
@@ -5650,12 +5687,13 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: *a38
+          enum: *a39
       required:
         - id
         - title
         - category
         - status
+        - scheduleMode
         - locationMode
         - cost
     GroupMemberUserEntity:
@@ -5683,7 +5721,7 @@ components:
           example: 0.72
         onlineStatus:
           type: string
-          enum: *a39
+          enum: *a40
       required:
         - id
         - name
@@ -5897,6 +5935,12 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
         dateTime:
           format: date-time
           type: string
@@ -5922,6 +5966,7 @@ components:
         - title
         - category
         - status
+        - scheduleMode
         - locationMode
         - cost
     HomeGroupMemberEntity:
@@ -6145,6 +6190,12 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
         dateTime:
           format: date-time
           type: string
@@ -6180,6 +6231,7 @@ components:
         - title
         - category
         - status
+        - scheduleMode
         - locationMode
         - cost
     GroupPlanDetailMemberEntity:
@@ -6879,6 +6931,12 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
         dateTime:
           format: date-time
           type: string
@@ -6945,6 +7003,7 @@ components:
         - title
         - category
         - status
+        - scheduleMode
         - locationMode
         - cost
         - createdAt
@@ -7256,7 +7315,7 @@ components:
       properties:
         issue:
           type: string
-          enum: &a40
+          enum: &a41
             - certificate-error
             - network-error
             - no-subscriptions
@@ -7280,7 +7339,7 @@ components:
           example: true
         issue:
           type: string
-          enum: *a40
+          enum: *a41
           example: certificate-error
           nullable: true
         diagnostics:
@@ -7404,6 +7463,12 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
         completedAt:
           format: date-time
           type: string
@@ -7413,6 +7478,7 @@ components:
         - id
         - title
         - status
+        - scheduleMode
     GroupReviewStateEntity:
       type: object
       properties:
@@ -7591,14 +7657,14 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: &a41
+          enum: &a42
             - system
             - light
             - dark
           example: system
         themeStyle:
           type: string
-          enum: &a42
+          enum: &a43
             - classic
             - glass
             - ink
@@ -7606,7 +7672,7 @@ components:
           example: classic
         themeColor:
           type: string
-          enum: &a43
+          enum: &a44
             - graphite
             - forge
             - harbor
@@ -7694,15 +7760,15 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: *a41
+          enum: *a42
           example: system
         themeStyle:
           type: string
-          enum: *a42
+          enum: *a43
           example: classic
         themeColor:
           type: string
-          enum: *a43
+          enum: *a44
           example: graphite
         showAgeOnProfile:
           type: boolean

@@ -25,6 +25,7 @@ function buildRawForgeExecutionInput(state: ForgeWizardData) {
     selectedActivity: state.selectedActivity,
     planName: state.planName,
     planDescription: state.planDescription,
+    planScheduleMode: state.planScheduleMode,
     planDate: state.planDate,
     planTime: state.planTime,
     planLocation: state.planLocation,

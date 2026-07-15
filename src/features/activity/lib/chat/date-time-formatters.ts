@@ -35,6 +35,10 @@ export function formatChatTime(isoString: string): string {
 export function formatChatFullDate(isoString: string): string {
   const date = new Date(isoString);
 
+  if (Number.isNaN(date.getTime())) {
+    return "Date unavailable";
+  }
+
   return date.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
@@ -63,6 +67,11 @@ export function formatRelativeTime(isoString: string): string {
 
 export function formatCountdown(isoString: string): string | null {
   const date = new Date(isoString);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
   const now = new Date();
   const diffMs = date.getTime() - now.getTime();
 

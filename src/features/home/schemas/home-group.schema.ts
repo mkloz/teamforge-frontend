@@ -4,6 +4,7 @@ import {
   groupStatusSchema,
   locationModeSchema,
   planCategorySchema,
+  planScheduleModeSchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
 import { imageMediaSchema } from "@/shared/schemas/media";
@@ -25,6 +26,7 @@ const homeGroupPlanSchema = z.object({
   title: z.string(),
   category: planCategorySchema,
   status: planStatusSchema,
+  scheduleMode: planScheduleModeSchema.nullish(),
   dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
   location: z.string().nullable(),

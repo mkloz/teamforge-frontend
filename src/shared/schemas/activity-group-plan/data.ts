@@ -9,6 +9,7 @@ import {
   groupStatusSchema,
   locationModeSchema,
   planCategorySchema,
+  planScheduleModeSchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
 
@@ -57,6 +58,7 @@ export const planShape = z.object({
   category: planCategorySchema,
   coverImage: z.string().nullable(),
   status: planStatusSchema,
+  scheduleMode: planScheduleModeSchema.nullish(),
   dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
   location: z.string().nullable(),

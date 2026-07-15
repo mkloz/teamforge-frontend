@@ -10,6 +10,7 @@ import {
   groupRoleSchema,
   locationModeSchema,
   planCategorySchema,
+  planScheduleModeSchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
 import { imageMediaSchema } from "@/shared/schemas/media";
@@ -37,7 +38,8 @@ const planSchema = z.object({
   coverImage: z.string().nullable(),
   coverImageMedia: imageMediaSchema.nullable().optional(),
   status: planStatusSchema,
-  dateTime: z.string().nullable(),
+  scheduleMode: planScheduleModeSchema.nullish(),
+  dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
   location: z.string().nullable(),
   locationLat: z.number().nullable(),
@@ -72,7 +74,8 @@ const planHistoryItemSchema = z.object({
   id: z.string(),
   title: z.string(),
   category: planCategorySchema,
-  dateTime: z.string().nullable(),
+  scheduleMode: planScheduleModeSchema.nullish(),
+  dateTime: z.string().datetime().nullable(),
   coverImage: z.string().nullable(),
   coverImageMedia: imageMediaSchema.nullable().optional(),
   status: planStatusSchema,

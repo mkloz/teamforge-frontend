@@ -127,8 +127,14 @@ function getPendingActionLabel(
 function getConfirmActionTitle(plan: Plan, offlineTitle?: string) {
   return (
     offlineTitle ??
-    (!plan.dateTime ? "Set a date before confirming" : undefined)
+    (!hasValidPlanDateTime(plan.dateTime)
+      ? "Set a date before confirming"
+      : undefined)
   );
+}
+
+function hasValidPlanDateTime(value: string | null) {
+  return value !== null && !Number.isNaN(new Date(value).getTime());
 }
 
 function getPlanLifecycleStatusFlags(plan: Plan): PlanLifecycleStatusFlags {
@@ -174,7 +180,7 @@ function getConfirmActionDisabled({
   plan: Plan;
 }) {
   return (
-    !plan.dateTime ||
+    !hasValidPlanDateTime(plan.dateTime) ||
     getUnavailableActionDisabled(isPlanActionDisabled, hasConfirmPlan)
   );
 }

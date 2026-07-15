@@ -8,6 +8,7 @@ import {
   locationModeSchema,
   personalityTypeSchema,
   planCategorySchema,
+  planScheduleModeSchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
 import { exploreInterestSchema } from "@/shared/schemas/explore";
@@ -80,6 +81,7 @@ export const groupPlanDetailSchema = z.object({
       coverImage: z.string().nullable(),
       coverImageMedia: imageMediaSchema.nullable().optional(),
       status: planStatusSchema,
+      scheduleMode: planScheduleModeSchema.nullish(),
       dateTime: z.string().datetime().nullable(),
       locationMode: locationModeSchema,
       location: z.string().nullable(),
@@ -95,6 +97,7 @@ export const groupPlanDetailSchema = z.object({
       id: z.string(),
       title: z.string(),
       category: planCategorySchema,
+      scheduleMode: planScheduleModeSchema.nullish(),
       dateTime: z.string().datetime().nullable(),
       coverImage: z.string().nullable(),
       coverImageMedia: imageMediaSchema.nullable().optional(),

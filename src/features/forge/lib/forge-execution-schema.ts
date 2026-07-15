@@ -70,6 +70,7 @@ const forgeExecutionBaseSchema = z.object({
     500,
     "Shorten the plan context before continuing.",
   ),
+  planScheduleMode: z.literal("FIXED"),
   planDate: dateValueSchema,
   planTime: timeValueSchema,
   planLocation: z.string().max(160, "Shorten the location before continuing."),

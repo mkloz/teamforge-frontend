@@ -8,6 +8,7 @@ export function createInitialForgeWizardState(): ForgeWizardData {
     appliedTemplateId: null,
     planName: "",
     planDescription: "",
+    planScheduleMode: "FIXED",
     planDate: "",
     planTime: "",
     planLocation: "",

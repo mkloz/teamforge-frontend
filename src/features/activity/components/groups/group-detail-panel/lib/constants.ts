@@ -28,7 +28,13 @@ export const statusColors: Record<PlanStatus, string> = {
 };
 
 export const formatDate = (date: string | Date) => {
-  return new Date(date).toLocaleDateString("en-US", {
+  const value = new Date(date);
+
+  if (Number.isNaN(value.getTime())) {
+    return "Date unavailable";
+  }
+
+  return value.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -36,7 +42,13 @@ export const formatDate = (date: string | Date) => {
 };
 
 export const formatTime = (date: string | Date) => {
-  return new Date(date).toLocaleTimeString("en-US", {
+  const value = new Date(date);
+
+  if (Number.isNaN(value.getTime())) {
+    return "Time unavailable";
+  }
+
+  return value.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
   });

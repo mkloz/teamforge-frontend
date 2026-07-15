@@ -5,6 +5,7 @@ import type {
   ForgeResult,
   GroupSizeMode,
   LocationType,
+  PlanScheduleMode,
   Visibility,
 } from "@/features/forge/lib/forge-contract";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
@@ -19,6 +20,7 @@ export interface ForgeWizardData {
   appliedTemplateId: string | null;
   planName: string;
   planDescription: string;
+  planScheduleMode: PlanScheduleMode;
   planDate: string;
   planTime: string;
   planLocation: string;
@@ -60,6 +62,7 @@ export type ForgeWizardField =
   | "appliedTemplateId"
   | "planName"
   | "planDescription"
+  | "planScheduleMode"
   | "planDate"
   | "planTime"
   | "planLocation"
