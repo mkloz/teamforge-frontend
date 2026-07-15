@@ -72,7 +72,7 @@ export function PrivacySettingsSection({
     <section className="flex flex-col gap-6">
       <SectionHeading
         title="Profile privacy"
-        description="Choose which personal details appear on your public profile. These details can still quietly help TeamForge place you in better groups."
+        description="Choose which details appear on your public profile. Hidden details may still be used when TeamForge forms groups."
       />
 
       {!isOnline ? (
@@ -110,8 +110,8 @@ export function PrivacySettingsSection({
 
       <div className="border-primary/35 border-l pl-4">
         <p className="text-slate-muted text-sm leading-relaxed">
-          Exact location is never shown on public profiles. People only see your
-          city when you allow it.
+          Coordinates are not shown on public profiles. Your city appears only
+          when you turn on Show city.
         </p>
       </div>
 

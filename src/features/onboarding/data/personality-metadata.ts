@@ -15,161 +15,146 @@ export const PERSONALITY_INFO_BY_TYPE: Record<
   INTJ: {
     letters: "INTJ",
     name: "The Architect",
-    tagline:
-      "Independent, strategic, and driven by a vision only they can fully see.",
+    tagline: "Independent, strategic, and focused on long-term plans.",
     about:
-      "You process the world through systems and patterns. Where others see complexity, you see structure waiting to be understood. You are deliberate, self-directed, and hold yourself to standards most people never consider. You do not need external validation - your internal compass is precise.",
+      "You tend to look for systems and patterns. You often prefer to understand a problem's structure, work independently, and decide against your own standards.",
     inGroups:
-      "In a group, you are the quiet strategist. You think several steps ahead, offer precision when others are still debating, and tend to take initiative when the plan is unclear. You work best when given autonomy and respect.",
+      "In a group, you may prefer to think ahead, clarify the plan, and take initiative when the next step is unclear. You tend to work best with room to act independently.",
   },
   INTP: {
     letters: "INTP",
     name: "The Thinker",
-    tagline:
-      "Endlessly curious, logically precise, and drawn to ideas for their own sake.",
+    tagline: "Curious, analytical, and interested in how ideas fit together.",
     about:
-      "Your mind is never fully at rest. You are constantly questioning assumptions, building mental models, and exploring possibilities that others walk right past. You value intellectual honesty over social comfort and prefer to get things exactly right rather than approximately right quickly.",
+      "You tend to question assumptions, build mental models, and explore several explanations before settling on one. You often value accuracy and intellectual honesty.",
     inGroups:
-      "In a group, you are the one who asks the question nobody else thought to ask. You bring rigorous thinking and an ability to spot flaws in a plan before anyone acts on it. You thrive when the group values depth over speed.",
+      "In a group, you may ask questions that test the plan and spot gaps before action starts. You tend to prefer groups that make room for detailed discussion.",
   },
   ENTJ: {
     letters: "ENTJ",
     name: "The Commander",
-    tagline:
-      "Strategic, direct, and energized by leading others toward a goal.",
+    tagline: "Direct, organized, and comfortable leading toward a goal.",
     about:
-      "You enter a room and instinctively see what needs to be organized. Chaos does not frustrate you - it motivates you. You are decisive, forward-thinking, and unafraid to take charge when no one else will. You hold high standards for yourself and the people around you.",
+      "You tend to notice what needs organizing and feel comfortable making decisions. Clear roles, high standards, and forward movement often matter to you.",
     inGroups:
-      "In a group, you move things forward. You push for decisions, keep energy high, and are not afraid to redirect the conversation when it drifts. Others look to you for direction, even when no formal role has been assigned.",
+      "In a group, you may push for decisions, redirect a drifting conversation, and help clarify the next step. You may take the lead even without a formal role.",
   },
   ENTP: {
     letters: "ENTP",
     name: "The Debater",
-    tagline:
-      "Quick-witted, idea-driven, and genuinely energized by intellectual friction.",
+    tagline: "Idea-driven, quick to question assumptions, and open to debate.",
     about:
-      "You love a good argument - not to win, but to discover. You are fast on your feet, generate ideas at an unusual rate, and have a talent for flipping problems upside down to find an unexpected angle. Boredom is your main enemy.",
+      "You may enjoy testing ideas through debate and looking at problems from several angles. Novelty and open-ended questions often hold your attention.",
     inGroups:
-      "In a group, you are the one who challenges the plan just as everyone is ready to execute. This can frustrate, but it also prevents mistakes. You bring energy, lateral thinking, and a willingness to say the thing nobody else dared to.",
+      "In a group, you may challenge a plan before action starts. This can uncover gaps, though the timing may frustrate people who are ready to proceed.",
   },
   INFJ: {
     letters: "INFJ",
     name: "The Advocate",
-    tagline:
-      "Deeply empathic, visionary, and quietly driven to make things better.",
+    tagline: "Reflective, values-led, and attentive to other people.",
     about:
-      "You see beneath the surface of situations and people with unusual clarity. Your convictions run deep, and you are motivated not by recognition but by the sense that what you are doing matters. You are rare: someone who combines empathy with vision.",
+      "You tend to look beneath the surface of situations and care about work that feels purposeful. You may prefer to contribute quietly, especially when you can combine empathy with a clear direction.",
     inGroups:
-      "In a group, you bring depth and purpose. You notice the emotional undercurrents others miss and quietly steer the group toward something more meaningful than the original plan. You do your best work when the group's goal aligns with your values.",
+      "In a group, you may notice emotional undercurrents and ask whether the plan aligns with shared values. You often prefer work that has a clear purpose.",
   },
   INFP: {
     letters: "INFP",
     name: "The Idealist",
-    tagline:
-      "Deeply values-driven, imaginative, and quietly fiercely passionate.",
+    tagline: "Values-led, imaginative, and attentive to sincerity.",
     about:
-      "You carry a rich inner world that most people never see. You are guided by your values more than rules, and you hold a strong sense of what could be - even when the present falls short. Authenticity matters deeply to you, and you can sense inauthenticity immediately.",
+      "You tend to be guided by personal values and spend time imagining how things could be different. Being sincere matters to you, and you often notice when words and actions do not line up.",
     inGroups:
-      "In a group, you bring heart and creativity. You tend to be the moral compass, gently redirecting when things feel off, and the creative wellspring when the group needs a fresh idea. You need a group that respects what matters to you.",
+      "In a group, you may notice when a plan conflicts with shared values and offer a different idea. You may prefer time to reflect before deciding.",
   },
   ENFJ: {
     letters: "ENFJ",
     name: "The Protagonist",
-    tagline:
-      "Inspiring, people-focused, and naturally gifted at bringing out the best in others.",
+    tagline: "People-focused, encouraging, and comfortable guiding a group.",
     about:
-      "You see the potential in people, often before they see it themselves. You are warm, persuasive, and have a natural ability to read the emotional climate of a room. You are energized by helping others grow, and you take that responsibility seriously.",
+      "You tend to notice other people's strengths and the emotional tone of a room. You may enjoy helping people contribute and move toward a shared goal.",
     inGroups:
-      "In a group, you are the glue. You make sure everyone feels included, articulate what the group is feeling, and translate diverse perspectives into a shared direction. You bring people together in a way that does not feel forced.",
+      "In a group, you may draw quieter people into the discussion, name shared concerns, and help different views move toward a decision.",
   },
   ENFP: {
     letters: "ENFP",
     name: "The Campaigner",
-    tagline:
-      "Enthusiastic, imaginative, and genuinely fascinated by people and possibilities.",
+    tagline: "Enthusiastic, imaginative, and interested in new possibilities.",
     about:
-      "You see almost everything as connected. You move through the world with curiosity and enthusiasm, forming fast, genuine connections with people and ideas. You are energized by novelty and have a gift for seeing potential where others see constraints.",
+      "You tend to connect ideas quickly and respond well to novelty. You may enjoy meeting new people and exploring possibilities before choosing one direction.",
     inGroups:
-      "In a group, you are the spark. Your enthusiasm is contagious, your ideas come quickly, and you excel at connecting people across differences. You need a group that moves and stays alive - stagnation is your kryptonite.",
+      "In a group, you may bring new ideas, connect different viewpoints, and encourage people to get started. You tend to prefer groups with room to change direction.",
   },
   ISTJ: {
     letters: "ISTJ",
     name: "The Inspector",
-    tagline:
-      "Methodical, dependable, and committed to doing things the right way.",
+    tagline: "Methodical, dependable, and attentive to agreed details.",
     about:
-      "You bring order to the world around you. You are thorough, consistent, and deeply reliable - when you say something will be done, it will be done. You take your responsibilities seriously and believe that the details matter, because they do.",
+      "You tend to value clear expectations, consistent follow-through, and practical detail. You may prefer proven methods and defined responsibilities.",
     inGroups:
-      "In a group, you are the one who actually makes sure things happen. You track what was agreed, hold others accountable, and ensure nothing falls through the cracks. The group may not always notice you, but they would notice immediately if you were gone.",
+      "In a group, you may track decisions, follow up on agreed tasks, and notice details that could otherwise be missed.",
   },
   ISFJ: {
     letters: "ISFJ",
     name: "The Defender",
-    tagline:
-      "Warm, attentive, and quietly devoted to the people and things they care about.",
+    tagline: "Attentive, considerate, and practical in how they help.",
     about:
-      "You notice things - a shift in someone's mood, a detail others overlooked, a need that was never voiced. You are quietly attentive and deeply caring, and you show it through consistent, practical acts rather than grand declarations.",
+      "You tend to notice changes in mood, overlooked details, and practical needs. You often show care through consistent actions.",
     inGroups:
-      "In a group, you create safety. People relax around you. You handle the logistics others forget, check in on members who seem off, and ensure the experience is positive for everyone, not just the loudest voices.",
+      "In a group, you may handle overlooked logistics, check in with quieter members, and help create a calm setting.",
   },
   ESTJ: {
     letters: "ESTJ",
     name: "The Executive",
-    tagline:
-      "Organized, decisive, and effective at turning plans into results.",
+    tagline: "Organized, decisive, and focused on carrying out the plan.",
     about:
-      "You are built for execution. You think clearly, decide quickly, and implement without hesitation. You believe in structure because structure works, and you have little patience for ambiguity that could be easily resolved with clear roles and expectations.",
+      "You tend to prefer clear roles, direct decisions, and practical action. Ambiguity may be frustrating when a plan could be clarified.",
     inGroups:
-      "In a group, you establish order. You clarify who is doing what, set timelines, and keep energy focused on the goal. The group moves faster when you are involved, and you expect everyone to pull their weight.",
+      "In a group, you may clarify responsibilities, set timelines, and keep attention on the goal. You often expect people to follow through.",
   },
   ESFJ: {
     letters: "ESFJ",
     name: "The Consul",
-    tagline:
-      "Sociable, caring, and genuinely invested in the people around them.",
+    tagline: "Sociable, considerate, and attentive to group needs.",
     about:
-      "People are your world. You are attuned to the needs and feelings of those around you and go out of your way to ensure everyone feels valued and included. You have a talent for creating warm environments where people feel comfortable being themselves.",
+      "You tend to pay attention to the needs and feelings of people around you. You may enjoy creating a setting where people feel included.",
     inGroups:
-      "In a group, you are the social architect. You make introductions, smooth tensions, and keep the atmosphere positive. You are the reason a group feels like a group rather than just a collection of individuals.",
+      "In a group, you may make introductions, notice tension, and help people take part in the conversation.",
   },
   ISTP: {
     letters: "ISTP",
     name: "The Craftsman",
-    tagline:
-      "Practical, observant, and exceptionally good at understanding how things work.",
+    tagline: "Practical, observant, and interested in how things work.",
     about:
-      "You learn by doing. You are calm under pressure, mechanically intuitive, and skilled at finding the most efficient solution to whatever problem is in front of you. You prefer action over discussion, and results over process.",
+      "You may learn best through hands-on work and prefer practical solutions. You often value action and visible results over long discussion.",
     inGroups:
-      "In a group, you are the one who actually fixes the problem while others are still talking about it. You are direct, pragmatic, and bring a hands-on energy that other types rarely can. You work best in groups that respect competence.",
+      "In a group, you may move quickly toward a hands-on solution while others are still discussing options. You tend to value practical competence.",
   },
   ISFP: {
     letters: "ISFP",
     name: "The Artist",
-    tagline:
-      "Gentle, present, and deeply in tune with beauty, feeling, and the moment.",
+    tagline: "Observant, flexible, and attentive to the immediate setting.",
     about:
-      "You experience the world with unusual sensitivity. You notice beauty, subtlety, and emotional truth in places others rush past. You are gentle, non-judgmental, and authentic - what you say is what you mean, and you expect the same from others.",
+      "You may notice sensory details and changes in atmosphere that others overlook. You often value sincerity and room to respond in the moment.",
     inGroups:
-      "In a group, you bring an authentic and grounding presence. You do not push your opinions loudly, but when you do speak, it is worth hearing. You help the group slow down and notice what they might be missing.",
+      "In a group, you may contribute quietly, notice practical details, and encourage others to pay attention to the immediate experience.",
   },
   ESTP: {
     letters: "ESTP",
     name: "The Entrepreneur",
-    tagline: "Bold, perceptive, and electrically alive in the present moment.",
+    tagline: "Direct, observant, and comfortable acting in the moment.",
     about:
-      "You are at your best when things are happening. You read the room instantly, act on instinct, and have a talent for making things work in real time. You are confident, charismatic, and thrive on challenges that require fast thinking.",
+      "You tend to act quickly, respond to the room, and solve problems in real time. Fast-moving situations may hold your attention.",
     inGroups:
-      "In a group, you bring momentum. You push for action when the group starts over-analyzing, notice opportunities in the environment others miss, and have an infectious energy that gets people moving. You keep things real.",
+      "In a group, you may push for action, notice immediate opportunities, and help move a stalled plan forward.",
   },
   ESFP: {
     letters: "ESFP",
     name: "The Entertainer",
-    tagline:
-      "Spontaneous, warm, and genuinely excited about life and the people in it.",
+    tagline: "Spontaneous, expressive, and attentive to the people present.",
     about:
-      "You are the person in the room who makes everyone feel immediately at ease. You are expressive, generous with your energy, and have a rare ability to be fully present in whatever is happening right now. You make ordinary moments feel special.",
+      "You tend to bring energy to shared experiences and pay attention to how others are feeling. You often help people settle in by staying present and expressive.",
     inGroups:
-      "In a group, you set the tone. Your enthusiasm is contagious, you break tension instinctively, and you have an ability to read what the group needs emotionally and deliver it. You turn a group of strangers into something that feels like a group.",
+      "In a group, you may bring energy, ease early tension, and notice when someone needs a way into the conversation.",
   },
 };
 

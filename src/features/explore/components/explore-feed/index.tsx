@@ -85,12 +85,12 @@ function ExploreFeedEmpty({
         <div className="flex flex-col gap-2">
           <h3 className="font-black text-2xl text-foreground leading-tight tracking-tight">
             {isFiltered
-              ? "Nothing fits these filters yet"
+              ? "No groups meet these filters."
               : "No open groups yet"}
           </h3>
           <p className="mx-auto max-w-md font-medium text-muted-foreground text-sm leading-relaxed">
             {isFiltered
-              ? "Widen the search a little and TeamForge will look for nearby groups with more room to breathe."
+              ? "Try clearing a filter or increasing the distance to see more groups."
               : "Explore is quiet right now. Forge a group and give others a clear place to join in."}
           </p>
         </div>

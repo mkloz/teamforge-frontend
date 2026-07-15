@@ -133,8 +133,8 @@ function ConversationListItemRow({
   viewState: ConversationListItemViewState;
 }) {
   return (
-    <ContextMenuTrigger asChild>
-      <div className={viewState.rowClassName}>
+    <div className={viewState.rowClassName}>
+      <ContextMenuTrigger asChild>
         <button
           type="button"
           aria-current={viewState.isSelected ? "true" : undefined}
@@ -144,24 +144,24 @@ function ConversationListItemRow({
         >
           <span className="sr-only">{viewState.optionLabel}</span>
         </button>
-        <span
-          aria-hidden="true"
-          className={viewState.selectedIndicatorClassName}
-        />
-        <AvatarSection
-          item={item}
-          isGroup={viewState.isGroup}
-          isCompact={viewState.isCompact}
-        />
-        <ContentSection
-          item={item}
-          density={viewState.isCompact ? "compact" : "default"}
-          selection={viewState.isSelected ? "selected" : "idle"}
-          source={isSavedView ? "saved" : "conversation"}
-          onTogglePinned={onTogglePinned}
-        />
-      </div>
-    </ContextMenuTrigger>
+      </ContextMenuTrigger>
+      <span
+        aria-hidden="true"
+        className={viewState.selectedIndicatorClassName}
+      />
+      <AvatarSection
+        item={item}
+        isGroup={viewState.isGroup}
+        isCompact={viewState.isCompact}
+      />
+      <ContentSection
+        item={item}
+        density={viewState.isCompact ? "compact" : "default"}
+        selection={viewState.isSelected ? "selected" : "idle"}
+        source={isSavedView ? "saved" : "conversation"}
+        onTogglePinned={onTogglePinned}
+      />
+    </div>
   );
 }
 

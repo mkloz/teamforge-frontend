@@ -98,7 +98,7 @@ export function getSeedTokens(seed: TemplateSeed) {
 }
 
 function getTextTokens(value: string) {
-  return normalizeForMatching(value)
+  return normalizeForTemplateSearch(value)
     .split(/[^a-z0-9]+/)
     .map((token) => normalizeToken(token))
     .filter(
@@ -108,7 +108,7 @@ function getTextTokens(value: string) {
     );
 }
 
-export function normalizeForMatching(value: string) {
+export function normalizeForTemplateSearch(value: string) {
   return value
     .normalize("NFKD")
     .replaceAll(/\p{Diacritic}/gu, "")

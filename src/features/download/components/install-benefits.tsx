@@ -16,11 +16,11 @@ export function InstallBenefitsSection() {
               id="install-benefits-title"
               className="mt-3 max-w-lg font-extrabold text-3xl text-ink leading-tight sm:text-4xl"
             >
-              Make TeamForge feel closer than another tab.
+              Keep TeamForge on your device.
             </h2>
             <p className="mt-4 max-w-md text-pretty text-slate-muted leading-relaxed">
-              Install gives the group flow a permanent place on your device,
-              with faster returns and alerts ready when plans move.
+              Install TeamForge in a dedicated window and enable notifications
+              when you want alerts about group plans.
             </p>
 
             <div className="mt-8 border-forge-teal/20 border-y py-5">
@@ -36,7 +36,7 @@ export function InstallBenefitsSection() {
                 />
                 <div>
                   <p className="font-bold text-ink">
-                    Browser install, app-like focus
+                    Browser install, dedicated window
                   </p>
                   <p className="mt-1 text-slate-muted text-sm leading-relaxed">
                     No app store. No tab hunting when a group is waiting.

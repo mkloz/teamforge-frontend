@@ -18,7 +18,7 @@ export function buildMatchingSignals(
     buildStageSignal(user),
     {
       detail: readiness.detail,
-      label: "Match confidence",
+      label: "Profile detail",
       strength: readiness.strength,
       value: readiness.label,
     },

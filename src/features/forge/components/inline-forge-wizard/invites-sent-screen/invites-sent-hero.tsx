@@ -11,7 +11,7 @@ interface InvitesSentHeroProps {
 export function InvitesSentHero({ facts, summary }: InvitesSentHeroProps) {
   const statusMessage = summary.isManual
     ? "The group has been formed and invitations are on their way."
-    : "The group has been formed. You can start coordinating from the hub.";
+    : "The group has been formed. You can start planning in the group workspace.";
 
   return (
     <section className="flex flex-col gap-5">

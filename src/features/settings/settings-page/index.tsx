@@ -24,7 +24,7 @@ export function SettingsPage() {
       : "Settings",
     description:
       activeSectionMeta?.summary ??
-      "Tune your TeamForge account, privacy, safety, notifications, and display settings.",
+      "Manage your TeamForge account, privacy, safety, notifications, and display settings.",
   });
 
   usePageMetadata(pageMetadata);

@@ -24,7 +24,7 @@ export function buildPortraitTitle(
     practicalOrganizer: "The person who gets the plan to hold",
     quietSpecialist: "The person with the interesting side route",
     restlessInstigator: "The person who gets people moving",
-    socialGameHost: "The person who gives everyone something to do",
+    socialGameHost: "The person who gives the group a shared activity",
     steadyHost: "The person who makes the room settle",
     tasteMaker: "The person who makes the plan feel chosen",
     warmConnector: "The person who makes the room easier",

@@ -52,7 +52,7 @@ export function GroupFeelsRightSection() {
             id="group-feels-right-heading"
             className="mt-4 text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
           >
-            Compatibility you can actually feel.
+            TeamForge considers more than shared interests.
           </h2>
           <p className="mx-auto mt-6 max-w-3xl text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
             Shared interests help, but they are not enough. TeamForge also
@@ -74,8 +74,8 @@ export function GroupFeelsRightSection() {
         </div>
 
         <p className="mx-auto mt-6 text-pretty text-center font-black text-base text-white leading-relaxed">
-          The point is not a perfect personality puzzle. It is a group that
-          feels easy enough to try.
+          Personality is one part. Shared interests, timing, location, and
+          follow-through also matter.
         </p>
 
         <LandingFeaturePointList

@@ -15,7 +15,7 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     id: "account",
     label: "Account",
     description: "Profile details and photo",
-    headline: "Make your profile feel like you",
+    headline: "Update your profile details",
     summary:
       "Keep the basics people see before a group starts: name, photo, city, and a short intro.",
     icon: UserRound,
@@ -24,7 +24,7 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     id: "appearance",
     label: "Appearance",
     description: "Theme and display comfort",
-    headline: "Tune how TeamForge looks",
+    headline: "Choose how TeamForge looks",
     summary:
       "Choose the interface theme that feels easiest to use in your current environment.",
     icon: Palette,
@@ -32,10 +32,10 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
   {
     id: "matching",
     label: "Group fit",
-    description: "Personality, interests, matching",
-    headline: "Shape how your groups come together",
+    description: "Personality, interests, group preferences",
+    headline: "Choose your group preferences",
     summary:
-      "Adjust the signals TeamForge uses when it includes you in compatible activity groups.",
+      "Adjust the profile details and preferences TeamForge uses when forming activity groups.",
     icon: SlidersHorizontal,
   },
   {
@@ -44,7 +44,7 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     description: "What other people can see",
     headline: "Choose what shows on your profile",
     summary:
-      "Decide which personal details stay visible and which ones only guide private compatibility.",
+      "Decide which personal details others can see and which TeamForge only uses to form groups.",
     icon: Eye,
   },
   {
@@ -61,15 +61,14 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     label: "Safety",
     description: "Blocked people and access controls",
     headline: "Manage blocked people",
-    summary:
-      "Review who cannot reach you in direct chats and restore access when it feels right.",
+    summary: "Review blocked people and unblock them when you choose.",
     icon: Shield,
   },
   {
     id: "notifications",
     label: "Notifications",
     description: "In-app and email delivery",
-    headline: "Decide what deserves your attention",
+    headline: "Choose which notifications you receive",
     summary:
       "Choose the updates that stay in TeamForge and the ones that can also reach your inbox.",
     icon: Bell,

@@ -23,7 +23,7 @@ export function ActivateAccountPage() {
   return (
     <AuthSupportShell
       title="Activating your account"
-      description="We're checking your verification link and signing you in securely."
+      description="We're checking your verification link and signing you in."
       backNavigation={buildAuthRouteNavigation("/auth/login", returnTo)}
       backLabel="Back to login"
       footer={

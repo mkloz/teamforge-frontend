@@ -36,8 +36,8 @@ export function MobileFiltersPanel({
               Refine results
             </SheetTitle>
             <SheetDescription className="text-left font-medium text-muted-foreground text-sm leading-6">
-              Changes update the feed immediately. Close this panel when the
-              list looks right.
+              Changes update the group list as you make them. Close this panel
+              when you are done.
             </SheetDescription>
           </SheetHeader>
 

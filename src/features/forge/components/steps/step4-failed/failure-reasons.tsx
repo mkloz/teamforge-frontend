@@ -14,7 +14,7 @@ export function FailureReasons({ context, reasons }: FailureReasonsProps) {
         <IconTile icon={SlidersHorizontal} tone="neutral" size="sm" />
         <div className="min-w-0">
           <p className="font-semibold text-muted-foreground text-xs leading-none">
-            What likely happened
+            What to review
           </p>
           <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
             {context}

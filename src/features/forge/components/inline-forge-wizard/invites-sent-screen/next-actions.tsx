@@ -39,7 +39,7 @@ function getNextActions(isManual: boolean): NextActionItem[] {
       active: true,
       icon: UsersRound,
       text: isManual
-        ? "Accepted invites appear in the group hub."
+        ? "Accepted members appear in the group workspace."
         : "See who joined and keep the group moving.",
       title: isManual ? "Track responses" : "Review members",
       tone: isManual ? "amber" : "teal",

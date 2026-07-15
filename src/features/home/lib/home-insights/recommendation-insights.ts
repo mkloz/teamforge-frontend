@@ -8,8 +8,8 @@ type RecommendationFitSignal = {
 };
 
 const RECOMMENDATION_FIT_FALLBACK_LABELS = [
-  "profile fit",
-  "activity fit",
+  "profile details",
+  "activity interests",
 ] as const;
 
 const RECOMMENDATION_FIT_SIGNAL_CONFIG = [
@@ -19,22 +19,22 @@ const RECOMMENDATION_FIT_SIGNAL_CONFIG = [
       compatibility.interestOverlap,
   },
   {
-    label: "personality fit",
+    label: "social style",
     getValue: (compatibility: RecommendationCompatibility) =>
       compatibility.personalityCompatibility,
   },
   {
-    label: "city fit",
+    label: "location",
     getValue: (compatibility: RecommendationCompatibility) =>
       compatibility.cityAlignment,
   },
   {
-    label: "age fit",
+    label: "age range",
     getValue: (compatibility: RecommendationCompatibility) =>
       compatibility.ageAlignment,
   },
   {
-    label: "trust signal",
+    label: "reliability",
     getValue: (compatibility: RecommendationCompatibility) =>
       compatibility.trustScore,
   },
@@ -50,7 +50,7 @@ export function getRecommendationFitLine(group: ExploreGroup) {
 
   const [first, second] = getTopRecommendationFitLabels(compatibility);
 
-  return `Strong on ${first} and ${second}.`;
+  return `Shared details: ${first} and ${second}.`;
 }
 
 export const normalizeScore = normalizeDisplayScore;

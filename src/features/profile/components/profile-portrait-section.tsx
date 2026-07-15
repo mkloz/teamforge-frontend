@@ -51,7 +51,7 @@ const COMPACT_SHOW_UP_TITLES = {
   practicalOrganizer: "You help the plan actually hold",
   quietSpecialist: "You bring the interesting side route",
   restlessInstigator: "You get people moving before things stall",
-  socialGameHost: "You give everyone something to do",
+  socialGameHost: "You give the group a shared activity",
   steadyHost: "You help the room settle",
   tasteMaker: "You make the plan feel chosen",
   warmConnector: "You make the room feel easier",

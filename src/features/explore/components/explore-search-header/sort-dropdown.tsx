@@ -23,7 +23,7 @@ export function SortDropdown() {
   const { sortBy, setSortBy } = useExploreRouteState();
   const activeSort = SORTS.find((sort) => sort.id === sortBy);
   const ActiveIcon = activeSort?.icon ?? ArrowDownUp;
-  const activeLabel = activeSort?.label ?? "Best fit";
+  const activeLabel = activeSort?.label ?? "Recommended";
 
   function handleSortChange(value: string) {
     const nextSort = SORTS.find((sort) => sort.id === value);

@@ -26,7 +26,7 @@ const API_PREFIX_PATTERN = /\/api\/v\d+$/u;
 const LOCAL_HOSTS = new Set(["0.0.0.0", "127.0.0.1", "localhost"]);
 const PLACEHOLDER_PATTERN =
   /^(your-|replace-|changeme$|change-me$|example$|example-|todo$|test$)/iu;
-const PRODUCTION_API_URL = "https://api.mkloz.com/teamforge/api/v1";
+const PRODUCTION_API_URL = "https://arm-api.mkloz.com/teamforge/api/v1";
 const EXPECTED_PRODUCTION_SOCKET_PATH = "/teamforge/socket.io";
 
 /** @type {EnvCheck[]} */

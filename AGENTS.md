@@ -6,9 +6,9 @@ Authoritative context for AI coding agents working in this repo. Read before mak
 
 ## Product
 
-**TeamForge** forms small, compatible groups for shared real-world activities. It targets students and young professionals aged 18-28 who want purposeful social discovery without scrolling, swiping, or random matching.
+**TeamForge** forms small, compatible groups for shared real-world activities. It targets students and young professionals aged 18-28 who want to meet people through shared plans without scrolling, swiping, or random group selection.
 
-Core mechanic: press **"Forge my group"** and receive one algorithmically selected group. Compatibility combines personality type, interest similarity, social graph proximity, age alignment, and an exponential-smoothing trust score.
+Core mechanic: press **"Forge my group"** and receive one group. Group formation considers personality type, shared interests, social graph proximity, age, and a trust score calculated with exponential smoothing.
 
 ---
 
@@ -51,7 +51,7 @@ Authenticated routes are protected by the app-shell `beforeLoad`; onboarding rou
 
 - Runtime side effects live in `src/app/runtime/`: auth redirects, route-aware realtime sync, authenticated PWA behavior, and global listeners.
 - Realtime connects to the Socket.IO `/realtime` namespace only after an auth session exists.
-- Socket path derives from `VITE_API_URL`: local `http://localhost:6969/api/v1` maps to `/socket.io`; production `https://api.mkloz.com/teamforge/api/v1` maps to `/teamforge/socket.io`.
+- Socket path derives from `VITE_API_URL`: local `http://localhost:6969/api/v1` maps to `/socket.io`; production `https://arm-api.mkloz.com/teamforge/api/v1` maps to `/teamforge/socket.io`. `https://api.mkloz.com/teamforge/api/v1` remains an active alias.
 - App-wide realtime handles `notification.new` and `group.updated` in `src/app/runtime/app-realtime-events.ts`.
 - Activity and group-plan detail routes handle chat, read, typing, presence, plan, and group events locally.
 - The app is a PWA via `vite-plugin-pwa`; `/download` owns install guidance, diagnostics, and push-notification readiness.
@@ -119,13 +119,13 @@ Required Vite env variables:
 - `VITE_GOOGLE_MAPS_API_KEY` - address autocomplete
 - `VITE_GIPHY_API_KEY` - GIF search in chat
 
-Use `.env.local` locally and never commit it. Local app/API usually uses `VITE_APP_URL=http://localhost:3000` and `VITE_API_URL=http://localhost:6969/api/v1`; production uses `VITE_APP_URL=https://teamforge.app` and `VITE_API_URL=https://api.mkloz.com/teamforge/api/v1`.
+Use `.env.local` locally and never commit it. Local app/API usually uses `VITE_APP_URL=http://localhost:3000` and `VITE_API_URL=http://localhost:6969/api/v1`; production uses `VITE_APP_URL=https://teamforge.mkloz.com` and `VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1`.
 
 Before a production PWA build, run the browser-env preflight with the same values Vite will bake into the bundle:
 
 ```bash
-VITE_APP_URL=https://teamforge.app \
-VITE_API_URL=https://api.mkloz.com/teamforge/api/v1 \
+VITE_APP_URL=https://teamforge.mkloz.com \
+VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
 VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \

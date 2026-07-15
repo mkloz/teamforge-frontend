@@ -152,7 +152,7 @@ function HeaderInfoContent({
 
   return (
     <>
-      {/* Avatar Section - Premium Rounded Squares for Groups, Circles for Users */}
+      {/* Rounded squares for groups; circles for people. */}
       <div className="relative flex shrink-0 items-center justify-center">
         <HeaderAvatar
           avatarKind={resolvedAvatarKind}

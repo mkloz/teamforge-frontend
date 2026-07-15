@@ -54,7 +54,7 @@ export function NotificationSettingsSection({
     <section className="flex flex-col gap-8">
       <SectionHeading
         title="Notification preferences"
-        description="Choose which updates stay inside TeamForge and which ones should also land in your inbox."
+        description="Choose which updates are also sent by email."
       />
 
       <PreferenceStatusMessage error={error} />
@@ -67,7 +67,7 @@ export function NotificationSettingsSection({
 
       <PreferenceGroup
         title="In-app notifications"
-        description="These control the bell, drawer, badges, and in-app activity surfaces."
+        description="Choose which updates appear inside TeamForge."
         items={NOTIFICATION_PREFERENCE_ITEMS}
         notificationPreferences={notificationPreferences}
         isLoading={isLoadingNotificationPreferences}
@@ -80,7 +80,7 @@ export function NotificationSettingsSection({
       {shouldShowEmailDelivery && (
         <PreferenceGroup
           title="Email delivery"
-          description="These control which alerts TeamForge is allowed to send to your inbox."
+          description="Choose which alerts TeamForge sends by email."
           items={EMAIL_PREFERENCE_ITEMS}
           notificationPreferences={notificationPreferences}
           disabled={!isOnline}

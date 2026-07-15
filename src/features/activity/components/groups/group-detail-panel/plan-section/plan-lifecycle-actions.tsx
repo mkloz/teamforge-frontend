@@ -117,7 +117,7 @@ function ConfirmPlanAction({
     <ActionDialog
       cancelLabel="Review first"
       confirmLabel={action.confirmLabel}
-      description="This turns the draft into the plan everyone sees as ready."
+      description="This confirms the draft as the group's current plan."
       details={[
         plan.dateTime ? `Time: ${formatDate(plan.dateTime)}` : "Date TBD",
         `Place: ${formatPlanLocation(plan)}`,

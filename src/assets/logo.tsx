@@ -26,10 +26,9 @@ export function TeamForgeLogo({
       )}
 
       <g clipPath="url(#group-boundary)">
-        {/* The k-NN Quadrants
- Color: Forge Teal with varying opacities to represent
- the diverse 4D MBTI vectors of the 4 group members.
- Stroke: Canvas (#FAFAF8) creates the physical boundaries.
+        {/* Four group regions
+ Color: Forge Teal with varying opacities keeps each member distinct.
+ Stroke: Canvas (#FAFAF8) creates the boundaries.
  */}
         <g stroke="#FAFAF8" strokeWidth="5" strokeLinejoin="round">
           <polygon

@@ -8,35 +8,35 @@ export function getForgeStepMetadata(fw: ForgeWizardState) {
       title: "What are we doing?",
     },
     2: {
-      hint: "Templates save you the planning — edit anything after",
+      hint: "Choose a template, then edit any detail.",
       sub: "Suggested Templates",
       title: "Pick a starting point",
     },
     3: {
-      hint: "Vague is fine — your group will lock in the final details",
+      hint: "Add what you know now. The group can decide the rest.",
       sub: "Planning Details",
       title: "When and where?",
     },
     4: {
-      hint: "Forge selects based on your personality and interests",
+      hint: "TeamForge uses your profile and group preferences",
       sub: "Group Preferences",
       title: "Who are we looking for?",
     },
     5: {
       hint:
         fw.forgeResult === "FAILED"
-          ? "Try a wider time window or a different activity"
-          : "Here's why they fit",
+          ? "Adjust the group settings, then try again"
+          : "Review the group before continuing",
       sub: fw.forgeResult === "FAILED" ? "Let's try adjusting" : "Success",
       title: fw.forgeResult === "FAILED" ? "No group yet" : "We found a group!",
     },
     6: {
       hint: "You can change this anytime from the group settings",
-      sub: "Group Identity",
+      sub: "Group Details",
       title: "Give it a look",
     },
     7: {
-      hint: "Skip this step — they'll find you in the activity feed",
+      hint: "Invitations are optional. Members can also find the group in Activity.",
       sub: "Invitations",
       title: "Ready to go!",
     },

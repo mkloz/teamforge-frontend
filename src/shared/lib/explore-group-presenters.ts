@@ -41,15 +41,14 @@ const FIT_REASON_BY_CUE: Record<
   CompatibilityCue,
   (group: ExploreGroup) => string
 > = {
-  interestOverlap: (group) =>
-    `Good fit because ${getInterestLabel(group)} lines up with your interests.`,
+  interestOverlap: (group) => `Shared interest: ${getInterestLabel(group)}.`,
   personalityCompatibility: () =>
     "The current members look likely to meet at your pace.",
   friendshipProximity: () =>
     "There is a familiar connection inside this group.",
-  ageAlignment: () => "The group is close to your stage of life.",
+  ageAlignment: () => "Members are in a similar age range to you.",
   cityAlignment: (group) =>
-    `${getCityFitPlace(group)} keeps this practical to join.`,
+    `${getCityFitPlace(group)} makes this group easier to attend.`,
 };
 
 const DISTANCE_LABEL_BY_LOCATION_MODE = {
@@ -119,7 +118,7 @@ export function getExploreGroupFitReason(group: ExploreGroup) {
     return `${planLabel} is open with room to join.`;
   }
 
-  return "A steady opening with enough context to inspect.";
+  return "Review the plan and members before deciding whether to join.";
 }
 
 function getStrongestCompatibilityCue(group: ExploreGroup) {

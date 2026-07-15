@@ -6,7 +6,7 @@
 
 ## 1. Who We Are
 
-TeamForge is an intelligent social platform that forms small, compatible groups of people for shared real-world activities. It is a university-originated project built as a full-stack product, targeting students and young professionals aged 18–28 who want to meet like-minded people without the friction of traditional social discovery.
+TeamForge forms small groups around shared real-world activities. It began as a university project and is designed for students and young professionals aged 18–28 who want to meet people through a clear activity plan.
 
 This document defines how TeamForge presents itself visually and verbally across every surface.
 
@@ -14,7 +14,7 @@ This document defines how TeamForge presents itself visually and verbally across
 
 ## 2. The Core Idea
 
-The difference between a good weekend and a lonely one is 3 to 5 people. TeamForge exists to close that gap — not through random matching or endless scrolling, but through a deliberate, intelligent act: press one button ("Forge my group") and receive one algorithmically selected, compatible group.
+TeamForge helps people turn an activity idea into a small group and a plan. A user starts with **"Forge my group,"** chooses the activity and details, and receives one group based on the available compatibility factors.
 
 The product uses a multi-factor scoring system combining:
 1. **Embedded personality profiling** (4-letter personality type code)
@@ -23,7 +23,7 @@ The product uses a multi-factor scoring system combining:
 4. **Age alignment**
 5. **Exponential-smoothing trust score**
 
-These elements work together to form groups that feel familiar from the first message.
+These inputs guide group formation.
 
 ---
 
@@ -35,36 +35,36 @@ These elements work together to form groups that feel familiar from the first me
 
 ## 4. Brand Personality: The Catalyst
 
-TeamForge is not the hero of the user's story — it is the force that makes the story possible. Like the friend who always introduces the right people at the right moment.
+TeamForge helps form the group, then lets the members decide what happens next.
 
-| Trait                            | What it means                          | What it does NOT mean                  |
-| -------------------------------- | -------------------------------------- | -------------------------------------- |
-| Intelligent but not intellectual | The system is smart. It just works.    | No jargon, no formulas facing the user |
-| Warm but not sentimental         | It cares about your outcome            | Not cutesy, not needy                  |
-| Confident but not arrogant       | Bold recommendations, no hedging       | Always gives users the final decision  |
-| Modern but not trendy            | Contemporary design, lasting aesthetic | No ephemeral micro-trends              |
+| Trait | What it means | What it does NOT mean |
+| --- | --- | --- |
+| Clear, not technical | Explain the outcome in plain language | Do not show formulas or implementation jargon |
+| Warm but not sentimental | Use supportive copy around uncertain or personal steps | Do not sound cutesy or needy |
+| Confident but not arrogant | Give one clear recommendation | Let users make the final decision |
+| Modern but not trendy | Use the established design system | Do not chase short-lived visual trends |
 
 ---
 
 ## 5. Core Values
 
-These values map directly to product features — they are not decoration.
+Each value should be reflected in product behavior and copy.
 
 ### Intentionality
 
-Every connection is purposeful. The algorithm selects each group member for a mathematically computed reason based on our multi-factor scoring system. Nothing is random.
+Group formation considers personality, interests, social proximity, age, and trust. The user receives one group rather than a ranked list.
 
 ### Trust
 
-The exponential-smoothing trust score is the system's moral spine. It rewards reliability and forgives past mistakes with grace. Trust is visible, earned, and real.
+The trust score records reliability over time. Later activity feedback can change the score.
 
 ### Belonging
 
-The social graph bonus in the matching algorithm deliberately prioritizes existing friendships and connections. TeamForge strengthens your existing social fabric while carefully introducing compatible new people using personality type compatibility.
+Social graph proximity gives more weight to existing friends and nearby connections when the service forms a group.
 
 ### Accessibility
 
-Guided onboarding, a unified activity feed, and 3-tap group formation (Forge wizard) make the experience effortless. The interface fights friction at every step safely.
+Onboarding collects profile details, the activity feed keeps conversations together, and the Forge wizard guides users through group formation.
 
 ### Growth
 
@@ -76,14 +76,14 @@ Personality types are discovery tools, not limiting labels. Trust scores evolve.
 
 The voice never uses corporate jargon, dating-app language, or game mechanics. It speaks like a knowledgeable peer.
 
-| Context            | Tone                 | Example                                                     |
-| ------------------ | -------------------- | ----------------------------------------------------------- |
-| Headline / CTA     | Confident, direct    | "Find your people, intelligently."                          |
-| Onboarding         | Encouraging, curious | "Let's find out how you tick."                              |
-| Personality result | Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
-| Group formed       | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
-| Empty state        | Gentle, activating   | "No groups yet. Let's forge your first one."                |
-| Error / limit      | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
+| Context | Tone | Example |
+| --- | --- | --- |
+| Headline / CTA | Confident, direct | "Find your people, intelligently." |
+| Onboarding | Encouraging, curious | "Start the personality assessment." |
+| Personality result | Affirming, warm | "You're an ENTJ. You often bring structure and direction to a group." |
+| Group formed | Celebratory | "Your group is ready. Here's what you have in common." |
+| Empty state | Gentle, activating | "No groups yet. Let's forge your first one." |
+| Error / limit | Honest, constructive | "We couldn't form a group with these settings. Adjust them and try again." |
 
 ---
 
@@ -107,11 +107,11 @@ The voice never uses corporate jargon, dating-app language, or game mechanics. I
 
 ### Concept
 
-The logo is a rounded-square badge containing four Voronoi regions in varying teal opacities, meeting at a central amber convergence point.
+The logo is a rounded-square badge with four teal regions meeting around an amber center.
 
-Each Voronoi region represents one group member — their distinct but compatible psychometric profile. The varying opacities (`1.0 / 0.83 / 0.66 / 0.50`) visualize the individuals converging. The amber dot at the center represents the moment all scoring factors (MBTI, OCEAN, trust, interests, etc) align and the group is forged.
+The four regions represent group members. Their different teal opacities (`1.0 / 0.83 / 0.66 / 0.50`) keep them visually distinct, while the amber center marks the group coming together.
 
-The `#FAFAF8` strokes between regions are the group's shared boundaries — individuals remain distinct, but they belong together.
+The `#FAFAF8` strokes separate the regions, showing distinct members within one group.
 
 ### Usage Rules
 
@@ -148,7 +148,8 @@ The wordmark pairs the logo symbol with the product name.
 
 - "**Team**" — displayed in Ink (`#1C1F1D`) or white depending on background
 - "**Forge**" — displayed in Forge Teal (`#0D9488`)
-- Font: Plus Jakarta Sans, Bold (700)
+- Product UI and live-text wordmark: Inter, Bold (700)
+- Fixed wordmark artwork may retain Plus Jakarta Sans as a brand-asset exception; do not load it for product UI
 - No letter-spacing adjustments
 
 On dark backgrounds, "Team" uses `rgba(255,255,255,0.5)` and "Forge" uses `#0D9488`.
@@ -157,7 +158,7 @@ On dark backgrounds, "Team" uses `rgba(255,255,255,0.5)` and "Forge" uses `#0D94
 
 ## 10. Brand Archetype Reference
 
-TeamForge is **The Catalyst** — not the Magician (too mystical), not the Sage (too intellectual), not the Creator (too product-focused). The Catalyst brings the right elements together and then steps back. The user is always the protagonist. TeamForge is the forge.
+TeamForge is **The Catalyst**: it helps form the group, then steps back. The members remain in control.
 
 ---
 

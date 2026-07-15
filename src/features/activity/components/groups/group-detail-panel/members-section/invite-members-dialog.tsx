@@ -139,7 +139,7 @@ export function InviteMembersDialog({
                 setQuery(event.target.value);
                 setInviteError(null);
               }}
-              placeholder="Search friends by name, city, or personality"
+              placeholder="Search by name, city, or personality type"
               leftIcon={<Search className="size-4" />}
             />
           </div>

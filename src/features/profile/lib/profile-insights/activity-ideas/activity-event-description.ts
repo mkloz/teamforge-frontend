@@ -8,7 +8,7 @@ export function buildActivityEventDescription(
   return compactSentences([
     getPrimaryEventSentence(context.primaryLane.key),
     getSecondaryEventSentence(context.secondaryLane?.key ?? null, title),
-    `Keep it to ${getGroupSizePhrase(context)} so everyone has a real way into the conversation.`,
+    `Keep it to ${getGroupSizePhrase(context)} so everyone has room to take part.`,
     getAnchorSentence(context.anchors),
     getStructureSentence(context),
   ]);
@@ -56,9 +56,9 @@ function getSecondaryEventSentence(key: LaneKey | null, title: string) {
       "Bring one question to compare notes on, then let the group decide which tangent is worth following.",
     outdoors:
       "Keep the movement gentle and local, with an easy exit if the group wants to wrap early.",
-    play: "Use low stakes and rotating turns so no one has to be instantly good at the activity.",
+    play: "Use low stakes and rotating turns so beginners can take part.",
     social:
-      "Build in one simple ritual, like everyone picking the next stop or sharing a small recommendation.",
+      "Add one shared choice, such as everyone picking the next stop or offering a recommendation.",
     wellness:
       "Keep the pace calm and predictable so the plan feels easy to repeat if the group clicks.",
   };

@@ -69,8 +69,8 @@ export function MatchingSettingsSection({
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <SectionHeading
-          title="Group forming"
-          description="Decide how openly TeamForge can include you when compatible groups are being formed."
+          title="Group availability"
+          description="Choose whether TeamForge can include you when other people start groups."
         />
 
         <MatchingStats currentUser={currentUser} />
@@ -127,7 +127,7 @@ function MatchingPreferenceControls({
       <NotificationPreferenceRow
         checked={notificationPreferences?.autoMatchingEnabled ?? true}
         title="Automatic group forming"
-        description="Allow TeamForge to include you when someone else forges an automatic group."
+        description="Allow TeamForge to include you when another person starts a group through Forge."
         disabled={getMatchingPreferenceDisabled(
           disabled,
           savingNotificationPreferenceKeys,

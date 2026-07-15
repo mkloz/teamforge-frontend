@@ -31,7 +31,7 @@ export function buildPortraitDetails(
     cafeConnector: [
       {
         label: "Social tell",
-        value: "Makes a simple setting feel less like a cold open.",
+        value: "Makes a simple setting easier to join.",
       },
       {
         label: "Best setting",
@@ -149,7 +149,7 @@ export function buildPortraitDetails(
       },
       {
         label: "Best setting",
-        value: `${firstLane}, especially with people who like options.`,
+        value: `${firstLane}, especially with people who prefer several options.`,
       },
       {
         label: "Watch for",
@@ -309,7 +309,7 @@ function getPersonalityDetail(
   if (!personality.type) {
     return {
       label: "Type read",
-      value: "MBTI data is still missing.",
+      value: "Personality type is not available yet.",
     };
   }
 
@@ -322,7 +322,7 @@ function getPersonalityDetail(
   const structure =
     personality.structure === "open"
       ? "keeps plans flexible"
-      : "likes decisions to land";
+      : "prefers clear decisions";
 
   return {
     label: personality.type,

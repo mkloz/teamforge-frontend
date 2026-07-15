@@ -16,7 +16,7 @@ export function OpenGroupHubButton({
       onClick={() => void onEnterGroupHub()}
       className="h-14 w-full rounded-lg"
     >
-      Open group hub
+      Open group workspace
       <ArrowRight size={17} />
     </Button>
   );

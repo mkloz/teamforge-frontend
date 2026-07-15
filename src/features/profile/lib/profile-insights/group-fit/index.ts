@@ -12,7 +12,7 @@ import {
   buildGroupFitAvoid,
   buildGroupFitBestWith,
   buildGroupFitOpeningMove,
-  buildPortraitChemistry,
+  buildPortraitGroupDynamics,
 } from "./group-fit-recommendations";
 import { getGroupFitStyle } from "./group-fit-style";
 import {
@@ -46,7 +46,7 @@ export function buildGroupFit(
   return {
     avoid: buildGroupFitAvoid(primaryKey, socialProfile),
     bestWith: buildGroupFitBestWith(primaryKey, socialProfile, openingIdea),
-    chemistry: buildPortraitChemistry(primaryKey, socialProfile),
+    groupDynamics: buildPortraitGroupDynamics(primaryKey, socialProfile),
     openingMove: buildGroupFitOpeningMove(openingIdea, topLane),
     signals: buildPortraitGroupSignals(
       primaryKey,

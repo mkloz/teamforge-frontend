@@ -6,8 +6,7 @@ import { useForgeRouteState } from "./hooks/use-forge-route-state";
 
 const FORGE_PAGE_METADATA = createTeamForgePageMetadata({
   title: "Forge",
-  description:
-    "Forge a compatible TeamForge group around one clear activity plan.",
+  description: "Create a TeamForge group around one activity plan.",
 });
 
 export function ForgePage() {

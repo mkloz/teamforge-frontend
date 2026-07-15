@@ -41,7 +41,7 @@ export function GroupIdentityFields({
     <div className="flex flex-col gap-3.5">
       <div className="px-0.5">
         <p className="font-semibold text-foreground text-xs md:text-sm">
-          Group identity
+          Group details
         </p>
         {subtitle && (
           <p className="mt-0.5 text-muted-foreground/60 text-xs">{subtitle}</p>

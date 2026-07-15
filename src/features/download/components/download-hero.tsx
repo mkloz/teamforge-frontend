@@ -49,8 +49,8 @@ export function DownloadHeroSection({
           </h1>
 
           <p className="mb-8 max-w-md text-pretty text-base text-text-dark-secondary leading-relaxed">
-            Install TeamForge directly from your browser — no app store, no
-            waiting. Select your device below for step-by-step instructions.
+            Install TeamForge from your browser. No app store is needed. Select
+            your device for step-by-step instructions.
           </p>
 
           <DownloadDeviceTabs

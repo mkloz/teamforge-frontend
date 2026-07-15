@@ -68,7 +68,7 @@ export function PlanSection({
   return (
     <Section
       heading="The plan"
-      description="What's been decided so far — and what's still open."
+      description="See the confirmed details and decisions still open."
       headingId="plan-section-heading"
       sectionRef={sectionRef}
       isHighlighted={isHighlighted}

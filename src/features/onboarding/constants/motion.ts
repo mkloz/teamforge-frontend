@@ -13,10 +13,8 @@ export const staggerContainer: Variants = {
 
 /**
  * Standard fade-up child item.
- * Uses the recommended enter easing from the ui-animation skill:
- * cubic-bezier(0.22, 1, 0.36, 1)
- *
- * Duration kept at 300 ms (sweet-spot for UI reveals).
+ * Uses cubic-bezier(0.22, 1, 0.36, 1) for entrance motion.
+ * Duration is 300 ms to align with other onboarding reveals.
  */
 export const fadeUpItem: Variants = {
   hidden: { opacity: 0, y: 20 },

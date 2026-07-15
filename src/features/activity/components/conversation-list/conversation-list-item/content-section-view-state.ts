@@ -44,7 +44,6 @@ export function getContentSectionViewState({
     isNotes: contentState.isNotes,
     latestMessage: contentState.latestMessage,
     pendingProposalCount: groupIndicatorState.pendingProposalCount,
-    planStatus: groupIndicatorState.planStatus,
     previewMessage: contentState.previewMessage,
     shouldShowSavedCountInIndicatorRow:
       groupIndicatorState.shouldShowSavedCountInIndicatorRow,

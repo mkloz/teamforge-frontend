@@ -47,7 +47,7 @@ export function AccountSettingsSection({
 
           <FormGroup
             title="Personal context"
-            description="Keep these accurate so profiles feel clear without oversharing."
+            description="Update your age, gender, and city."
           >
             <PersonalContextFields form={form} />
           </FormGroup>

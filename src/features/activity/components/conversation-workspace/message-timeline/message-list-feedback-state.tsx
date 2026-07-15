@@ -44,12 +44,10 @@ export function MessageListErrorState({
   isOffline,
   onRetry,
 }: MessageListErrorStateProps) {
-  const title = isOffline
-    ? "Messages need a connection"
-    : "Messages did not load";
+  const title = isOffline ? "You're offline" : "Messages did not load";
   const description = isOffline
     ? "Reconnect to fetch this thread."
-    : "Retry to bring the latest conversation back.";
+    : "Try loading the conversation again.";
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center px-6 py-10 text-center">

@@ -26,7 +26,7 @@ const DIFFERENCE_POINTS = [
   {
     icon: MessageCircle,
     title: "A clearer first message",
-    detail: "Everyone arrives with the same plan in front of them.",
+    detail: "Every group starts with a shared plan.",
   },
 ] as const;
 

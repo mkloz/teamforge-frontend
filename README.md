@@ -2,9 +2,9 @@
 
 > **"Find your people, intelligently."**
 
-TeamForge is an intelligent social platform that forms small, compatible groups of people for shared real-world activities. It targets students and young professionals aged 18–28 who want to meet like-minded people without the friction of traditional social discovery.
+TeamForge forms small groups around shared real-world activities. It is designed for students and young professionals aged 18–28 who want a direct way to meet people through a plan.
 
-The core mechanic: press one button — **"Forge my group"** — and receive one algorithmically selected, compatible group. No endless scrolling, no random matching. Every connection is purposeful and mathematically computed using MBTI personality vectors, OCEAN Big Five scores, interest similarity, social graph proximity, age alignment, and an exponential-smoothing trust score.
+The core flow starts with **"Forge my group."** After the user chooses an activity and plan, TeamForge forms one group using personality, interests, social graph proximity, age, and trust score.
 
 ---
 
@@ -177,10 +177,13 @@ VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com
 Production should use the public browser URL with the same API prefix:
 
 ```env
-VITE_APP_URL=https://teamforge.app
+VITE_APP_URL=https://teamforge.mkloz.com
 VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1
 VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com
 ```
+
+`https://api.mkloz.com/teamforge/api/v1` remains an active API alias, but
+production release examples use the canonical ARM host above.
 
 Sentry is disabled unless `VITE_SENTRY_DSN` is set. Source map upload is
 separate from runtime telemetry and only runs in CI builds when
@@ -194,7 +197,7 @@ Before a production PWA build, run the browser-env preflight with the same
 values that Vite will bake into the bundle:
 
 ```bash
-VITE_APP_URL=https://teamforge.app \
+VITE_APP_URL=https://teamforge.mkloz.com \
 VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
 VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
@@ -291,7 +294,7 @@ The color system is intentionally small: forge teal, spark amber, canvas, ink, a
 The production PWA release path is:
 
 ```bash
-VITE_APP_URL=https://teamforge.app \
+VITE_APP_URL=https://teamforge.mkloz.com \
 VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
 VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
@@ -338,7 +341,7 @@ Optional GitHub environment variables:
 ```text
 CLOUDFLARE_PAGES_DEPLOY_ON_PUSH=false
 CLOUDFLARE_PAGES_PRODUCTION_BRANCH=main
-VITE_APP_URL=https://teamforge.app
+VITE_APP_URL=https://teamforge.mkloz.com
 VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1
 ```
 

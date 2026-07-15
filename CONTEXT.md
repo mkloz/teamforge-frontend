@@ -1,6 +1,6 @@
 # TeamForge Frontend Context
 
-TeamForge is a React frontend for forming small, compatible groups around real-world activities. It targets students and young professionals who want purposeful social discovery without scrolling, swiping, or random matching.
+TeamForge is a React frontend for forming small, compatible groups around real-world activities. It targets students and young professionals who want to meet people through shared plans without scrolling, swiping, or random group selection.
 
 ## Domain Language
 

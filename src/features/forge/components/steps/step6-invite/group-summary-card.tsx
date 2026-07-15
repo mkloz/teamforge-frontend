@@ -34,7 +34,7 @@ interface GroupSummaryViewState {
 
 const IMAGE_SOURCE_PATTERN = /^(https?:\/\/|data:image\/|blob:|\/)/i;
 const DEFAULT_GROUP_DESCRIPTION =
-  "The plan is ready. Finish now, then continue coordination from the group hub.";
+  "The plan is ready. Finish now, then continue in the group workspace.";
 
 export function GroupSummaryCard(props: GroupSummaryCardProps) {
   const summary = getGroupSummaryViewState(props);

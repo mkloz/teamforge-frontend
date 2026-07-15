@@ -20,11 +20,11 @@ const OCEAN_SIGNAL_COPY: Record<OceanTraitKey, OceanSignalCopy> = {
     lowLabel: "Grounded",
     balancedLabel: "Adaptive",
     highDescription:
-      "They are likely to bring new angles, ideas, and room for creative detours.",
+      "Their profile suggests an interest in new ideas and unfamiliar activities.",
     lowDescription:
-      "They are likely to keep plans practical and return the group to what feels workable.",
+      "Their profile suggests a preference for practical plans and workable details.",
     balancedDescription:
-      "They can move between fresh ideas and practical details without getting stuck at either end.",
+      "Their profile suggests an interest in both new ideas and practical details.",
   },
   conscientiousness: {
     label: "Follow-through",
@@ -32,11 +32,11 @@ const OCEAN_SIGNAL_COPY: Record<OceanTraitKey, OceanSignalCopy> = {
     lowLabel: "Flexible",
     balancedLabel: "Responsive",
     highDescription:
-      "They tend to make plans easier to trust by tracking details and keeping momentum steady.",
+      "Their profile suggests they prefer plans with clear details and follow-through.",
     lowDescription:
-      "They tend to stay loose when the plan changes and help the group avoid over-planning.",
+      "Their profile suggests they are comfortable adjusting plans as they change.",
     balancedDescription:
-      "They can add structure when it helps and relax the plan when the moment needs more room.",
+      "Their profile suggests they use structure when helpful but can still adapt.",
   },
   extraversion: {
     label: "Social rhythm",
@@ -44,35 +44,34 @@ const OCEAN_SIGNAL_COPY: Record<OceanTraitKey, OceanSignalCopy> = {
     lowLabel: "Selective",
     balancedLabel: "Situational",
     highDescription:
-      "They usually add visible energy early and make conversation feel easier to start.",
+      "Their profile suggests comfort with expressive, energetic social settings.",
     lowDescription:
-      "They are more likely to build trust through quieter presence and smaller-group attention.",
+      "Their profile suggests a preference for quieter settings and smaller groups.",
     balancedDescription:
-      "They can meet the room's energy without needing to dominate it or disappear from it.",
+      "Their profile suggests comfort in both active and quieter social settings.",
   },
   agreeableness: {
     label: "Collaboration",
     highLabel: "Supportive",
     lowLabel: "Direct",
-    balancedLabel: "Clear-hearted",
+    balancedLabel: "Balanced",
     highDescription:
-      "They tend to notice comfort, smooth friction, and make cooperation feel natural.",
+      "Their profile suggests they value cooperation and other people's comfort.",
     lowDescription:
-      "They are likely to bring candor and independent judgment when a group needs clarity.",
+      "Their profile suggests a direct style and comfort making independent decisions.",
     balancedDescription:
-      "They can be warm without losing honesty, and direct without making the room colder.",
+      "Their profile suggests a balance between cooperation and direct feedback.",
   },
   neuroticism: {
     label: "Composure",
     highLabel: "Attuned",
     lowLabel: "Steady",
     balancedLabel: "Aware",
-    highDescription:
-      "They may catch tension early and notice emotional shifts before everyone has words for them.",
+    highDescription: "Their profile shows higher emotional sensitivity.",
     lowDescription:
-      "They tend to stay calm when plans wobble and give the group a steadier baseline.",
+      "Their profile shows lower emotional sensitivity to stress.",
     balancedDescription:
-      "They can read emotional context without letting every small ripple take over the room.",
+      "Their profile suggests a moderate response to emotional stress.",
   },
 };
 

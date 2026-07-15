@@ -1,5 +1,4 @@
 import type {
-  Plan,
   UnifiedConversation,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
@@ -24,7 +23,6 @@ export interface ContentSectionViewState {
   isNotes: boolean;
   latestMessage: UnifiedMessage | undefined;
   pendingProposalCount: number;
-  planStatus: Plan["status"] | null | undefined;
   previewMessage: UnifiedMessage | undefined;
   shouldShowSavedCountInIndicatorRow: boolean;
   showInlineGroupIndicators: boolean;
@@ -49,7 +47,6 @@ export interface GroupIndicatorState {
   hasIndicatorRow: boolean;
   hasSavedMessages: boolean;
   pendingProposalCount: number;
-  planStatus: Plan["status"] | null | undefined;
   shouldShowSavedCountInIndicatorRow: boolean;
   showInlineGroupIndicators: boolean;
 }
@@ -59,7 +56,6 @@ export interface GroupIndicatorVisibilityInput {
   hasSavedMessages: boolean;
   isReviewWaiting: boolean;
   pendingProposalCount: number;
-  plan: Plan | null | undefined;
 }
 
 export interface GroupIndicatorChromeInput {

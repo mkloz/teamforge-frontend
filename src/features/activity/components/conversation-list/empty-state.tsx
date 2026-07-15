@@ -14,7 +14,7 @@ type ConversationEmptyArtwork = "default" | "filtered";
 const emptyDescriptionByCtaState = {
   "false:false": null,
   "false:true": "Forge a group to start your first conversation.",
-  "true:false": "Browse open groups to find a conversation worth joining.",
+  "true:false": "Browse open groups and join a conversation.",
   "true:true": "Browse open groups or forge one around your own plan.",
 } as const;
 
@@ -22,7 +22,7 @@ interface EmptyStateProps {
   label: string;
   description?: string | null;
   artwork?: ConversationEmptyArtwork;
-  /** When true shows the Forge CTA — used for the "No conversations yet" base empty state */
+  /** Shows the Forge action for the base empty state. */
   showForgeCta?: boolean;
   showExploreCta?: boolean;
 }

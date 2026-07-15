@@ -101,7 +101,7 @@ export function SuccessHero({
                 Group ready
               </p>
               <h3 className="mt-1 font-bold text-foreground text-xl leading-tight">
-                {displayTitle} has a lineup.
+                {displayTitle} is ready.
               </h3>
               <p className="mt-1.5 text-muted-foreground text-sm leading-snug">
                 Keep this group as-is, or remove someone before you continue.
@@ -192,7 +192,7 @@ function AverageFitStat({ averageScore }: { averageScore: number | null }) {
           {getAverageFitLabel(averageScore)}
         </p>
         <p className="font-semibold text-micro text-muted-foreground">
-          Avg fit
+          Average score
         </p>
       </div>
     </div>
@@ -214,7 +214,7 @@ function TopFitSummary({ topFit }: { topFit: ScoredParticipant | null }) {
 
   return (
     <p className="min-w-0 text-muted-foreground">
-      Strongest fit is{" "}
+      Highest compatibility score:{" "}
       <span className="font-semibold text-foreground">
         {getParticipantName(topFit.participant)}
       </span>

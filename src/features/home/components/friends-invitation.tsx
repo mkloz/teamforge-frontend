@@ -47,7 +47,7 @@ export function FriendsInvitation() {
     <section className="flex w-full flex-col gap-4">
       <HomeSectionHeading
         title="Bring someone in"
-        description="For the group that needs one familiar face."
+        description="Invite someone you know to TeamForge."
       />
 
       <div className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 px-3 py-3">

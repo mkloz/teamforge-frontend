@@ -28,22 +28,22 @@ const MBTI_CATEGORY: Record<PersonalityType, string> = {
 };
 
 const MBTI_DESCRIPTION: Record<PersonalityType, string> = {
-  INTJ: "Strategic, independent, and driven by a long-range vision.",
-  INTP: "Analytical and inventive — thrives on solving abstract problems.",
-  ENTJ: "Natural-born organiser who rallies people around a shared goal.",
-  ENTP: "Quick thinker who finds a new angle on every conversation.",
-  INFJ: "Quietly insightful — understands people at a deeper level.",
-  INFP: "Creative and empathetic, brings warmth and meaning to a group.",
-  ENFJ: "Energises others and helps groups move toward a common purpose.",
-  ENFP: "Spontaneous and ideas-driven — keeps things lively and open.",
-  ISTJ: "Reliable, thorough, and the kind of person who actually shows up.",
-  ISFJ: "Warm and dependable — creates comfort for everyone around them.",
-  ESTJ: "Efficient organiser who keeps the group on track.",
-  ESFJ: "Social glue — makes sure everyone feels included.",
-  ISTP: "Calm under pressure and quietly skilled at practical things.",
-  ISFP: "Gentle and perceptive, brings a creative and sensory awareness.",
-  ESTP: "High-energy and action-first — turns plans into motion.",
-  ESFP: "Enthusiastic and fun, makes any group feel alive.",
+  INTJ: "Often prefers independent planning and long-range goals.",
+  INTP: "Often enjoys analyzing ideas and abstract problems.",
+  ENTJ: "Often prefers clear goals, decisions, and organized action.",
+  ENTP: "Often explores several angles through discussion and debate.",
+  INFJ: "Often considers values, purpose, and other people's perspectives.",
+  INFP: "Often values sincerity, imagination, and personal meaning.",
+  ENFJ: "Often helps people contribute toward a shared goal.",
+  ENFP: "Often brings new ideas and prefers room to change direction.",
+  ISTJ: "Often values clear expectations, detail, and follow-through.",
+  ISFJ: "Often notices practical needs and supports people consistently.",
+  ESTJ: "Often organizes tasks and keeps attention on the goal.",
+  ESFJ: "Often helps people feel welcome and included.",
+  ISTP: "Often prefers hands-on problems and practical solutions.",
+  ISFP: "Often notices atmosphere, detail, and immediate experience.",
+  ESTP: "Often prefers action and responds quickly to changing situations.",
+  ESFP: "Often brings energy and helps ease early social tension.",
 };
 
 export function TypeBadge({

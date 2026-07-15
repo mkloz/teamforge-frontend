@@ -35,7 +35,7 @@ export function ProfilePanelSignalsSection({
   return (
     <section className="px-5 py-5">
       <h4 className="font-bold text-slate-muted text-xs">
-        How they tend to show up
+        Personality profile
       </h4>
 
       {personalitySignals.length > 0 ? (
@@ -47,8 +47,8 @@ export function ProfilePanelSignalsSection({
       ) : (
         <p className="mt-2 font-medium text-slate-muted text-sm">
           {isHydratingProfile
-            ? "Personality signals are loading."
-            : "Personality signals are not available yet."}
+            ? "Personality profile is loading."
+            : "Personality profile is not available yet."}
         </p>
       )}
     </section>

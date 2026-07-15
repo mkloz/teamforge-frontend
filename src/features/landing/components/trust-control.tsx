@@ -27,7 +27,7 @@ const CONTROL_POINTS = [
   {
     icon: ShieldCheck,
     title: "Reliability matters",
-    detail: "Follow-through helps future groups feel easier to trust.",
+    detail: "Showing up as planned helps TeamForge form more reliable groups.",
   },
 ] as const;
 
@@ -57,13 +57,13 @@ export function TrustControlSection() {
               You stay in control.
             </h2>
             <p className="mt-6 text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
-              You can review the room, decline it when it doesn't feel right,
-              leave when plans change, and report behavior that should not be
-              there. TeamForge should feel useful, never pressuring.
+              Review a group before joining, decline it, leave when plans
+              change, or report behavior that breaks the rules. You decide what
+              happens next.
             </p>
 
             <p className="mt-8 text-pretty border-forge-teal/45 border-l-2 pl-4 font-black text-base text-white leading-relaxed">
-              Better groups depend on trust, not popularity.
+              Group formation considers reliability, not popularity.
             </p>
 
             <div className="mt-8 flex items-center gap-3 text-text-dark-secondary">

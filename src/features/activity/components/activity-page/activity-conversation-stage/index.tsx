@@ -134,8 +134,8 @@ function SelectionErrorStage({
         actionLabel="Try again"
         description={
           isOnline
-            ? "Something interrupted this chat. Retry to load the latest details."
-            : "This chat needs a fresh load before it can open. Reconnect and try again."
+            ? "We couldn't load this conversation. Try again."
+            : "Reconnect to load this conversation."
         }
         title={isOnline ? "Conversation did not load" : "You are offline"}
         variant={isOnline ? "error" : "offline"}

@@ -6,7 +6,7 @@ import {
 } from "./use-message-item-render-controller";
 
 /**
- * MessageItem - Orchestrates the rendering of individual chat messages.
+ * Renders an individual chat message by type and state.
  */
 export function MessageItem({
   message,

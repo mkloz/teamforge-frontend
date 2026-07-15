@@ -19,7 +19,7 @@ export function PeopleSection({ detail }: PeopleSectionProps) {
   return (
     <Section
       heading="Who you'd be joining"
-      description="A quick read on the humans behind this plan."
+      description="See the people already in this group."
       headingId="people-section-heading"
       trailing={
         <p className="font-bold text-muted-foreground text-sm">

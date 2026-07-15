@@ -3,7 +3,7 @@ import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
 
 /**
- * Calculates MBTI-based suggestions based on the user's personality type.
+ * Returns unselected interests from the hand-authored list for a personality type.
  */
 export function getMbtiSuggestions(
   personalityType: PersonalityType | null,

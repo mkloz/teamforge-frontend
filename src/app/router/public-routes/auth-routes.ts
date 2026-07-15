@@ -44,8 +44,8 @@ const loginRoute = createRoute({
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authLogin,
     fullPage: true,
-    title: "We hit a sign-in problem",
-    description: "TeamForge couldn't finish loading the login flow right now.",
+    title: "Sign-in page could not load",
+    description: "Try again or return to the homepage.",
     fallbackTo: "/",
     fallbackLabel: "Back home",
   }),
@@ -62,8 +62,8 @@ const registerRoute = createRoute({
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authRegister,
     fullPage: true,
-    title: "We hit a sign-up problem",
-    description: "TeamForge couldn't finish loading registration right now.",
+    title: "Sign-up page could not load",
+    description: "Try again or return to the homepage.",
     fallbackTo: "/",
     fallbackLabel: "Back home",
   }),
@@ -80,8 +80,8 @@ const forgotPasswordRoute = createRoute({
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authForgotPassword,
     fullPage: true,
-    title: "We hit a recovery problem",
-    description: "The password reset screen couldn't finish loading right now.",
+    title: "Password reset page could not load",
+    description: "Try again or return to sign in.",
     fallbackTo: "/auth/login",
     fallbackLabel: "Back to login",
   }),
@@ -97,8 +97,9 @@ const resetPasswordRoute = createRoute({
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authResetPassword,
     fullPage: true,
-    title: "We couldn't open this reset flow",
-    description: "The password reset experience hit an unexpected issue.",
+    title: "Password reset link could not open",
+    description:
+      "Try opening the link again or request a new password reset email.",
     fallbackTo: "/auth/login",
     fallbackLabel: "Back to login",
   }),
@@ -114,8 +115,8 @@ const activateAccountRoute = createRoute({
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authActivateAccount,
     fullPage: true,
-    title: "We couldn't finish activation",
-    description: "The activation flow ran into an unexpected problem.",
+    title: "Account activation could not finish",
+    description: "Try opening the activation link again or return to sign up.",
     fallbackTo: "/auth/register",
     fallbackLabel: "Back to sign up",
   }),

@@ -45,7 +45,7 @@ export function StepProfile({
               <AddressAutocomplete
                 label="City"
                 required
-                hint="Exact point is used for group fit only. Other members see your city."
+                hint="Coordinates help form nearby groups and stay private. You can change city visibility in Settings."
                 placeholder="Search your city or area..."
                 value={
                   field.value
@@ -78,7 +78,7 @@ export function StepProfile({
         size="lg"
         className="mt-4 w-full"
       >
-        {isOnline ? "Looks good" : "Reconnect to continue"}
+        {isOnline ? "Continue" : "Reconnect to continue"}
         <ArrowRightAnimated />
       </Button>
 
@@ -90,7 +90,7 @@ export function StepProfile({
         className="text-slate-muted hover:bg-transparent hover:text-ink"
       >
         <ArrowLeft size={14} />
-        Wait, go back
+        Back
       </Button>
     </div>
   );

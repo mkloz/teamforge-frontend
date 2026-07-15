@@ -12,8 +12,7 @@ export function SearchEmptyState({ query }: SearchEmptyStateProps) {
         No exact interest for &ldquo;{query}&rdquo;
       </p>
       <p className="mt-2 text-pretty font-medium font-sans text-slate-muted text-sm leading-relaxed">
-        Try a broader word, or pick the closest thing from the catalog. The
-        point is honest signal, not perfect wording.
+        Try a broader word or choose the closest option from the catalog.
       </p>
     </div>
   );

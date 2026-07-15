@@ -9,7 +9,7 @@ export function RemovalNote() {
           <span className="font-semibold text-spark-amber">
             Try another set
           </span>{" "}
-          if you want a different lineup.
+          if you want a different group.
         </p>
       </div>
     </div>

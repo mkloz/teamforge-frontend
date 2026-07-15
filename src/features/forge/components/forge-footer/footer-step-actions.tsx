@@ -101,7 +101,7 @@ export function Step5SuccessFooterAction({ fw }: ForgeFooterChildProps) {
   return (
     <FooterActionMotion motionKey="s5s">
       <PrimaryButton
-        label="Continue to group identity"
+        label="Continue to group details"
         icon={<ChevronRight size={16} />}
         onClick={fw.goNext}
       />
@@ -129,7 +129,7 @@ export function Step6FooterAction({ fw }: ForgeFooterChildProps) {
         disabled={!isOnline || fw.isSavingIdentity}
       />
       {!isOnline ? (
-        <ForgeFooterOfflineNotice message="Reconnect before saving group identity." />
+        <ForgeFooterOfflineNotice message="Reconnect before saving group details." />
       ) : null}
     </FooterActionMotion>
   );
@@ -153,7 +153,7 @@ export function Step7FooterAction({ fw }: ForgeFooterChildProps) {
         />
       ) : (
         <PrimaryButton
-          label="Enter the group hub"
+          label="Open the group workspace"
           icon={<Check size={18} />}
           onClick={() => void fw.handleEnterGroupHub()}
         />

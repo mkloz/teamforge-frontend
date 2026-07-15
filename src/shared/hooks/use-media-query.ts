@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 
 import { getBrowserMediaQuery } from "@/shared/lib/browser-environment";
 
-/**
- * Custom hook to track the state of a media query.
- * @param query The media query string to track.
- * @returns boolean indicating if the query matches.
- */
+/** Returns whether the supplied media query currently applies. */
 export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(() => matchesMediaQuery(query));
 

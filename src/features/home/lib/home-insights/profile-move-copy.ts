@@ -9,9 +9,9 @@ export function getProfileMoveCopy(
   switch (nextStep.kind) {
     case "security":
       return {
-        eyebrow: "Secure the basics",
+        eyebrow: "Secure your account",
         title: nextStep.title,
-        body: "Lock this down before you bring more people into your plans.",
+        body: "Review your account security before joining more group plans.",
         primaryLabel: nextStep.label,
         secondaryLabel: "Open profile",
         signal,
@@ -20,25 +20,25 @@ export function getProfileMoveCopy(
       return {
         eyebrow: "Finish your profile",
         title: nextStep.title,
-        body: "A clearer profile gives invites and group suggestions a better first read.",
+        body: "Complete your profile so people can review it before sharing a plan with you.",
         primaryLabel: nextStep.label,
         secondaryLabel: "Open profile",
         signal,
       };
     case "personality":
       return {
-        eyebrow: "Improve your fit",
+        eyebrow: "Add personality details",
         title: nextStep.title,
-        body: "Personality signal helps TeamForge place you with groups that feel easier to join.",
+        body: "Complete the personality assessment so TeamForge can use those details when forming groups.",
         primaryLabel: nextStep.label,
         secondaryLabel: "Open profile",
         signal,
       };
     case "interests":
       return {
-        eyebrow: "Tune your suggestions",
+        eyebrow: "Add your interests",
         title: nextStep.title,
-        body: "Add a few interests so recommendations can lean toward plans you would actually show up for.",
+        body: "Add interests so TeamForge can suggest activity plans you may want to join.",
         primaryLabel: nextStep.label,
         secondaryLabel: "Open profile",
         signal,

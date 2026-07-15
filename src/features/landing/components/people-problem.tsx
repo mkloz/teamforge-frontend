@@ -11,13 +11,13 @@ const PEOPLE_PROBLEM_POINTS = [
   },
   {
     icon: UsersRound,
-    title: "The group is the real friction",
+    title: "Finding the group takes the work",
     detail: "You need people who are free, interested, and easy to talk to.",
   },
   {
     icon: MousePointer2,
-    title: "TeamForge removes the admin",
-    detail: "Start the plan once. TeamForge finds the small group around it.",
+    title: "TeamForge handles the group setup",
+    detail: "Start the plan once. TeamForge forms the small group around it.",
   },
 ] as const;
 
@@ -44,7 +44,7 @@ export function PeopleProblemSection() {
               id="people-problem-heading"
               className="mt-4 text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
             >
-              The plan is easy. Finding the right people is the hard part.
+              The plan is easy. Finding people who want the same plan is harder.
             </h2>
             <p className="mt-6 text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
               Coffee after class. A weekend walk. Board games. A study session.

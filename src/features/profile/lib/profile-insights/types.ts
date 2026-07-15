@@ -57,7 +57,7 @@ export interface ActivityIdea {
 export interface GroupFitInsight {
   avoid: string;
   bestWith: string;
-  chemistry: string;
+  groupDynamics: string;
   openingMove: string;
   signals: string[];
   summary: string;

@@ -5,10 +5,7 @@ import { useForgeWizardRouteSync } from "@/features/forge/hooks/forge-wizard/use
 import { useForgeWizardSubmitActions } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-submit-actions";
 import { useForgeAnimation } from "@/features/forge/hooks/use-forge-animation";
 import type { ForgeMode } from "@/features/forge/lib/forge-contract";
-import {
-  buildForgeIdeaTemplate,
-  buildForgeIdeaTemplateId,
-} from "@/features/forge/lib/forge-idea-template";
+import { selectForgeIdeaTemplate } from "@/features/forge/lib/forge-idea-template";
 import type { ForgeWizardData, Step } from "@/features/forge/lib/forge-wizard";
 import {
   createInitialForgeWizardState,
@@ -243,10 +240,12 @@ function createInitialForgeWizardStateForRoute(input: {
     return baseState;
   }
 
+  const selection = selectForgeIdeaTemplate(input.routeIdea);
+
   return forgeWizardReducer(baseState, {
     type: "apply-activity-template",
-    template: buildForgeIdeaTemplate(input.routeIdea),
-    templateId: buildForgeIdeaTemplateId(input.routeIdea),
+    template: selection.template,
+    templateId: selection.id,
   });
 }
 

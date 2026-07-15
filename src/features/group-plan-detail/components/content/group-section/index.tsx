@@ -19,7 +19,7 @@ export function GroupSection({ detail }: GroupSectionProps) {
   return (
     <Section
       heading="About this group"
-      description="The people and purpose behind this gathering."
+      description="See the group's purpose, size, and joining options."
       headingId="group-section-heading"
     >
       <div className="flex flex-col gap-8">

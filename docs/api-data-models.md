@@ -635,40 +635,69 @@ interface UpdateGroupResponse {
 #### Explore Groups
 
 ```typescript
-// GET /explore/groups?categories=SPORTS,TECH&minSize=2&maxSize=6&distance=10&locationMode=IN_PERSON&access=OPEN&sortBy=match
+// GET /explore/groups?categories=SPORTS,TECH&minMembers=2&maxMembers=6&maxDistanceKm=10&locationMode=IN_PERSON&access=OPEN&sortBy=MATCH&page=1&limit=20
 interface ExploreGroupsRequest {
+    search?: string;
+    city?: string;
+    category?: PlanCategory;
     categories?: string[];
-    minSize?: number;
-    maxSize?: number;
-    distance?: number;
-    locationMode?: 'IN_PERSON' | 'ONLINE' | 'ANY';
-    access?: 'OPEN' | 'BY_REQUEST' | 'ALL';
-    sortBy?: 'match' | 'soonest' | 'newest';
-    cursor?: string;
+    access?: 'OPEN' | 'BY_REQUEST';
+    locationMode?: 'IN_PERSON' | 'ONLINE' | 'TBD';
+    startsAfter?: string;
+    startsBefore?: string;
+    minMembers?: number;
+    maxMembers?: number;
+    maxDistanceKm?: number;
+    sortBy?: 'MATCH' | 'NEWEST' | 'SOONEST';
+    page?: number;
     limit?: number;
 }
 
 interface ExploreGroupsResponse {
-    groups: GroupPreview[];
-    nextCursor: string | null;
+    items: ExploreGroupPreview[];
+    meta: {
+        totalItemsCount: number;
+        itemsPerPage: number;
+        currentPage: number;
+        totalPages: number;
+    };
+    insight: {
+        summary: string;
+        bullets: string[];
+    };
 }
 
-interface GroupPreview {
+interface ExploreGroupPreview {
     id: string;
     name: string;
     avatar: string | null;
-    matchScore: number;
-    plan: {
+    status: GroupStatus;
+    activeMembersCount: number;
+    maxMembers: number;
+    access: 'OPEN' | 'BY_REQUEST';
+    activity: {
+        id: string;
         title: string;
-        dateTime: string;
+        city: string | null;
+        interests: Interest[];
+    };
+    plan: null | {
+        id: string;
+        title: string;
+        dateTime: string | null;
         category: PlanCategory;
         locationMode: LocationMode;
         cost: CostType;
     };
-    currentSize: number;
-    maxMembers: number;
-    access: 'OPEN' | 'BY_REQUEST';
-    distance: number | null;
+    compatibility: {
+        interestOverlap: number;
+        personalityCompatibility: number;
+        cityAlignment: number;
+        ageAlignment: number;
+        trustScore: number;
+        friendshipProximity: number;
+        total: number;
+    };
 }
 ```
 
@@ -969,8 +998,8 @@ interface PaginatedResponse<T> {
 }
 ```
 
-Message history and explore feeds use cursor-style pagination where that shape
-better matches infinite scrolling:
+Message history and Explore results use cursor pagination because both load
+additional items incrementally:
 
 ```typescript
 interface CursorPaginatedResponse<T> {
@@ -1002,10 +1031,10 @@ const socket = io('http://localhost:6969/realtime', {
 ```
 
 Current production path when the frontend uses
-`VITE_API_URL=https://api.mkloz.com/teamforge/api/v1`:
+`VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1`:
 
 ```typescript
-io('https://api.mkloz.com/realtime', {
+io('https://arm-api.mkloz.com/realtime', {
     auth: {
         token: accessToken,
     },

@@ -14,11 +14,11 @@ interface PersonalityIntroProps {
 const BENEFITS = [
   {
     icon: Brain,
-    text: "Based on the IPIP – one of the most widely validated personality frameworks in academic psychology.",
+    text: "Uses questions adapted from the public-domain International Personality Item Pool (IPIP).",
   },
   {
     icon: Lock,
-    text: "Your results are only used to find compatible people. They are never sold or shared.",
+    text: "Your results help TeamForge form groups. Our privacy policy explains how this data is handled.",
   },
   {
     icon: RefreshCcw,
@@ -43,14 +43,12 @@ export function PersonalityIntro({
 
       <div className="text-left">
         <p className="mb-3 text-pretty font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-base">
-          Before we build your group, we want to understand how your mind works
-          – the core of your personality.
+          Before we build your group, answer a set of questions about how you
+          usually think, feel, and act.
         </p>
         <p className="mb-6 text-pretty font-sans text-muted-foreground text-xs leading-relaxed">
-          This is the{" "}
-          <span className="font-semibold text-ink">IPIP Assessment</span> – a
-          scientifically validated framework. The result shapes your group
-          matches and gives you a framework for understanding yourself.
+          This assessment uses IPIP questions. Your result shows five broad
+          trait scores and helps TeamForge form groups.
         </p>
       </div>
 
@@ -66,7 +64,7 @@ export function PersonalityIntro({
         backLabel={backLabel}
         onBack={onBack}
         onStart={onStart}
-        startLabel="Let's find out"
+        startLabel="Start assessment"
       />
     </PersonalityScreenShell>
   );

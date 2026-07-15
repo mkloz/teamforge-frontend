@@ -131,7 +131,7 @@ const PWA_RELEASE_SCRIPT = "node scripts/pwa/release.mjs";
 const LOCAL_APP_URL = "http://localhost:3000";
 const LOCAL_API_URL = "http://localhost:6969/api/v1";
 const MEDIA_BASE_URL = "https://mkloz-teamforge.s3.us-east-1.amazonaws.com";
-const PRODUCTION_API_URL = "https://api.mkloz.com/teamforge/api/v1";
+const PRODUCTION_API_URL = "https://arm-api.mkloz.com/teamforge/api/v1";
 
 /**
  * @param {readonly string[]} markers Source marker strings.

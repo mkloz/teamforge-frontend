@@ -24,52 +24,52 @@ export function buildPortraitLead(
 
   switch (key) {
     case "activeCatalyst":
-      lead = `${firstName} reads like someone who needs the plan to leave the group chat. The ${lanePhrase}${secondLanePhrase} point to a person who warms up through motion: pick a route, try the place, make the first small decision, then let people get comfortable while something is already happening.`;
+      lead = `${firstName} seems to prefer plans that move beyond the group chat. The ${lanePhrase}${secondLanePhrase} suggest an activity-led plan: choose a route, place, or small first task so conversation can develop while the group is doing something.`;
       break;
     case "creativeInstigator":
-      lead = `${firstName} comes across as someone with taste and a bit of mischief in the best sense. The ${lanePhrase}${secondLanePhrase} suggest company alone is not the whole draw; the plan needs a point of view, even if it starts casually.`;
+      lead = `${firstName} may prefer plans with a clear theme or idea. The ${lanePhrase}${secondLanePhrase} suggest choosing something specific enough to discuss while leaving room for the group to improvise.`;
       break;
     case "tasteMaker":
-      lead = `${firstName} reads like the person who notices what makes a plan feel chosen. The ${lanePhrase}${secondLanePhrase} suggest a good eye for atmosphere, details, and small choices that keep a meet-up from feeling generic.`;
+      lead = `${firstName} seems to notice what makes a plan feel considered. The ${lanePhrase}${secondLanePhrase} suggest attention to atmosphere, details, and choices that make a meetup feel specific.`;
       break;
     case "socialGameHost":
-      lead = `${firstName} feels strongest in plans where the activity gives everyone permission to relax. The ${lanePhrase}${secondLanePhrase} point toward someone who can make a first meet feel less loaded by giving people something simple to do together.`;
+      lead = `${firstName} may prefer plans where a shared activity reduces early social pressure. The ${lanePhrase}${secondLanePhrase} suggest activity-led first meetings that give everyone a simple shared task.`;
       break;
     case "cafeConnector":
-      lead = `${firstName} reads as someone who can make a low-key plan feel warmer than it looks on paper. The ${lanePhrase}${secondLanePhrase} suggest they are well suited to first meets where the setting is simple, public, and easy to settle into.`;
+      lead = `${firstName} may prefer simple, low-pressure plans. The ${lanePhrase}${secondLanePhrase} suggest a public setting where people can settle in and talk without a complicated schedule.`;
       break;
     case "curiousSpecialist":
-      lead = `${firstName} comes across as the person with the topic people did not expect to enjoy. The ${lanePhrase}${secondLanePhrase} suggest a profile that gets better when the group has something concrete to compare, learn, or pick apart.`;
+      lead = `${firstName} may enjoy plans built around a specific topic. The ${lanePhrase}${secondLanePhrase} suggest giving the group something concrete to compare, learn, or discuss.`;
       break;
     case "calmAnchor":
-      lead = `${firstName} reads like someone who notices the pace of the room. The ${lanePhrase}${secondLanePhrase} suggest they are better in plans that leave people room to arrive properly instead of forcing instant chemistry.`;
+      lead = `${firstName} may prefer a calmer pace. The ${lanePhrase}${secondLanePhrase} suggest plans that give people time to settle in without expecting immediate conversation.`;
       break;
     case "restlessInstigator":
-      lead = `${firstName} reads like someone who gets restless when a plan stays abstract for too long. There is a bias toward doing the thing, trying the route, choosing the table, taking the photo, starting somewhere. The ${lanePhrase}${secondLanePhrase} make that feel less like random energy and more like a habit: give the group a real first move, then let the social part catch up.`;
+      lead = `${firstName} seems to prefer a concrete first step. The ${lanePhrase}${secondLanePhrase} suggest choosing a route, table, photo prompt, or other small task, then letting conversation develop around it.`;
       break;
     case "ideaFirstExplorer":
-      lead = `${firstName} comes across as idea-first: quick to notice a more interesting version of the plan, and usually happier when there is room to improvise. The ${lanePhrase}${secondLanePhrase} point to someone who wants the meet-up to have a shape, a hook, something worth talking about after.`;
+      lead = `${firstName} may prefer plans with room for new ideas. The ${lanePhrase}${secondLanePhrase} suggest starting with a clear activity while leaving some details open for the group to decide.`;
       break;
     case "quietSpecialist":
-      lead = `${firstName} reads like the person with the detail that makes a quiet room better. The ${lanePhrase}${secondLanePhrase} suggest a profile that gets stronger when the group has something concrete to notice, make, learn, or compare.`;
+      lead = `${firstName} may prefer smaller plans with something specific to discuss. The ${lanePhrase}${secondLanePhrase} suggest something concrete to notice, make, learn, or compare.`;
       break;
     case "steadyHost":
-      lead = `${firstName} gives off the profile of someone who can make a small group feel held together. The ${lanePhrase}${secondLanePhrase} add warmth to that structure: not over-planned, not vague either, just enough direction for people to relax into the plan.`;
+      lead = `${firstName} may prefer small groups with a clear structure. The ${lanePhrase}${secondLanePhrase} suggest setting enough detail for people to know what to expect without planning every moment.`;
       break;
     case "warmConnector":
-      lead = `${firstName} reads as the kind of person who helps the first few minutes feel less stiff. The ${lanePhrase}${secondLanePhrase} give that warmth somewhere to go, so the group can ease into a shared activity instead of circling around small talk.`;
+      lead = `${firstName} may help first meetings feel more comfortable. The ${lanePhrase}${secondLanePhrase} suggest beginning with a shared activity so conversation has a clear starting point.`;
       break;
     case "focusedBuilder":
-      lead = `${firstName} has a builder streak: less interested in vague networking, more interested in making an idea concrete. The ${lanePhrase}${secondLanePhrase} suggest conversations that work best when people bring taste, curiosity, or a rough problem to shape together.`;
+      lead = `${firstName} may prefer making or solving something together. The ${lanePhrase}${secondLanePhrase} suggest a plan where people can bring an idea, question, or practical task to work through.`;
       break;
     case "playfulScout":
-      lead = `${firstName} feels like the person who can make a first meet less heavy. The ${lanePhrase}${secondLanePhrase} point toward low-pressure plans where people can warm up through the activity before the conversation has to carry everything.`;
+      lead = `${firstName} may prefer low-pressure first meetings. The ${lanePhrase}${secondLanePhrase} suggest an activity that gives conversation a clear starting point.`;
       break;
     case "practicalOrganizer":
-      lead = `${firstName} reads as someone who helps a plan become real. The ${lanePhrase}${secondLanePhrase} matter because they give the structure a human reason: something to do, somewhere to go, and fewer loose ends for the group to trip over.`;
+      lead = `${firstName} may prefer plans with clear details. The ${lanePhrase}${secondLanePhrase} suggest deciding what to do, where to meet, and what the group needs before the activity starts.`;
       break;
     case "flexibleParticipant":
-      lead = `${firstName} has a flexible profile: not locked into one obvious social role, but with enough interest detail to find the right thread. The ${lanePhrase}${secondLanePhrase} should lead the first match more than a heavy personality label.`;
+      lead = `${firstName} has a flexible profile without one obvious social role. The ${lanePhrase}${secondLanePhrase} should guide the first group more than a broad personality label.`;
       break;
   }
 

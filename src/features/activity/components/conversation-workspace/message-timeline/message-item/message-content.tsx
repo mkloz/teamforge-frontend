@@ -38,7 +38,7 @@ export function MessageContent({
 
   return (
     <div className="relative flex min-w-0 max-w-full flex-col gap-2 px-2 py-1.5">
-      {/* Link preview — only rendered when a URL is detected in the content */}
+      {/* Render a preview when the message contains a URL. */}
       <MessageContentLinkPreview
         previewUrl={viewState.previewUrl}
         isOwn={isOwn}

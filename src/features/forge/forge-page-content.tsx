@@ -95,8 +95,8 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
               What are you trying to make happen?
             </h1>
             <p className="max-w-xl text-pretty font-medium text-base text-muted-foreground leading-relaxed">
-              Give Forge a real activity and a few boundaries — it forms a
-              compatible group and moves everyone into a shared chat.
+              Describe the activity and set the group size. TeamForge chooses
+              people and opens a shared conversation.
             </p>
           </div>
 

@@ -8,8 +8,7 @@ interface TopProgressBarProps {
 }
 
 /**
- * A highly reusable, premium top-aligned progress bar for onboarding and auth flows.
- * Scales perfectly across mobile and desktop layouts.
+ * Shared top progress bar for onboarding and authentication layouts.
  */
 export function TopProgressBar({
   progress,

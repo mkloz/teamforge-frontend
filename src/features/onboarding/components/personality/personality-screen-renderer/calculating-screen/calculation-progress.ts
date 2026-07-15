@@ -7,10 +7,10 @@ import {
 const CALCULATION_DIMENSIONS = ["O", "C", "E", "A", "N"] as const;
 
 export const CALCULATION_MESSAGES = [
-  "Analyzing responses...",
-  "Mapping cognitive patterns...",
-  "Synthesizing personality vector...",
-  "Generating professional profile...",
+  "Scoring your responses...",
+  "Comparing answers across five traits...",
+  "Checking where your scores sit...",
+  "Preparing your results...",
 ] as const;
 
 export function getCalculationProgressRows(vector: OceanVectorWithMeta) {

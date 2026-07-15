@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document provides detailed specifications for each core feature of TeamForge. Features are organized by user journey phase and include purpose, user stories, UI components, data requirements, and acceptance criteria.
+This document records intended feature behavior and may lag the implementation. Use the source tree and `docs/open-api.yaml` for current routes, components, and API contracts.
 
 ---
 
@@ -81,7 +81,7 @@ interface AuthResponse {
 
 ### 1.2 Personality Test
 
-**Purpose:** Collect user personality data to enable compatibility matching through embedded personality profiling.
+**Purpose:** Collect personality answers used to create a type and trait summary and help form groups.
 
 #### User Stories
 
@@ -91,10 +91,10 @@ interface AuthResponse {
 
 #### Test Structure
 
-- **Questions:** 50 questions
+- **Questions:** 30, 50, or 150, chosen by the user
 - **Scale:** 5-point Likert (Strongly Disagree to Strongly Agree)
-- **Duration:** 5-8 minutes
-- **Output:** 4-letter personality type code (e.g., "INFP", "ESTJ")
+- **Estimated duration:** 2, 5, or 15 minutes
+- **Output:** 4-letter personality type code plus Big Five/OCEAN trait scores
 
 #### Components
 
@@ -125,7 +125,7 @@ interface PersonalityResult {
 
 ### 1.3 Interest Selection
 
-**Purpose:** Capture user interests for activity matching.
+**Purpose:** Capture activity interests used during group formation.
 
 #### User Stories
 
@@ -195,15 +195,15 @@ Category (e.g., "Sports")
 
 ### 2.2 Forge Wizard
 
-**Purpose:** The core interaction - algorithmically form a compatible group for an activity.
+**Purpose:** Form one group around an activity and plan using the available group-forming inputs.
 
 #### User Stories
 
 - As a user, I initiate the Forge process with one button
 - As a user, I select or describe an activity
 - As a user, I set plan details (date, location)
-- As a user, I choose group size (4, 6, or 8)
-- As a user, I receive an algorithmically formed group
+- As a user, I choose a group size from 2 to 8
+- As a user, I receive one proposed group
 - As a user, I can accept or decline the result
 - As a user, I name my group and select an avatar
 
@@ -212,18 +212,18 @@ Category (e.g., "Sports")
 | Step | Name | Purpose |
 |------|------|---------|
 | 1 | **Activity** | Select what you want to do |
-| 2 | **Plan** | Set date, time, location |
-| 3 | **Preferences** | Group size, visibility |
-| 4 | **Matching** | Algorithm runs, loading state |
+| 2 | **Template** | Choose an optional starting plan |
+| 3 | **Plan** | Set date, time, and location |
+| 4 | **Group** | Choose group size, visibility, and formation method |
 | 5 | **Result** | View formed group or failure |
 | 6 | **Identity** | Name group, select avatar |
-| 7 | **Complete** | Confirmation, next steps |
+| 7 | **Invite** | Invite people or continue to the group |
 
 #### Forge Modes
 
 | Mode | Description |
 |------|-------------|
-| **Auto** | Algorithm selects all members |
+| **Auto** | TeamForge selects all members |
 | **Manual** | User invites specific friends |
 
 #### Group Size Options
@@ -600,7 +600,7 @@ FORMING → PENDING → ACTIVE → PLANNING → COMPLETED
 - Priority queue placement
 - Detailed compatibility breakdowns
 
-### Enhanced Discovery
+### Additional Discovery Options
 
 - Activity-based search
 - Location-based discovery feed

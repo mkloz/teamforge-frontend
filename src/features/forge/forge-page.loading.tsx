@@ -27,7 +27,7 @@ const IDEA_CHIP_SKELETONS = [
 export function ForgePageLoading(_props: PageLoadingProps = {}) {
   return (
     <div aria-busy="true">
-      <output className="sr-only">Loading forge</output>
+      <output className="sr-only">Loading Forge</output>
       <ForgePageLoadingFixture />
     </div>
   );
@@ -57,7 +57,7 @@ function ForgePageLoadingFixture() {
           </div>
 
           <aside
-            aria-label="Loading example forge brief"
+            aria-label="Loading activity example"
             className="overflow-hidden rounded-2xl border border-forge-teal/25 bg-forge-teal/6"
           >
             <div className="flex items-center justify-between gap-4 border-forge-teal/20 border-b px-4 py-3">

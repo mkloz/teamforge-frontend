@@ -17,7 +17,7 @@ export function MatchingSnapshot({ signals }: MatchingSnapshotProps) {
 
   return (
     <section className="flex flex-col gap-4">
-      <ProfileSectionHeading>Match basis</ProfileSectionHeading>
+      <ProfileSectionHeading>Group-forming details</ProfileSectionHeading>
 
       <div className="flex flex-wrap gap-2">
         {visibleSignals.map((signal) => (
@@ -63,8 +63,8 @@ function SignalPill({ signal }: { signal: MatchingSignal }) {
 function getVisibleSignals(signals: MatchingSignal[]) {
   const preferredLabels = new Set([
     "Activity read",
-    "Social read",
-    "Match confidence",
+    "Personality detail",
+    "Profile detail",
   ]);
   const preferred = signals.filter((signal) =>
     preferredLabels.has(signal.label),

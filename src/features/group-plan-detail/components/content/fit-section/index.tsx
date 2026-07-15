@@ -55,12 +55,12 @@ function getFitSectionState(detail: GroupPlanDetail): FitSectionState {
 function EmptyFitSection() {
   return (
     <Section
-      heading="Fit signals are still settling"
-      description="Once a few more interactions land you'll see compatibility signals here."
+      heading="Group fit is not available yet"
+      description="A group fit summary is not available yet."
       headingId="fit-section-heading"
     >
       <p className="text-muted-foreground text-sm leading-relaxed">
-        For now, judge the group from the plan and the people already in.
+        Review the plan and current members for now.
       </p>
     </Section>
   );

@@ -48,9 +48,9 @@ paths:
                 $ref: '#/components/schemas/UrlResponse'
         '429':
           description: Too many requests
-      summary: Upload an image and return its accessible URL
+      summary: Upload an image and return its public URL
       tags: &a1
-        - FileUpload
+        - File uploads
   /api/v1/file-upload/chat-attachment:
     post:
       operationId: FileUploadController_uploadChatAttachment
@@ -74,7 +74,7 @@ paths:
                 $ref: '#/components/schemas/UrlResponse'
         '429':
           description: Too many requests
-      summary: Upload a chat attachment and return its accessible URL
+      summary: Upload a chat attachment and return its download URL
       tags: *a1
   /api/v1/health:
     get:
@@ -206,9 +206,9 @@ paths:
                   - timestamp
                   - method
                   - requestId
-      summary: 'Get state of api. [open for: everyone]'
+      summary: Check backend dependencies
       tags: &a8
-        - Healthcheck
+        - Health
       security: []
   /api/v1/health/frontend:
     get:
@@ -340,7 +340,7 @@ paths:
                   - timestamp
                   - method
                   - requestId
-      summary: 'Get state of frontend. [open for: everyone]'
+      summary: Check frontend reachability
       tags: *a8
       security: []
   /api/v1/health/ok:
@@ -352,7 +352,7 @@ paths:
           description: ''
         '429':
           description: Too many requests
-      summary: 'Get callback from backend. [open for: everyone]'
+      summary: Return a lightweight uptime response
       tags: *a8
       security: []
   /api/v1/users/me:
@@ -485,7 +485,7 @@ paths:
               $ref: '#/components/schemas/LoginDto'
       responses:
         '200':
-          description: User successfully logged in
+          description: Login completed
           content:
             application/json:
               schema:
@@ -510,7 +510,7 @@ paths:
               $ref: '#/components/schemas/RegisterDto'
       responses:
         '200':
-          description: User successfully registered
+          description: Account created
           content:
             application/json:
               schema:
@@ -536,7 +536,7 @@ paths:
               $ref: '#/components/schemas/VerifyEmailOtpDto'
       responses:
         '200':
-          description: Email successfully verified
+          description: Email verified
           content:
             application/json:
               schema:
@@ -578,7 +578,7 @@ paths:
       parameters: []
       responses:
         '200':
-          description: User successfully logged out
+          description: Logout completed
           content:
             application/json:
               schema:
@@ -654,7 +654,7 @@ paths:
       parameters: []
       responses:
         '200':
-          description: Access token successfully refreshed
+          description: Access token refreshed
           content:
             application/json:
               schema:
@@ -678,7 +678,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Account successfully activated
+          description: Account activated
           content:
             application/json:
               schema:
@@ -702,16 +702,16 @@ paths:
               $ref: '#/components/schemas/EmailDto'
       responses:
         '200':
-          description: Reset link sent if email exists
+          description: Password reset request accepted
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Success'
         '400':
-          description: Invalid email or unverified account
+          description: Invalid email address
         '429':
           description: Too many requests
-      summary: Send a password reset link to a verified email address
+      summary: Request a password reset link
       tags: *a11
       security: []
   /api/v1/auth/reset-password:
@@ -726,7 +726,7 @@ paths:
               $ref: '#/components/schemas/ResetPasswordDto'
       responses:
         '200':
-          description: Password successfully reset
+          description: Password reset
           content:
             application/json:
               schema:
@@ -756,12 +756,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthResult'
         '400':
-          description: Invalid Google token
+          description: Google sign-in could not be verified
         '409':
-          description: Email or Google identity is already connected to another account
+          description:
+            The email address or Google account is already connected to another
+            TeamForge account
         '429':
           description: Too many requests
-      summary: Log in or register with a Google access token
+      summary: Log in or register with a Google authorization code
       tags:
         - AuthGoogle
       security: []
@@ -860,7 +862,7 @@ paths:
           description: Too many requests
       security:
         - bearer: []
-      summary: Replace the current user interest selections
+      summary: Replace the current user's selected interests
       tags:
         - Users
   /api/v1/activities:
@@ -875,18 +877,18 @@ paths:
               $ref: '#/components/schemas/CreateActivityDto'
       responses:
         '201':
-          description: Activity successfully created
+          description: Activity created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActivityEntity'
         '400':
-          description: Profile incomplete or invalid interest IDs
+          description: Profile is incomplete or one or more interest IDs are invalid
         '429':
           description: Too many requests
       security: &a13
         - bearer: []
-      summary: Create a new activity for forging or manual coordination
+      summary: Create an activity for automatic or manual group formation
       tags: &a14
         - Activities
     get:
@@ -994,27 +996,27 @@ paths:
               $ref: '#/components/schemas/ForgeActivityDto'
       responses:
         '201':
-          description: Group successfully forged
+          description: Group formed
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ForgeActivityResultEntity'
         '400':
-          description: Invalid forge payload
+          description: The group-formation request is invalid
         '403':
           description: You do not have access to this activity
         '404':
           description: Activity not found
         '409':
           description:
-            Activity state or forge mode does not allow forging, group already
-            formed, or not enough compatible users
+            The activity cannot form a group in its current state, already has
+            a group, or does not have enough available people
         '429':
           description: Too many requests
       security: *a13
       summary:
-        Forge a compatible group from an AUTO activity and create its initial
-        plan and chat
+        Form a group from an automatic activity and create its first plan and
+        chat
       tags: *a14
   /api/v1/activities/{id}/keep-searching:
     post:
@@ -1035,7 +1037,7 @@ paths:
               $ref: '#/components/schemas/ForgeActivityDto'
       responses:
         '200':
-          description: Activity marked as matching
+          description: Activity will keep searching for a group
           content:
             application/json:
               schema:
@@ -1051,9 +1053,7 @@ paths:
         '429':
           description: Too many requests
       security: *a13
-      summary:
-        Keep an AUTO activity open for future matching after an unsuccessful
-        forge
+      summary: Keep an automatic activity open to try forming a group later
       tags: *a14
   /api/v1/activities/{id}/stop-searching:
     post:
@@ -1068,7 +1068,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Activity removed from pending matching
+          description: Activity stopped searching for a group
           content:
             application/json:
               schema:
@@ -1084,7 +1084,7 @@ paths:
         '429':
           description: Too many requests
       security: *a13
-      summary: Stop a pending AUTO activity from future matching checks
+      summary: Stop an automatic activity from continuing its group search
       tags: *a14
   /api/v1/activities/{id}/forge-pending:
     post:
@@ -1099,7 +1099,7 @@ paths:
             type: string
       responses:
         '201':
-          description: Pending activity successfully forged
+          description: Group formed from the pending activity
           content:
             application/json:
               schema:
@@ -1112,12 +1112,14 @@ paths:
           description: Activity not found
         '409':
           description:
-            Activity is not pending matching, has no saved forge payload, or no
-            longer has enough matches
+            The activity is not waiting for a group, has no saved group
+            request, or no longer has enough available people
         '429':
           description: Too many requests
       security: *a13
-      summary: Forge a group from a pending AUTO activity after matches become available
+      summary:
+        Form a group from an automatic activity after enough people become
+        available
       tags: *a14
   /api/v1/chats/link-preview:
     get:
@@ -1140,7 +1142,7 @@ paths:
           description: Too many requests
       security: &a15
         - bearer: []
-      summary: Fetch a server-side link preview for a URL
+      summary: Get link preview details for a URL
       tags: &a16
         - Chat
   /api/v1/chats:
@@ -1219,7 +1221,7 @@ paths:
         '429':
           description: Too many requests
       security: *a15
-      summary: List lightweight chats for the activity feed
+      summary: List chat summaries for the activity feed
       tags: *a16
   /api/v1/chats/saved-messages:
     get:
@@ -1476,7 +1478,7 @@ paths:
         '429':
           description: Too many requests
       security: *a15
-      summary: Soft-delete one of your messages
+      summary: Mark one of your messages as deleted
       tags: *a16
   /api/v1/chats/{id}/messages/{messageId}/pin:
     post:
@@ -1756,7 +1758,7 @@ paths:
         '429':
           description: Too many requests
       security: *a15
-      summary: Forward a message into another chat
+      summary: Forward a message to another chat
       tags: *a16
   /api/v1/chats/{id}/messages/{messageId}/reactions:
     post:
@@ -2380,7 +2382,7 @@ paths:
           description: Too many requests
       security: &a19
         - bearer: []
-      summary: Browse groups available in explore
+      summary: Browse groups available in Explore
       tags: &a20
         - Explore
   /api/v1/explore/groups/{id}/join:
@@ -2404,13 +2406,14 @@ paths:
         '400':
           description: Profile incomplete
         '403':
-          description: Group is hidden from explore or blocked by a safety rule
+          description: The group is not visible in Explore or a safety rule prevents access
         '404':
           description: Group or user not found
         '409':
           description:
-            Already a member, group no longer joinable, group full, pending
-            invite/request exists, or join mode changed
+            The user is already a member, the group cannot be joined, the group
+            is full, an invitation or request is pending, or the access setting
+            changed
         '429':
           description: Too many requests
       security: *a19
@@ -2527,7 +2530,7 @@ paths:
         '429':
           description: Too many requests
       security: *a21
-      summary: List lightweight groups for the home dashboard
+      summary: List group summaries for the home page
       tags: *a22
   /api/v1/groups/activity-feed:
     get:
@@ -2569,7 +2572,7 @@ paths:
         '429':
           description: Too many requests
       security: *a21
-      summary: List lightweight groups for the activity feed
+      summary: List group summaries for Activity
       tags: *a22
   /api/v1/groups/{id}:
     get:
@@ -2618,7 +2621,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/GroupEntity'
         '409':
-          description: Group lifecycle state prevents update
+          description: The group cannot be updated in its current state
         '429':
           description: Too many requests
       security: *a21
@@ -2645,7 +2648,7 @@ paths:
         '429':
           description: Too many requests
       security: *a21
-      summary: Get a group and plan briefing
+      summary: Get group and plan details
       tags: *a22
   /api/v1/groups/{id}/leave:
     post:
@@ -2666,7 +2669,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/GroupEntity'
         '409':
-          description: Group lifecycle state prevents leaving
+          description: The group cannot be left in its current state
         '429':
           description: Too many requests
       security: *a21
@@ -2697,7 +2700,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/GroupEntity'
         '409':
-          description: Group lifecycle state prevents member removal
+          description: A member cannot be removed while the group is in its current state
         '429':
           description: Too many requests
       security: *a21
@@ -2757,7 +2760,7 @@ paths:
         '429':
           description: Too many requests
       security: *a21
-      summary: Create the next draft plan for a durable group
+      summary: Create a new draft plan for an existing group
       tags: *a22
   /api/v1/invites/received:
     get:
@@ -2862,16 +2865,17 @@ paths:
                 $ref: '#/components/schemas/InviteEntity'
         '400':
           description:
-            Self-invite, unsupported invite type, invalid expiry, or blocked
-            relationship
+            The request targets the sender, uses an unsupported invite type or
+            expiry date, or involves a blocked relationship
         '403':
           description: User is not a group manager
         '404':
           description: Group or invitee not found
         '409':
           description:
-            Group no longer invitable, group full, invitee already member, or
-            active/accepted invite already exists
+            The group's status does not allow invites, the group is full, the
+            invitee is already a member, or a pending or accepted invite already
+            exists
         '429':
           description: Too many requests
       security: *a23
@@ -2896,13 +2900,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/InviteEntity'
         '400':
-          description: Join request invite type or blocked relationship
+          description:
+            Join requests must be reviewed by group managers, or a blocked
+            relationship prevents acceptance
         '404':
           description: Invite not found
         '409':
           description:
-            Invite not pending or expired, group no longer accepts invites,
-            group full, or user already member
+            The invite is not pending or has expired, the group no longer
+            accepts invites, the group is full, or the invitee is already a
+            member
         '429':
           description: Too many requests
       security: *a23
@@ -2927,11 +2934,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/InviteEntity'
         '400':
-          description: Join request invite type
+          description: Join requests must be reviewed by group managers
         '404':
           description: Invite not found
         '409':
-          description: Invite not pending or expired
+          description: The invite is not pending or has expired
         '429':
           description: Too many requests
       security: *a23
@@ -2986,7 +2993,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlanEntity'
         '409':
-          description: Plan lifecycle state prevents update
+          description: The plan's current status does not allow updates
         '429':
           description: Too many requests
       security: *a25
@@ -3011,7 +3018,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlanEntity'
         '409':
-          description: Plan lifecycle state prevents confirmation
+          description: The plan's current status does not allow confirmation
         '429':
           description: Too many requests
       security: *a25
@@ -3036,7 +3043,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlanEntity'
         '409':
-          description: Plan lifecycle state prevents completion
+          description: The plan's current status does not allow completion
         '429':
           description: Too many requests
       security: *a25
@@ -3061,7 +3068,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlanEntity'
         '409':
-          description: Plan lifecycle state prevents cancellation
+          description: The plan's current status does not allow cancellation
         '429':
           description: Too many requests
       security: *a25
@@ -3119,8 +3126,8 @@ paths:
                 $ref: '#/components/schemas/PlanProposalEntity'
         '409':
           description:
-            Plan is no longer open for proposals or an identical pending
-            proposal already exists
+            The plan no longer accepts proposals, or this field already has a
+            pending proposal with the same value
         '429':
           description: Too many requests
       security: *a27
@@ -3151,7 +3158,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlanProposalEntity'
         '409':
-          description: Proposal or plan state no longer allows voting
+          description: The proposal or plan status does not allow voting
         '429':
           description: Too many requests
       security: *a27
@@ -3176,7 +3183,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlanProposalEntity'
         '409':
-          description: Proposal or plan state no longer allows withdrawal
+          description: The proposal or plan status does not allow withdrawal
         '429':
           description: Too many requests
       security: *a27
@@ -3278,7 +3285,7 @@ paths:
         '429':
           description: Too many requests
       security: []
-      summary: Get web push public key state
+      summary: Get the web push public key and enabled state
       tags: *a30
   /api/v1/notifications/web-push/subscriptions:
     get:
@@ -3355,7 +3362,7 @@ paths:
         '429':
           description: Too many requests
       security: *a29
-      summary: Send a test web push notification to this user
+      summary: Send the current user a test web push notification
       tags: *a30
   /api/v1/notifications/{id}/read:
     post:
@@ -3446,7 +3453,7 @@ paths:
         - name: rateeId
           required: false
           in: query
-          description: Optional filter by rated user
+          description: Filter ratings by the member who was rated
           schema:
             example: clx1user456
             type: string
@@ -3505,12 +3512,12 @@ paths:
                 $ref: '#/components/schemas/CreateRatingResultEntity'
         '409':
           description:
-            Group plan is not reviewable, plan is no longer current, or this
-            rating was already submitted
+            The group plan is not complete, the plan is no longer current, or
+            this rating was already submitted
         '429':
           description: Too many requests
       security: *a31
-      summary: Submit ratings for your group experience
+      summary: Submit a rating for a member of your completed group plan
       tags: *a32
   /api/v1/ratings/groups/{id}/review-deferrals:
     post:
@@ -3537,12 +3544,12 @@ paths:
                 $ref: '#/components/schemas/GroupReviewStateEntity'
         '409':
           description:
-            Group plan is not reviewable, plan is no longer current, or no
-            reviews are pending
+            The group plan is not complete, the plan is no longer current, or
+            no reviews are pending
         '429':
           description: Too many requests
       security: *a31
-      summary: Delay the completed-plan review prompt until the next plan
+      summary: Defer the completed-plan review prompt until the next plan
       tags: *a32
   /api/v1/settings/me:
     get:
@@ -3559,7 +3566,7 @@ paths:
           description: Too many requests
       security: &a33
         - bearer: []
-      summary: Get your saved user settings
+      summary: Get settings for the authenticated user
       tags: &a34
         - Settings
     patch:
@@ -3581,15 +3588,13 @@ paths:
         '429':
           description: Too many requests
       security: *a33
-      summary: Update your saved user settings
+      summary: Update settings for the authenticated user
       tags: *a34
 info:
   title: TeamForge API
   description:
-    TeamForge is an intelligent social platform that forms small,
-    compatible groups of people for shared real-world activities. It targets
-    students and young professionals aged 18–28 who want to meet like-minded
-    people without the friction of traditional social discovery.
+    TeamForge API for accounts, profiles, activity-based group
+    formation, shared plans, conversations, invitations, and notifications.
   version: '1.0'
   contact: {}
   license:
@@ -3605,7 +3610,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
       type: http
-      description: Enter JWT token
+      description: Paste a JWT access token.
   schemas:
     UrlResponse:
       type: object
@@ -3892,7 +3897,7 @@ components:
           example: example@example.com
         password:
           type: string
-          example: Pass123@
+          example: ExamplePassphrase123!
       required:
         - email
         - password
@@ -3916,13 +3921,13 @@ components:
           example: example@example.com
         password:
           type: string
-          example: Pass123@
+          example: ExamplePassphrase123!
         name:
           type: string
           example: John Doe
         bio:
           type: string
-          example: This is my bio
+          example: Software engineer who enjoys hiking and board games.
         age:
           type: number
           example: 23
@@ -4020,8 +4025,8 @@ components:
           example: wrbesef.vrwsaefd.vwsefvs
         currentUser:
           description:
-            Hydrated current user returned with refreshed tokens to bootstrap
-            protected app routes.
+            Current user returned with the refreshed tokens so the client can
+            load authenticated routes.
           allOf:
             - $ref: '#/components/schemas/UserEntity'
       required:
@@ -4032,7 +4037,7 @@ components:
       properties:
         password:
           type: string
-          example: Pass123@
+          example: ExamplePassphrase123!
         token:
           type: string
       required:
@@ -4050,7 +4055,9 @@ components:
           enum:
             - login
             - register
-          description: Frontend intent for analytics and pipeline handling
+          description:
+            Whether the frontend started Google sign-in from login or
+            registration
       required:
         - code
     AuthResult:
@@ -4066,7 +4073,7 @@ components:
         isNewUser:
           type: boolean
           example: true
-          description: Whether this authentication flow created a new account during sign-in
+          description: Whether this request created a new account
       required:
         - accessToken
         - isNewUser
@@ -4728,7 +4735,7 @@ components:
           nullable: true
         description:
           type: string
-          example: How TeamForge builds intentional small groups around real activities.
+          example: How TeamForge forms small groups around shared activities.
           nullable: true
         image:
           type: string
@@ -5431,14 +5438,12 @@ components:
       properties:
         summary:
           type: string
-          example:
-            Showing idea-led openings around Graphic Design with flexible starts,
-            then using shared interests as the tie-breaker.
+          example: Showing available groups around Graphic Design.
         bullets:
           example:
-            - This view is strongest on shared interests.
-            - 9 plans already have a time attached.
+            - 9 plans are already scheduled.
             - 6 groups can be joined without a request.
+            - 3 smaller groups still have room for more members.
             - Graphic Design appears most often in these results.
           type: array
           items:
@@ -5478,7 +5483,7 @@ components:
           nullable: true
         message:
           type: string
-          example: You joined the group successfully.
+          example: You joined the group.
       required:
         - status
         - groupId
@@ -6332,7 +6337,7 @@ components:
           nullable: true
         summary:
           type: string
-          example: This group looks like a strong fit for you.
+          example: This group shares several of your interests and preferences.
         signals:
           type: array
           items:
@@ -6545,7 +6550,7 @@ components:
           example: Saturday park picnic
         description:
           type: string
-          example: A fresh plan for the group.
+          example: A new plan for the group.
         coverImage:
           type: string
           example: teal-grid
@@ -7019,10 +7024,10 @@ components:
           type: string
           example: 2026-05-01T18:30:00.000Z
           description:
-            String value interpreted by field. For LOCATION, send a JSON string
-            like
+            Send the proposed value as a string. For LOCATION, send a
+            JSON-encoded string such as
             {"locationMode":"TBD","location":null,"locationLat":null,"locationLng":null}.
-            For COST, send either FREE/PAID or a JSON string like
+            For COST, send FREE, PAID, or a JSON-encoded string such as
             {"cost":"PAID","costAmount":12.5,"costDetails":"Court booking"}.
       required:
         - field
@@ -7069,10 +7074,10 @@ components:
             - ACCOUNT_SECURITY
         title:
           type: string
-          example: Group formed
+          example: Your group is ready
         message:
           type: string
-          example: You have been matched with a new group
+          example: Your group is ready. Open the plan and say hello in chat.
         link:
           type: string
           example: /groups/clx1group123

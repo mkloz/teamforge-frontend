@@ -7,7 +7,7 @@ import type {
 import { getActivityConversationKey } from "./activity-conversation-key";
 import { getOtherChatParticipant } from "./activity-projections";
 import { isGifAttachment } from "./gif-attachments";
-import { getGroupAvatarUrl, getGroupCoverImage } from "./group-identity";
+import { getGroupAvatarUrl } from "./group-identity";
 import {
   MY_NOTES_AVATAR_URL,
   MY_NOTES_SUBTITLE,
@@ -77,14 +77,6 @@ export function getConversationTitle(item: UnifiedConversation) {
 
 export function getConversationAvatarUrl(item: UnifiedConversation) {
   return conversationAvatarResolvers[getConversationIdentityKind(item)](item);
-}
-
-export function getConversationSecondaryAvatar(item: UnifiedConversation) {
-  if (item.kind !== "group") {
-    return undefined;
-  }
-
-  return getGroupCoverImage(item.group) ?? undefined;
 }
 
 export function getConversationOnlineStatus(

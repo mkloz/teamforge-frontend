@@ -37,10 +37,10 @@ export function getInterestShapeSummary(
   const categoryPhrase = formatCategoryPhrase(topCategories);
 
   if (topCategories.length === 1) {
-    return `Your ${selectedCount} picks have a strong ${categoryPhrase} thread. Add or remove anything that no longer feels like something you would actually choose.`;
+    return `You selected ${selectedCount} interests, mostly in ${categoryPhrase}. Add or remove any that you would not choose for an activity.`;
   }
 
-  return `Your ${selectedCount} picks lean toward ${categoryPhrase}. It feels specific without locking you into one narrow version of yourself.`;
+  return `You selected ${selectedCount} interests across ${categoryPhrase}. Review the list before continuing.`;
 }
 
 function getSelectedCategoryTagIds(

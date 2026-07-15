@@ -1,7 +1,7 @@
 export const NOTIFICATION_OFFLINE_ACTIONS = {
   markAllRead: {
     id: "notifications-mark-all-read-offline",
-    description: "Reconnect before clearing notification badges.",
+    description: "Reconnect before marking all notifications as read.",
   },
   markRead: {
     id: "notifications-mark-read-offline",

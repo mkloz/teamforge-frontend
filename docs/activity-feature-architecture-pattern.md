@@ -7,8 +7,8 @@ small stable interfaces.
 
 ## Current Activity Verdict
 
-Activity is now a good reference for API and hook architecture, with a few
-remaining component-level cleanup items before it is a perfect template.
+Activity is a useful reference for API and hook architecture. Complete the
+remaining component cleanup before using the pattern unchanged elsewhere.
 
 Architecture health:
 

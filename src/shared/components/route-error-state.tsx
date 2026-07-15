@@ -104,7 +104,7 @@ export function RouteErrorState({
   description,
   retryLabel = "Try again",
   fallbackTo = "/home",
-  fallbackLabel = "Back to safety",
+  fallbackLabel = "Back to home",
   fullPage = false,
   onRetry,
 }: RouteErrorStateProps) {

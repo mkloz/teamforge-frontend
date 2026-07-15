@@ -18,7 +18,7 @@ const ExploreRightFilters = lazy(() =>
 const EXPLORE_PAGE_METADATA = createTeamForgePageMetadata({
   title: "Explore",
   description:
-    "Explore TeamForge groups, people, and activity options that fit your interests.",
+    "Browse open TeamForge groups by activity, date, location, and group size.",
 });
 
 export function ExplorePage() {

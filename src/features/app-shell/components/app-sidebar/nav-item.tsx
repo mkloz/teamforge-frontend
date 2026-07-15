@@ -74,7 +74,7 @@ export function NavItem({ item, pathname }: NavItemProps) {
           aria-label={ariaLabel}
           className={getNavLinkClassName(active)}
         >
-          {/* Active left-border indicator — thin and subtle */}
+          {/* Thin active indicator on the left edge. */}
           {active && (
             <span
               className="absolute top-1/2 left-0 h-6 w-1 -translate-y-1/2 rounded-full bg-primary"

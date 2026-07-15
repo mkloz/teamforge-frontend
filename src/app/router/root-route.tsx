@@ -21,7 +21,7 @@ export const rootRoute = createRootRoute({
     scope: routeErrorScopes.root,
     fullPage: true,
     title: "Something went wrong in TeamForge",
-    description: "The app hit an unexpected issue while loading this screen.",
+    description: "TeamForge could not load this screen.",
     fallbackTo: "/",
     fallbackLabel: "Back home",
   }),

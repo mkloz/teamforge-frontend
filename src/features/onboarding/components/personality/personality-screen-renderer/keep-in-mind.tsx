@@ -26,12 +26,12 @@ const GUIDELINES = [
   {
     icon: Globe2,
     title: "Think broadly",
-    text: "Consider how you act across your whole life, not just in specific stressful situations.",
+    text: "Think about your usual behavior across different parts of life, including calm and stressful situations.",
   },
   {
     icon: UserCircle,
     title: "Compare to the average",
-    text: "Compare yourself to an average person, not a world-class expert in a specific skill.",
+    text: "Compare yourself with most people rather than with an expert in one skill.",
   },
 ];
 

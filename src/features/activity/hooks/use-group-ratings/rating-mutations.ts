@@ -26,7 +26,7 @@ export function getCreateRatingMutationOptions(groupId: string) {
 export function getDeferReviewMutationOptions(groupId: string) {
   return {
     meta: {
-      errorToastMessage: "We couldn't move that review prompt right now.",
+      errorToastMessage: "We couldn't save that review choice right now.",
     },
     mutationFn: ActivityCommands.deferGroupReview.bind(null, groupId),
   };

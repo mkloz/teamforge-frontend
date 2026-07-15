@@ -177,7 +177,7 @@ function handleForgeExecutionError(
   if (error instanceof MissingForgeInterestSignalsError) {
     showAppErrorToast(error, {
       fallbackMessage:
-        "Add at least one interest first. It gives TeamForge enough signal to form a group.",
+        "Add at least one interest so TeamForge can use your profile when forming the group.",
       id: "forge-missing-interest-signals",
       title: "Interests needed",
     });

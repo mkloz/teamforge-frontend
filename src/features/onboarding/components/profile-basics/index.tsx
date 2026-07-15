@@ -34,7 +34,8 @@ export function ProfileBasicsCard({
           <span className="text-forge-teal">.</span>
         </h1>
         <p className="mt-1 max-w-sm text-center font-sans text-slate-muted text-xs sm:mt-2 sm:text-base">
-          Google handled sign-in. These details help us forge better groups.
+          Google handled sign-in. Add the profile details TeamForge uses when
+          forming groups.
         </p>
       </div>
 

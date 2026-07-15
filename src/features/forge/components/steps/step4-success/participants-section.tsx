@@ -45,7 +45,7 @@ export function ParticipantsSection({
           <IconTile icon={Users} tone="teal" size="sm" />
           <div className="min-w-0">
             <p className="font-semibold text-foreground text-sm leading-none">
-              Matched people
+              Selected people
             </p>
             <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
               Review the list before continuing.

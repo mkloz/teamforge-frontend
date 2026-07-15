@@ -43,7 +43,7 @@ const LazyUpcomingPlans = lazy(() =>
 const HOME_PAGE_METADATA = createTeamForgePageMetadata({
   title: "Home",
   description:
-    "Your TeamForge home for groups, invitations, plans, and recommended next moves.",
+    "See your TeamForge groups, invitations, upcoming plans, and suggested actions.",
 });
 
 type HomeDataState = ReturnType<typeof useHomeData>;

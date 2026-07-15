@@ -28,11 +28,13 @@ function getTemplateTogglePayload(
 }
 
 function getTemplateBadgeTone(badge: string): StatusPillTone {
-  return badge === "Personal fit" ? "teal" : "neutral";
+  return badge === "Based on your profile" ? "teal" : "neutral";
 }
 
 function getTemplateBadgeClassName(badge: string) {
-  return cn(badge === "Personal fit" ? "bg-forge-teal/10" : "bg-muted");
+  return cn(
+    badge === "Based on your profile" ? "bg-forge-teal/10" : "bg-muted",
+  );
 }
 
 function getTemplateCardClassName(active: boolean) {

@@ -31,10 +31,8 @@ interface ChatStatusBarProps {
 const EMPTY_PINNED_MESSAGES: UnifiedMessage[] = [];
 
 /**
- * ChatStatusBar — slim, single-line cycling pinned bar.
- *
- * Shows one entry at a time. Click to cycle. The plan status is always
- * entry 0 and cannot be dismissed. User-pinned messages follow it.
+ * Shows the plan status and pinned messages one at a time.
+ * The plan status remains first and cannot be dismissed.
  */
 export function ChatStatusBar({
   plan,

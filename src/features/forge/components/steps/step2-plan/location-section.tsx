@@ -215,7 +215,7 @@ function LocationTbdNotice() {
     <div className="fade-in flex animate-in items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 duration-200">
       <Globe size={12} className="shrink-0 text-muted-foreground/50" />
       <p className="text-muted-foreground/70 text-xs leading-snug">
-        Your group can lock in the location once everyone's in.
+        The group can decide the location after everyone joins.
       </p>
     </div>
   );

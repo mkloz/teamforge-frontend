@@ -295,7 +295,7 @@ function NotificationSource({
             aria-label={`${actionLabel}. ${item.title}`}
             title={
               isReadActionDisabled
-                ? "Reconnect to update read state"
+                ? `Reconnect to ${actionLabel.toLowerCase()}.`
                 : actionLabel
             }
             className="absolute inset-0 hidden size-10 rounded-md bg-canvas/95 p-0 opacity-0 shadow-sm transition-opacity duration-150 lg:inline-flex lg:group-hover:opacity-100 lg:group-focus-within:opacity-100"
@@ -308,7 +308,7 @@ function NotificationSource({
         </TooltipTrigger>
         <TooltipContent side="right">
           {isReadActionDisabled
-            ? "Reconnect to update read state"
+            ? `Reconnect to ${actionLabel.toLowerCase()}.`
             : actionLabel}
         </TooltipContent>
       </Tooltip>

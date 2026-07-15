@@ -26,12 +26,10 @@ export function MatchingThresholdControl({
     <div className="border-border border-b py-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-semibold text-ink text-sm">
-            Minimum compatibility
-          </p>
+          <p className="font-semibold text-ink text-sm">Minimum group fit</p>
           <p className="mt-1 text-slate-muted text-xs leading-relaxed">
-            Raise this to make automatic group forming stricter. Very high
-            limits can slow things down.
+            Raise this to require a higher group-fit score before TeamForge
+            forms a group. A high setting can take longer.
           </p>
         </div>
         <StatusPill
@@ -50,7 +48,7 @@ export function MatchingThresholdControl({
         step={5}
         value={[value]}
         disabled={disabled}
-        aria-label="Minimum compatibility score"
+        aria-label="Minimum group-fit score"
         onValueChange={(nextValue) => onChange(nextValue[0] ?? value)}
         className="mt-5"
       />

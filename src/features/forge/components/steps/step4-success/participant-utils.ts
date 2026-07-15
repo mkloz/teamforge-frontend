@@ -48,7 +48,7 @@ function getCompatibilityParticipantMeta(participant: ForgeParticipant) {
   const normalizedScore = Math.round(normalizePercent(compatibilityScore));
 
   return {
-    label: "Match",
+    label: "Compatibility",
     value: formatPercent(compatibilityScore),
     className:
       normalizedScore >= 90 ? "text-forge-teal" : "text-muted-foreground",
@@ -76,7 +76,7 @@ function getTrustParticipantMeta(participant: ForgeParticipant) {
 function getCandidateParticipantMeta() {
   return {
     label: "Status",
-    value: "Candidate",
+    value: "Selected person",
     className: "text-muted-foreground",
   };
 }

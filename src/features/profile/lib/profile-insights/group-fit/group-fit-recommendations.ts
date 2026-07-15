@@ -29,7 +29,7 @@ export function buildGroupFitBestWith(
   }
 
   if (style.posture === "coordinator") {
-    return `People who like a plan with shape and a next step.${planPhrase}`;
+    return `People who prefer a clear plan and next step.${planPhrase}`;
   }
 
   if (style.posture === "specialist" || style.posture === "builder") {
@@ -37,7 +37,7 @@ export function buildGroupFitBestWith(
   }
 
   if (style.posture === "curator") {
-    return `People who care how the plan feels, not just what it is.${planPhrase}`;
+    return `People who care about the setting as well as the activity.${planPhrase}`;
   }
 
   if (pressure === "easy") {
@@ -70,7 +70,7 @@ export function buildGroupFitAvoid(
   }
 
   if (style.posture === "connector" || style.posture === "host") {
-    return "Formats that depend on instant chemistry.";
+    return "Formats that expect people to connect immediately.";
   }
 
   if (style.posture === "coordinator") {
@@ -103,49 +103,48 @@ export function buildGroupFitOpeningMove(
   return "Start with a simple interest-led group while more profile detail builds.";
 }
 
-export function buildPortraitChemistry(
+export function buildPortraitGroupDynamics(
   key: PortraitKey,
   socialProfile: SocialProfileModel,
 ) {
   const [tension] = socialProfile.context.tensions;
 
   if (tension) {
-    return `${tension.value} Chemistry will be easier to read once the first activity gives people something real to do.`;
+    return `${tension.value} Group dynamics will be easier to assess after a shared activity.`;
   }
 
   const notes: Record<PortraitKey, string> = {
     activeCatalyst:
-      "Chemistry is strongest with people who are willing to start doing before every detail is settled.",
+      "Works best with people who are willing to start before every detail is settled.",
     cafeConnector:
-      "Chemistry is strongest with people who appreciate simple plans that still feel considered.",
-    calmAnchor:
-      "Chemistry works when the group does not rush it and can let the activity set the pace.",
+      "Works best with people who appreciate simple, considered plans.",
+    calmAnchor: "Works best when the group lets the activity set the pace.",
     creativeInstigator:
-      "Chemistry is strongest with people who enjoy a plan having taste, angle, or a small surprise.",
+      "Works best with people who enjoy plans with a point of view or a small surprise.",
     curiousSpecialist:
-      "Chemistry works with people who like following an interesting thread rather than filling silence.",
+      "Works best with people who enjoy following an interesting thread rather than filling silence.",
     focusedBuilder:
-      "Chemistry is strongest with people who bring rough ideas and enjoy making them more concrete.",
+      "Works best with people who bring rough ideas and enjoy making them concrete.",
     flexibleParticipant:
-      "Chemistry works when the group has a clear starting point and enough room for different people to contribute.",
+      "Works best when the group has a clear starting point and room for different contributions.",
     ideaFirstExplorer:
-      "Chemistry is strongest with people who like options, but can still choose one and start.",
+      "Works best with people who enjoy options but can still choose one and start.",
     playfulScout:
-      "Chemistry works with people who warm up through the activity instead of heavy introductions.",
+      "Works best with people who warm up through the activity instead of long introductions.",
     practicalOrganizer:
-      "Chemistry is strongest with people who appreciate clear plans but do not make them stiff.",
+      "Works best with people who appreciate clear plans without making them rigid.",
     quietSpecialist:
       "Best in smaller groups where the activity gives people something real to talk about.",
     restlessInstigator:
-      "Chemistry is strongest with one or two steady people nearby so the energy turns into an actual plan.",
+      "Works best with one or two steady people who can turn energy into a plan.",
     socialGameHost:
-      "Chemistry works with people who are happier doing something together than trying to impress each other.",
+      "Works best with people who prefer doing something together over trying to impress each other.",
     steadyHost:
-      "Chemistry is strongest in groups that need warmth at the start and enough structure to avoid awkward drift.",
+      "Works best in groups that need a warm start and enough structure to keep moving.",
     tasteMaker:
-      "Chemistry works with people who care about the feel of the plan beyond the category name.",
+      "Works best with people who care about the setting and details of a plan.",
     warmConnector:
-      "Chemistry is strongest in groups that need warmth without making one person carry the whole mood.",
+      "Works best in groups that value a warm start without relying on one person to lead it.",
   };
 
   return notes[key];

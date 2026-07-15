@@ -9,7 +9,7 @@ import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadat
 const INTERESTS_PAGE_METADATA = createTeamForgePageMetadata({
   title: "Choose Interests",
   description:
-    "Select your interests to help TeamForge match you with relevant activities and groups.",
+    "Select activities and topics you would want to join with a group.",
 });
 
 const CompletionBlueprint = lazy(() =>

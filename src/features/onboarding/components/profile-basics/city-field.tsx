@@ -32,7 +32,7 @@ export function CityField({ form, watchedValues }: CityFieldProps) {
             <AddressAutocomplete
               label="City"
               required
-              hint="Exact point is used for matching only. Other members see your city."
+              hint="Coordinates help form nearby groups and stay private. You can change city visibility in Settings."
               placeholder="Search your city or area..."
               value={getProfileBasicsLocationValue(field.value, watchedValues)}
               onLocationSelect={(location) => {

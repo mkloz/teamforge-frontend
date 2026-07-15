@@ -61,7 +61,7 @@ function getInstallFeedback(state: InstallState): string | null {
   }
 
   if (state === "dismissed") {
-    return "No rush — you can install it from this page any time.";
+    return "No rush. You can install it from this page at any time.";
   }
 
   return null;

@@ -24,7 +24,7 @@ function getUnreadCountLabel(count: number) {
 export function getNotificationsListHeaderActionLabels(isOnline: boolean) {
   if (!isOnline) {
     return {
-      markAllRead: "Reconnect to update read state",
+      markAllRead: "Reconnect to mark all notifications as read",
       refresh: "Reconnect to refresh",
     };
   }

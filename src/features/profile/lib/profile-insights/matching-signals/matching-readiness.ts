@@ -30,7 +30,7 @@ export function getMatchingReadiness(socialProfile: SocialProfileModel): {
   if (score >= 15 && confidence === "high" && clearLaneCount >= 2) {
     return {
       detail:
-        "Enough evidence points in the same direction for a confident first group.",
+        "The profile has several interests and personality details to guide a first group.",
       label: "High",
       score,
       strength: "ready",
@@ -40,8 +40,8 @@ export function getMatchingReadiness(socialProfile: SocialProfileModel): {
   if (score >= 10 && clearLaneCount >= 1) {
     return {
       detail: secondaryCandidate
-        ? "The profile is matchable, but the read is blended. Use a plan that leaves room for both patterns."
-        : "The profile is matchable. A concrete first plan will matter more than extra questions.",
+        ? "The profile has enough detail for a first group, but it points in more than one direction. Choose an activity that works with both."
+        : "The profile has enough detail for a first group. The activity will matter more than adding more answers.",
       label: "Good",
       score,
       strength: "good",
@@ -51,7 +51,7 @@ export function getMatchingReadiness(socialProfile: SocialProfileModel): {
   if (score >= 10) {
     return {
       detail:
-        "There is useful profile depth, but the activity evidence is still soft. Keep the first match conservative.",
+        "The profile has useful detail, but its activity preferences are still broad. Start with a simple first plan.",
       label: "Early",
       score,
       strength: "quiet",
@@ -60,7 +60,7 @@ export function getMatchingReadiness(socialProfile: SocialProfileModel): {
 
   return {
     detail:
-      "Useful starting detail, but TeamForge should keep the first match conservative until the profile has more depth.",
+      "The profile has some useful detail. Add more interests or personality answers before using it to shape a specific group.",
     label: "Early",
     score,
     strength: "quiet",

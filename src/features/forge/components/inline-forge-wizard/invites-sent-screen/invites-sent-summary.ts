@@ -39,7 +39,7 @@ export function getStatusFacts({
     },
     {
       label: "Next",
-      value: isManual ? "Wait for replies" : "Open group hub",
+      value: isManual ? "Wait for replies" : "Open group workspace",
     },
   ];
 }

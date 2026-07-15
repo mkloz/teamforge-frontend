@@ -14,82 +14,82 @@ const INTERMISSION_CONTENT: {
 }[] = [
   {
     icon: Brain,
-    title: "Patterns, not boxes",
+    title: "Traits on a scale",
     description:
-      "Your answers are forming a shape across several traits, not locking you into one type.",
-    factTitle: "Why it feels familiar",
-    fact: "A good result usually sounds like something you half-knew already. The value is seeing it clearly enough to use it.",
+      "Your answers contribute to scores across several traits rather than one fixed category.",
+    factTitle: "How to use the result",
+    fact: "Use the result as a prompt for reflection, not as a final label.",
   },
   {
     icon: Target,
-    title: "Similar questions have a job",
-    description:
-      "Some items may feel close to each other. That is part of how the read checks for consistency.",
-    factTitle: "Why repeat at all?",
-    fact: "Asking about the same tendency in a few ways helps smooth out mood, context, and the one answer you might overthink.",
+    title: "Why some questions are similar",
+    description: "Some questions cover the same trait from different angles.",
+    factTitle: "Repeated topics",
+    fact: "Answer each question based on your usual behavior, even when it resembles an earlier one.",
   },
   {
     icon: Brain,
-    title: "The Big Five lens",
+    title: "Five broad traits",
     description:
-      "The read looks at five broad traits that show up in everyday choices and social energy.",
-    factTitle: "Why this model",
-    fact: "Big Five is useful because it measures degrees. Most people are not all one thing; they sit somewhere along a few useful scales.",
+      "The assessment covers openness, conscientiousness, extraversion, agreeableness, and emotional stability.",
+    factTitle: "Scores, not categories",
+    fact: "Each trait is reported on a scale, so results can fall anywhere between the two ends.",
   },
   {
     icon: Target,
-    title: "Somewhere in the middle counts",
-    description: "You do not need extreme answers to get a meaningful result.",
-    factTitle: "Ambiverts are normal",
-    fact: "Many people land between introverted and extroverted. The middle can still say a lot about when you open up and when you pull back.",
+    title: "Middle scores count",
+    description:
+      "You do not need extreme answers for the assessment to calculate a result.",
+    factTitle: "A middle extraversion score",
+    fact: "A score near the middle can reflect different behavior across settings and groups.",
   },
   {
     icon: Brain,
-    title: "Sensitivity is information",
+    title: "Sensitivity and stability",
     description:
-      "Emotional sensitivity is not treated as good or bad. It is part of how you notice pressure.",
-    factTitle: "Stability vs sensitivity",
-    fact: "Some people stay steady under noise. Others catch small shifts early. Both patterns can be useful in the right setting.",
+      "Questions about stress and emotion contribute to the emotional-stability score.",
+    factTitle: "No preferred end",
+    fact: "The score describes a tendency. It is not a grade or a judgment of character.",
   },
   {
     icon: Target,
-    title: "Harmony and honesty",
+    title: "Harmony and directness",
     description:
-      "Agreeableness is about how you handle tension, compromise, and directness.",
-    factTitle: "Not always nicer",
-    fact: "High agreement can make groups feel easy. Lower agreement can help people say the thing everyone is avoiding.",
+      "Agreeableness questions cover cooperation, compromise, and directness.",
+    factTitle: "Different approaches",
+    fact: "Higher scores often favor harmony. Lower scores can reflect a more direct approach.",
   },
   {
     icon: Brain,
-    title: "Plans and flexibility",
+    title: "Planning and flexibility",
     description:
-      "Conscientiousness can show whether structure helps you feel free or boxed in.",
-    factTitle: "Different kinds of reliable",
-    fact: "Some people are reliable because they plan. Others are reliable because they adapt quickly when the plan changes.",
+      "Conscientiousness questions cover planning, organization, and follow-through.",
+    factTitle: "Structure varies",
+    fact: "People differ in how much advance planning they prefer and how they respond when plans change.",
   },
   {
     icon: Target,
-    title: "Curiosity has textures",
+    title: "Openness covers several areas",
     description:
-      "Openness is not only creativity. It can show up as taste, ideas, emotion, or appetite for novelty.",
-    factTitle: "More than imagination",
-    fact: "Someone can love new ideas and still prefer familiar routines. The details are what make the result feel personal.",
+      "Openness questions cover creativity, ideas, emotion, taste, and interest in novelty.",
+    factTitle: "Preferences can differ",
+    fact: "A person can enjoy new ideas while still preferring familiar routines in daily life.",
   },
   {
     icon: Brain,
-    title: "Social energy is situational",
+    title: "Social behavior varies by setting",
     description:
-      "The read is looking for where your energy tends to rise, not whether you are always outgoing.",
+      "Extraversion questions estimate how you usually respond to social activity.",
     factTitle: "Context matters",
-    fact: "A person can be quiet in a crowd and lively in the right small group. The test tries to catch that difference.",
+    fact: "You may answer differently for a large crowd and a familiar small group. Choose what is most typical overall.",
   },
   {
     icon: Target,
-    title: "Almost there",
+    title: "More answers add detail",
     description:
-      "The last stretch gives the result more texture, especially around traits that are close together.",
-    factTitle: "Why finish",
-    fact: "A few more answers can turn a vague result into one that feels easier to recognize.",
+      "The longer assessment includes more questions for each trait.",
+    factTitle: "You can stop or continue",
+    fact: "Use the current result or continue if you want to answer the remaining questions.",
   },
 ];
 

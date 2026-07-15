@@ -16,11 +16,11 @@ export function describeLaneEvidence(lane: ActivityLane) {
 
 export function getEvidenceTitle(evidence: ActivityLaneEvidence) {
   const reasonLabels: Record<ActivityLaneEvidence["reason"], string> = {
-    category: "Matched from the interest category.",
-    context: "Matched from parent context.",
-    direct: "Matched from the interest name.",
+    category: "Based on the interest category.",
+    context: "Based on the broader interest context.",
+    direct: "Based on the interest name.",
     fallback: "Used as a general interest cue.",
-    mixed: "Matched from several cues.",
+    mixed: "Based on several profile details.",
   };
 
   return reasonLabels[evidence.reason];

@@ -214,7 +214,7 @@ export class ForgeCommands {
     }
 
     const message = input.planName.trim()
-      ? `I'd like you to join ${input.planName.trim()}.`
+      ? `Join me for ${input.planName.trim()}.`
       : undefined;
 
     await Promise.all(

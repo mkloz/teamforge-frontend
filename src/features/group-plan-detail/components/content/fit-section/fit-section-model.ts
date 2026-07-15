@@ -11,7 +11,7 @@ export function sortFitSignalsByStrength(signals: GroupPlanFitSignal[]) {
 }
 
 export function getFitVerdict(percent: number | null) {
-  if (percent === null) return "Fit still settling";
+  if (percent === null) return "Group fit is not available yet";
   if (percent >= 75) return "Strong practical fit";
   if (percent >= 60) return "Useful overlap";
   if (percent >= 45) return "Some shared ground";

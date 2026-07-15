@@ -132,7 +132,7 @@ function getPrimaryStep(manual: boolean): NextStepItemProps {
     title: manual ? "Invites go out" : "Group opens",
     text: manual
       ? "Selected people receive the group invitation."
-      : "The matched members land in the same group space.",
+      : "The selected members can use the same group space.",
     tone: manual ? "amber" : "teal",
   };
 }
@@ -142,8 +142,8 @@ function getSecondaryStep(manual: boolean): NextStepItemProps {
     icon: Bell,
     title: manual ? "Replies arrive" : "Members are notified",
     text: manual
-      ? "Accepted invites appear from the group hub."
-      : "Everyone can pick up the plan from the hub.",
+      ? "Accepted members can continue in the group workspace."
+      : "Everyone can continue planning in the group workspace.",
   };
 }
 

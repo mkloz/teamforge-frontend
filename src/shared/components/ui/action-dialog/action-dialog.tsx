@@ -37,6 +37,7 @@ export function ActionDialog({
   onContentClick,
   onOpenChange,
   open,
+  overlayClassName,
   title,
   tone = "info",
   trigger,
@@ -95,6 +96,7 @@ export function ActionDialog({
       ) : null}
       <AlertDialogContent
         onClick={onContentClick}
+        overlayClassName={overlayClassName}
         className={cn(
           "w-[calc(100%-2rem)] overflow-hidden rounded-md border-border/80 bg-canvas p-0 shadow-none sm:max-w-md [&>button]:top-4 [&>button]:right-4 [&>button]:shadow-none",
           contentClassName,

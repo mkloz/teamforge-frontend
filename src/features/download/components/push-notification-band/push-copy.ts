@@ -29,22 +29,22 @@ const PUSH_COPY_RULES: readonly PushCopyRule[] = [
   {
     shouldUse: (push) => !push.isAuthenticated,
     copy: {
-      title: "Unlock mobile alerts",
+      title: "Sign in for mobile alerts",
       body: "Sign in on this device to turn on group invites, messages, and plan updates.",
     },
   },
   {
     shouldUse: (push) => push.isPublicKeyLoading,
     copy: {
-      title: "Checking alert capability",
-      body: "TeamForge is checking whether this environment can send mobile alerts.",
+      title: "Checking alert support",
+      body: "TeamForge is checking whether this browser can receive alerts.",
     },
   },
   {
     shouldUse: (push) => !push.isWebPushEnabled,
     copy: {
       title: "Alerts not enabled yet",
-      body: "Installation works now. Push delivery can be turned on when this environment is configured.",
+      body: "You can install TeamForge now, but alerts are not available yet.",
     },
   },
   {

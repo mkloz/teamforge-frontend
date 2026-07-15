@@ -9,8 +9,8 @@ import type { User } from "@/shared/schemas";
 const FALLBACK_PROFILE_SUMMARY = {
   avatar: undefined,
   avatarName: undefined,
-  displayName: "Account syncing",
-  email: "Your session is active",
+  displayName: "Loading account",
+  email: "Loading profile details",
   personalityType: undefined,
 };
 

@@ -22,7 +22,7 @@ export function PwaDiagnosticsHeader({
             id="pwa-diagnostics-title"
             className="font-extrabold text-2xl text-ink sm:text-3xl"
           >
-            PWA diagnostics
+            Installation checks
           </h2>
           <Button
             aria-label="Refresh diagnostics"
@@ -36,8 +36,7 @@ export function PwaDiagnosticsHeader({
           </Button>
         </div>
         <p className="mt-2 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          Use these checks on the actual device before install, offline, or push
-          notification QA.
+          Check installation, offline access, and notifications on this device.
         </p>
       </div>
 

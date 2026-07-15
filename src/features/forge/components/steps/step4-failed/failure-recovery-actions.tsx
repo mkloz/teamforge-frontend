@@ -33,8 +33,7 @@ export function FailureRecoveryActions({
               Keep searching
             </p>
             <p className="mt-1 text-muted-foreground text-xs leading-snug">
-              Save this activity as matching so it stays available for a later
-              retry.
+              Save this activity so you can search again later.
             </p>
           </div>
           <Switch

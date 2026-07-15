@@ -150,7 +150,7 @@ export function useCompletedGroupRating(group: Group) {
     if (
       guardOfflineAction({
         id: "activity-group-review-deferral-offline",
-        description: "Reconnect before moving review prompts.",
+        description: "Reconnect before choosing a review option.",
       })
     ) {
       return;

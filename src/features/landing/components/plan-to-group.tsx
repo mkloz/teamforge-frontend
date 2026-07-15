@@ -10,8 +10,8 @@ const SECTION_NOTES = [
   },
   {
     icon: CalendarClock,
-    title: "Add the rough shape",
-    detail: "Give it enough time and place context to feel real.",
+    title: "Add the plan details",
+    detail: "Add a date, time, and location.",
   },
   {
     icon: MessageCircle,
@@ -48,8 +48,8 @@ export function PlanToGroupSection() {
           </header>
 
           <p className="max-w-xl text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg lg:col-span-5 lg:col-start-8">
-            Choose the activity, add the rough shape, and let TeamForge handle
-            the grouping work. You get one room for one plan.
+            Choose the activity, add the plan details, and let TeamForge handle
+            the group setup. You get one room for one plan.
           </p>
         </div>
       </div>

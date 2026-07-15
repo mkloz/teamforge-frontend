@@ -17,7 +17,7 @@ export function AppearanceSectionHeader({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <SectionHeading
         title="Appearance"
-        description="Layer the mode, material style, and color pack that make TeamForge feel right for you."
+        description="Choose a mode, interface style, and color theme."
       />
       <Button
         type="button"

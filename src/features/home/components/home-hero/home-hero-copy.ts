@@ -9,20 +9,20 @@ export function getGreeting(firstName: string): {
   if (hour < 12) {
     return {
       greeting: `Good morning, ${firstName}`,
-      sub: "What needs a tap before the day gets busy.",
+      sub: "Review what needs your attention today.",
     };
   }
 
   if (hour < 17) {
     return {
       greeting: `Good afternoon, ${firstName}`,
-      sub: "Plans first, fresh openings after.",
+      sub: "Check your plans and open groups.",
     };
   }
 
   return {
     greeting: `Good evening, ${firstName}`,
-    sub: "A quick look before the night gets away.",
+    sub: "Review plans and invitations before you sign off.",
   };
 }
 

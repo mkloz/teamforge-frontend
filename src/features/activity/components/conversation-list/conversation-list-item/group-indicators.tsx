@@ -1,18 +1,15 @@
 import { Bookmark, Clock, UserStar, Vote } from "lucide-react";
 import type { ReactNode } from "react";
-import { PLAN_STATUS_CONFIG } from "@/features/activity/components/conversation-workspace/chat-status-bar/chat-status-plan-config";
-import type { Plan } from "@/features/activity/lib/activity-contract";
 import { StatusPill } from "@/shared/components/ui/status-pill";
-import { cn } from "@/shared/lib/utils";
 
-const counterBadgeClassName = "min-w-5";
-const indicatorIconClassName = "size-2.5";
+const counterBadgeClassName = "h-3.5 min-w-3.5 px-1";
+const iconOnlyBadgeClassName = "size-3.5 min-w-0 p-0";
+const indicatorIconClassName = "size-2";
 
 interface GroupIndicatorsProps {
   action?: ReactNode;
   countdown?: string | null;
   pendingProposalCount?: number;
-  planStatus?: Plan["status"] | null;
   savedMessageCount?: number;
   isReviewWaiting?: boolean;
   variant?: "inline" | "row";
@@ -23,14 +20,12 @@ interface GroupIndicatorsViewState {
   hasPendingProposal: boolean;
   hasSavedMessages: boolean;
   pendingProposalLabel: string;
-  planStatusConfig: (typeof PLAN_STATUS_CONFIG)[Plan["status"]] | null;
 }
 
 export function GroupIndicators({
   action,
   countdown,
   pendingProposalCount = 0,
-  planStatus,
   savedMessageCount = 0,
   isReviewWaiting = false,
   variant = "row",
@@ -40,7 +35,6 @@ export function GroupIndicators({
     countdown,
     isReviewWaiting,
     pendingProposalCount,
-    planStatus,
     savedMessageCount,
   });
 
@@ -62,7 +56,7 @@ export function GroupIndicators({
 
   return (
     <div className="mt-0.5 flex items-center justify-between gap-2">
-      <div className="flex min-w-0 items-center gap-2">{indicators}</div>
+      <div className="flex min-w-0 items-center gap-1">{indicators}</div>
       {action}
     </div>
   );
@@ -73,7 +67,6 @@ function getGroupIndicatorsViewState({
   countdown,
   isReviewWaiting,
   pendingProposalCount,
-  planStatus,
   savedMessageCount,
 }: Pick<
   GroupIndicatorsProps,
@@ -81,17 +74,14 @@ function getGroupIndicatorsViewState({
   | "countdown"
   | "isReviewWaiting"
   | "pendingProposalCount"
-  | "planStatus"
   | "savedMessageCount"
 >): GroupIndicatorsViewState {
   const hasPendingProposal = (pendingProposalCount ?? 0) > 0;
   const hasSavedMessages = (savedMessageCount ?? 0) > 0;
-  const planStatusConfig = getPlanStatusConfig({ countdown, planStatus });
 
   return {
     hasAnything: hasVisibleGroupIndicator({
       countdown,
-      planStatusConfig,
       hasPendingProposal,
       hasSavedMessages,
       isReviewWaiting,
@@ -100,39 +90,19 @@ function getGroupIndicatorsViewState({
     hasPendingProposal,
     hasSavedMessages,
     pendingProposalLabel: getPendingProposalLabel(pendingProposalCount ?? 0),
-    planStatusConfig,
   };
-}
-
-function getPlanStatusConfig({
-  countdown,
-  planStatus,
-}: {
-  countdown: string | null | undefined;
-  planStatus: Plan["status"] | null | undefined;
-}): GroupIndicatorsViewState["planStatusConfig"] {
-  if (countdown || !planStatus) {
-    return null;
-  }
-
-  return PLAN_STATUS_CONFIG[planStatus];
 }
 
 function hasVisibleGroupIndicator({
   countdown,
-  planStatusConfig,
   hasPendingProposal,
   hasSavedMessages,
   isReviewWaiting,
   action,
-}: Pick<
-  GroupIndicatorsViewState,
-  "hasPendingProposal" | "hasSavedMessages" | "planStatusConfig"
-> &
+}: Pick<GroupIndicatorsViewState, "hasPendingProposal" | "hasSavedMessages"> &
   Pick<GroupIndicatorsProps, "action" | "countdown" | "isReviewWaiting">) {
   return [
     countdown,
-    planStatusConfig,
     hasPendingProposal,
     hasSavedMessages,
     isReviewWaiting,
@@ -156,7 +126,6 @@ function GroupIndicatorPills({
   return (
     <>
       <CountdownIndicator countdown={countdown} />
-      <PlanStatusIndicator planStatusConfig={viewState.planStatusConfig} />
       <SavedMessagesIndicator
         count={savedMessageCount}
         isVisible={viewState.hasSavedMessages}
@@ -189,37 +158,9 @@ function CountdownIndicator({
       size="signature"
       surface="soft"
       className={counterBadgeClassName}
+      numeric
     >
       {countdown}
-    </StatusPill>
-  );
-}
-
-function PlanStatusIndicator({
-  planStatusConfig,
-}: {
-  planStatusConfig: GroupIndicatorsViewState["planStatusConfig"];
-}) {
-  const PlanStatusIcon = planStatusConfig?.icon;
-
-  if (!PlanStatusIcon || !planStatusConfig) {
-    return null;
-  }
-
-  return (
-    <StatusPill
-      icon={PlanStatusIcon}
-      iconClassName={indicatorIconClassName}
-      iconStrokeWidth={2.2}
-      tone="none"
-      size="signature"
-      surface="soft"
-      className={cn(counterBadgeClassName, planStatusConfig.badgeClass)}
-      title={`Plan ${planStatusConfig.label.toLowerCase()}`}
-    >
-      <span className="sr-only">
-        Plan {planStatusConfig.label.toLowerCase()}
-      </span>
     </StatusPill>
   );
 }
@@ -244,6 +185,7 @@ function SavedMessagesIndicator({
       size="signature"
       surface="soft"
       className={counterBadgeClassName}
+      numeric
     >
       {count}
     </StatusPill>
@@ -273,6 +215,7 @@ function PendingProposalIndicator({
       surface="soft"
       className={counterBadgeClassName}
       title={label}
+      numeric
     >
       {count}
       <span className="sr-only">{label}</span>
@@ -293,7 +236,7 @@ function ReviewWaitingIndicator({ isVisible }: { isVisible: boolean }) {
       tone="amber"
       size="signature"
       surface="soft"
-      className={counterBadgeClassName}
+      className={iconOnlyBadgeClassName}
       title="Review checkpoint"
     >
       <span className="sr-only">Review checkpoint</span>

@@ -19,7 +19,7 @@ export const SORTS: {
   label: string;
   icon: LucideIcon;
 }[] = [
-  { id: "MATCH", label: "Best fit", icon: Target },
+  { id: "MATCH", label: "Recommended", icon: Target },
   { id: "SOONEST", label: "Soonest", icon: Clock },
   { id: "NEWEST", label: "Newest", icon: Activity },
 ];

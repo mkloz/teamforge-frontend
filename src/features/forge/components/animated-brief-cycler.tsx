@@ -19,7 +19,7 @@ interface Brief {
 
 const BRIEFS: Brief[] = [
   {
-    badge: "Example brief",
+    badge: "Example activity",
     rows: [
       { label: "Activity", value: "Beginner bouldering" },
       { label: "When", value: "Thursday, 6:30 PM" },
@@ -28,7 +28,7 @@ const BRIEFS: Brief[] = [
     ],
   },
   {
-    badge: "Example brief",
+    badge: "Example activity",
     rows: [
       { label: "Activity", value: "Sunday cycle route" },
       { label: "When", value: "Sunday, 9 AM" },
@@ -37,7 +37,7 @@ const BRIEFS: Brief[] = [
     ],
   },
   {
-    badge: "Example brief",
+    badge: "Example activity",
     rows: [
       { label: "Activity", value: "Exam revision block" },
       { label: "When", value: "Saturday, 2 PM" },
@@ -70,7 +70,7 @@ export function AnimatedBriefCycler() {
 
   return (
     <aside
-      aria-label="Example forge brief"
+      aria-label="Example activity"
       className="overflow-hidden rounded-2xl border border-forge-teal/25 bg-forge-teal/6"
     >
       {/* Header */}

@@ -15,8 +15,8 @@ export function FirefoxNotice() {
             Firefox doesn't yet support installing web apps as standalone
             applications. To install TeamForge on this computer, open this page
             in <strong className="text-ink">Google Chrome</strong> or{" "}
-            <strong className="text-ink">Microsoft Edge</strong> — the
-            installation takes two clicks.
+            <strong className="text-ink">Microsoft Edge</strong>, then follow
+            the installation steps shown there.
           </p>
 
           <DownloadPageLinkCopy />

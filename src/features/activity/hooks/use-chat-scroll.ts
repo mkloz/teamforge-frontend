@@ -39,8 +39,7 @@ const INITIAL_SCROLL_SETTLE_DELAY_MS = 250;
 const NEAR_BOTTOM_DISTANCE_PX = 100;
 
 /**
- * useChatScroll - Encapsulates scroll behavior for the chat window,
- * including auto-scroll on new messages and manual "scroll to bottom" actions.
+ * Manages initial positioning, new-message scrolling, and the jump-to-bottom state.
  */
 export function useChatScroll({
   conversationId,

@@ -82,8 +82,7 @@ const profileBasicsRoute = createRoute({
     scope: routeErrorScopes.onboardingProfile,
     fullPage: true,
     title: "We couldn't load your profile step",
-    description:
-      "The profile basics step hit an unexpected issue before it could settle.",
+    description: "Your profile details did not load. Try again or return home.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),
@@ -107,7 +106,7 @@ const personalityRoute = createRoute({
     fullPage: true,
     title: "We couldn't load the personality step",
     description:
-      "The personality questionnaire hit an unexpected issue before it could settle.",
+      "The personality questions did not load. Try again or return home.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),
@@ -131,7 +130,7 @@ const interestsRoute = createRoute({
     fullPage: true,
     title: "We couldn't load your interests",
     description:
-      "The interests step ran into an unexpected issue while preparing your options.",
+      "Your interest options did not load. Try again or return home.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),

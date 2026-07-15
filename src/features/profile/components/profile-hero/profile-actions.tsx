@@ -14,12 +14,12 @@ export function ProfileActions() {
       </Button>
       <Button asChild variant="outline" className="w-full sm:w-auto">
         <Link
-          aria-label="Update matching"
+          aria-label="Update group preferences"
           {...buildSettingsNavigation("matching")}
         >
           <SlidersHorizontal className="size-4 shrink-0 sm:size-5" />
-          <span className="sm:hidden">Matching</span>
-          <span className="hidden sm:inline">Update Matching</span>
+          <span className="sm:hidden">Group fit</span>
+          <span className="hidden sm:inline">Group preferences</span>
         </Link>
       </Button>
     </div>

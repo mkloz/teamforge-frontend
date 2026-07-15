@@ -3,7 +3,7 @@ import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 
 /**
- * useSwipeToReply - Encapsulates logic for swipe-to-reply gesture.
+ * Handles the horizontal drag gesture used to reply to a message.
  */
 export function useSwipeToReply(message: UnifiedMessage, isOwn: boolean) {
   const setReplyingTo = useActivityStore((state) => state.setReplyingTo);
@@ -13,7 +13,7 @@ export function useSwipeToReply(message: UnifiedMessage, isOwn: boolean) {
   const scale = useTransform(x, [0, 50, 100], [0.8, 0.9, 1]);
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
-    // Threshold of 80px for triggering reply
+    // Trigger a reply after an 80px horizontal drag.
     if (info.offset.x > 80 && !isOwn) {
       setReplyingTo(message);
     } else if (info.offset.x < -80 && isOwn) {

@@ -15,7 +15,7 @@ const returnTargetLabels: Record<OnboardingReturnTarget, string> = {
 const settingsSectionLabels: Record<SettingsSection, string> = {
   account: "account settings",
   appearance: "appearance settings",
-  matching: "matching settings",
+  matching: "group fit settings",
   notifications: "notification settings",
   privacy: "privacy settings",
   safety: "safety settings",

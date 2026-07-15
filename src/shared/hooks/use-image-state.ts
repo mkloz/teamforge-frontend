@@ -2,13 +2,7 @@ import { useState } from "react";
 
 export type ImageLoadState = "loading" | "loaded" | "error";
 
-/**
- * useImageState — tracks the three load states of an <img> element.
- *
- * Usage:
- *   const { state, onLoad, onError } = useImageState();
- *   <img onLoad={onLoad} onError={onError} ... />
- */
+/** Tracks whether an image is loading, loaded, or unavailable. */
 export function useImageState(initial: ImageLoadState = "loading") {
   const [state, setState] = useState<ImageLoadState>(initial);
 

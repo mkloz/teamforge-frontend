@@ -24,8 +24,8 @@ export function BalanceNudge() {
         <Sprout size={16} strokeWidth={2} />
       </div>
       <p className="flex-1 font-sans text-ink text-xs leading-snug">
-        You have a strong lane here. A few picks from another area can make the
-        profile feel more like the full you.
+        Most of your picks are in one area. Add interests from another area if
+        they also appeal to you.
       </p>
       <Tooltip>
         <TooltipTrigger asChild>

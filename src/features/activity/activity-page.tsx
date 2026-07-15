@@ -9,12 +9,11 @@ import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadat
 const ACTIVITY_PAGE_METADATA = createTeamForgePageMetadata({
   title: "Activity",
   description:
-    "TeamForge activity brings conversations, group plans, direct chats, and decisions into one workspace.",
+    "Use Activity to view conversations, group plans, direct chats, and pending decisions.",
 });
 
 /**
- * ActivityPage - The main feature orchestrator for Unified Conversations,
- * Groups and Direct Chats.
+ * Renders the Activity page and its conversation workspace.
  */
 export function ActivityPage() {
   usePageMetadata(ACTIVITY_PAGE_METADATA);

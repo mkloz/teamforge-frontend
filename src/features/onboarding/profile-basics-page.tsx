@@ -9,7 +9,8 @@ import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contrac
 
 const PROFILE_BASICS_METADATA = createTeamForgePageMetadata({
   title: "Profile Setup",
-  description: "Set up your TeamForge profile basics to start matching.",
+  description:
+    "Add the basic profile details TeamForge needs before forming a group.",
 });
 
 export function ProfileBasicsPage() {

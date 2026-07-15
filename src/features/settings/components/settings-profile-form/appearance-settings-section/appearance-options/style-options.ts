@@ -6,7 +6,7 @@ export const STYLE_OPTIONS = [
   {
     value: ThemeStyle.CLASSIC,
     label: "Classic",
-    description: "Default material.",
+    description: "Standard cards and panels.",
     icon: Layers2,
   },
   {

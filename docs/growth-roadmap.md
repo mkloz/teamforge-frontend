@@ -2,11 +2,13 @@
 
 **Version 2.0 | Strategic Planning Document**
 
+> **Status:** Historical strategy and planning material. Dates, targets, premium features, staffing plans, and market assumptions are not current commitments. Confirm them with product leadership before implementation or publication.
+
 ---
 
 ## Executive Summary
 
-This document outlines TeamForge's growth strategy, product roadmap, and differentiation points. It serves as a strategic guide for product decisions, prioritization, and go-to-market planning.
+This document records earlier growth, roadmap, and go-to-market plans. Use it as planning context, not as an implementation inventory.
 
 ---
 
@@ -20,7 +22,7 @@ This document outlines TeamForge's growth strategy, product roadmap, and differe
 |--------|-----------|
 | **Density** | High concentration of target demographic (18-28) |
 | **Need** | New students actively seeking social connections |
-| **Virality** | Tight social networks enable word-of-mouth |
+| **Word of mouth** | Tight social networks help information spread |
 | **Seasonality** | Clear onboarding windows (semester starts) |
 | **Trust** | Institutional affiliation adds credibility |
 
@@ -53,7 +55,7 @@ Phase 3: Regional Scaling
 | **Campus ambassadors** | Students promoting in-person | Low |
 | **Student organizations** | Partnerships with clubs | Low |
 | **Social media** | Organic content, testimonials | Medium |
-| **Referral program** | Invite friends, earn benefits | Low |
+| **Referral program** | Invite people who may want to join | Low |
 | **University partnerships** | Official orientation programs | Very Low |
 | **Targeted ads** | Instagram/TikTok to 18-28 | Medium-High |
 
@@ -62,19 +64,19 @@ Phase 3: Regional Scaling
 | Mechanic | Implementation |
 |----------|----------------|
 | **Activity completion** | Natural closure creates satisfaction |
-| **Trust accumulation** | Users invested in their reputation |
-| **Social graph** | Friends on platform create switching cost |
+| **Trust accumulation** | Participation history encourages reliable follow-through |
+| **Social graph** | Existing friends make the product more useful |
 | **Notification cadence** | Balanced alerts for new opportunities |
 | **Seasonal prompts** | Contextual nudges (weekend plans, etc.) |
 
 ### 1.4 Network Effects
 
-TeamForge exhibits **local network effects**:
+TeamForge depends on having enough available people in each area:
 
-- More users in a city = better matching quality
-- More interest coverage = more activity types available
-- Higher density = shorter travel for in-person activities
-- Trust data compounds = better quality signals
+- More available users in a city provide more possible groups
+- Broader interest coverage supports more activity types
+- Higher local density can reduce travel distance
+- More participation history provides more reliability data
 
 **Critical Mass Thresholds:**
 
@@ -88,7 +90,9 @@ TeamForge exhibits **local network effects**:
 
 ## 2. Product Roadmap
 
-### 2.1 Current State (MVP)
+### 2.1 Historical MVP snapshot
+
+This section records an earlier planning snapshot. It is not a current implementation inventory; use the source tree, architecture guide, and OpenAPI copy for current behavior.
 
 **Completed Features:**
 - User authentication (email + Google OAuth)
@@ -117,7 +121,7 @@ TeamForge exhibits **local network effects**:
 | Backend API integration | Critical | High | Enables everything |
 | Realtime messaging (Socket.IO) | Critical | Medium | Core UX |
 | Push notifications | High | Medium | Retention |
-| Trust score calculation | High | Medium | Quality signal |
+| Trust score calculation | High | Medium | Reliability input |
 | Algorithm tuning dashboard | Medium | Medium | Matching quality |
 | Error handling & edge cases | High | Medium | Reliability |
 | Performance optimization | Medium | Medium | UX quality |
@@ -130,12 +134,12 @@ TeamForge exhibits **local network effects**:
 | Feature | Priority | Effort | Impact |
 |---------|----------|--------|--------|
 | Referral program | High | Medium | Growth |
-| Enhanced Explore discovery | High | Medium | Engagement |
+| More Explore filters and browsing options | High | Medium | Engagement |
 | Activity templates | Medium | Low | UX improvement |
 | Recurring plans | Medium | Medium | Retention |
 | Photo sharing post-activity | Medium | Medium | Engagement |
-| Profile enhancements | Low | Low | Polish |
-| Onboarding improvements | Medium | Low | Activation |
+| Profile updates | Low | Low | Polish |
+| Onboarding updates | Medium | Low | Activation |
 
 ### 2.4 Phase 3: Monetization (6-12 months)
 
@@ -166,17 +170,17 @@ TeamForge exhibits **local network effects**:
 
 ---
 
-## 3. Competitive Differentiation
+## 3. Competitor Comparison
 
 ### 3.1 Core Differentiators
 
 | Differentiator | Description | Defensibility |
 |----------------|-------------|---------------|
-| **One-button matching** | Radical simplicity vs. endless browsing | UX philosophy, hard to copy culture |
-| **Multi-factor algorithm** | Interest + social graph + trust | Data moat improves over time |
+| **One group request** | One group request instead of a long result list | Product flow |
+| **Several group inputs** | Interests + social graph + trust | Participation history may improve group formation over time |
 | **Activity-centric** | Groups form around plans, not abstract matching | Product architecture |
-| **Trust economy** | Visible, earned reputation | Network effect, behavior data |
-| **Intentional limits** | 3 searches/day creates scarcity | Counter-intuitive, few will copy |
+| **Reliability history** | Participation record | Past activity data |
+| **Intentional limits** | Earlier plan limited Forge requests to three per day | Product constraint |
 
 ### 3.2 Competitor Analysis
 
@@ -190,19 +194,19 @@ TeamForge exhibits **local network effects**:
 | Compatibility | None | Multi-factor |
 | Business model | Organizer pays | User premium |
 
-**TeamForge advantage:** Intimate groups, no organizational burden, compatibility-based.
+**TeamForge difference:** Small groups formed around a plan, with less manual coordination.
 
 #### vs. Bumble BFF
 
 | Dimension | Bumble BFF | TeamForge |
 |-----------|------------|-----------|
-| Matching unit | 1:1 | Group |
-| UX model | Swipe | One-button |
-| Activity focus | Post-match | Pre-match |
+| Formation unit | 1:1 | Group |
+| UX model | Profile browsing | One-button |
+| Activity focus | After introduction | Before group formation |
 | Depth | Surface profiles | Personality + interests |
 | Trust | None | Exponential score |
 
-**TeamForge advantage:** Group-based (more natural), activity-centric, deeper profiling.
+**TeamForge difference:** Group-based planning with activity and profile inputs.
 
 #### vs. Facebook Groups / Discord
 
@@ -214,13 +218,13 @@ TeamForge exhibits **local network effects**:
 | Group size | Variable | Fixed small |
 | Accountability | Low | Trust score |
 
-**TeamForge advantage:** Real-world activation, small curated groups, accountability.
+**TeamForge difference:** Small groups, concrete activity plans, and participation history.
 
-### 3.3 Moat Development
+### 3.3 Long-Term Differentiation
 
 **Short-term (0-12 months):**
-- Superior UX and design quality
-- First-mover in "intelligent group formation" positioning
+- Clear group-forming flow and consistent design
+- Clear positioning around forming one small group for a plan
 
 **Medium-term (1-3 years):**
 - Trust score data accumulation
@@ -244,7 +248,7 @@ This metric captures:
 - Users finding compatible groups (matching works)
 - Groups forming successfully (network density)
 - Plans being executed (product delivers value)
-- Full value loop completion
+- People complete the activity they planned
 
 ### 4.2 Funnel Metrics
 
@@ -262,8 +266,8 @@ This metric captures:
 
 | Metric | Target | Why It Matters |
 |--------|--------|----------------|
-| **Forge success rate** | >70% | Algorithm effectiveness |
-| **Post-activity rating** | >4.0/5.0 | Match quality |
+| **Forge success rate** | >70% | How often Forge forms a group |
+| **Post-activity rating** | >4.0/5.0 | How participants rate the completed activity |
 | **Plan completion rate** | >60% | Groups follow through |
 | **Trust score average** | >0.6 | Community health |
 | **NPS** | >50 | Word-of-mouth potential |
@@ -276,13 +280,13 @@ These are explicitly **not** optimized:
 |--------|----------------------|
 | Time in app | We want efficient experiences |
 | Messages sent | Activity completion matters more |
-| Daily active users | Meaningful engagement over vanity |
+| Daily active users | Completed activities matter more than daily opens |
 | Groups joined | Quality over quantity |
 | Notifications clicked | Respect attention |
 
 ---
 
-## 5. Innovation Areas
+## 5. Possible Future Work
 
 ### 5.1 Matching Algorithm Evolution
 
@@ -304,7 +308,7 @@ These are explicitly **not** optimized:
 - Verification tiers (ID verified, university verified)
 - Trust recovery mechanics (second chances with conditions)
 
-### 5.3 Activity Intelligence
+### 5.3 Activity Suggestions
 
 **Future possibilities:**
 - Activity recommendation engine
@@ -337,7 +341,7 @@ These are explicitly **not** optimized:
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
-| **Competitor entry** | Medium | Medium | Build data moat, brand loyalty |
+| **Competitor entry** | Medium | Medium | Improve product reliability and user retention |
 | **Platform changes** | Low | Medium | Own channels, diverse acquisition |
 | **Economic downturn** | Low | Medium | Free tier always available |
 | **Regulatory** | Low | Low | Privacy-first design, GDPR compliance |
@@ -393,7 +397,7 @@ These are explicitly **not** optimized:
 - 100,000+ active users
 - Premium tier generating revenue
 - Expanding beyond universities to young professionals
-- Trust score recognized as meaningful signal
+- Trust score understood as a record of reliability
 
 **Year 3:**
 - 500,000+ active users
@@ -401,13 +405,9 @@ These are explicitly **not** optimized:
 - "TeamForge" as recognized brand in social tech
 - Platform integrations and API
 
-### The Ultimate Vision
+### Long-Term Outcome
 
-TeamForge succeeds when it becomes the default answer to: "I want to do something with compatible people."
-
-Not "I want to scroll through profiles" or "I want to join a big anonymous group" - but "I want to find my people for this specific thing, right now."
-
-When users graduate from TeamForge because they've built the real-world friendships they needed, that's the ultimate success. Every user who no longer needs us because we helped them build a social life is a victory.
+TeamForge succeeds when people can form a small group for a specific activity without browsing profiles or coordinating everyone manually. Lasting friendships that eventually make the product unnecessary are still a successful outcome.
 
 ---
 

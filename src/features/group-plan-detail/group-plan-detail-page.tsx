@@ -12,7 +12,7 @@ import type { GroupPlanDetailRouteSearch } from "@/shared/navigation";
 
 const GROUP_PLAN_DETAIL_ROUTE = "/app-shell/groups/$groupId";
 const GROUP_PLAN_DETAIL_DEFAULT_DESCRIPTION =
-  "Review the TeamForge group, plan, members, and fit signals.";
+  "Review this group's plan, members, and fit summary in TeamForge.";
 
 export function GroupPlanDetailPage() {
   const { groupId } = useParams({ from: GROUP_PLAN_DETAIL_ROUTE });
@@ -54,12 +54,12 @@ function GroupPlanDetailErrorState({
 }) {
   return (
     <section
-      aria-label="Group plan detail error"
+      aria-label="Group details error"
       className="mx-auto w-full max-w-screen-2xl px-4 pt-3 pb-6 sm:px-5 md:pt-6 lg:px-8"
     >
       <PageErrorState
         title="Group details could not load"
-        description="TeamForge could not refresh this group and plan briefing right now."
+        description="TeamForge could not load this group's details right now."
         retryLabel="Refresh details"
         onRetry={() => {
           void onRetry();

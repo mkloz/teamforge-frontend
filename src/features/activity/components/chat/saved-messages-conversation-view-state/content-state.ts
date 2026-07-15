@@ -75,7 +75,7 @@ function getSavedMessagesErrorContentState(
     state: {
       icon: "retry",
       title: "Saved messages did not load",
-      description: "Retry to bring your private bookmarks back.",
+      description: "Try loading your saved messages again.",
       actionLabel: input.isRetrying ? "Retrying..." : "Retry",
       actionDisabled: input.isRetrying,
     },

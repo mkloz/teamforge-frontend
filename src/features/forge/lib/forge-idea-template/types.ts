@@ -10,10 +10,15 @@ export interface CandidateCategory {
   weight: number;
 }
 
-export interface TemplateMatch {
+export interface ScoredTemplateSeed {
   category: ActivityCategory;
   score: number;
   seed: TemplateSeed;
+}
+
+export interface ForgeIdeaTemplateSelection {
+  id: string;
+  template: ForgePlanTemplate;
 }
 
 export interface PreferredTemplateRule {
@@ -31,59 +36,3 @@ export interface TokenNormalizationRule {
   normalize: (token: string) => string;
   suffix: string;
 }
-
-export interface IdeaTemplateText {
-  detail: string;
-  eventDescription: string;
-  title: string;
-}
-
-export type ResolvedForgeTemplate = ForgePlanTemplate | null;
-
-export type ActivityTemplateSection = Pick<
-  ForgePlanTemplate,
-  "selectedActivity"
->;
-
-export type PlanTemplateSection = Pick<
-  ForgePlanTemplate,
-  | "planName"
-  | "planDescription"
-  | "planLocation"
-  | "planLocationLat"
-  | "planLocationLng"
-  | "locationType"
-  | "planCost"
-  | "planCostAmount"
-  | "planCostDetails"
->;
-
-export type PlanCopyTemplateSection = Pick<
-  PlanTemplateSection,
-  "planName" | "planDescription"
->;
-
-export type PlanLocationTemplateSection = Pick<
-  PlanTemplateSection,
-  "planLocation" | "planLocationLat" | "planLocationLng" | "locationType"
->;
-
-export type PlanCostTemplateSection = Pick<
-  PlanTemplateSection,
-  "planCost" | "planCostAmount" | "planCostDetails"
->;
-
-export type GroupSettingsTemplateSection = Pick<
-  ForgePlanTemplate,
-  "forgeMode" | "fixedSize" | "visibility"
->;
-
-export type GroupCopyTemplateSection = Pick<
-  ForgePlanTemplate,
-  "groupName" | "groupDescription"
->;
-
-export type TemplateImagesSection = Pick<
-  ForgePlanTemplate,
-  "coverImage" | "avatarImage"
->;

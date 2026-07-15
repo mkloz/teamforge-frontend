@@ -21,7 +21,7 @@ export const laneDrafts: Record<
   },
   builder: {
     description:
-      "Works well for ambitious chats, product ideas, and people who like making things real.",
+      "Works well for focused discussions, product ideas, and making something practical.",
     label: "Builder energy",
   },
   food: {
@@ -44,7 +44,7 @@ export const laneDrafts: Record<
   },
   general: {
     description: "Extra cues the matcher can combine with nearby profiles.",
-    label: "Other sparks",
+    label: "Other interests",
   },
 };
 

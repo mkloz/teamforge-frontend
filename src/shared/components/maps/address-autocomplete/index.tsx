@@ -20,8 +20,8 @@ export function AddressAutocomplete({
   placeholder = "Search address, area, or venue...",
   disabled,
   required,
-  badge = "City stays public",
-  hint = "Exact point is used for matching only. Other members see your city.",
+  badge = "Location use",
+  hint = "TeamForge uses coordinates for nearby group formation. Public profiles can show your city, but not your coordinates.",
   className,
 }: AddressAutocompleteProps) {
   const { hintId, inputId, suggestionsId } = useAddressAutocompleteIds();

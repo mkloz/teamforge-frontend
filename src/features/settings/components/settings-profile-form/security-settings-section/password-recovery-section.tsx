@@ -27,7 +27,7 @@ type PasswordResetProgress = "idle" | "pending";
 const GOOGLE_PASSWORD_RECOVERY_DESCRIPTION =
   "This account signs in with Google, so password changes are managed by Google instead of TeamForge.";
 const EMAIL_PASSWORD_RECOVERY_DESCRIPTION =
-  "Send a secure password reset link to your email if you want to rotate your password.";
+  "Send a password reset link to your email if you want to change your password.";
 
 const PASSWORD_RESET_BUTTON_LABELS = {
   idle: "Send reset link",

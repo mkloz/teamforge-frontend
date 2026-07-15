@@ -39,17 +39,17 @@ export function buildPortraitGroupSummary(
   const summaries: Record<PortraitKey, string> = {
     activeCatalyst: `${context.firstName} fits groups that become less awkward once people are moving${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     cafeConnector: `${context.firstName} fits simple first meets where the setting does half the warming-up${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
-    calmAnchor: `${context.firstName} fits smaller groups where pace matters and nobody has to perform immediately${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
+    calmAnchor: `${context.firstName} fits smaller groups where people can settle in without being put on the spot${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     creativeInstigator: `${context.firstName} fits groups that want a plan with some taste, beyond the usual time-and-place setup${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     curiousSpecialist: `${context.firstName} fits groups with a topic, object, route, or question people can actually dig into${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     focusedBuilder: `${context.firstName} fits groups where ideas can turn into something concrete${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
-    flexibleParticipant: `${context.firstName} can fit several group shapes, so the first activity should carry the match${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
-    ideaFirstExplorer: `${context.firstName} fits groups that like a better version of the obvious plan${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
+    flexibleParticipant: `${context.firstName} may suit several group formats, so let the first activity guide the choice${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
+    ideaFirstExplorer: `${context.firstName} fits groups open to trying a less obvious plan${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     playfulScout: `${context.firstName} fits low-pressure groups where the activity makes joining feel easier${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     practicalOrganizer: `${context.firstName} fits groups that need enough structure to stop the plan from drifting${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     quietSpecialist: `${context.firstName} fits smaller groups where a concrete activity or topic can draw them out${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     restlessInstigator: `${context.firstName} fits groups that need someone to make the first move before the plan gets over-discussed${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
-    socialGameHost: `${context.firstName} fits groups where doing something together removes the pressure to be instantly interesting${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
+    socialGameHost: `${context.firstName} fits groups where a shared activity removes pressure from the first conversation${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     steadyHost: `${context.firstName} fits groups that need a warm frame and enough clarity to relax${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     tasteMaker: `${context.firstName} fits groups where the small choices matter: place, route, feel, or what makes the plan seem chosen${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
     warmConnector: `${context.firstName} fits groups that need an easier first few minutes and a low-pressure way in${lanePhrase}.${secondLanePhrase}${hybridPhrase}`,
@@ -112,7 +112,7 @@ function buildGroupSecondaryLaneSentence(lane: ActivityLane | undefined) {
     return "";
   }
 
-  return ` Keep the ${lane.label.toLowerCase()} cue available, but let the lead lane set the match.`;
+  return ` Keep the ${lane.label.toLowerCase()} option available, but let the main activity area guide the group.`;
 }
 
 function buildGroupBlendSentence(candidate: ProfilePortraitCandidate | null) {

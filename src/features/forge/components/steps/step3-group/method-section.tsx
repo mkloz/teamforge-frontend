@@ -22,7 +22,7 @@ export function MethodSection({
           onClick={() => onForgeModeChange("AUTO")}
           icon={Cpu}
           title="Forge for me"
-          description="Forge picks the right people based on your profile."
+          description="TeamForge uses your profile and group preferences to choose people."
           activeColor="primary"
         />
         <ModeButton

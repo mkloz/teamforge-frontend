@@ -64,7 +64,7 @@ export function useSendForgeInvitesAction({
 function captureMissingForgeGroup() {
   captureException(
     "forge.sendInvites",
-    new Error("Cannot finish forge flow before a group is formed."),
+    new Error("Cannot send invitations before a group is formed."),
     {
       groupId: "missing",
     },

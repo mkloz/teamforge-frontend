@@ -27,7 +27,7 @@ export function PendingVotesCard({ detail }: PendingVotesCardProps) {
       </div>
 
       <p className="mt-2 font-medium text-muted-foreground text-xs leading-relaxed">
-        Approve, reject, or weigh in on what the group is shaping.
+        Review and vote on the plan changes waiting for your decision.
       </p>
 
       <Button asChild variant="outline" size="sm" className="mt-3 w-full">

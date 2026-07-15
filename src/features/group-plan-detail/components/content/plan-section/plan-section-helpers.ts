@@ -7,7 +7,7 @@ const PLAN_STATUS_CONTEXT: Partial<Record<PlanStatus, string>> = {
   CANCELLED: "This plan was called off",
   COMPLETED: "This plan has wrapped up",
   CONFIRMED: "Everything is set",
-  IN_PROGRESS: "Details are still being shaped",
+  IN_PROGRESS: "This plan has started",
   PROPOSED: "Waiting for the group to agree",
 };
 

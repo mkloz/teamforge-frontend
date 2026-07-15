@@ -4,7 +4,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.GRAPHITE,
     label: "Graphite",
-    description: "Dense neutral default.",
+    description: "Dark gray with teal accents.",
     tag: "Core",
     swatches: {
       light: [
@@ -26,7 +26,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.FORGE,
     label: "Ash",
-    description: "Soft neutral surface.",
+    description: "Light gray with muted accents.",
     tag: "Core",
     swatches: {
       light: [
@@ -48,7 +48,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.HARBOR,
     label: "Steel",
-    description: "Cool graphite focus.",
+    description: "Cool gray with blue accents.",
     tag: "Core",
     swatches: {
       light: [
@@ -70,7 +70,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.EMBER,
     label: "Copper",
-    description: "Warm graphite energy.",
+    description: "Warm gray with copper accents.",
     tag: "Core",
     swatches: {
       light: [
@@ -92,7 +92,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.SPRUCE,
     label: "Sage",
-    description: "Muted green-neutral.",
+    description: "Muted green and gray.",
     tag: "Core",
     swatches: {
       light: [
@@ -114,7 +114,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.PAPER,
     label: "Chalk",
-    description: "Clean bright neutral.",
+    description: "Bright neutral surfaces.",
     tag: "Core",
     swatches: {
       light: [
@@ -158,7 +158,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.COBALT,
     label: "Cobalt",
-    description: "Blue with orange heat.",
+    description: "Blue with orange accents.",
     tag: "Experimental",
     swatches: {
       light: [
@@ -180,7 +180,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.CORAL,
     label: "Coral",
-    description: "Warm with mint lift.",
+    description: "Coral with mint accents.",
     tag: "Experimental",
     swatches: {
       light: [
@@ -202,7 +202,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.ACID,
     label: "Acid",
-    description: "Vivid lime oddity.",
+    description: "Bright lime with dark contrast.",
     tag: "Experimental",
     swatches: {
       light: [
@@ -224,7 +224,7 @@ export const COLOR_OPTIONS = [
   {
     value: ThemeColor.MONO,
     label: "Mono",
-    description: "Near-colorless focus.",
+    description: "Black, white, and gray.",
     tag: "Experimental",
     swatches: {
       light: [

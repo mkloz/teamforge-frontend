@@ -33,7 +33,6 @@ export function getGroupIndicatorState({
     hasSavedMessages,
     isReviewWaiting,
     pendingProposalCount,
-    plan,
   };
   const visibleGroupIndicatorCount =
     getVisibleGroupIndicatorCount(visibilityInput);
@@ -52,7 +51,6 @@ export function getGroupIndicatorState({
     hasIndicatorRow,
     hasSavedMessages,
     pendingProposalCount,
-    planStatus: countdown ? null : plan?.status,
     shouldShowSavedCountInIndicatorRow: hasIndicatorRow && hasSavedMessages,
     showInlineGroupIndicators,
   };
@@ -78,20 +76,12 @@ function getVisibleGroupIndicatorCount({
   hasSavedMessages,
   isReviewWaiting,
   pendingProposalCount,
-  plan,
-}: {
-  countdown: string | null;
-  hasSavedMessages: boolean;
-  isReviewWaiting: boolean;
-  pendingProposalCount: number;
-  plan: Plan | null | undefined;
-}): number {
+}: GroupIndicatorVisibilityInput): number {
   return getVisibleGroupIndicatorFlags({
     countdown,
     hasSavedMessages,
     isReviewWaiting,
     pendingProposalCount,
-    plan,
   }).filter(Boolean).length;
 }
 
@@ -100,11 +90,9 @@ function getVisibleGroupIndicatorFlags({
   hasSavedMessages,
   isReviewWaiting,
   pendingProposalCount,
-  plan,
 }: GroupIndicatorVisibilityInput) {
   return [
     Boolean(countdown),
-    Boolean(!countdown && plan?.status),
     hasSavedMessages,
     pendingProposalCount > 0,
     isReviewWaiting,

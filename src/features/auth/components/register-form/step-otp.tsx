@@ -40,7 +40,7 @@ function getSubmitTitle(isOnline: boolean) {
 }
 
 function getSubmitLabel(isOnline: boolean) {
-  return isOnline ? "I'm ready to forge" : "Reconnect to continue";
+  return isOnline ? "Verify email" : "Reconnect to continue";
 }
 
 function getResendTitle(isOnline: boolean) {

@@ -11,139 +11,130 @@ export const TRAIT_COPY: Record<
   openness: {
     high: {
       summary:
-        "You are pulled toward possibility: new ideas, subtle meanings, and the feeling that there is always another angle worth exploring.",
+        "Your answers suggest that you often enjoy new ideas, different interpretations, and unfamiliar experiences.",
       strengths: [
-        "Sees connections other people miss",
-        "Follows curiosity into unexpected places",
-        "Keeps imagination close to everyday life",
+        "Explores several ways to understand a topic",
+        "Shows interest in unfamiliar ideas",
+        "Brings imagination into practical situations",
       ],
       socialRead:
-        "you bring curiosity into the room and often notice a more interesting path before anyone names it",
+        "you may introduce a new idea or a different way to approach the plan",
       mostYourself:
-        "there is room to explore, reinterpret, and make something ordinary feel new",
+        "you have room to explore and interpret the activity in your own way",
     },
     low: {
       summary:
-        "You are grounded by what is tangible and tested. You usually prefer a clear reality over an elegant theory.",
+        "Your answers suggest that you often prefer practical information, familiar methods, and concrete outcomes.",
       strengths: [
-        "Keeps attention on what is real and workable",
-        "Cuts through overcomplicated ideas",
-        "Trusts practical evidence over novelty",
+        "Keeps attention on workable options",
+        "Simplifies overcomplicated ideas",
+        "Uses practical evidence when deciding",
       ],
       socialRead:
-        "you keep things anchored and help others return to what is actually in front of them",
-      mostYourself:
-        "expectations are clear and the situation feels concrete enough to trust",
+        "you may help the group focus on the practical details in front of them",
+      mostYourself: "expectations are clear and the plan is concrete",
     },
   },
   conscientiousness: {
     high: {
       summary:
-        "You feel calmer when intentions turn into structure: a plan, a standard, or a promise that is actually kept.",
+        "Your answers suggest that you often prefer structure, clear standards, and reliable follow-through.",
       strengths: [
-        "Turns intention into follow-through",
-        "Notices the details that make trust possible",
-        "Brings steadiness without needing a spotlight",
+        "Follows through on agreed tasks",
+        "Notices details in a plan",
+        "Keeps work organized and consistent",
       ],
       socialRead:
-        "people often experience you as dependable because your care shows up in what you actually do",
-      mostYourself: "there is enough order to let you relax into the moment",
+        "people may experience you as dependable because you follow through on plans",
+      mostYourself:
+        "the plan has enough structure for you to know what to expect",
     },
     low: {
       summary:
-        "You do not need everything locked down before you begin. Flexibility keeps you interested and lets better options appear.",
+        "Your answers suggest that you often prefer flexibility and do not need every detail decided before starting.",
       strengths: [
-        "Stays open when the plan changes",
-        "Finds ease in loose, unfinished moments",
-        "Adapts without making everything heavy",
+        "Adapts when the plan changes",
+        "Starts before every detail is settled",
+        "Keeps several options open",
       ],
       socialRead:
-        "you can keep things light when others start making the moment too rigid",
-      mostYourself:
-        "you can move naturally without every detail being decided in advance",
+        "you may help the group adjust when the original plan changes",
+      mostYourself: "you can act without every detail being decided in advance",
     },
   },
   extraversion: {
     high: {
       summary:
-        "Your energy tends to move outward. You think well in motion, with people, conversation, and visible momentum around you.",
+        "Your answers suggest that social activity and conversation often help you think and respond.",
       strengths: [
-        "Brings thoughts out into the open quickly",
-        "Makes first moments feel less stiff",
-        "Adds visible energy when things are too quiet",
+        "Shares thoughts early in a conversation",
+        "Starts interaction with new people",
+        "Responds well to active group settings",
       ],
-      socialRead:
-        "you often make your presence felt early, which can help people relax into the exchange",
-      mostYourself:
-        "there is movement, conversation, and something alive to respond to",
+      socialRead: "you may speak early and help start the group's conversation",
+      mostYourself: "there is conversation and an activity to respond to",
     },
     low: {
       summary:
-        "Your energy is more selective. You often need quiet space before your real thoughts and preferences become clear.",
+        "Your answers suggest that you often prefer quieter settings and time to think before responding.",
       strengths: [
-        "Notices details that louder moments can bury",
-        "Chooses words with care",
-        "Builds trust through consistency rather than volume",
+        "Notices details in quieter moments",
+        "Takes time before speaking",
+        "Contributes consistently without seeking attention",
       ],
       socialRead:
-        "you may take longer to unfold, but your presence becomes clearer when the pace gives you room",
-      mostYourself:
-        "you are not pushed to perform before you have settled into the room",
+        "you may contribute more after you have had time to settle into the group",
+      mostYourself: "you have time to settle in before being asked to speak",
     },
   },
   agreeableness: {
     high: {
       summary:
-        "You are tuned to other people's comfort and emotional weather, sometimes before anything is said directly.",
+        "Your answers suggest that you often consider other people's comfort and look for cooperation.",
       strengths: [
-        "Makes warmth feel natural rather than forced",
-        "Senses when someone needs gentler handling",
-        "Creates ease without demanding attention",
+        "Looks for compromise",
+        "Notices when someone may need support",
+        "Encourages a cooperative tone",
       ],
-      socialRead:
-        "you soften the emotional edges of a room and make it easier for people to be themselves",
-      mostYourself:
-        "kindness is treated as strength, not as something people take for granted",
+      socialRead: "you may help the group handle disagreement with care",
+      mostYourself: "cooperation and consideration are valued",
     },
     low: {
       summary:
-        "You are not easily swept along by social pressure. You tend to respect honesty more than easy agreement.",
+        "Your answers suggest that you often value directness and independent judgment over easy agreement.",
       strengths: [
-        "Says what others are only circling around",
-        "Keeps your own judgment intact",
-        "Spots false harmony quickly",
+        "States concerns directly",
+        "Forms an independent view",
+        "Questions agreement that hides a problem",
       ],
       socialRead:
-        "you can be refreshing because people usually know where they stand with you",
+        "you may make your position clear even when the group disagrees",
       mostYourself:
-        "directness is welcome and nobody expects you to soften every opinion",
+        "direct opinions are welcome and disagreement can be discussed openly",
     },
   },
   neuroticism: {
     high: {
       summary:
-        "You feel things quickly and notice tension early. That sensitivity can make you perceptive, even when it costs energy.",
+        "Your answers suggest that you often notice stress, tension, and changes in mood quickly.",
       strengths: [
-        "Reads subtle tension before it becomes obvious",
-        "Takes emotional undercurrents seriously",
-        "Notices what a smoother person might miss",
+        "Notices tension early",
+        "Pays attention to emotional changes",
+        "Considers possible risks before acting",
       ],
-      socialRead:
-        "you often catch small shifts in tone, mood, or risk before others have words for them",
-      mostYourself:
-        "there is enough emotional honesty that you do not have to pretend everything is fine",
+      socialRead: "you may notice shifts in tone, mood, or risk early",
+      mostYourself: "people can discuss concerns without dismissing them",
     },
     low: {
       summary:
-        "Your emotional baseline is fairly steady. You are less easily shaken by friction, uncertainty, or a change of plan.",
+        "Your answers suggest that uncertainty, disagreement, or a changed plan may not unsettle you quickly.",
       strengths: [
-        "Stays steady when the moment gets messy",
-        "Does not overreact to small uncertainty",
-        "Gives others a calmer point of reference",
+        "Stays calm during uncertainty",
+        "Responds evenly to small setbacks",
+        "Keeps attention on the immediate problem",
       ],
-      socialRead:
-        "you can make pressure feel more manageable because you do not absorb every ripple around you",
-      mostYourself: "things can be imperfect without becoming dramatic",
+      socialRead: "you may remain steady when a plan changes or tension rises",
+      mostYourself: "small problems can be handled without urgency",
     },
   },
 };

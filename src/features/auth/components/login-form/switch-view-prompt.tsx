@@ -15,7 +15,7 @@ export function SwitchViewPrompt({ onClick }: SwitchViewPromptProps) {
         onClick={onClick}
         className="h-auto p-0 font-semibold"
       >
-        Join the forge
+        Create an account
       </Button>
     </p>
   );

@@ -21,7 +21,7 @@ const SUBCATEGORY_SIBLING_WEIGHT = 1;
 const MAX_CORRELATED_SUGGESTIONS = 15;
 
 /**
- * Calculates "You Might Also Like" suggestions based on selected interests.
+ * Builds related-interest suggestions from the selected interests.
  */
 export function getCorrelatedSuggestions(
   selectedIds: string[],

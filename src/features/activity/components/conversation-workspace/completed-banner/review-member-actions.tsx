@@ -34,7 +34,9 @@ export function ReviewMemberActions({ member }: { member: GroupMember }) {
         loading={connectLoading}
         onClick={() => onConnect()}
         aria-label={`${connectLabel} with ${memberName}`}
-        title={isOnline ? undefined : "Reconnect before changing connections."}
+        title={
+          isOnline ? undefined : "Reconnect before updating friendship status."
+        }
       >
         <ConnectActionIcon label={connectLabel} />
         <span>{connectLabel}</span>

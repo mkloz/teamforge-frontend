@@ -23,12 +23,10 @@ function getVoiceNoteDuration(
   return durationSeconds > 0 ? durationSeconds : fallbackDuration;
 }
 
-/**
- * VoiceNote - Refined, interactive voice message component.
- */
+/** Plays a voice message with seek and speed controls. */
 export function VoiceNote({
   url,
-  duration = 120, // Default to 2 mins for demo
+  duration = 120, // Fallback until audio metadata loads.
   isOwn = false,
 }: VoiceNoteProps) {
   const audioPlayer = useAudioPlayer(url);

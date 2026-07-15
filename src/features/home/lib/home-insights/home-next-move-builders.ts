@@ -110,16 +110,16 @@ export function buildRecommendationMove(group: ExploreGroup): HomeNextMove {
     kind: "recommendation",
     eyebrow: getRecommendationEyebrow(fitScore),
     title: getRecommendationTitle(group),
-    body: `${getRecommendationFitLine(group)} Take a look before the room fills up.`,
+    body: `${getRecommendationFitLine(group)} Review the plan and members before joining.`,
     primaryLabel: "See group",
     secondaryLabel: "Forge instead",
-    signal: `${fitScore}% fit`,
+    signal: "Recommended group",
     groupId: group.id,
   };
 }
 
 function getRecommendationEyebrow(fitScore: number) {
-  return fitScore >= 75 ? "Strong fit nearby" : "Worth checking";
+  return fitScore >= 75 ? "Nearby group" : "Group to review";
 }
 
 function getRecommendationTitle(group: ExploreGroup) {
@@ -133,8 +133,8 @@ export function buildFirstForgeMove(): HomeNextMove {
   return {
     kind: "forge",
     eyebrow: "First move",
-    title: "Forge a group around something you would actually do",
-    body: "Choose the activity and the shape of the plan. TeamForge will look for people who fit the room.",
+    title: "Start a group around an activity you want to do",
+    body: "Choose the activity and add the plan details. TeamForge will form a group around them.",
     primaryLabel: "Forge my group",
     secondaryLabel: "Browse first",
     signal: "Ready when you are",
@@ -145,8 +145,8 @@ export function buildReturnForgeMove(activeGroupCount: number): HomeNextMove {
   return {
     kind: "forge",
     eyebrow: "Start something new",
-    title: "Start a new group when the current ones go quiet",
-    body: "Your profile has enough signal to form something useful. Pick the plan; TeamForge can handle the room.",
+    title: "Start another group for a new plan",
+    body: "Your profile is ready. Choose the activity and plan details, and TeamForge will form the group.",
     primaryLabel: "Forge my group",
     secondaryLabel: "Browse groups",
     signal: `${activeGroupCount} active spaces`,

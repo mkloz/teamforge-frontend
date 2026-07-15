@@ -11,7 +11,7 @@ export function PitchSection({ detail }: PitchSectionProps) {
   const pitch = getPitch(detail, action.isMember);
 
   return (
-    <section aria-label="The Pitch">
+    <section aria-label="Group summary">
       <p className="max-w-4xl text-pretty font-semibold text-foreground text-xl leading-snug tracking-tight md:text-2xl">
         {pitch}
       </p>
@@ -55,7 +55,7 @@ function getMemberPitch(context: PitchContext) {
   }
 
   if (context.planStatus === "IN_PROGRESS") {
-    return "The plan is underway, keep the group moving in the workspace.";
+    return "The plan has started. Continue in the group workspace.";
   }
 
   return `${formatPeopleIn(context.memberCount)} in. ${getMemberSeatPrompt(context.seatsLeft)}`;
@@ -63,11 +63,11 @@ function getMemberPitch(context: PitchContext) {
 
 function getVisitorPitch(context: PitchContext) {
   if (!context.planStatusLabel) {
-    return `A group is forming around ${context.activityTitle}${context.citySuffix}. Join early to help shape the plan.`;
+    return `A group is forming for ${context.activityTitle}${context.citySuffix}. Join early to help decide the plan.`;
   }
 
   if (context.seatsLeft === 0) {
-    return `${context.memberCount} people are committed to this ${context.planStatusLabel} plan${context.citySuffix}. You can still see whether the group feels right.`;
+    return `${context.memberCount} people are committed to this ${context.planStatusLabel} plan${context.citySuffix}. You can still review the plan and members.`;
   }
 
   return `${formatPeopleCommitted(context.memberCount)} committed to this ${context.planStatusLabel} plan${context.citySuffix}. ${formatVisitorSeatPrompt(context.seatsLeft)} still open.`;

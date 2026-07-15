@@ -27,7 +27,8 @@ export function ExplorePageContent({
               Explore
             </h1>
             <p className="mt-1 max-w-2xl font-medium text-muted-foreground text-sm leading-relaxed">
-              Open groups ranked by fit, timing, and available seats.
+              Browse open groups by activity, date, location, and available
+              seats.
             </p>
           </div>
           {searchHeader}

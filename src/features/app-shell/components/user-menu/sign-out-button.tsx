@@ -17,6 +17,8 @@ export function UserMenuSignOutButton() {
       details={["You can come back with the same email and password."]}
       loading={isSigningOut}
       onConfirm={signOut}
+      overlayClassName="z-120"
+      contentClassName="z-120"
       title="Sign out of TeamForge?"
       tone="warning"
       trigger={
@@ -24,11 +26,19 @@ export function UserMenuSignOutButton() {
           type="button"
           variant="ghost"
           disabled={isSigningOut}
-          className="flex h-auto w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-muted-foreground transition-colors hover:bg-destructive/8 hover:text-destructive"
+          contentClassName="gap-3"
+          className="h-auto w-full justify-start rounded-xl border-destructive/15 bg-destructive/5 px-3 py-3 text-left text-destructive shadow-none transition-colors hover:border-destructive/25 hover:bg-destructive/10 focus-visible:ring-destructive/40 active:bg-destructive/12"
         >
-          <IconTile icon={LogOut} tone="neutral" size="md" bordered />
-          <span className="font-semibold text-sm">
-            {isSigningOut ? "Signing out..." : "Sign out"}
+          <IconTile icon={LogOut} tone="destructive" size="md" bordered />
+          <span className="min-w-0 flex-1">
+            <span className="block font-semibold text-sm">
+              {isSigningOut ? "Signing out..." : "Sign out"}
+            </span>
+            <span className="mt-0.5 block text-muted-foreground text-xs group-hover:text-destructive/75">
+              {isSigningOut
+                ? "Ending this session"
+                : "End this session on this device"}
+            </span>
           </span>
         </Button>
       }

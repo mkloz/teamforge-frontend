@@ -86,7 +86,9 @@ export function MessageContextMenu({
   return (
     <>
       <ContextMenu modal={false} onOpenChange={handleOpenChange}>
-        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+        <ContextMenuTrigger asChild>
+          <div className="contents">{children}</div>
+        </ContextMenuTrigger>
         <ContextMenuContent
           ref={contentRef}
           aria-label="Message actions"

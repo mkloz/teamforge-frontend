@@ -5,49 +5,49 @@ const TYPE_SIGNAL_COPY: Record<string, PersonalityTypeSignalCue> = {
     label: "Social rhythm",
     level: "Expressive",
     description:
-      "Their type points toward outward social energy and comfort getting conversation moving.",
+      "Their personality type is associated with expressive social settings.",
   },
   I: {
     label: "Social rhythm",
     level: "Selective",
     description:
-      "Their type points toward quieter social energy and stronger connection in focused moments.",
+      "Their personality type is associated with quieter, more focused social settings.",
   },
   N: {
     label: "Curiosity",
     level: "Pattern-led",
     description:
-      "Their type points toward ideas, possibilities, and reading between the lines.",
+      "Their personality type is associated with ideas, possibilities, and patterns.",
   },
   S: {
     label: "Curiosity",
     level: "Practical",
     description:
-      "Their type points toward concrete details, lived experience, and plans that feel usable.",
+      "Their personality type is associated with concrete details and practical plans.",
   },
   F: {
     label: "Collaboration",
     level: "People-aware",
     description:
-      "Their type points toward noticing values, tone, and how decisions land with people.",
+      "Their personality type is associated with values and the effect of decisions on people.",
   },
   T: {
     label: "Collaboration",
     level: "Analytical",
     description:
-      "Their type points toward clear reasoning and saying what the situation needs plainly.",
+      "Their personality type is associated with analytical, direct decisions.",
   },
   J: {
     label: "Follow-through",
     level: "Structured",
     description:
-      "Their type points toward closure, planning, and making next steps easier to see.",
+      "Their personality type is associated with planning and clear next steps.",
   },
   P: {
     label: "Follow-through",
     level: "Flexible",
     description:
-      "Their type points toward adapting in the moment and keeping options open when useful.",
+      "Their personality type is associated with adapting and keeping options open.",
   },
 };
 

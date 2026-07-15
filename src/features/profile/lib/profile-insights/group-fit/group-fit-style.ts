@@ -20,7 +20,7 @@ export function getGroupFitStyle(key: PortraitKey): GroupFitStyle {
   const styles: Record<PortraitKey, GroupFitStyle> = {
     activeCatalyst: {
       posture: "starter",
-      title: "Activity-first catalyst",
+      title: "Activity starter",
     },
     cafeConnector: {
       posture: "connector",
@@ -32,7 +32,7 @@ export function getGroupFitStyle(key: PortraitKey): GroupFitStyle {
     },
     creativeInstigator: {
       posture: "starter",
-      title: "Creative spark",
+      title: "Creative starter",
     },
     curiousSpecialist: {
       posture: "specialist",

@@ -7,8 +7,6 @@ import { cn } from "@/shared/lib/utils";
 import type { ContentSectionViewState } from "../content-section-view-state";
 import { GroupIndicators } from "../group-indicators";
 
-const titleCounterPillClassName = "min-w-5";
-
 export function ConversationTitleRow({
   item,
   isCompact,
@@ -24,20 +22,20 @@ export function ConversationTitleRow({
   viewState: ContentSectionViewState;
   onTogglePinned?: () => void;
 }) {
-  const titlePinButton = getTitlePinButton(viewState, onTogglePinned);
+  const titlePinButton = getTitlePinButton(
+    viewState,
+    item.isPinned,
+    onTogglePinned,
+  );
 
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
         <ConversationTitle isSelected={isSelected} title={viewState.title} />
-        <SavedMessageCountTitlePill
-          isCompact={isCompact}
-          savedMessageCount={item.savedMessageCount}
-          viewState={viewState}
-        />
         <NotesPrivacyPill isVisible={viewState.isNotes} />
         <ConversationTitleUtilitiesSlot
           item={item}
+          isCompact={isCompact}
           isReviewWaiting={isReviewWaiting}
           titlePinButton={titlePinButton}
           viewState={viewState}
@@ -55,10 +53,14 @@ export function ConversationTitleRow({
 
 function getTitlePinButton(
   viewState: ContentSectionViewState,
+  isPinned: boolean | undefined,
   onTogglePinned?: () => void,
 ) {
   return viewState.showTitlePinButton && onTogglePinned ? (
-    <TitlePinButton onTogglePinned={onTogglePinned} />
+    <TitlePinButton
+      isPinned={Boolean(isPinned)}
+      onTogglePinned={onTogglePinned}
+    />
   ) : null;
 }
 
@@ -88,16 +90,26 @@ function getTitleTextClassName(isSelected: boolean) {
 
 function ConversationTitleUtilitiesSlot({
   item,
+  isCompact,
   isReviewWaiting,
   titlePinButton,
   viewState,
 }: {
   item: UnifiedConversation;
+  isCompact: boolean;
   isReviewWaiting: boolean;
   titlePinButton: ReactNode;
   viewState: ContentSectionViewState;
 }) {
-  if (!viewState.hasTitleUtilityCluster) {
+  const savedMessageCount = shouldShowStandaloneSavedMessageCount({
+    isCompact,
+    savedMessageCount: item.savedMessageCount,
+    viewState,
+  })
+    ? item.savedMessageCount
+    : undefined;
+
+  if (!viewState.hasTitleUtilityCluster && !savedMessageCount) {
     return null;
   }
 
@@ -105,6 +117,7 @@ function ConversationTitleUtilitiesSlot({
     <ConversationTitleUtilities
       item={item}
       isReviewWaiting={isReviewWaiting}
+      savedMessageCount={savedMessageCount}
       titlePinButton={titlePinButton}
       viewState={viewState}
     />
@@ -133,11 +146,13 @@ function ConversationTimestamp({
 function ConversationTitleUtilities({
   item,
   isReviewWaiting,
+  savedMessageCount,
   titlePinButton,
   viewState,
 }: {
   item: UnifiedConversation;
   isReviewWaiting: boolean;
+  savedMessageCount: number | undefined;
   titlePinButton: ReactNode;
   viewState: ContentSectionViewState;
 }) {
@@ -153,6 +168,7 @@ function ConversationTitleUtilities({
         isReviewWaiting={isReviewWaiting}
         viewState={viewState}
       />
+      <SavedMessageCountPill count={savedMessageCount} />
       <InlineMutedIndicatorSlot viewState={viewState} />
       <TitlePinButtonSlot
         isPinned={item.isPinned}
@@ -204,7 +220,6 @@ function InlineGroupIndicatorsSlot({
     <GroupIndicators
       countdown={viewState.countdown}
       pendingProposalCount={viewState.pendingProposalCount}
-      planStatus={viewState.planStatus}
       savedMessageCount={
         viewState.hasSavedMessages ? item.savedMessageCount : undefined
       }
@@ -230,22 +245,8 @@ function StaticPinnedIconSlot({
   return viewState.showStaticPinnedIcon ? <StaticPinnedIcon /> : null;
 }
 
-function SavedMessageCountTitlePill({
-  isCompact,
-  savedMessageCount,
-  viewState,
-}: {
-  isCompact: boolean;
-  savedMessageCount: number | undefined;
-  viewState: ContentSectionViewState;
-}) {
-  if (
-    !shouldShowSavedMessageCountTitlePill({
-      isCompact,
-      savedMessageCount,
-      viewState,
-    })
-  ) {
+function SavedMessageCountPill({ count }: { count: number | undefined }) {
+  if (!count) {
     return null;
   }
 
@@ -256,14 +257,15 @@ function SavedMessageCountTitlePill({
       tone="teal"
       size="signature"
       surface="soft"
-      className={titleCounterPillClassName}
+      className="h-3.5 min-w-3.5 px-1"
+      numeric
     >
-      {savedMessageCount}
+      {count}
     </StatusPill>
   );
 }
 
-function shouldShowSavedMessageCountTitlePill({
+function shouldShowStandaloneSavedMessageCount({
   isCompact,
   savedMessageCount,
   viewState,
@@ -292,13 +294,19 @@ function NotesPrivacyPill({ isVisible }: { isVisible: boolean }) {
   );
 }
 
-function TitlePinButton({ onTogglePinned }: { onTogglePinned: () => void }) {
+function TitlePinButton({
+  isPinned,
+  onTogglePinned,
+}: {
+  isPinned: boolean;
+  onTogglePinned: () => void;
+}) {
   return (
     <button
       type="button"
-      aria-label="Pin chat"
+      aria-label={isPinned ? "Unpin chat" : "Pin chat"}
       className={cn(
-        "relative z-20 hidden size-4 shrink-0 items-center justify-center rounded-full text-slate-muted/70 transition",
+        "relative z-20 hidden size-6 shrink-0 items-center justify-center rounded-full text-slate-muted/70 transition",
         "hover:bg-forge-teal/8 hover:text-forge-teal",
         "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25",
         "opacity-100 group-focus-within/item:inline-flex group-hover/item:inline-flex",
@@ -309,7 +317,7 @@ function TitlePinButton({ onTogglePinned }: { onTogglePinned: () => void }) {
       }}
       onKeyDown={(event) => event.stopPropagation()}
     >
-      <Pin className="size-3" strokeWidth={2.2} />
+      <Pin className="size-2.5" strokeWidth={2.2} />
     </button>
   );
 }
@@ -321,10 +329,10 @@ function StaticPinnedIcon() {
         size="2xs"
         shape="circle"
         tone="none"
-        className="text-forge-teal"
+        className="size-3.5 text-forge-teal"
       >
         <Pin
-          className="size-3 rotate-45"
+          className="size-2.5 rotate-45"
           aria-hidden="true"
           strokeWidth={2.2}
         />
@@ -341,10 +349,10 @@ function MutedIndicator() {
       size="2xs"
       shape="circle"
       tone="muted"
-      className="text-slate-muted/70"
+      className="size-3.5 text-slate-muted/70"
       title="Notifications muted"
     >
-      <BellOff aria-hidden="true" className="size-2.5" strokeWidth={2.2} />
+      <BellOff aria-hidden="true" className="size-2" strokeWidth={2.2} />
       <span className="sr-only">Notifications muted</span>
     </IconTile>
   );

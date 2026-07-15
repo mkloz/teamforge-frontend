@@ -18,10 +18,10 @@ export const ANVIL_SPARK_TRANSITION: Transition = {
 };
 
 export const FORGE_LOADING_LABELS = [
-  "Checking group fit...",
-  "Balancing the lineup...",
+  "Finding available people...",
+  "Checking your group settings...",
   "Reviewing shared interests...",
-  "Shaping the group...",
+  "Preparing the group...",
   "Preparing your group...",
   "Almost ready...",
 ];

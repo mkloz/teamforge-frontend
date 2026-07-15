@@ -19,10 +19,7 @@ interface SystemMessageProps {
   isHighlighted?: boolean;
 }
 
-/**
- * SystemMessage - Renders a system message as a compact status note.
- * Optimized for readability and consistent branding across themes.
- */
+/** Renders a system message as a compact status note. */
 export function SystemMessage({
   message,
   isHighlighted = false,

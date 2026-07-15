@@ -130,7 +130,7 @@ function getManagedConnectionAction({
   if (connectLabel === "Connected") {
     return {
       buttonAriaLabel: "Manage connection",
-      itemLabel: "Remove Connection",
+      itemLabel: "Remove connection",
       loading: unfriendLoading,
       onSelect: onUnfriend,
     };
@@ -139,7 +139,7 @@ function getManagedConnectionAction({
   if (connectLabel === "Requested") {
     return {
       buttonAriaLabel: "Manage connection request",
-      itemLabel: "Cancel Request",
+      itemLabel: "Cancel request",
       loading: withdrawLoading,
       onSelect: onWithdraw,
     };

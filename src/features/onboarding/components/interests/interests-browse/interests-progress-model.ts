@@ -17,22 +17,22 @@ export function getInterestsProgressText({
   isAtMax: boolean;
 }) {
   if (!canContinue) {
-    return `Pick ${MIN_INTERESTS - selectedCount} more before review`;
+    return `Choose ${MIN_INTERESTS - selectedCount} more to continue`;
   }
 
   if (isAtMax) {
-    return "Full set - remove one to add another";
+    return "Interest limit reached. Remove one to add another.";
   }
 
   const ratio = selectedCount / MAX_INTERESTS;
 
   if (ratio >= 0.8) {
-    return "Strong, specific profile";
+    return `${selectedCount} interests selected`;
   }
 
   if (ratio >= 0.5) {
-    return "Good shape taking form";
+    return `${selectedCount} interests selected. You can continue.`;
   }
 
-  return "Choose what feels true";
+  return "Choose activities and topics you would make time for.";
 }

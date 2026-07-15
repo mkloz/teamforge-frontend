@@ -38,10 +38,7 @@ type MediaGalleryTimeOverlayState =
   | { shouldRender: false; timestamp?: undefined }
   | { shouldRender: true; timestamp: string };
 
-/**
- * MediaGallery - Adaptive collage layout with a high-performance lightbox.
- * Features organic transitions, glassmorphism, and intuitive navigation.
- */
+/** Displays up to four attachments and opens the selected item in a lightbox. */
 export function MediaGallery({
   attachments,
   isOwn = false,

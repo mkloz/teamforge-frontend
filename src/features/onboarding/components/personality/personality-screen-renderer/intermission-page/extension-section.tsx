@@ -25,11 +25,11 @@ export function ExtensionSection({
       <div className="mb-5 h-px w-full bg-muted/60 sm:mb-6 dark:bg-white/10" />
 
       <h3 className="mb-1.5 flex items-center gap-2 font-bold font-sans text-base text-ink">
-        Want a sharper result?
+        Answer more questions?
       </h3>
       <p className="mb-4 font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:mb-5">
-        You have completed the baseline. You can stop here, or answer a little
-        more to make the final read more specific.
+        You can stop here or continue with a longer assessment for more trait
+        detail.
       </p>
 
       <div className="flex w-full flex-col gap-2.5">

@@ -47,9 +47,8 @@ export const homeRouteOptions = {
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.home,
-    title: "Home could not finish loading",
-    description:
-      "Your dashboard hit an unexpected issue while refreshing groups, plans, or recommendations.",
+    title: "Home could not load",
+    description: "Your groups, plans, and suggestions did not load.",
     fallbackTo: "/activity",
     fallbackLabel: "Open activity",
   }),
@@ -67,9 +66,8 @@ export const exploreRouteOptions = {
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.explore,
-    title: "Explore could not finish loading",
-    description:
-      "Group discovery ran into an unexpected issue while loading people, requests, or group options.",
+    title: "Explore could not load",
+    description: "People, requests, and group options did not load.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),
@@ -90,9 +88,8 @@ export const groupPlanDetailRouteOptions = {
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.groupPlanDetail,
-    title: "Group details could not finish loading",
-    description:
-      "The group and plan briefing hit an unexpected issue before it could render cleanly.",
+    title: "Group details could not load",
+    description: "The group and plan details did not load.",
     fallbackTo: "/explore",
     fallbackLabel: "Back to explore",
   }),
@@ -110,9 +107,8 @@ export const activityRouteOptions = {
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.activity,
-    title: "The activity workspace hit a snag",
-    description:
-      "Your conversations and planning space couldn't finish rendering cleanly.",
+    title: "Activity could not load",
+    description: "Your conversations and planning tools did not load.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),
@@ -129,9 +125,9 @@ export const profileRouteOptions = {
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.profile,
-    title: "Profile could not finish loading",
+    title: "Profile could not load",
     description:
-      "Your profile hit an unexpected issue while loading personality details, interests, or trust history.",
+      "Your personality details, interests, and trust history did not load.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),
@@ -152,9 +148,9 @@ export const userDetailRouteOptions = {
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.userDetail,
-    title: "Profile could not finish loading",
+    title: "This profile could not load",
     description:
-      "This public profile hit an unexpected issue while loading details, interests, or social fit.",
+      "The profile details, interests, and group information did not load.",
     fallbackTo: "/explore",
     fallbackLabel: "Back to explore",
   }),
@@ -172,9 +168,8 @@ export const settingsRouteOptions = {
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.settings,
-    title: "Settings could not finish loading",
-    description:
-      "Your account settings hit an unexpected issue before the page could render cleanly.",
+    title: "Settings could not load",
+    description: "Your account settings did not load.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),
@@ -192,8 +187,8 @@ export const forgeRouteOptions = {
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.forge,
-    title: "Forge hit an unexpected issue",
-    description: "We couldn't finish loading the group-forging flow right now.",
+    title: "Forge could not load",
+    description: "The group setup did not load.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),

@@ -15,7 +15,7 @@ export function getDesktopConfig(
       return {
         heading: "Install from Chrome in two clicks",
         subheading:
-          "Chrome installs TeamForge as a standalone app — no app store, no download.",
+          "Chrome installs TeamForge as a standalone web app. No app store is needed.",
         steps: [
           {
             icon: MonitorSmartphone,
@@ -26,19 +26,19 @@ export function getDesktopConfig(
           {
             icon: Download,
             title: "Click 'Install' in the dialog",
-            body: "A dialog asks for confirmation. Click 'Install'. TeamForge opens immediately in its own window — no tabs, no address bar — and is pinned to your taskbar or Dock automatically.",
+            body: "A dialog asks for confirmation. Click 'Install'. TeamForge opens in its own window without browser tabs or an address bar. You can pin it in the next step.",
           },
           {
             icon: Bookmark,
             title: "Pin for one-click access",
-            body: "Right-click the TeamForge icon in your taskbar (Windows) or Dock (macOS) and choose 'Pin to taskbar' or 'Keep in Dock'. TeamForge is now always one click away.",
+            body: "Right-click the TeamForge icon in your taskbar (Windows) or Dock (macOS) and choose 'Pin to taskbar' or 'Keep in Dock'. You can then open TeamForge from the pinned icon.",
           },
         ],
       };
 
     case "edge":
       return {
-        heading: "Install from Edge — built-in support",
+        heading: "Install TeamForge from Edge",
         subheading:
           "Edge has native app installation. TeamForge installs as a standalone app in seconds.",
         steps: [
@@ -51,7 +51,7 @@ export function getDesktopConfig(
           {
             icon: Download,
             title: "Click 'Install' to confirm",
-            body: "An 'Install app?' dialog appears showing the TeamForge icon and name. Click 'Install'. TeamForge opens in its own window immediately.",
+            body: "An 'Install app?' dialog appears showing the TeamForge icon and name. Click 'Install'. TeamForge opens in its own window.",
           },
           {
             icon: Bookmark,
@@ -81,7 +81,7 @@ export function getDesktopConfig(
           {
             icon: Bookmark,
             title: "TeamForge is now in your Dock",
-            body: "Click the TeamForge icon in your Dock to open it as a standalone app — no Safari toolbar, no tabs. It opens directly to your groups and activity.",
+            body: "Click the TeamForge icon to open it in its own window without the Safari toolbar or tabs. It opens to your groups and activity.",
           },
         ],
       };
@@ -93,7 +93,7 @@ export function getDesktopConfig(
       return {
         heading: "Install TeamForge on your desktop",
         subheading:
-          "Use Chrome or Edge for the best installation experience — one click, no app store.",
+          "Use Chrome or Edge to install TeamForge without an app store.",
         steps: [
           {
             icon: MonitorSmartphone,

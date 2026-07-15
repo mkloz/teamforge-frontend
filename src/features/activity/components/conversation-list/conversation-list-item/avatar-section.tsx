@@ -1,13 +1,14 @@
 import { MyNotesAvatarVisual } from "@/features/activity/assets/special-conversation-avatars";
+import { getPlanStatusConfig } from "@/features/activity/components/conversation-workspace/chat-status-bar/chat-status-plan-config";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import {
   getConversationAvatarUrl,
   getConversationIsNotes,
   getConversationOnlineStatus,
-  getConversationSecondaryAvatar,
   getConversationTitle,
 } from "@/features/activity/lib/unify-conversations";
 import { Avatar } from "@/shared/components/common/avatar";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { StatusIndicator } from "./status-indicator";
 
@@ -28,7 +29,7 @@ export function AvatarSection({
 
       <ConversationOnlineStatus isGroup={isGroup} viewState={viewState} />
 
-      <SecondaryGroupAvatar isGroup={isGroup} viewState={viewState} />
+      <GroupPlanStatus item={item} isGroup={isGroup} />
     </div>
   );
 }
@@ -40,7 +41,6 @@ interface AvatarSectionViewState {
   isCompact: boolean;
   isNotes: boolean;
   onlineStatus: ReturnType<typeof getConversationOnlineStatus>;
-  secondaryAvatar: string | null;
   title: string;
 }
 
@@ -58,7 +58,6 @@ function getAvatarSectionViewState({
     isCompact,
     isNotes: getConversationIsNotes(item),
     onlineStatus: getConversationOnlineStatus(item),
-    secondaryAvatar: getConversationSecondaryAvatar(item) ?? null,
     title: getConversationTitle(item),
   };
 }
@@ -118,27 +117,36 @@ function ConversationOnlineStatus({
   );
 }
 
-function SecondaryGroupAvatar({
+function GroupPlanStatus({
+  item,
   isGroup,
-  viewState,
 }: {
+  item: UnifiedConversation;
   isGroup: boolean;
-  viewState: AvatarSectionViewState;
 }) {
-  if (!isGroup || !viewState.secondaryAvatar) {
+  const plan = item.kind === "group" ? item.group?.plan : null;
+
+  if (!isGroup || !plan) {
     return null;
   }
 
+  const config = getPlanStatusConfig(plan);
+
   return (
-    <div className="absolute -right-0.5 -bottom-0.5 z-10 size-3 overflow-hidden rounded-lg shadow-sm">
-      <Avatar
-        src={viewState.secondaryAvatar}
-        alt=""
-        fallback=""
-        imageSize={32}
-        shape="rounded"
-        className="size-full rounded-lg"
-      />
-    </div>
+    <StatusPill
+      icon={config.icon}
+      iconClassName="size-2.5"
+      iconStrokeWidth={2.2}
+      tone="none"
+      size="signature"
+      surface="soft"
+      className={cn(
+        "pointer-events-none absolute -right-0.5 -bottom-0.5 z-20 size-4 min-w-0 p-0 shadow-sm ring-2 ring-canvas",
+        config.badgeClass,
+      )}
+      title={`Plan ${config.label.toLowerCase()}`}
+    >
+      <span className="sr-only">Plan {config.label.toLowerCase()}</span>
+    </StatusPill>
   );
 }

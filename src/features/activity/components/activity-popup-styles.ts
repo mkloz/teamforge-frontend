@@ -17,12 +17,12 @@ export function getActivityPopupPanelClass(className?: string) {
 }
 
 export function getActivityMenuContentClass(className?: string) {
-  return getActivityPopupPanelClass(cn("rounded-lg p-1", className));
+  return getActivityPopupPanelClass(cn("z-110 rounded-lg p-1", className));
 }
 
 export function getActivityTransparentMenuContentClass(className?: string) {
   return cn(
-    "overflow-visible border-0 bg-transparent p-0 text-ink shadow-none",
+    "z-110 overflow-visible border-0 bg-transparent p-0 text-ink shadow-none",
     className,
   );
 }

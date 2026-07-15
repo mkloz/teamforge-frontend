@@ -8,7 +8,7 @@ import Share from "lucide-react/dist/esm/icons/share.js";
 import type { DeviceStepConfig } from "@/features/download/data/download-install-steps/types";
 
 export const IOS_SAFARI_CONFIG: DeviceStepConfig = {
-  heading: "Four steps in Safari — under a minute",
+  heading: "Install TeamForge from Safari in four steps",
   subheading:
     "Add to Home Screen only works in Safari on iPhone and iPad. No App Store needed.",
   steps: [
@@ -21,17 +21,17 @@ export const IOS_SAFARI_CONFIG: DeviceStepConfig = {
     {
       icon: Share,
       title: "Tap the Share button (□↑)",
-      body: "In Safari's toolbar, tap the Share button — a box with an arrow pointing up. On iPhone it's at the bottom of the screen; on iPad it's at the top-right of the toolbar. If you can't see it, scroll up slightly first.",
+      body: "In Safari, tap the Share button (a box with an arrow pointing up). On iPhone it's at the bottom of the screen; on iPad it's at the top-right of the toolbar. If you can't see it, scroll up slightly first.",
     },
     {
       icon: Plus,
       title: "Tap 'Add to Home Screen'",
-      body: "Scroll down in the share sheet until you see 'Add to Home Screen'. It has a white icon with a ⊕ symbol. Tap it — a preview of TeamForge will appear with the name and icon already set.",
+      body: "Scroll down in the share sheet until you see 'Add to Home Screen'. It has a white icon with a ⊕ symbol. Tap it. A preview of the TeamForge icon will appear.",
     },
     {
       icon: CheckCircle2,
-      title: "Tap 'Add' — you're done",
-      body: "In the top-right corner of the preview, tap 'Add'. TeamForge appears on your home screen immediately and opens like a native app, without any browser chrome.",
+      title: "Tap 'Add' to finish",
+      body: "In the top-right corner of the preview, tap 'Add'. TeamForge appears on your home screen and opens in its own window, without browser tabs or controls.",
     },
   ],
 };
@@ -44,19 +44,19 @@ export const ANDROID_CONFIG: DeviceStepConfig = {
     {
       icon: Download,
       title: "Accept the install prompt",
-      body: "Chrome automatically shows an 'Add to Home screen' banner at the bottom of this page. Tap 'Install TeamForge' or 'Add' to install immediately. This is the fastest option.",
+      body: "Chrome may show an 'Add to Home screen' banner. If it appears, tap it and follow the prompt.",
       tip: "If you don't see the banner, use the browser menu instead:",
     },
     {
       icon: EllipsisVertical,
       title: "Or open Chrome's menu (⋮)",
-      body: "Tap the three-dot menu icon (⋮) in the top-right corner of Chrome. Look for 'Install app' or 'Add to Home screen'. Both options do the same thing — the label depends on your Chrome version.",
+      body: "Tap the three-dot menu icon (⋮) in the top-right corner of Chrome. Look for 'Install app' or 'Add to Home screen'. The label depends on your Chrome version.",
       isAlternative: true,
     },
     {
       icon: CheckCircle2,
       title: "Confirm and you're done",
-      body: "A dialog shows the TeamForge icon and name. Tap 'Install' or 'Add' to confirm. TeamForge is immediately added to your home screen and app drawer, and opens without any browser interface.",
+      body: "A dialog shows the TeamForge icon and name. Tap 'Install' or 'Add' to confirm. TeamForge is added to your home screen and app drawer and opens in its own window.",
     },
   ],
 };

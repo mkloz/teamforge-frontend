@@ -47,8 +47,8 @@ export function PersonalityResults({
 
       <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
         <SectionHeading
-          eyebrow="TeamForge read"
-          title="How this helps a group"
+          eyebrow="Personality summary"
+          title="How you may contribute to a group"
         />
         <p className="text-pretty font-medium text-base text-ink/82 leading-relaxed">
           {viewModel.groupRead}

@@ -66,7 +66,7 @@ export function AppRoutePreloadRuntime() {
 
         void warmAuthenticatedAppRoutes(router.state.location.pathname).catch(
           (error: unknown) => {
-            warnInDevelopment("App route warmup failed.", error);
+            warnInDevelopment("App route preloading failed.", error);
           },
         );
       });

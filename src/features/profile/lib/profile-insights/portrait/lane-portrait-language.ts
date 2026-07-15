@@ -30,14 +30,15 @@ export function getPortraitBlendPhrase(key: PortraitKey) {
       "the plan needs to become physical before the social part fully opens up",
     cafeConnector:
       "simple settings and familiar rituals do a lot of the warming-up",
-    calmAnchor: "pace and emotional room matter more than instant chemistry",
+    calmAnchor:
+      "pace and emotional room matter more than connecting immediately",
     creativeInstigator: "taste and a point of view are part of the social cue",
     curiousSpecialist:
       "a good topic or tangent can pull the best version forward",
     focusedBuilder:
       "rough ideas are easier to connect around than vague networking",
     flexibleParticipant:
-      "the first activity should carry the match more than a fixed role",
+      "the first activity should matter more than assigning a fixed role",
     ideaFirstExplorer: "the obvious plan usually needs a better angle",
     playfulScout: "low-pressure play helps people join without overthinking it",
     practicalOrganizer: "the group still needs enough structure to become real",

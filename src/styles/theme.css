@@ -20,7 +20,7 @@
   --color-canvas: var(--canvas);
   --color-slate-muted: var(--slate-muted);
 
-  /* Semantic tokens for dark sections (Hero, Algorithm, CTA) */
+  /* Semantic tokens for dark landing-page sections. */
   --color-text-dark-secondary: rgba(255, 255, 255, 0.7);
   --color-text-dark-muted: rgba(255, 255, 255, 0.5);
 

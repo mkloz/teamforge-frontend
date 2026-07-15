@@ -143,9 +143,9 @@ function registerPwaServiceWorker() {
       trackPwaServiceWorkerUpdateReady({ source: "runtime" });
 
       void import("@/shared/lib/app-toast").then(({ showAppInfoToast }) => {
-        showAppInfoToast("A fresh TeamForge update is ready.", {
+        showAppInfoToast("A TeamForge update is ready.", {
           closeButton: true,
-          description: "Refresh when you have a moment.",
+          description: "Refresh to use the latest version.",
           duration: PWA_UPDATE_TOAST_DURATION_MS,
           id: PWA_UPDATE_TOAST_ID,
           action: {
@@ -225,7 +225,7 @@ function registerPwaServiceWorker() {
 
         void import("@/shared/lib/app-toast").then(
           ({ showAppSuccessToast }) => {
-            showAppSuccessToast("TeamForge is ready for offline launches.", {
+            showAppSuccessToast("TeamForge can now open offline.", {
               id: "teamforge-pwa-offline-ready",
             });
 

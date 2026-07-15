@@ -13,8 +13,8 @@ export function buildPersonalitySignal(
   if (!personality.type && !traits) {
     return {
       detail:
-        "Personality data is missing, so matching leans mostly on interests for now.",
-      label: "Social read",
+        "Personality details are missing, so TeamForge will rely mostly on interests when forming groups.",
+      label: "Personality detail",
       strength: "quiet",
       value: "Missing",
     };
@@ -23,8 +23,8 @@ export function buildPersonalitySignal(
   if (tensions.length > 0) {
     return {
       detail:
-        "There is useful personality depth, but one mixed cue means the first group should stay concrete.",
-      label: "Social read",
+        "The personality answers include a mixed signal, so a group with a clear activity is a better starting point.",
+      label: "Personality detail",
       strength: "good",
       value: "Mixed",
     };
@@ -32,8 +32,8 @@ export function buildPersonalitySignal(
 
   if (personality.type && traits) {
     return {
-      detail: `${personality.type} plus ${traits.dominant.label}-led OCEAN scores gives the matcher a clear social shape.`,
-      label: "Social read",
+      detail: `${personality.type} and the ${traits.dominant.label} trait score provide two views of how this person tends to engage in groups.`,
+      label: "Personality detail",
       strength: "ready",
       value: personality.type,
     };
@@ -41,9 +41,9 @@ export function buildPersonalitySignal(
 
   return {
     detail: personality.type
-      ? `${personality.type} gives an early social pattern; OCEAN scores would sharpen it.`
-      : `${traits?.dominant.label ?? "Trait"} is present; MBTI would make the read more complete.`,
-    label: "Social read",
+      ? `${personality.type} gives a starting point. Adding Big Five scores would provide more detail.`
+      : `${traits?.dominant.label ?? "Trait"} is present. Adding a personality type would provide more detail.`,
+    label: "Personality detail",
     strength: "good",
     value: personality.type ?? "Trait",
   };

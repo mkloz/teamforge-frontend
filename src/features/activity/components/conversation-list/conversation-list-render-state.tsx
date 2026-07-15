@@ -141,7 +141,7 @@ function ConversationFeedErrorState({
   return (
     <ConversationListErrorState
       description={
-        isSavedFilter ? "Retry to bring your saved messages back." : undefined
+        isSavedFilter ? "Try loading your saved messages again." : undefined
       }
       isOffline={!isOnline}
       isRetrying={isFeedRetrying}

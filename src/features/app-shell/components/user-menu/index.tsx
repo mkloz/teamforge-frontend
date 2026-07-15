@@ -30,6 +30,7 @@ import { AppearanceSwitch } from "./appearance-switch";
 import { MenuLinkItem, MenuLinkItemContent } from "./menu-link-item";
 import { UserMenuProfileSummary } from "./profile-summary";
 import { UserMenuSignOutButton } from "./sign-out-button";
+import { TeamForgeLinks } from "./teamforge-links";
 import { type UserMenuTrigger, UserMenuTriggerButton } from "./trigger-button";
 
 interface UserMenuProps {
@@ -53,7 +54,8 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
 
       <SheetContent
         side="right"
-        className="z-70 flex w-full flex-col border-border border-l bg-canvas p-0 text-foreground shadow-black/15 shadow-xl sm:max-w-sm [&>button]:top-5 [&>button]:right-5 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card/85 [&>button]:p-2 [&>button]:opacity-100"
+        overlayClassName="z-110"
+        className="z-110 flex w-full flex-col border-border border-l bg-canvas p-0 text-foreground shadow-black/15 shadow-xl sm:max-w-sm [&>button]:top-5 [&>button]:right-5 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card/85 [&>button]:p-2 [&>button]:opacity-100"
       >
         {/* Header */}
         <SheetHeader className="border-border/70 border-b px-5 py-4 pr-14 text-left">
@@ -108,8 +110,8 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
           <nav className="flex flex-col gap-0.5 px-4 py-2">
             <MenuLinkItem
               icon={SlidersHorizontal}
-              label="Group fit"
-              description="Interests and forming rules"
+              label="Group preferences"
+              description="Interests and group settings"
               navigation={buildSettingsNavigation("matching")}
             />
             <MenuLinkItem
@@ -132,9 +134,13 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             />
           </nav>
 
-          {/* Sign out */}
-          <div className="mt-auto border-border/50 border-t px-4 py-3">
-            <UserMenuSignOutButton />
+          <div className="mt-auto">
+            <TeamForgeLinks />
+
+            {/* Sign out */}
+            <div className="border-border/50 border-t px-4 py-4">
+              <UserMenuSignOutButton />
+            </div>
           </div>
         </div>
       </SheetContent>

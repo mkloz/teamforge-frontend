@@ -55,7 +55,7 @@ export function ActivityCategoryGrid({
             Choose a category
           </p>
           <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
-            Pick a style and we&apos;ll find the right people.
+            Choose the kind of activity you want to plan.
           </p>
         </div>
         <p className="shrink-0 font-semibold text-micro text-muted-foreground/50 leading-none">

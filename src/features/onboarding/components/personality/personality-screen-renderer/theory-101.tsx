@@ -32,18 +32,17 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
         className="mb-8 flex flex-col gap-5 px-1 text-left leading-relaxed"
       >
         <p className="font-medium font-sans text-muted-foreground text-sm sm:text-chat-input">
-          Most generic tests group people into strict categories (like entirely
-          a "Thinker" or purely a "Feeler"). But human psychology is much more
-          nuanced than that.
+          Some personality tests use fixed labels. The Big Five scores five
+          traits on a continuous scale.
         </p>
 
         <div className="flex flex-col gap-4">
           <p className="text-pretty font-sans text-muted-foreground text-sm leading-relaxed sm:text-chat-input">
-            That's where the{" "}
+            The{" "}
             <span className="font-bold text-ink">Big Five (OCEAN) model</span>{" "}
-            comes in. Instead of boxing you in, it measures exactly where you
-            sit on a <i className="font-medium text-foreground/85">spectrum</i>{" "}
-            for five distinct traits:
+            reports where your answers fall on a{" "}
+            <i className="font-medium text-foreground/85">spectrum</i> for five
+            broad traits:
           </p>
 
           <ul className="ml-2 flex flex-col gap-2.5 border-forge-teal/30 border-l-2 py-1 pl-4 font-sans text-foreground/90 text-sm sm:ml-4 sm:gap-3 sm:pl-5 sm:text-chat-input">
@@ -71,9 +70,9 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
         </div>
 
         <p className="font-sans text-muted-foreground text-sm leading-relaxed opacity-90 sm:text-chat-input">
-          By measuring traits on a continuous scale, the Big Five provides a
-          remarkably accurate mathematical map of your personality. It's the
-          gold standard in modern psychology, and the foundation of TeamForge.
+          The Big Five scores five broad traits on a continuous scale. TeamForge
+          uses those scores as one part of your personality summary and when
+          forming groups.
         </p>
       </m.div>
 

@@ -1,8 +1,4 @@
-/**
- * AlertDialog — built on top of the existing Dialog primitive.
- * Provides the same API as the standard shadcn/ui AlertDialog without
- * requiring an additional @radix-ui/react-alert-dialog dependency.
- */
+/** Alert dialog built from the shared Dialog primitive. */
 
 import type React from "react";
 import { cn } from "@/shared/lib/utils";

@@ -15,16 +15,16 @@ const LENGTH_SELECTOR_CONTENT: Record<
   { eyebrow: string; title: string; description: string }
 > = {
   adjust: {
-    eyebrow: "Intermission",
-    title: "Adjust test depth",
+    eyebrow: "Assessment length",
+    title: "Change assessment length",
     description:
-      "You can increase or decrease the remaining density of your test. Your existing progress will be preserved regardless of your choice.",
+      "Choose how much time you want to spend. Your existing answers will be kept.",
   },
   begin: {
-    eyebrow: "Test depth",
-    title: "Choose your read",
+    eyebrow: "Assessment length",
+    title: "Choose an assessment length",
     description:
-      "Pick the version that fits your patience today. You can still update it later.",
+      "Choose how much time you want to spend. You can change this later.",
   },
 };
 

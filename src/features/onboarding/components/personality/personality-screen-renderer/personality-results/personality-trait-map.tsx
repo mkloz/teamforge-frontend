@@ -18,7 +18,10 @@ export function PersonalityTraitMap({
       <div className="flex flex-col gap-8">
         <div className="grid gap-3 md:grid-cols-2 md:items-stretch">
           <section className="flex h-full flex-col gap-5">
-            <SectionHeading eyebrow="Type dimensions" title="The four levers" />
+            <SectionHeading
+              eyebrow="Type dimensions"
+              title="Four type dimensions"
+            />
             <div className="flex flex-1 flex-col justify-center gap-4">
               {dimensionScores.map((score) => (
                 <DimensionSpectrum key={score.dimension} score={score} />
@@ -27,7 +30,7 @@ export function PersonalityTraitMap({
           </section>
 
           <section className="flex h-full flex-col gap-5 border-border/60 border-t pt-6 md:border-t-0 md:border-l md:pt-0 md:pl-3">
-            <SectionHeading eyebrow="Trait map" title="Personality shape" />
+            <SectionHeading eyebrow="Trait map" title="Big Five traits" />
             <div className="flex flex-1 items-center justify-center md:hidden">
               <OceanChart scores={oceanScores} />
             </div>

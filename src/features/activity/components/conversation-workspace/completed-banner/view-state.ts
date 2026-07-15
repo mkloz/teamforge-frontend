@@ -26,7 +26,7 @@ export function getCompletedReviewGateViewState(
     deferralDisabled: isReviewDeferralDisabled(rating),
     deferralTitle: getReviewReconnectTitle(
       rating.isOnline,
-      "moving review prompts",
+      "choosing a review option",
     ),
     groupTitle: getCompletedGroupTitle(group),
     isReviewFormBusy,

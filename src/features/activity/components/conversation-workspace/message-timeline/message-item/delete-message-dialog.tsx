@@ -18,7 +18,7 @@ export function DeleteMessageDialog({
     <ActionDialog
       cancelLabel="Keep message"
       confirmLabel="Delete message"
-      description="This removes the message from the conversation. Replies and pinned context may feel different for everyone."
+      description="This removes the message from the conversation. Replies and pinned references to it may no longer make sense."
       details={
         message.attachments?.length
           ? ["Attached files will no longer appear with this message."]

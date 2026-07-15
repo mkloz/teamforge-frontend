@@ -36,11 +36,7 @@ interface LoginFormProps {
 type LoginFormController = ReturnType<typeof useLoginForm>;
 type LoginGoogleAuthController = ReturnType<typeof useGoogleAuth>;
 
-/**
- * LoginForm
- * Secure entry point for existing TeamForge users.
- * Optimized with hook-based logic and premium micro-interactions.
- */
+/** Handles email/password and Google sign-in for existing TeamForge users. */
 export function LoginForm({
   authReturnTo,
   onSwitchToRegister,

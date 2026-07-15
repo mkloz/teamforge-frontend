@@ -13,7 +13,7 @@ export function HostMemberRow() {
         <span className="sr-only">View your profile</span>
       </Link>
 
-      {/* Avatar substitute — "You" badge */}
+      {/* Use a "You" badge instead of an avatar for the host row. */}
       <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal font-bold text-micro text-primary-foreground ring-2 ring-forge-teal/30">
         You
       </div>

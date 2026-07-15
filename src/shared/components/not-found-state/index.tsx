@@ -65,8 +65,8 @@ export function NotFoundState({
                 A group of one.
               </h1>
               <p className="mt-6 max-w-lg text-base text-slate-muted leading-relaxed sm:text-lg">
-                You're the only person here because this page is a dead end.
-                TeamForge is about shared experiences, so let's get you back.
+                This page does not exist or is no longer available. Choose
+                another place to continue.
               </p>
 
               <div className="mt-8 grid gap-3 sm:flex sm:justify-center lg:justify-start">

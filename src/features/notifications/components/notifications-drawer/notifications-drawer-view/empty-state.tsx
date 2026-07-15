@@ -6,10 +6,10 @@ export function NotificationsEmptyState() {
       <EmptyNotificationsVisual className="h-30 w-auto text-foreground" />
       <div className="mt-6 max-w-68">
         <p className="font-bold text-base text-ink leading-tight">
-          Nothing needs your attention
+          No notifications yet
         </p>
         <p className="mt-2 text-muted-foreground text-sm leading-relaxed">
-          We'll keep this quiet until there's something useful to check.
+          New notifications will appear here.
         </p>
       </div>
     </div>

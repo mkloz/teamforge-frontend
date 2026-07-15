@@ -16,7 +16,7 @@ export function StepHeader({ step }: StepHeaderProps) {
     step === 1
       ? "Start with the basics to secure your account."
       : step === 2
-        ? "Just a few details to help us forge better groups."
+        ? "These details help TeamForge form groups around your plans."
         : "Check your email for a 6-digit code.";
 
   return (

@@ -33,11 +33,7 @@ function RegisterStepFallback() {
   return <div className="min-h-80" aria-hidden="true" />;
 }
 
-/**
- * RegisterForm
- * A smooth, multi-step onboarding wizard for new TeamForge users.
- * Orchestrates step transitions, validation, and real-time progress feedback.
- */
+/** Handles account details, profile details, and email verification. */
 export function RegisterForm({
   onSwitchToLogin,
   onSuccess,

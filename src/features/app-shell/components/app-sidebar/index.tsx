@@ -82,7 +82,7 @@ export function AppSidebar({
 
         <NavItem item={settingsItem} pathname={pathname} />
 
-        {/* Forge button — icon only */}
+        {/* Icon-only Forge button. */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

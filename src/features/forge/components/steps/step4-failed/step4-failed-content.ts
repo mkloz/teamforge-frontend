@@ -4,33 +4,33 @@ import type { Step4FailedContent } from "./types";
 
 const AUTO_FAILED_CONTENT = {
   description:
-    "The current pool did not produce a balanced group with these preferences.",
-  context: "Only pool size and group balance preferences are considered here.",
+    "We couldn't form a group with the people available and these settings.",
+  context: "Group size and balance settings affect who can be included.",
   reasons: [
-    "The current candidate pool is too small for this request.",
-    "Group balance preferences are too narrow for the available pool.",
-    "The group size range does not fit the candidates available right now.",
+    "Not enough people are available for this request.",
+    "The group balance settings may be too narrow.",
+    "The group size range does not fit the people available right now.",
   ],
   suggestions: [
-    "Loosen group balance preferences",
+    "Use broader group balance settings",
     "Expand the group size range",
-    "Try again when more candidates are available",
+    "Try again when more people are available",
   ],
 } as const satisfies Step4FailedContent;
 
 const MANUAL_FAILED_CONTENT = {
-  description:
-    "The manual group request could not be completed with the selected invite pool.",
-  context: "Only invite pool and group size are considered here.",
+  description: "We couldn't form the group with the people you selected.",
+  context:
+    "The selected people and group size determine whether this can work.",
   reasons: [
-    "The current invite pool is too small for the requested group.",
-    "The selected group size does not fit the available invitees.",
-    "The request could not create a valid group from this pool.",
+    "Not enough people were selected for the requested group.",
+    "The group size does not fit the selected invitees.",
+    "The selected people cannot fill a group of this size.",
   ],
   suggestions: [
     "Invite more people",
     "Lower the selected group size",
-    "Switch to Automatic mode to use the wider candidate pool",
+    "Let TeamForge choose from more available people",
   ],
 } as const satisfies Step4FailedContent;
 

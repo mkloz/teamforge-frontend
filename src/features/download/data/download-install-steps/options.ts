@@ -11,7 +11,7 @@ export const CAPABILITIES = [
   {
     icon: Smartphone,
     title: "Home-screen launch",
-    body: "Open TeamForge like an app, without hunting through browser tabs.",
+    body: "Open TeamForge in its own window without hunting through browser tabs.",
   },
   {
     icon: RefreshCw,

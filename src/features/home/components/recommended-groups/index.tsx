@@ -55,7 +55,7 @@ function RecommendedGroupsView({
         id="recommended-groups-heading"
         eyebrow="Discovery"
         title="Groups worth a look"
-        description="A couple of openings to inspect, not automatic yeses."
+        description="Open groups you may want to review."
         action={
           <Button asChild variant="ghost" size="sm">
             <Link {...buildExploreNavigation()}>
@@ -74,7 +74,7 @@ function RecommendedGroupsView({
               No strong openings yet.
             </p>
             <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
-              When a group looks like a good fit, it will show up here.
+              Open groups will appear here when they are available.
             </p>
           </div>
         </div>

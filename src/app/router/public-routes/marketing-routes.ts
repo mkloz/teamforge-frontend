@@ -39,9 +39,8 @@ export const downloadRoute = createRoute({
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.download,
     fullPage: true,
-    title: "Download page could not finish loading",
-    description:
-      "TeamForge couldn't finish loading install guidance right now.",
+    title: "Download page could not load",
+    description: "The installation guide did not load.",
     fallbackTo: "/",
     fallbackLabel: "Back home",
   }),

@@ -18,14 +18,14 @@ const STEP_ONE_SELECTED_HINT: HintStripMessage = {
 };
 const STEP_FIVE_SUCCESS_HINT: HintStripMessage = {
   key: "h5-success",
-  text: "Group formed — give it an identity next",
+  text: "Group formed. Add its name and photo next.",
 };
 const STATIC_STEP_HINTS: Partial<
   Record<ForgeFooterChildProps["fw"]["step"], HintStripMessage>
 > = {
   2: { key: "h2", text: "Choose a starting point for this plan" },
   3: { key: "h3", text: "Next: tune who should find this group" },
-  7: { key: "h7", text: "Final step — send your invitations" },
+  7: { key: "h7", text: "Final step. Invite people to the group." },
 };
 
 function HintText({ children }: { children: ReactNode }) {

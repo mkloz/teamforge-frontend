@@ -38,9 +38,7 @@ export function InterestsIntro({
 
       <div>
         <p className="mb-3 text-pretty font-medium font-sans text-slate-muted text-sm leading-relaxed">
-          This is where your profile starts to feel like your real life: the
-          hobbies, places, games, scenes, and small obsessions you would
-          genuinely make time for.
+          Choose hobbies, places, games, and topics you would make time for.
         </p>
         <p className="mb-6 text-pretty font-sans text-slate-muted/80 text-sm leading-relaxed">
           Pick at least{" "}

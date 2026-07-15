@@ -5,8 +5,8 @@ import { SENTINEL_MBTI_SUGGESTIONS } from "@/features/onboarding/data/interest-r
 import type { PersonalityType } from "@/shared/schemas/enums";
 
 /**
- * Maps 4-letter MBTI types to leaf interest ids that statistically correlate
- * with each type's activity profile.
+ * Maps each personality type to a hand-authored list of interest IDs used for
+ * initial suggestions.
  */
 export const MBTI_SUGGESTIONS: Record<PersonalityType, string[]> = {
   ...ANALYST_MBTI_SUGGESTIONS,

@@ -4,20 +4,13 @@ import type {
   ForgeWizardRouteSyncOptions,
   ForgeWizardRouteSyncResult,
 } from "@/features/forge/hooks/forge-wizard/forge-wizard-hook.types";
-import {
-  buildForgeIdeaTemplate,
-  buildForgeIdeaTemplateId,
-} from "@/features/forge/lib/forge-idea-template";
+import { selectForgeIdeaTemplate } from "@/features/forge/lib/forge-idea-template";
 
 type ForgeWizardState = ForgeWizardRouteSyncOptions["state"];
 type ForgeReadySnapshot = {
   forgeResult: ForgeWizardState["forgeResult"];
   participantsLength: number;
 };
-
-function getInitialConsumedIdeaTemplateId(appliedTemplateId: string | null) {
-  return appliedTemplateId?.startsWith("idea:") ? appliedTemplateId : null;
-}
 
 function getForgeReadySnapshot(
   forgeResult: ForgeReadySnapshot["forgeResult"],
@@ -60,9 +53,7 @@ export function useForgeWizardRouteSync({
   const modeRef = useRef(state.forgeMode);
   const activityIdRef = useRef(state.activityId);
   const groupIdRef = useRef(state.groupId);
-  const consumedIdeaTemplateIdRef = useRef(
-    getInitialConsumedIdeaTemplateId(state.appliedTemplateId),
-  );
+  const consumedProfileTemplateIdRef = useRef(state.appliedTemplateId);
   const forgeReadyRef = useRef(
     getForgeReadySnapshot(state.forgeResult, state.participants.length),
   );
@@ -102,21 +93,21 @@ export function useForgeWizardRouteSync({
 
   useEffect(() => {
     if (!routeIdea) {
-      consumedIdeaTemplateIdRef.current = null;
+      consumedProfileTemplateIdRef.current = null;
       return;
     }
 
-    const templateId = buildForgeIdeaTemplateId(routeIdea);
+    const selection = selectForgeIdeaTemplate(routeIdea);
 
-    if (consumedIdeaTemplateIdRef.current === templateId) {
+    if (consumedProfileTemplateIdRef.current === selection.id) {
       return;
     }
 
-    consumedIdeaTemplateIdRef.current = templateId;
+    consumedProfileTemplateIdRef.current = selection.id;
     dispatch({
       type: "apply-activity-template",
-      template: buildForgeIdeaTemplate(routeIdea),
-      templateId,
+      template: selection.template,
+      templateId: selection.id,
     });
   }, [dispatch, routeIdea]);
 

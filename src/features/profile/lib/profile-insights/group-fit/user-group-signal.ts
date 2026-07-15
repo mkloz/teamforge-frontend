@@ -46,7 +46,7 @@ export function buildUserGroupSignal(key: PortraitKey): UserGroupSignal {
     },
     creativeInstigator: {
       connectionStyle: {
-        description: "You spark interesting interactions.",
+        description: "You may start interesting conversations.",
         value: "Playful",
       },
       groupEnergy: {
@@ -92,7 +92,7 @@ export function buildUserGroupSignal(key: PortraitKey): UserGroupSignal {
         value: "Adaptable",
       },
       groupEnergy: {
-        description: "You match the group's natural pace.",
+        description: "You adapt to the group's natural pace.",
         value: "Fluid",
       },
       socialRhythm: {
@@ -120,7 +120,7 @@ export function buildUserGroupSignal(key: PortraitKey): UserGroupSignal {
         value: "Light",
       },
       groupEnergy: {
-        description: "You make joining feel effortless.",
+        description: "You make it easy for new people to join.",
         value: "Breezy",
       },
       socialRhythm: {
@@ -172,7 +172,7 @@ export function buildUserGroupSignal(key: PortraitKey): UserGroupSignal {
     },
     socialGameHost: {
       connectionStyle: {
-        description: "You make sure everyone is included.",
+        description: "You may help people take part.",
         value: "Inviting",
       },
       groupEnergy: {
@@ -204,12 +204,12 @@ export function buildUserGroupSignal(key: PortraitKey): UserGroupSignal {
         value: "Discerning",
       },
       groupEnergy: {
-        description: "You set the right tone for the plan.",
-        value: "Curated",
+        description: "You pay attention to the setting and details.",
+        value: "Considered",
       },
       socialRhythm: {
         description: "You prefer a thoughtful pace.",
-        value: "Refined",
+        value: "Thoughtful",
       },
     },
     warmConnector: {

@@ -6,24 +6,22 @@ import {
 import { ProfileSignal } from "./profile-signal";
 
 const ARCHETYPE_DESCRIPTIONS: Record<string, string> = {
-  Strategist: "Shapes how the group thinks through a problem before acting.",
-  Thinker:
-    "Adds depth and perspective — asks the question no one else thought of.",
-  Leader: "Moves the group forward with clear direction and energy.",
-  Visionary: "Spots possibilities early and keeps options open.",
-  Guide: "Holds the bigger picture while staying attuned to how people feel.",
-  Dreamer: "Brings heart and imagination to ideas that could go either way.",
-  Mentor: "Draws people out and helps the group work at its best.",
-  Spark: "Generates enthusiasm that makes the group want to start.",
-  Anchor: "Keeps things grounded when plans get complicated.",
-  Caretaker: "Attentive to what the group needs and quietly makes it happen.",
-  Director: "Keeps the group on track and makes sure decisions land.",
-  Host: "Holds the social fabric together — everyone feels welcomed.",
-  Craftsman: "Brings practical ability and calm under pressure.",
-  Artist: "Adds a sensory and creative lens to what the group does.",
-  Dynamo: "High-energy presence that accelerates the group's momentum.",
-  Performer:
-    "Makes the experience itself memorable — the group is the activity.",
+  Strategist: "May help the group examine a problem before acting.",
+  Thinker: "May ask questions others have not considered.",
+  Leader: "May help the group choose a direction and next step.",
+  Visionary: "May notice new options early.",
+  Guide: "May consider both the overall plan and how people respond to it.",
+  Dreamer: "May bring care and imagination to an open-ended idea.",
+  Mentor: "May encourage other people to contribute.",
+  Spark: "May help the group get started.",
+  Anchor: "May keep attention on practical details when plans get complicated.",
+  Caretaker: "May notice and respond to practical group needs.",
+  Director: "May help the group track decisions and tasks.",
+  Host: "May help people feel welcome and included.",
+  Craftsman: "May contribute practical skills when a problem appears.",
+  Artist: "May notice creative and sensory details in the activity.",
+  Dynamo: "May encourage action when the group stalls.",
+  Performer: "May keep attention on the shared experience.",
 };
 
 export function RoleBadge({

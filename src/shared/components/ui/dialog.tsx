@@ -32,15 +32,21 @@ function DialogOverlay({
 }
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+interface DialogContentProps
+  extends React.ComponentPropsWithRef<typeof DialogPrimitive.Content> {
+  overlayClassName?: string;
+}
+
 function DialogContent({
   className,
   children,
+  overlayClassName,
   ref,
   ...props
-}: React.ComponentPropsWithRef<typeof DialogPrimitive.Content>) {
+}: DialogContentProps) {
   return (
     <DialogPortal>
-      <DialogOverlay />
+      <DialogOverlay className={overlayClassName} />
       <DialogPrimitive.Content
         ref={ref}
         className={cn(

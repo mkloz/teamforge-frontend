@@ -21,6 +21,7 @@ export interface ActionDialogProps {
   onContentClick?: MouseEventHandler<HTMLDivElement>;
   onOpenChange?: (open: boolean) => void;
   open?: boolean;
+  overlayClassName?: string;
   title: ReactNode;
   tone?: ActionDialogTone;
   trigger?: ReactNode;

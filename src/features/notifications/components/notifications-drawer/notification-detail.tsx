@@ -175,7 +175,9 @@ function getNotificationDetailReadActionState({
 }
 
 function getNotificationDetailReadActionTitle(isReadActionDisabled: boolean) {
-  return isReadActionDisabled ? "Reconnect to update read state" : undefined;
+  return isReadActionDisabled
+    ? "Reconnect to mark this notification as read or unread."
+    : undefined;
 }
 
 function NotificationDetailUnreadMarker({ isRead }: { isRead: boolean }) {

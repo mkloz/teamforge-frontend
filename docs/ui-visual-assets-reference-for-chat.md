@@ -6,7 +6,7 @@ Use this document as the current reference for generating TeamForge UI visuals i
 
 ## Goal
 
-TeamForge needs in-app visuals that make the product feel less soulless without turning it into generic SaaS art, stock lifestyle imagery, sci-fi interface decoration, or abstract symbolism.
+TeamForge needs in-app visuals that reflect specific product states without using generic SaaS art, stock lifestyle imagery, sci-fi decoration, or abstract symbolism.
 
 The target is not "more creative rendering." The target is:
 
@@ -14,13 +14,13 @@ The target is not "more creative rendering." The target is:
 Stable visual style, better concept choices.
 ```
 
-Keep the rendering language close to the approved picks. Be more thoughtful and varied in what each visual shows.
+Keep the rendering language close to the approved picks. Give each visual a distinct subject tied to its product state.
 
 ## Product Context
 
 TeamForge is a social app for forming small, compatible groups around real-world activities. The audience is mostly students and young professionals aged 18-28.
 
-The audience is skeptical of fake, corporate, overly polished, or generic AI visuals. The visuals should feel:
+Avoid generic generated visuals, corporate stock imagery, and surfaces polished beyond the rest of the app. The visuals should feel:
 
 - clear
 - social
@@ -29,7 +29,7 @@ The audience is skeptical of fake, corporate, overly polished, or generic AI vis
 - confident but not corporate
 - concrete before symbolic
 
-The app promise is social friction relief: "I want to do something, but I need the right people."
+The visual premise is: "I have an activity in mind and need a group."
 
 ## Current Visual Style Target
 
@@ -97,7 +97,7 @@ These rules matter as much as the concept. Most failed variants broke one of the
 
 ## Style Anchors
 
-Use these files as style references. Their color ratios are not perfect, but their overall visual style is the best current reference.
+Use these files as style references. Their color ratios need adjustment, but they are the closest current reference for shape and rendering style.
 
 Folder:
 

@@ -40,7 +40,7 @@ function EmptyTraitMap() {
       <EmptyTraitMapVisual className="h-16 w-auto shrink-0 text-foreground" />
       <div className="flex min-w-0 flex-col items-center gap-3 sm:items-start">
         <p className="font-medium text-slate-muted text-sm">
-          OCEAN scores are not available yet.
+          Big Five trait scores are not available yet.
         </p>
         <Button asChild variant="outline" size="sm">
           <Link

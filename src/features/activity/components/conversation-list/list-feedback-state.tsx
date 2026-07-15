@@ -23,13 +23,12 @@ export function ConversationListErrorState({
   title: titleProp,
   onRetry,
 }: ConversationListErrorStateProps) {
-  const defaultDescription =
-    "Something interrupted the chat list. Retry to bring everything back.";
+  const defaultDescription = "We couldn't load your conversations. Try again.";
   const title = isOffline
     ? "You are offline"
     : (titleProp ?? "Conversations did not load");
   const description = isOffline
-    ? "Reconnect to refresh your chats and keep planning."
+    ? "Reconnect to refresh your conversations."
     : (descriptionProp ?? defaultDescription);
 
   return (

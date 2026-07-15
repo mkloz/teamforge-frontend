@@ -25,12 +25,12 @@ const PRE_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
 
 const POST_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
   { s: 5, label: "Result" },
-  { s: 6, label: "Identity" },
+  { s: 6, label: "Details" },
   { s: 7, label: "Invite" },
 ];
 
 const MANUAL_POST_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
-  { s: 6, label: "Identity" },
+  { s: 6, label: "Details" },
   { s: 7, label: "Invite" },
 ];
 
@@ -157,7 +157,7 @@ export function ForgeProgressBar({
                   />
                 )}
 
-                {/* Label — shown only on active step; on mobile show step count */}
+                {/* Show the label only for the active step; on mobile, show the step count. */}
                 <span
                   className={getProgressLabelClassName(isActive, isComplete)}
                 >

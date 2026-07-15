@@ -77,7 +77,7 @@ export function AutoForgeButton({
         disabled={disabled}
         variant="primary"
         size="lg"
-        aria-label="Auto-forge with algorithm"
+        aria-label="Forge my group"
         className="h-14 w-full"
       >
         <Cpu
@@ -86,8 +86,7 @@ export function AutoForgeButton({
           className="shrink-0 transition-transform group-hover:rotate-12"
         />
         <span className="truncate">
-          <span className="sm:hidden">Auto-forge</span>
-          <span className="hidden sm:inline">Auto-forge with algorithm</span>
+          <span>Forge my group</span>
         </span>
         <Network size={14} aria-hidden="true" className="shrink-0 opacity-80" />
       </Button>

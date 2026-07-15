@@ -13,7 +13,7 @@ export function PersonalityStrengths({ strengths }: PersonalityStrengthsProps) {
       <div className="flex items-center gap-3">
         <span className="h-px flex-1 bg-border/70" />
         <p className="shrink-0 font-bold text-forge-teal text-xs">
-          Key strengths
+          Common tendencies
         </p>
         <span className="h-px flex-1 bg-border/70" />
       </div>

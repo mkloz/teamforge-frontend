@@ -32,7 +32,7 @@ function getSuggestionBadge(
     item.score >= MIN_PERSONAL_FIT_SCORE &&
     item.score >= topScore * PERSONAL_FIT_TOP_SCORE_RATIO
   ) {
-    return "Personal fit";
+    return "Based on your profile";
   }
 
   if (index < 2) {

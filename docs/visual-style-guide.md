@@ -43,29 +43,35 @@ Do not introduce new hue families without explicit approval. When a new surface 
 
 ### Color Emotion Reference
 
-| Color       | Association                    | Why it works for TeamForge                                                            |
-| ----------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| Forge Teal  | Trust, growth, intelligence    | Bridges blue (credibility) and green (vitality); unclaimed in the social app category |
-| Spark Amber | Energy, warmth, transformation | Marks the forge moment — when the algorithm fires and a group is born                 |
-| Canvas      | Porcelain, approachability, calm | Cleaner than cream; keeps long app sessions warm without turning beige              |
-| Ink         | Authority, readability         | Green-black charcoal reads more naturally than pure black on Canvas                   |
-| Slate       | Neutrality, hierarchy          | Recedes behind Teal and Amber; creates text hierarchy without a new hue               |
+| Color | Association | Why it works for TeamForge |
+| --- | --- | --- |
+| Forge Teal | Trust, clarity | Primary brand color for active and selected states |
+| Spark Amber | Attention, warmth | Marks notifications, highlights, and the group-formed state |
+| Canvas | Porcelain, approachability, calm | Cleaner than cream; keeps long app sessions warm without turning beige |
+| Ink | Authority, readability | Green-black charcoal reads more naturally than pure black on Canvas |
+| Slate | Neutrality, hierarchy | Recedes behind Teal and Amber; creates text hierarchy without a new hue |
 
 ---
 
 ## 2. Typography
 
-A single font family is used throughout. This is a non-negotiable rule — it ensures visual cohesion across 8+ screen types without fragmentation.
+Use Inter throughout the product so type remains consistent across screens.
 
 ### Font Family
 
-**Plus Jakarta Sans** - a contemporary screen-first sans with generous geometry, strong headings, and a warmer social-product feel than a default system face.
+**Inter** is the product font for headings, body copy, labels, and controls.
 
-```
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+```css
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("/fonts/inter-latin-var.woff2") format("woff2");
+}
 ```
 
-CSS token: `--font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;`
+CSS token: `--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;`
 
 ### Type Scale
 
@@ -132,7 +138,7 @@ This applies to all section content. Never break this to `max-w-none` for text c
 
 ## 4. Border Radius
 
-Consistent rounding is one of the primary signals of the brand's "Structured Warmth" aesthetic.
+Consistent rounding is part of the "Structured Warmth" visual style.
 
 | Context                    | Radius | Tailwind class |
 | -------------------------- | ------ | -------------- |
@@ -142,7 +148,7 @@ Consistent rounding is one of the primary signals of the brand's "Structured War
 | Avatar images              | Full   | `rounded-full` |
 | Modal / large overlay      | 20px   | `rounded-3xl`  |
 
-**Never use sharp corners** (i.e., `rounded-none`) on user-facing cards, buttons, or inputs. Sharp corners communicate coldness. Fully circular containers (`rounded-full`) are reserved for avatars and pill badges only.
+**Never use sharp corners** (i.e., `rounded-none`) on user-facing cards, buttons, or inputs. Fully circular containers (`rounded-full`) are reserved for avatars and pill badges only.
 
 ---
 
@@ -187,18 +193,18 @@ border-radius: 16px;
 
 The landing page follows a deliberate dark-light alternation that creates scroll momentum:
 
-| Section      | Background                     | Purpose               |
-| ------------ | ------------------------------ | --------------------- |
-| Navbar       | Transparent → `#090909`        | Seamless              |
-| Hero         | `#090909` + animated nodes     | Immersive — the "wow" |
-| How It Works | Canvas `#F7F8F4`               | Clear, instructional  |
-| Features     | Card `#FFFEFA`                 | Scannable, energetic  |
-| Algorithm    | `#090909` + interactive viz    | Proof of intelligence |
-| About        | Canvas `#F7F8F4` + Card surfaces | Warm, human         |
-| CTA          | `#090909` + spotlight          | Dramatic, urgent      |
-| Footer       | `#090909`                      | Minimal, complete     |
+| Section | Background | Purpose |
+| --- | --- | --- |
+| Navbar | Transparent → `#090909` | Keeps navigation readable while scrolling |
+| Hero | `#090909` + animated nodes | Introduces the product and primary action |
+| How It Works | Canvas `#F7F8F4` | Explains the group-forming flow |
+| Features | Card `#FFFEFA` | Summarizes core product capabilities |
+| How groups form | `#090909` + interactive viz | Explains the factors used to form a group |
+| About | Canvas `#F7F8F4` + Card surfaces | Explains the product purpose |
+| CTA | `#090909` + spotlight | Repeats the primary action |
+| Footer | `#090909` | Provides navigation and legal links |
 
-This pattern must be maintained when new sections are added. A light section should never immediately follow another light section without a dark break.
+On public pages, alternate light and dark sections unless a reviewed design calls for a different sequence.
 
 ---
 
@@ -206,7 +212,7 @@ This pattern must be maintained when new sections are added. A light section sho
 
 ### Motion Philosophy
 
-Animations communicate intelligence and delight — they are never decorative. Every animation has a reason.
+Animations explain state changes and guide attention. Remove motion that has no interaction or status purpose.
 
 ### Entrance Animations
 

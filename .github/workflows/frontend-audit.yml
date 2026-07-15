@@ -84,8 +84,8 @@ jobs:
       - name: Run browser audit
         env:
           AUDIT_API_PROXY_PATH: /__audit_api
-          AUDIT_API_PROXY_TARGET: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
-          AUDIT_API_URL: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://api.mkloz.com/teamforge/api/v1' }}
+          AUDIT_API_PROXY_TARGET: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://arm-api.mkloz.com/teamforge/api/v1' }}
+          AUDIT_API_URL: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://arm-api.mkloz.com/teamforge/api/v1' }}
           AUDIT_BROWSER_API_URL: http://127.0.0.1:4173/__audit_api
           AUDIT_LIGHTHOUSE_IGNORE_CERT_ERRORS: "true"
           AUDIT_OUTPUT_ROOT: temp/browser-audit-${{ github.run_id }}

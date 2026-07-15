@@ -3,7 +3,7 @@ import type { PageMetadata } from "@/shared/lib/document-metadata";
 const LANDING_TITLE = "TeamForge | Find your people, intelligently.";
 
 const LANDING_DESCRIPTION =
-  "TeamForge turns real plans into small compatible groups, using your setup to make the first room feel easier to join.";
+  "TeamForge uses your setup answers to form one small group around an activity plan.";
 
 export const LANDING_SEO = {
   title: LANDING_TITLE,

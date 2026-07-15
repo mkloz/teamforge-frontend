@@ -52,10 +52,10 @@ export function NotificationsDrawerHeader({
         <ActionDialog
           cancelLabel="Not now"
           confirmLabel={isMarkingAllRead ? "Marking..." : "Mark all as read"}
-          description="This clears the unread badges from every notification in the drawer."
+          description="This marks every notification as read."
           details={[
-            "The notifications stay in your history.",
-            "New updates will still appear as unread.",
+            "Notifications will stay in your history.",
+            "New notifications will still appear as unread.",
           ]}
           loading={isMarkingAllRead}
           disabled={!isOnline || count === 0}

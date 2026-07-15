@@ -15,7 +15,7 @@ export const loginSchema = z.object({
   email: z
     .string()
     .min(1, "Don't forget your email.")
-    .email("Check that email again—it looks a bit off."),
+    .email("Check that email again. It looks a little off."),
   password: z.string().min(6, "Make it at least 6 characters for safety."),
 });
 
@@ -26,7 +26,7 @@ export const registerSchema = z.object({
   email: z
     .string()
     .min(1, "Don't forget your email.")
-    .email("Check that email again—it looks a bit off."),
+    .email("Check that email again. It looks a little off."),
   password: PasswordValidator,
   otp: z.string().min(6, "We need all 6 digits to verify."),
   age: z
@@ -43,7 +43,7 @@ export const forgotPasswordSchema = z.object({
   email: z
     .string()
     .min(1, "Don't forget your email.")
-    .email("Check that email again—it looks a bit off."),
+    .email("Check that email again. It looks a little off."),
 });
 
 export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;

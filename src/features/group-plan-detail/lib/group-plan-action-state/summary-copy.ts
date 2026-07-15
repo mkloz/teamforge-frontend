@@ -5,7 +5,7 @@ import type {
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 
 const MEMBER_SUMMARY =
-  "You're in. Open the group workspace to keep the plan moving.";
+  "You're in. Open the group workspace to continue planning.";
 
 const MODE_SUMMARIES: Partial<Record<GroupPlanViewerMode, string>> = {
   invited: "You have a pending invite to review.",
@@ -28,7 +28,7 @@ const JOIN_AVAILABLE_SUMMARIES = [
   },
   {
     isAvailable: (detail: GroupPlanDetail) => detail.viewer.canRequestToJoin,
-    summary: "Send a request and the group can bring you in.",
+    summary: "Send a request for the group managers to review.",
   },
 ] as const;
 

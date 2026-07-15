@@ -22,7 +22,7 @@ export function StyleLayer({
     <LayerBlock
       index="02"
       title="Art style"
-      description="Change the material without changing color."
+      description="Change the interface style without changing its colors."
     >
       <StyleTableGrid
         selectedThemeStyle={selectedThemeStyle}

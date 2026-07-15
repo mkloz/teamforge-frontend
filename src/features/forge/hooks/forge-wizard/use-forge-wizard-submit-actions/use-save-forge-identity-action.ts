@@ -22,7 +22,7 @@ export function useSaveForgeIdentityAction({
     if (
       guardOfflineAction({
         id: "forge-identity-save-offline",
-        description: "Reconnect before saving group identity.",
+        description: "Reconnect before saving group details.",
       })
     ) {
       return;

@@ -29,9 +29,8 @@ export function HeroSection() {
             </h1>
 
             <p className="mb-8 max-w-md text-pretty font-sans text-base text-text-dark-secondary leading-relaxed md:text-lg">
-              Answer a few thoughtful setup questions once. TeamForge uses that
-              context to form one small group around a real plan, so the first
-              room starts warmer than a cold message.
+              Answer a few setup questions once. TeamForge uses your answers to
+              form one small group around an activity plan.
             </p>
 
             <div className="mb-10 flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">

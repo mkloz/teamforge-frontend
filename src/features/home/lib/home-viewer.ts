@@ -98,7 +98,7 @@ function getInterestsNextStep(): HomeViewerNextStep {
   return {
     kind: "interests",
     title: "Add your interests",
-    body: "Interests help TeamForge connect you with groups that actually fit your energy.",
+    body: "Your interests help TeamForge form groups around activities you enjoy.",
     label: "Choose interests",
   };
 }

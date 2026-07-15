@@ -80,7 +80,6 @@ function ContentIndicatorRow({
     <GroupIndicators
       countdown={viewState.countdown}
       pendingProposalCount={viewState.pendingProposalCount}
-      planStatus={viewState.planStatus}
       savedMessageCount={
         viewState.shouldShowSavedCountInIndicatorRow
           ? item.savedMessageCount

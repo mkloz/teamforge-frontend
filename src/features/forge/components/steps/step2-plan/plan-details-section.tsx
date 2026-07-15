@@ -17,7 +17,7 @@ export function PlanDetailsSection({
     <SectionCard>
       <SectionHeader
         title="Context"
-        description="Optional — add anything useful before people join."
+        description="Optional. Add anything useful before people join."
       />
 
       <div className="flex flex-col gap-2">
