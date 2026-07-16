@@ -109,6 +109,13 @@ export function buildForgeLaunchNavigation() {
   return buildForgeNavigation(forgeLaunchSearch);
 }
 
+export function buildForgeProposalNavigation(proposalId: string) {
+  return {
+    to: "/forge/proposals/$proposalId",
+    params: { proposalId },
+  } as const;
+}
+
 export function buildForgeIdeaLaunchNavigation(idea: ForgeIdeaLaunch) {
   const title = normalizeSearchText(idea.title, MAX_IDEA_TITLE_SEARCH_LENGTH);
   const detail = normalizeSearchText(

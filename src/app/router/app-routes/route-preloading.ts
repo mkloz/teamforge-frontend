@@ -3,8 +3,10 @@ import {
   activityPageModule,
   ExploreRouteLoading,
   explorePageModule,
+  ForgeProposalRouteLoading,
   ForgeRouteLoading,
   forgePageModule,
+  forgeProposalPageModule,
   GroupPlanDetailRouteLoading,
   groupPlanDetailPageModule,
   HomeRouteLoading,
@@ -83,6 +85,18 @@ export function createGroupPlanDetailRouteLoader(
   return async ({ params }: { params: { groupId: string } }) => {
     startRouteLoadingPreload(loading);
     startRouteDataPreload(() => preloadGroupPlanDetail(params.groupId));
+
+    await module.preload();
+  };
+}
+
+export function createForgeProposalRouteLoader(
+  module: LazyRouteModule,
+  loading?: LazyRouteLoadingComponent,
+) {
+  return async ({ params }: { params: { proposalId: string } }) => {
+    startRouteLoadingPreload(loading);
+    startRouteDataPreload(() => preloadForgeProposal(params.proposalId));
 
     await module.preload();
   };
@@ -251,6 +265,14 @@ async function preloadForgeRouteData() {
   ]);
 }
 
+async function preloadForgeProposal(proposalId: string) {
+  const { forgeProposalQueries } = await import(
+    "@/features/forge-proposals/api/forge-proposal-queries"
+  );
+
+  await appQueryClient.prefetchQuery(forgeProposalQueries.detail(proposalId));
+}
+
 async function preloadGroupPlanDetail(groupId: string) {
   const { groupPlanDetailQueries } = await import(
     "@/features/group-plan-detail/api/group-plan-detail-queries"
@@ -357,6 +379,16 @@ function createGroupSessionRestoredPreload(pathname: string) {
     : undefined;
 }
 
+function createForgeProposalSessionRestoredPreload(pathname: string) {
+  const proposalId = getForgeProposalIdFromPathname(pathname);
+
+  return proposalId
+    ? async () => {
+        await preloadForgeProposal(proposalId);
+      }
+    : undefined;
+}
+
 function createUserSessionRestoredPreload(pathname: string) {
   const userId = getUserIdFromPathname(pathname);
 
@@ -399,9 +431,17 @@ function getUserIdFromPathname(pathname: string) {
   return userId ? decodeURIComponent(userId) : null;
 }
 
+function getForgeProposalIdFromPathname(pathname: string) {
+  const match = /^\/forge\/proposals\/([^/?#]+)/.exec(pathname);
+  const proposalId = match?.[1];
+
+  return proposalId ? decodeURIComponent(proposalId) : null;
+}
+
 const SESSION_RESTORED_PRELOAD_RESOLVERS: SessionRestoredPreloadResolver[] = [
   createExploreSessionRestoredPreload,
   createActivitySessionRestoredPreload,
+  createForgeProposalSessionRestoredPreload,
   createGroupSessionRestoredPreload,
   createUserSessionRestoredPreload,
 ];
@@ -460,6 +500,16 @@ const APP_ROUTE_MODULE_PRELOADERS = [
     module: settingsPageModule,
     loading: SettingsRouteLoading,
     preloadData: preloadSettingsRouteData,
+  },
+  {
+    matches: (pathname: string) => pathname.startsWith("/forge/proposals/"),
+    module: forgeProposalPageModule,
+    loading: ForgeProposalRouteLoading,
+    preloadData: (pathname: string) => {
+      const proposalId = getForgeProposalIdFromPathname(pathname);
+
+      return proposalId ? preloadForgeProposal(proposalId) : Promise.resolve();
+    },
   },
   {
     matches: (pathname: string) => pathname === "/forge",

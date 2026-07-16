@@ -1,11 +1,17 @@
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Pause, RefreshCcw, Search, X } from "lucide-react";
+import { ArrowRight, Pause, RefreshCcw, Search, X } from "lucide-react";
 import {
   type AutoForgeRequest,
   clearAutoForgeRequestWizardDraft,
   saveAutoForgeRequestAsWizardDraft,
   useAutoForgeRequest,
 } from "@/features/forge/public/auto-forge-request";
+import {
+  type CurrentForgeProposalResponse,
+  forgeProposalQueries,
+} from "@/features/forge-proposals/public/proposal-review";
+import { CurrentForgeProposalStatus } from "@/features/home/components/current-forge-proposal-status";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
@@ -13,10 +19,14 @@ import { StatusPill } from "@/shared/components/ui/status-pill";
 import {
   buildForgeLaunchNavigation,
   buildForgeNavigation,
+  buildForgeProposalNavigation,
 } from "@/shared/navigation";
+
+type CurrentForgeProposalQuery = UseQueryResult<CurrentForgeProposalResponse>;
 
 export function AutoForgeRequestStatus() {
   const state = useAutoForgeRequest();
+  const proposalQuery = useQuery(forgeProposalQueries.current());
 
   if (state.isLoading) {
     return (
@@ -30,37 +40,83 @@ export function AutoForgeRequestStatus() {
 
   if (state.isStateError && !state.request) {
     return (
-      <section
-        id="forge-request-heading"
-        className="grid gap-3"
-        aria-label="Forge request"
-        role="alert"
-      >
-        <p className="text-muted-foreground text-sm">
-          Your current Forge request could not be refreshed.
-        </p>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-fit"
-          onClick={state.onRetryStatus}
+      <div className="grid gap-8">
+        <StandaloneProposalStatus proposalQuery={proposalQuery} />
+        <section
+          id="forge-request-heading"
+          className="grid gap-3"
+          aria-label="Forge request"
+          role="alert"
         >
-          <RefreshCcw className="size-4" aria-hidden="true" />
-          Try again
-        </Button>
-      </section>
+          <p className="text-muted-foreground text-sm">
+            Your current Forge request could not be refreshed.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-fit"
+            onClick={state.onRetryStatus}
+          >
+            <RefreshCcw className="size-4" aria-hidden="true" />
+            Try again
+          </Button>
+        </section>
+      </div>
     );
   }
 
-  if (!state.request) return null;
+  if (!state.request) {
+    return <StandaloneProposalStatus proposalQuery={proposalQuery} />;
+  }
 
-  return <RequestStatusCard request={state.request} state={state} />;
+  const shouldShowStandaloneProposal = state.request.lifecycle !== "PROPOSED";
+
+  return (
+    <div className="grid gap-8">
+      {shouldShowStandaloneProposal ? (
+        <StandaloneProposalStatus
+          proposalQuery={proposalQuery}
+          request={state.request}
+        />
+      ) : null}
+      <RequestStatusCard
+        proposalQuery={proposalQuery}
+        request={state.request}
+        state={state}
+      />
+    </div>
+  );
+}
+
+function StandaloneProposalStatus({
+  proposalQuery,
+  request,
+}: {
+  proposalQuery: CurrentForgeProposalQuery;
+  request?: AutoForgeRequest;
+}) {
+  const showTransientState =
+    !request ||
+    (request.lifecycle === "PAUSED" &&
+      request.pauseReason === "CANDIDATE_SEAT");
+
+  return (
+    <CurrentForgeProposalStatus
+      isError={proposalQuery.isError}
+      isLoading={proposalQuery.isPending}
+      onRetry={() => void proposalQuery.refetch()}
+      proposal={proposalQuery.data?.proposal ?? null}
+      showTransientState={showTransientState}
+    />
+  );
 }
 
 function RequestStatusCard({
+  proposalQuery,
   request,
   state,
 }: {
+  proposalQuery: CurrentForgeProposalQuery;
   request: AutoForgeRequest;
   state: ReturnType<typeof useAutoForgeRequest>;
 }) {
@@ -81,7 +137,12 @@ function RequestStatusCard({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <StatusPill
             size="sm"
-            tone={request.lifecycle === "SEARCHING" ? "teal" : "muted"}
+            tone={
+              request.lifecycle === "SEARCHING" ||
+              request.lifecycle === "PROPOSED"
+                ? "teal"
+                : "muted"
+            }
             surface="soft"
           >
             {view.label}
@@ -116,6 +177,7 @@ function RequestStatusCard({
 
         <RequestActions
           actionDisabled={actionDisabled}
+          proposalQuery={proposalQuery}
           request={request}
           state={state}
         />
@@ -151,10 +213,12 @@ function RequestTiming({ request }: { request: AutoForgeRequest }) {
 
 function RequestActions({
   actionDisabled,
+  proposalQuery,
   request,
   state,
 }: {
   actionDisabled: boolean;
+  proposalQuery: CurrentForgeProposalQuery;
   request: AutoForgeRequest;
   state: ReturnType<typeof useAutoForgeRequest>;
 }) {
@@ -253,7 +317,79 @@ function RequestActions({
     );
   }
 
+  if (request.lifecycle === "PROPOSED") {
+    return (
+      <ProposedRequestAction
+        proposalQuery={proposalQuery}
+        requestId={request.id}
+      />
+    );
+  }
+
   return null;
+}
+
+function ProposedRequestAction({
+  proposalQuery,
+  requestId,
+}: {
+  proposalQuery: CurrentForgeProposalQuery;
+  requestId: string;
+}) {
+  if (proposalQuery.isPending) {
+    return (
+      <Button className="w-fit" loading disabled>
+        Loading proposal
+      </Button>
+    );
+  }
+
+  if (proposalQuery.isError) {
+    return (
+      <div className="flex flex-wrap items-center gap-3" role="alert">
+        <p className="text-muted-foreground text-sm">
+          The group proposal could not be refreshed.
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => void proposalQuery.refetch()}
+        >
+          <RefreshCcw className="size-4" aria-hidden="true" />
+          Try again
+        </Button>
+      </div>
+    );
+  }
+
+  const proposal = proposalQuery.data?.proposal;
+
+  if (!proposal || proposal.requestId !== requestId) {
+    return (
+      <div className="flex flex-wrap items-center gap-3">
+        <p className="text-muted-foreground text-sm">
+          The review is still being prepared. Check again in a moment.
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => void proposalQuery.refetch()}
+        >
+          <RefreshCcw className="size-4" aria-hidden="true" />
+          Check again
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <Button asChild className="w-fit">
+      <Link {...buildForgeProposalNavigation(proposal.id)}>
+        Review group
+        <ArrowRight className="size-4" aria-hidden="true" />
+      </Link>
+    </Button>
+  );
 }
 
 function CancelRequestAction({
@@ -311,11 +447,18 @@ function getRequestView(request: AutoForgeRequest) {
         "This request is no longer searching. Start a new request when you are ready.",
     };
   }
-  if (request.lifecycle === "RESERVED" || request.lifecycle === "PROPOSED") {
+  if (request.lifecycle === "RESERVED") {
     return {
-      label: "Request in progress",
+      label: "Preparing review",
       description:
-        "This request has moved to a later stage. More details are not available on this screen yet.",
+        "A possible roster is being checked and prepared for review. No group has formed yet.",
+    };
+  }
+  if (request.lifecycle === "PROPOSED") {
+    return {
+      label: "Ready to review",
+      description:
+        "Your group is ready to review. Check the activity and everyone in it before deciding.",
     };
   }
   return {

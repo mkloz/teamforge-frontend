@@ -3,6 +3,7 @@ import {
   accountActionDetailRouteOptions,
   activityRouteOptions,
   exploreRouteOptions,
+  forgeProposalRouteOptions,
   forgeRouteOptions,
   groupPlanDetailRouteOptions,
   homeRouteOptions,
@@ -100,6 +101,11 @@ const forgeRoute = createRoute({
   ...forgeRouteOptions,
 });
 
+const forgeProposalRoute = createRoute({
+  getParentRoute: () => appShellBaseRoute,
+  ...forgeProposalRouteOptions,
+});
+
 const appRoutes = [
   homeRoute,
   exploreRoute,
@@ -113,6 +119,7 @@ const appRoutes = [
   accountActionDetailRoute,
   restrictionDetailRoute,
   forgeRoute,
+  forgeProposalRoute,
 ];
 
 export const appShellRoute = appShellBaseRoute.addChildren(appRoutes);

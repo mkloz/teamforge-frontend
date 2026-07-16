@@ -5,8 +5,10 @@ import {
   activityPageModule,
   ExploreRouteLoading,
   explorePageModule,
+  ForgeProposalRouteLoading,
   ForgeRouteLoading,
   forgePageModule,
+  forgeProposalPageModule,
   GroupPlanDetailRouteLoading,
   groupPlanDetailPageModule,
   HomeRouteLoading,
@@ -23,6 +25,7 @@ import {
 import {
   createActivityRouteLoader,
   createExploreRouteLoader,
+  createForgeProposalRouteLoader,
   createGroupPlanDetailRouteLoader,
   createRouteModuleLoader,
   createUserDetailRouteLoader,
@@ -276,6 +279,27 @@ export const forgeRouteOptions = {
     scope: routeErrorScopes.forge,
     title: "Forge could not load",
     description: "The group setup did not load.",
+    fallbackTo: "/home",
+    fallbackLabel: "Back to home",
+  }),
+};
+
+export const forgeProposalRouteOptions = {
+  path: "/forge/proposals/$proposalId" as const,
+  loader: createForgeProposalRouteLoader(
+    forgeProposalPageModule,
+    ForgeProposalRouteLoading,
+  ),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: ForgeProposalRouteLoading,
+  component: createLazyPageRoute(
+    forgeProposalPageModule.Component,
+    <ForgeProposalRouteLoading />,
+  ),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.forge,
+    title: "Group proposal could not load",
+    description: "This group proposal did not load.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),

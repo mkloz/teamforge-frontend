@@ -119,6 +119,22 @@ export const ForgeRouteLoading = createLazyRouteLoading(
   { mode: "route" },
 );
 
+export const forgeProposalPageModule = createLazyRouteModule(() =>
+  import("@/features/forge-proposals/forge-proposal-page").then((m) => ({
+    default: m.ForgeProposalPage,
+  })),
+);
+
+export const ForgeProposalRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/forge-proposals/forge-proposal-page.loading").then(
+      (m) => ({
+        default: m.ForgeProposalPageLoading,
+      }),
+    ),
+  { mode: "route" },
+);
+
 export const groupPlanDetailPageModule = createLazyRouteModule(() =>
   import("@/features/group-plan-detail/group-plan-detail-page").then((m) => ({
     default: m.GroupPlanDetailPage,
