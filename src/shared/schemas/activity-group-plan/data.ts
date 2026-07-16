@@ -12,6 +12,7 @@ import {
   planScheduleModeSchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
+import { groupGovernanceSchema } from "@/shared/schemas/group-governance";
 
 export const activityData = {
   id: z.string(),
@@ -49,6 +50,7 @@ export const groupData = {
   updatedAt: z.string().datetime(),
   disbandedAt: z.string().datetime().nullable(),
   activityId: z.string(),
+  governance: groupGovernanceSchema.nullish(),
 };
 
 export const planShape = z.object({
@@ -73,4 +75,5 @@ export const planShape = z.object({
   updatedAt: z.string().datetime(),
   version: z.number().optional(),
   groupId: z.string(),
+  governance: groupGovernanceSchema.nullish(),
 });

@@ -1,5 +1,12 @@
+import { CalendarPlus } from "lucide-react";
 import type React from "react";
 import type { ActivityOutgoingGifAttachment } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { AttachmentMenu } from "./attachment-menu";
 import { ExpressionPicker } from "./expression-picker";
@@ -16,6 +23,7 @@ interface InputRowProps {
   controlsDisabled?: boolean;
   canAttach?: boolean;
   canSendGif?: boolean;
+  allowGif?: boolean;
   onCreateProposal?: () => void;
   onInsertEmoji: (emoji: string) => void;
   onSelectGif: (gif: ActivityOutgoingGifAttachment) => void;
@@ -35,6 +43,7 @@ export function InputRow({
   controlsDisabled = disabled,
   canAttach = true,
   canSendGif = true,
+  allowGif = true,
   onCreateProposal,
   onInsertEmoji,
   onSelectGif,
@@ -45,6 +54,7 @@ export function InputRow({
     <>
       <div className="flex h-11 shrink-0 items-center gap-0.5 pl-1 sm:pl-1.5">
         <ExpressionPicker
+          allowGif={allowGif}
           canSendGif={canSendGif}
           disabled={controlsDisabled}
           onInsertEmoji={onInsertEmoji}
@@ -58,6 +68,24 @@ export function InputRow({
             onSelectFiles={onSelectFiles}
           />
         )}
+        {!canAttach && onCreateProposal ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="size-8 rounded-full text-slate-muted hover:text-forge-teal"
+                disabled={controlsDisabled}
+                onClick={onCreateProposal}
+                aria-label="Suggest a plan change"
+              >
+                <CalendarPlus className="size-4" strokeWidth={2} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Suggest a plan change</TooltipContent>
+          </Tooltip>
+        ) : null}
       </div>
 
       <div className="relative flex min-h-11 flex-1 items-center px-1.5 py-2">

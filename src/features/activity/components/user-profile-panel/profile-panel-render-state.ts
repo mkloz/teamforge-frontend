@@ -17,6 +17,7 @@ interface ProfilePanelParticipantCandidateInput {
 }
 
 interface ProfilePanelContentStateInput {
+  allowChatNavigation?: boolean;
   chat?: UserProfilePanelChat;
   participant: UserProfilePanelParticipant;
   profileNavigation?: ProfileNavigation;
@@ -66,6 +67,7 @@ export function getProfilePanelScrollResetKey({
 }
 
 export function getProfilePanelContentState({
+  allowChatNavigation = true,
   chat,
   participant,
   profileNavigation,
@@ -74,7 +76,7 @@ export function getProfilePanelContentState({
   propMutualGroups,
 }: ProfilePanelContentStateInput): ProfilePanelContentState {
   return {
-    chatNavigation: getChatNavigation(chat),
+    chatNavigation: allowChatNavigation ? getChatNavigation(chat) : undefined,
     isBlocked: getProfilePanelFlag(propIsBlocked, chat?.isBlocked),
     isMuted: getProfilePanelFlag(propIsMuted, chat?.isMuted),
     mutualGroups: getMutualGroups(propMutualGroups, chat),

@@ -16,6 +16,9 @@ interface GroupIdentityActionsProps {
   activityTitle: string | null;
   avatarSrc: string | null;
   canEditGroup: boolean;
+  canCreateJoinLinks: boolean;
+  canLeaveGroup: boolean;
+  canSuggestPlanChange: boolean;
   displayName: string;
   groupId: string;
   groupLink: string;
@@ -30,6 +33,9 @@ export function GroupIdentityActions({
   activityTitle,
   avatarSrc,
   canEditGroup,
+  canCreateJoinLinks,
+  canLeaveGroup,
+  canSuggestPlanChange,
   displayName,
   groupId,
   groupLink,
@@ -56,28 +62,30 @@ export function GroupIdentityActions({
         </Link>
       </Button>
 
-      <QrShareDialog
-        url={groupLink}
-        title="Group link"
-        description="Scan to open this group in TeamForge. Only members can access it."
-        avatarSrc={avatarSrc}
-        bottomText={displayName}
-        trigger={
-          <Button
-            variant="outline"
-            size="xs"
-            className="min-w-0 flex-1 basis-32"
-            contentClassName="gap-1.5"
-            aria-label={`Show ${displayName} group link QR code`}
-          >
-            <QrCode className="size-3.5" aria-hidden="true" />
-            <span className="truncate">Group link</span>
-          </Button>
-        }
-      />
+      {canCreateJoinLinks ? (
+        <QrShareDialog
+          url={groupLink}
+          title="Group link"
+          description="Scan to open this group in TeamForge. Only members can access it."
+          avatarSrc={avatarSrc}
+          bottomText={displayName}
+          trigger={
+            <Button
+              variant="outline"
+              size="xs"
+              className="min-w-0 flex-1 basis-32"
+              contentClassName="gap-1.5"
+              aria-label={`Show ${displayName} group link QR code`}
+            >
+              <QrCode className="size-3.5" aria-hidden="true" />
+              <span className="truncate">Group link</span>
+            </Button>
+          }
+        />
+      ) : null}
 
       <ReportDialog
-        canRequestLeave={!isReadOnly}
+        canRequestLeave={!isReadOnly && canLeaveGroup}
         onLeave={() => leaveReportedGroup(groupId)}
         targets={getAggregateReportTargets({
           activityId,
@@ -102,6 +110,7 @@ export function GroupIdentityActions({
 
       <GroupMutableAction
         canEditGroup={canEditGroup}
+        canSuggestPlanChange={canSuggestPlanChange}
         isOnline={isOnline}
         isReadOnly={isReadOnly}
         plan={plan}
@@ -142,12 +151,14 @@ function getAggregateReportTargets({
 
 function GroupMutableAction({
   canEditGroup,
+  canSuggestPlanChange,
   isOnline,
   isReadOnly,
   plan,
   onEditGroup,
 }: {
   canEditGroup: boolean;
+  canSuggestPlanChange: boolean;
   isOnline: boolean;
   isReadOnly: boolean;
   plan?: Group["plan"];
@@ -155,6 +166,7 @@ function GroupMutableAction({
 }) {
   const actionKind = getGroupMutableActionKind({
     canEditGroup,
+    canSuggestPlanChange,
     hasPlan: Boolean(plan),
     isReadOnly,
   });
@@ -208,10 +220,12 @@ function GroupMutableAction({
 
 function getGroupMutableActionKind({
   canEditGroup,
+  canSuggestPlanChange,
   hasPlan,
   isReadOnly,
 }: {
   canEditGroup: boolean;
+  canSuggestPlanChange: boolean;
   hasPlan: boolean;
   isReadOnly: boolean;
 }) {
@@ -223,7 +237,7 @@ function getGroupMutableActionKind({
     return "edit";
   }
 
-  return hasPlan ? "suggest" : "hidden";
+  return hasPlan && canSuggestPlanChange ? "suggest" : "hidden";
 }
 
 function getGroupEditDisabledTitle(isOnline: boolean) {

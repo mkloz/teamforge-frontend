@@ -10,6 +10,7 @@ import { PlanCategoryPill, PlanStatusPill } from "./plan-section-pills";
 import { getPlanSectionViewState } from "./plan-section-view-state";
 
 interface PlanSectionProps {
+  canManagePlanDirectly?: boolean;
   plan: Plan;
   currentUserRole?: MemberRole;
   isFocused?: boolean;
@@ -25,6 +26,7 @@ interface PlanSectionProps {
 }
 
 export function PlanSection({
+  canManagePlanDirectly,
   currentUserRole = "MEMBER",
   plan,
   isFocused = false,
@@ -98,6 +100,7 @@ export function PlanSection({
 
       <PlanLifecycleActions
         currentUserRole={currentUserRole}
+        canManagePlanDirectly={canManagePlanDirectly}
         isOnline={isOnline}
         isReadOnly={isReadOnly}
         onCancelPlan={onCancelPlan}

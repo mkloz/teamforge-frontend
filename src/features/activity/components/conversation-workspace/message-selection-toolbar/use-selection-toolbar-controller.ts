@@ -23,11 +23,13 @@ import {
 import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
 
 interface UseMessageSelectionToolbarControllerInput {
+  canForwardMessages: boolean;
   onClearSelection: () => void;
   selectedMessages: UnifiedMessage[];
 }
 
 export function useMessageSelectionToolbarController({
+  canForwardMessages,
   onClearSelection,
   selectedMessages,
 }: UseMessageSelectionToolbarControllerInput) {
@@ -44,7 +46,7 @@ export function useMessageSelectionToolbarController({
   });
   const actionButtonStates = getSelectionActionButtonStates({
     canDelete: toolbarState.canDelete,
-    canForward: toolbarState.canForward,
+    canForward: canForwardMessages && toolbarState.canForward,
     isDeleting,
     isOnline,
     isSaving,
@@ -137,7 +139,9 @@ export function useMessageSelectionToolbarController({
     isOnline,
     messageActions,
     openDeleteDialog: () => setDeleteDialogOpen(true),
-    openForwardDialog: () => setForwardDialogOpen(true),
+    openForwardDialog: () => {
+      if (canForwardMessages) setForwardDialogOpen(true);
+    },
     selectedCount: toolbarState.selectedCount,
     setDeleteDialogOpen,
     setForwardDialogOpen,

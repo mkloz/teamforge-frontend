@@ -1,4 +1,5 @@
 import { type ComponentProps, useState } from "react";
+import { useConversationCapabilities } from "@/features/activity/components/conversation-workspace/conversation-capability-context";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
@@ -75,6 +76,7 @@ interface MessageItemActivityState {
 }
 
 interface MessageItemContextMenuPropsInput {
+  canForwardMessages: boolean;
   isSelectable: boolean;
   message: UnifiedMessage;
   messageActions: MessageItemControllerActions;
@@ -103,6 +105,7 @@ export function useMessageItemRenderController({
     isOwn,
   });
   const messageActions = useMessageItemControllerActions();
+  const capabilities = useConversationCapabilities();
   const savedMessageIds = useSavedMessageIds();
 
   const viewState = getMessageItemViewStateForController({
@@ -125,6 +128,7 @@ export function useMessageItemRenderController({
 
   return {
     contextMenuProps: getMessageItemContextMenuProps({
+      canForwardMessages: capabilities.canForwardMessages,
       isSelectable,
       message,
       messageActions,
@@ -226,6 +230,7 @@ function getMessageIdOrNull(
 }
 
 function getMessageItemContextMenuProps({
+  canForwardMessages,
   isSelectable,
   message,
   messageActions,
@@ -238,7 +243,7 @@ function getMessageItemContextMenuProps({
     isSaved: viewState.isSaved,
     message,
     onDelete: messageActions.deleteMessage,
-    onForward: messageActions.forwardMessage,
+    onForward: canForwardMessages ? messageActions.forwardMessage : undefined,
     onOpenChange: setIsContextMenuOpen,
     onPin: messageActions.pinMessage,
     onReply: messageActions.startReply,

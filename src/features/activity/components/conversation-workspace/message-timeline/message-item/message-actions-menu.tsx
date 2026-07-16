@@ -123,7 +123,7 @@ export function MessageContextMenu({
         onDelete={onDelete}
         onOpenChange={menu.setDeleteDialogOpen}
       />
-      {menu.forwardDialogOpen ? (
+      {menu.forwardDialogOpen && onForward ? (
         <ForwardMessageDialog
           message={message}
           open={menu.forwardDialogOpen}

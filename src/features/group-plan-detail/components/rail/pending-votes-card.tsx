@@ -5,6 +5,7 @@ import { getPendingVoteHeadline } from "@/features/group-plan-detail/components/
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Button } from "@/shared/components/ui/button";
 import { buildActivityGroupNavigation } from "@/shared/navigation/activity-navigation";
+import { isSystemManagedGroupGovernance } from "@/shared/schemas/group-governance";
 
 interface PendingVotesCardProps {
   detail: GroupPlanDetail;
@@ -12,7 +13,13 @@ interface PendingVotesCardProps {
 
 export function PendingVotesCard({ detail }: PendingVotesCardProps) {
   const pending = detail.planning.pendingProposalCount;
-  if (pending === 0 || !detail.viewer.canVoteOnPlanChange) return null;
+  const governance = detail.governance;
+  const canVote = isSystemManagedGroupGovernance(governance)
+    ? detail.viewer.canVoteOnPlanChange &&
+      governance.capabilities.canVoteOnPlanChange
+    : governance !== undefined && detail.viewer.canVoteOnPlanChange;
+
+  if (pending === 0 || !canVote) return null;
 
   return (
     <RailCard tone="highlight">

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { getConversationCapabilities } from "@/features/activity/components/conversation-workspace/conversation-capability-context";
 import {
   getConversationViewState,
   getSearchResultLabel,
@@ -127,13 +128,14 @@ export function useConversationWorkspaceController(
     matchCount,
     normalizedQuery,
   });
-  const handleCreateProposal = canOpenPlanProposalDialog(
-    kind,
-    activePlan,
-    isCompleted,
-  )
-    ? createOpenProposalDialogHandler(setIsProposalDialogOpen)
-    : undefined;
+  const composerGroup = getConversationComposerGroup(props);
+  const capabilities = getConversationCapabilities(composerGroup);
+  const handleCreateProposal =
+    canOpenPlanProposalDialog(kind, activePlan, isCompleted) &&
+    capabilities.canSuggestPlanChange &&
+    !capabilities.isSystemManaged
+      ? createOpenProposalDialogHandler(setIsProposalDialogOpen)
+      : undefined;
   const handleUnpinPinnedMessage = createPinnedMessageUnpinHandler({
     allPinnedMessages,
     unpinMessage,
@@ -218,7 +220,7 @@ export function useConversationWorkspaceController(
   };
   const composerProps = {
     chatId,
-    group: getConversationComposerGroup(props),
+    group: composerGroup,
     inputPlaceholder,
     isBlockedDirectChat,
     isCompleted,
@@ -233,6 +235,7 @@ export function useConversationWorkspaceController(
 
   return {
     alertProps,
+    capabilities,
     composerProps,
     dialogProps,
     headerProps: workspaceHeaderProps,

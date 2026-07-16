@@ -24,7 +24,10 @@ interface RealtimeGroupUpdateOptions {
     group: GroupApi,
     currentUserId: string | null,
     proposals?: PlanProposal[],
-    chatSummary?: Pick<ChatApi, "id" | "isMuted" | "pinnedMessages"> | null,
+    chatSummary?: Pick<
+      ChatApi,
+      "governance" | "id" | "isMuted" | "pinnedMessages"
+    > | null,
   ) => Group;
 }
 
@@ -307,12 +310,16 @@ function getNewestGroupForSelection({
 
 function getGroupSelectionChatSummary(
   current: ActivityGroupSelectionData,
-): Pick<ChatApi, "id" | "isMuted" | "pinnedMessages"> | null {
+): Pick<ChatApi, "governance" | "id" | "isMuted" | "pinnedMessages"> | null {
   if (!current.chatId) {
     return null;
   }
 
   return {
+    governance:
+      current.group?.governance === undefined
+        ? current.group?.chat?.governance
+        : current.group.governance,
     id: current.chatId,
     isMuted: current.group?.chat?.isMuted ?? false,
     pinnedMessages: current.group?.chat?.pinnedMessages?.map((message) =>

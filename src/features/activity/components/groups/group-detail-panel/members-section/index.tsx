@@ -8,6 +8,8 @@ import { InviteMembersDialog } from "./invite-members-dialog";
 import { MemberCard } from "./member-card";
 
 interface MembersSectionProps {
+  canInviteMembers?: boolean;
+  canRemoveMembers?: boolean;
   inviteCandidates?: ActivityParticipant[];
   invitingMemberId?: string | null;
   isOnline?: boolean;
@@ -29,6 +31,7 @@ interface MembersSectionViewState {
 }
 
 interface MembersSectionViewStateInput {
+  canInviteMembers?: boolean;
   currentUserRole: MemberRole;
   inviteCandidates: ActivityParticipant[];
   isOnline: boolean;
@@ -45,6 +48,7 @@ interface MemberCardRenderState {
 }
 
 interface MemberCardRenderStateInput {
+  canRemoveMembers?: boolean;
   currentUserId: string | null;
   currentUserRole: MemberRole;
   isOnline: boolean;
@@ -54,6 +58,7 @@ interface MemberCardRenderStateInput {
 }
 
 interface MembersGridProps {
+  canRemoveMembers?: boolean;
   currentUserId: string | null;
   currentUserRole: MemberRole;
   isOnline: boolean;
@@ -67,6 +72,8 @@ interface MembersGridProps {
 const EMPTY_INVITE_CANDIDATES: ActivityParticipant[] = [];
 
 export function MembersSection({
+  canInviteMembers,
+  canRemoveMembers,
   inviteCandidates = EMPTY_INVITE_CANDIDATES,
   invitingMemberId = null,
   isOnline = true,
@@ -81,6 +88,7 @@ export function MembersSection({
   onShowProfile,
 }: MembersSectionProps) {
   const viewState = getMembersSectionViewState({
+    canInviteMembers,
     currentUserRole,
     inviteCandidates,
     isReadOnly,
@@ -106,6 +114,7 @@ export function MembersSection({
 
       <MembersGrid
         currentUserId={currentUserId}
+        canRemoveMembers={canRemoveMembers}
         currentUserRole={currentUserRole}
         isOnline={isOnline}
         isReadOnly={isReadOnly}
@@ -119,6 +128,7 @@ export function MembersSection({
 }
 
 function getMembersSectionViewState({
+  canInviteMembers: canInviteMembersCapability,
   currentUserRole,
   inviteCandidates,
   isOnline,
@@ -128,7 +138,8 @@ function getMembersSectionViewState({
   onInviteMember,
 }: MembersSectionViewStateInput): MembersSectionViewState {
   return {
-    canInvite: canInviteMembers({
+    canInvite: canInviteMembersForViewer({
+      canInviteMembers: canInviteMembersCapability,
       currentUserRole,
       inviteCandidates,
       isReadOnly,
@@ -144,7 +155,8 @@ function getMembersSectionViewState({
   };
 }
 
-function canInviteMembers({
+function canInviteMembersForViewer({
+  canInviteMembers,
   currentUserRole,
   inviteCandidates,
   isReadOnly,
@@ -153,10 +165,10 @@ function canInviteMembers({
   onInviteMember,
 }: Omit<MembersSectionViewStateInput, "isOnline">) {
   const inviteRequirements = [
+    canInviteMembers ?? currentUserRole !== "MEMBER",
     !isReadOnly,
     members.length < maxMembers,
     inviteCandidates.length > 0,
-    currentUserRole !== "MEMBER",
     onInviteMember !== undefined,
   ];
 
@@ -215,6 +227,7 @@ function MembersSectionHeader({
 }
 
 function MembersGrid({
+  canRemoveMembers,
   currentUserId,
   currentUserRole,
   isOnline,
@@ -228,6 +241,7 @@ function MembersGrid({
     <div className="grid gap-1.5">
       {members.map((member) => {
         const cardState = getMemberCardRenderState({
+          canRemoveMembers,
           currentUserId,
           currentUserRole,
           isOnline,
@@ -253,6 +267,7 @@ function MembersGrid({
 }
 
 function getMemberCardRenderState({
+  canRemoveMembers,
   currentUserId,
   currentUserRole,
   isOnline,
@@ -262,6 +277,7 @@ function getMemberCardRenderState({
 }: MemberCardRenderStateInput): MemberCardRenderState {
   return {
     canRemove: canRemoveMember({
+      canRemoveMembers,
       currentUserId,
       currentUserRole,
       isOnline,
@@ -274,6 +290,7 @@ function getMemberCardRenderState({
 }
 
 function canRemoveMember({
+  canRemoveMembers,
   currentUserId,
   currentUserRole,
   isOnline,
@@ -281,9 +298,9 @@ function canRemoveMember({
   member,
 }: Omit<MemberCardRenderStateInput, "removingMemberId">) {
   const removalRequirements = [
+    canRemoveMembers ?? currentUserRole === "ADMIN",
     !isReadOnly,
     isOnline,
-    currentUserRole === "ADMIN",
     currentUserId !== null,
     member.userId !== currentUserId,
   ];

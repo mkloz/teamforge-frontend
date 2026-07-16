@@ -5,6 +5,7 @@ import { useGroupPlanProposalActions } from "@/features/group-plan-detail/hooks/
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Button } from "@/shared/components/ui/button";
 import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
+import { isSystemManagedGroupGovernance } from "@/shared/schemas/group-governance";
 
 interface MemberQuickActionsProps {
   detail: GroupPlanDetail;
@@ -80,9 +81,22 @@ export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
 }
 
 function getMemberQuickActionCapabilities(detail: GroupPlanDetail) {
-  const canSuggestPlanChange = canViewerSuggestPlanChange(detail);
-  const canInviteMembers = detail.viewer.canInviteMembers;
-  const canManageGroup = detail.viewer.canManageGroup;
+  const governance = detail.governance;
+  const isSystemManaged = isSystemManagedGroupGovernance(governance);
+  const isGovernanceUnknown = governance === undefined;
+  const canSuggestPlanChange = isSystemManaged
+    ? detail.viewer.canSuggestPlanChange &&
+      governance.capabilities.canSuggestPlanChange &&
+      Boolean(detail.plan)
+    : !isGovernanceUnknown && canViewerSuggestPlanChange(detail);
+  const canInviteMembers = isSystemManaged
+    ? detail.viewer.canInviteMembers && governance.capabilities.canInviteMembers
+    : !isGovernanceUnknown && detail.viewer.canInviteMembers;
+  const canManageGroup = isSystemManaged
+    ? detail.viewer.canManageGroup &&
+      (governance.capabilities.canEditGroupIdentity ||
+        governance.capabilities.canUpdatePlanDirectly)
+    : !isGovernanceUnknown && detail.viewer.canManageGroup;
 
   return {
     canInviteMembers,
@@ -148,6 +162,7 @@ function DeferredPlanChangeDialog({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const isDisabled = disabled || !detail.plan;
+  const actionLabel = getPlanChangeActionLabel(detail);
   const trigger = (
     <Button
       variant="outline"
@@ -159,7 +174,7 @@ function DeferredPlanChangeDialog({
         setIsOpen(true);
       }}
     >
-      What would you change?
+      {actionLabel}
     </Button>
   );
 
@@ -171,7 +186,7 @@ function DeferredPlanChangeDialog({
     <Suspense
       fallback={
         <Button variant="outline" size="sm" loading disabled>
-          What would you change?
+          {actionLabel}
         </Button>
       }
     >
@@ -186,6 +201,18 @@ function DeferredPlanChangeDialog({
       />
     </Suspense>
   );
+}
+
+function getPlanChangeActionLabel(detail: GroupPlanDetail) {
+  if (!detail.plan?.dateTime) {
+    return "Pick a time together";
+  }
+
+  if (!detail.plan.location || detail.plan.location === "Location TBD") {
+    return "Choose a place together";
+  }
+
+  return "Suggest a plan change";
 }
 
 interface QuickActionLinkProps {

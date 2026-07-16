@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useConversationCapabilities } from "@/features/activity/components/conversation-workspace/conversation-capability-context";
 import { SelectionToolbarDialogs } from "@/features/activity/components/conversation-workspace/message-selection-toolbar/selection-toolbar-dialogs";
 import { SelectionToolbarShell } from "@/features/activity/components/conversation-workspace/message-selection-toolbar/selection-toolbar-shell";
 import { useMessageSelectionToolbarController } from "@/features/activity/components/conversation-workspace/message-selection-toolbar/use-selection-toolbar-controller";
@@ -18,8 +19,10 @@ export function MessageSelectionToolbar({
   selectedMessages,
   onClearSelection,
 }: MessageSelectionToolbarProps) {
+  const capabilities = useConversationCapabilities();
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const toolbar = useMessageSelectionToolbarController({
+    canForwardMessages: capabilities.canForwardMessages,
     onClearSelection,
     selectedMessages,
   });
@@ -41,7 +44,9 @@ export function MessageSelectionToolbar({
 
       <SelectionToolbarDialogs
         deleteDialogOpen={toolbar.deleteDialogOpen}
-        forwardDialogOpen={toolbar.forwardDialogOpen}
+        forwardDialogOpen={
+          capabilities.canForwardMessages && toolbar.forwardDialogOpen
+        }
         isDeleting={toolbar.isDeleting}
         isOnline={toolbar.isOnline}
         messageActions={toolbar.messageActions}

@@ -25,6 +25,7 @@ import { buildAppUrl } from "@/shared/lib/app-url";
 import { scrollWindowToTop } from "@/shared/lib/scroll-to-top";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { cn } from "@/shared/lib/utils";
+import { isSystemManagedGroupGovernance } from "@/shared/schemas/group-governance";
 
 interface GroupPlanHeroProps {
   detail: GroupPlanDetail;
@@ -38,6 +39,14 @@ export function GroupPlanHero({
   search,
 }: GroupPlanHeroProps) {
   const hero = getGroupPlanHeroViewModel(detail, search);
+  const governance = detail.governance;
+  const isSystemManaged = isSystemManagedGroupGovernance(governance);
+  const canCreateJoinLinks = isSystemManaged
+    ? governance.chat.capabilities.canCreateJoinLinks
+    : governance !== undefined;
+  const canLeaveGroup = isSystemManaged
+    ? detail.viewer.canLeaveGroup && governance.capabilities.canLeaveGroup
+    : governance !== undefined && detail.viewer.canLeaveGroup;
 
   return (
     <header className="flex flex-col gap-4">
@@ -51,26 +60,28 @@ export function GroupPlanHero({
       <HeroCover detail={detail} alt={`${hero.title} cover photo`}>
         <div className="absolute top-4 right-4 z-20 flex items-center gap-2 sm:top-6 sm:right-6">
           <ReportDialog
-            canRequestLeave={detail.viewer.canLeaveGroup}
+            canRequestLeave={canLeaveGroup}
             onLeave={() => leaveReportedGroup(detail.group.id)}
             targets={getAggregateReportTargets(detail)}
             trigger={<HeroReportButton />}
           />
-          <GroupLinkQrDialog
-            avatarSrc={hero.groupAvatar}
-            bottomText={hero.groupName}
-            trigger={
-              <Button
-                variant="inverseGhost"
-                size="icon"
-                className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
-                aria-label="Show group QR code"
-              >
-                <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
-              </Button>
-            }
-            url={hero.groupLink}
-          />
+          {canCreateJoinLinks ? (
+            <GroupLinkQrDialog
+              avatarSrc={hero.groupAvatar}
+              bottomText={hero.groupName}
+              trigger={
+                <Button
+                  variant="inverseGhost"
+                  size="icon"
+                  className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
+                  aria-label="Show group QR code"
+                >
+                  <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
+                </Button>
+              }
+              url={hero.groupLink}
+            />
+          ) : null}
         </div>
 
         <h1 className="mt-4 max-w-3xl text-balance font-extrabold text-3xl text-foreground leading-none tracking-tight md:text-4xl lg:text-5xl">
@@ -91,6 +102,7 @@ export function GroupPlanHero({
       </HeroCover>
 
       <GroupPlanCompactHero
+        canCreateJoinLinks={canCreateJoinLinks}
         detail={detail}
         metadata={hero.metadata}
         title={hero.title}
@@ -162,11 +174,13 @@ function GroupLinkQrDialog({
 }
 
 function GroupPlanCompactHero({
+  canCreateJoinLinks,
   detail,
   metadata,
   title,
   visible,
 }: {
+  canCreateJoinLinks: boolean;
   detail: GroupPlanDetail;
   metadata: string;
   title: string;
@@ -218,9 +232,11 @@ function GroupPlanCompactHero({
               </p>
             </div>
 
-            <div className="pointer-events-auto shrink-0">
-              <CompactHeroQrDialog compactHero={compactHero} />
-            </div>
+            {canCreateJoinLinks ? (
+              <div className="pointer-events-auto shrink-0">
+                <CompactHeroQrDialog compactHero={compactHero} />
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

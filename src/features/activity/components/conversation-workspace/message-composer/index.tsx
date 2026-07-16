@@ -12,6 +12,9 @@ import { getMessageInputViewState } from "./message-input-view-state";
 import { useMessageComposer } from "./use-message-composer";
 
 interface MessageComposerProps {
+  allowAttachments?: boolean;
+  allowGif?: boolean;
+  allowVoiceNotes?: boolean;
   chatId?: string | null;
   errorMessage?: string | null;
   onSend: (input: ActivitySendMessageInput) => Promise<void> | void;
@@ -22,6 +25,9 @@ interface MessageComposerProps {
 }
 
 export function MessageComposer({
+  allowAttachments = true,
+  allowGif = true,
+  allowVoiceNotes = true,
   chatId = null,
   errorMessage = null,
   onSend,
@@ -40,6 +46,9 @@ export function MessageComposer({
     errorMessage,
     onClearError,
     onSend,
+    allowAttachments,
+    allowGif,
+    allowVoiceNotes,
   });
 
   const viewState = getMessageInputViewState({
@@ -68,13 +77,19 @@ export function MessageComposer({
           />
 
           <MessageInputPill
+            allowAttachments={allowAttachments}
+            allowGif={allowGif}
             composer={composer}
             viewState={viewState}
             onCreateProposal={onCreateProposal}
           />
         </div>
 
-        <MessageInputAction composer={composer} viewState={viewState} />
+        <MessageInputAction
+          allowVoiceNotes={allowVoiceNotes}
+          composer={composer}
+          viewState={viewState}
+        />
       </div>
     </div>
   );

@@ -1,6 +1,9 @@
 import type { Group } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
-
+import {
+  hasMissingAutoGovernance,
+  isSystemManagedGroupGovernance,
+} from "@/shared/schemas/group-governance";
 import {
   EditGroupIdentityDialog,
   EditPlanDetailsDialog,
@@ -222,22 +225,39 @@ function GroupPanelAdminDialogs({
   group: Group;
   panel: GroupPanelContentState;
 }) {
-  if (panel.currentUserRole !== "ADMIN") {
+  const governance = group.governance;
+  const isSystemManaged = isSystemManagedGroupGovernance(governance);
+  const hasMissingGovernance = hasMissingAutoGovernance({
+    forgeMode: group.activity?.forgeMode,
+    governance,
+  });
+  const canEditIdentity = isSystemManaged
+    ? governance.capabilities.canEditGroupIdentity
+    : !hasMissingGovernance && panel.currentUserRole === "ADMIN";
+  const canEditPlan = isSystemManaged
+    ? governance.capabilities.canUpdatePlanDirectly
+    : !hasMissingGovernance && panel.currentUserRole === "ADMIN";
+
+  if (!canEditIdentity && !canEditPlan) {
     return null;
   }
 
   return (
     <>
-      <EditGroupIdentityDialog
-        group={group}
-        open={panel.isEditOpen}
-        onOpenChange={panel.setIsEditOpen}
-      />
-      <EditPlanDetailsDialog
-        group={group}
-        open={panel.isPlanEditOpen}
-        onOpenChange={panel.setIsPlanEditOpen}
-      />
+      {canEditIdentity ? (
+        <EditGroupIdentityDialog
+          group={group}
+          open={panel.isEditOpen}
+          onOpenChange={panel.setIsEditOpen}
+        />
+      ) : null}
+      {canEditPlan ? (
+        <EditPlanDetailsDialog
+          group={group}
+          open={panel.isPlanEditOpen}
+          onOpenChange={panel.setIsPlanEditOpen}
+        />
+      ) : null}
     </>
   );
 }

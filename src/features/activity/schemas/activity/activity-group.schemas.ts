@@ -13,6 +13,7 @@ import {
   planScheduleModeSchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
+import { groupGovernanceSchema } from "@/shared/schemas/group-governance";
 import { imageMediaSchema } from "@/shared/schemas/media";
 import { planProposalSchema } from "@/shared/schemas/plan";
 
@@ -53,6 +54,7 @@ const planSchema = z.object({
   updatedAt: z.string(),
   version: z.number(),
   groupId: z.string(),
+  governance: groupGovernanceSchema.nullish(),
   proposals: z.array(planProposalSchema).optional(),
 });
 
@@ -101,12 +103,14 @@ const groupSchema = z.object({
   chat: z
     .object({
       id: z.string(),
+      governance: groupGovernanceSchema.nullish(),
       pinnedMessages: z.array(unifiedMessageSchema).optional(),
       isMuted: z.boolean().optional(),
       mutualGroups: z.array(activityMutualGroupSchema).optional(),
     })
     .optional(),
   planHistory: z.array(planHistoryItemSchema).optional(),
+  governance: groupGovernanceSchema.nullish(),
 });
 
 export type Group = z.infer<typeof groupSchema>;

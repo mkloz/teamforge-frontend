@@ -25,6 +25,7 @@ export function mapApiGroupFromSelection(
     version: group.version,
     disbandedAt: group.disbandedAt,
     activityId: group.activityId,
+    governance: group.governance,
     activity: mapSelectionActivity(group.activity, baseGroup.activity),
     plan:
       group.plan === undefined
@@ -66,6 +67,7 @@ function mapSelectionPlan(
     locationLat: plan.locationLat,
     locationLng: plan.locationLng,
     cost: plan.cost,
+    governance: plan.governance,
   };
 }
 
@@ -76,6 +78,7 @@ function mapSelectionChat(chat: Group["chat"]): GroupApi["chat"] {
 
   return {
     id: chat.id,
+    governance: chat.governance,
     isMuted: chat.isMuted,
     pinnedMessages: chat.pinnedMessages?.map((message) =>
       toMessageApi(message),

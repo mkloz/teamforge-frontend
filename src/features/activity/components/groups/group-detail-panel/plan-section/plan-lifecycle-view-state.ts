@@ -22,14 +22,17 @@ export interface PlanLifecycleViewState {
   showCompleteAction: boolean;
   showConfirmAction: boolean;
   showCreateNextAction: boolean;
+  showEditAction: boolean;
 }
 
 interface GetPlanLifecycleViewStateParams {
+  canManagePlanDirectly?: boolean;
   currentUserRole: MemberRole;
   hasCancelPlan: boolean;
   hasCompletePlan: boolean;
   hasConfirmPlan: boolean;
   hasEditPlan: boolean;
+  hasCreateNextPlan: boolean;
   isOnline: boolean;
   isReadOnly: boolean;
   pendingAction: string | null;
@@ -227,11 +230,13 @@ function getStaticLifecycleActionState({
 }
 
 export function getPlanLifecycleViewState({
+  canManagePlanDirectly,
   currentUserRole,
   hasCancelPlan,
   hasCompletePlan,
   hasConfirmPlan,
   hasEditPlan,
+  hasCreateNextPlan,
   isOnline,
   isReadOnly,
   pendingAction,
@@ -246,7 +251,9 @@ export function getPlanLifecycleViewState({
   const offlineTitle = getOfflineActionTitle(isOnline);
 
   return {
-    canManagePlan: canCurrentUserManagePlan(currentUserRole, isReadOnly),
+    canManagePlan:
+      canManagePlanDirectly ??
+      canCurrentUserManagePlan(currentUserRole, isReadOnly),
     cancel: getLabeledLifecycleActionState({
       action: "cancel-plan",
       disabled: getUnavailableActionDisabled(
@@ -286,9 +293,10 @@ export function getPlanLifecycleViewState({
       title: offlineTitle,
     }),
     hasOfflineBlock,
-    showCancelAction: !statusFlags.isTerminal,
-    showCompleteAction: statusFlags.isActive,
-    showConfirmAction: statusFlags.isDraftLike,
-    showCreateNextAction: statusFlags.isTerminal,
+    showCancelAction: hasCancelPlan && !statusFlags.isTerminal,
+    showCompleteAction: hasCompletePlan && statusFlags.isActive,
+    showConfirmAction: hasConfirmPlan && statusFlags.isDraftLike,
+    showCreateNextAction: hasCreateNextPlan && statusFlags.isTerminal,
+    showEditAction: hasEditPlan,
   };
 }

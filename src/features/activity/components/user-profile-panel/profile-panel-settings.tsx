@@ -9,10 +9,12 @@ import { Button, type ButtonV2Props } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 interface ProfilePanelSettingsProps {
+  context: "direct-chat" | "group-member";
   content: ProfilePanelSettingsContent;
   mode: "desktop" | "mobile";
   reportTarget: { id: string; name: string };
   safety: ProfilePanelSettingsSafety;
+  showMuteAction: boolean;
 }
 
 interface ProfilePanelSettingsContent {
@@ -66,10 +68,12 @@ interface BlockActionState {
 }
 
 export function ProfilePanelSettings({
+  context,
   content,
   mode,
   reportTarget,
   safety,
+  showMuteAction,
 }: ProfilePanelSettingsProps) {
   const isMobile = mode === "mobile";
   const muteAction = getMuteActionState({
@@ -84,7 +88,7 @@ export function ProfilePanelSettings({
     isPending: safety.blockActionPending,
     onToggle: safety.onToggleBlock,
   });
-  const blockDialog = getBlockDialogState(content.isBlocked);
+  const blockDialog = getBlockDialogState(content.isBlocked, context);
 
   return (
     <section
@@ -92,16 +96,18 @@ export function ProfilePanelSettings({
     >
       <h4 className="font-bold text-slate-muted text-xs">Account & safety</h4>
       <div className="mt-3 flex flex-col gap-3">
-        <SettingsActionButton
-          variant={muteAction.variant}
-          disabled={muteAction.disabled}
-          title={muteAction.title}
-          ariaPressed={content.isMuted}
-          onClick={safety.onToggleMute}
-          label={muteAction.label}
-        >
-          {muteAction.icon}
-        </SettingsActionButton>
+        {showMuteAction ? (
+          <SettingsActionButton
+            variant={muteAction.variant}
+            disabled={muteAction.disabled}
+            title={muteAction.title}
+            ariaPressed={content.isMuted}
+            onClick={safety.onToggleMute}
+            label={muteAction.label}
+          >
+            {muteAction.icon}
+          </SettingsActionButton>
+        ) : null}
 
         <ReportDialog
           canRequestBlock={!content.isBlocked}
@@ -252,7 +258,10 @@ function getBlockActionLabel(isBlocked: boolean, isPending: boolean) {
   return isBlocked ? "Unblock user" : "Block user";
 }
 
-function getBlockDialogState(isBlocked: boolean) {
+function getBlockDialogState(
+  isBlocked: boolean,
+  context: ProfilePanelSettingsProps["context"],
+) {
   return isBlocked
     ? {
         cancelLabel: "Keep blocked",
@@ -270,7 +279,9 @@ function getBlockDialogState(isBlocked: boolean) {
         cancelLabel: "Not now",
         confirmLabel: "Block user",
         description:
-          "Blocking closes this direct chat, removes your connection, and adds them to your blocked list.",
+          context === "group-member"
+            ? "Blocking this person adds them to your blocked list and may close your access to this group so you can leave safely."
+            : "Blocking closes this direct chat, removes your connection, and adds them to your blocked list.",
         details: [
           "Blocking can also change which shared groups you can access.",
           "You can unblock them later in Safety settings, but this will not restore the connection, chat, or group access.",

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { chatTypeSchema } from "./enums";
+import { groupGovernanceSchema } from "./group-governance";
 import {
   messageApiCoreFields,
   messageAttachmentApiFields,
@@ -75,6 +76,7 @@ const chatData = {
   type: chatTypeSchema,
   createdAt: z.string().datetime(),
   groupId: z.string().nullable(),
+  governance: groupGovernanceSchema.nullish(),
   notesOwnerId: z.string().nullable().optional(),
 };
 

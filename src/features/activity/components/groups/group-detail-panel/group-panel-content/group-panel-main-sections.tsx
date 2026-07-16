@@ -5,7 +5,12 @@ import type {
   MemberRole,
   PlanHistoryItem,
 } from "@/features/activity/lib/activity-contract";
-
+import {
+  type GroupGovernance,
+  hasMissingAutoGovernance,
+  isSystemManagedGroupGovernance,
+  NO_GROUP_GOVERNANCE_CAPABILITIES,
+} from "@/shared/schemas/group-governance";
 import { ActionsSection } from "../actions-section";
 import { isGroupActionsLocked } from "../actions-section/group-action-rules";
 import { GroupIdentitySection } from "../group-identity-section";
@@ -82,6 +87,18 @@ export function GroupPanelMainSections({
   setSelectedMember,
 }: GroupPanelMainSectionsProps) {
   const isGroupLocked = isGroupActionsLocked(group.status);
+  const governance = group.governance;
+  const isSystemManaged = isSystemManagedGroupGovernance(governance);
+  const hasMissingGovernance = hasMissingAutoGovernance({
+    forgeMode: group.activity?.forgeMode,
+    governance,
+  });
+  const capabilities = isSystemManaged
+    ? governance.capabilities
+    : hasMissingGovernance
+      ? NO_GROUP_GOVERNANCE_CAPABILITIES
+      : null;
+  const hasGeneratedMembership = isSystemManaged || hasMissingGovernance;
 
   return (
     <div className="flex flex-col gap-7 px-5 pt-0 pb-7">
@@ -93,6 +110,16 @@ export function GroupPanelMainSections({
         coverImage={group.plan?.coverImage ?? null}
         createdAt={group.createdAt}
         currentUserRole={currentUserRole}
+        canCreateJoinLinks={
+          isSystemManaged
+            ? governance.chat.capabilities.canCreateJoinLinks
+            : hasMissingGovernance
+              ? false
+              : undefined
+        }
+        canEditGroup={capabilities?.canEditGroupIdentity}
+        canLeaveGroup={capabilities?.canLeaveGroup}
+        canSuggestPlanChange={capabilities?.canSuggestPlanChange}
         description={group.description}
         isReadOnly={isGroupLocked}
         memberCount={memberCount}
@@ -103,6 +130,7 @@ export function GroupPanelMainSections({
         onEditGroup={onEditGroup}
         plan={group.plan}
         status={group.status}
+        isSystemManaged={hasGeneratedMembership}
       />
 
       <CurrentPlanSection
@@ -118,6 +146,7 @@ export function GroupPanelMainSections({
         onConfirmPlan={confirmPlan}
         onCreateNextPlan={createNextGroupPlan}
         onEditPlan={onEditPlan}
+        governanceCapabilities={capabilities}
       />
 
       <GroupMembersSection
@@ -133,6 +162,8 @@ export function GroupPanelMainSections({
         removeMember={removeMember}
         removingMemberId={removingMemberId}
         setSelectedMember={setSelectedMember}
+        canInviteMembers={capabilities?.canInviteMembers}
+        canRemoveMembers={capabilities?.canRemoveMembers}
       />
 
       <GroupPlanHistorySection
@@ -142,6 +173,7 @@ export function GroupPanelMainSections({
         isOnline={isOnline}
         pendingPlanAction={pendingPlanAction}
         onUseAsTemplate={createPlanFromHistory}
+        canCreateNextPlan={capabilities?.canCreateNextPlan}
       />
 
       <GroupPanelMembershipControls
@@ -155,6 +187,8 @@ export function GroupPanelMainSections({
         disbandGroup={disbandGroup}
         group={group}
         leaveGroup={leaveGroup}
+        canDisbandGroup={capabilities?.canDisbandGroup}
+        canLeaveGroup={capabilities?.canLeaveGroup}
       />
     </div>
   );
@@ -173,6 +207,7 @@ function CurrentPlanSection({
   onConfirmPlan,
   onCreateNextPlan,
   onEditPlan,
+  governanceCapabilities,
 }: {
   currentPlan: Group["plan"];
   currentUserRole: MemberRole;
@@ -186,6 +221,7 @@ function CurrentPlanSection({
   onConfirmPlan: (planId: string) => Promise<void> | void;
   onCreateNextPlan: (plan: CurrentGroupPlan) => Promise<void> | void;
   onEditPlan: () => void;
+  governanceCapabilities: GroupGovernance["capabilities"] | null;
 }) {
   if (!currentPlan) {
     return null;
@@ -200,11 +236,42 @@ function CurrentPlanSection({
       isOnline={isOnline}
       currentUserRole={currentUserRole}
       pendingAction={pendingPlanAction}
-      onCancelPlan={() => onCancelPlan(currentPlan.id)}
-      onCompletePlan={() => onCompletePlan(currentPlan.id)}
-      onConfirmPlan={() => onConfirmPlan(currentPlan.id)}
-      onCreateNextPlan={() => onCreateNextPlan(currentPlan)}
-      onEditPlan={onEditPlan}
+      onCancelPlan={
+        governanceCapabilities?.canCancelPlanDirectly === false
+          ? undefined
+          : () => onCancelPlan(currentPlan.id)
+      }
+      onCompletePlan={
+        governanceCapabilities?.canCompletePlanDirectly === false
+          ? undefined
+          : () => onCompletePlan(currentPlan.id)
+      }
+      onConfirmPlan={
+        governanceCapabilities?.canConfirmPlanDirectly === false
+          ? undefined
+          : () => onConfirmPlan(currentPlan.id)
+      }
+      onCreateNextPlan={
+        governanceCapabilities?.canCreateNextPlan === false
+          ? undefined
+          : () => onCreateNextPlan(currentPlan)
+      }
+      onEditPlan={
+        governanceCapabilities?.canUpdatePlanDirectly === false
+          ? undefined
+          : onEditPlan
+      }
+      canManagePlanDirectly={
+        governanceCapabilities
+          ? [
+              governanceCapabilities.canCancelPlanDirectly,
+              governanceCapabilities.canCompletePlanDirectly,
+              governanceCapabilities.canConfirmPlanDirectly,
+              governanceCapabilities.canCreateNextPlan,
+              governanceCapabilities.canUpdatePlanDirectly,
+            ].some(Boolean)
+          : undefined
+      }
     />
   );
 }
@@ -222,6 +289,8 @@ function GroupMembersSection({
   removeMember,
   removingMemberId,
   setSelectedMember,
+  canInviteMembers,
+  canRemoveMembers,
 }: {
   currentUserId: string | null;
   currentUserRole: MemberRole;
@@ -235,6 +304,8 @@ function GroupMembersSection({
   removeMember: (memberId: string) => Promise<void> | void;
   removingMemberId: string | null;
   setSelectedMember: (member: GroupMember) => void;
+  canInviteMembers?: boolean;
+  canRemoveMembers?: boolean;
 }) {
   if (members.length === 0) {
     return null;
@@ -254,6 +325,8 @@ function GroupMembersSection({
       onRemoveMember={removeMember}
       onShowProfile={setSelectedMember}
       removingMemberId={removingMemberId}
+      canInviteMembers={canInviteMembers}
+      canRemoveMembers={canRemoveMembers}
     />
   );
 }
@@ -265,6 +338,7 @@ function GroupPlanHistorySection({
   isOnline,
   pendingPlanAction,
   onUseAsTemplate,
+  canCreateNextPlan,
 }: {
   focusedPlanId: string | null;
   group: Group;
@@ -272,15 +346,22 @@ function GroupPlanHistorySection({
   isOnline: boolean;
   pendingPlanAction: string | null;
   onUseAsTemplate: (plan: PlanHistoryItem) => Promise<void> | void;
+  canCreateNextPlan?: boolean;
 }) {
   return (
     <PlanHistorySection
       focusedPlanId={focusedPlanId}
       history={group.planHistory ?? []}
-      isTemplateActionDisabled={pendingPlanAction !== null || isGroupLocked}
+      isTemplateActionDisabled={
+        pendingPlanAction !== null ||
+        isGroupLocked ||
+        canCreateNextPlan === false
+      }
       isOnline={isOnline}
       isTemplateActionPending={pendingPlanAction === "create-next-plan"}
-      onUseAsTemplate={onUseAsTemplate}
+      onUseAsTemplate={
+        canCreateNextPlan === false ? undefined : onUseAsTemplate
+      }
     />
   );
 }
@@ -291,12 +372,16 @@ function GroupPanelMembershipControls({
   disbandGroup,
   group,
   leaveGroup,
+  canDisbandGroup,
+  canLeaveGroup,
 }: {
   actionState: GroupPanelMembershipActionState;
   currentUserRole: MemberRole;
   disbandGroup: () => Promise<void> | void;
   group: Group;
   leaveGroup: () => Promise<void> | void;
+  canDisbandGroup?: boolean;
+  canLeaveGroup?: boolean;
 }) {
   if (actionState.isGroupLocked) {
     return <ArchivedGroupFooter status={group.status} />;
@@ -311,6 +396,8 @@ function GroupPanelMembershipControls({
       isLeaving={actionState.isLeaving}
       onDisbandGroup={disbandGroup}
       onLeaveGroup={leaveGroup}
+      canDisband={canDisbandGroup}
+      canLeave={canLeaveGroup}
     />
   );
 }

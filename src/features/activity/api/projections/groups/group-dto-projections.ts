@@ -13,7 +13,7 @@ import {
 } from "../chat-user-preferences";
 import { mapGroupPinnedMessages } from "./group-chat-projections";
 
-type GroupChatSummary = Pick<ChatApi, "id" | "pinnedMessages"> &
+type GroupChatSummary = Pick<ChatApi, "governance" | "id" | "pinnedMessages"> &
   ChatPreferenceSummary;
 
 export function mapGroup(
@@ -22,6 +22,7 @@ export function mapGroup(
   proposals: PlanProposal[] = [],
   chatSummary?: GroupChatSummary | null,
 ): Group {
+  const governance = resolveGroupGovernance(group, chatSummary);
   const members = group.members.map((member) =>
     mapGroupMember(member, group.id),
   );
@@ -43,10 +44,17 @@ export function mapGroup(
     disbandedAt: group.disbandedAt,
     activityId: group.activityId,
     activity: mapGroupActivitySummary(group),
-    plan: group.plan ? mapGroupPlan(group, proposals) : null,
+    plan: group.plan ? mapGroupPlan(group, proposals, governance) : null,
     members,
-    chat: mapGroupChat(group, chatSummary, participants, currentUserId),
+    chat: mapGroupChat(
+      group,
+      chatSummary,
+      participants,
+      currentUserId,
+      governance,
+    ),
     planHistory: mapGroupPlanHistory(group),
+    governance,
   };
 }
 
@@ -65,6 +73,7 @@ function mapGroupActivitySummary(group: GroupApi): Group["activity"] {
 function mapGroupPlan(
   group: GroupApi,
   proposals: PlanProposal[],
+  governance: GroupApi["governance"],
 ): NonNullable<Group["plan"]> {
   const { plan } = group;
 
@@ -95,6 +104,7 @@ function mapGroupPlan(
     updatedAt: group.updatedAt,
     version: group.version,
     groupId: group.id,
+    governance: resolveGovernance(plan.governance, governance),
     proposals,
   };
 }
@@ -104,6 +114,7 @@ function mapGroupChat(
   chatSummary: GroupChatSummary | null | undefined,
   participants: ActivityParticipant[],
   currentUserId: string | null,
+  governance: GroupApi["governance"],
 ): Group["chat"] {
   const chat = getGroupChat(group, chatSummary);
 
@@ -113,6 +124,7 @@ function mapGroupChat(
 
   return {
     id: chat.id,
+    governance: resolveGovernance(chat.governance, governance),
     isMuted: getChatIsMutedForUser(chat, currentUserId),
     pinnedMessages: mapGroupPinnedMessages(
       {
@@ -122,6 +134,28 @@ function mapGroupChat(
       currentUserId,
     ),
   };
+}
+
+function resolveGroupGovernance(
+  group: GroupApi,
+  chatSummary: GroupChatSummary | null | undefined,
+) {
+  return resolveGovernance(
+    group.governance,
+    chatSummary?.governance,
+    group.chat?.governance,
+  );
+}
+
+function resolveGovernance(
+  primary: GroupApi["governance"],
+  ...fallbacks: GroupApi["governance"][]
+) {
+  if (primary !== undefined) {
+    return primary;
+  }
+
+  return fallbacks.find((governance) => governance !== undefined);
 }
 
 function getGroupChat(

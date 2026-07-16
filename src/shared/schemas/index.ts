@@ -6,6 +6,7 @@ export * from "./enums";
 export * from "./explore";
 export * from "./friendship-api";
 export * from "./group-api";
+export * from "./group-governance";
 export * from "./invite";
 export * from "./media";
 export * from "./notification";

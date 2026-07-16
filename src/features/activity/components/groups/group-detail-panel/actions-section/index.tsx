@@ -10,6 +10,8 @@ import { ConfirmGroupActionButton } from "./confirm-group-action-button";
 import { canDisbandGroup, isGroupActionsLocked } from "./group-action-rules";
 
 interface ActionsSectionProps {
+  canDisband?: boolean;
+  canLeave?: boolean;
   currentUserRole: MemberRole;
   groupStatus: GroupStatus;
   isDisbanding?: boolean;
@@ -114,6 +116,8 @@ function getMembershipActionTitle(
 }
 
 export function ActionsSection({
+  canDisband: canDisbandCapability,
+  canLeave = true,
   currentUserRole,
   groupStatus,
   isDisbanding = false,
@@ -123,7 +127,8 @@ export function ActionsSection({
   onLeaveGroup,
 }: ActionsSectionProps) {
   const actionsLocked = isGroupActionsLocked(groupStatus);
-  const canDisband = canDisbandGroup(currentUserRole, groupStatus);
+  const canDisband =
+    canDisbandCapability ?? canDisbandGroup(currentUserRole, groupStatus);
   const leaveAction = getGroupMembershipActionState({
     isDisbanding,
     isLeaving,
@@ -151,6 +156,7 @@ export function ActionsSection({
       <MembershipActionButtons
         actionsLocked={actionsLocked}
         canDisband={canDisband}
+        canLeave={canLeave}
         disbandAction={disbandAction}
         leaveAction={leaveAction}
         onDisbandGroup={onDisbandGroup}
@@ -168,6 +174,7 @@ export function ActionsSection({
 function MembershipActionButtons({
   actionsLocked,
   canDisband,
+  canLeave,
   disbandAction,
   leaveAction,
   onDisbandGroup,
@@ -175,6 +182,7 @@ function MembershipActionButtons({
 }: {
   actionsLocked: boolean;
   canDisband: boolean;
+  canLeave: boolean;
   disbandAction: GroupMembershipActionState;
   leaveAction: GroupMembershipActionState;
   onDisbandGroup: ActionsSectionProps["onDisbandGroup"];
@@ -182,7 +190,7 @@ function MembershipActionButtons({
 }) {
   return (
     <>
-      {!actionsLocked && (
+      {!actionsLocked && canLeave ? (
         <ConfirmGroupActionButton
           confirmActionLabel={leaveAction.confirmActionLabel}
           confirmDescription="You’ll leave this group and lose access to its chat and planning workspace."
@@ -194,7 +202,7 @@ function MembershipActionButtons({
           title={leaveAction.title}
           variant="destructive"
         />
-      )}
+      ) : null}
 
       {canDisband && (
         <ConfirmGroupActionButton

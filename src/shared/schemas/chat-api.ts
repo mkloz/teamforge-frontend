@@ -9,6 +9,7 @@ import {
   userProfileSummaryFields,
 } from "./entity-fragments";
 import { chatTypeSchema, groupStatusSchema, messageTypeSchema } from "./enums";
+import { groupGovernanceSchema } from "./group-governance";
 import {
   messageApiCoreFields,
   messageAttachmentApiFields,
@@ -28,6 +29,7 @@ export const chatApiSchema = z.object({
   type: chatTypeSchema,
   createdAt: z.string().datetime(),
   groupId: z.string().nullable(),
+  governance: groupGovernanceSchema.nullish(),
   isPinned: z.boolean().optional().default(false),
   isMuted: z.boolean().optional().default(false),
   group: z

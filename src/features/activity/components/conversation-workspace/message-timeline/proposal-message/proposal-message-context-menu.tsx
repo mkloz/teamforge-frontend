@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-
+import { useConversationCapabilities } from "@/features/activity/components/conversation-workspace/conversation-capability-context";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { MessageContextMenu } from "../message-item/message-actions-menu";
 import type { ProposalMessageActions } from "./proposal-message-types";
@@ -25,6 +25,8 @@ export function ProposalMessageContextMenu({
   onStartSelection,
   selectedReactionEmojis,
 }: ProposalMessageContextMenuProps) {
+  const capabilities = useConversationCapabilities();
+
   return (
     <MessageContextMenu
       message={message}
@@ -33,7 +35,11 @@ export function ProposalMessageContextMenu({
       onReply={messageActions.startReply}
       onRetry={messageActions.retryMessage}
       onStartEdit={messageActions.startEdit}
-      onForward={messageActions.forwardMessage}
+      onForward={
+        capabilities.canForwardMessages
+          ? messageActions.forwardMessage
+          : undefined
+      }
       onToggleReaction={messageActions.toggleReaction}
       reactionPickerDisabled
       selectedReactionEmojis={selectedReactionEmojis}

@@ -15,6 +15,7 @@ export function getGroupIdentityViewState({
   activity,
   avatar,
   coverImage,
+  canEditGroup,
   createdAt,
   currentUserRole,
   description,
@@ -27,6 +28,7 @@ export function getGroupIdentityViewState({
   | "activity"
   | "avatar"
   | "coverImage"
+  | "canEditGroup"
   | "createdAt"
   | "currentUserRole"
   | "description"
@@ -47,7 +49,8 @@ export function getGroupIdentityViewState({
   return {
     activityTitle: getDisplayActivityTitle(activity, statusLabel),
     avatarSrc: getDisplayAvatarSrc(avatar, coverImage),
-    canEditGroup: canEditGroupDetails(currentUserRole, isReadOnly),
+    canEditGroup:
+      canEditGroup ?? canEditGroupDetails(currentUserRole, isReadOnly),
     createdLabel: getCreatedLabel(createdAt),
     displayDescription,
     displayName,

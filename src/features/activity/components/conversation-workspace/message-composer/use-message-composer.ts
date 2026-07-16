@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { useChatTypingSignal } from "@/features/activity/hooks/use-chat-typing-signal";
 import { useVoiceRecording } from "@/features/activity/hooks/use-voice-recording";
 import type {
@@ -23,6 +25,9 @@ import { useMessageComposerDraft } from "./use-message-composer-draft";
 import { useMessageComposerSubmit } from "./use-message-composer-submit";
 
 interface UseMessageComposerOptions {
+  allowAttachments: boolean;
+  allowGif: boolean;
+  allowVoiceNotes: boolean;
   chatId: string | null;
   disabled: boolean;
   dropzoneRoot?: HTMLElement | null;
@@ -32,6 +37,9 @@ interface UseMessageComposerOptions {
 }
 
 export function useMessageComposer({
+  allowAttachments,
+  allowGif,
+  allowVoiceNotes,
   chatId,
   disabled,
   dropzoneRoot = null,
@@ -64,12 +72,26 @@ export function useMessageComposer({
     errorMessage,
     onClearError,
   });
+  const { appendAttachments, clearAttachments, pendingAttachments } =
+    attachments;
 
   const draft = useMessageComposerDraft({
     errorMessage,
-    onClearAttachments: attachments.clearAttachments,
+    onClearAttachments: clearAttachments,
     onClearError,
   });
+
+  useEffect(() => {
+    if (!allowAttachments && pendingAttachments.length > 0) {
+      clearAttachments();
+    }
+  }, [allowAttachments, clearAttachments, pendingAttachments.length]);
+
+  useEffect(() => {
+    if (!allowVoiceNotes && isRecording) {
+      cancelRecording();
+    }
+  }, [allowVoiceNotes, cancelRecording, isRecording]);
 
   const editingActive = draft.editingMessage !== null;
   const editingMessageId = getMessageReferenceId(draft.editingMessage);
@@ -81,7 +103,7 @@ export function useMessageComposer({
     onClearComposer: draft.clearComposer,
     onOfflineSubmit: () => guardComposerMessageOffline(guardOfflineAction),
     onSend,
-    pendingAttachments: attachments.pendingAttachments,
+    pendingAttachments: allowAttachments ? pendingAttachments : [],
     value: draft.value,
   });
   const {
@@ -103,7 +125,7 @@ export function useMessageComposer({
     isRecording,
     isSendingGif,
     isSendingVoiceNote,
-    pendingAttachmentCount: attachments.pendingAttachments.length,
+    pendingAttachmentCount: pendingAttachments.length,
     replyingToId,
     submitDisabled: submit.isDisabled,
     submitIsSubmitting: submit.isSubmitting,
@@ -111,10 +133,10 @@ export function useMessageComposer({
   });
 
   const attachmentActions = useComposerAttachmentActions({
-    appendAttachments: attachments.appendAttachments,
+    appendAttachments,
     dropzoneRoot,
     guardOfflineAction,
-    isDropzoneDisabled,
+    isDropzoneDisabled: isDropzoneDisabled || !allowAttachments,
     isEditing: editingActive,
   });
 
@@ -133,6 +155,10 @@ export function useMessageComposer({
   }
 
   async function sendGif(gif: ActivityOutgoingGifAttachment) {
+    if (!allowGif) {
+      return;
+    }
+
     await sendComposerGif({
       gif,
       guardOfflineAction,
@@ -151,7 +177,7 @@ export function useMessageComposer({
   });
 
   const handleStopRecording = useComposerVoiceNoteSender({
-    disabled,
+    disabled: disabled || !allowVoiceNotes,
     guardOfflineAction,
     isOnline,
     isSendingVoiceNote,
@@ -190,7 +216,7 @@ export function useMessageComposer({
     recordingTime,
     sendGif,
     setIsFocused: localState.setIsFocused,
-    startRecording,
+    startRecording: allowVoiceNotes ? startRecording : async () => {},
     submit,
     textareaRef,
   });

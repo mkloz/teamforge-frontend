@@ -17,6 +17,7 @@ import { useHydratedProfilePanelParticipant } from "./use-hydrated-profile-panel
 import { useProfilePanelViewState } from "./use-profile-panel-view-state";
 
 interface UserProfilePanelProps {
+  allowChatNavigation?: boolean;
   participant?: UserProfilePanelParticipant;
   chat?: UserProfilePanelChat;
   profileNavigation?: ProfileNavigation;
@@ -60,6 +61,7 @@ const DEFAULT_PROFILE_PANEL_SAFETY_CONTROLS: ProfilePanelSafetyControls = {
 };
 
 export function UserProfilePanel({
+  allowChatNavigation = true,
   participant: propParticipant,
   chat,
   profileNavigation,
@@ -96,6 +98,7 @@ export function UserProfilePanel({
   }
 
   const contentState = getProfilePanelContentState({
+    allowChatNavigation,
     chat,
     participant,
     profileNavigation,
@@ -222,16 +225,14 @@ function DirectChatSettingsSection({
   safety,
   scope,
 }: DirectChatSettingsSectionProps) {
-  if (scope !== "direct-chat") {
-    return null;
-  }
-
   return (
     <ProfilePanelSettings
+      context={scope}
       content={contentState}
       mode={mode}
       reportTarget={{ id: participant.id, name: participant.name }}
       safety={safety}
+      showMuteAction={scope === "direct-chat"}
     />
   );
 }

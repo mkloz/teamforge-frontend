@@ -23,6 +23,7 @@ import {
   planStatusSchema,
 } from "./enums";
 import { exploreInterestSchema } from "./explore";
+import { groupGovernanceSchema } from "./group-governance";
 import { imageMediaSchema } from "./media";
 
 const groupActivitySummarySchema = z.object({
@@ -50,6 +51,7 @@ const groupPlanSummarySchema = z.object({
   locationLat: z.number().nullable(),
   locationLng: z.number().nullable(),
   cost: costTypeSchema,
+  governance: groupGovernanceSchema.nullish(),
 });
 
 const groupMemberUserSummarySchema = z.object({
@@ -90,12 +92,14 @@ export const groupApiSchema = z
     chat: z
       .object({
         id: z.string(),
+        governance: groupGovernanceSchema.nullish(),
         isMuted: z.boolean().optional(),
         pinnedMessages: z.array(messageApiSchema).optional(),
       })
       .nullable()
       .optional(),
     members: z.array(groupMemberApiSchema),
+    governance: groupGovernanceSchema.nullish(),
   })
   .transform((group) => ({
     ...group,

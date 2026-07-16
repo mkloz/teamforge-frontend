@@ -31,12 +31,15 @@ interface MessageInputContextPanelProps {
 }
 
 interface MessageInputPillProps {
+  allowAttachments: boolean;
+  allowGif: boolean;
   composer: MessageComposer;
   onCreateProposal?: () => void;
   viewState: MessageInputViewState;
 }
 
 interface MessageInputActionProps {
+  allowVoiceNotes: boolean;
   composer: MessageComposer;
   viewState: MessageInputViewState;
 }
@@ -175,6 +178,8 @@ function SendErrorNotice({
 }
 
 export function MessageInputPill({
+  allowAttachments,
+  allowGif,
   composer,
   onCreateProposal,
   viewState,
@@ -182,6 +187,8 @@ export function MessageInputPill({
   const attachmentControls = getMessageInputAttachmentControls(
     composer,
     onCreateProposal,
+    allowAttachments,
+    allowGif,
   );
 
   return (
@@ -205,6 +212,7 @@ export function MessageInputPill({
           controlsDisabled={composer.areNetworkActionsDisabled}
           canAttach={attachmentControls.canAttach}
           canSendGif={attachmentControls.canSendGif}
+          allowGif={allowGif}
           onCreateProposal={attachmentControls.onCreateProposal}
         />
       )}
@@ -215,12 +223,14 @@ export function MessageInputPill({
 function getMessageInputAttachmentControls(
   composer: MessageComposer,
   onCreateProposal?: () => void,
+  allowAttachments = true,
+  allowGif = true,
 ) {
   const isComposingNewMessage = !composer.isEditing;
 
   return {
-    canAttach: isComposingNewMessage,
-    canSendGif: isComposingNewMessage && composer.isOnline,
+    canAttach: isComposingNewMessage && allowAttachments,
+    canSendGif: isComposingNewMessage && allowGif && composer.isOnline,
     onCreateProposal: isComposingNewMessage ? onCreateProposal : undefined,
     onSelectFiles: isComposingNewMessage
       ? composer.appendAttachments
@@ -232,9 +242,13 @@ function getMessageInputAttachmentControls(
 }
 
 export function MessageInputAction({
+  allowVoiceNotes,
   composer,
   viewState,
 }: MessageInputActionProps) {
+  if (!allowVoiceNotes && !composer.hasDraft) {
+    return null;
+  }
   function startRecordingIfEnabled() {
     if (!viewState.isActionTargetDisabled) {
       void composer.startRecording();

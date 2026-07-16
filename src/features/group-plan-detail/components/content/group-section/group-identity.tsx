@@ -1,6 +1,7 @@
 import { getCategoryCover } from "@/features/group-plan-detail/lib/category-cover";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Avatar } from "@/shared/components/common/avatar";
+import { isSystemManagedGroupGovernance } from "@/shared/schemas/group-governance";
 import {
   getGroupFallbackDescription,
   resolveGroupImage,
@@ -10,6 +11,7 @@ export function GroupIdentity({ detail }: { detail: GroupPlanDetail }) {
   const category = getCategoryCover(detail.plan?.category);
   const CategoryIcon = category.icon;
   const coverSrc = resolveGroupImage(detail);
+  const isSystemManaged = isSystemManagedGroupGovernance(detail.governance);
 
   return (
     <div className="flex gap-5">
@@ -37,6 +39,11 @@ export function GroupIdentity({ detail }: { detail: GroupPlanDetail }) {
             {getGroupFallbackDescription(detail)}
           </p>
         )}
+        {isSystemManaged ? (
+          <p className="mt-2 text-slate-muted text-xs leading-relaxed">
+            TeamForge formed this group. Everyone has the same member role.
+          </p>
+        ) : null}
       </div>
     </div>
   );

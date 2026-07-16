@@ -14,6 +14,7 @@ import {
 } from "./plan-lifecycle-view-state";
 
 interface PlanLifecycleActionsProps {
+  canManagePlanDirectly?: boolean;
   currentUserRole: MemberRole;
   isOnline: boolean;
   isReadOnly: boolean;
@@ -27,6 +28,7 @@ interface PlanLifecycleActionsProps {
 }
 
 export function PlanLifecycleActions({
+  canManagePlanDirectly,
   currentUserRole,
   isReadOnly,
   isOnline,
@@ -40,9 +42,11 @@ export function PlanLifecycleActions({
 }: PlanLifecycleActionsProps) {
   const viewState = getPlanLifecycleViewState({
     currentUserRole,
+    canManagePlanDirectly,
     hasCancelPlan: Boolean(onCancelPlan),
     hasCompletePlan: Boolean(onCompletePlan),
     hasConfirmPlan: Boolean(onConfirmPlan),
+    hasCreateNextPlan: Boolean(onCreateNextPlan),
     hasEditPlan: Boolean(onEditPlan),
     isOnline,
     isReadOnly,
@@ -274,6 +278,10 @@ function EditPlanAction({
   viewState: PlanLifecycleViewState;
 }) {
   const action = viewState.edit;
+
+  if (!viewState.showEditAction) {
+    return null;
+  }
 
   return (
     <Button

@@ -8555,6 +8555,120 @@ components:
             $ref: '#/components/schemas/MessageEntity'
       required:
         - id
+    GroupGovernanceCapabilitiesEntity:
+      type: object
+      properties:
+        canCancelPlanDirectly:
+          type: boolean
+        canCompletePlanDirectly:
+          type: boolean
+        canConfirmPlanDirectly:
+          type: boolean
+        canCreateNextPlan:
+          type: boolean
+        canDisbandGroup:
+          type: boolean
+        canEditGroupIdentity:
+          type: boolean
+        canInviteMembers:
+          type: boolean
+        canLeaveGroup:
+          type: boolean
+        canRemoveMembers:
+          type: boolean
+        canSuggestPlanChange:
+          type: boolean
+        canUpdatePlanDirectly:
+          type: boolean
+        canVoteOnPlanChange:
+          type: boolean
+      required:
+        - canCancelPlanDirectly
+        - canCompletePlanDirectly
+        - canConfirmPlanDirectly
+        - canCreateNextPlan
+        - canDisbandGroup
+        - canEditGroupIdentity
+        - canInviteMembers
+        - canLeaveGroup
+        - canRemoveMembers
+        - canSuggestPlanChange
+        - canUpdatePlanDirectly
+        - canVoteOnPlanChange
+    GroupGovernanceChatCapabilitiesEntity:
+      type: object
+      properties:
+        canAttachMedia:
+          type: boolean
+        canCreateJoinLinks:
+          type: boolean
+        canFetchLinkPreviews:
+          type: boolean
+        canForwardMessages:
+          type: boolean
+        canSendGifs:
+          type: boolean
+        canSendText:
+          type: boolean
+        canSendVoiceMessages:
+          type: boolean
+      required:
+        - canAttachMedia
+        - canCreateJoinLinks
+        - canFetchLinkPreviews
+        - canForwardMessages
+        - canSendGifs
+        - canSendText
+        - canSendVoiceMessages
+    GroupGovernanceChatEntity:
+      type: object
+      properties:
+        mode:
+          type: string
+          enum:
+            - TEXT_ONLY
+            - READ_ONLY
+        writable:
+          type: boolean
+        readOnlyReason:
+          type: string
+          enum:
+            - ACCESS_RESTRICTED
+            - BELOW_MINIMUM_MEMBERS
+            - GROUP_CLOSED
+            - MEMBERSHIP_ENDED
+            - OPERATOR_COVERAGE_UNAVAILABLE
+          nullable: true
+        capabilities:
+          $ref: '#/components/schemas/GroupGovernanceChatCapabilitiesEntity'
+      required:
+        - mode
+        - writable
+        - capabilities
+    GroupGovernanceEntity:
+      type: object
+      properties:
+        origin:
+          type: string
+          enum:
+            - AUTO_FORGE
+        mode:
+          type: string
+          enum:
+            - SYSTEM_MANAGED
+        capabilityPolicyVersion:
+          type: string
+          example: forge-context-capability-v1
+        capabilities:
+          $ref: '#/components/schemas/GroupGovernanceCapabilitiesEntity'
+        chat:
+          $ref: '#/components/schemas/GroupGovernanceChatEntity'
+      required:
+        - origin
+        - mode
+        - capabilityPolicyVersion
+        - capabilities
+        - chat
     GroupEntity:
       type: object
       properties:
@@ -8630,6 +8744,11 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/GroupChatSummaryEntity'
+        governance:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/GroupGovernanceEntity'
       required:
         - id
         - name
@@ -9108,6 +9227,7 @@ components:
             - FULL
             - DISBANDED
             - COMPLETED
+            - FIXED_MEMBERSHIP
             - PRIVATE
             - ALREADY_MEMBER
             - REQUEST_PENDING
@@ -9310,6 +9430,11 @@ components:
     GroupPlanDetailEntity:
       type: object
       properties:
+        governance:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/GroupGovernanceEntity'
         group:
           $ref: '#/components/schemas/GroupPlanDetailGroupEntity'
         activity:
@@ -10054,6 +10179,11 @@ components:
         version:
           type: number
           example: 1777560000000
+        governance:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/GroupGovernanceEntity'
         group:
           $ref: '#/components/schemas/PlanGroupEntity'
       required:

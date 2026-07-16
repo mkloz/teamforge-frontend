@@ -1,3 +1,4 @@
+import { ConversationCapabilityProvider } from "@/features/activity/components/conversation-workspace/conversation-capability-context";
 import {
   ConversationAlertBanners,
   ConversationComposer,
@@ -17,23 +18,25 @@ export function ConversationWorkspaceContent({
   workspace,
 }: ConversationWorkspaceContentProps) {
   return (
-    <div
-      data-chat-dropzone-root
-      className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40"
-    >
-      <ChatBackground />
+    <ConversationCapabilityProvider capabilities={workspace.capabilities}>
+      <div
+        data-chat-dropzone-root
+        className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40"
+      >
+        <ChatBackground />
 
-      <ConversationPlanProposalDialog {...workspace.dialogProps} />
+        <ConversationPlanProposalDialog {...workspace.dialogProps} />
 
-      <WorkspaceHeader {...workspace.headerProps} />
+        <WorkspaceHeader {...workspace.headerProps} />
 
-      <WorkspaceStatusBar {...workspace.statusBarProps} />
+        <WorkspaceStatusBar {...workspace.statusBarProps} />
 
-      <ConversationAlertBanners {...workspace.alertProps} />
+        <ConversationAlertBanners {...workspace.alertProps} />
 
-      <ConversationMessageArea {...workspace.messageAreaProps} />
+        <ConversationMessageArea {...workspace.messageAreaProps} />
 
-      <ConversationComposer {...workspace.composerProps} />
-    </div>
+        <ConversationComposer {...workspace.composerProps} />
+      </div>
+    </ConversationCapabilityProvider>
   );
 }

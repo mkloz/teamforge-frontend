@@ -11,6 +11,7 @@ import {
   planStatusSchema,
 } from "@/shared/schemas/enums";
 import { exploreInterestSchema } from "@/shared/schemas/explore";
+import { groupGovernanceSchema } from "@/shared/schemas/group-governance";
 import { imageMediaSchema } from "@/shared/schemas/media";
 import { planProposalSchema } from "@/shared/schemas/plan";
 
@@ -33,6 +34,7 @@ const groupPlanJoinDisabledReasonSchema = z
     "PRIVATE",
     "ALREADY_MEMBER",
     "REQUEST_PENDING",
+    "FIXED_MEMBERSHIP",
   ])
   .nullable();
 
@@ -51,6 +53,7 @@ const groupPlanFitSignalSchema = z.object({
 });
 
 export const groupPlanDetailSchema = z.object({
+  governance: groupGovernanceSchema.nullish(),
   group: z.object({
     id: z.string(),
     name: z.string(),

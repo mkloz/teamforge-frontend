@@ -221,7 +221,7 @@ export function PlanHistorySection({
         <p className="text-slate-muted text-xs leading-relaxed">
           Completed and cancelled plans from this group.
         </p>
-        {!isOnline ? (
+        {!isOnline && onUseAsTemplate ? (
           <p role="status" className="text-slate-muted text-xs">
             Reconnect before reusing a previous plan.
           </p>

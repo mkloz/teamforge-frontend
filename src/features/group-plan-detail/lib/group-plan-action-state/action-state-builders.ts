@@ -17,6 +17,7 @@ import type {
   GroupPlanActionViewState,
   GroupPlanViewerMode,
 } from "@/features/group-plan-detail/lib/group-plan-action-state/types";
+import { isSystemManagedGroupGovernance } from "@/shared/schemas/group-governance";
 
 function buildActionViewState({
   access,
@@ -45,12 +46,15 @@ function buildCurrentMemberState({
   detail,
   summary,
 }: ActionStateBuilderContext): GroupPlanActionViewState {
+  const canLeaveGroup = isSystemManagedGroupGovernance(detail.governance)
+    ? detail.viewer.canLeaveGroup &&
+      detail.governance.capabilities.canLeaveGroup
+    : detail.governance !== undefined && detail.viewer.canLeaveGroup;
+
   return buildActionViewState({
     access,
     primary: buildGroupChatAction(detail.group.id),
-    secondary: detail.viewer.canLeaveGroup
-      ? buildLeaveGroupAction(controls)
-      : null,
+    secondary: canLeaveGroup ? buildLeaveGroupAction(controls) : null,
     summary,
   });
 }

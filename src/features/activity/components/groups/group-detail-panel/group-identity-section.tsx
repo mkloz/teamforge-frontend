@@ -10,11 +10,16 @@ export function GroupIdentitySection({
   avatar,
   avatarMedia,
   coverImage = null,
+  canCreateJoinLinks = true,
+  canEditGroup: canEditGroupCapability,
+  canLeaveGroup = true,
+  canSuggestPlanChange = true,
   createdAt,
   currentUserRole,
   description,
   isReadOnly = false,
   isOnline = true,
+  isSystemManaged = false,
   memberCount,
   maxMembers,
   groupId,
@@ -35,6 +40,7 @@ export function GroupIdentitySection({
     activity,
     avatar,
     coverImage,
+    canEditGroup: canEditGroupCapability,
     createdAt,
     currentUserRole,
     description,
@@ -59,6 +65,12 @@ export function GroupIdentitySection({
         </p>
       )}
 
+      {isSystemManaged ? (
+        <p className="text-slate-muted text-xs leading-relaxed">
+          TeamForge formed this group. Everyone has the same member role.
+        </p>
+      ) : null}
+
       <GroupFactList
         activity={activity}
         createdLabel={createdLabel}
@@ -72,6 +84,9 @@ export function GroupIdentitySection({
         activityTitle={activityTitle}
         avatarSrc={avatarSrc}
         canEditGroup={canEditGroup}
+        canCreateJoinLinks={canCreateJoinLinks}
+        canLeaveGroup={canLeaveGroup}
+        canSuggestPlanChange={canSuggestPlanChange}
         displayName={displayName}
         groupId={groupId}
         groupLink={groupLink}

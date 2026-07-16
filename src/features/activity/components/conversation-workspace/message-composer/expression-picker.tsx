@@ -51,6 +51,7 @@ const GIF_SKELETON_CELLS = Array.from(
 );
 
 interface ExpressionPickerProps {
+  allowGif?: boolean;
   canSendGif?: boolean;
   disabled: boolean;
   onInsertEmoji: (emoji: string) => void;
@@ -60,6 +61,7 @@ interface ExpressionPickerProps {
 type ExpressionMode = "emoji" | "gif";
 
 export function ExpressionPicker({
+  allowGif = true,
   canSendGif = true,
   disabled,
   onInsertEmoji,
@@ -73,6 +75,7 @@ export function ExpressionPicker({
   const gifTabId = `${pickerId}-gif-tab`;
   const emojiPanelId = `${pickerId}-emoji-panel`;
   const gifPanelId = `${pickerId}-gif-panel`;
+  const activeMode = allowGif ? mode : "emoji";
 
   useEffect(() => {
     if (!open || mode !== "emoji") {
@@ -87,6 +90,12 @@ export function ExpressionPicker({
       cancelDelay(timeoutId);
     };
   }, [open, mode]);
+
+  useEffect(() => {
+    if (!allowGif && mode === "gif") {
+      setMode("emoji");
+    }
+  }, [allowGif, mode]);
 
   const handleOpenChange = (nextOpen: boolean) => {
     setRenderEmojiPanel(false);
@@ -115,6 +124,32 @@ export function ExpressionPicker({
       getBrowserElementById(nextTabId)?.focus();
     });
   };
+  const panelContent =
+    activeMode === "emoji" ? (
+      renderEmojiPanel ? (
+        <Suspense fallback={<EmojiPickerSkeleton />}>
+          <LazyChatEmojiPickerPanel
+            height={EMOJI_PANEL_VIEWPORT_HEIGHT}
+            onSelect={(emoji) => {
+              onInsertEmoji(emoji);
+              handleOpenChange(false);
+            }}
+          />
+        </Suspense>
+      ) : (
+        <EmojiPickerSkeleton />
+      )
+    ) : (
+      <Suspense fallback={<GifPickerSkeleton />}>
+        <LazyGifPickerPanel
+          canSendGif={canSendGif}
+          onSelect={(gif) => {
+            onSelectGif(gif);
+            handleOpenChange(false);
+          }}
+        />
+      </Suspense>
+    );
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
@@ -125,14 +160,16 @@ export function ExpressionPicker({
               variant="ghost"
               size="icon-sm"
               className="size-8 cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-accent"
-              aria-label="Add emoji or GIF"
+              aria-label={allowGif ? "Add emoji or GIF" : "Add emoji"}
               disabled={disabled}
             >
               <Smile className="size-4" strokeWidth={2} />
             </Button>
           </PopoverTrigger>
         </TooltipTrigger>
-        <TooltipContent>Add emoji or GIF</TooltipContent>
+        <TooltipContent>
+          {allowGif ? "Add emoji or GIF" : "Add emoji"}
+        </TooltipContent>
       </Tooltip>
       <PopoverContent
         align="start"
@@ -143,64 +180,46 @@ export function ExpressionPicker({
           "w-[min(calc(100vw-1.5rem),22rem)] overflow-hidden rounded-lg p-0 will-change-transform data-[state=closed]:pointer-events-none data-[state=closed]:invisible data-[state=closed]:opacity-0",
         )}
       >
-        <div className="border-border/55 border-b px-1.5 py-1.5">
-          <div
-            className="grid grid-cols-2 gap-1"
-            role="tablist"
-            aria-label="Message expression picker"
-          >
-            <ExpressionTab
-              active={mode === "emoji"}
-              controlsId={emojiPanelId}
-              icon={Smile}
-              id={emojiTabId}
-              label="Emoji"
-              onKeyDown={handleTabKeyDown}
-              onClick={() => handleModeChange("emoji")}
-            />
-            <ExpressionTab
-              active={mode === "gif"}
-              controlsId={gifPanelId}
-              icon={Clapperboard}
-              id={gifTabId}
-              label="GIF"
-              onKeyDown={handleTabKeyDown}
-              onClick={() => handleModeChange("gif")}
-            />
-          </div>
-        </div>
-
-        <div
-          id={mode === "emoji" ? emojiPanelId : gifPanelId}
-          role="tabpanel"
-          aria-labelledby={mode === "emoji" ? emojiTabId : gifTabId}
-        >
-          {mode === "emoji" ? (
-            renderEmojiPanel ? (
-              <Suspense fallback={<EmojiPickerSkeleton />}>
-                <LazyChatEmojiPickerPanel
-                  height={EMOJI_PANEL_VIEWPORT_HEIGHT}
-                  onSelect={(emoji) => {
-                    onInsertEmoji(emoji);
-                    handleOpenChange(false);
-                  }}
-                />
-              </Suspense>
-            ) : (
-              <EmojiPickerSkeleton />
-            )
-          ) : (
-            <Suspense fallback={<GifPickerSkeleton />}>
-              <LazyGifPickerPanel
-                canSendGif={canSendGif}
-                onSelect={(gif) => {
-                  onSelectGif(gif);
-                  handleOpenChange(false);
-                }}
+        {allowGif ? (
+          <div className="border-border/55 border-b px-1.5 py-1.5">
+            <div
+              className="grid grid-cols-2 gap-1"
+              role="tablist"
+              aria-label="Message expression picker"
+            >
+              <ExpressionTab
+                active={mode === "emoji"}
+                controlsId={emojiPanelId}
+                icon={Smile}
+                id={emojiTabId}
+                label="Emoji"
+                onKeyDown={handleTabKeyDown}
+                onClick={() => handleModeChange("emoji")}
               />
-            </Suspense>
-          )}
-        </div>
+              <ExpressionTab
+                active={mode === "gif"}
+                controlsId={gifPanelId}
+                icon={Clapperboard}
+                id={gifTabId}
+                label="GIF"
+                onKeyDown={handleTabKeyDown}
+                onClick={() => handleModeChange("gif")}
+              />
+            </div>
+          </div>
+        ) : null}
+
+        {allowGif ? (
+          <div
+            id={activeMode === "emoji" ? emojiPanelId : gifPanelId}
+            role="tabpanel"
+            aria-labelledby={activeMode === "emoji" ? emojiTabId : gifTabId}
+          >
+            {panelContent}
+          </div>
+        ) : (
+          <div id={emojiPanelId}>{panelContent}</div>
+        )}
       </PopoverContent>
     </Popover>
   );

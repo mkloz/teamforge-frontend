@@ -8,6 +8,10 @@ import type { IconTileTone } from "@/shared/components/ui/icon-tile";
 import type { ImageMedia } from "@/shared/schemas/media";
 
 export interface GroupIdentitySectionProps {
+  canCreateJoinLinks?: boolean;
+  canEditGroup?: boolean;
+  canLeaveGroup?: boolean;
+  canSuggestPlanChange?: boolean;
   activity?: Group["activity"];
   activityId: string;
   avatar?: string | null;
@@ -18,6 +22,7 @@ export interface GroupIdentitySectionProps {
   description: string | null;
   isReadOnly?: boolean;
   isOnline?: boolean;
+  isSystemManaged?: boolean;
   memberCount: number;
   maxMembers: number;
   groupId: string;

@@ -11,6 +11,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Notice } from "@/shared/components/ui/notice";
 import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import { CompletedReviewGate } from "./completed-banner";
+import { useConversationCapabilities } from "./conversation-capability-context";
 import { MessageComposer } from "./message-composer";
 import { MessageSelectionToolbar } from "./message-selection-toolbar";
 import { MessageTimeline } from "./message-timeline";
@@ -167,6 +168,8 @@ export function ConversationComposer({
   onCreateProposal,
   onSendMessage,
 }: ConversationComposerProps) {
+  const capabilities = useConversationCapabilities();
+
   if (isMessageSelectionMode) {
     return (
       <MessageSelectionToolbar
@@ -174,6 +177,10 @@ export function ConversationComposer({
         onClearSelection={onClearSelection}
       />
     );
+  }
+
+  if (!capabilities.writable || !capabilities.canSendText) {
+    return <ConversationCapabilityNotice />;
   }
 
   const input = (
@@ -185,14 +192,67 @@ export function ConversationComposer({
       onClearError={onClearSendError}
       onCreateProposal={onCreateProposal}
       placeholder={inputPlaceholder}
+      allowAttachments={capabilities.canAttachMedia}
+      allowGif={capabilities.canSendGifs}
+      allowVoiceNotes={capabilities.canSendVoiceMessages}
     />
   );
 
+  const content = (
+    <>
+      {capabilities.chatMode === "TEXT_ONLY" ? (
+        <ConversationCapabilityNotice />
+      ) : null}
+      {input}
+    </>
+  );
+
   if (isCompleted && group?.plan) {
-    return <CompletedReviewGate group={group}>{input}</CompletedReviewGate>;
+    return <CompletedReviewGate group={group}>{content}</CompletedReviewGate>;
   }
 
-  return input;
+  return content;
+}
+
+function ConversationCapabilityNotice() {
+  const capabilities = useConversationCapabilities();
+  const message = getConversationCapabilityMessage(capabilities);
+
+  return (
+    <Notice
+      role="status"
+      tone="neutral"
+      size="xs"
+      className="rounded-none border-x-0 border-b-0 bg-canvas/90 px-4 py-2"
+    >
+      {message}
+    </Notice>
+  );
+}
+
+function getConversationCapabilityMessage(
+  capabilities: ReturnType<typeof useConversationCapabilities>,
+) {
+  if (capabilities.chatMode === "TEXT_ONLY" && capabilities.writable) {
+    return "Text chat only. Media, GIFs, voice, and forwarding are off.";
+  }
+
+  const remainingActions = capabilities.canLeaveGroup
+    ? "report, block, or leave"
+    : "report or block";
+
+  switch (capabilities.readOnlyReason) {
+    case "BELOW_MINIMUM_MEMBERS":
+      return `This chat is read-only because fewer than three members remain. You can still ${remainingActions}.`;
+    case "GROUP_CLOSED":
+      return `This chat is read-only because the group has closed. You can still ${remainingActions}.`;
+    case "MEMBERSHIP_ENDED":
+      return `This chat is read-only because your membership has ended. You can still ${remainingActions}.`;
+    case "OPERATOR_COVERAGE_UNAVAILABLE":
+      return `Messages are paused right now. You can still ${remainingActions}.`;
+    default:
+      return `This chat is read-only right now. You can still ${remainingActions}.`;
+  }
 }
 
 function ConversationMessageErrorBanner({
