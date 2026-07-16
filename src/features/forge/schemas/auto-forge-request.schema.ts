@@ -25,6 +25,7 @@ export const autoForgeRequestPauseReasonSchema = z
     "CANDIDATE_SEAT",
     "AUTOMATIC_GROUP_CAPACITY",
     "AUTOMATIC_RETRY_FAILURE",
+    "PROPOSAL_ENDED",
   ])
   .nullable();
 

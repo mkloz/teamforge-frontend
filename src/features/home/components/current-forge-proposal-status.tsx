@@ -43,6 +43,12 @@ export function CurrentForgeProposalStatus({
 }
 
 function CurrentProposalSummary({ proposal }: { proposal: ForgeProposal }) {
+  const view = getProposalView(proposal);
+
+  if (!view) {
+    return null;
+  }
+
   return (
     <section
       className="grid gap-4"
@@ -52,13 +58,13 @@ function CurrentProposalSummary({ proposal }: { proposal: ForgeProposal }) {
         id="current-forge-proposal-heading"
         eyebrow="Group proposal"
         title={proposal.activity.title}
-        description={getProposalDescription(proposal)}
+        description={view.description}
       />
 
       <div className="flex flex-col gap-4 border-border/70 border-y py-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <StatusPill tone="teal" surface="soft" size="sm">
-            {proposal.state === "FORMING" ? "Group forming" : "Ready to review"}
+            {view.label}
           </StatusPill>
           <StatusPill tone="neutral" surface="soft" size="sm">
             {proposal.scope === "LOCAL" ? "Local" : "Online"}
@@ -69,8 +75,8 @@ function CurrentProposalSummary({ proposal }: { proposal: ForgeProposal }) {
         </div>
 
         <Button asChild className="w-fit">
-          <Link {...buildForgeProposalNavigation(proposal.id)}>
-            Review group
+          <Link {...view.navigation}>
+            {view.actionLabel}
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </Button>
@@ -107,10 +113,38 @@ function CurrentProposalError({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-function getProposalDescription(proposal: ForgeProposal) {
-  return proposal.state === "FORMING"
-    ? "Your group is being created. Open the proposal to see the current status."
-    : "Review the activity and everyone in the group before you decide.";
+function getProposalView(proposal: ForgeProposal) {
+  if (proposal.viewer.disposition !== "ACTIVE") {
+    return null;
+  }
+
+  if (proposal.state === "FORMING") {
+    return {
+      actionLabel: "View status",
+      description:
+        "Your response is saved. The group space is being prepared now.",
+      label: "Group forming",
+      navigation: buildForgeProposalNavigation(proposal.id),
+    };
+  }
+
+  if (proposal.viewer.decision === "ACCEPTED") {
+    return {
+      actionLabel: "View proposal",
+      description:
+        "Your response is saved. You can withdraw before the group forms.",
+      label: "Response saved",
+      navigation: buildForgeProposalNavigation(proposal.id),
+    };
+  }
+
+  return {
+    actionLabel: "Review proposal",
+    description:
+      "Review the activity and everyone in the proposal before you decide.",
+    label: "Ready to review",
+    navigation: buildForgeProposalNavigation(proposal.id),
+  };
 }
 
 function getScheduleLabel(proposal: ForgeProposal) {

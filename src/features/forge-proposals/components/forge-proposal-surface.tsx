@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import type { ForgeProposalActionSlot } from "@/features/forge-proposals/components/forge-proposal-review";
 import { ForgeProposalReview } from "@/features/forge-proposals/components/forge-proposal-review";
 import {
-  ForgeProposalCompleteState,
   ForgeProposalEmptyState,
   ForgeProposalErrorState,
   ForgeProposalExpiredState,
@@ -14,6 +13,7 @@ import type { ForgeProposal } from "@/features/forge-proposals/lib/forge-proposa
 export type ForgeProposalSurfaceState =
   | { status: "loading" }
   | { status: "error"; onRetry?: () => void }
+  | { status: "expired" }
   | { status: "unavailable" }
   | { status: "ready"; proposal: ForgeProposal | null };
 
@@ -36,6 +36,10 @@ export function ForgeProposalSurface({
 
   if (state.status === "error") {
     return <ForgeProposalErrorState onRetry={state.onRetry} />;
+  }
+
+  if (state.status === "expired") {
+    return <ForgeProposalExpiredState action={terminalAction} />;
   }
 
   if (state.status === "unavailable") {
@@ -64,10 +68,6 @@ function ResolvedForgeProposal({
   proposal: ForgeProposal;
   terminalAction?: ReactNode;
 }) {
-  if (proposal.state === "FORMED") {
-    return <ForgeProposalCompleteState action={terminalAction} />;
-  }
-
   if (isExpired(proposal)) {
     return <ForgeProposalExpiredState action={terminalAction} />;
   }

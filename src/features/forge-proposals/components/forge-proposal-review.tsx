@@ -14,9 +14,14 @@ import { StatusPill } from "@/shared/components/ui/status-pill";
 
 export interface ForgeProposalActionContext {
   deadlineAt: string;
+  policyVersion: ForgeProposal["policyVersion"];
   proposalId: string;
   proposalState: ForgeProposalState;
+  proposalVersion: number;
+  scheduleMode: ForgeProposal["scheduleMode"];
+  scope: ForgeProposal["scope"];
   viewerDecision: ForgeProposalSeatDecision;
+  viewerDecisionRevision: number;
   viewerDisposition: ForgeProposalSeatDisposition;
   viewerSeatId: string;
 }
@@ -115,9 +120,14 @@ export function ForgeProposalReview({
 function getActionContext(proposal: ForgeProposal): ForgeProposalActionContext {
   return {
     deadlineAt: proposal.deadlineAt,
+    policyVersion: proposal.policyVersion,
     proposalId: proposal.id,
     proposalState: proposal.state,
+    proposalVersion: proposal.version,
+    scheduleMode: proposal.scheduleMode,
+    scope: proposal.scope,
     viewerDecision: proposal.viewer.decision,
+    viewerDecisionRevision: proposal.viewer.decisionRevision,
     viewerDisposition: proposal.viewer.disposition,
     viewerSeatId: proposal.viewer.seatId,
   };

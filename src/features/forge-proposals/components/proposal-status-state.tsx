@@ -1,4 +1,11 @@
-import { CircleOff, Clock3, Inbox, RefreshCw, UsersRound } from "lucide-react";
+import {
+  CheckCircle2,
+  CircleOff,
+  Clock3,
+  Inbox,
+  RefreshCw,
+  UsersRound,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/shared/components/ui/button";
@@ -48,7 +55,7 @@ export function ForgeProposalEmptyState({ action }: { action?: ReactNode }) {
     <ProposalStatusState
       icon={Inbox}
       title="No group to review"
-      description="When a group is ready, you will see the activity and everyone in it here before you decide."
+      description="When a proposal is ready, you'll see the activity and everyone in the proposal here before you decide."
       action={action}
     />
   );
@@ -59,7 +66,7 @@ export function ForgeProposalExpiredState({ action }: { action?: ReactNode }) {
     <ProposalStatusState
       icon={Clock3}
       title="This proposal has ended"
-      description="The response window has closed. Your Forge status will show whether a saved search can continue or you can start another activity."
+      description="The response window has closed. This proposal is no longer available."
       action={action}
     />
   );
@@ -74,7 +81,7 @@ export function ForgeProposalUnavailableState({
     <ProposalStatusState
       icon={CircleOff}
       title="This proposal is no longer available"
-      description="It may have closed or your access may have changed. Your current Forge status will show what you can do next."
+      description="It may have closed or your access may have changed."
       action={action}
     />
   );
@@ -91,12 +98,33 @@ export function ForgeProposalCompleteState({ action }: { action?: ReactNode }) {
   );
 }
 
+export function ForgeProposalResponseSavedState({
+  action,
+  decision,
+}: {
+  action?: ReactNode;
+  decision: "DECLINED" | "WITHDRAWN";
+}) {
+  return (
+    <ProposalStatusState
+      icon={CheckCircle2}
+      title="Your response is saved"
+      description={
+        decision === "WITHDRAWN"
+          ? "You've withdrawn from this proposal. The other people in it won't see your response."
+          : "You won't join this proposal. The other people in it won't see your response."
+      }
+      action={action}
+    />
+  );
+}
+
 export function ForgeProposalErrorState({ onRetry }: { onRetry?: () => void }) {
   return (
     <ProposalStatusState
       icon={CircleOff}
-      title="We couldn't load this group"
-      description="Check your connection and try again. If the proposal has closed, your Forge status will update when you reconnect."
+      title="We couldn't load this proposal"
+      description="Check your connection and try again. If the proposal has closed, it will no longer be available when you reconnect."
       action={
         onRetry ? (
           <Button variant="primary" onClick={onRetry}>

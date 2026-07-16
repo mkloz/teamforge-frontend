@@ -37,6 +37,44 @@ export const forgeProposalSeatRoleSchema = z.enum(["REQUESTER", "CANDIDATE"]);
 
 export const forgeProposalScopeSchema = z.enum(["LOCAL", "ONLINE"]);
 
+export const forgeProposalDecisionPolicySchema = z.literal(
+  "forge-proposal-decision-v1",
+);
+
+export const forgeProposalDeclineReasonSchema = z.enum([
+  "ACTIVITY_NOT_FOR_ME",
+  "FIXED_TIME_DOES_NOT_WORK",
+  "AREA_DOES_NOT_WORK",
+  "NOT_THIS_GROUP",
+  "TAKING_A_BREAK",
+  "PREFER_NOT_TO_SAY",
+]);
+
+const formedResourcesSchema = z
+  .object({
+    groupId: z.string().min(1),
+    planId: z.string().min(1),
+    chatId: z.string().min(1),
+  })
+  .strict();
+
+export const forgeProposalDecisionCommandSchema = z
+  .object({
+    policyVersion: forgeProposalDecisionPolicySchema,
+    expectedProposalVersion: z.number().int().positive(),
+    expectedSeatDecisionRevision: z.number().int().nonnegative(),
+  })
+  .strict();
+
+export const forgeProposalDeclineCommandSchema = z
+  .object({
+    policyVersion: forgeProposalDecisionPolicySchema,
+    expectedProposalVersion: z.number().int().positive(),
+    expectedSeatDecisionRevision: z.number().int().nonnegative(),
+    reason: forgeProposalDeclineReasonSchema.optional(),
+  })
+  .strict();
+
 const proposalInterestSchema = z
   .object({
     id: z.string().min(1),
@@ -90,6 +128,7 @@ const proposalViewerSchema = z
     role: forgeProposalSeatRoleSchema,
     decision: forgeProposalSeatDecisionSchema,
     disposition: forgeProposalSeatDispositionSchema,
+    decisionRevision: z.number().int().nonnegative(),
   })
   .strict();
 
@@ -97,6 +136,8 @@ export const forgeProposalSchema = z
   .object({
     id: z.string().min(1),
     requestId: z.string().min(1),
+    policyVersion: forgeProposalDecisionPolicySchema,
+    version: z.number().int().positive(),
     state: forgeProposalStateSchema,
     deadlineAt: z.string().datetime(),
     targetGroupSize: z.number().int(),
@@ -110,6 +151,7 @@ export const forgeProposalSchema = z
     cost: costTypeSchema,
     costAmount: z.number().nonnegative().nullable(),
     costDetails: z.string().max(250).nullable(),
+    formedResources: formedResourcesSchema.nullable(),
     viewer: proposalViewerSchema,
     seats: z.array(proposalSeatSchema).length(4),
   })
@@ -123,6 +165,18 @@ export const forgeProposalSchema = z
 export const currentForgeProposalResponseSchema = z
   .object({
     proposal: forgeProposalSchema.nullable(),
+  })
+  .strict();
+
+export const forgeProposalDecisionReceiptSchema = z
+  .object({
+    proposalId: z.string().min(1),
+    proposalState: forgeProposalStateSchema,
+    proposalVersion: z.number().int().positive(),
+    viewerDecision: forgeProposalSeatDecisionSchema,
+    viewerDisposition: forgeProposalSeatDispositionSchema,
+    viewerDecisionRevision: z.number().int().nonnegative(),
+    formedResources: formedResourcesSchema.nullable(),
   })
   .strict();
 
@@ -219,6 +273,21 @@ export type ForgeProposalSeatDisposition = z.infer<
 >;
 export type ForgeProposalSeatRole = z.infer<typeof forgeProposalSeatRoleSchema>;
 export type ForgeProposalSeat = ForgeProposal["seats"][number];
+export type ForgeProposalDecisionPolicy = z.infer<
+  typeof forgeProposalDecisionPolicySchema
+>;
+export type ForgeProposalDeclineReason = z.infer<
+  typeof forgeProposalDeclineReasonSchema
+>;
+export type ForgeProposalDecisionCommand = z.infer<
+  typeof forgeProposalDecisionCommandSchema
+>;
+export type ForgeProposalDeclineCommand = z.infer<
+  typeof forgeProposalDeclineCommandSchema
+>;
+export type ForgeProposalDecisionReceipt = z.infer<
+  typeof forgeProposalDecisionReceiptSchema
+>;
 export type CurrentForgeProposalResponse = z.infer<
   typeof currentForgeProposalResponseSchema
 >;

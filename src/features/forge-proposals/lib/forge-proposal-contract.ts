@@ -1,6 +1,11 @@
 export type {
   CurrentForgeProposalResponse,
   ForgeProposal,
+  ForgeProposalDecisionCommand,
+  ForgeProposalDecisionPolicy,
+  ForgeProposalDecisionReceipt,
+  ForgeProposalDeclineCommand,
+  ForgeProposalDeclineReason,
   ForgeProposalSeat,
   ForgeProposalSeatDecision,
   ForgeProposalSeatDisposition,
@@ -10,6 +15,11 @@ export type {
 
 export {
   currentForgeProposalResponseSchema,
+  forgeProposalDecisionCommandSchema,
+  forgeProposalDecisionPolicySchema,
+  forgeProposalDecisionReceiptSchema,
+  forgeProposalDeclineCommandSchema,
+  forgeProposalDeclineReasonSchema,
   forgeProposalSchema,
   forgeProposalScopeSchema,
   forgeProposalSeatDecisionSchema,

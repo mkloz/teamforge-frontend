@@ -19,6 +19,7 @@ const realtimeEventSchema = z.enum([
   "plan.unsubscribe",
   "plan.updated",
   "group.updated",
+  "forge.proposal.updated",
   "notification.new",
   "chat.read",
 ]);
@@ -50,6 +51,12 @@ const realtimeEventMetaSchema = z.object({
 });
 
 export const realtimeAccessChangedPayloadSchema = realtimeEventMetaSchema;
+
+export const realtimeForgeProposalUpdatedPayloadSchema =
+  realtimeEventMetaSchema.extend({
+    proposalId: z.string().min(1),
+    version: z.number().int().positive(),
+  });
 
 export const realtimeMessagePayloadSchema = realtimeEventMetaSchema.extend({
   chatId: z.string(),

@@ -300,6 +300,25 @@ function RequestActions({
     );
   }
 
+  if (
+    request.lifecycle === "PAUSED" &&
+    request.pauseReason === "PROPOSAL_ENDED"
+  ) {
+    return (
+      <div className="flex flex-wrap gap-3">
+        <Button
+          disabled={actionDisabled}
+          loading={state.activeAction === "resume"}
+          onClick={state.onResume}
+        >
+          <Search className="size-4" aria-hidden="true" />
+          Keep looking
+        </Button>
+        <CancelRequestAction disabled={actionDisabled} state={state} />
+      </div>
+    );
+  }
+
   if (request.lifecycle === "PAUSED") {
     return <CancelRequestAction disabled={actionDisabled} state={state} />;
   }
@@ -458,7 +477,7 @@ function getRequestView(request: AutoForgeRequest) {
     return {
       label: "Ready to review",
       description:
-        "Your group is ready to review. Check the activity and everyone in it before deciding.",
+        "Your proposal is ready to review. Check the activity and everyone in the proposal before deciding.",
     };
   }
   return {
@@ -479,6 +498,9 @@ function getPauseDescription(reason: AutoForgeRequest["pauseReason"]) {
   }
   if (reason === "AUTOMATIC_RETRY_FAILURE") {
     return "We hit repeated errors while checking this request, so we paused it. Try again when you are ready.";
+  }
+  if (reason === "PROPOSAL_ENDED") {
+    return "That proposal did not form a group, so this request is paused. Keep looking when you are ready.";
   }
   return "You paused this search. Resume it when you are ready.";
 }

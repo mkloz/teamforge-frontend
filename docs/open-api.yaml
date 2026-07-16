@@ -1585,6 +1585,129 @@ paths:
       security: *a21
       summary: Get an authorized group proposal
       tags: *a22
+  /api/v1/forge-proposals/{id}/accept:
+    post:
+      operationId: ForgeProposalsController_accept
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this proposal decision retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgeProposalDecisionCommandDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgeProposalDecisionReceiptEntity'
+        '400':
+          description: Invalid decision or idempotency key
+        '404':
+          description: Group proposal not found
+        '409':
+          description: Policy, revision, or state conflict
+        '410':
+          description: Group proposal deadline passed
+        '429':
+          description: Too many requests
+      security: *a21
+      summary: Accept a group proposal
+      tags: *a22
+  /api/v1/forge-proposals/{id}/decline:
+    post:
+      operationId: ForgeProposalsController_decline
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this proposal decision retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeclineForgeProposalDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgeProposalDecisionReceiptEntity'
+        '400':
+          description: Invalid decision or idempotency key
+        '404':
+          description: Group proposal not found
+        '409':
+          description: Policy, revision, or state conflict
+        '410':
+          description: Group proposal deadline passed
+        '429':
+          description: Too many requests
+      security: *a21
+      summary: Decline a group proposal
+      tags: *a22
+  /api/v1/forge-proposals/{id}/withdraw:
+    post:
+      operationId: ForgeProposalsController_withdraw
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this proposal decision retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgeProposalDecisionCommandDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgeProposalDecisionReceiptEntity'
+        '400':
+          description: Invalid decision or idempotency key
+        '404':
+          description: Group proposal not found
+        '409':
+          description: Policy, revision, or state conflict
+        '410':
+          description: Group proposal deadline passed
+        '429':
+          description: Too many requests
+      security: *a21
+      summary: Withdraw acceptance of a group proposal
+      tags: *a22
   /api/v1/forge/availability:
     get:
       operationId: ForgeCandidateAvailabilityController_get
@@ -7024,6 +7147,7 @@ components:
             - CANDIDATE_SEAT
             - AUTOMATIC_GROUP_CAPACITY
             - AUTOMATIC_RETRY_FAILURE
+            - PROPOSAL_ENDED
           nullable: true
         revision:
           type: number
@@ -7238,12 +7362,16 @@ components:
             - EXPIRED
             - SAFETY_CANCELLED
             - FORMED
+        decisionRevision:
+          type: integer
+          minimum: 0
       required:
         - seatId
         - userId
         - role
         - decision
         - disposition
+        - decisionRevision
     ForgeProposalOceanEntity:
       type: object
       properties:
@@ -7345,6 +7473,19 @@ components:
         - role
         - profile
         - compatibilityWithViewer
+    ForgeProposalFormedResourcesEntity:
+      type: object
+      properties:
+        groupId:
+          type: string
+        planId:
+          type: string
+        chatId:
+          type: string
+      required:
+        - groupId
+        - planId
+        - chatId
     ForgeProposalEntity:
       type: object
       properties:
@@ -7361,6 +7502,12 @@ components:
             - FAILED_QUORUM
             - CANCELLED
             - EXPIRED
+        version:
+          type: integer
+          minimum: 1
+        policyVersion:
+          type: string
+          example: forge-proposal-decision-v1
         deadlineAt:
           format: date-time
           type: string
@@ -7412,10 +7559,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ForgeProposalSeatEntity'
+        formedResources:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ForgeProposalFormedResourcesEntity'
       required:
         - id
         - requestId
         - state
+        - version
+        - policyVersion
         - deadlineAt
         - targetGroupSize
         - minimumGroupSize
@@ -7430,6 +7584,7 @@ components:
         - costDetails
         - viewer
         - seats
+        - formedResources
     CurrentForgeProposalEntity:
       type: object
       properties:
@@ -7440,6 +7595,106 @@ components:
             - $ref: '#/components/schemas/ForgeProposalEntity'
       required:
         - proposal
+    ForgeProposalDecisionCommandDto:
+      type: object
+      properties:
+        expectedProposalVersion:
+          type: integer
+          example: 1
+          minimum: 1
+        expectedSeatDecisionRevision:
+          type: integer
+          example: 0
+          minimum: 0
+        policyVersion:
+          type: string
+          enum: &a56
+            - forge-proposal-decision-v1
+          example: forge-proposal-decision-v1
+      required:
+        - expectedProposalVersion
+        - expectedSeatDecisionRevision
+        - policyVersion
+    ForgeProposalDecisionReceiptEntity:
+      type: object
+      properties:
+        proposalId:
+          type: string
+        proposalState:
+          type: string
+          enum:
+            - OPEN
+            - FORMING
+            - FORMED
+            - FAILED_QUORUM
+            - CANCELLED
+            - EXPIRED
+        proposalVersion:
+          type: integer
+          minimum: 1
+        viewerDecision:
+          type: string
+          enum:
+            - PENDING
+            - ACCEPTED
+            - DECLINED
+            - WITHDRAWN
+        viewerDisposition:
+          type: string
+          enum:
+            - ACTIVE
+            - RELEASED
+            - INELIGIBLE
+            - EXPIRED
+            - SAFETY_CANCELLED
+            - FORMED
+        viewerDecisionRevision:
+          type: integer
+          minimum: 0
+        formedResources:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ForgeProposalFormedResourcesEntity'
+      required:
+        - proposalId
+        - proposalState
+        - proposalVersion
+        - viewerDecision
+        - viewerDisposition
+        - viewerDecisionRevision
+        - formedResources
+    DeclineForgeProposalDto:
+      type: object
+      properties:
+        expectedProposalVersion:
+          type: integer
+          example: 1
+          minimum: 1
+        expectedSeatDecisionRevision:
+          type: integer
+          example: 0
+          minimum: 0
+        policyVersion:
+          type: string
+          enum: *a56
+          example: forge-proposal-decision-v1
+        reason:
+          type: string
+          description:
+            Private reason used only to improve this request and future
+            proposal pacing
+          enum:
+            - ACTIVITY_NOT_FOR_ME
+            - FIXED_TIME_DOES_NOT_WORK
+            - AREA_DOES_NOT_WORK
+            - NOT_THIS_GROUP
+            - TAKING_A_BREAK
+            - PREFER_NOT_TO_SAY
+      required:
+        - expectedProposalVersion
+        - expectedSeatDecisionRevision
+        - policyVersion
     ForgeCandidateAvailabilityEntity:
       type: object
       properties:
@@ -7879,7 +8134,7 @@ components:
           nullable: true
         onlineStatus:
           type: string
-          enum: &a61
+          enum: &a62
             - ONLINE
             - AWAY
             - OFFLINE
@@ -8131,7 +8386,7 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: &a56
+          enum: &a57
             - TECH
             - SPORTS
             - ARTS
@@ -8146,7 +8401,7 @@ components:
             - OTHER
         status:
           type: string
-          enum: &a57
+          enum: &a58
             - DRAFT
             - PROPOSED
             - CONFIRMED
@@ -8155,7 +8410,7 @@ components:
             - CANCELLED
         scheduleMode:
           type: string
-          enum: &a58
+          enum: &a59
             - TO_BE_DECIDED
             - FIXED
           nullable: true
@@ -8165,7 +8420,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: &a59
+          enum: &a60
             - IN_PERSON
             - ONLINE
             - TBD
@@ -8180,7 +8435,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: &a60
+          enum: &a61
             - FREE
             - PAID
       required:
@@ -8202,13 +8457,13 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: *a56
+          enum: *a57
         status:
           type: string
-          enum: *a57
+          enum: *a58
         scheduleMode:
           type: string
-          enum: *a58
+          enum: *a59
           nullable: true
         dateTime:
           format: date-time
@@ -8216,7 +8471,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: *a59
+          enum: *a60
         location:
           type: string
           example: Regents Park Courts
@@ -8228,7 +8483,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: *a60
+          enum: *a61
       required:
         - id
         - title
@@ -8256,7 +8511,7 @@ components:
             - $ref: '#/components/schemas/ImageMediaEntity'
         onlineStatus:
           type: string
-          enum: *a61
+          enum: *a62
       required:
         - id
         - name
@@ -10118,7 +10373,7 @@ components:
       properties:
         issue:
           type: string
-          enum: &a62
+          enum: &a63
             - certificate-error
             - network-error
             - no-subscriptions
@@ -10142,7 +10397,7 @@ components:
           example: true
         issue:
           type: string
-          enum: *a62
+          enum: *a63
           example: certificate-error
           nullable: true
         diagnostics:
@@ -11209,7 +11464,7 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: &a63
+          enum: &a64
             - OPEN
             - TRIAGING
             - NEEDS_INFORMATION
@@ -11220,7 +11475,7 @@ components:
             - CLOSED
         severity:
           type: string
-          enum: &a64
+          enum: &a65
             - P0
             - P1
             - P2
@@ -11233,7 +11488,7 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: &a65
+          enum: &a66
             - UNKNOWN
             - COMPLETE
             - PARTIAL
@@ -11241,7 +11496,7 @@ components:
             - CONFLICTING
         uncertainty:
           type: string
-          enum: &a66
+          enum: &a67
             - UNKNOWN
             - LOW
             - MEDIUM
@@ -11650,10 +11905,10 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: *a63
+          enum: *a64
         severity:
           type: string
-          enum: *a64
+          enum: *a65
           nullable: true
         policyLabels:
           type: array
@@ -11661,10 +11916,10 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: *a65
+          enum: *a66
         uncertainty:
           type: string
-          enum: *a66
+          enum: *a67
         mandatoryHumanReasons:
           type: array
           items:
@@ -11911,7 +12166,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: &a67
+          enum: &a68
             - FOLLOWED
             - CHANGED
             - NOT_USED
@@ -11922,7 +12177,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: &a68
+          example: &a69
             - SAFETY_ABUSE
           type: array
           items:
@@ -11993,7 +12248,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a67
+          enum: *a68
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -12001,7 +12256,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a68
+          example: *a69
           type: array
           items:
             type: array
@@ -12023,7 +12278,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a67
+          enum: *a68
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -12031,7 +12286,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a68
+          example: *a69
           type: array
           items:
             type: array
@@ -12061,7 +12316,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a67
+          enum: *a68
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -12069,7 +12324,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a68
+          example: *a69
           type: array
           items:
             type: array
@@ -12106,7 +12361,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a67
+          enum: *a68
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -12114,7 +12369,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a68
+          example: *a69
           type: array
           items:
             type: array
@@ -12126,7 +12381,7 @@ components:
           maxLength: 1000
         actionType:
           type: string
-          enum: &a69
+          enum: &a70
             - WARNING
             - OUTBOUND_RATE_LIMIT
             - NEW_STRANGER_CONTACT_RESTRICTION
@@ -12137,7 +12392,7 @@ components:
             - GROUP_RESTRICTION
         scope:
           type: string
-          enum: &a70
+          enum: &a71
             - ACCOUNT
             - NEW_STRANGER_CONTACT
             - ACCEPTED_CHAT
@@ -12147,7 +12402,7 @@ components:
           type: string
         targetType:
           type: string
-          enum: &a71
+          enum: &a72
             - PROFILE
             - MESSAGE
             - ATTACHMENT
@@ -12173,7 +12428,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a67
+          enum: *a68
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -12181,7 +12436,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a68
+          example: *a69
           type: array
           items:
             type: array
@@ -12219,7 +12474,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a67
+          enum: *a68
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -12227,7 +12482,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a68
+          example: *a69
           type: array
           items:
             type: array
@@ -12245,15 +12500,15 @@ components:
             - OVERTURNED
         replacementActionType:
           type: string
-          enum: *a69
+          enum: *a70
         replacementScope:
           type: string
-          enum: *a70
+          enum: *a71
         replacementEvidenceId:
           type: string
         replacementTargetType:
           type: string
-          enum: *a71
+          enum: *a72
         replacementTargetId:
           type: string
         replacementExpiresAt:
@@ -12271,7 +12526,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a67
+          enum: *a68
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -12279,7 +12534,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a68
+          example: *a69
           type: array
           items:
             type: array
@@ -12307,7 +12562,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a67
+          enum: *a68
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -12315,7 +12570,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a68
+          example: *a69
           type: array
           items:
             type: array
@@ -12397,14 +12652,14 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: &a72
+          enum: &a73
             - system
             - light
             - dark
           example: system
         themeStyle:
           type: string
-          enum: &a73
+          enum: &a74
             - classic
             - glass
             - ink
@@ -12412,7 +12667,7 @@ components:
           example: classic
         themeColor:
           type: string
-          enum: &a74
+          enum: &a75
             - graphite
             - forge
             - harbor
@@ -12504,15 +12759,15 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: *a72
+          enum: *a73
           example: system
         themeStyle:
           type: string
-          enum: *a73
+          enum: *a74
           example: classic
         themeColor:
           type: string
-          enum: *a74
+          enum: *a75
           example: graphite
         showAgeOnProfile:
           type: boolean
