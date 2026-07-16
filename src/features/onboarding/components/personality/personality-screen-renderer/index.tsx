@@ -1,4 +1,4 @@
-import { domMax, LazyMotion } from "framer-motion";
+import { domMax, LazyMotion, MotionConfig } from "framer-motion";
 import { lazy, type ReactNode, Suspense } from "react";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
@@ -112,9 +112,11 @@ export function PersonalityScreenRenderer({
   });
 
   return (
-    <LazyMotion features={domMax}>
-      <Suspense fallback={null}>{renderedScreen}</Suspense>
-    </LazyMotion>
+    <MotionConfig reducedMotion="user">
+      <LazyMotion features={domMax}>
+        <Suspense fallback={null}>{renderedScreen}</Suspense>
+      </LazyMotion>
+    </MotionConfig>
   );
 }
 
@@ -148,10 +150,19 @@ function isPersonalityScreenId(
 }
 
 function renderIntroScreen({
+  assessment,
   backLabel,
   navigation,
 }: PersonalityScreenRenderContext) {
-  return <PersonalityIntro {...navigation.intro} backLabel={backLabel} />;
+  return (
+    <PersonalityIntro
+      {...navigation.intro}
+      backLabel={backLabel}
+      disclosure={assessment.disclosure}
+      onRetryState={assessment.onRetryState}
+      stateStatus={assessment.stateStatus}
+    />
+  );
 }
 
 function renderTheoryScreen({ navigation }: PersonalityScreenRenderContext) {

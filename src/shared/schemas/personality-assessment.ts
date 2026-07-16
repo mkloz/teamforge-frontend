@@ -22,29 +22,29 @@ export const personalityAssessmentAnswerSchema = z.object({
 });
 
 export const ownerPersonalityAssessmentSchema = z.object({
-  assessmentId: z.string(),
+  assessmentId: z.string().min(1),
   lifecycle: z.enum(["DRAFT_RESULT", "CURRENT", "SUPERSEDED", "DELETED"]),
   provenance: z.enum(["ASSESSMENT_DERIVED", "LEGACY_CLIENT_RESULT"]),
   source: z.enum(["ONBOARDING", "RETAKE", "MIGRATION"]),
   quality: z.enum(["COMPLETE", "LEGACY_UNVERIFIED"]),
   compatibilityEligible: z.boolean(),
-  instrumentVersion: z.string(),
-  formVersion: z.string(),
-  scoringVersion: z.string(),
-  displayVersion: z.string(),
+  instrumentVersion: z.string().min(1),
+  formVersion: z.string().min(1),
+  scoringVersion: z.string().min(1),
+  displayVersion: z.string().min(1),
   personalityType: personalityTypeSchema,
   ocean: personalityTraitScoresSchema,
-  completedAt: z.string().nullable(),
+  completedAt: z.string().datetime().nullable(),
 });
 
 export const personalityDisclosureSchema = z.object({
-  policyVersion: z.string(),
+  policyVersion: z.string().min(1),
   publicFields: z.array(z.string()),
-  purposeVersion: z.string(),
+  purposeVersion: z.string().min(1),
   authorizedAudiences: z.array(z.string()),
-  assessmentDisplayVersion: z.string(),
-  compatibilitySchemaVersion: z.string(),
-  methodologyVersion: z.string(),
+  assessmentDisplayVersion: z.string().min(1),
+  compatibilitySchemaVersion: z.string().min(1),
+  methodologyVersion: z.string().min(1),
 });
 
 export const personalityAssessmentStateSchema = z.object({
@@ -60,9 +60,9 @@ export const personalityAssessmentStateSchema = z.object({
 });
 
 export const createPersonalityAssessmentAttemptResponseSchema = z.object({
-  attemptId: z.string(),
+  attemptId: z.string().min(1),
   formVersion: personalityAssessmentFormVersionSchema,
-  expiresAt: z.string(),
+  expiresAt: z.string().datetime(),
 });
 
 export const submitPersonalityAssessmentResponseSchema = z.object({

@@ -18,7 +18,9 @@ interface OnboardingIntroActionsProps {
   backLabel: string;
   onBack: () => void;
   onStart: () => void;
+  startDisabled?: boolean;
   startLabel: ReactNode;
+  startLoading?: boolean;
 }
 
 export function OnboardingIntroBenefitList({
@@ -47,7 +49,9 @@ export function OnboardingIntroActions({
   backLabel,
   onBack,
   onStart,
+  startDisabled = false,
   startLabel,
+  startLoading = false,
 }: OnboardingIntroActionsProps) {
   return (
     <div className="mt-auto flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-6">
@@ -63,6 +67,8 @@ export function OnboardingIntroActions({
       <Button
         size="md"
         onClick={onStart}
+        disabled={startDisabled}
+        loading={startLoading}
         className="flex w-full min-w-0 xs:flex-1 items-center justify-center gap-2"
       >
         <span className="truncate">{startLabel}</span>

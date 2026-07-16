@@ -30,7 +30,7 @@ export function PersonalityPageContent({
 
         <div
           ref={scrollContainerRef}
-          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth"
+          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth motion-reduce:scroll-auto"
         >
           <div className="absolute top-0 right-0 left-0 z-50">
             <TopProgressBar progress={displayProgress} />

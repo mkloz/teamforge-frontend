@@ -1,36 +1,34 @@
-import { Eye, Lock, RefreshCcw } from "lucide-react";
+import { Eye, LoaderCircle, Lock, RefreshCcw } from "lucide-react";
 import {
   OnboardingIntroActions,
   OnboardingIntroBenefitList,
 } from "@/features/onboarding/components/onboarding-intro-parts";
+import type { PersonalityAssessmentQueryStatus } from "@/features/onboarding/hooks/use-personality-test-page-flow";
+import { getPersonalityAudienceText } from "@/features/onboarding/lib/personality-disclosure-copy";
+import { Button } from "@/shared/components/ui/button";
+import type { PersonalityDisclosure } from "@/shared/schemas/personality-assessment";
 import { PersonalityScreenShell } from "./personality-screen-layout";
 
 interface PersonalityIntroProps {
   backLabel: string;
+  disclosure: PersonalityDisclosure | null;
   onBack: () => void;
+  onRetryState: () => void;
   onStart: () => void;
+  stateStatus: PersonalityAssessmentQueryStatus;
 }
-
-const BENEFITS = [
-  {
-    icon: Lock,
-    text: "Your answers are sent for scoring when you submit and are not saved.",
-  },
-  {
-    icon: Eye,
-    text: "After you see the result, you decide whether TeamForge can use it when forming groups. A published result can be shown to people in a group proposal with you and members of your current groups.",
-  },
-  {
-    icon: RefreshCcw,
-    text: "Answers stay only in this tab until submission. Reloading, signing out, or closing the tab loses them.",
-  },
-];
 
 export function PersonalityIntro({
   backLabel,
+  disclosure,
   onBack,
+  onRetryState,
   onStart,
+  stateStatus,
 }: PersonalityIntroProps) {
+  const benefits = getDisclosureBenefits(disclosure);
+  const stateReady = stateStatus === "ready";
+
   return (
     <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
       <p className="mb-3 text-center font-bold font-sans text-forge-teal text-xs">
@@ -55,17 +53,86 @@ export function PersonalityIntro({
       <div className="mb-6 h-px w-full bg-muted dark:bg-white/10" />
 
       <OnboardingIntroBenefitList
-        benefits={BENEFITS}
+        benefits={benefits}
         iconTileClassName="mt-0.5"
         textClassName="font-sans text-muted-foreground text-xs leading-relaxed"
       />
+
+      <AssessmentStateNotice onRetry={onRetryState} status={stateStatus} />
 
       <OnboardingIntroActions
         backLabel={backLabel}
         onBack={onBack}
         onStart={onStart}
+        startDisabled={!stateReady}
         startLabel="I understand, continue"
+        startLoading={stateStatus === "loading" || stateStatus === "refreshing"}
       />
     </PersonalityScreenShell>
+  );
+}
+
+function getDisclosureBenefits(disclosure: PersonalityDisclosure | null) {
+  const audience = disclosure
+    ? getPersonalityAudienceText(disclosure.authorizedAudiences)
+    : "people in a live group proposal with you and members of your current groups";
+
+  return [
+    {
+      icon: Lock,
+      text: "Your answers stay in this tab until you submit. They are sent for scoring and are not saved after scoring.",
+    },
+    {
+      icon: Eye,
+      text: `If you publish, ${audience} can see your four-letter type and five trait scores from 0 to 100. The result is not public on the open web.`,
+    },
+    {
+      icon: RefreshCcw,
+      text: "TeamForge uses a published result to calculate and explain compatibility for group formation. It is not a safety score or a promise that people will become friends.",
+    },
+    {
+      icon: RefreshCcw,
+      text: "Reloading, signing out, closing this tab, or replacing the session before submission loses your answers.",
+    },
+  ];
+}
+
+function AssessmentStateNotice({
+  onRetry,
+  status,
+}: {
+  onRetry: () => void;
+  status: PersonalityAssessmentQueryStatus;
+}) {
+  if (status === "ready") return null;
+
+  if (status === "error") {
+    return (
+      <div
+        className="grid gap-3 rounded-2xl border border-border bg-card p-4 text-left"
+        role="alert"
+      >
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          Your saved personality status could not be checked. Refresh it before
+          starting another assessment.
+        </p>
+        <Button variant="outline" size="sm" className="w-fit" onClick={onRetry}>
+          Try again
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <p
+      className="flex items-center justify-center gap-2 text-muted-foreground text-sm"
+      role="status"
+    >
+      <LoaderCircle
+        className="size-4 animate-spin motion-reduce:animate-none"
+        aria-hidden="true"
+      />
+      Checking your saved personality status
+    </p>
   );
 }

@@ -41,6 +41,12 @@ type AssessmentResultAction =
   | "delete-all"
   | "retake";
 
+export type PersonalityAssessmentQueryStatus =
+  | "error"
+  | "loading"
+  | "ready"
+  | "refreshing";
+
 interface SubmissionPair {
   attemptId: string;
   idempotencyKey: string;
@@ -83,17 +89,38 @@ export function usePersonalityTestPageFlow() {
   });
 
   const hasUnsentAnswers = Object.keys(testState.answers).length > 0;
+  const clearAssessmentRequestMemory = useCallback(() => {
+    submissionPairRef.current = null;
+    const snapshot = usePersonalityTestStore.getState();
+
+    if (Object.keys(snapshot.answers).length > 0) {
+      snapshot.reset();
+    }
+  }, []);
   const shouldBlockNavigation = useCallback(() => {
-    return !window.confirm(
+    const shouldLeave = window.confirm(
       "Your answers have not been submitted. Leave and lose them?",
     );
-  }, []);
+
+    if (shouldLeave) {
+      clearAssessmentRequestMemory();
+    }
+
+    return !shouldLeave;
+  }, [clearAssessmentRequestMemory]);
 
   useBlocker({
     disabled: !hasUnsentAnswers,
     enableBeforeUnload: hasUnsentAnswers,
     shouldBlockFn: shouldBlockNavigation,
   });
+
+  useEffect(
+    () => () => {
+      clearAssessmentRequestMemory();
+    },
+    [clearAssessmentRequestMemory],
+  );
 
   const submitCurrentAssessment = useCallback(async () => {
     if (submissionInFlightRef.current) {
@@ -280,25 +307,20 @@ export function usePersonalityTestPageFlow() {
   }
 
   async function retakeAssessment() {
-    setActiveResultAction("retake");
     setResultActionError(null);
 
-    try {
-      if (assessmentQuery.data?.draft) {
-        const nextState = await PersonalityAssessmentApi.discardDraft();
-        queryClient.setQueryData(PERSONALITY_ASSESSMENT_QUERY_KEY, nextState);
-      }
-
-      setSubmittedPreview(null);
-      setSubmittedDisclosure(null);
-      submissionPairRef.current = null;
-      testState.actions.reset();
-      testState.actions.setScreen({ id: "length" });
-    } catch (error) {
-      setResultActionError(getResultActionErrorMessage(error));
-    } finally {
-      setActiveResultAction(null);
+    if (assessmentQuery.data?.draft) {
+      setResultActionError(
+        "Discard this draft before starting another assessment.",
+      );
+      return;
     }
+
+    setSubmittedPreview(null);
+    setSubmittedDisclosure(null);
+    submissionPairRef.current = null;
+    testState.actions.reset();
+    testState.actions.setScreen({ id: "length" });
   }
 
   async function runResultAction(
@@ -425,6 +447,12 @@ export function usePersonalityTestPageFlow() {
     toPublicProfile(
       assessmentQuery.data?.draft ?? assessmentQuery.data?.current ?? null,
     );
+  const assessmentStateStatus = getAssessmentQueryStatus({
+    hasData: Boolean(assessmentQuery.data),
+    isError: assessmentQuery.isError,
+    isFetching: assessmentQuery.isFetching,
+    isPending: assessmentQuery.isPending,
+  });
 
   return {
     assessment: {
@@ -436,7 +464,7 @@ export function usePersonalityTestPageFlow() {
         submittedDisclosure ?? assessmentQuery.data?.disclosure ?? null,
       error: resultActionError,
       hasDraft: assessmentQuery.data?.draft != null,
-      isLoading: assessmentQuery.isLoading,
+      onRetryState: () => void assessmentQuery.refetch(),
       isPublished:
         assessmentQuery.data?.publication.decision === "GRANTED" &&
         assessmentQuery.data.publicProfile?.assessmentId ===
@@ -455,6 +483,7 @@ export function usePersonalityTestPageFlow() {
       onPublish: publishResult,
       onRetake: retakeAssessment,
       preview: displayedProfile,
+      stateStatus: assessmentStateStatus,
     },
     backLabel: buildBackToLabel(backDestination),
     continueLabel: isEditMode ? "Back to settings" : "Continue",
@@ -514,7 +543,7 @@ function getSubmissionErrorMessage(error: unknown) {
     return error.message;
   }
 
-  return "We couldn't submit your answers. They are still on this device, and retrying will use the same submission.";
+  return "We couldn't submit your answers. They are still in this tab, and retrying will use the same submission.";
 }
 
 function shouldReplaceSubmissionPair(error: unknown) {
@@ -525,10 +554,25 @@ function shouldReplaceSubmissionPair(error: unknown) {
   );
 }
 
-function getResultActionErrorMessage(error: unknown) {
-  return error instanceof Error && error.message
-    ? error.message
-    : "We couldn't update your personality settings. Try again.";
+function getResultActionErrorMessage(_error: unknown) {
+  return "We couldn't update your personality settings. Refresh and try again.";
+}
+
+function getAssessmentQueryStatus({
+  hasData,
+  isError,
+  isFetching,
+  isPending,
+}: {
+  hasData: boolean;
+  isError: boolean;
+  isFetching: boolean;
+  isPending: boolean;
+}): PersonalityAssessmentQueryStatus {
+  if (isPending && !hasData) return "loading";
+  if (isError) return "error";
+  if (isFetching) return "refreshing";
+  return "ready";
 }
 
 function getApiErrorCode(error: unknown) {

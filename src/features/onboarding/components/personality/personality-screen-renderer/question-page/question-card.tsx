@@ -22,6 +22,7 @@ export function QuestionCard({
   onChange,
 }: QuestionCardProps) {
   const answered = value !== undefined;
+  const questionLabelId = `personality-question-${question.id}`;
 
   return (
     <div
@@ -37,7 +38,7 @@ export function QuestionCard({
           tone="muted"
           size="xs"
           surface="soft"
-          className="font-sans text-nano sm:px-2.5 sm:py-1"
+          className="font-sans text-xs sm:px-2.5 sm:py-1"
         >
           Q {index} of {totalQuestions}
         </StatusPill>
@@ -55,7 +56,7 @@ export function QuestionCard({
                 tone="teal"
                 size="xs"
                 surface="soft"
-                className="font-sans text-nano sm:px-2.5 sm:py-1"
+                className="font-sans text-xs sm:px-2.5 sm:py-1"
                 iconClassName="size-2.5"
               >
                 Done
@@ -65,11 +66,15 @@ export function QuestionCard({
         </AnimatePresence>
       </div>
 
-      <h3 className="mb-3 text-pretty font-sans font-semibold text-ink text-sm leading-snug sm:mb-5 sm:text-base">
+      <h3
+        id={questionLabelId}
+        className="mb-3 text-pretty font-sans font-semibold text-ink text-sm leading-snug sm:mb-5 sm:text-base"
+      >
         {question.text}
       </h3>
 
       <LikertScale
+        labelledBy={questionLabelId}
         value={value}
         onChange={(val) => onChange(question.id, val)}
       />

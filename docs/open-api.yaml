@@ -4995,23 +4995,23 @@ components:
       type: object
       properties:
         openness:
-          type: number
+          type: integer
           minimum: 0
           maximum: 100
         conscientiousness:
-          type: number
+          type: integer
           minimum: 0
           maximum: 100
         extraversion:
-          type: number
+          type: integer
           minimum: 0
           maximum: 100
         agreeableness:
-          type: number
+          type: integer
           minimum: 0
           maximum: 100
         neuroticism:
-          type: number
+          type: integer
           minimum: 0
           maximum: 100
       required:
@@ -5080,6 +5080,7 @@ components:
         - quality
         - compatibilityEligible
         - formVersion
+        - completedAt
     PublicPersonalityProfileEntity:
       type: object
       properties:
@@ -5142,14 +5143,17 @@ components:
             - REVOKED
           nullable: true
         sequence:
-          type: number
+          type: integer
+          minimum: 0
       required:
+        - decision
         - sequence
     OwnerPersonalityStateEntity:
       type: object
       properties:
         assessmentGeneration:
-          type: number
+          type: integer
+          minimum: 0
         draft:
           nullable: true
           type: object
@@ -5171,6 +5175,9 @@ components:
           $ref: '#/components/schemas/PersonalityPublicationEntity'
       required:
         - assessmentGeneration
+        - draft
+        - current
+        - publicProfile
         - disclosure
         - publication
     CreateAssessmentAttemptDto:
@@ -5208,17 +5215,19 @@ components:
       type: object
       properties:
         questionId:
-          type: number
+          type: integer
           minimum: 1
           maximum: 150
         value:
-          type: number
+          type: integer
           enum:
             - 1
             - 2
             - 3
             - 4
             - 5
+          minimum: 1
+          maximum: 5
       required:
         - questionId
         - value

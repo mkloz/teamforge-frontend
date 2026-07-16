@@ -2,6 +2,7 @@ import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import { cn } from "@/shared/lib/utils";
 
 interface LikertScaleProps {
+  labelledBy: string;
   value: 1 | 2 | 3 | 4 | 5 | undefined;
   onChange: (val: 1 | 2 | 3 | 4 | 5) => void;
 }
@@ -37,7 +38,7 @@ function getLabelAlignmentClass(point: LikertPoint) {
   return "justify-center";
 }
 
-export function LikertScale({ value, onChange }: LikertScaleProps) {
+export function LikertScale({ labelledBy, value, onChange }: LikertScaleProps) {
   const handleValueChange = (nextValue: string) => {
     const nextPoint = POINTS.find((point) => point.toString() === nextValue);
 
@@ -52,7 +53,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
         value={value ? value.toString() : ""}
         onValueChange={handleValueChange}
         className="relative h-8 w-full focus-visible:outline-none sm:h-9"
-        aria-label="Rate your agreement"
+        aria-labelledby={labelledBy}
       >
         <div
           className="pointer-events-none absolute top-1/2 right-[10%] left-[10%] z-0 h-0.5 -translate-y-1/2 bg-muted dark:bg-white/10"
@@ -65,7 +66,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             <RadioGroupItem
               key={point}
               value={point.toString()}
-              id={`point-${point}`}
+              id={`${labelledBy}-point-${point}`}
               aria-label={LABELS[point]}
               className={cn(
                 "group/likert appearance-none! absolute top-1/2 z-10 flex h-24! w-1/5! -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full! border-0! bg-transparent! p-0! text-inherit! shadow-none! outline-none! ring-0! ring-offset-0! transition-none focus-visible:border-transparent! sm:h-28!",
@@ -101,7 +102,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             {LABELS[point] && (
               <span
                 className={cn(
-                  "max-w-full text-micro leading-4 transition-colors duration-200",
+                  "max-w-full text-xs leading-4 transition-colors duration-200 motion-reduce:transition-none",
                   value === point
                     ? "font-bold text-forge-teal"
                     : "font-semibold text-muted-foreground",

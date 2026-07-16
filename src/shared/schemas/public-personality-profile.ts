@@ -11,10 +11,10 @@ export const personalityTraitScoresSchema = z.object({
 });
 
 export const publicPersonalityProfileSchema = z.object({
-  assessmentId: z.string(),
-  instrumentVersion: z.string(),
-  scoringVersion: z.string(),
-  displayVersion: z.string(),
+  assessmentId: z.string().min(1),
+  instrumentVersion: z.string().min(1),
+  scoringVersion: z.string().min(1),
+  displayVersion: z.string().min(1),
   personalityType: personalityTypeSchema,
   ocean: personalityTraitScoresSchema,
 });

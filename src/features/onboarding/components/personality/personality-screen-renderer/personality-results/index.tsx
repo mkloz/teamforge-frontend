@@ -1,6 +1,9 @@
 import { m } from "framer-motion";
 
 import { resultsContainer } from "@/features/onboarding/constants/motion";
+import type { PersonalityAssessmentQueryStatus } from "@/features/onboarding/hooks/use-personality-test-page-flow";
+import { getPersonalityAudienceText } from "@/features/onboarding/lib/personality-disclosure-copy";
+import { Button } from "@/shared/components/ui/button";
 import type { PersonalityDisclosure } from "@/shared/schemas/personality-assessment";
 import type { PublicPersonalityProfile } from "@/shared/schemas/public-personality-profile";
 
@@ -33,7 +36,9 @@ interface PersonalityResultsProps {
   onKeepPrivate: () => void;
   onPublish: () => void;
   onRetake: () => void;
+  onRetryState: () => void;
   profile: PublicPersonalityProfile;
+  stateStatus: PersonalityAssessmentQueryStatus;
 }
 
 export function PersonalityResults({
@@ -53,9 +58,13 @@ export function PersonalityResults({
   onKeepPrivate,
   onPublish,
   onRetake,
+  onRetryState,
   profile,
+  stateStatus,
 }: PersonalityResultsProps) {
-  const audienceText = getAudienceText(disclosure.authorizedAudiences);
+  const audienceText = getPersonalityAudienceText(
+    disclosure.authorizedAudiences,
+  );
 
   return (
     <m.div
@@ -73,7 +82,8 @@ export function PersonalityResults({
         />
         <p className="text-pretty text-muted-foreground text-sm leading-relaxed">
           This is an estimate based on your answers. It is not a diagnosis or a
-          fixed description of who you are.
+          fixed description of who you are. It does not measure safety or
+          guarantee how well a group will work.
         </p>
         <PersonalityTraitMap oceanScores={profile.ocean} />
       </section>
@@ -86,7 +96,8 @@ export function PersonalityResults({
         <p className="text-pretty text-ink/82 text-sm leading-relaxed">
           Publishing lets TeamForge use this exact type and these five scores
           for {audienceText}. Keeping it private stores the result for you.
-          TeamForge will not use it when forming groups.
+          TeamForge will not use it when forming groups. It is never published
+          on the open web.
         </p>
         <p className="text-pretty text-muted-foreground text-xs leading-relaxed">
           Your answers were used for this submission and are not saved.
@@ -104,7 +115,10 @@ export function PersonalityResults({
         </p>
       ) : null}
 
+      <AssessmentStateNotice onRetry={onRetryState} status={stateStatus} />
+
       <PersonalityResultActions
+        actionsAvailable={stateStatus === "ready"}
         activeAction={activeResultAction}
         canContinue={canContinue}
         continueLabel={continueLabel}
@@ -125,17 +139,33 @@ export function PersonalityResults({
   );
 }
 
-function getAudienceText(audiences: string[]) {
-  const allowedAudiences = [
-    audiences.includes("LIVE_PROPOSAL_SEAT")
-      ? "people in a group proposal with you"
-      : null,
-    audiences.includes("CURRENT_GROUP") ? "current group members" : null,
-  ].filter((audience): audience is string => audience !== null);
-
-  if (allowedAudiences.length === 2) {
-    return `${allowedAudiences[0]} and ${allowedAudiences[1]}`;
+function AssessmentStateNotice({
+  onRetry,
+  status,
+}: {
+  onRetry: () => void;
+  status: PersonalityAssessmentQueryStatus;
+}) {
+  if (status === "error") {
+    return (
+      <div
+        className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4"
+        role="alert"
+      >
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          We could not refresh the saved publication status. Review is still
+          available, but refresh before changing it.
+        </p>
+        <Button variant="outline" size="sm" className="w-fit" onClick={onRetry}>
+          Refresh status
+        </Button>
+      </div>
+    );
   }
 
-  return allowedAudiences[0] ?? "group formation";
+  return status === "refreshing" ? (
+    <p className="text-center text-muted-foreground text-sm" role="status">
+      Refreshing saved publication status
+    </p>
+  ) : null;
 }

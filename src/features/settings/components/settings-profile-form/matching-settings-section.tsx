@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Brain, Tags } from "lucide-react";
+import { Brain, RefreshCcw, Tags } from "lucide-react";
 import {
   OfflineSettingsNotice,
   PreferenceStatusMessage,
@@ -103,12 +103,29 @@ function MatchingStats({ currentUser }: { currentUser: User | undefined }) {
   const personalityAssessment = useQuery(personalityAssessmentQueryOptions());
 
   return (
-    <div className="grid gap-5 sm:grid-cols-2">
-      <StatPill
-        label="Personality type"
-        value={getPersonalityStatusLabel(personalityAssessment.data)}
-      />
-      <StatPill label="Trust score" value={getTrustScoreLabel(currentUser)} />
+    <div className="grid gap-3">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <StatPill
+          label="Personality type"
+          value={getPersonalityStatusLabel(personalityAssessment)}
+        />
+        <StatPill label="Trust score" value={getTrustScoreLabel(currentUser)} />
+      </div>
+      {personalityAssessment.isError ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="justify-self-start"
+          onClick={() => void personalityAssessment.refetch()}
+        >
+          <RefreshCcw className="size-4" aria-hidden="true" />
+          Retry personality status
+        </Button>
+      ) : personalityAssessment.isFetching && personalityAssessment.data ? (
+        <p className="text-slate-muted text-xs" role="status">
+          Refreshing personality status
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -273,9 +290,15 @@ function MatchingEditActions() {
   );
 }
 
-function getPersonalityStatusLabel(
-  state: PersonalityAssessmentState | undefined,
-) {
+function getPersonalityStatusLabel(query: {
+  data: PersonalityAssessmentState | undefined;
+  isError: boolean;
+  isPending: boolean;
+}) {
+  if (query.isPending) return "Loading…";
+  if (query.isError) return "Unavailable";
+
+  const state = query.data;
   if (state?.draft) {
     return `${state.draft.personalityType} draft`;
   }
