@@ -109,10 +109,7 @@ export function useSettingsPreferencesActions({
   }
 
   async function updateMatchingPreference(
-    values: Pick<
-      NotificationPreferences,
-      "autoMatchingEnabled" | "minCompatibilityScore"
-    >,
+    values: Pick<NotificationPreferences, "minCompatibilityScore">,
   ) {
     await saveNotificationPreferencePatch(values);
   }

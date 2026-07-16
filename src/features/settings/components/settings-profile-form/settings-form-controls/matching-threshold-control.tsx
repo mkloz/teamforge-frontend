@@ -28,8 +28,8 @@ export function MatchingThresholdControl({
         <div>
           <p className="font-semibold text-ink text-sm">Minimum group fit</p>
           <p className="mt-1 text-slate-muted text-xs leading-relaxed">
-            Raise this to require a higher group-fit score before TeamForge
-            forms a group. A high setting can take longer.
+            Raise this to ask for a higher group-fit score before TeamForge
+            shows you a proposal. Higher settings can mean fewer proposals.
           </p>
         </div>
         <StatusPill

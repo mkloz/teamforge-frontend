@@ -1,4 +1,10 @@
 import {
+  candidateAvailabilityPolicySchema,
+  candidateAvailabilitySchema,
+  type UpdateCandidateAvailability,
+  updateCandidateAvailabilitySchema,
+} from "@/features/settings/schemas/candidate-availability.schema";
+import {
   apiClient,
   getResponseRequestId,
   parseJsonWithRequestId,
@@ -45,6 +51,54 @@ export interface UpdateAdultEligibilityDto {
 }
 
 export class SettingsApi {
+  static async getCandidateAvailability() {
+    const response = await apiClient.get("forge/availability").json<unknown>();
+
+    return candidateAvailabilitySchema.parse(response);
+  }
+
+  static async updateCandidateAvailability(
+    payload: UpdateCandidateAvailability,
+    idempotencyKey: string,
+  ) {
+    const response = await apiClient.put("forge/availability", {
+      headers: { "Idempotency-Key": idempotencyKey },
+      json: updateCandidateAvailabilitySchema.parse(payload),
+    });
+
+    return parseJsonWithRequestId(response, (value) =>
+      candidateAvailabilitySchema.parse(value),
+    );
+  }
+
+  static async pauseCandidateAvailability(
+    payload: { expectedRevision: number; policyVersion: string },
+    idempotencyKey: string,
+  ) {
+    const response = await apiClient.post("forge/availability/pause", {
+      headers: { "Idempotency-Key": idempotencyKey },
+      json: candidateAvailabilityPolicySchema.parse(payload),
+    });
+
+    return parseJsonWithRequestId(response, (value) =>
+      candidateAvailabilitySchema.parse(value),
+    );
+  }
+
+  static async reconfirmCandidateAvailability(
+    payload: { expectedRevision: number; policyVersion: string },
+    idempotencyKey: string,
+  ) {
+    const response = await apiClient.post("forge/availability/reconfirm", {
+      headers: { "Idempotency-Key": idempotencyKey },
+      json: candidateAvailabilityPolicySchema.parse(payload),
+    });
+
+    return parseJsonWithRequestId(response, (value) =>
+      candidateAvailabilitySchema.parse(value),
+    );
+  }
+
   static async updateProfile(payload: UpdateSettingsProfileDto) {
     return patchCurrentUser(payload);
   }

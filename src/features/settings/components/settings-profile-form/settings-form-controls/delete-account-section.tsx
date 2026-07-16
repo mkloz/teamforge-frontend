@@ -16,7 +16,7 @@ interface DeleteAccountSectionProps {
 const DELETE_ACCOUNT_CONFIRMATION = "DELETE";
 const DELETE_ACCOUNT_DETAILS = [
   "Your active sessions will be removed.",
-  "Automatic group forming will stop for this account.",
+  "Proposal availability will close for this account.",
   "Existing group history may remain where other members need context.",
 ];
 
@@ -109,9 +109,9 @@ export function DeleteAccountSection({
             Delete account
           </h3>
           <p className="mt-2 text-slate-muted text-sm leading-relaxed">
-            This signs you out, disables automatic group forming, removes active
-            sessions, and anonymizes your sign-in identifiers. Existing group
-            history may remain where other members need context.
+            This signs you out, closes your proposal availability, removes
+            active sessions, and anonymizes your sign-in identifiers. Existing
+            group history may remain where other members need context.
           </p>
           <DeleteAccountError error={error} />
         </div>

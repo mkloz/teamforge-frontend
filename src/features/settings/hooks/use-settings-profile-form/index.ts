@@ -1,3 +1,4 @@
+import { useCandidateAvailability } from "@/features/settings/hooks/use-candidate-availability";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import { useDeleteAccountAction } from "./use-delete-account-action";
 import { useSettingsAvatarActions } from "./use-settings-avatar-actions";
@@ -25,6 +26,9 @@ export function useSettingsProfileForm({
   });
   const preferences = useSettingsPreferencesActions({
     enabled: Boolean(profile.currentUser) && shouldLoadPreferences,
+  });
+  const candidateAvailability = useCandidateAvailability({
+    enabled: Boolean(profile.currentUser) && activeSection === "matching",
   });
   const deleteAccount = useDeleteAccountAction();
 
@@ -66,6 +70,7 @@ export function useSettingsProfileForm({
       preferences.isSavingNotificationPreferences,
     savingNotificationPreferenceKeys:
       preferences.savingNotificationPreferenceKeys,
+    candidateAvailability,
     deleteAccount: deleteAccount.deleteAccount,
     isDeletingAccount: deleteAccount.isDeletingAccount,
     deleteAccountError: deleteAccount.deleteAccountError,

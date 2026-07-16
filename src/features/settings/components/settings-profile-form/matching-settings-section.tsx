@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Brain, RefreshCcw, Tags } from "lucide-react";
+import { CandidateAvailabilityControl } from "@/features/settings/components/settings-profile-form/candidate-availability-control";
 import {
   OfflineSettingsNotice,
   PreferenceStatusMessage,
@@ -8,10 +9,10 @@ import {
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import {
   MatchingThresholdControl,
-  NotificationPreferenceRow,
   StatPill,
 } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { normalizeTrustScore } from "@/features/settings/components/settings-profile-form/settings-formatters";
+import type { CandidateAvailabilityState } from "@/features/settings/hooks/use-candidate-availability";
 import { personalityAssessmentQueryOptions } from "@/shared/api/personality-assessment-query";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -23,6 +24,7 @@ import type { NotificationPreferences, User } from "@/shared/schemas";
 import type { PersonalityAssessmentState } from "@/shared/schemas/personality-assessment";
 
 interface MatchingSettingsSectionProps {
+  candidateAvailability: CandidateAvailabilityState;
   currentUser: User | undefined;
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
@@ -31,16 +33,13 @@ interface MatchingSettingsSectionProps {
   error: string | null;
   isOnline: boolean;
   onChange: (
-    values: Pick<
-      NotificationPreferences,
-      "autoMatchingEnabled" | "minCompatibilityScore"
-    >,
+    values: Pick<NotificationPreferences, "minCompatibilityScore">,
   ) => Promise<void>;
 }
 
 type MatchingPreferenceValues = Pick<
   NotificationPreferences,
-  "autoMatchingEnabled" | "minCompatibilityScore"
+  "minCompatibilityScore"
 >;
 type UserInterest = NonNullable<User["interests"]>[number];
 
@@ -54,6 +53,7 @@ interface MatchingPreferenceControlsProps {
 const MAX_INTERESTS_PREVIEW = 12;
 
 export function MatchingSettingsSection({
+  candidateAvailability,
   currentUser,
   notificationPreferences,
   isLoadingNotificationPreferences,
@@ -72,16 +72,23 @@ export function MatchingSettingsSection({
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <SectionHeading
-          title="Group availability"
-          description="Choose whether TeamForge can include you when other people start groups."
+          title="Group proposals"
+          description="TeamForge may show you an activity-led group proposal. You review every proposal before joining."
         />
 
         <MatchingStats currentUser={currentUser} />
       </div>
 
       {!isOnline ? (
-        <OfflineSettingsNotice message="Reconnect before changing group forming settings." />
+        <OfflineSettingsNotice message="Reconnect before changing group proposal settings." />
       ) : null}
+
+      <CandidateAvailabilityControl
+        hasSavedLocation={
+          currentUser?.locationLat != null && currentUser.locationLng != null
+        }
+        state={candidateAvailability}
+      />
 
       <MatchingPreferenceControls
         disabled={isDisabled}
@@ -145,23 +152,7 @@ function MatchingPreferenceControls({
   }
 
   return (
-    <div className="grid gap-0 border-border border-t lg:grid-cols-[1fr_1.4fr] lg:gap-8">
-      <NotificationPreferenceRow
-        checked={notificationPreferences?.autoMatchingEnabled ?? true}
-        title="Automatic group forming"
-        description="Allow TeamForge to include you when another person starts a group through Forge."
-        disabled={getMatchingPreferenceDisabled(
-          disabled,
-          savingNotificationPreferenceKeys,
-          "autoMatchingEnabled",
-        )}
-        onToggle={() => {
-          updateMatchingPreference(
-            getAutoMatchingToggleValues(notificationPreferences),
-          );
-        }}
-      />
-
+    <div className="grid gap-0 border-border border-t">
       <MatchingThresholdControl
         value={notificationPreferences?.minCompatibilityScore ?? 0}
         disabled={getMatchingPreferenceDisabled(
@@ -187,19 +178,6 @@ function getMatchingPreferenceDisabled(
   return disabled || savingNotificationPreferenceKeys.has(key);
 }
 
-function getAutoMatchingToggleValues(
-  notificationPreferences: NotificationPreferences | null,
-): MatchingPreferenceValues | null {
-  if (!notificationPreferences) {
-    return null;
-  }
-
-  return {
-    autoMatchingEnabled: !notificationPreferences.autoMatchingEnabled,
-    minCompatibilityScore: notificationPreferences.minCompatibilityScore,
-  };
-}
-
 function getCompatibilityScoreValues(
   notificationPreferences: NotificationPreferences | null,
   minCompatibilityScore: number,
@@ -209,7 +187,6 @@ function getCompatibilityScoreValues(
   }
 
   return {
-    autoMatchingEnabled: notificationPreferences.autoMatchingEnabled,
     minCompatibilityScore,
   };
 }

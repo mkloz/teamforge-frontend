@@ -54,6 +54,7 @@ export const APP_QUERY_KEYS = {
     subscriptions: ["web-push", "subscriptions"] as const,
   },
   settings: {
+    candidateAvailability: ["settings", "candidate-availability"] as const,
     notificationPreferences: ["settings", "notification-preferences"] as const,
     sessions: ["settings", "sessions"] as const,
     blockedUsers: ["settings", "blocked-users"] as const,

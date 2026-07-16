@@ -65,6 +65,7 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
       }}
       matching={{
         ...notificationPreferenceState,
+        candidateAvailability: profileFormState.candidateAvailability,
         currentUser: profileFormState.currentUser,
         onChange: profileFormState.updateMatchingPreference,
       }}

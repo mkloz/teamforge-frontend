@@ -1,8 +1,10 @@
 import {
   SETTINGS_BLOCKED_USERS_QUERY_KEY,
+  SETTINGS_CANDIDATE_AVAILABILITY_QUERY_KEY,
   SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
   SETTINGS_SESSIONS_QUERY_KEY,
 } from "@/features/settings/api/settings-query-keys";
+import type { CandidateAvailability } from "@/features/settings/schemas/candidate-availability.schema";
 import { appQueryClient } from "@/shared/api/query-client";
 import { invalidateUserBlockSurfaces } from "@/shared/api/query-invalidation";
 import type {
@@ -26,6 +28,19 @@ function removeBlockedUser(
 }
 
 export const SettingsCache = {
+  setCandidateAvailability(availability: CandidateAvailability) {
+    appQueryClient.setQueryData(
+      SETTINGS_CANDIDATE_AVAILABILITY_QUERY_KEY,
+      availability,
+    );
+  },
+
+  invalidateCandidateAvailability() {
+    return appQueryClient.invalidateQueries({
+      queryKey: SETTINGS_CANDIDATE_AVAILABILITY_QUERY_KEY,
+    });
+  },
+
   setNotificationPreferences(preferences: NotificationPreferences) {
     appQueryClient.setQueryData(
       SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,

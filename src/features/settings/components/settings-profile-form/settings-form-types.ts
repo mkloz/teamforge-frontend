@@ -1,4 +1,5 @@
 import type { UseFormReturn } from "react-hook-form";
+import type { CandidateAvailabilityState } from "@/features/settings/hooks/use-candidate-availability";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import type {
@@ -43,12 +44,10 @@ interface NotificationPreferenceState {
 }
 
 export interface MatchingSettingsState extends NotificationPreferenceState {
+  candidateAvailability: CandidateAvailabilityState;
   currentUser: User | undefined;
   onChange: (
-    values: Pick<
-      NotificationPreferences,
-      "autoMatchingEnabled" | "minCompatibilityScore"
-    >,
+    values: Pick<NotificationPreferences, "minCompatibilityScore">,
   ) => Promise<void>;
 }
 
