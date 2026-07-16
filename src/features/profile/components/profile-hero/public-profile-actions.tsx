@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   Ban,
   CircleDashed,
+  Flag,
   MessageCircle,
   UserCheck,
   UserMinus,
@@ -9,6 +10,10 @@ import {
 } from "lucide-react";
 import { type RefObject, useEffect, useRef } from "react";
 import { usePublicProfileActions } from "@/features/profile/public/public-profile-actions";
+import {
+  blockReportedUser,
+  ReportDialog,
+} from "@/features/reporting/public/reporting";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -22,11 +27,16 @@ import {
 } from "@/shared/lib/browser-scheduling";
 import { cn } from "@/shared/lib/utils";
 import { buildActivityDmNavigation } from "@/shared/navigation/activity-navigation";
-import type { User } from "@/shared/schemas";
+
+interface PublicProfileActionUser {
+  canReport: boolean;
+  id: string;
+  name: string;
+}
 
 interface PublicProfileActionsProps {
   spotlightConnect?: boolean;
-  user: User;
+  user: PublicProfileActionUser;
 }
 
 type PublicProfileActionState = ReturnType<typeof usePublicProfileActions>;
@@ -62,7 +72,30 @@ export function PublicProfileActions({
         user={user}
       />
       <MessageAction actionState={actionState} user={user} />
+      {user.canReport ? <ReportProfileAction user={user} /> : null}
     </div>
+  );
+}
+
+function ReportProfileAction({ user }: { user: PublicProfileActionUser }) {
+  return (
+    <ReportDialog
+      canRequestBlock
+      onBlock={() => blockReportedUser(user.id)}
+      targets={[
+        {
+          id: user.id,
+          label: `${user.name}'s profile`,
+          type: "PROFILE",
+        },
+      ]}
+      trigger={
+        <Button variant="ghost" className="w-full sm:w-auto">
+          <Flag className="shrink-0" aria-hidden="true" />
+          <span>Report</span>
+        </Button>
+      }
+    />
   );
 }
 
@@ -80,7 +113,7 @@ interface ConnectionActionProps {
   actionState: PublicProfileActionState;
   connectButtonRef: RefObject<HTMLButtonElement | null>;
   shouldSpotlightConnect: boolean;
-  user: User;
+  user: PublicProfileActionUser;
 }
 
 function ConnectionAction({
@@ -206,7 +239,7 @@ function MessageAction({
   user,
 }: {
   actionState: PublicProfileActionState;
-  user: User;
+  user: PublicProfileActionUser;
 }) {
   if (actionState.messageChatId) {
     return (

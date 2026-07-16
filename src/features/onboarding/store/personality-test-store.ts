@@ -30,10 +30,16 @@ export const usePersonalityTestStore = create<PersonalityTestState>()(
         testLength,
         questionIds,
         answers: {},
-        result: null,
-        vector: null,
         previousScreen: null,
         screen: { id: "questions", currentPage: 1 },
+      }),
+
+    clearSubmittedAnswers: () =>
+      set({
+        answers: {},
+        questionIds: [],
+        isReviewMode: false,
+        previousScreen: null,
       }),
 
     updateTestLength: (testLength) => {
@@ -45,8 +51,6 @@ export const usePersonalityTestStore = create<PersonalityTestState>()(
       set((state) => ({
         answers: { ...state.answers, [questionId]: val },
       })),
-
-    setResultData: (result, vector) => set({ result, vector }),
 
     reset: () => set(PERSONALITY_TEST_DEFAULT_STATE),
   }),

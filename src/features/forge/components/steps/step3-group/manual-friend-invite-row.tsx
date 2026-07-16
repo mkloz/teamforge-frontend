@@ -1,12 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { Check, MapPin, Plus, ShieldCheck } from "lucide-react";
+import { Check, MapPin, Plus } from "lucide-react";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
-import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { FriendshipApi } from "@/shared/schemas";
-import { formatTrustScore } from "./step3-group.utils";
 
 interface ManualFriendInviteRowProps {
   disabled?: boolean;
@@ -24,7 +22,6 @@ export function ManualFriendInviteRow({
   selected,
 }: ManualFriendInviteRowProps) {
   const friend = friendship.counterpart;
-  const trustScore = formatTrustScore(friend.trustScore);
 
   return (
     <div
@@ -36,11 +33,7 @@ export function ManualFriendInviteRow({
     >
       <FriendProfileLink friend={friend} />
       <FriendAvatar friend={friend} selected={selected} />
-      <FriendIdentityMeta
-        friend={friend}
-        selected={selected}
-        trustScore={trustScore}
-      />
+      <FriendIdentityMeta friend={friend} selected={selected} />
       <InviteToggleButton
         disabled={disabled}
         friend={friend}
@@ -95,11 +88,9 @@ function FriendAvatar({
 function FriendIdentityMeta({
   friend,
   selected,
-  trustScore,
 }: {
   friend: FriendProfile;
   selected: boolean;
-  trustScore: string;
 }) {
   return (
     <span className="flex min-w-0 flex-1 flex-col gap-1">
@@ -116,25 +107,6 @@ function FriendIdentityMeta({
 
       <span className="flex min-w-0 flex-wrap items-center gap-1.5">
         {friend.city && <FriendCity city={friend.city} />}
-        {friend.personalityType && (
-          <StatusPill
-            tone="teal"
-            size="xs"
-            surface="solid"
-            className="h-4 px-1.5 py-0 font-semibold leading-4"
-          >
-            {friend.personalityType}
-          </StatusPill>
-        )}
-        <StatusPill
-          icon={ShieldCheck}
-          tone="neutral"
-          size="xs"
-          surface="soft"
-          className="h-4 px-1.5 py-0 leading-4"
-        >
-          {trustScore}
-        </StatusPill>
       </span>
     </span>
   );

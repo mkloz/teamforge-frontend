@@ -4,11 +4,11 @@ import {
   SETTINGS_SESSIONS_QUERY_KEY,
 } from "@/features/settings/api/settings-query-keys";
 import { appQueryClient } from "@/shared/api/query-client";
-import { invalidateFriendshipSurfaces } from "@/shared/api/query-invalidation";
+import { invalidateUserBlockSurfaces } from "@/shared/api/query-invalidation";
 import type {
   AuthSession,
-  FriendshipApi,
   NotificationPreferences,
+  UserBlockApi,
 } from "@/shared/schemas";
 
 function removeSessionFromList(
@@ -19,16 +19,10 @@ function removeSessionFromList(
 }
 
 function removeBlockedUser(
-  blockedUsers: FriendshipApi[] | undefined,
+  blockedUsers: UserBlockApi[] | undefined,
   userId: string,
 ) {
-  return (
-    blockedUsers?.filter(
-      (friendship) =>
-        friendship.counterpart.id !== userId &&
-        friendship.receiverId !== userId,
-    ) ?? []
-  );
+  return blockedUsers?.filter((block) => block.id !== userId) ?? [];
 }
 
 export const SettingsCache = {
@@ -106,28 +100,23 @@ export const SettingsCache = {
   },
 
   getBlockedUsersSnapshot() {
-    return appQueryClient.getQueryData<FriendshipApi[]>(
+    return appQueryClient.getQueryData<UserBlockApi[]>(
       SETTINGS_BLOCKED_USERS_QUERY_KEY,
     );
   },
 
   removeBlockedUser(userId: string) {
-    appQueryClient.setQueryData<FriendshipApi[]>(
+    appQueryClient.setQueryData<UserBlockApi[]>(
       SETTINGS_BLOCKED_USERS_QUERY_KEY,
       (current) => removeBlockedUser(current, userId),
     );
   },
 
-  restoreBlockedUsers(blockedUsers: FriendshipApi[] | undefined) {
+  restoreBlockedUsers(blockedUsers: UserBlockApi[] | undefined) {
     appQueryClient.setQueryData(SETTINGS_BLOCKED_USERS_QUERY_KEY, blockedUsers);
   },
 
   async invalidateBlockedUserSurfaces() {
-    await Promise.all([
-      appQueryClient.invalidateQueries({
-        queryKey: SETTINGS_BLOCKED_USERS_QUERY_KEY,
-      }),
-      invalidateFriendshipSurfaces(),
-    ]);
+    await invalidateUserBlockSurfaces();
   },
 };

@@ -1,8 +1,20 @@
-import { useRef } from "react";
-import { getActivityTransparentMenuContentClass } from "@/features/activity/components/activity-popup-styles";
+import { Flag } from "lucide-react";
+import { useRef, useState } from "react";
+import {
+  ACTIVITY_MENU_ITEM_CLASS,
+  ACTIVITY_MENU_SEPARATOR_CLASS,
+  getActivityTransparentMenuContentClass,
+} from "@/features/activity/components/activity-popup-styles";
+import {
+  blockReportedUser,
+  ReportDialog,
+  type ReportTarget,
+} from "@/features/reporting/public/reporting";
 import {
   ContextMenu,
   ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/shared/components/ui/context-menu";
 import { getBrowserDocument } from "@/shared/lib/browser-environment";
@@ -44,6 +56,7 @@ export function MessageContextMenu({
   isOnline = true,
 }: MessageContextMenuProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const menu = useMessageActionMenu({
     message,
     onPin,
@@ -95,7 +108,9 @@ export function MessageContextMenu({
           className={MENU_CONTENT_CLASS}
         >
           <MessageMenuSurface
+            canReport={canReportMessage(message)}
             menu={menu}
+            onReport={() => setReportDialogOpen(true)}
             onSelectReaction={handleSelectReaction}
             onRequestClose={requestClose}
           />
@@ -117,16 +132,31 @@ export function MessageContextMenu({
           onOpenChange={menu.setForwardDialogOpen}
         />
       ) : null}
+      {reportDialogOpen ? (
+        <ReportDialog
+          canRequestBlock
+          onBlock={() =>
+            blockReportedUser(message.sender?.id ?? message.senderId)
+          }
+          open={reportDialogOpen}
+          onOpenChange={setReportDialogOpen}
+          targets={getMessageReportTargets(message)}
+        />
+      ) : null}
     </>
   );
 }
 
 function MessageMenuSurface({
+  canReport,
   menu,
+  onReport,
   onRequestClose,
   onSelectReaction,
 }: {
+  canReport: boolean;
   menu: MessageActionMenu;
+  onReport: () => void;
   onRequestClose: () => void;
   onSelectReaction: (emoji: string) => void;
 }) {
@@ -142,8 +172,46 @@ function MessageMenuSurface({
         dangerActions={menu.dangerActions}
         primaryActions={menu.primaryActions}
       />
+      {canReport ? (
+        <>
+          <ContextMenuSeparator className={ACTIVITY_MENU_SEPARATOR_CLASS} />
+          <ContextMenuItem
+            className={ACTIVITY_MENU_ITEM_CLASS}
+            onSelect={onReport}
+          >
+            <Flag className="size-4" aria-hidden="true" />
+            <span className="font-bold text-xs">Report message</span>
+          </ContextMenuItem>
+        </>
+      ) : null}
     </>
   );
+}
+
+function canReportMessage(message: MessageContextMenuProps["message"]) {
+  return !message.isOwn && !message.isSystem && !message.proposal;
+}
+
+function getMessageReportTargets(
+  message: MessageContextMenuProps["message"],
+): ReportTarget[] {
+  const senderName = message.sender?.name ?? "this person";
+  const messageTarget: ReportTarget = {
+    id: message.id,
+    label: `Message from ${senderName}`,
+    type: "MESSAGE",
+  };
+  const attachmentTargets =
+    message.attachments?.map((attachment, index) => ({
+      id: attachment.id,
+      label: attachment.name
+        ? `Attachment: ${attachment.name}`
+        : `Attachment ${index + 1} from ${senderName}`,
+      relatedMessageIds: [message.id],
+      type: "ATTACHMENT" as const,
+    })) ?? [];
+
+  return [messageTarget, ...attachmentTargets];
 }
 
 function showReactionError(error: unknown) {

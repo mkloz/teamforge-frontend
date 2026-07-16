@@ -15,8 +15,8 @@ interface KeepInMindProps {
 const GUIDELINES = [
   {
     icon: ShieldCheck,
-    title: "Be your authentic self",
-    text: "Answer as your true self, not who you feel pressured to be at work or by society.",
+    title: "Use ordinary life",
+    text: "Answer for how you usually act, not how you feel expected to act at work or around other people.",
   },
   {
     icon: Eye,

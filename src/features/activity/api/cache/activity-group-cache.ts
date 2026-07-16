@@ -8,6 +8,7 @@ import type { Group } from "@/features/activity/lib/activity-contract";
 import { appQueryClient } from "@/shared/api/query-client";
 import { invalidateHomeGroupSurfaces } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { resetViewerProfileQueries } from "@/shared/api/viewer-profile-cache";
 import type { ChatApi, GroupApi, PlanProposal } from "@/shared/schemas";
 
 interface RealtimeGroupUpdateOptions {
@@ -18,7 +19,7 @@ interface RealtimeGroupUpdateOptions {
       | Pick<Group, "updatedAt" | "version">,
   ) => number;
   group: GroupApi;
-  mapApiGroupFromSelection: (group: Group) => GroupApi;
+  mapApiGroupFromSelection: (group: Group, baseGroup: GroupApi) => GroupApi;
   mapGroup: (
     group: GroupApi,
     currentUserId: string | null,
@@ -53,6 +54,14 @@ export const ActivityGroupCache = {
     mapApiGroupFromSelection,
     mapGroup,
   }: RealtimeGroupUpdateOptions) {
+    const cachedGroup = appQueryClient
+      .getQueryData<GroupApi[]>(ACTIVITY_GROUPS_QUERY_KEY)
+      ?.find((item) => item.id === group.id);
+
+    if (hasViewerProfileAccessChanged(cachedGroup, group)) {
+      void resetViewerProfileQueries();
+    }
+
     const isStillMember = isActiveGroupMember(group, currentUserId);
 
     appQueryClient.setQueryData<GroupApi[]>(
@@ -93,6 +102,31 @@ export const ActivityGroupCache = {
     void invalidateHomeGroupSurfaces();
   },
 };
+
+function hasViewerProfileAccessChanged(
+  cachedGroup: GroupApi | undefined,
+  incomingGroup: GroupApi,
+) {
+  if (!cachedGroup) {
+    return true;
+  }
+
+  if (cachedGroup.status !== incomingGroup.status) {
+    return true;
+  }
+
+  return (
+    getActiveMemberIds(cachedGroup).join(":") !==
+    getActiveMemberIds(incomingGroup).join(":")
+  );
+}
+
+function getActiveMemberIds(group: GroupApi) {
+  return group.members
+    .filter((member) => member.leftAt === null)
+    .map((member) => member.userId)
+    .sort();
+}
 
 function isActiveGroupMember(group: GroupApi, currentUserId: string) {
   return group.members.some(
@@ -267,7 +301,7 @@ function getNewestGroupForSelection({
   mapApiGroupFromSelection: RealtimeGroupUpdateOptions["mapApiGroupFromSelection"];
 }) {
   return getGroupVersion(currentGroup) > getGroupVersion(incomingGroup)
-    ? mapApiGroupFromSelection(currentGroup)
+    ? mapApiGroupFromSelection(currentGroup, incomingGroup)
     : incomingGroup;
 }
 

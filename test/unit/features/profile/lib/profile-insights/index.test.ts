@@ -46,9 +46,9 @@ describe("buildProfileInsights", () => {
     expect(insights.matchingSignals).toHaveLength(4);
     expect(insights.matchingSignals.map((signal) => signal.label)).toEqual([
       "Activity read",
-      "Social read",
+      "Personality detail",
       "Life stage",
-      "Match confidence",
+      "Profile detail",
     ]);
     expect(insights.portrait.confidence).not.toBe("early");
     expect(insights.portrait.title).toBe(
@@ -95,7 +95,7 @@ describe("buildProfileInsights", () => {
     });
     expect(insights.portrait.lead).toContain("This profile");
     expect(insights.groupFit).toMatchObject({
-      title: "Fit still forming",
+      title: "Add details to see group fit",
     });
   });
 

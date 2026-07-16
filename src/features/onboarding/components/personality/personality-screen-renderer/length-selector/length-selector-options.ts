@@ -44,7 +44,7 @@ export function getLengthSelectorActionLabel(
     return "Begin assessment";
   }
 
-  return isSelectedComplete ? "Complete & View Results" : "Confirm & Continue";
+  return isSelectedComplete ? "Finish and review result" : "Keep this length";
 }
 
 function countAnsweredQuestions(

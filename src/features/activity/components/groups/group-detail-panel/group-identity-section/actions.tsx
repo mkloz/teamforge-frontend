@@ -1,12 +1,19 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Pencil, QrCode } from "lucide-react";
+import { ArrowRight, Flag, Pencil, QrCode } from "lucide-react";
 import type { Group } from "@/features/activity/lib/activity-contract";
+import {
+  leaveReportedGroup,
+  ReportDialog,
+  type ReportTarget,
+} from "@/features/reporting/public/reporting";
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { buildGroupPlanDetailNavigation } from "@/shared/navigation";
 import { PlanChangeDialog } from "../plan-section/plan-change-dialog";
 
 interface GroupIdentityActionsProps {
+  activityId: string;
+  activityTitle: string | null;
   avatarSrc: string | null;
   canEditGroup: boolean;
   displayName: string;
@@ -19,6 +26,8 @@ interface GroupIdentityActionsProps {
 }
 
 export function GroupIdentityActions({
+  activityId,
+  activityTitle,
   avatarSrc,
   canEditGroup,
   displayName,
@@ -67,6 +76,30 @@ export function GroupIdentityActions({
         }
       />
 
+      <ReportDialog
+        canRequestLeave={!isReadOnly}
+        onLeave={() => leaveReportedGroup(groupId)}
+        targets={getAggregateReportTargets({
+          activityId,
+          activityTitle,
+          displayName,
+          groupId,
+          plan,
+        })}
+        trigger={
+          <Button
+            type="button"
+            variant="outline"
+            size="xs"
+            className="min-w-0 flex-1 basis-32"
+            contentClassName="gap-1.5"
+          >
+            <Flag className="size-3.5" aria-hidden="true" />
+            <span className="truncate">Report</span>
+          </Button>
+        }
+      />
+
       <GroupMutableAction
         canEditGroup={canEditGroup}
         isOnline={isOnline}
@@ -76,6 +109,35 @@ export function GroupIdentityActions({
       />
     </div>
   );
+}
+
+function getAggregateReportTargets({
+  activityId,
+  activityTitle,
+  displayName,
+  groupId,
+  plan,
+}: {
+  activityId: string;
+  activityTitle: string | null;
+  displayName: string;
+  groupId: string;
+  plan?: Group["plan"];
+}): ReportTarget[] {
+  const targets: ReportTarget[] = [
+    { id: groupId, label: `Group: ${displayName}`, type: "GROUP" },
+    {
+      id: activityId,
+      label: activityTitle ? `Activity: ${activityTitle}` : "Activity",
+      type: "ACTIVITY",
+    },
+  ];
+
+  if (plan) {
+    targets.push({ id: plan.id, label: `Plan: ${plan.title}`, type: "PLAN" });
+  }
+
+  return targets;
 }
 
 function GroupMutableAction({

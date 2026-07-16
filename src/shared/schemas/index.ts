@@ -15,5 +15,7 @@ export * from "./plan";
 export * from "./rating-api";
 export * from "./realtime";
 export * from "./user";
+export * from "./user-block-api";
 export * from "./user-response";
+export * from "./viewer-profile";
 export * from "./web-push";

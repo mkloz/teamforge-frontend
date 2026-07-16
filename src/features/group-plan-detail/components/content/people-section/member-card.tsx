@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Handshake, type LucideIcon, ShieldCheck, Target } from "lucide-react";
+import { Handshake } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { AdminCrownBadge } from "@/shared/components/common/admin-crown-badge";
 import { Avatar } from "@/shared/components/common/avatar";
@@ -14,13 +14,6 @@ interface MemberCardProps {
   isMember: boolean;
   isViewer: boolean;
   variant: "host" | "regular";
-}
-
-interface MemberMetricViewModel {
-  icon: LucideIcon;
-  label: string;
-  tone: "muted" | "teal";
-  value: string;
 }
 
 export function MemberCard({
@@ -75,12 +68,7 @@ function MemberAvatar({
         media={member.avatarMedia ?? null}
         name={member.name}
         imageSize={64}
-        className={cn(
-          "size-10 ring-1 ring-border/20",
-          member.trustScore >= 0.8
-            ? "ring-2 ring-forge-teal/30"
-            : "ring-border/40",
-        )}
+        className="size-10 ring-1 ring-border/40"
       />
       {isHost ? (
         <AdminCrownBadge
@@ -115,112 +103,31 @@ function MemberIdentity({
           You
         </StatusPill>
       ) : null}
-      {member.personalityType ? (
-        <StatusPill
-          tone="teal"
-          size="xs"
-          surface="solid"
-          className="h-4 px-1.5 py-0 leading-4"
-        >
-          {member.personalityType}
-        </StatusPill>
-      ) : null}
     </div>
   );
 }
 
 function MemberMeta({ member }: { member: GroupPlanDetailMember }) {
-  const metrics = getMemberMetrics(member);
+  if (!member.knownConnection) {
+    return null;
+  }
 
   return (
     <div className="mt-1.5 flex min-w-0 items-center gap-1.5">
-      {metrics.map((metric) => (
-        <MemberMetric key={metric.label} {...metric} />
-      ))}
-      {member.knownConnection ? (
-        <KnownConnectionIndicator label={member.knownConnection} />
-      ) : null}
+      <KnownConnectionIndicator label={member.knownConnection} />
     </div>
   );
-}
-
-function MemberMetric({
-  icon: Icon,
-  label,
-  tone,
-  value,
-}: MemberMetricViewModel) {
-  return (
-    <StatusPill
-      icon={Icon}
-      size="xs"
-      tone={tone === "teal" ? "teal" : "neutral"}
-      surface="soft"
-      className="h-5 px-1.5 text-xs"
-      title={`${label} ${value}`}
-    >
-      <span className="sr-only">{label}</span>
-      <span>{value}</span>
-    </StatusPill>
-  );
-}
-
-function getMemberMetrics(member: GroupPlanDetailMember) {
-  return [
-    getMemberMetric({
-      icon: ShieldCheck,
-      label: "Trust",
-      score: member.trustScore,
-    }),
-    getMemberMetric({
-      icon: Target,
-      label: "Fit",
-      score: member.compatibilityScore,
-    }),
-  ].filter(isMemberMetric);
-}
-
-function getMemberMetric({
-  icon,
-  label,
-  score,
-}: {
-  icon: LucideIcon;
-  label: string;
-  score: number | null;
-}): MemberMetricViewModel | null {
-  const percent = formatPercent(score);
-
-  return typeof percent === "number"
-    ? {
-        icon,
-        label,
-        tone: getMemberMetricTone(percent),
-        value: `${percent}%`,
-      }
-    : null;
-}
-
-function isMemberMetric(
-  metric: MemberMetricViewModel | null,
-): metric is MemberMetricViewModel {
-  return metric !== null;
-}
-
-function getMemberMetricTone(percent: number) {
-  return percent >= 80 ? "teal" : "muted";
 }
 
 function shouldShowMemberAction({
   isMember,
   isViewer,
-  member,
 }: {
   isMember: boolean;
   isViewer: boolean;
   member: GroupPlanDetailMember;
 }) {
-  return isMember && !isViewer && !member.knownConnection;
+  return isMember && !isViewer;
 }
 
 function KnownConnectionIndicator({ label }: { label: string }) {
@@ -237,12 +144,4 @@ function KnownConnectionIndicator({ label }: { label: string }) {
       title={label}
     />
   );
-}
-
-function formatPercent(score: number | null) {
-  if (typeof score !== "number") {
-    return null;
-  }
-
-  return Math.round(score > 1 ? score : score * 100);
 }

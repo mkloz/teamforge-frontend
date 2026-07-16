@@ -1,5 +1,5 @@
 import type { IpipQuestion } from "@/features/onboarding/data/ipip-questions";
-import type { RawAnswers } from "@/features/onboarding/utils/score-calculator";
+import type { RawAnswers } from "@/features/onboarding/lib/personality-answer";
 
 const ESTIMATED_SECONDS_PER_QUESTION = 5;
 

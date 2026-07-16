@@ -1,4 +1,4 @@
-import { CalendarHeart, ShieldCheck, UsersRound } from "lucide-react";
+import { CalendarHeart, UsersRound } from "lucide-react";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 
 const GROUP_AGE_DAY_MS = 1000 * 60 * 60 * 24;
@@ -22,21 +22,14 @@ const GROUP_AGE_RULES = [
   },
 ] as const;
 
-const RELIABILITY_TIERS = [
-  { label: "Strong", min: 80 },
-  { label: "Healthy", min: 60 },
-  { label: "Building", min: 40 },
-] as const;
-
 export function getPendingVoteHeadline(pending: number) {
   return pending === 1
     ? "1 plan change needs your vote"
     : `${pending} plan changes need your vote`;
 }
 
-export function getTrustRows(detail: GroupPlanDetail) {
+export function getGroupOverviewRows(detail: GroupPlanDetail) {
   const groupAge = formatGroupAge(detail.group.createdAt);
-  const reliability = formatReliability(detail);
   const host = detail.members.find((member) => member.role === "ADMIN");
 
   return [
@@ -45,13 +38,6 @@ export function getTrustRows(detail: GroupPlanDetail) {
           icon: CalendarHeart,
           label: "Group age",
           value: groupAge,
-        }
-      : null,
-    reliability
-      ? {
-          icon: ShieldCheck,
-          label: "Member reliability",
-          value: reliability,
         }
       : null,
     host
@@ -96,17 +82,4 @@ function getAgeMonths(days: number) {
 
 function formatActiveAge(count: number, unit: "day" | "month" | "week") {
   return `Active ${count} ${count === 1 ? unit : `${unit}s`}`;
-}
-
-function formatReliability(detail: GroupPlanDetail) {
-  if (detail.members.length === 0) return null;
-  const avg =
-    detail.members.reduce((sum, member) => sum + member.trustScore, 0) /
-    detail.members.length;
-  const pct = Math.round(Math.max(0, Math.min(1, avg)) * 100);
-  return `${getReliabilityLabel(pct)} (${pct}% avg)`;
-}
-
-function getReliabilityLabel(percent: number) {
-  return RELIABILITY_TIERS.find((tier) => percent >= tier.min)?.label ?? "New";
 }

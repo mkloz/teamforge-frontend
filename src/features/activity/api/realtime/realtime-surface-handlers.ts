@@ -52,8 +52,8 @@ export function applyRealtimeGroupUpdate(
     currentUserId,
     getGroupVersion: (incomingGroup) => context.getGroupVersion(incomingGroup),
     group,
-    mapApiGroupFromSelection: (selectionGroup) =>
-      context.mapApiGroupFromSelection(selectionGroup),
+    mapApiGroupFromSelection: (selectionGroup, baseGroup) =>
+      context.mapApiGroupFromSelection(selectionGroup, baseGroup),
     mapGroup: (incomingGroup, userId, proposals, chatSummary) =>
       context.mapGroup(incomingGroup, userId, proposals, chatSummary),
   });

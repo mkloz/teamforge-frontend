@@ -1,7 +1,6 @@
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
 import {
   calculatePersonalityProgress,
-  calculatePersonalityResult,
   countAnsweredQuestions,
   getIntermissionContinuationStep,
   getNextQuestionStep,
@@ -22,7 +21,7 @@ export function usePersonalityTest({
   questionsPerPage,
 }: UsePersonalityTestProps) {
   const store = usePersonalityTestStore();
-  const { screen, testLength, questionIds, answers, result, vector } = store;
+  const { screen, testLength, questionIds, answers } = store;
 
   const questions = resolvePersonalityQuestions(
     questionIds,
@@ -61,7 +60,7 @@ export function usePersonalityTest({
     if (store.isReviewMode) {
       store.setIsReviewMode(false);
     }
-    completeAssessment(questions, answers);
+    completeAssessment();
   }
 
   function handleContinueFromIntermission() {
@@ -79,27 +78,15 @@ export function usePersonalityTest({
     });
 
     if (nextStep.type === "complete") {
-      completeAssessment(currentQuestions, currentStore.answers);
+      completeAssessment();
       return;
     }
 
     store.setScreen(nextStep.screen);
   }
 
-  function completeAssessment(
-    assessmentQuestions: typeof questions,
-    assessmentAnswers: typeof answers,
-  ) {
-    const nextResult = calculatePersonalityResult(
-      assessmentQuestions,
-      assessmentAnswers,
-    );
-    store.setResultData(nextResult.result, nextResult.vector);
-    store.setScreen({ id: "calculating" });
-  }
-
-  function handleCalculationDone() {
-    store.setScreen({ id: "results" });
+  function completeAssessment() {
+    store.setScreen({ id: "submitting" });
   }
 
   function handleRetake() {
@@ -115,8 +102,8 @@ export function usePersonalityTest({
     setIsReviewMode: store.setIsReviewMode,
     handleNextPage,
     handleContinueFromIntermission,
-    handleCalculationDone,
     handleRetake,
+    clearSubmittedAnswers: store.clearSubmittedAnswers,
     reset: store.reset,
   };
 
@@ -142,8 +129,6 @@ export function usePersonalityTest({
     answers,
     previousScreen: store.previousScreen,
     answeredInPoolCount,
-    result,
-    vector,
     totalPages,
     currentPage,
     pageStart,

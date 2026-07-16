@@ -1,8 +1,5 @@
 import { getParticipantOceanScores } from "./show-up-profile/ocean-scoring";
-import {
-  buildOceanSignals,
-  buildPersonalityTypeSignals,
-} from "./show-up-profile/signal-builders";
+import { buildOceanSignals } from "./show-up-profile/signal-builders";
 import type { ShowUpSignal } from "./show-up-profile/types";
 import type { UserProfilePanelParticipant } from "./types";
 
@@ -15,10 +12,6 @@ export function buildShowUpSignals(
 
   if (oceanScores) {
     return buildOceanSignals(oceanScores);
-  }
-
-  if (participant.personalityType) {
-    return buildPersonalityTypeSignals(participant.personalityType);
   }
 
   return [];

@@ -128,9 +128,9 @@ describe("profile matching signals", () => {
       ),
     ).toEqual([
       "Activity read",
-      "Social read",
+      "Personality detail",
       "Life stage",
-      "Match confidence",
+      "Profile detail",
     ]);
   });
 });

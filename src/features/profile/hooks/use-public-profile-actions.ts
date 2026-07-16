@@ -9,7 +9,6 @@ import {
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
-import type { User } from "@/shared/schemas";
 
 import {
   getConnectActionCopy,
@@ -23,7 +22,9 @@ import {
   WITHDRAW_CONNECTION_REQUEST_OFFLINE_ACTION,
 } from "./public-profile-action-state";
 
-type PublicProfileActionUser = Pick<User, "id">;
+interface PublicProfileActionUser {
+  id: string;
+}
 
 export function usePublicProfileActions(user: PublicProfileActionUser) {
   const currentUserQuery = useCurrentUserQuery();
@@ -55,7 +56,6 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
         APP_QUERY_KEYS.profile.friendshipWith(user.id),
         result.data,
       );
-
       await Promise.all([
         invalidateFriendshipSurfaces(),
         invalidateProfileFriendRequestSurfaces(),
@@ -101,7 +101,6 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
         APP_QUERY_KEYS.profile.friendshipWith(user.id),
         null,
       );
-
       await Promise.all([
         invalidateFriendshipSurfaces(),
         invalidateGroupPlanDetailSurfaces(),
@@ -129,7 +128,6 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
         APP_QUERY_KEYS.profile.friendshipWith(user.id),
         null,
       );
-
       await Promise.all([
         invalidateFriendshipSurfaces(),
         invalidateProfileFriendRequestSurfaces(),

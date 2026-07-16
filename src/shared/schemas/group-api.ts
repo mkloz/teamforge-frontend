@@ -7,10 +7,8 @@ import {
   groupBaseFields,
   userAvatarMediaField,
   userIdentitySummaryFields,
-  userPersonalityScoreFields,
   userPresenceFields,
   userProfileSummaryFields,
-  userTrustScoreField,
 } from "./entity-fragments";
 import {
   activityAccessSchema,
@@ -20,7 +18,6 @@ import {
   forgeModeSchema,
   groupRoleSchema,
   locationModeSchema,
-  personalityTypeSchema,
   planCategorySchema,
   planScheduleModeSchema,
   planStatusSchema,
@@ -59,9 +56,6 @@ const groupMemberUserSummarySchema = z.object({
   ...userIdentitySummaryFields,
   ...userAvatarMediaField,
   ...userProfileSummaryFields,
-  personalityType: personalityTypeSchema.nullable(),
-  ...userPersonalityScoreFields,
-  ...userTrustScoreField,
   ...userPresenceFields,
 });
 
@@ -70,7 +64,6 @@ const groupMemberApiSchema = z.object({
   role: groupRoleSchema,
   joinedAt: z.string().datetime(),
   leftAt: z.string().datetime().nullable(),
-  compatibilityScore: z.number().nullable(),
   user: groupMemberUserSummarySchema,
 });
 

@@ -8,14 +8,7 @@ type ResultStepPanelProps = Pick<CurrentForgeStepProps, "actions" | "fw">;
 export function ResultStepPanel({ actions, fw }: ResultStepPanelProps) {
   if (fw.forgeResult === "SUCCESS") {
     return (
-      <Step4Success
-        planTitle={fw.planName}
-        participants={fw.participants}
-        removedIds={fw.removedIds}
-        onRemoveParticipant={fw.handleRemoveParticipant}
-        onRestoreParticipant={fw.handleRestoreParticipant}
-        onReforge={fw.handleReforge}
-      />
+      <Step4Success planTitle={fw.planName} participants={fw.participants} />
     );
   }
 

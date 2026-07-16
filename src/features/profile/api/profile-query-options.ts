@@ -6,7 +6,9 @@ export function publicProfileQueryOptions(userId: string) {
   return queryOptions({
     queryKey: APP_QUERY_KEYS.profile.byId(userId),
     queryFn: () => ProfileApi.getUserProfile(userId),
-    staleTime: 60_000,
+    gcTime: 0,
+    staleTime: 0,
+    meta: { errorToast: false },
   });
 }
 

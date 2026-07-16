@@ -34,8 +34,11 @@ export function mapGroup(
   );
 }
 
-export function mapApiGroupFromSelection(group: Group): GroupApi {
-  return ActivityProjections.mapApiGroupFromSelection(group);
+export function mapApiGroupFromSelection(
+  group: Group,
+  baseGroup: GroupApi,
+): GroupApi {
+  return ActivityProjections.mapApiGroupFromSelection(group, baseGroup);
 }
 
 export function mapDirectChat(

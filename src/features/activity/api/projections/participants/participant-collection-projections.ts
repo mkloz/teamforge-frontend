@@ -24,7 +24,7 @@ export function buildParticipantsFromChatSummary(
   };
   const participants: ActivityParticipant[] =
     chat.participants?.map((participant) =>
-      mapChatSummaryParticipant(participant, currentUserParticipant),
+      mapChatSummaryParticipant(participant),
     ) ?? [];
 
   if (!participants.some((participant) => participant.id === currentUser.id)) {
@@ -76,15 +76,8 @@ export function getDefinedActivityParticipants(
   );
 }
 
-function mapChatSummaryParticipant(
-  participant: ChatSummaryParticipant,
-  currentUserParticipant: ActivityParticipant,
-) {
+function mapChatSummaryParticipant(participant: ChatSummaryParticipant) {
   return mapParticipantUserSummary(participant.user, {
     lastReadMessageId: participant.lastReadMessageId,
-    trustScore:
-      participant.user.id === currentUserParticipant.id
-        ? currentUserParticipant.trustScore
-        : (participant.user.trustScore ?? 0),
   });
 }

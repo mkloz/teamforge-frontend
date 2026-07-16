@@ -17,3 +17,5 @@
 
 @source "./";
 @source "../index.html";
+@source not "./features/operator";
+@source not "../operator";

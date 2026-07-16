@@ -1,7 +1,16 @@
-import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
-import { createPaginatedSchema, friendshipApiSchema } from "@/shared/schemas";
+import {
+  apiClient,
+  getResponseRequestId,
+  parseJsonWithRequestId,
+} from "@/shared/api/api";
+import {
+  createPaginatedSchema,
+  friendshipApiSchema,
+  userBlockApiSchema,
+} from "@/shared/schemas";
 
 const paginatedFriendshipsSchema = createPaginatedSchema(friendshipApiSchema);
+const paginatedUserBlocksSchema = createPaginatedSchema(userBlockApiSchema);
 
 type FriendshipPageLimit = number | string;
 
@@ -17,7 +26,7 @@ export async function getFriends(limit: FriendshipPageLimit) {
   return parseFriendshipPage(response);
 }
 
-export async function getBlockedFriends(limit: FriendshipPageLimit) {
+export async function getBlockedUsers(limit: FriendshipPageLimit) {
   const response = await apiClient
     .get("friends/blocked", {
       searchParams: {
@@ -26,7 +35,7 @@ export async function getBlockedFriends(limit: FriendshipPageLimit) {
     })
     .json<unknown>();
 
-  return parseFriendshipPage(response);
+  return paginatedUserBlocksSchema.parse(response).items;
 }
 
 export async function getIncomingFriendRequests(limit: FriendshipPageLimit) {
@@ -57,16 +66,20 @@ export async function blockUser(userId: string) {
   const response = await apiClient.post(`friends/${userId}/block`);
 
   return parseJsonWithRequestId(response, (value) =>
-    friendshipApiSchema.parse(value),
+    userBlockApiSchema.parse(value),
   );
 }
 
 export async function unblockUser(userId: string) {
   const response = await apiClient.delete(`friends/${userId}/block`);
 
-  return parseJsonWithRequestId(response, (value) =>
-    friendshipApiSchema.parse(value),
-  );
+  return parseUnblockResponse(response);
+}
+
+function parseUnblockResponse(response: Response) {
+  return {
+    requestId: getResponseRequestId(response),
+  };
 }
 
 function parseFriendshipPage(response: unknown) {

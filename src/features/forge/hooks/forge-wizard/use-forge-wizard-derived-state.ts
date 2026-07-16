@@ -3,9 +3,7 @@ import type { ForgeWizardData } from "@/features/forge/lib/forge-wizard";
 import { getForgeExecutionValidation } from "./forge-execution-input";
 
 export function useForgeWizardDerivedState(state: ForgeWizardData) {
-  const activeParticipants = state.participants.filter(
-    (participant) => !state.removedIds.has(participant.userId),
-  );
+  const activeParticipants = state.participants;
   const forgeExecutionValidation = getForgeExecutionValidation(state);
   const canAdvanceStep1 = !!state.selectedActivity;
   const canAdvanceStep2 = forgeExecutionValidation.canSubmit;

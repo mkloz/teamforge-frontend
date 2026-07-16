@@ -14,11 +14,11 @@ export function getCreateRatingMutationOptions(groupId: string) {
     },
     mutationFn: (payload: CreateRatingPayload) =>
       ActivityCommands.createGroupRating(groupId, payload),
-    onSuccess: (result: RatingMutationResult, payload: CreateRatingPayload) => {
-      trackRatingSubmitSuccess(groupId, payload, result);
+    onSuccess: (result: RatingMutationResult) => {
+      trackRatingSubmitSuccess(result);
     },
-    onError: (_error: unknown, payload: CreateRatingPayload) => {
-      trackRatingSubmitError(groupId, payload);
+    onError: () => {
+      trackRatingSubmitError();
     },
   };
 }
@@ -32,30 +32,16 @@ export function getDeferReviewMutationOptions(groupId: string) {
   };
 }
 
-function trackRatingSubmitSuccess(
-  groupId: string,
-  payload: CreateRatingPayload,
-  result: RatingMutationResult,
-) {
+function trackRatingSubmitSuccess(result: RatingMutationResult) {
   trackMutationOutcome(
     trackedMutationNames.activityGroupRatingSubmit,
     "success",
     {
-      groupId,
-      score: payload.score,
       requestId: result.requestId,
-      updatedTrustScore: result.data.updatedTrustScore,
     },
   );
 }
 
-function trackRatingSubmitError(groupId: string, payload: CreateRatingPayload) {
-  trackMutationOutcome(
-    trackedMutationNames.activityGroupRatingSubmit,
-    "error",
-    {
-      groupId,
-      score: payload.score,
-    },
-  );
+function trackRatingSubmitError() {
+  trackMutationOutcome(trackedMutationNames.activityGroupRatingSubmit, "error");
 }

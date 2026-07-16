@@ -11,7 +11,7 @@ const LazyAvatarPreviewDialog = lazy(() =>
 interface ProfileAvatarProps {
   src: string | null;
   name: string;
-  onlineStatus: OnlineStatus;
+  onlineStatus?: OnlineStatus;
 }
 
 export function ProfileAvatar({ src, name, onlineStatus }: ProfileAvatarProps) {
@@ -67,11 +67,13 @@ function ProfileAvatarButton({
           imageSize={128}
           loading="eager"
         />
-        <AvatarStatus
-          status={onlineStatus}
-          borderClassName="border-canvas"
-          sizeClassName="size-4 sm:size-5"
-        />
+        {onlineStatus ? (
+          <AvatarStatus
+            status={onlineStatus}
+            borderClassName="border-canvas"
+            sizeClassName="size-4 sm:size-5"
+          />
+        ) : null}
       </div>
     </button>
   );

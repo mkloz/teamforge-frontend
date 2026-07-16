@@ -4,8 +4,7 @@ import {
   type TestLength,
 } from "../data/ipip-questions";
 import type { ScreenState } from "../store/personality-test-store";
-import { calculateVector, type RawAnswers } from "../utils/score-calculator";
-import { evaluatePersonalityVector } from "./personality-evaluation";
+import type { RawAnswers } from "./personality-answer";
 
 interface GetNextQuestionStepParams {
   currentPage: number;
@@ -25,7 +24,7 @@ const PROGRESSIVE_SCREEN_IDS = new Set<ScreenState["id"]>([
   "length",
 ]);
 const COMPLETE_PROGRESS_SCREEN_IDS = new Set<ScreenState["id"]>([
-  "calculating",
+  "submitting",
   "results",
 ]);
 
@@ -122,16 +121,6 @@ export function getIntermissionContinuationStep({
   }
 
   return getQuestionStep(nextPageIndex);
-}
-
-export function calculatePersonalityResult(
-  questions: IpipQuestion[],
-  answers: RawAnswers,
-) {
-  const vector = calculateVector(questions, answers);
-  const result = evaluatePersonalityVector(vector);
-
-  return { result, vector };
 }
 
 export function calculatePersonalityProgress(

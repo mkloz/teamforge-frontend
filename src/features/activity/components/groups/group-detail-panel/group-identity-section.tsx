@@ -6,6 +6,7 @@ import { getGroupIdentityViewState } from "./group-identity-section/view-state";
 
 export function GroupIdentitySection({
   activity,
+  activityId,
   avatar,
   avatarMedia,
   coverImage = null,
@@ -67,6 +68,8 @@ export function GroupIdentitySection({
       />
 
       <GroupIdentityActions
+        activityId={activityId}
+        activityTitle={activityTitle}
         avatarSrc={avatarSrc}
         canEditGroup={canEditGroup}
         displayName={displayName}

@@ -46,6 +46,7 @@ export const userCoreFields = {
   onlineStatus: onlineStatusSchema.optional(),
   trustScore: z.number(),
   profileComplete: z.boolean(),
+  personalitySetupComplete: z.boolean().optional(),
   showFriendsListOnProfile: z.boolean().default(true),
 };
 

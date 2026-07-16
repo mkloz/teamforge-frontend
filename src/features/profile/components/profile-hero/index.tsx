@@ -52,7 +52,7 @@ export function ProfileHero({
                 <ProfileAvatar
                   src={user.avatar}
                   name={user.name}
-                  onlineStatus={user.onlineStatus ?? "ONLINE"}
+                  onlineStatus={user.onlineStatus}
                 />
                 <ProfileIdentity
                   user={user}

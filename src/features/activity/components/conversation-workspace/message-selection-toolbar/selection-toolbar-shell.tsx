@@ -9,7 +9,9 @@ interface SelectionToolbarShellProps {
   onCopy: () => void;
   onDelete: () => void;
   onForward: () => void;
+  onReport: () => void;
   onSave: () => void;
+  reportDisabled: boolean;
   selectedCount: number;
 }
 
@@ -19,7 +21,9 @@ export function SelectionToolbarShell({
   onCopy,
   onDelete,
   onForward,
+  onReport,
   onSave,
+  reportDisabled,
   selectedCount,
 }: SelectionToolbarShellProps) {
   return (
@@ -45,7 +49,9 @@ export function SelectionToolbarShell({
           onCopy={onCopy}
           onDelete={onDelete}
           onForward={onForward}
+          onReport={onReport}
           onSave={onSave}
+          reportDisabled={reportDisabled}
         />
       </div>
     </div>

@@ -1,13 +1,10 @@
-import type { GroupMember } from "@/features/activity/lib/activity-contract";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 
 export function MemberIdentityRow({
   isViewer,
-  member,
   memberName,
 }: {
   isViewer: boolean;
-  member: GroupMember;
   memberName: string;
 }) {
   return (
@@ -23,16 +20,6 @@ export function MemberIdentityRow({
           className="bg-muted px-1.5"
         >
           You
-        </StatusPill>
-      ) : null}
-      {member.user?.personalityType ? (
-        <StatusPill
-          tone="teal"
-          size="xs"
-          surface="solid"
-          className="h-4 px-1.5 py-0 leading-4"
-        >
-          {member.user.personalityType}
         </StatusPill>
       ) : null}
     </div>

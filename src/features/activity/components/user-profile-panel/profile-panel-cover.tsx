@@ -12,7 +12,7 @@ type ProfileCompactMetaItem =
 
 interface ProfilePanelCoverProps {
   compactHeaderVisible: boolean;
-  onlineStatus: OnlineStatus;
+  onlineStatus?: OnlineStatus;
   onCompactHeaderClick?: () => void;
   participant: UserProfilePanelParticipant;
 }
@@ -67,7 +67,7 @@ function PanelCompactProfileHeader({
   participant,
   visible,
 }: {
-  onlineStatus: OnlineStatus;
+  onlineStatus?: OnlineStatus;
   onClick?: () => void;
   participant: UserProfilePanelParticipant;
   visible: boolean;
@@ -98,11 +98,13 @@ function PanelCompactProfileHeader({
           fallbackClassName="bg-muted text-forge-teal"
           loading="eager"
         />
-        <AvatarStatus
-          status={onlineStatus}
-          borderClassName="border-forge-teal"
-          sizeClassName="size-3"
-        />
+        {onlineStatus ? (
+          <AvatarStatus
+            status={onlineStatus}
+            borderClassName="border-forge-teal"
+            sizeClassName="size-3"
+          />
+        ) : null}
       </div>
 
       <div className="pointer-events-none relative z-10 min-w-0">

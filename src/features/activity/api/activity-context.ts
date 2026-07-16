@@ -60,6 +60,8 @@ export const ACTIVITY_ACTION_CONTEXT: ActivityActionContext = {
       friendship,
       mergeFriendshipList,
     }),
+  closeDirectChatForBlockedUser: (userId) =>
+    ActivitySurfaceCache.closeDirectChatForBlockedUser(userId),
   applyRealtimeGroupUpdate: (currentUserId, group) =>
     ActivitySurfaceCache.applyRealtimeGroupUpdate({
       currentUserId,

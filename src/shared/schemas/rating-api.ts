@@ -6,8 +6,6 @@ const ratingUserEntitySchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar: z.string().nullable().optional(),
-  personalityType: z.string().nullable().optional(),
-  trustScore: z.number(),
 });
 
 export const ratingEntitySchema = z
@@ -76,17 +74,6 @@ export const groupReviewStateSchema = z.object({
 
 export type GroupReviewState = z.infer<typeof groupReviewStateSchema>;
 
-const trustScoreLogEntitySchema = z.object({
-  id: z.string(),
-  score: z.number(),
-  change: z.number(),
-  reason: z.string().nullable().optional(),
-  createdAt: z.string().datetime(),
-  userId: z.string(),
-});
-
 export const createRatingResultSchema = z.object({
   rating: ratingEntitySchema,
-  trustScoreLog: trustScoreLogEntitySchema,
-  updatedTrustScore: z.number(),
 });

@@ -19,8 +19,8 @@ interface GroupFitSectionProps {
 
 export function GroupFitSection({ insight }: GroupFitSectionProps) {
   const showEmptyVisual =
-    insight.title === "Fit still forming" ||
-    insight.title === "Fit needs an activity";
+    insight.title === "Add details to see group fit" ||
+    insight.title === "Add interests to improve group fit";
 
   if (showEmptyVisual) {
     return (

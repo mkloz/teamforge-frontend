@@ -23,6 +23,10 @@ function isMissingProfileBasics(user: User) {
 }
 
 function isMissingPersonality(user: User) {
+  if (user.personalitySetupComplete !== undefined) {
+    return !user.personalitySetupComplete;
+  }
+
   return (
     !user.personalityType ||
     OCEAN_SCORE_FIELDS.some((field) => user[field] === null)

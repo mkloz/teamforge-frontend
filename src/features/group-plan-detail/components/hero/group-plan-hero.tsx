@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, QrCode } from "lucide-react";
+import { ArrowLeft, Flag, QrCode } from "lucide-react";
 import type { ReactNode } from "react";
 import { HeroCover } from "@/features/group-plan-detail/components/hero/hero-cover";
 import { getHeroCoverImage } from "@/features/group-plan-detail/components/hero/hero-cover-image";
@@ -14,6 +14,11 @@ import {
   type GroupPlanDetailRouteSearch,
   getGroupPlanDetailBackLink,
 } from "@/features/group-plan-detail/public/group-plan-detail-navigation";
+import {
+  leaveReportedGroup,
+  ReportDialog,
+  type ReportTarget,
+} from "@/features/reporting/public/reporting";
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { buildAppUrl } from "@/shared/lib/app-url";
@@ -44,7 +49,13 @@ export function GroupPlanHero({
       </Button>
 
       <HeroCover detail={detail} alt={`${hero.title} cover photo`}>
-        <div className="absolute top-4 right-4 z-20 sm:top-6 sm:right-6">
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-2 sm:top-6 sm:right-6">
+          <ReportDialog
+            canRequestLeave={detail.viewer.canLeaveGroup}
+            onLeave={() => leaveReportedGroup(detail.group.id)}
+            targets={getAggregateReportTargets(detail)}
+            trigger={<HeroReportButton />}
+          />
           <GroupLinkQrDialog
             avatarSrc={hero.groupAvatar}
             bottomText={hero.groupName}
@@ -87,6 +98,44 @@ export function GroupPlanHero({
       />
     </header>
   );
+}
+
+function HeroReportButton() {
+  return (
+    <Button
+      variant="inverseGhost"
+      size="icon"
+      className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
+      aria-label="Report this group, plan, or activity"
+    >
+      <Flag size={18} strokeWidth={2.25} aria-hidden="true" />
+    </Button>
+  );
+}
+
+function getAggregateReportTargets(detail: GroupPlanDetail): ReportTarget[] {
+  const targets: ReportTarget[] = [
+    {
+      id: detail.group.id,
+      label: `Group: ${detail.group.name}`,
+      type: "GROUP",
+    },
+    {
+      id: detail.activity.id,
+      label: `Activity: ${detail.activity.title}`,
+      type: "ACTIVITY",
+    },
+  ];
+
+  if (detail.plan) {
+    targets.push({
+      id: detail.plan.id,
+      label: `Plan: ${detail.plan.title}`,
+      type: "PLAN",
+    });
+  }
+
+  return targets;
 }
 
 function GroupLinkQrDialog({

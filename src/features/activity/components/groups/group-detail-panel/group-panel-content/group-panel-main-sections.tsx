@@ -87,6 +87,7 @@ export function GroupPanelMainSections({
     <div className="flex flex-col gap-7 px-5 pt-0 pb-7">
       <GroupIdentitySection
         activity={group.activity}
+        activityId={group.activityId}
         avatar={group.avatar}
         avatarMedia={group.avatarMedia ?? null}
         coverImage={group.plan?.coverImage ?? null}

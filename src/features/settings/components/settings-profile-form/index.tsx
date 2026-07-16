@@ -1,4 +1,5 @@
 import { lazy, type ReactNode, Suspense } from "react";
+import { AdultEligibilitySection } from "@/features/settings/components/adult-eligibility-section";
 import {
   SettingsActiveSessionsSkeleton,
   SettingsBlockedUsersSkeleton,
@@ -75,24 +76,29 @@ function AccountSettingsPanel({
   account,
 }: Pick<SettingsProfileFormProps, "account">) {
   return (
-    <AccountSettingsSection
-      currentUser={account.currentUser}
-      form={account.form}
-      onSubmit={account.onSubmit}
-      onAvatarSelect={account.onAvatarSelect}
-      onAvatarDelete={account.onAvatarDelete}
-      profileSummary={account.profileSummary}
-      status={{
-        isOnline: account.isOnline,
-        isSaving: account.isSaving,
-        isUploadingAvatar: account.isUploadingAvatar,
-        isDeletingAvatar: account.isDeletingAvatar,
-      }}
-      errors={{
-        saveError: account.saveError,
-        avatarError: account.avatarError,
-      }}
-    />
+    <div className="flex flex-col gap-9">
+      <AccountSettingsSection
+        currentUser={account.currentUser}
+        form={account.form}
+        onSubmit={account.onSubmit}
+        onAvatarSelect={account.onAvatarSelect}
+        onAvatarDelete={account.onAvatarDelete}
+        profileSummary={account.profileSummary}
+        status={{
+          isOnline: account.isOnline,
+          isSaving: account.isSaving,
+          isUploadingAvatar: account.isUploadingAvatar,
+          isDeletingAvatar: account.isDeletingAvatar,
+        }}
+        errors={{
+          saveError: account.saveError,
+          avatarError: account.avatarError,
+        }}
+      />
+      <AdultEligibilitySection
+        adultEligibility={account.currentUser?.adultEligibility}
+      />
+    </div>
   );
 }
 

@@ -1,4 +1,4 @@
-import { Brain, Lock, RefreshCcw } from "lucide-react";
+import { Eye, Lock, RefreshCcw } from "lucide-react";
 import {
   OnboardingIntroActions,
   OnboardingIntroBenefitList,
@@ -13,16 +13,16 @@ interface PersonalityIntroProps {
 
 const BENEFITS = [
   {
-    icon: Brain,
-    text: "Uses questions adapted from the public-domain International Personality Item Pool (IPIP).",
+    icon: Lock,
+    text: "Your answers are sent for scoring when you submit and are not saved.",
   },
   {
-    icon: Lock,
-    text: "Your results help TeamForge form groups. Our privacy policy explains how this data is handled.",
+    icon: Eye,
+    text: "After you see the result, you decide whether TeamForge can use it when forming groups. A published result can be shown to people in a group proposal with you and members of your current groups.",
   },
   {
     icon: RefreshCcw,
-    text: "You can retake or update your assessment at any time from your profile.",
+    text: "Answers stay only in this tab until submission. Reloading, signing out, or closing the tab loses them.",
   },
 ];
 
@@ -34,21 +34,21 @@ export function PersonalityIntro({
   return (
     <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
       <p className="mb-3 text-center font-bold font-sans text-forge-teal text-xs">
-        Personality Assessment
+        Before the assessment
       </p>
 
       <h1 className="mb-4 text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight sm:text-display-lg">
-        What makes you, you?
+        Know what happens to your answers
       </h1>
 
       <div className="text-left">
         <p className="mb-3 text-pretty font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-base">
-          Before we build your group, answer a set of questions about how you
-          usually think, feel, and act.
+          You will answer questions about how you usually think, feel, and act.
+          TeamForge calculates the result after you finish.
         </p>
         <p className="mb-6 text-pretty font-sans text-muted-foreground text-xs leading-relaxed">
-          This assessment uses IPIP questions. Your result shows five broad
-          trait scores and helps TeamForge form groups.
+          The questions come from the public-domain International Personality
+          Item Pool. The result is an estimate, not a diagnosis.
         </p>
       </div>
 
@@ -64,7 +64,7 @@ export function PersonalityIntro({
         backLabel={backLabel}
         onBack={onBack}
         onStart={onStart}
-        startLabel="Start assessment"
+        startLabel="I understand, continue"
       />
     </PersonalityScreenShell>
   );

@@ -2,22 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 
 import { activityParticipantProfileQueryOptions } from "@/features/activity/api/activity-participant-profile-query-options";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
-import { normalizeTrustScore } from "@/shared/lib/user-psychometrics";
 import type { User } from "@/shared/schemas";
-import type { UserProfilePanelParticipant } from "./types";
+import type { ViewerProfile } from "@/shared/schemas/viewer-profile";
+import type {
+  ProfilePanelDataState,
+  UserProfilePanelParticipant,
+} from "./types";
 
 const LEGACY_ACTIVITY_CURRENT_USER_IDS = new Set([
   "current-user",
   "user-current",
 ]);
-
-const OCEAN_PROFILE_FIELDS = [
-  "oceanO",
-  "oceanC",
-  "oceanE",
-  "oceanA",
-  "oceanN",
-] satisfies readonly (keyof UserProfilePanelParticipant)[];
 
 export function useHydratedProfilePanelParticipant(
   participant: UserProfilePanelParticipant | undefined,
@@ -34,14 +29,27 @@ export function useHydratedProfilePanelParticipant(
     ...activityParticipantProfileQueryOptions(participant?.id ?? ""),
     enabled: canFetchPublicProfile,
   });
-  const profile = isCurrentUser ? currentUser : publicProfileQuery.data;
+  const hydratedParticipant = isCurrentUser
+    ? mergeCurrentUserParticipant(participant, currentUser)
+    : mergeViewerProfileParticipant(participant, publicProfileQuery.data);
+  const profileState = getProfilePanelDataState({
+    canFetchPublicProfile,
+    currentUserError: currentUserQuery.isError,
+    currentUserLoading: currentUserQuery.isLoading,
+    isCurrentUser,
+    publicProfileError: publicProfileQuery.isError,
+    publicProfileLoading: publicProfileQuery.isLoading,
+    viewerContext: publicProfileQuery.data?.viewerContext,
+  });
 
   return {
-    participant: mergeProfileParticipant(participant, profile),
-    isHydratingProfile:
-      canFetchPublicProfile &&
-      publicProfileQuery.isLoading &&
-      !hasCompleteOceanProfile(participant),
+    participant: hydratedParticipant,
+    profileState,
+    retryProfile: () => {
+      void (isCurrentUser
+        ? currentUserQuery.refetch()
+        : publicProfileQuery.refetch());
+    },
   };
 }
 
@@ -65,7 +73,7 @@ function canFetchProfilePanelPublicProfile(
   );
 }
 
-function mergeProfileParticipant(
+function mergeCurrentUserParticipant(
   participant: UserProfilePanelParticipant | undefined,
   profile: User | undefined,
 ): UserProfilePanelParticipant | undefined {
@@ -88,17 +96,62 @@ function mergeProfileParticipant(
     oceanA: profile.oceanA,
     oceanN: profile.oceanN,
     onlineStatus: profile.onlineStatus ?? participant.onlineStatus,
-    trustScore: normalizeTrustScore(profile.trustScore),
   };
 }
 
-function hasCompleteOceanProfile(
+function mergeViewerProfileParticipant(
   participant: UserProfilePanelParticipant | undefined,
-) {
-  return Boolean(
-    participant &&
-      OCEAN_PROFILE_FIELDS.every(
-        (field) => typeof participant[field] === "number",
-      ),
-  );
+  profile: ViewerProfile | undefined,
+): UserProfilePanelParticipant | undefined {
+  if (!participant || !profile) {
+    return participant;
+  }
+
+  const personality = profile.personalityProfile;
+
+  return {
+    ...participant,
+    name: profile.name,
+    avatar: profile.avatar,
+    bio: profile.bio,
+    age: profile.age,
+    gender: profile.gender,
+    city: profile.city,
+    personalityType: personality?.personalityType ?? null,
+    oceanO: personality?.ocean.openness ?? null,
+    oceanC: personality?.ocean.conscientiousness ?? null,
+    oceanE: personality?.ocean.extraversion ?? null,
+    oceanA: personality?.ocean.agreeableness ?? null,
+    oceanN: personality?.ocean.neuroticism ?? null,
+  };
+}
+
+function getProfilePanelDataState({
+  canFetchPublicProfile,
+  currentUserError,
+  currentUserLoading,
+  isCurrentUser,
+  publicProfileError,
+  publicProfileLoading,
+  viewerContext,
+}: {
+  canFetchPublicProfile: boolean;
+  currentUserError: boolean;
+  currentUserLoading: boolean;
+  isCurrentUser: boolean;
+  publicProfileError: boolean;
+  publicProfileLoading: boolean;
+  viewerContext: ViewerProfile["viewerContext"] | undefined;
+}): ProfilePanelDataState {
+  if (isCurrentUser) {
+    if (currentUserLoading) return "loading";
+    if (currentUserError) return "error";
+    return "ready";
+  }
+
+  if (!canFetchPublicProfile) return "ready";
+  if (publicProfileLoading) return "loading";
+  if (publicProfileError) return "error";
+
+  return viewerContext === "MINIMAL" ? "minimal" : "ready";
 }

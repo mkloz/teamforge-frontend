@@ -1,11 +1,15 @@
 import { createRoute } from "@tanstack/react-router";
 import {
+  accountActionDetailRouteOptions,
   activityRouteOptions,
   exploreRouteOptions,
   forgeRouteOptions,
   groupPlanDetailRouteOptions,
   homeRouteOptions,
   profileRouteOptions,
+  restrictionDetailRouteOptions,
+  safetyReportDetailRouteOptions,
+  safetyRouteOptions,
   settingsRouteOptions,
   userDetailRouteOptions,
 } from "@/app/router/app-routes/authenticated-route-options";
@@ -71,6 +75,26 @@ const settingsRoute = createRoute({
   ...settingsRouteOptions,
 });
 
+const safetyRoute = createRoute({
+  getParentRoute: () => appShellBaseRoute,
+  ...safetyRouteOptions,
+});
+
+const safetyReportDetailRoute = createRoute({
+  getParentRoute: () => appShellBaseRoute,
+  ...safetyReportDetailRouteOptions,
+});
+
+const accountActionDetailRoute = createRoute({
+  getParentRoute: () => appShellBaseRoute,
+  ...accountActionDetailRouteOptions,
+});
+
+const restrictionDetailRoute = createRoute({
+  getParentRoute: () => appShellBaseRoute,
+  ...restrictionDetailRouteOptions,
+});
+
 const forgeRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
   ...forgeRouteOptions,
@@ -84,6 +108,10 @@ const appRoutes = [
   profileRoute,
   userDetailRoute,
   settingsRoute,
+  safetyRoute,
+  safetyReportDetailRoute,
+  accountActionDetailRoute,
+  restrictionDetailRoute,
   forgeRoute,
 ];
 

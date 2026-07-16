@@ -2,11 +2,11 @@ import { useParams, useSearch } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { usePublicProfile } from "@/features/profile/hooks/use-profile";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
-import { ProfilePageContent } from "@/features/profile/profile-page/profile-page-content";
+import { ViewerProfilePageContent } from "@/features/profile/user-detail-page/viewer-profile-page-content";
 import { SkeletonButton } from "@/shared/components/loading/skeleton-patterns";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
-import type { User } from "@/shared/schemas";
+import type { ViewerProfile } from "@/shared/schemas/viewer-profile";
 
 const USER_DETAIL_ROUTE = "/app-shell/users/$userId";
 const LazyProfilePageError = lazy(() =>
@@ -38,8 +38,8 @@ function useUserDetailPageState() {
   const pageMetadata = createTeamForgePageMetadata({
     title: profile?.name ? `${profile.name}'s profile` : "Profile",
     description: profile?.name
-      ? `View ${profile.name}'s TeamForge profile, interests, and social fit.`
-      : "View a TeamForge profile, interests, and social fit.",
+      ? `View ${profile.name}'s TeamForge profile.`
+      : "View a TeamForge profile.",
   });
 
   return {
@@ -85,7 +85,7 @@ function UserDetailUnavailableState({
     <Suspense fallback={<ProfilePageLoading mode="query" />}>
       <LazyProfilePageError
         title="Profile could not load"
-        description="This public profile could not be refreshed right now."
+        description="This profile could not load. Try again."
         onRetry={onRetry}
       />
     </Suspense>
@@ -96,14 +96,13 @@ function UserDetailProfile({
   profile,
   spotlightConnect,
 }: {
-  profile: User;
+  profile: ViewerProfile;
   spotlightConnect: boolean;
 }) {
   return (
-    <ProfilePageContent
+    <ViewerProfilePageContent
       profile={profile}
-      mode="public"
-      renderActions={() => (
+      actions={
         <Suspense
           fallback={<PublicProfileActionsFallback userName={profile.name} />}
         >
@@ -112,8 +111,7 @@ function UserDetailProfile({
             spotlightConnect={spotlightConnect}
           />
         </Suspense>
-      )}
-      showUserMenu={false}
+      }
     />
   );
 }

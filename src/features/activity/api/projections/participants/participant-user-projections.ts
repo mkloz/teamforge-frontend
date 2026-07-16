@@ -6,8 +6,6 @@ import type {
   User,
 } from "@/shared/schemas";
 
-import { normalizeTrustScore } from "./participant-score-normalizers";
-
 type ParticipantUserSummary = {
   id: string;
   name: string;
@@ -17,20 +15,12 @@ type ParticipantUserSummary = {
   age?: number | null;
   gender?: ActivityParticipant["gender"];
   city?: string | null;
-  personalityType?: ActivityParticipant["personalityType"];
-  oceanO?: number | null;
-  oceanC?: number | null;
-  oceanE?: number | null;
-  oceanA?: number | null;
-  oceanN?: number | null;
   onlineStatus?: ActivityParticipant["onlineStatus"];
-  trustScore?: number | null;
 };
 
 interface ParticipantUserProjectionOptions {
   includeAvatarMedia?: boolean;
   lastReadMessageId?: string | null;
-  trustScore?: number | null;
 }
 
 export function mapParticipantUserSummary(
@@ -43,7 +33,6 @@ export function mapParticipantUserSummary(
     avatar: user.avatar,
     ...mapParticipantProfileFields(user),
     onlineStatus: user.onlineStatus,
-    trustScore: getProjectedTrustScore(user, options),
   };
 
   return applyParticipantProjectionOptions(participant, user, options);
@@ -51,32 +40,11 @@ export function mapParticipantUserSummary(
 
 function mapParticipantProfileFields(user: ParticipantUserSummary) {
   return {
-    bio: nullableParticipantField(user.bio),
-    age: nullableParticipantField(user.age),
-    gender: nullableParticipantField(user.gender),
-    city: nullableParticipantField(user.city),
-    personalityType: nullableParticipantField(user.personalityType),
-    oceanO: nullableParticipantField(user.oceanO),
-    oceanC: nullableParticipantField(user.oceanC),
-    oceanE: nullableParticipantField(user.oceanE),
-    oceanA: nullableParticipantField(user.oceanA),
-    oceanN: nullableParticipantField(user.oceanN),
+    ...(user.bio !== undefined && { bio: user.bio }),
+    ...(user.age !== undefined && { age: user.age }),
+    ...(user.gender !== undefined && { gender: user.gender }),
+    ...(user.city !== undefined && { city: user.city }),
   };
-}
-
-function nullableParticipantField<T>(value: T | null | undefined) {
-  return value ?? null;
-}
-
-function getProjectedTrustScore(
-  user: ParticipantUserSummary,
-  options: ParticipantUserProjectionOptions,
-) {
-  if ("trustScore" in options) {
-    return normalizeTrustScore(options.trustScore ?? 0);
-  }
-
-  return normalizeTrustScore(user.trustScore ?? 0);
 }
 
 function applyParticipantProjectionOptions(
@@ -123,6 +91,5 @@ export function mapCurrentUserParticipant(user: User): ActivityParticipant {
     oceanA: user.oceanA,
     oceanN: user.oceanN,
     onlineStatus: user.onlineStatus,
-    trustScore: normalizeTrustScore(user.trustScore),
   };
 }

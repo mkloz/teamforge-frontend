@@ -7,6 +7,6 @@ export const ActivityFriendshipCommands = {
   },
 
   unblockUser(userId: string) {
-    return ActivityActions.unblockUser(ACTIVITY_ACTION_CONTEXT, userId);
+    return ActivityActions.unblockUser(userId);
   },
 };

@@ -8,13 +8,11 @@ const forgeParticipantSchema = z.object({
   role: groupRoleSchema,
   joinedAt: z.string(),
   leftAt: z.string().nullable(),
-  compatibilityScore: z.number().nullable(),
   sortOrder: z.number().optional(),
   user: z.object({
     id: z.string(),
     name: z.string(),
-    avatar: z.string(),
-    trustScore: z.number().nullable().optional(),
+    avatar: z.string().nullable(),
   }),
 });
 

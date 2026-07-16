@@ -2,17 +2,22 @@ import { toMessageApi } from "@/features/activity/api/messages/message-mappers";
 import type { Group } from "@/features/activity/lib/activity-contract";
 import type { GroupApi } from "@/shared/schemas";
 
-type SelectionActivity = NonNullable<Group["activity"]>;
 type SelectionMember = NonNullable<Group["members"]>[number];
 type SelectionMemberUser = NonNullable<SelectionMember["user"]>;
 
-export function mapApiGroupFromSelection(group: Group): GroupApi {
+export function mapApiGroupFromSelection(
+  group: Group,
+  baseGroup: GroupApi,
+): GroupApi {
   return {
+    ...baseGroup,
     id: group.id,
     name: group.name,
     description: group.description,
     avatar: group.avatar,
-    avatarMedia: group.avatarMedia,
+    ...(group.avatarMedia !== undefined && {
+      avatarMedia: group.avatarMedia,
+    }),
     status: group.status,
     maxMembers: group.maxMembers,
     createdAt: group.createdAt,
@@ -20,50 +25,34 @@ export function mapApiGroupFromSelection(group: Group): GroupApi {
     version: group.version,
     disbandedAt: group.disbandedAt,
     activityId: group.activityId,
-    activity: mapSelectionActivity(group),
-    plan: mapSelectionPlan(group.plan),
-    chat: mapSelectionChat(group.chat),
-    members: mapSelectionMembers(group.members),
+    activity: mapSelectionActivity(group.activity, baseGroup.activity),
+    plan:
+      group.plan === undefined
+        ? baseGroup.plan
+        : mapSelectionPlan(group.plan, baseGroup.plan),
+    chat:
+      group.chat === undefined ? baseGroup.chat : mapSelectionChat(group.chat),
+    members: mapSelectionMembers(group.members, baseGroup.members),
   };
 }
 
-function mapSelectionActivity(group: Group): GroupApi["activity"] {
-  const { activity } = group;
-
-  return {
-    id: getSelectionActivityField(activity, ({ id }) => id, group.activityId),
-    title: getSelectionActivityField(
-      activity,
-      ({ title }) => title,
-      group.name,
-    ),
-    city: getSelectionActivityField(activity, ({ city }) => city, null),
-    status: getSelectionActivityField(
-      activity,
-      ({ status }) => status,
-      "MATCHED",
-    ),
-    visibility: getSelectionActivityField(
-      activity,
-      ({ visibility }) => visibility,
-      "PUBLIC",
-    ),
-    access: getSelectionActivityField(activity, ({ access }) => access, "OPEN"),
-    forgeMode: getSelectionActivityField(
-      activity,
-      ({ forgeMode }) => forgeMode,
-      "AUTO",
-    ),
-    interests: [],
-  };
+function mapSelectionActivity(
+  activity: Group["activity"],
+  baseActivity: GroupApi["activity"],
+): GroupApi["activity"] {
+  return activity ? { ...baseActivity, ...activity } : baseActivity;
 }
 
-function mapSelectionPlan(plan: Group["plan"]): GroupApi["plan"] {
+function mapSelectionPlan(
+  plan: Group["plan"],
+  basePlan: GroupApi["plan"],
+): GroupApi["plan"] {
   if (!plan) {
     return null;
   }
 
   return {
+    ...basePlan,
     id: plan.id,
     title: plan.title,
     category: plan.category,
@@ -94,84 +83,66 @@ function mapSelectionChat(chat: Group["chat"]): GroupApi["chat"] {
   };
 }
 
-function mapSelectionMembers(members: Group["members"]): GroupApi["members"] {
-  return members?.map(mapSelectionMember) ?? [];
+function mapSelectionMembers(
+  members: Group["members"],
+  baseMembers: GroupApi["members"],
+): GroupApi["members"] {
+  if (!members) {
+    return baseMembers;
+  }
+
+  const mappedMembers = members.map((member) =>
+    mapSelectionMember(
+      member,
+      baseMembers.find((candidate) => candidate.userId === member.userId),
+    ),
+  );
+
+  return mappedMembers.every(isDefinedSelectionMember)
+    ? mappedMembers
+    : baseMembers;
 }
 
 function mapSelectionMember(
   member: SelectionMember,
-): GroupApi["members"][number] {
+  baseMember: GroupApi["members"][number] | undefined,
+): GroupApi["members"][number] | null {
+  const user = member.user
+    ? mapSelectionMemberUser(member.user)
+    : baseMember?.user;
+
+  if (!user) {
+    return null;
+  }
+
   return {
+    ...baseMember,
     userId: member.userId,
     role: member.role,
     joinedAt: member.joinedAt,
     leftAt: member.leftAt,
-    compatibilityScore: member.compatibilityScore,
-    user: mapSelectionMemberUser(member),
+    user,
   };
 }
 
 function mapSelectionMemberUser(
-  member: SelectionMember,
+  user: SelectionMemberUser,
 ): GroupApi["members"][number]["user"] {
-  const { user } = member;
-
   return {
-    id: getSelectionMemberUserField(user, ({ id }) => id, member.userId),
-    name: getSelectionMemberUserField(user, ({ name }) => name, "Member"),
-    avatar: getSelectionMemberUserField(user, ({ avatar }) => avatar, null),
-    avatarMedia: readSelectionMemberUserField(
-      user,
-      ({ avatarMedia }) => avatarMedia,
-    ),
-    personalityType: getSelectionMemberUserField(
-      user,
-      ({ personalityType }) => personalityType,
-      null,
-    ),
-    trustScore: getSelectionMemberUserField(
-      user,
-      ({ trustScore }) => trustScore,
-      0,
-    ),
-    onlineStatus: readSelectionMemberUserField(
-      user,
-      ({ onlineStatus }) => onlineStatus,
-    ),
+    id: user.id,
+    name: user.name,
+    avatar: user.avatar,
+    avatarMedia: user.avatarMedia,
+    bio: user.bio,
+    age: user.age,
+    gender: user.gender,
+    city: user.city,
+    onlineStatus: user.onlineStatus,
   };
 }
 
-function getSelectionActivityField<T>(
-  activity: Group["activity"],
-  readField: (activity: SelectionActivity) => T | null | undefined,
-  fallback: T,
-): T {
-  if (!activity) {
-    return fallback;
-  }
-
-  return readField(activity) ?? fallback;
-}
-
-function getSelectionMemberUserField<T>(
-  user: SelectionMember["user"],
-  readField: (user: SelectionMemberUser) => T | null | undefined,
-  fallback: T,
-): T {
-  if (!user) {
-    return fallback;
-  }
-
-  return readField(user) ?? fallback;
-}
-
-function readSelectionMemberUserField<T>(
-  user: SelectionMember["user"],
-  readField: (user: SelectionMemberUser) => T,
-): T | undefined {
-  if (!user) {
-    return undefined;
-  }
-
-  return readField(user);
+function isDefinedSelectionMember(
+  member: GroupApi["members"][number] | null,
+): member is GroupApi["members"][number] {
+  return member !== null;
 }

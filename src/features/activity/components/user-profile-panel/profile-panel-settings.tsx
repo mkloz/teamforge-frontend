@@ -1,5 +1,9 @@
-import { Ban, Bell, BellOff, Loader2 } from "lucide-react";
+import { Ban, Bell, BellOff, Flag, Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
+import {
+  blockReportedUser,
+  ReportDialog,
+} from "@/features/reporting/public/reporting";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button, type ButtonV2Props } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -7,6 +11,7 @@ import { cn } from "@/shared/lib/utils";
 interface ProfilePanelSettingsProps {
   content: ProfilePanelSettingsContent;
   mode: "desktop" | "mobile";
+  reportTarget: { id: string; name: string };
   safety: ProfilePanelSettingsSafety;
 }
 
@@ -63,6 +68,7 @@ interface BlockActionState {
 export function ProfilePanelSettings({
   content,
   mode,
+  reportTarget,
   safety,
 }: ProfilePanelSettingsProps) {
   const isMobile = mode === "mobile";
@@ -96,6 +102,27 @@ export function ProfilePanelSettings({
         >
           {muteAction.icon}
         </SettingsActionButton>
+
+        <ReportDialog
+          canRequestBlock={!content.isBlocked}
+          onBlock={() => blockReportedUser(reportTarget.id)}
+          targets={[
+            {
+              id: reportTarget.id,
+              label: `${reportTarget.name}'s profile`,
+              type: "PROFILE",
+            },
+          ]}
+          trigger={
+            <SettingsActionButton
+              variant="subtle"
+              disabled={false}
+              label="Report user"
+            >
+              <Flag className="size-4" aria-hidden="true" />
+            </SettingsActionButton>
+          }
+        />
 
         <ActionDialog
           cancelLabel={blockDialog.cancelLabel}
@@ -230,10 +257,11 @@ function getBlockDialogState(isBlocked: boolean) {
     ? {
         cancelLabel: "Keep blocked",
         confirmLabel: "Unblock user",
-        description: "They can contact you again after you unblock them.",
+        description:
+          "Unblocking permits future contact only where your privacy and group settings allow it.",
         details: [
           "They will leave your blocked people list.",
-          "You can block them again from this panel.",
+          "This does not restore previous connections, chats, or groups.",
         ],
         title: "Unblock this user?",
         tone: "info" as const,
@@ -242,10 +270,10 @@ function getBlockDialogState(isBlocked: boolean) {
         cancelLabel: "Not now",
         confirmLabel: "Block user",
         description:
-          "TeamForge will limit direct contact and move them into your blocked list.",
+          "Blocking closes this direct chat, removes your connection, and adds them to your blocked list.",
         details: [
-          "You can unblock them later in Privacy and safety settings.",
-          "This does not remove shared group history where other members need context.",
+          "Blocking can also change which shared groups you can access.",
+          "You can unblock them later in Safety settings, but this will not restore the connection, chat, or group access.",
         ],
         title: "Block this user?",
         tone: "danger" as const,

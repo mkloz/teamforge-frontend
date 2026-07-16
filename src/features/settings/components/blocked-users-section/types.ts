@@ -1,7 +1,7 @@
-import type { FriendshipApi } from "@/shared/schemas";
+import type { UserBlockApi } from "@/shared/schemas";
 
 export interface BlockedUsersSectionProps {
-  blockedUsers: FriendshipApi[];
+  blockedUsers: UserBlockApi[];
   errorMessage: string | null;
   isOnline: boolean;
   isLoading: boolean;

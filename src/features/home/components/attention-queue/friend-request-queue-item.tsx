@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, UserPlus } from "lucide-react";
 
 import { AvatarWithBadge } from "@/shared/components/common/avatar-with-badge";
-import { StatusPill } from "@/shared/components/ui/status-pill";
 
 import type { AttentionQueueFriendRequest } from "./attention-queue.types";
 import { AttentionQueueItemActions } from "./attention-queue-item-actions";
@@ -61,16 +60,6 @@ export function FriendRequestQueueItem({
               <p className="truncate font-bold text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
                 {request.counterpart.name}
               </p>
-              {request.counterpart.personalityType ? (
-                <StatusPill
-                  tone="teal"
-                  size="xs"
-                  surface="soft"
-                  className="text-micro"
-                >
-                  {request.counterpart.personalityType}
-                </StatusPill>
-              ) : null}
               <ArrowRight
                 className="size-3.5 shrink-0 text-muted-foreground/70 opacity-0 transition duration-150 group-focus-within:translate-x-0.5 group-focus-within:text-forge-teal group-focus-within:opacity-100 group-hover:translate-x-0.5 group-hover:text-forge-teal group-hover:opacity-100"
                 aria-hidden="true"

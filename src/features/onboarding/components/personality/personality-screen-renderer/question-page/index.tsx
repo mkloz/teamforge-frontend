@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { TeamForgeLogo } from "@/assets/logo";
 import type { IpipQuestion } from "@/features/onboarding/data/ipip-questions";
-import type { RawAnswers } from "@/features/onboarding/utils/score-calculator";
+import type { RawAnswers } from "@/features/onboarding/lib/personality-answer";
 import { Button } from "@/shared/components/ui/button";
 
 import { QuestionList } from "./question-list";

@@ -51,7 +51,7 @@ export function useRegisterForm({
       email: "",
       password: "",
       otp: "",
-      age: 21,
+      dateOfBirth: "",
       city: "",
       gender: "",
     },
@@ -79,7 +79,12 @@ export function useRegisterForm({
 
   async function goToStep3() {
     setRootError(null);
-    const isValid = await form.trigger(["age", "city", "gender"]);
+    const isValid = await form.trigger([
+      "dateOfBirth",
+      "age",
+      "city",
+      "gender",
+    ]);
     if (!isValid) {
       return;
     }
@@ -99,6 +104,7 @@ export function useRegisterForm({
     try {
       const email = form.getValues("email");
       const result = await AuthCommands.registerWithEmail(form.getValues());
+      form.resetField("dateOfBirth", { defaultValue: "" });
       trackMutationOutcome(trackedMutationNames.authRegisterEmail, "success", {
         requestId: result.requestId,
       });

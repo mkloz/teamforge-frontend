@@ -20,10 +20,10 @@ export interface UserProfilePanelParticipant {
   oceanA?: number | null;
   oceanN?: number | null;
   onlineStatus?: OnlineStatus;
-  trustScore: number;
-  compatibilityScore?: number | null;
   groupRole?: GroupRole | null;
 }
+
+export type ProfilePanelDataState = "ready" | "loading" | "error" | "minimal";
 
 export interface UserProfilePanelChatParticipant {
   userId: string;

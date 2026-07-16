@@ -1,15 +1,21 @@
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import {
-  getBlockedFriends as sharedGetBlockedFriends,
   getFriends as sharedGetFriends,
   getIncomingFriendRequests as sharedGetIncomingFriendRequests,
   getOutgoingFriendRequests as sharedGetOutgoingFriendRequests,
 } from "@/shared/api/friendship-membership-api";
-import { getPublicUserById as sharedGetPublicUserById } from "@/shared/api/public-user-api";
+import { getViewerProfileById } from "@/shared/api/public-user-api";
 import type { FriendshipApi } from "@/shared/schemas";
-import { createPaginatedSchema, friendshipApiSchema } from "@/shared/schemas";
+import {
+  createPaginatedSchema,
+  friendshipApiSchema,
+  publicFriendSummaryApiSchema,
+} from "@/shared/schemas";
 
 const paginatedFriendshipsSchema = createPaginatedSchema(friendshipApiSchema);
+const paginatedPublicFriendsSchema = createPaginatedSchema(
+  publicFriendSummaryApiSchema,
+);
 const FRIENDSHIP_LOOKUP_LIMIT = "100";
 
 function findFriendshipWithUser(friendships: FriendshipApi[], userId: string) {
@@ -21,7 +27,7 @@ function findFriendshipWithUser(friendships: FriendshipApi[], userId: string) {
 
 export class ProfileApi {
   static async getUserProfile(userId: string) {
-    return sharedGetPublicUserById(userId);
+    return getViewerProfileById(userId);
   }
 
   static async getFriendshipWithUser(userId: string) {
@@ -29,7 +35,6 @@ export class ProfileApi {
       sharedGetFriends(FRIENDSHIP_LOOKUP_LIMIT),
       sharedGetIncomingFriendRequests(FRIENDSHIP_LOOKUP_LIMIT),
       sharedGetOutgoingFriendRequests(FRIENDSHIP_LOOKUP_LIMIT),
-      sharedGetBlockedFriends(FRIENDSHIP_LOOKUP_LIMIT),
     ]);
 
     return findFriendshipWithUser(friendshipPages.flat(), userId);
@@ -106,7 +111,7 @@ export class ProfileApi {
       })
       .json<unknown>();
 
-    return paginatedFriendshipsSchema.parse(response).items;
+    return paginatedPublicFriendsSchema.parse(response).items;
   }
 
   static async removeFriend(friendId: string) {

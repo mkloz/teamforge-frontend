@@ -7,92 +7,68 @@ type RecommendationFitSignal = {
   value: number;
 };
 
-const RECOMMENDATION_FIT_FALLBACK_LABELS = [
-  "profile details",
-  "activity interests",
-] as const;
-
 const RECOMMENDATION_FIT_SIGNAL_CONFIG = [
   {
-    label: "shared interests",
+    getLabel: () => "shared interests",
     getValue: (compatibility: RecommendationCompatibility) =>
       compatibility.interestOverlap,
   },
   {
-    label: "social style",
-    getValue: (compatibility: RecommendationCompatibility) =>
-      compatibility.personalityCompatibility,
-  },
-  {
-    label: "location",
+    getLabel: (group: ExploreGroup) =>
+      group.plan?.locationMode === "ONLINE"
+        ? "an online activity"
+        : "the same city",
     getValue: (compatibility: RecommendationCompatibility) =>
       compatibility.cityAlignment,
   },
   {
-    label: "age range",
+    getLabel: () => "a similar age range",
     getValue: (compatibility: RecommendationCompatibility) =>
       compatibility.ageAlignment,
   },
   {
-    label: "reliability",
+    getLabel: () => "someone you know",
     getValue: (compatibility: RecommendationCompatibility) =>
-      compatibility.trustScore,
+      compatibility.friendshipProximity,
   },
 ] as const;
 
 export function getRecommendationFitLine(group: ExploreGroup) {
-  const compatibility = group.compatibility;
-  const interestScore = normalizeScore(compatibility.interestOverlap);
+  const [first, second] = getTopRecommendationFitLabels(group);
 
-  if (interestScore <= 0) {
-    return "Close by and in your age range, but light on shared interests.";
+  if (!first) {
+    return "No shared details are shown yet.";
   }
 
-  const [first, second] = getTopRecommendationFitLabels(compatibility);
+  if (!second) {
+    return `Shared detail: ${first}.`;
+  }
 
   return `Shared details: ${first} and ${second}.`;
 }
 
 export const normalizeScore = normalizeDisplayScore;
 
-function getTopRecommendationFitLabels(
-  compatibility: RecommendationCompatibility,
-) {
-  const strongest = getSortedRecommendationFitSignals(compatibility);
+function getTopRecommendationFitLabels(group: ExploreGroup) {
+  const strongest = getSortedRecommendationFitSignals(group).filter(
+    (signal) => normalizeScore(signal.value) > 0,
+  );
 
-  return [
-    getRecommendationFitLabel(strongest, 0),
-    getRecommendationFitLabel(strongest, 1),
-  ] as const;
+  return [strongest[0]?.label, strongest[1]?.label] as const;
 }
 
-function getRecommendationFitLabel(
-  signals: RecommendationFitSignal[],
-  index: 0 | 1,
-) {
-  const signal = signals[index];
-
-  if (!signal) {
-    return RECOMMENDATION_FIT_FALLBACK_LABELS[index];
-  }
-
-  return signal.label;
-}
-
-function getSortedRecommendationFitSignals(
-  compatibility: RecommendationCompatibility,
-) {
-  return buildRecommendationFitSignals(compatibility).sort(
+function getSortedRecommendationFitSignals(group: ExploreGroup) {
+  return buildRecommendationFitSignals(group).sort(
     compareRecommendationFitSignals,
   );
 }
 
 function buildRecommendationFitSignals(
-  compatibility: RecommendationCompatibility,
+  group: ExploreGroup,
 ): RecommendationFitSignal[] {
   return RECOMMENDATION_FIT_SIGNAL_CONFIG.map((signal) => ({
-    label: signal.label,
-    value: signal.getValue(compatibility),
+    label: signal.getLabel(group),
+    value: signal.getValue(group.compatibility),
   }));
 }
 

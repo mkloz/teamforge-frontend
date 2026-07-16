@@ -31,6 +31,7 @@ interface UpdateChatLastMessageOptions {
 
 export interface ActivityActionContext {
   applyFriendshipUpdate(friendship: FriendshipApi): void;
+  closeDirectChatForBlockedUser(userId: string): void;
   applyRealtimeGroupUpdate(currentUserId: string, group: GroupApi): void;
   ensureBaseData(): Promise<ActivityActionBaseData>;
   mapMessages(

@@ -7,6 +7,7 @@ import { notificationSchema } from "./notification";
 import { planProposalSchema, planSchema } from "./plan";
 
 const realtimeEventSchema = z.enum([
+  "access.changed",
   "realtime.ready",
   "chat.subscribe",
   "chat.unsubscribe",
@@ -47,6 +48,8 @@ const realtimeEventMetaSchema = z.object({
   eventId: z.string(),
   occurredAt: z.string(),
 });
+
+export const realtimeAccessChangedPayloadSchema = realtimeEventMetaSchema;
 
 export const realtimeMessagePayloadSchema = realtimeEventMetaSchema.extend({
   chatId: z.string(),

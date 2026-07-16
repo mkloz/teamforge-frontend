@@ -11,9 +11,8 @@ export function MemberCard({
   onRemove,
   onShowProfile,
   removing = false,
-  showFit = true,
 }: MemberCardProps) {
-  const viewState = getMemberCardViewState(member, showFit);
+  const viewState = getMemberCardViewState(member);
 
   return (
     <article

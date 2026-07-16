@@ -2,27 +2,27 @@ import { z } from "zod";
 
 import {
   userIdentitySummaryFields,
-  userPersonalityScoreFields,
   userPresenceFields,
   userProfileSummaryFields,
-  userTrustScoreField,
 } from "./entity-fragments";
-import {
-  chatTypeSchema,
-  friendshipStatusSchema,
-  personalityTypeSchema,
-} from "./enums";
+import { chatTypeSchema, friendshipStatusSchema } from "./enums";
 
 const friendshipUserApiSchema = z.object({
   ...userIdentitySummaryFields,
   ...userProfileSummaryFields,
-  personalityType: personalityTypeSchema.nullable(),
-  ...userPersonalityScoreFields,
-  ...userTrustScoreField,
   ...userPresenceFields,
 });
 
 export type FriendshipUserApi = z.infer<typeof friendshipUserApiSchema>;
+
+export const publicFriendSummaryApiSchema = z.object({
+  ...userIdentitySummaryFields,
+  city: userProfileSummaryFields.city,
+});
+
+export type PublicFriendSummaryApi = z.infer<
+  typeof publicFriendSummaryApiSchema
+>;
 
 const friendshipPrivateChatApiSchema = z.object({
   id: z.string(),

@@ -4,14 +4,12 @@ import {
   groupBaseFields,
   userAvatarMediaField,
   userIdentitySummaryFields,
-  userTrustScoreField,
 } from "./entity-fragments";
 import {
   activityAccessSchema,
   activityVisibilitySchema,
   costTypeSchema,
   locationModeSchema,
-  personalityTypeSchema,
   planCategorySchema,
   planScheduleModeSchema,
 } from "./enums";
@@ -24,10 +22,8 @@ export const exploreInterestSchema = z.object({
 
 const compatibilitySchema = z.object({
   interestOverlap: z.number(),
-  personalityCompatibility: z.number(),
   cityAlignment: z.number(),
   ageAlignment: z.number(),
-  trustScore: z.number(),
   friendshipProximity: z.number(),
   total: z.number(),
 });
@@ -54,8 +50,6 @@ const explorePlanSchema = z.object({
 const exploreMemberSchema = z.object({
   ...userIdentitySummaryFields,
   ...userAvatarMediaField,
-  personalityType: personalityTypeSchema.nullable(),
-  ...userTrustScoreField,
 });
 
 export const exploreGroupSchema = z.object({

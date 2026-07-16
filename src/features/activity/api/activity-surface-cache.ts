@@ -8,6 +8,11 @@ export const ActivitySurfaceCache = {
   applyFriendshipUpdate: (
     ...args: Parameters<typeof ActivityFriendshipCache.applyFriendshipUpdate>
   ) => ActivityFriendshipCache.applyFriendshipUpdate(...args),
+  closeDirectChatForBlockedUser: (
+    ...args: Parameters<
+      typeof ActivityFriendshipCache.closeDirectChatForBlockedUser
+    >
+  ) => ActivityFriendshipCache.closeDirectChatForBlockedUser(...args),
   applyPresenceChanged: (
     ...args: Parameters<typeof ActivityPresenceCache.applyPresenceChanged>
   ) => ActivityPresenceCache.applyPresenceChanged(...args),

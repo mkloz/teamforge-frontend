@@ -15,11 +15,12 @@ import {
   buildFileUploadBody,
 } from "@/shared/api/file-upload";
 import {
-  getBlockedFriends as sharedGetBlockedFriends,
+  getBlockedUsers as sharedGetBlockedUsers,
   unblockUser as sharedUnblockUser,
 } from "@/shared/api/friendship-membership-api";
 import type { NotificationPreferences } from "@/shared/schemas";
 import {
+  adultEligibilitySchema,
   authSessionListSchema,
   fullUserResponseSchema,
   notificationPreferencesSchema,
@@ -39,9 +40,23 @@ export interface UpdateSettingsProfileDto {
 
 export type UpdateNotificationPreferencesDto = NotificationPreferences;
 
+export interface UpdateAdultEligibilityDto {
+  dateOfBirth: string;
+}
+
 export class SettingsApi {
   static async updateProfile(payload: UpdateSettingsProfileDto) {
     return patchCurrentUser(payload);
+  }
+
+  static async updateAdultEligibility(payload: UpdateAdultEligibilityDto) {
+    const response = await apiClient.put("users/me/adult-eligibility", {
+      json: payload,
+    });
+
+    return parseJsonWithRequestId(response, (value) =>
+      adultEligibilitySchema.parse(value),
+    );
   }
 
   static async uploadAvatar(file: File) {
@@ -98,7 +113,7 @@ export class SettingsApi {
   }
 
   static async getBlockedUsers() {
-    return sharedGetBlockedFriends(DEFAULT_LIMIT);
+    return sharedGetBlockedUsers(DEFAULT_LIMIT);
   }
 
   static async unblockUser(userId: string) {

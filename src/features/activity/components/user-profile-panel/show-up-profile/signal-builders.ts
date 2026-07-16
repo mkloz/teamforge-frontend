@@ -5,7 +5,6 @@ import {
   TRAIT_KEYS,
   TRAIT_TIEBREAK_RANK,
 } from "./ocean-scoring";
-import { getPersonalityTypeSignalCues } from "./personality-type-cues";
 import type {
   OceanSignalCopy,
   RankedOceanSignal,
@@ -93,22 +92,6 @@ export function buildOceanSignals(
     })
     .slice(0, MAX_SIGNAL_COUNT)
     .map((signal) => buildOceanSignal(signal));
-}
-
-export function buildPersonalityTypeSignals(
-  personalityType: string,
-): ShowUpSignal[] {
-  return getPersonalityTypeSignalCues(personalityType)
-    .slice(0, MAX_SIGNAL_COUNT)
-    .map((signal, index) => ({
-      key: `type-${index}-${signal.label}`,
-      label: signal.label,
-      value: null,
-      level: signal.level,
-      description: signal.description,
-      source: "personalityType",
-      confidence: 0.58,
-    }));
 }
 
 function buildOceanSignal(signal: RankedOceanSignal): ShowUpSignal {

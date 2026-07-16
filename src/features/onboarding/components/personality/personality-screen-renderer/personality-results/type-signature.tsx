@@ -4,54 +4,39 @@ import {
   popDownItem,
   resultsContainer,
 } from "@/features/onboarding/constants/motion";
-import type { PersonalityEvaluation } from "@/features/onboarding/lib/personality-evaluation";
+import type { PersonalityType } from "@/shared/schemas/enums";
 
 const TYPE_DIMENSION_LABELS = [
   "Energy",
-  "Mind",
-  "Nature",
-  "Tactics",
-  "Identity",
-] as const;
+  "Information",
+  "Decisions",
+  "Structure",
+];
 
 interface TypeSignatureProps {
-  result: PersonalityEvaluation;
-  typeLabel: string;
+  personalityType: PersonalityType;
 }
 
-export function TypeSignature({ result, typeLabel }: TypeSignatureProps) {
-  const typeLetters = result.type.split("");
-  const letters = [...typeLetters, result.variant];
-
+export function TypeSignature({ personalityType }: TypeSignatureProps) {
   return (
     <m.div
       variants={resultsContainer}
-      className="flex flex-wrap items-end gap-x-2 gap-y-2"
-      aria-label={typeLabel}
+      className="flex flex-wrap items-end gap-2"
+      aria-label={`Personality type ${personalityType}`}
     >
-      {letters.map((letter, index) => (
-        <div
+      {personalityType.split("").map((letter, index) => (
+        <m.div
           key={`${letter}-${TYPE_DIMENSION_LABELS[index]}`}
-          className="flex items-end gap-2"
+          variants={popDownItem}
+          className="w-14 text-center"
         >
-          {index === typeLetters.length && (
-            <m.span
-              variants={popDownItem}
-              className="pb-5 font-black text-[2.4rem] text-muted-foreground/60 leading-none sm:pb-6 sm:text-[3rem]"
-              aria-hidden="true"
-            >
-              -
-            </m.span>
-          )}
-          <m.div variants={popDownItem} className="w-11 text-center sm:w-14">
-            <span className="block font-black text-[3rem] text-ink leading-none tracking-tight sm:text-[3.85rem]">
-              {letter}
-            </span>
-            <span className="mt-1 block font-bold text-muted-foreground text-xs">
-              {TYPE_DIMENSION_LABELS[index]}
-            </span>
-          </m.div>
-        </div>
+          <span className="block font-black text-5xl text-ink leading-none tracking-tight sm:text-6xl">
+            {letter}
+          </span>
+          <span className="mt-1 block font-bold text-muted-foreground text-xs">
+            {TYPE_DIMENSION_LABELS[index]}
+          </span>
+        </m.div>
       ))}
     </m.div>
   );

@@ -76,7 +76,7 @@ export function mapDirectChat(
       currentUser.id,
     ),
     isMuted: getChatIsMutedForUser(chatSummary, currentUser.id),
-    isBlocked: friendship.status === "BLOCKED",
+    isBlocked: false,
     mutualGroups: [],
   };
 }

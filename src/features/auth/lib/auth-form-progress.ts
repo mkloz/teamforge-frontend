@@ -17,6 +17,7 @@ const REGISTER_PROGRESS_RULES: ReadonlyArray<ProgressRule<RegisterValues>> = [
   (values) => hasMinimumTextLength(values.email, 4),
   (values) => hasMinimumTextLength(values.password, 5),
   (values) => values.otp?.length === 6,
+  (values) => Boolean(values.dateOfBirth),
   (values) => hasAgeValue(values.age),
   (values) => hasMinimumTextLength(values.city, 2),
   (values) => hasMinimumTextLength(values.gender, 1),

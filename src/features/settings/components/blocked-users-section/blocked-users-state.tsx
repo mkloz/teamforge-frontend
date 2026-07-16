@@ -21,7 +21,7 @@ export function BlockedUsersEmptyState() {
       <div>
         <p className="font-semibold text-ink text-sm">No blocked users</p>
         <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          People you block from direct chats will appear here.
+          People you block will appear here.
         </p>
       </div>
     </div>

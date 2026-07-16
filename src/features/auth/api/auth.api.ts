@@ -16,6 +16,7 @@ interface RegisterDto {
   email: string;
   password: string;
   name: string;
+  dateOfBirth: string;
   age: number;
   city: string;
   gender: "MALE" | "FEMALE" | "NON_BINARY" | "OTHER";
@@ -85,6 +86,7 @@ export class AuthApi {
       email: values.email,
       password: values.password,
       name: values.name,
+      dateOfBirth: values.dateOfBirth,
       age: values.age,
       city: values.city,
       gender: normalizeGender(values.gender),

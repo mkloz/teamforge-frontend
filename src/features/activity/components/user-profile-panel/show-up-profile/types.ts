@@ -1,7 +1,6 @@
 import type { OceanTraitKey } from "@/shared/types/psychometrics";
 
 export type ShowUpDirection = "balanced" | "high" | "low";
-export type ShowUpSource = "ocean" | "personalityType";
 
 export interface ShowUpSignal {
   key: string;
@@ -9,7 +8,7 @@ export interface ShowUpSignal {
   value: number | null;
   level: string;
   description: string;
-  source: ShowUpSource;
+  source: "ocean";
   confidence: number;
 }
 
@@ -30,8 +29,3 @@ export interface RankedOceanSignal {
   direction: ShowUpDirection;
   confidence: number;
 }
-
-export type PersonalityTypeSignalCue = Pick<
-  ShowUpSignal,
-  "description" | "label" | "level"
->;

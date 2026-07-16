@@ -74,7 +74,7 @@ export function UserProfilePanel({
     chat,
     participant: propParticipant,
   });
-  const { isHydratingProfile, participant } =
+  const { participant, profileState, retryProfile } =
     useHydratedProfilePanelParticipant(selectedParticipant);
   const profileScrollResetKey = getProfilePanelScrollResetKey({
     chat,
@@ -118,8 +118,9 @@ export function UserProfilePanel({
         contentState={contentState}
         headerState={{
           compactHeaderVisible: isCompactHeaderVisible,
-          isHydratingProfile,
           onCompactHeaderClick: scrollPanelToTop,
+          profileState,
+          retryProfile,
         }}
         mode={mode}
         onBack={onBack}
@@ -149,15 +150,16 @@ function getProfilePanelSafetyState(
 function ProfilePanelUnavailableState() {
   return (
     <div className="flex flex-1 items-center justify-center p-8 text-center">
-      <p className="text-slate-muted text-sm">User profile not found</p>
+      <p className="text-slate-muted text-sm">Profile is not available.</p>
     </div>
   );
 }
 
 interface ProfilePanelHeaderState {
   compactHeaderVisible: boolean;
-  isHydratingProfile: boolean;
   onCompactHeaderClick: () => void;
+  profileState: import("./types").ProfilePanelDataState;
+  retryProfile: () => void;
 }
 
 interface ProfilePanelContentProps {
@@ -183,12 +185,13 @@ function ProfilePanelContent({
     <div className="flex-1">
       <ProfilePanelInfo
         participant={participant}
-        isHydratingProfile={headerState.isHydratingProfile}
         chatNavigation={contentState.chatNavigation}
         compactHeaderVisible={headerState.compactHeaderVisible}
         onCompactHeaderClick={headerState.onCompactHeaderClick}
+        profileState={headerState.profileState}
         profileNavigation={contentState.profileNavigation}
         onBack={onBack}
+        onRetryProfile={headerState.retryProfile}
       />
 
       <MutualGroupsSection groups={contentState.mutualGroups} />
@@ -196,6 +199,7 @@ function ProfilePanelContent({
       <DirectChatSettingsSection
         contentState={contentState}
         mode={mode}
+        participant={participant}
         safety={safety}
         scope={scope}
       />
@@ -206,6 +210,7 @@ function ProfilePanelContent({
 interface DirectChatSettingsSectionProps {
   contentState: ProfilePanelContentState;
   mode: ProfilePanelMode;
+  participant: UserProfilePanelParticipant;
   safety: ProfilePanelSafetyState;
   scope: ProfilePanelScope;
 }
@@ -213,6 +218,7 @@ interface DirectChatSettingsSectionProps {
 function DirectChatSettingsSection({
   contentState,
   mode,
+  participant,
   safety,
   scope,
 }: DirectChatSettingsSectionProps) {
@@ -221,6 +227,11 @@ function DirectChatSettingsSection({
   }
 
   return (
-    <ProfilePanelSettings content={contentState} mode={mode} safety={safety} />
+    <ProfilePanelSettings
+      content={contentState}
+      mode={mode}
+      reportTarget={{ id: participant.id, name: participant.name }}
+      safety={safety}
+    />
   );
 }

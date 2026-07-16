@@ -14,7 +14,7 @@ describe("forge template personalization", () => {
 
     expect(
       suggestions.slice(0, 3).map((suggestion) => suggestion.title),
-    ).toEqual(["Brunch table", "New spot vote", "Cook together"]);
+    ).toEqual(["Weekend brunch", "New restaurant night", "Cooking night"]);
     expect(suggestions[0]?.badge).toBe("Recommended");
     expect(suggestions[2]?.badge).toBe("Flexible");
   });
@@ -41,7 +41,7 @@ describe("forge template personalization", () => {
     expect(suggestions[0]?.categoryId).toBe("SPORTS");
     expect(
       suggestions.slice(0, 3).map((suggestion) => suggestion.title),
-    ).toContain("Five-a-side football");
+    ).toContain("Small-sided football");
   });
 
   it("does not discard meaningful short interests", () => {
@@ -56,11 +56,11 @@ describe("forge template personalization", () => {
 
     expect(
       suggestions.slice(0, 3).map((suggestion) => suggestion.title),
-    ).toContain("AI tool test");
+    ).toContain("AI task workshop");
     expect(
-      suggestions.find((suggestion) => suggestion.title === "AI tool test")
+      suggestions.find((suggestion) => suggestion.title === "AI task workshop")
         ?.badge,
-    ).toBe("Personal fit");
+    ).toBe("Based on your profile");
   });
 
   it("ranks concrete user interests above broad category traits", () => {
@@ -77,10 +77,10 @@ describe("forge template personalization", () => {
     expect(
       suggestions.slice(0, 4).map((suggestion) => suggestion.title),
     ).toEqual([
-      "Card draft table",
-      "RPG one-shot",
-      "Hidden-role night",
-      "Board game rotation",
+      "Trading card night",
+      "Board game cafe",
+      "Strategy game night",
+      "Tabletop RPG night",
     ]);
   });
 

@@ -1,0 +1,225 @@
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Eye, EyeOff, FileLock2 } from "lucide-react";
+import { useState } from "react";
+import { OperatorApi } from "@/features/operator/api/operator.api";
+import { operatorQueries } from "@/features/operator/api/operator-queries";
+import { OperatorPanel } from "@/features/operator/components/operator-case-panels";
+import {
+  formatOperatorDate,
+  humanizeCode,
+  isChildSafetyCase,
+} from "@/features/operator/lib/operator-language";
+import type {
+  OperatorEvidenceMetadata,
+  RevealedEvidence,
+} from "@/features/operator/schemas/operator.schemas";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+
+export function OperatorEvidencePanel({
+  caseId,
+  policyLabels,
+  reportCategories,
+}: {
+  caseId: string;
+  policyLabels: string[];
+  reportCategories: string[];
+}) {
+  const query = useQuery(operatorQueries.evidence(caseId));
+  const childSafety = isChildSafetyCase(policyLabels, reportCategories);
+
+  return (
+    <OperatorPanel title="Evidence metadata">
+      <p className="text-slate-muted text-sm leading-relaxed">
+        Evidence stays metadata-only until an audited text reveal succeeds.
+        Attachments cannot be previewed here.
+      </p>
+      {query.isLoading ? (
+        <div className="grid gap-2">
+          <Skeleton className="h-24 rounded-xl" />
+          <Skeleton className="h-24 rounded-xl" />
+        </div>
+      ) : query.isError ? (
+        <div className="grid gap-2">
+          <p className="text-destructive text-sm" role="alert">
+            Evidence metadata could not be loaded.
+          </p>
+          <Button
+            variant="outline"
+            className="w-fit"
+            onClick={() => void query.refetch()}
+          >
+            Try again
+          </Button>
+        </div>
+      ) : query.data?.length ? (
+        <ul className="grid gap-3">
+          {query.data.map((evidence) => (
+            <EvidenceItem
+              key={evidence.id}
+              caseId={caseId}
+              childSafety={childSafety}
+              evidence={evidence}
+            />
+          ))}
+        </ul>
+      ) : (
+        <p className="text-slate-muted text-sm">
+          No evidence metadata returned.
+        </p>
+      )}
+    </OperatorPanel>
+  );
+}
+
+function EvidenceItem({
+  caseId,
+  childSafety,
+  evidence,
+}: {
+  caseId: string;
+  childSafety: boolean;
+  evidence: OperatorEvidenceMetadata;
+}) {
+  const [reasonCode, setReasonCode] = useState("CASE_REVIEW");
+  const mutation = useMutation({
+    mutationKey: ["operator", "moderation", "evidence-reveal", evidence.id],
+    gcTime: 0,
+    mutationFn: () =>
+      OperatorApi.revealEvidence({
+        caseId,
+        evidenceId: evidence.id,
+        childSafety,
+        reasonCode,
+      }),
+  });
+  const canReveal =
+    evidence.sourceType !== "ATTACHMENT" &&
+    evidence.preservationState === "PRESERVED" &&
+    /^[A-Z][A-Z0-9_]{2,63}$/u.test(reasonCode);
+
+  return (
+    <li className="grid gap-3 rounded-xl bg-muted/45 p-4">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="grid gap-1">
+          <p className="flex items-center gap-2 font-semibold text-ink text-sm">
+            <FileLock2 className="size-4" aria-hidden="true" />
+            {humanizeCode(evidence.sourceType)} · {evidence.sourceId}
+          </p>
+          <p className="text-slate-muted text-xs">
+            {humanizeCode(evidence.preservationState)} · {evidence.sensitivity}
+          </p>
+          <p className="text-slate-muted text-xs">
+            Preserved {formatOperatorDate(evidence.preservedAt)} · retained
+            until {formatOperatorDate(evidence.retentionUntil)}
+          </p>
+        </div>
+        {mutation.data ? (
+          <Button variant="outline" size="sm" onClick={() => mutation.reset()}>
+            <EyeOff className="size-4" aria-hidden="true" />
+            Hide revealed text
+          </Button>
+        ) : null}
+      </div>
+
+      {mutation.data ? (
+        <RevealedText value={mutation.data} />
+      ) : evidence.sourceType === "ATTACHMENT" ? (
+        <p className="text-slate-muted text-sm">
+          Attachment metadata only. Preview is disabled.
+        </p>
+      ) : (
+        <div className="sm:main-action-grid grid gap-2 sm:items-end">
+          <label
+            htmlFor={`reveal-reason-${evidence.id}`}
+            className="grid gap-1.5 font-semibold text-ink text-sm"
+          >
+            Audit reason code
+            <Input
+              id={`reveal-reason-${evidence.id}`}
+              value={reasonCode}
+              maxLength={64}
+              spellCheck={false}
+              onChange={(event) =>
+                setReasonCode(event.target.value.toUpperCase())
+              }
+            />
+          </label>
+          <Button
+            variant="outline"
+            disabled={!canReveal || mutation.isPending}
+            loading={mutation.isPending}
+            onClick={() => mutation.mutate()}
+          >
+            <Eye className="size-4" aria-hidden="true" />
+            Reveal text
+          </Button>
+        </div>
+      )}
+      {mutation.isError ? (
+        <p className="text-destructive text-sm" role="alert">
+          The reveal did not complete. Confirm your role and recent step-up,
+          then try again.
+        </p>
+      ) : null}
+    </li>
+  );
+}
+
+function RevealedText({ value }: { value: RevealedEvidence }) {
+  return (
+    <div className="grid gap-4 rounded-xl border border-accent/30 bg-card p-4">
+      <div className="grid gap-1">
+        <p className="font-semibold text-ink text-sm">Revealed text</p>
+        <p className="text-slate-muted text-xs">
+          Captured {formatOperatorDate(value.capturedAt)} ·{" "}
+          {humanizeCode(value.targetType)}
+        </p>
+      </div>
+      <EvidenceFields value={value.target} />
+      {value.reporterNarrative ? (
+        <div className="grid gap-1 rounded-xl bg-muted/45 p-3">
+          <h4 className="font-semibold text-slate-muted text-xs">
+            Reporter's account
+          </h4>
+          <p className="wrap-break-word whitespace-pre-wrap text-ink text-sm leading-relaxed">
+            {value.reporterNarrative}
+          </p>
+        </div>
+      ) : null}
+      {value.context.length ? (
+        <div className="grid gap-3">
+          <h4 className="font-semibold text-slate-muted text-xs">Context</h4>
+          {value.context.map((entry) => (
+            <EvidenceFields
+              key={String(entry.id ?? JSON.stringify(entry))}
+              value={entry}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function EvidenceFields({
+  value,
+}: {
+  value: Record<string, boolean | number | string | null>;
+}) {
+  return (
+    <dl className="grid gap-2 rounded-xl bg-muted/45 p-3">
+      {Object.entries(value).map(([label, content]) => (
+        <div key={label} className="grid gap-0.5">
+          <dt className="font-semibold text-slate-muted text-xs">
+            {humanizeCode(label)}
+          </dt>
+          <dd className="wrap-break-word whitespace-pre-wrap text-ink text-sm">
+            {content === null ? "Not available" : String(content)}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}

@@ -134,7 +134,6 @@ export const friendshipStatusSchema = z.enum([
   "PENDING",
   "ACCEPTED",
   "DECLINED",
-  "BLOCKED",
 ]);
 
 export const notificationTypeSchema = z.enum([

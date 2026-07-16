@@ -50,15 +50,11 @@ function filterInviteCandidates(
 }
 
 function getInviteCandidateSearchText(candidate: ActivityParticipant) {
-  return [candidate.name, candidate.city ?? "", candidate.personalityType ?? ""]
-    .join(" ")
-    .toLowerCase();
+  return [candidate.name, candidate.city ?? ""].join(" ").toLowerCase();
 }
 
 function getInviteCandidateMeta(candidate: ActivityParticipant) {
-  return `${candidate.city || "Location pending"}${
-    candidate.personalityType ? ` · ${candidate.personalityType}` : ""
-  }`;
+  return candidate.city || "Location pending";
 }
 
 export function InviteMembersDialog({

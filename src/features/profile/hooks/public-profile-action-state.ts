@@ -37,7 +37,6 @@ const CONNECT_LABEL_BY_STATUS: Partial<
   Record<NonNullable<FriendshipStatus>, string>
 > = {
   ACCEPTED: "Connected",
-  BLOCKED: "Blocked",
   PENDING: "Requested",
 };
 
@@ -178,5 +177,5 @@ function hasBlockingFriendshipStatus(
     return !incomingRequest;
   }
 
-  return status === "ACCEPTED" || status === "BLOCKED";
+  return status === "ACCEPTED";
 }

@@ -36,7 +36,7 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
 
   const mutation = useMutation({
     meta: {
-      errorToastMessage: "We couldn't update that safety setting right now.",
+      errorToastMessage: "We couldn't change that block setting right now.",
     },
     mutationFn: runDirectChatSafetyMutation,
     onSuccess: async (result, { action }) => {

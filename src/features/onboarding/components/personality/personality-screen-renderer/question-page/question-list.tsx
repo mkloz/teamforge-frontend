@@ -5,7 +5,7 @@ import {
   staggerContainer,
 } from "@/features/onboarding/constants/motion";
 import type { IpipQuestion } from "@/features/onboarding/data/ipip-questions";
-import type { RawAnswers } from "@/features/onboarding/utils/score-calculator";
+import type { RawAnswers } from "@/features/onboarding/lib/personality-answer";
 
 import { QuestionCard } from "./question-card";
 

@@ -6,9 +6,10 @@ import {
 import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 import type { User } from "@/shared/schemas";
 
-const PROFILE_BASICS_FIELD_COUNT = 3;
+const PROFILE_BASICS_FIELD_COUNT = 4;
 
 export const PROFILE_BASICS_DEFAULT_VALUES: ProfileBasicsValues = {
+  dateOfBirth: "",
   age: "",
   gender: "",
   city: "",
@@ -28,6 +29,7 @@ export function getProfileBasicsValuesFromUser(
 
 function buildProfileBasicsValues(user: User): ProfileBasicsValues {
   return {
+    dateOfBirth: "",
     age: toProfileBasicsAgeValue(user.age),
     gender: toProfileBasicsTextValue(user.gender),
     city: toProfileBasicsTextValue(user.city),
@@ -52,6 +54,7 @@ function toProfileBasicsLocationValue(value: number | null | undefined) {
 
 export function getProfileBasicsProgress(values: Partial<ProfileBasicsValues>) {
   const filledFields = [
+    Boolean(values.dateOfBirth?.trim().length),
     Boolean(values.age?.trim().length),
     Boolean(values.gender),
     Boolean(values.city?.trim().length),
@@ -68,6 +71,7 @@ export function toProfileBasicsDto(
   }
 
   return {
+    dateOfBirth: values.dateOfBirth,
     age: Number(values.age),
     gender: values.gender,
     city: values.city.trim(),

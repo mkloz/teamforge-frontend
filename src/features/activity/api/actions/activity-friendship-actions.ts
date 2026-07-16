@@ -1,26 +1,30 @@
 import { ActivityApi } from "@/features/activity/api/activity.api";
 
 import type { ActivityActionContext } from "@/features/activity/api/activity-action-context";
-import { invalidateFriendshipSurfaces } from "@/shared/api/query-invalidation";
+import {
+  invalidateGroupMembershipSurfaces,
+  invalidateUserBlockSurfaces,
+} from "@/shared/api/query-invalidation";
 
 export const ActivityFriendshipActions = {
   async blockUser(context: ActivityActionContext, userId: string) {
-    const friendshipResult = await ActivityApi.blockUser(userId);
+    const blockResult = await ActivityApi.blockUser(userId);
 
-    context.applyFriendshipUpdate(friendshipResult.data);
+    context.closeDirectChatForBlockedUser(userId);
 
-    await invalidateFriendshipSurfaces();
+    await Promise.all([
+      invalidateUserBlockSurfaces(),
+      invalidateGroupMembershipSurfaces(),
+    ]);
 
-    return friendshipResult;
+    return blockResult;
   },
 
-  async unblockUser(context: ActivityActionContext, userId: string) {
-    const friendshipResult = await ActivityApi.unblockUser(userId);
+  async unblockUser(userId: string) {
+    const unblockResult = await ActivityApi.unblockUser(userId);
 
-    context.removeFriendshipFromActivity(friendshipResult.data);
+    await invalidateUserBlockSurfaces();
 
-    await invalidateFriendshipSurfaces();
-
-    return friendshipResult;
+    return unblockResult;
   },
 };

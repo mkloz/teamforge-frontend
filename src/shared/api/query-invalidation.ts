@@ -2,6 +2,7 @@ import type { QueryKey } from "@tanstack/react-query";
 
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { resetViewerProfileQueries } from "@/shared/api/viewer-profile-cache";
 
 function invalidateQuery(queryKey: QueryKey) {
   return appQueryClient.invalidateQueries({ queryKey });
@@ -30,6 +31,7 @@ export function invalidateHomeGroupSurfaces() {
 
 export function invalidateGroupMembershipSurfaces() {
   return Promise.all([
+    resetViewerProfileQueries(),
     invalidateActivityGroupSurfaces(),
     invalidateHomeGroupSurfaces(),
     invalidateQuery(APP_QUERY_KEYS.explore.groups),
@@ -38,11 +40,41 @@ export function invalidateGroupMembershipSurfaces() {
 }
 
 export function invalidateFriendshipSurfaces() {
-  return invalidateQueries([
-    APP_QUERY_KEYS.activity.friendships,
-    APP_QUERY_KEYS.activity.chats,
-    APP_QUERY_KEYS.activity.directSelection,
-    APP_QUERY_KEYS.forge.friends,
+  return Promise.all([
+    resetViewerProfileQueries(),
+    invalidateQueries([
+      APP_QUERY_KEYS.activity.friendships,
+      APP_QUERY_KEYS.activity.chats,
+      APP_QUERY_KEYS.activity.directSelection,
+      APP_QUERY_KEYS.forge.friends,
+    ]),
+  ]);
+}
+
+export function invalidateUserBlockSurfaces() {
+  return Promise.all([
+    invalidateQuery(APP_QUERY_KEYS.settings.blockedUsers),
+    invalidateFriendshipSurfaces(),
+  ]);
+}
+
+export function refreshAccessSensitiveSurfaces() {
+  appQueryClient.removeQueries({
+    queryKey: APP_QUERY_KEYS.activity.directSelection,
+  });
+  appQueryClient.removeQueries({
+    queryKey: APP_QUERY_KEYS.activity.groupSelection,
+  });
+  appQueryClient.removeQueries({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.all,
+  });
+  appQueryClient.removeQueries({ queryKey: ["activity-messages"] });
+  appQueryClient.removeQueries({ queryKey: ["activity-message-search"] });
+
+  return Promise.all([
+    invalidateUserBlockSurfaces(),
+    invalidateGroupMembershipSurfaces(),
+    invalidateInvitationSurfaces(),
   ]);
 }
 

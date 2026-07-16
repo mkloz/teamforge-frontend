@@ -1,8 +1,8 @@
 import { apiClient } from "@/shared/api/api";
-import { publicUserResponseSchema } from "@/shared/schemas";
+import { viewerProfileSchema } from "@/shared/schemas/viewer-profile";
 
-export async function getPublicUserById(userId: string) {
+export async function getViewerProfileById(userId: string) {
   const response = await apiClient.get(`users/${userId}`).json<unknown>();
 
-  return publicUserResponseSchema.parse(response);
+  return viewerProfileSchema.parse(response);
 }

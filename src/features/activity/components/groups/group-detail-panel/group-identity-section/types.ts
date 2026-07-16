@@ -9,6 +9,7 @@ import type { ImageMedia } from "@/shared/schemas/media";
 
 export interface GroupIdentitySectionProps {
   activity?: Group["activity"];
+  activityId: string;
   avatar?: string | null;
   avatarMedia?: ImageMedia | null;
   coverImage?: string | null;

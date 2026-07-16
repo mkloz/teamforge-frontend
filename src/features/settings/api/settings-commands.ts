@@ -1,4 +1,5 @@
 import type {
+  UpdateAdultEligibilityDto,
   UpdateNotificationPreferencesDto,
   UpdateSettingsProfileDto,
 } from "@/features/settings/api/settings.api";
@@ -9,6 +10,10 @@ import { clearCurrentUserCache } from "@/shared/api/current-user-query";
 export const SettingsCommands = {
   updateProfile(payload: UpdateSettingsProfileDto) {
     return SettingsApi.updateProfile(payload);
+  },
+
+  updateAdultEligibility(payload: UpdateAdultEligibilityDto) {
+    return SettingsApi.updateAdultEligibility(payload);
   },
 
   uploadAvatar(file: File) {

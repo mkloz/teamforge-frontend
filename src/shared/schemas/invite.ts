@@ -1,11 +1,12 @@
 import { z } from "zod";
 
-import { groupStatusSchema, personalityTypeSchema } from "./enums";
+import { groupStatusSchema } from "./enums";
 
 const inviteTypeSchema = z.enum([
   "ALGORITHM_MATCH",
   "FRIEND_INVITE",
   "DIRECT_INVITE",
+  "JOIN_REQUEST",
 ]);
 
 const inviteStatusSchema = z.enum([
@@ -36,8 +37,6 @@ const inviteUserSchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar: z.string().nullable(),
-  personalityType: personalityTypeSchema.nullable(),
-  trustScore: z.number(),
 });
 
 export const inviteSchema = z

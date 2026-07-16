@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Brain, Tags } from "lucide-react";
 import {
@@ -11,6 +12,7 @@ import {
   StatPill,
 } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { normalizeTrustScore } from "@/features/settings/components/settings-profile-form/settings-formatters";
+import { personalityAssessmentQueryOptions } from "@/shared/api/personality-assessment-query";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import {
@@ -18,6 +20,7 @@ import {
   buildPersonalityEditNavigation,
 } from "@/shared/navigation";
 import type { NotificationPreferences, User } from "@/shared/schemas";
+import type { PersonalityAssessmentState } from "@/shared/schemas/personality-assessment";
 
 interface MatchingSettingsSectionProps {
   currentUser: User | undefined;
@@ -97,11 +100,13 @@ export function MatchingSettingsSection({
 }
 
 function MatchingStats({ currentUser }: { currentUser: User | undefined }) {
+  const personalityAssessment = useQuery(personalityAssessmentQueryOptions());
+
   return (
     <div className="grid gap-5 sm:grid-cols-2">
       <StatPill
         label="Personality type"
-        value={currentUser?.personalityType ?? "Not set"}
+        value={getPersonalityStatusLabel(personalityAssessment.data)}
       />
       <StatPill label="Trust score" value={getTrustScoreLabel(currentUser)} />
     </div>
@@ -236,7 +241,8 @@ function MatchingEditActions() {
   return (
     <div className="flex flex-col gap-3 border-border border-t pt-5 md:flex-row md:items-center md:justify-between">
       <p className="text-slate-muted text-sm">
-        Update your answers and interests when your preferences shift.
+        Review your personality result or update your interests when they
+        change.
       </p>
 
       <div className="responsive-action-grid grid w-full gap-3 md:max-w-92">
@@ -248,7 +254,7 @@ function MatchingEditActions() {
             })}
           >
             <Brain className="size-4" aria-hidden="true" />
-            Update personality
+            Review personality
           </Link>
         </Button>
         <Button asChild variant="outline" size="compact" className="min-w-0">
@@ -265,6 +271,26 @@ function MatchingEditActions() {
       </div>
     </div>
   );
+}
+
+function getPersonalityStatusLabel(
+  state: PersonalityAssessmentState | undefined,
+) {
+  if (state?.draft) {
+    return `${state.draft.personalityType} draft`;
+  }
+
+  if (state?.publicProfile) {
+    return `${state.publicProfile.personalityType} published`;
+  }
+
+  if (state?.current) {
+    return state.current.provenance === "LEGACY_CLIENT_RESULT"
+      ? `${state.current.personalityType} · retake needed`
+      : `${state.current.personalityType} private`;
+  }
+
+  return "Not set";
 }
 
 function getMatchingControlsDisabled({

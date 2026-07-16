@@ -6,14 +6,15 @@ import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
 
 const PERSONALITY_TEST_METADATA = createTeamForgePageMetadata({
-  title: "Personality Test",
-  description: "Take the TeamForge personality test to find compatible groups.",
+  title: "Personality Assessment",
+  description: "Answer personality questions and review what TeamForge saves.",
 });
 
 export function PersonalityTestPage() {
   usePageMetadata(PERSONALITY_TEST_METADATA);
 
   const {
+    assessment,
     backLabel,
     continueLabel,
     continueToInterests,
@@ -22,12 +23,14 @@ export function PersonalityTestPage() {
     isOnline,
     scrollContainerRef,
     setPendingLength,
+    submissionError,
+    submitCurrentAssessment,
     testState,
   } = usePersonalityTestPageFlow();
   const hasTopPadding =
     testState.screen.id !== "questions" &&
     testState.screen.id !== "results" &&
-    testState.screen.id !== "calculating";
+    testState.screen.id !== "submitting";
   const screenTransitionKey = getPersonalityScreenTransitionKey(
     testState.screen,
   );
@@ -42,14 +45,17 @@ export function PersonalityTestPage() {
     >
       <div key={screenTransitionKey} className="flex flex-1 flex-col">
         <PersonalityScreenRenderer
+          assessment={assessment}
           state={testState}
           backLabel={backLabel}
           onBack={goBack}
           onSelectionChange={setPendingLength}
+          onRetrySubmission={submitCurrentAssessment}
           onContinue={continueToInterests}
           continueLabel={continueLabel}
           isOnline={isOnline}
           questionsPerPage={QUESTIONS_PER_PAGE}
+          submissionError={submissionError}
         />
       </div>
     </PersonalityPageContent>

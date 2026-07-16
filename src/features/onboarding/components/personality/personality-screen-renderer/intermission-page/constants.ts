@@ -45,9 +45,9 @@ const INTERMISSION_CONTENT: {
   },
   {
     icon: Brain,
-    title: "Sensitivity and stability",
+    title: "Emotional sensitivity",
     description:
-      "Questions about stress and emotion contribute to the emotional-stability score.",
+      "Questions about stress and emotion contribute to the emotional-sensitivity score.",
     factTitle: "No preferred end",
     fact: "The score describes a tendency. It is not a grade or a judgment of character.",
   },
@@ -89,7 +89,7 @@ const INTERMISSION_CONTENT: {
     description:
       "The longer assessment includes more questions for each trait.",
     factTitle: "You can stop or continue",
-    fact: "Use the current result or continue if you want to answer the remaining questions.",
+    fact: "Finish with the answers you have given or continue if you want to answer the remaining questions.",
   },
 ];
 

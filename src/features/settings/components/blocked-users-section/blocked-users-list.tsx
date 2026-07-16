@@ -38,12 +38,12 @@ export function BlockedUsersList({
 
   return (
     <>
-      {blockedUsers.map((friendship) => (
+      {blockedUsers.map((block) => (
         <BlockedUserRow
-          key={`${friendship.requesterId}-${friendship.receiverId}`}
-          friendship={friendship}
+          key={block.id}
+          block={block}
           isOnline={isOnline}
-          isUnblocking={unblockingUserId === friendship.counterpart.id}
+          isUnblocking={unblockingUserId === block.id}
           onUnblockUser={onUnblockUser}
         />
       ))}

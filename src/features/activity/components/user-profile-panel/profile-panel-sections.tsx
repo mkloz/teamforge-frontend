@@ -1,24 +1,44 @@
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { ShowUpSignal } from "./show-up-profile";
-import type { UserProfilePanelParticipant } from "./types";
+import type {
+  ProfilePanelDataState,
+  UserProfilePanelParticipant,
+} from "./types";
 
 const PERSONALITY_SEGMENTS = [1, 2, 3, 4, 5];
 
 export function ProfilePanelAboutSection({
+  onRetry,
   participant,
+  profileState,
 }: {
+  onRetry: () => void;
   participant: UserProfilePanelParticipant;
+  profileState: ProfilePanelDataState;
 }) {
   return (
     <section className="border-border/70 border-b px-5 py-5">
       <h4 className="font-bold text-slate-muted text-xs">About</h4>
-      {participant.bio ? (
+      {profileState === "error" ? (
+        <ProfileDetailsError onRetry={onRetry} />
+      ) : profileState === "loading" ? (
+        <p
+          className="mt-2 text-slate-muted text-sm leading-relaxed"
+          role="status"
+          aria-live="polite"
+        >
+          Profile details are loading.
+        </p>
+      ) : participant.bio ? (
         <p className="mt-2 text-pretty text-ink/80 text-sm leading-relaxed">
           {participant.bio}
         </p>
       ) : (
         <p className="mt-2 text-slate-muted text-sm leading-relaxed">
-          {participant.name} has not added a profile note yet.
+          {profileState === "minimal"
+            ? "Only basic profile details are available."
+            : "No profile note is available."}
         </p>
       )}
     </section>
@@ -26,12 +46,16 @@ export function ProfilePanelAboutSection({
 }
 
 export function ProfilePanelSignalsSection({
-  isHydratingProfile,
   personalitySignals,
+  profileState,
 }: {
-  isHydratingProfile: boolean;
   personalitySignals: ShowUpSignal[];
+  profileState: ProfilePanelDataState;
 }) {
+  if (profileState !== "ready") {
+    return null;
+  }
+
   return (
     <section className="px-5 py-5">
       <h4 className="font-bold text-slate-muted text-xs">
@@ -46,12 +70,23 @@ export function ProfilePanelSignalsSection({
         </div>
       ) : (
         <p className="mt-2 font-medium text-slate-muted text-sm">
-          {isHydratingProfile
-            ? "Personality profile is loading."
-            : "Personality profile is not available yet."}
+          Personality details are not shared on this profile.
         </p>
       )}
     </section>
+  );
+}
+
+function ProfileDetailsError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="mt-2 flex flex-col items-start gap-3">
+      <p className="font-medium text-slate-muted text-sm">
+        Some profile details could not load.
+      </p>
+      <Button size="sm" variant="outline" onClick={onRetry}>
+        Try again
+      </Button>
+    </div>
   );
 }
 
@@ -73,15 +108,9 @@ function PersonalitySignal({ signal }: { signal: ShowUpSignal }) {
             {signal.level}
           </p>
         </div>
-        {signal.source === "ocean" ? (
-          <p className="shrink-0 font-bold text-forge-teal text-xs leading-tight">
-            {roundedValue}%
-          </p>
-        ) : (
-          <p className="shrink-0 font-bold text-slate-muted text-xs leading-tight">
-            Type cue
-          </p>
-        )}
+        <p className="shrink-0 font-bold text-forge-teal text-xs leading-tight">
+          {roundedValue}%
+        </p>
       </div>
 
       <p className="mt-2 text-pretty text-slate-muted text-xs leading-relaxed">

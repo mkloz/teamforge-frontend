@@ -8,8 +8,6 @@ import {
   getHomePlanCostLabel,
   getHomePlanLocationLabel,
 } from "@/features/home/lib/home-plan-presenters";
-import { normalizeTrustScore } from "@/shared/lib/user-psychometrics";
-
 import type {
   AttentionQueueFriendRequest,
   AttentionQueueInvitation,
@@ -120,7 +118,6 @@ function getStartOfDay(date: Date) {
 export function getFriendRequestMeta(request: AttentionQueueFriendRequest) {
   const meta = [
     request.counterpart.city,
-    `Trust ${normalizeTrustScore(request.counterpart.trustScore)}`,
     getQueueMomentLabel(request.createdAt, "Sent"),
   ];
 

@@ -4,6 +4,7 @@ import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import { AgeGenderFields } from "@/shared/components/profile/age-gender-fields";
+import { DateOfBirthField } from "@/shared/components/profile/date-of-birth-field";
 import { Button } from "@/shared/components/ui/button";
 import {
   FormControl,
@@ -29,6 +30,8 @@ export function StepProfile({
 
   return (
     <div className="flex flex-col gap-4">
+      <DateOfBirthField control={control} name="dateOfBirth" />
+
       <AgeGenderFields
         ageName="age"
         ageValueMode="number"

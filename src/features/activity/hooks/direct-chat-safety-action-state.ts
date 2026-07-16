@@ -24,7 +24,7 @@ interface DirectChatActionGuard {
 }
 
 export const DIRECT_CHAT_SAFETY_ACTION_GUARD = {
-  description: "Reconnect before changing safety settings.",
+  description: "Reconnect before blocking or unblocking someone.",
   id: "activity-direct-chat-safety-offline",
 } as const satisfies DirectChatActionGuard;
 
@@ -200,7 +200,7 @@ export function invalidateDirectChatMuteQueries(
 export function shouldClearSelectionAfterSafetyAction(
   action: DirectChatSafetyAction,
 ) {
-  return action === "unblock";
+  return action === "block";
 }
 
 export function trackDirectChatSafetyMutation(

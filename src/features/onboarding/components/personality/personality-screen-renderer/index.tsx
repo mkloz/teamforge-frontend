@@ -2,6 +2,7 @@ import { domMax, LazyMotion } from "framer-motion";
 import { lazy, type ReactNode, Suspense } from "react";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
+import type { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import type { ScreenState } from "@/features/onboarding/store/personality-test-store.types";
 import { PersonalityIntro } from "./personality-intro";
 import { usePersonalityScreenNavigation } from "./use-personality-screen-navigation";
@@ -27,9 +28,9 @@ const IntermissionPage = lazy(() =>
     default: module.IntermissionPage,
   })),
 );
-const CalculatingScreen = lazy(() =>
+const SubmissionScreen = lazy(() =>
   import("./calculating-screen").then((module) => ({
-    default: module.CalculatingScreen,
+    default: module.SubmissionScreen,
   })),
 );
 const PersonalityResults = lazy(() =>
@@ -39,6 +40,9 @@ const PersonalityResults = lazy(() =>
 );
 
 type PersonalityTestState = ReturnType<typeof usePersonalityTest>;
+type PersonalityAssessmentFlow = ReturnType<
+  typeof usePersonalityTestPageFlow
+>["assessment"];
 type PersonalityScreenNavigation = ReturnType<
   typeof usePersonalityScreenNavigation
 >;
@@ -46,11 +50,14 @@ type PersonalityScreenId = ScreenState["id"];
 
 interface PersonalityScreenRenderContext {
   backLabel: string;
+  assessment: PersonalityAssessmentFlow;
   continueLabel: string;
   isOnline: boolean;
   navigation: PersonalityScreenNavigation;
   onContinue: () => void;
   onSelectionChange: (length: TestLength) => void;
+  onRetrySubmission: () => void;
+  submissionError: string | null;
   state: PersonalityTestState;
 }
 
@@ -61,24 +68,30 @@ type PersonalityScreenRendererMap = Record<
 
 interface PersonalityScreenRendererProps {
   backLabel: string;
+  assessment: PersonalityAssessmentFlow;
   continueLabel: string;
   isOnline: boolean;
   onBack: () => void;
   onContinue: () => void;
   onSelectionChange: (length: TestLength) => void;
+  onRetrySubmission: () => void;
   questionsPerPage: number;
   state: PersonalityTestState;
+  submissionError: string | null;
 }
 
 export function PersonalityScreenRenderer({
   backLabel,
+  assessment,
   continueLabel,
   isOnline,
   onBack,
   onContinue,
   onSelectionChange,
+  onRetrySubmission,
   questionsPerPage,
   state,
+  submissionError,
 }: PersonalityScreenRendererProps) {
   const navigation = usePersonalityScreenNavigation({
     onBack,
@@ -87,12 +100,15 @@ export function PersonalityScreenRenderer({
   });
   const renderedScreen = renderPersonalityScreen({
     backLabel,
+    assessment,
     continueLabel,
     isOnline,
     navigation,
     onContinue,
     onSelectionChange,
+    onRetrySubmission,
     state,
+    submissionError,
   });
 
   return (
@@ -109,13 +125,13 @@ function renderPersonalityScreen(context: PersonalityScreenRenderContext) {
 }
 
 const PERSONALITY_SCREEN_RENDERERS: PersonalityScreenRendererMap = {
-  calculating: renderCalculatingScreen,
   guidelines: renderGuidelinesScreen,
   intermission: renderIntermissionScreen,
   intro: renderIntroScreen,
   length: renderLengthScreen,
   questions: renderQuestionsScreen,
   results: renderResultsScreen,
+  submitting: renderSubmittingScreen,
   theory: renderTheoryScreen,
 };
 
@@ -209,35 +225,31 @@ function renderIntermissionScreen({
   );
 }
 
-function renderCalculatingScreen({ state }: PersonalityScreenRenderContext) {
-  if (!state.vector) {
-    return null;
-  }
-
+function renderSubmittingScreen({
+  onRetrySubmission,
+  submissionError,
+}: PersonalityScreenRenderContext) {
   return (
-    <CalculatingScreen
-      vector={state.vector}
-      onDone={state.actions.handleCalculationDone}
-    />
+    <SubmissionScreen error={submissionError} onRetry={onRetrySubmission} />
   );
 }
 
 function renderResultsScreen({
+  assessment,
   continueLabel,
   isOnline,
   onContinue,
-  state,
 }: PersonalityScreenRenderContext) {
-  if (!state.result || !state.vector) {
+  if (!assessment.preview || !assessment.disclosure) {
     return null;
   }
 
   return (
     <PersonalityResults
-      result={state.result}
-      vector={state.vector}
+      {...assessment}
+      disclosure={assessment.disclosure}
+      profile={assessment.preview}
       onContinue={onContinue}
-      onRetake={state.actions.handleRetake}
       continueLabel={continueLabel}
       isOnline={isOnline}
     />

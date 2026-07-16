@@ -95,7 +95,8 @@ export function AgeGenderFields<TFieldValues extends FieldValues>({
       </div>
 
       <p className="mt-0 text-center text-slate-muted text-xs">
-        We only show this on your profile; it doesn't affect your group fit.
+        Your age and gender appear on your profile. You can update them in
+        Settings.
       </p>
     </>
   );

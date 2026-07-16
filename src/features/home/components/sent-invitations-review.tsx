@@ -92,7 +92,9 @@ function FocusedSentInviteStatus({ invite }: { invite: Invite }) {
             {invite.group.name}
           </p>
           <h3 className="mt-1 truncate font-black text-base text-foreground">
-            {invite.invitee.name}
+            {invite.type === "JOIN_REQUEST"
+              ? "Join request"
+              : invite.invitee.name}
           </h3>
           <p className="mt-2 font-medium text-muted-foreground text-sm leading-relaxed">
             {getSentInviteMessage(invite)}
@@ -132,6 +134,13 @@ function getFocusedInvite(
 }
 
 function getSentInviteMessage(invite: Invite) {
+  if (invite.type === "JOIN_REQUEST") {
+    return (
+      invite.message?.trim() ||
+      `A request to join ${invite.group.name} was submitted.`
+    );
+  }
+
   return (
     invite.message?.trim() ||
     `This invite was sent to ${invite.invitee.name} for ${invite.group.name}.`

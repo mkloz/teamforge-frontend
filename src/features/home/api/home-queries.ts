@@ -15,7 +15,7 @@ import { buildHomeStats } from "@/features/home/lib/home-stats";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import { getExploreGroupMatchScore } from "@/shared/lib/explore-group-presenters";
+import { getExploreGroupFitScore } from "@/shared/lib/explore-group-presenters";
 
 export const homeQueries = {
   groups() {
@@ -42,7 +42,7 @@ export const homeQueries = {
 
         return [...groups].sort(
           (left, right) =>
-            getExploreGroupMatchScore(right) - getExploreGroupMatchScore(left),
+            getExploreGroupFitScore(right) - getExploreGroupFitScore(left),
         );
       },
       staleTime: 60_000,

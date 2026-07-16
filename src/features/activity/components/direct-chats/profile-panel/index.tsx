@@ -19,7 +19,6 @@ interface ProfilePanelProps {
 
 /**
  * ProfilePanel - Desktop side panel for direct chat participant profiles.
- * Features a slide-in animation and unified content.
  */
 export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
   const safetyActions = useDirectChatSafetyActions(chat);
@@ -50,7 +49,6 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
 
 /**
  * ProfilePanelMobile - Mobile bottom drawer for direct chat profiles.
- * Uses shadcn Drawer for high-performance sliding and accessibility.
  */
 export function ProfilePanelMobile({
   chat,

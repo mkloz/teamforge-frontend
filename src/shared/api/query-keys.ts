@@ -66,7 +66,8 @@ export const APP_QUERY_KEYS = {
     interestTree: ["onboarding", "interests", "tree"] as const,
   },
   profile: {
-    byId: (userId: string) => ["profile", userId] as const,
+    viewerProfiles: ["profile", "viewer"] as const,
+    byId: (userId: string) => ["profile", "viewer", userId] as const,
     friendshipWith: (userId: string) =>
       ["profile", "friendship", userId] as const,
     friendRequests: ["profile", "friend-requests"] as const,

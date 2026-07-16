@@ -25,7 +25,6 @@ interface MembersSectionProps {
 interface MembersSectionViewState {
   canInvite: boolean;
   memberCountString: string;
-  showMemberFit: boolean;
   showOfflineMemberActionWarning: boolean;
 }
 
@@ -63,7 +62,6 @@ interface MembersGridProps {
   onRemoveMember?: MembersSectionProps["onRemoveMember"];
   onShowProfile?: MembersSectionProps["onShowProfile"];
   removingMemberId: string | null;
-  showMemberFit: boolean;
 }
 
 const EMPTY_INVITE_CANDIDATES: ActivityParticipant[] = [];
@@ -115,7 +113,6 @@ export function MembersSection({
         onRemoveMember={onRemoveMember}
         onShowProfile={onShowProfile}
         removingMemberId={removingMemberId}
-        showMemberFit={viewState.showMemberFit}
       />
     </section>
   );
@@ -140,7 +137,6 @@ function getMembersSectionViewState({
       onInviteMember,
     }),
     memberCountString: `(${members.length}/${maxMembers})`,
-    showMemberFit: shouldShowMemberFit(members),
     showOfflineMemberActionWarning: shouldShowOfflineMemberActionWarning({
       currentUserRole,
       isOnline,
@@ -165,10 +161,6 @@ function canInviteMembers({
   ];
 
   return inviteRequirements.every(Boolean);
-}
-
-function shouldShowMemberFit(members: GroupMember[]) {
-  return members.length > 1;
 }
 
 function shouldShowOfflineMemberActionWarning({
@@ -231,7 +223,6 @@ function MembersGrid({
   onRemoveMember,
   onShowProfile,
   removingMemberId,
-  showMemberFit,
 }: MembersGridProps) {
   return (
     <div className="grid gap-1.5">
@@ -254,7 +245,6 @@ function MembersGrid({
             onRemove={onRemoveMember}
             onShowProfile={onShowProfile}
             removing={cardState.removing}
-            showFit={showMemberFit}
           />
         );
       })}

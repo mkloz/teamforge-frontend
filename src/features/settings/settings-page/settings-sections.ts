@@ -59,9 +59,10 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
   {
     id: "safety",
     label: "Safety",
-    description: "Blocked people and access controls",
-    headline: "Manage blocked people",
-    summary: "Review blocked people and unblock them when you choose.",
+    description: "Reports, account actions, and blocked people",
+    headline: "Review your safety options",
+    summary:
+      "Open the Safety Center, review blocked people, and change access controls.",
     icon: Shield,
   },
   {

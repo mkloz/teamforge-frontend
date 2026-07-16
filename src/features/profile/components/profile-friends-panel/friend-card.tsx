@@ -1,8 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { MapPin, ShieldCheck } from "lucide-react";
+import { MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import { Avatar } from "@/shared/components/common/avatar";
-import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { OnlineStatus } from "@/shared/schemas/enums";
@@ -11,9 +10,7 @@ interface FriendCardUser {
   id: string;
   name: string;
   avatar: string | null;
-  personalityType?: string | null;
   city?: string | null;
-  trustScore?: number;
   onlineStatus?: OnlineStatus;
 }
 
@@ -33,20 +30,15 @@ export function FriendCard({
   actions,
   friendsSince,
 }: FriendCardProps) {
-  const trustPercent = getFriendTrustPercent(user.trustScore);
-  const isHighTrust = isHighTrustPercent(trustPercent);
-
   return (
     <article className="group relative flex min-h-16 items-center gap-3 rounded-xl px-2 py-2 transition-colors duration-150 hover:bg-muted/50">
       <FriendCardLink user={user} />
 
-      <FriendCardAvatar user={user} isHighTrust={isHighTrust} />
+      <FriendCardAvatar user={user} />
 
       <FriendCardIdentity
         friendsSince={friendsSince}
-        isHighTrust={isHighTrust}
         subtitle={subtitle}
-        trustPercent={trustPercent}
         user={user}
       />
 
@@ -71,22 +63,13 @@ function FriendCardLink({ user }: { user: FriendCardUser }) {
   );
 }
 
-function FriendCardAvatar({
-  isHighTrust,
-  user,
-}: {
-  isHighTrust: boolean;
-  user: FriendCardUser;
-}) {
+function FriendCardAvatar({ user }: { user: FriendCardUser }) {
   return (
     <div className="relative shrink-0">
       <Avatar
         src={user.avatar}
         name={user.name}
-        className={cn(
-          "size-10 ring-1",
-          isHighTrust ? "ring-2 ring-forge-teal/30" : "ring-border/40",
-        )}
+        className="size-10 ring-1 ring-border/40"
       />
       <PresenceIndicator onlineStatus={user.onlineStatus} />
     </div>
@@ -115,15 +98,11 @@ function PresenceIndicator({ onlineStatus }: { onlineStatus?: OnlineStatus }) {
 
 function FriendCardIdentity({
   friendsSince,
-  isHighTrust,
   subtitle,
-  trustPercent,
   user,
 }: {
   friendsSince: string | null | undefined;
-  isHighTrust: boolean;
   subtitle: ReactNode;
-  trustPercent: number | null;
   user: FriendCardUser;
 }) {
   return (
@@ -131,9 +110,7 @@ function FriendCardIdentity({
       <FriendNameRow user={user} />
       <FriendSecondaryLine
         friendsSince={friendsSince}
-        isHighTrust={isHighTrust}
         subtitle={subtitle}
-        trustPercent={trustPercent}
         user={user}
       />
     </div>
@@ -146,31 +123,17 @@ function FriendNameRow({ user }: { user: FriendCardUser }) {
       <h3 className="truncate font-black text-foreground text-sm leading-tight">
         {user.name}
       </h3>
-      {user.personalityType && (
-        <StatusPill
-          tone="teal"
-          size="xs"
-          surface="solid"
-          className="h-4 shrink-0 px-1.5 py-0 leading-4"
-        >
-          {user.personalityType}
-        </StatusPill>
-      )}
     </div>
   );
 }
 
 function FriendSecondaryLine({
   friendsSince,
-  isHighTrust,
   subtitle,
-  trustPercent,
   user,
 }: {
   friendsSince: string | null | undefined;
-  isHighTrust: boolean;
   subtitle: ReactNode;
-  trustPercent: number | null;
   user: FriendCardUser;
 }) {
   return (
@@ -180,10 +143,6 @@ function FriendSecondaryLine({
       ) : (
         <>
           <FriendCity city={user.city} />
-          <FriendTrustPill
-            isHighTrust={isHighTrust}
-            trustPercent={trustPercent}
-          />
           <FriendsSinceLabel friendsSince={friendsSince} />
         </>
       )}
@@ -204,32 +163,6 @@ function FriendCity({ city }: { city?: string | null }) {
   );
 }
 
-function FriendTrustPill({
-  isHighTrust,
-  trustPercent,
-}: {
-  isHighTrust: boolean;
-  trustPercent: number | null;
-}) {
-  if (typeof trustPercent !== "number") {
-    return null;
-  }
-
-  return (
-    <StatusPill
-      icon={ShieldCheck}
-      size="xs"
-      tone={isHighTrust ? "teal" : "neutral"}
-      surface="soft"
-      className="h-5 px-1.5 text-xs"
-      title={`Trust score ${trustPercent}%`}
-    >
-      <span className="sr-only">Trust</span>
-      <span>{trustPercent}%</span>
-    </StatusPill>
-  );
-}
-
 function FriendsSinceLabel({
   friendsSince,
 }: {
@@ -247,16 +180,6 @@ function FriendsSinceLabel({
       {formatFriendsSince(friendsSince)}
     </span>
   );
-}
-
-function getFriendTrustPercent(score: number | undefined) {
-  return typeof score === "number"
-    ? Math.round(score > 1 ? score : score * 100)
-    : null;
-}
-
-function isHighTrustPercent(trustPercent: number | null) {
-  return typeof trustPercent === "number" && trustPercent >= 80;
 }
 
 function shouldShowPresenceIndicator(

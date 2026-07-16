@@ -6,9 +6,11 @@ import { addIncomingNotification } from "@/features/notifications/public/notific
 import { authSession } from "@/shared/api/auth-session";
 import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
+import { refreshAccessSensitiveSurfaces } from "@/shared/api/query-invalidation";
 import { realtimeClient } from "@/shared/api/realtime-client";
 import { shouldApplyRealtimeEvent } from "@/shared/lib/realtime-event-registry";
 import {
+  realtimeAccessChangedPayloadSchema,
   realtimeGroupUpdatedPayloadSchema,
   realtimeNotificationPayloadSchema,
 } from "@/shared/schemas/realtime";
@@ -47,6 +49,16 @@ function handleGroupUpdatedPayload(payload: unknown) {
   applyActivityGroupUpdate(currentUser.id, parsed.group);
 }
 
+function handleAccessChangedPayload(payload: unknown) {
+  const parsed = realtimeAccessChangedPayloadSchema.parse(payload);
+
+  if (!shouldApplyRealtimeEvent(parsed)) {
+    return;
+  }
+
+  void refreshAccessSensitiveSurfaces();
+}
+
 function syncRealtimeSession() {
   realtimeClient.syncSession(authSession.getAccessToken());
 }
@@ -70,6 +82,10 @@ export function disconnectRealtimeSession() {
 
 // fallow-ignore-next-line unused-export
 export function subscribeAppRealtimeEvents() {
+  const unsubscribeAccessChange = realtimeClient.on(
+    "access.changed",
+    handleAccessChangedPayload,
+  );
   const unsubscribeNotification = realtimeClient.on(
     "notification.new",
     handleNotificationPayload,
@@ -80,6 +96,7 @@ export function subscribeAppRealtimeEvents() {
   );
 
   return () => {
+    unsubscribeAccessChange();
     unsubscribeGroupUpdate();
     unsubscribeNotification();
   };

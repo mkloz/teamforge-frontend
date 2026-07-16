@@ -1,5 +1,6 @@
 import type { UseFormReturn } from "react-hook-form";
 import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
+import { DateOfBirthField } from "@/shared/components/profile/date-of-birth-field";
 
 import { ProfileBasicsAgeGenderFields } from "./age-gender-fields";
 import { CityField } from "./city-field";
@@ -16,6 +17,7 @@ export function ProfileBasicsFormFields({
 }: ProfileBasicsFormFieldsProps) {
   return (
     <>
+      <DateOfBirthField control={form.control} name="dateOfBirth" />
       <ProfileBasicsAgeGenderFields form={form} />
       <CityField form={form} watchedValues={watchedValues} />
       <HiddenLocationFields form={form} />

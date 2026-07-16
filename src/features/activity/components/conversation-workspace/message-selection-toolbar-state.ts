@@ -4,6 +4,8 @@ import {
   canSaveMessage,
 } from "@/features/activity/lib/message-action-capabilities";
 
+const MAX_RELATED_REPORT_MESSAGES = 20;
+
 interface GetMessageSelectionToolbarStateInput {
   savedMessageIds: ReadonlySet<string>;
   selectedMessages: UnifiedMessage[];
@@ -37,6 +39,31 @@ export function getMessageSelectionToolbarState({
     saveableMessages,
     saveLabel: allSaveableMessagesSaved ? "Unsave" : "Save",
     selectedCount,
+  };
+}
+
+export function getSelectedMessageReportContext(
+  selectedMessages: UnifiedMessage[],
+) {
+  const primaryMessage = selectedMessages.find(canReportSelectedMessage);
+
+  if (!primaryMessage) {
+    return null;
+  }
+
+  const otherSelectedMessageIds = selectedMessages
+    .filter((message) => message.id !== primaryMessage.id)
+    .map((message) => message.id);
+  const relatedMessageIds = otherSelectedMessageIds.slice(
+    0,
+    MAX_RELATED_REPORT_MESSAGES,
+  );
+
+  return {
+    omittedMessageCount:
+      otherSelectedMessageIds.length - relatedMessageIds.length,
+    primaryMessage,
+    relatedMessageIds,
   };
 }
 
@@ -141,6 +168,10 @@ function canRunSelectionAction(
   canRunAction: (message: UnifiedMessage) => boolean,
 ) {
   return selectedMessages.length > 0 && selectedMessages.every(canRunAction);
+}
+
+function canReportSelectedMessage(message: UnifiedMessage) {
+  return message.type !== "SYSTEM" && !message.isSystem && !message.isOwn;
 }
 
 function shouldDisableDeleteSelectionAction({

@@ -74,6 +74,10 @@ export const routeErrorScopes = {
   profile: "profile",
   userDetail: "user-detail",
   settings: "settings",
+  safety: "safety",
+  safetyReport: "safety.report",
+  safetyAccountAction: "safety.account-action",
+  safetyRestriction: "safety.restriction",
   forge: "forge",
 } as const;
 

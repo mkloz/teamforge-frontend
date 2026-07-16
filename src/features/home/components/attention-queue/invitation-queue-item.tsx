@@ -68,22 +68,22 @@ export function InvitationQueueItem({
               />
             </div>
             <p className="mt-1 truncate font-medium text-muted-foreground text-xs">
-              {invite.inviter?.name ?? "Someone"} invited you to join.
+              {getInvitationQueueDescription(invite)}
             </p>
             <AttentionQueueMetaList items={inviteMeta} />
           </div>
         </Link>
         <AttentionQueueItemActions
           accept={{
-            ariaLabel: `Join ${invite.group.name}`,
+            ariaLabel: getInvitationAcceptLabel(invite),
             disabled: acceptButtonDisabled,
-            label: "Join",
+            label: invite.type === "JOIN_REQUEST" ? "Approve" : "Join",
             loading: acceptButtonLoading,
             onClick: () => void onAccept(invite.id),
             title: acceptButtonTitle,
           }}
           decline={{
-            ariaLabel: `Decline invitation to ${invite.group.name}`,
+            ariaLabel: getInvitationDeclineLabel(invite),
             disabled: declineButtonDisabled,
             loading: declineButtonLoading,
             onClick: () => void onDecline(invite.id),
@@ -93,4 +93,24 @@ export function InvitationQueueItem({
       </div>
     </li>
   );
+}
+
+function getInvitationQueueDescription(invite: AttentionQueueInvitation) {
+  if (invite.type === "JOIN_REQUEST") {
+    return "A request to join this group needs review.";
+  }
+
+  return `${invite.inviter?.name ?? "Someone"} invited you to join.`;
+}
+
+function getInvitationAcceptLabel(invite: AttentionQueueInvitation) {
+  return invite.type === "JOIN_REQUEST"
+    ? `Approve request to join ${invite.group.name}`
+    : `Join ${invite.group.name}`;
+}
+
+function getInvitationDeclineLabel(invite: AttentionQueueInvitation) {
+  return invite.type === "JOIN_REQUEST"
+    ? `Decline request to join ${invite.group.name}`
+    : `Decline invitation to ${invite.group.name}`;
 }

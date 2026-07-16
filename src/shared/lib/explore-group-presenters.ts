@@ -2,7 +2,6 @@ import type { ExploreGroup } from "@/shared/schemas";
 
 type CompatibilityCue =
   | "interestOverlap"
-  | "personalityCompatibility"
   | "friendshipProximity"
   | "ageAlignment"
   | "cityAlignment";
@@ -31,7 +30,6 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const COMPATIBILITY_CUE_KEYS = [
   "interestOverlap",
-  "personalityCompatibility",
   "friendshipProximity",
   "ageAlignment",
   "cityAlignment",
@@ -42,13 +40,12 @@ const FIT_REASON_BY_CUE: Record<
   (group: ExploreGroup) => string
 > = {
   interestOverlap: (group) => `Shared interest: ${getInterestLabel(group)}.`,
-  personalityCompatibility: () =>
-    "The current members look likely to meet at your pace.",
-  friendshipProximity: () =>
-    "There is a familiar connection inside this group.",
-  ageAlignment: () => "Members are in a similar age range to you.",
+  friendshipProximity: () => "Someone you already know is in this group.",
+  ageAlignment: () => "Members with a public age are close to your age.",
   cityAlignment: (group) =>
-    `${getCityFitPlace(group)} makes this group easier to attend.`,
+    group.plan?.locationMode === "ONLINE"
+      ? "This activity is online."
+      : "This activity is in the city shown on your profile.",
 };
 
 const DISTANCE_LABEL_BY_LOCATION_MODE = {
@@ -60,13 +57,7 @@ const DISTANCE_LABEL_BY_LOCATION_MODE = {
   (group: ExploreGroup) => string
 >;
 
-const CITY_FIT_FALLBACK_BY_LOCATION_MODE = {
-  IN_PERSON: "The location",
-  ONLINE: "The location",
-  TBD: "The area",
-} as const satisfies Record<ExplorePlanLocationMode, string>;
-
-export function getExploreGroupMatchScore(group: ExploreGroup) {
+export function getExploreGroupFitScore(group: ExploreGroup) {
   const score = group.compatibility.total;
 
   if (score > 0 && score <= 1) {
@@ -177,13 +168,6 @@ function getInPersonDistanceLabel(group: ExploreGroup) {
 
 function getTbdDistanceLabel(group: ExploreGroup) {
   return group.activity.city || "Place TBD";
-}
-
-function getCityFitPlace(group: ExploreGroup) {
-  return (
-    group.activity.city ||
-    CITY_FIT_FALLBACK_BY_LOCATION_MODE[getExplorePlanLocationMode(group)]
-  );
 }
 
 function getInterestLabel(group: ExploreGroup) {

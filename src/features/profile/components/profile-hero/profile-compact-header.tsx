@@ -62,11 +62,13 @@ function CompactHeaderAvatar({ user }: { user: User }) {
         imageSize={80}
         loading="eager"
       />
-      <AvatarStatus
-        status={user.onlineStatus ?? "ONLINE"}
-        borderClassName="border-forge-teal"
-        sizeClassName="size-3.5 sm:size-4 lg:size-3"
-      />
+      {user.onlineStatus ? (
+        <AvatarStatus
+          status={user.onlineStatus}
+          borderClassName="border-forge-teal"
+          sizeClassName="size-3.5 sm:size-4 lg:size-3"
+        />
+      ) : null}
     </div>
   );
 }

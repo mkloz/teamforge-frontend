@@ -1,4 +1,3 @@
-import { getArchetype } from "@/features/profile/public/profile-archetypes";
 import type { buildActivityDmNavigation } from "@/shared/navigation/activity-navigation";
 import type { ProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { OnlineStatus } from "@/shared/schemas/enums";
@@ -12,44 +11,40 @@ import {
   ProfilePanelSignalsSection,
 } from "./profile-panel-sections";
 import { buildShowUpSignals, type ShowUpSignal } from "./show-up-profile";
-import type { UserProfilePanelParticipant } from "./types";
+import type {
+  ProfilePanelDataState,
+  UserProfilePanelParticipant,
+} from "./types";
 
 interface ProfilePanelInfoProps {
   participant: UserProfilePanelParticipant;
-  isHydratingProfile?: boolean;
   chatNavigation?: ReturnType<typeof buildActivityDmNavigation>;
   compactHeaderVisible?: boolean;
+  profileState: ProfilePanelDataState;
   profileNavigation?: ProfileNavigation;
   onBack?: () => void;
   onCompactHeaderClick?: () => void;
+  onRetryProfile: () => void;
 }
 
 interface ProfilePanelInfoViewState {
-  groupMode: string;
-  onlineStatus: OnlineStatus;
+  onlineStatus?: OnlineStatus;
   personalitySignals: ShowUpSignal[];
-  trustScore: number;
-  typeLabel: string;
-}
-
-function formatPercent(score: number | null | undefined): number {
-  if (typeof score !== "number") {
-    return 0;
-  }
-
-  return Math.round(score > 0 && score <= 1 ? score * 100 : score);
+  roleLabel?: string;
+  typeLabel?: string;
 }
 
 export function ProfilePanelInfo({
   participant,
-  isHydratingProfile = false,
   chatNavigation,
   compactHeaderVisible = false,
+  profileState,
   profileNavigation,
   onBack,
   onCompactHeaderClick,
+  onRetryProfile,
 }: ProfilePanelInfoProps) {
-  const viewState = getProfilePanelInfoViewState(participant);
+  const viewState = getProfilePanelInfoViewState(participant, profileState);
 
   return (
     <div className="relative flex w-full flex-col">
@@ -64,19 +59,22 @@ export function ProfilePanelInfo({
 
       <ProfilePanelOriginalCard
         chatNavigation={chatNavigation}
-        groupMode={viewState.groupMode}
         onlineStatus={viewState.onlineStatus}
         participant={participant}
         profileNavigation={profileNavigation}
-        trustScore={viewState.trustScore}
+        roleLabel={viewState.roleLabel}
         typeLabel={viewState.typeLabel}
       />
 
-      <ProfilePanelAboutSection participant={participant} />
+      <ProfilePanelAboutSection
+        onRetry={onRetryProfile}
+        participant={participant}
+        profileState={profileState}
+      />
 
       <ProfilePanelSignalsSection
-        isHydratingProfile={isHydratingProfile}
         personalitySignals={viewState.personalitySignals}
+        profileState={profileState}
       />
     </div>
   );
@@ -84,16 +82,30 @@ export function ProfilePanelInfo({
 
 function getProfilePanelInfoViewState(
   participant: UserProfilePanelParticipant,
+  profileState: ProfilePanelDataState,
 ): ProfilePanelInfoViewState {
   const personalityType = participant.personalityType;
+  const canShowPersonality = profileState === "ready";
 
   return {
-    groupMode: personalityType
-      ? getArchetype(personalityType).replace(/^The\s+/i, "")
-      : "Open",
-    onlineStatus: participant.onlineStatus || "OFFLINE",
-    personalitySignals: buildShowUpSignals(participant),
-    trustScore: formatPercent(participant.trustScore),
-    typeLabel: personalityType ?? "Open",
+    onlineStatus: participant.onlineStatus,
+    personalitySignals: canShowPersonality
+      ? buildShowUpSignals(participant)
+      : [],
+    roleLabel: formatGroupRole(participant.groupRole),
+    typeLabel: canShowPersonality ? (personalityType ?? undefined) : undefined,
   };
+}
+
+function formatGroupRole(role: UserProfilePanelParticipant["groupRole"]) {
+  switch (role) {
+    case "ADMIN":
+      return "Admin";
+    case "MODERATOR":
+      return "Moderator";
+    case "MEMBER":
+      return "Member";
+    default:
+      return undefined;
+  }
 }

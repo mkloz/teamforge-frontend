@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { publicProfileQueryOptions } from "@/features/profile/api/profile-query-options";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
-import type { User } from "@/shared/schemas";
 
 export function useProfile() {
   const currentUserQuery = useCurrentUserQuery();
@@ -20,10 +19,8 @@ export function usePublicProfile(userId: string) {
     enabled: Boolean(userId),
   });
 
-  const profile: User | null = publicProfileQuery.data ?? null;
-
   return {
-    profile,
+    profile: publicProfileQuery.data ?? null,
     isLoading: publicProfileQuery.isLoading,
     error: publicProfileQuery.error,
     refetch: publicProfileQuery.refetch,

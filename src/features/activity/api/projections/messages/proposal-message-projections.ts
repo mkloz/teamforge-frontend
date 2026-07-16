@@ -39,7 +39,6 @@ export function buildProposalMessage(
       id: proposal.proposer.id,
       name: proposal.proposer.name,
       avatar: proposal.proposer.avatar,
-      trustScore: 0,
     },
     reactions: [],
     attachments: [],

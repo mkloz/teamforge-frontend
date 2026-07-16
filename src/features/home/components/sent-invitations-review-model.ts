@@ -72,6 +72,12 @@ function formatInviteMoment(value: string | null) {
 
 export function getInviteStatusSentence(invite: Invite) {
   if (invite.status === "DECLINED") {
+    if (invite.type === "JOIN_REQUEST") {
+      return `This join request was declined on ${formatInviteMoment(
+        invite.respondedAt,
+      )}.`;
+    }
+
     return `${invite.invitee.name} declined this invitation on ${formatInviteMoment(
       invite.respondedAt,
     )}.`;

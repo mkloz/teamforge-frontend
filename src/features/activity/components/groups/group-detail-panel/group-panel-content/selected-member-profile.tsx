@@ -20,7 +20,6 @@ export function SelectedMemberProfile({
   const participant = member.user
     ? {
         ...member.user,
-        compatibilityScore: member.compatibilityScore,
         groupRole: member.role,
       }
     : undefined;

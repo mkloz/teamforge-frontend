@@ -1,14 +1,17 @@
-import { Link } from "@tanstack/react-router";
 import {
   Ban,
   CircleDashed,
-  ExternalLink,
+  Flag,
   UserCheck,
   UserMinus,
   UserRoundPlus,
 } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { usePublicProfileActions } from "@/features/profile/public/public-profile-actions";
+import {
+  blockReportedUser,
+  ReportDialog,
+} from "@/features/reporting/public/reporting";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -22,33 +25,44 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
-import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 
 const memberActionClassName =
-  "flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground opacity-80 transition-colors duration-150 hover:bg-forge-teal/10 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 group-hover:opacity-100";
+  "flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground opacity-80 transition-colors duration-150 hover:bg-forge-teal/10 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 group-hover:opacity-100";
 
 export function MemberAction({ member }: { member: GroupPlanDetailMember }) {
-  if (member.knownConnection) {
-    return <KnownConnectionAction member={member} />;
-  }
-
-  return <ConnectMemberAction member={member} />;
+  return (
+    <div className="flex items-center gap-1">
+      {!member.knownConnection ? <ConnectMemberAction member={member} /> : null}
+      <ReportMemberAction member={member} />
+    </div>
+  );
 }
 
-function KnownConnectionAction({ member }: { member: GroupPlanDetailMember }) {
+function ReportMemberAction({ member }: { member: GroupPlanDetailMember }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Link
-          {...buildProfileNavigation(member.userId)}
+    <ReportDialog
+      canRequestBlock
+      onBlock={() => blockReportedUser(member.userId)}
+      targets={[
+        {
+          id: member.userId,
+          label: `${member.name}'s profile`,
+          type: "PROFILE",
+        },
+      ]}
+      trigger={
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
           className={memberActionClassName}
-          aria-label={`Open ${member.name}'s profile`}
+          aria-label={`Report ${member.name}`}
+          onClick={(event) => event.stopPropagation()}
         >
-          <ExternalLink className="size-4" />
-        </Link>
-      </TooltipTrigger>
-      <TooltipContent side="top">Open {member.name}'s profile</TooltipContent>
-    </Tooltip>
+          <Flag className="size-4" aria-hidden="true" />
+        </Button>
+      }
+    />
   );
 }
 

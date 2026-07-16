@@ -36,7 +36,7 @@ export const TEST_LENGTH_CONFIG: Record<
     recommended: true,
   },
   150: {
-    label: "Deep",
+    label: "Detailed",
     sublabel: "50 pages · about 15 minutes",
     estimatedMinutes: 15,
     itemsPerDimension: 30,

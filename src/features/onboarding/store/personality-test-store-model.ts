@@ -10,8 +10,6 @@ export const PERSONALITY_TEST_DEFAULT_STATE: PersonalityTestSnapshot = {
   testLength: 50,
   questionIds: [],
   answers: {},
-  result: null,
-  vector: null,
   previousScreen: null,
   isReviewMode: false,
 };

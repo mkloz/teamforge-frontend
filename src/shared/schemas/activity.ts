@@ -217,7 +217,6 @@ const forgedChatSchema = z.object({
 const forgedGroupMemberSchema = z.object({
   userId: z.string(),
   role: groupRoleSchema,
-  compatibilityScore: z.number().nullable(),
 });
 
 const forgedGroupSchema = z.object({

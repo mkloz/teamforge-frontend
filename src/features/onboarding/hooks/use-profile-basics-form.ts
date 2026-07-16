@@ -101,6 +101,7 @@ export function useProfileBasicsForm() {
 
     try {
       const updatedUser = await profileBasicsMutation.mutateAsync(payload);
+      form.resetField("dateOfBirth", { defaultValue: "" });
       const nextDestination = getPostAuthRedirectPath(updatedUser);
       const nextSearch = buildProfileBasicsFlowSearch(flowState);
 
@@ -115,6 +116,9 @@ export function useProfileBasicsForm() {
           "We couldn't save those details. Please try again.",
         ),
       );
+    } finally {
+      payload.dateOfBirth = "";
+      profileBasicsMutation.reset();
     }
   });
 

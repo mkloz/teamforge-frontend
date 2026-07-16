@@ -10,7 +10,7 @@ import {
   buildGroupFitAvoid,
   buildGroupFitBestWith,
   buildGroupFitOpeningMove,
-  buildPortraitChemistry,
+  buildPortraitGroupDynamics,
 } from "@/features/profile/lib/profile-insights/group-fit/group-fit-recommendations";
 import { getGroupFitStyle } from "@/features/profile/lib/profile-insights/group-fit/group-fit-style";
 import {
@@ -49,7 +49,7 @@ describe("group fit", () => {
         [],
       ),
     ).toMatchObject({
-      title: "Fit still forming",
+      title: "Add details to see group fit",
     });
 
     expect(
@@ -63,7 +63,7 @@ describe("group fit", () => {
         [],
       ),
     ).toMatchObject({
-      title: "Fit needs an activity",
+      title: "Add interests to improve group fit",
     });
   });
 
@@ -134,9 +134,9 @@ describe("group fit", () => {
     expect(buildGroupFitAvoid("focusedBuilder", socialProfile)).toContain(
       "one cue too literally",
     );
-    expect(buildPortraitChemistry("focusedBuilder", socialProfile)).toContain(
-      "Mixed detail.",
-    );
+    expect(
+      buildPortraitGroupDynamics("focusedBuilder", socialProfile),
+    ).toContain("Mixed detail.");
   });
 
   it("builds summaries, signals, and user group defaults", () => {

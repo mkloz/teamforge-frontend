@@ -2,11 +2,16 @@ import type { UseFormReturn } from "react-hook-form";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import type {
+  AdultEligibility,
   AuthSession,
-  FriendshipApi,
   NotificationPreferences,
   User,
+  UserBlockApi,
 } from "@/shared/schemas";
+
+type SettingsCurrentUser = User & {
+  adultEligibility?: AdultEligibility;
+};
 
 export type BooleanSettingsPreferenceKey = Exclude<
   keyof NotificationPreferences,
@@ -14,7 +19,7 @@ export type BooleanSettingsPreferenceKey = Exclude<
 >;
 
 export interface AccountSettingsState {
-  currentUser: User | undefined;
+  currentUser: SettingsCurrentUser | undefined;
   form: UseFormReturn<SettingsProfileValues>;
   onSubmit: () => void;
   onAvatarSelect: (file: File) => Promise<unknown>;
@@ -94,7 +99,7 @@ export interface SecuritySettingsState {
 }
 
 export interface SafetySettingsState {
-  blockedUsers: FriendshipApi[];
+  blockedUsers: UserBlockApi[];
   isOnline: boolean;
   isLoadingBlockedUsers: boolean;
   blockedUsersError: string | null;

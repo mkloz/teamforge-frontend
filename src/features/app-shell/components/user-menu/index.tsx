@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import {
   Bell,
+  Eye,
   LockKeyhole,
   Settings,
   Shield,
@@ -23,6 +24,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
+import { buildSafetyNavigation } from "@/shared/navigation/safety-navigation";
 import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 import type { User } from "@/shared/schemas";
 
@@ -115,10 +117,16 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
               navigation={buildSettingsNavigation("matching")}
             />
             <MenuLinkItem
-              icon={Shield}
-              label="Privacy and safety"
-              description="Visibility and blocked people"
+              icon={Eye}
+              label="Privacy"
+              description="Profile visibility"
               navigation={buildSettingsNavigation("privacy")}
+            />
+            <MenuLinkItem
+              icon={Shield}
+              label="Safety Center"
+              description="Reports and account actions"
+              navigation={buildSafetyNavigation()}
             />
             <MenuLinkItem
               icon={LockKeyhole}

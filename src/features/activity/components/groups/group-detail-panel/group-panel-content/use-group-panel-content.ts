@@ -20,6 +20,8 @@ interface UseGroupPanelContentOptions {
 type ActivityFriendshipsData = NonNullable<
   ReturnType<typeof useActivityFriendships>["data"]
 >;
+type ActivityFriendshipCounterpart =
+  ActivityFriendshipsData[number]["counterpart"];
 
 export function useGroupPanelContent({
   group,
@@ -150,20 +152,14 @@ function getInviteCandidates(
     .map(getInviteCandidate);
 }
 
-function getInviteCandidate(counterpart: ActivityParticipant) {
+function getInviteCandidate(
+  counterpart: ActivityFriendshipCounterpart,
+): ActivityParticipant {
   return {
     id: counterpart.id,
     name: counterpart.name,
     avatar: counterpart.avatar,
     city: counterpart.city ?? null,
-    personalityType: counterpart.personalityType,
     onlineStatus: counterpart.onlineStatus,
-    trustScore: getDisplayTrustScore(counterpart.trustScore),
   };
-}
-
-function getDisplayTrustScore(trustScore: number) {
-  return trustScore > 0 && trustScore <= 1
-    ? Math.round(trustScore * 100)
-    : Math.round(trustScore);
 }

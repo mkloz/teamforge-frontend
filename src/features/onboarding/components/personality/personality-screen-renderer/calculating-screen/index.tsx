@@ -1,88 +1,39 @@
-import { domAnimation, LazyMotion, m } from "framer-motion";
+import { LoaderCircle, RotateCcw } from "lucide-react";
 
-import type { OceanVectorWithMeta } from "@/features/onboarding/utils/score-calculator";
+import { Button } from "@/shared/components/ui/button";
 
-import { AnimatedCounter } from "./animated-counter";
-import { useCalculationSequence } from "./use-calculation-sequence";
-
-interface CalculatingScreenProps {
-  vector: OceanVectorWithMeta;
-  onDone: () => void;
+interface SubmissionScreenProps {
+  error: string | null;
+  onRetry: () => void;
 }
 
-export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
-  const { controls, message, progressRows } = useCalculationSequence({
-    onDone,
-    vector,
-  });
-
+export function SubmissionScreen({ error, onRetry }: SubmissionScreenProps) {
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center px-4 py-12 sm:px-6">
-      <p className="mb-8 font-bold font-sans text-forge-teal text-xs">
-        Reading your answers
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center px-4 py-12 text-center sm:px-6">
+      <LoaderCircle
+        aria-hidden="true"
+        className={error ? "text-destructive" : "animate-spin text-forge-teal"}
+        size={32}
+        strokeWidth={1.5}
+      />
+
+      <h1 className="mt-5 text-balance font-extrabold text-2xl text-ink leading-tight">
+        {error ? "Your answers are still here" : "Submitting your answers"}
+      </h1>
+      <p
+        className="mt-3 max-w-sm text-pretty text-muted-foreground text-sm leading-relaxed"
+        role={error ? "alert" : undefined}
+      >
+        {error ??
+          "TeamForge is sending your answers for scoring. This usually takes a few seconds."}
       </p>
 
-      <LazyMotion features={domAnimation}>
-        <div className="flex w-full max-w-sm flex-col gap-6">
-          {progressRows.map((row, index) => (
-            <m.div
-              key={row.dimension}
-              className="flex flex-col gap-2"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0, x: -10 },
-                visible: {
-                  opacity: 1,
-                  x: 0,
-                  transition: { duration: 0.5, delay: index * 0.15 },
-                },
-              }}
-            >
-              <div className="flex items-baseline justify-between">
-                <span className="font-sans font-semibold text-foreground/90 text-xs">
-                  {row.label}
-                </span>
-                <span className="font-bold font-sans text-forge-teal text-xs">
-                  <AnimatedCounter
-                    value={row.value}
-                    delay={0.6 + index * 0.25}
-                  />
-                </span>
-              </div>
-              <progress
-                aria-label={row.label}
-                className="sr-only"
-                value={row.value}
-                max={100}
-              >
-                {row.value}%
-              </progress>
-              <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted shadow-inner dark:bg-white/10">
-                <m.div
-                  custom={index}
-                  animate={controls}
-                  initial={{ width: "0%" }}
-                  className="absolute top-0 bottom-0 left-0 h-full rounded-full bg-linear-to-r from-forge-teal/70 to-forge-teal shadow-teal-glow"
-                />
-              </div>
-            </m.div>
-          ))}
-        </div>
-
-        <div className="mt-12 flex h-4 w-full justify-center overflow-hidden">
-          <m.p
-            key={message}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="text-center font-medium font-sans text-muted-foreground text-xs"
-          >
-            {message}
-          </m.p>
-        </div>
-      </LazyMotion>
+      {error ? (
+        <Button className="mt-6" onClick={onRetry}>
+          <RotateCcw size={16} strokeWidth={2} />
+          Retry submission
+        </Button>
+      ) : null}
     </div>
   );
 }

@@ -35,6 +35,7 @@ const inviteBadgeIconMap: Partial<
 > = {
   ALGORITHM_MATCH: UsersRound,
   FRIEND_INVITE: Handshake,
+  JOIN_REQUEST: UserRoundPlus,
 };
 
 export interface InvitationQueueItemState {

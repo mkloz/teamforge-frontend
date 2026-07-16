@@ -3,13 +3,16 @@ import type { LucideIcon } from "lucide-react";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { SheetClose } from "@/shared/components/ui/sheet";
 import { cn } from "@/shared/lib/utils";
+import type { buildSafetyNavigation } from "@/shared/navigation/safety-navigation";
 import type { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
 interface MenuLinkItemProps {
   description?: string;
   icon: LucideIcon;
   label: string;
-  navigation: ReturnType<typeof buildSettingsNavigation>;
+  navigation:
+    | ReturnType<typeof buildSafetyNavigation>
+    | ReturnType<typeof buildSettingsNavigation>;
   tone?: "default" | "destructive";
 }
 

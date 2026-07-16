@@ -3,61 +3,14 @@ import { ForgeGroupReadyVisual } from "@/features/forge/assets/forge-group-ready
 import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
 import { Avatar } from "@/shared/components/common/avatar";
 import { IconTile } from "@/shared/components/ui/icon-tile";
-import { StatusPill } from "@/shared/components/ui/status-pill";
-import { cn } from "@/shared/lib/utils";
 import {
   getParticipantInitials,
   getParticipantName,
-  getParticipantScorePercent,
 } from "./participant-utils";
 
 interface SuccessHeroProps {
   planTitle: string;
   participants: ForgeParticipant[];
-  removedIds: Set<string>;
-}
-
-interface ScoredParticipant {
-  participant: ForgeParticipant;
-  score: number;
-}
-
-function getActiveParticipants(
-  participants: ForgeParticipant[],
-  removedIds: Set<string>,
-) {
-  return participants.filter(
-    (participant) => !removedIds.has(participant.userId),
-  );
-}
-
-function getScoredParticipants(
-  participants: ForgeParticipant[],
-): ScoredParticipant[] {
-  return participants
-    .map((participant) => ({
-      participant,
-      score: getParticipantScorePercent(participant),
-    }))
-    .filter((item): item is ScoredParticipant => item.score !== null);
-}
-
-function getAverageScore(scoredParticipants: ScoredParticipant[]) {
-  if (scoredParticipants.length === 0) {
-    return null;
-  }
-
-  return Math.round(
-    scoredParticipants.reduce((sum, item) => sum + item.score, 0) /
-      scoredParticipants.length,
-  );
-}
-
-function getTopFit(scoredParticipants: ScoredParticipant[]) {
-  return scoredParticipants.reduce<ScoredParticipant | null>(
-    (best, item) => (!best || item.score > best.score ? item : best),
-    null,
-  );
 }
 
 function getParticipantVisibility(participants: ForgeParticipant[]) {
@@ -73,16 +26,8 @@ function getSuccessHeroDisplayTitle(planTitle: string) {
   return planTitle.trim() || "your plan";
 }
 
-export function SuccessHero({
-  planTitle,
-  participants,
-  removedIds,
-}: SuccessHeroProps) {
+export function SuccessHero({ planTitle, participants }: SuccessHeroProps) {
   const displayTitle = getSuccessHeroDisplayTitle(planTitle);
-  const activeParticipants = getActiveParticipants(participants, removedIds);
-  const scoredParticipants = getScoredParticipants(activeParticipants);
-  const averageScore = getAverageScore(scoredParticipants);
-  const topFit = getTopFit(scoredParticipants);
 
   return (
     <section className="overflow-hidden rounded-lg border border-border/40 bg-card/70">
@@ -113,21 +58,14 @@ export function SuccessHero({
         </div>
 
         <div className="flex items-center justify-between gap-3 border-border/35 border-y py-3">
-          <SuccessHeroPeopleStack activeParticipants={activeParticipants} />
-
-          <AverageFitStat averageScore={averageScore} />
+          <SuccessHeroPeopleStack activeParticipants={participants} />
+          <ReviewStatus />
         </div>
 
-        <div
-          className={cn(
-            "grid gap-2 text-xs",
-            topFit
-              ? "grid-cols-[repeat(auto-fit,minmax(8rem,1fr))]"
-              : "grid-cols-1",
-          )}
-        >
-          <TopFitSummary topFit={topFit} />
-          <TopFitScorePill topFit={topFit} />
+        <div className="grid grid-cols-1 gap-2 text-xs">
+          <p className="min-w-0 text-muted-foreground">
+            Review the selected people before continuing.
+          </p>
         </div>
       </div>
     </section>
@@ -151,7 +89,7 @@ function SuccessHeroPeopleStack({
         {visibleParticipants.map((participant) => (
           <Avatar
             key={participant.userId}
-            src={participant.user?.avatar}
+            src={participant.user.avatar}
             name={getParticipantName(participant)}
             fallback={getParticipantInitials(participant)}
             shape="rounded"
@@ -183,54 +121,18 @@ function HiddenParticipantCount({ hiddenCount }: { hiddenCount: number }) {
   );
 }
 
-function AverageFitStat({ averageScore }: { averageScore: number | null }) {
+function ReviewStatus() {
   return (
     <div className="flex shrink-0 items-center gap-2 text-right">
       <UsersRound size={15} className="text-forge-teal" />
       <div>
         <p className="font-bold text-foreground text-sm leading-tight">
-          {getAverageFitLabel(averageScore)}
+          Ready to review
         </p>
         <p className="font-semibold text-micro text-muted-foreground">
-          Average score
+          Group status
         </p>
       </div>
     </div>
-  );
-}
-
-function getAverageFitLabel(averageScore: number | null) {
-  return averageScore !== null ? `${averageScore}%` : "Ready";
-}
-
-function TopFitSummary({ topFit }: { topFit: ScoredParticipant | null }) {
-  if (!topFit) {
-    return (
-      <p className="min-w-0 text-muted-foreground">
-        The group is ready for review.
-      </p>
-    );
-  }
-
-  return (
-    <p className="min-w-0 text-muted-foreground">
-      Highest compatibility score:{" "}
-      <span className="font-semibold text-foreground">
-        {getParticipantName(topFit.participant)}
-      </span>
-      .
-    </p>
-  );
-}
-
-function TopFitScorePill({ topFit }: { topFit: ScoredParticipant | null }) {
-  if (!topFit) {
-    return null;
-  }
-
-  return (
-    <StatusPill tone="amber" size="xs" numeric className="justify-self-start">
-      {topFit.score}%
-    </StatusPill>
   );
 }

@@ -46,7 +46,7 @@ export interface ActivityRealtimeContext {
     receiverId: string,
     friendship: Pick<FriendshipApi, "requesterId" | "receiverId">,
   ): boolean;
-  mapApiGroupFromSelection(group: Group): GroupApi;
+  mapApiGroupFromSelection(group: Group, baseGroup: GroupApi): GroupApi;
   mapCurrentUserParticipant(user: User): ActivityParticipant;
   mapGroup(
     group: GroupApi,

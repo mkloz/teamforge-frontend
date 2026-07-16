@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { DateOfBirthValidator } from "@/shared/validators/date-of-birth.validator";
 import { PasswordValidator } from "@/shared/validators/password.validator";
 
 export const authTokensSchema = z.object({
@@ -29,6 +30,7 @@ export const registerSchema = z.object({
     .email("Check that email again. It looks a little off."),
   password: PasswordValidator,
   otp: z.string().min(6, "We need all 6 digits to verify."),
+  dateOfBirth: DateOfBirthValidator,
   age: z
     .number({ error: "How old are you?" })
     .min(16, "Enter your age (we support 16 to 99).")

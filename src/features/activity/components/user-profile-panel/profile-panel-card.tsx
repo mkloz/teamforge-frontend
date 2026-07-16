@@ -11,21 +11,19 @@ import type { UserProfilePanelParticipant } from "./types";
 
 interface ProfilePanelOriginalCardProps {
   chatNavigation?: ReturnType<typeof buildActivityDmNavigation>;
-  groupMode: string;
-  onlineStatus: OnlineStatus;
+  onlineStatus?: OnlineStatus;
   participant: UserProfilePanelParticipant;
   profileNavigation?: ProfileNavigation;
-  trustScore: number;
-  typeLabel: string;
+  roleLabel?: string;
+  typeLabel?: string;
 }
 
 export function ProfilePanelOriginalCard({
   chatNavigation,
-  groupMode,
   onlineStatus,
   participant,
   profileNavigation,
-  trustScore,
+  roleLabel,
   typeLabel,
 }: ProfilePanelOriginalCardProps) {
   return (
@@ -55,13 +53,7 @@ export function ProfilePanelOriginalCard({
         />
       </div>
 
-      <div className="border-border border-t px-4 py-3">
-        <PanelProfileSignals
-          groupMode={groupMode}
-          trustScore={trustScore}
-          typeLabel={typeLabel}
-        />
-      </div>
+      <PanelProfileSignals roleLabel={roleLabel} typeLabel={typeLabel} />
     </section>
   );
 }
@@ -146,7 +138,7 @@ function PanelProfileAvatar({
   src,
 }: {
   name: string;
-  onlineStatus: OnlineStatus;
+  onlineStatus?: OnlineStatus;
   src: string | null;
 }) {
   return (
@@ -166,11 +158,13 @@ function PanelProfileAvatar({
             fallbackClassName="bg-muted text-forge-teal text-2xl"
             loading="eager"
           />
-          <AvatarStatus
-            status={onlineStatus}
-            borderClassName="border-canvas"
-            sizeClassName="size-4"
-          />
+          {onlineStatus ? (
+            <AvatarStatus
+              status={onlineStatus}
+              borderClassName="border-canvas"
+              sizeClassName="size-4"
+            />
+          ) : null}
         </div>
       </button>
     </AvatarPreviewDialog>
@@ -178,31 +172,40 @@ function PanelProfileAvatar({
 }
 
 function PanelProfileSignals({
-  groupMode,
-  trustScore,
+  roleLabel,
   typeLabel,
 }: {
-  groupMode: string;
-  trustScore: number;
-  typeLabel: string;
+  roleLabel?: string;
+  typeLabel?: string;
 }) {
+  const signals = [
+    typeLabel ? { label: "Type", value: typeLabel } : null,
+    roleLabel ? { label: "Role", value: roleLabel } : null,
+  ].filter((signal): signal is { label: string; value: string } =>
+    Boolean(signal),
+  );
+
+  if (signals.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="grid grid-cols-3 overflow-hidden">
-      <ProfileSignal
-        label="Trust"
-        value={`${trustScore} ${getTrustLabel(trustScore)}`}
-        accent="text-forge-teal"
-      />
-      <ProfileSignal
-        label="Type"
-        value={typeLabel}
-        className="border-border border-l pl-3"
-      />
-      <ProfileSignal
-        label="Role"
-        value={groupMode}
-        className="border-border border-l pl-3"
-      />
+    <div className="border-border border-t px-4 py-3">
+      <div
+        className={cn(
+          "grid overflow-hidden",
+          signals.length === 2 ? "grid-cols-2" : "grid-cols-1",
+        )}
+      >
+        {signals.map((signal, index) => (
+          <ProfileSignal
+            key={signal.label}
+            label={signal.label}
+            value={signal.value}
+            className={index > 0 ? "border-border border-l pl-3" : undefined}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -289,14 +292,6 @@ function ProfileSignal({
       </p>
     </div>
   );
-}
-
-function getTrustLabel(trustScore: number) {
-  if (trustScore >= 80) {
-    return "High";
-  }
-
-  return trustScore >= 50 ? "Medium" : "Low";
 }
 
 function formatGender(gender?: UserProfilePanelParticipant["gender"] | null) {

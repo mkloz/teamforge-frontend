@@ -25,6 +25,45 @@ paths:
       tags:
         - App
       security: []
+  /api/v1/users/me/adult-eligibility:
+    get:
+      operationId: AdultEligibilityController_getSummary
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdultEligibilitySummaryEntity'
+        '429':
+          description: Too many requests
+      security: &a1
+        - bearer: []
+      summary: Get the current adult eligibility status
+      tags: &a2
+        - Adult eligibility
+    put:
+      operationId: AdultEligibilityController_setFromDateOfBirth
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetAdultEligibilityDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdultEligibilitySummaryEntity'
+        '429':
+          description: Too many requests
+      security: *a1
+      summary: Set adult eligibility from a date of birth
+      tags: *a2
   /api/v1/file-upload/image:
     post:
       operationId: FileUploadController_uploadImage
@@ -49,7 +88,7 @@ paths:
         '429':
           description: Too many requests
       summary: Upload an image and return its public URL
-      tags: &a1
+      tags: &a3
         - File uploads
   /api/v1/file-upload/chat-attachment:
     post:
@@ -75,7 +114,7 @@ paths:
         '429':
           description: Too many requests
       summary: Upload a chat attachment and return its download URL
-      tags: *a1
+      tags: *a3
   /api/v1/health:
     get:
       operationId: HealthController_check
@@ -95,8 +134,8 @@ paths:
                         example: ok
                       info:
                         type: object
-                        example: &a2
-                          database: &a3
+                        example: &a4
+                          database: &a5
                             status: up
                         additionalProperties:
                           type: object
@@ -119,7 +158,7 @@ paths:
                         nullable: true
                       details:
                         type: object
-                        example: *a2
+                        example: *a4
                         additionalProperties:
                           type: object
                           properties:
@@ -149,7 +188,7 @@ paths:
                         example: error
                       info:
                         type: object
-                        example: *a2
+                        example: *a4
                         additionalProperties:
                           type: object
                           properties:
@@ -161,7 +200,7 @@ paths:
                       error:
                         type: object
                         example:
-                          redis: &a4
+                          redis: &a6
                             status: down
                             message: Could not connect
                         additionalProperties:
@@ -175,8 +214,8 @@ paths:
                       details:
                         type: object
                         example:
-                          database: *a3
-                          redis: *a4
+                          database: *a5
+                          redis: *a6
                         additionalProperties:
                           type: object
                           properties:
@@ -184,6 +223,9 @@ paths:
                               type: string
                           additionalProperties:
                             type: string
+                  code:
+                    description: Stable code for errors with a documented recovery path.
+                    type: string
                   timestamp:
                     example: 2023-08-20T12:34:56Z
                     type: string
@@ -207,7 +249,7 @@ paths:
                   - method
                   - requestId
       summary: Check backend dependencies
-      tags: &a8
+      tags: &a10
         - Health
       security: []
   /api/v1/health/frontend:
@@ -229,8 +271,8 @@ paths:
                         example: ok
                       info:
                         type: object
-                        example: &a5
-                          database: &a6
+                        example: &a7
+                          database: &a8
                             status: up
                         additionalProperties:
                           type: object
@@ -253,7 +295,7 @@ paths:
                         nullable: true
                       details:
                         type: object
-                        example: *a5
+                        example: *a7
                         additionalProperties:
                           type: object
                           properties:
@@ -283,7 +325,7 @@ paths:
                         example: error
                       info:
                         type: object
-                        example: *a5
+                        example: *a7
                         additionalProperties:
                           type: object
                           properties:
@@ -295,7 +337,7 @@ paths:
                       error:
                         type: object
                         example:
-                          redis: &a7
+                          redis: &a9
                             status: down
                             message: Could not connect
                         additionalProperties:
@@ -309,8 +351,8 @@ paths:
                       details:
                         type: object
                         example:
-                          database: *a6
-                          redis: *a7
+                          database: *a8
+                          redis: *a9
                         additionalProperties:
                           type: object
                           properties:
@@ -318,6 +360,9 @@ paths:
                               type: string
                           additionalProperties:
                             type: string
+                  code:
+                    description: Stable code for errors with a documented recovery path.
+                    type: string
                   timestamp:
                     example: 2023-08-20T12:34:56Z
                     type: string
@@ -341,7 +386,7 @@ paths:
                   - method
                   - requestId
       summary: Check frontend reachability
-      tags: *a8
+      tags: *a10
       security: []
   /api/v1/health/ok:
     get:
@@ -353,8 +398,152 @@ paths:
         '429':
           description: Too many requests
       summary: Return a lightweight uptime response
-      tags: *a8
+      tags: *a10
       security: []
+  /api/v1/users/me/personality-assessment:
+    get:
+      operationId: PersonalityController_getOwnerState
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerPersonalityStateEntity'
+        '429':
+          description: Too many requests
+      security: &a11
+        - bearer: []
+      summary: Get the authenticated user personality state
+      tags: &a12
+        - Personality assessment
+    delete:
+      operationId: PersonalityController_deleteAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerPersonalityStateEntity'
+        '429':
+          description: Too many requests
+      security: *a11
+      summary: Delete all stored personality results
+      tags: *a12
+  /api/v1/users/me/personality-assessment/attempts:
+    post:
+      operationId: PersonalityController_createAttempt
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssessmentAttemptDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessmentAttemptEntity'
+        '429':
+          description: Too many requests
+      security: *a11
+      summary: Create a short-lived personality attempt
+      tags: *a12
+  /api/v1/users/me/personality-assessment/attempts/{attemptId}/submissions:
+    post:
+      operationId: PersonalityController_submitAttempt
+      parameters:
+        - name: attemptId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID that identifies this submission retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitAssessmentDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmittedPersonalityAssessmentEntity'
+        '409':
+          description: Attempt expired, stale, or submitted
+        '429':
+          description: Too many requests
+      security: *a11
+      summary: Score a completed personality assessment
+      tags: *a12
+  /api/v1/users/me/personality-assessment/publish:
+    post:
+      operationId: PersonalityController_publish
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishPersonalityDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerPersonalityStateEntity'
+        '429':
+          description: Too many requests
+      security: *a11
+      summary: Publish an accepted personality result
+      tags: *a12
+  /api/v1/users/me/personality-assessment/keep-private:
+    post:
+      operationId: PersonalityController_keepPrivate
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerPersonalityStateEntity'
+        '429':
+          description: Too many requests
+      security: *a11
+      summary: Accept a personality result without publishing it
+      tags: *a12
+  /api/v1/users/me/personality-assessment/draft:
+    delete:
+      operationId: PersonalityController_discardDraft
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerPersonalityStateEntity'
+        '429':
+          description: Too many requests
+      security: *a11
+      summary: Discard the current personality draft
+      tags: *a12
   /api/v1/users/me:
     get:
       operationId: UserController_me
@@ -368,10 +557,10 @@ paths:
                 $ref: '#/components/schemas/UserEntity'
         '429':
           description: Too many requests
-      security: &a9
+      security: &a13
         - bearer: []
       summary: Get the authenticated user profile
-      tags: &a10
+      tags: &a14
         - Users
     delete:
       operationId: UserController_deleteMe
@@ -385,9 +574,9 @@ paths:
                 $ref: '#/components/schemas/Success'
         '429':
           description: Too many requests
-      security: *a9
+      security: *a13
       summary: Delete the authenticated user account
-      tags: *a10
+      tags: *a14
     patch:
       operationId: UserController_update
       parameters: []
@@ -406,9 +595,9 @@ paths:
                 $ref: '#/components/schemas/UserEntity'
         '429':
           description: Too many requests
-      security: *a9
+      security: *a13
       summary: Update the authenticated user profile
-      tags: *a10
+      tags: *a14
   /api/v1/users/{id}:
     get:
       operationId: UserController_getById
@@ -427,11 +616,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PublicUserEntity'
+        '401':
+          description: Authentication required
+        '404':
+          description: User not found
         '429':
           description: Too many requests
-      security: []
-      summary: Get a public user profile by ID
-      tags: *a10
+      security: *a13
+      summary: Get a user profile available to the viewer
+      tags: *a14
   /api/v1/users/me/avatar:
     patch:
       operationId: UserController_updateAvatar
@@ -455,9 +648,9 @@ paths:
                 $ref: '#/components/schemas/UserEntity'
         '429':
           description: Too many requests
-      security: *a9
+      security: *a13
       summary: Upload or replace the authenticated user avatar
-      tags: *a10
+      tags: *a14
     delete:
       operationId: UserController_deleteAvatar
       parameters: []
@@ -470,9 +663,9 @@ paths:
                 $ref: '#/components/schemas/UserEntity'
         '429':
           description: Too many requests
-      security: *a9
+      security: *a13
       summary: Delete the authenticated user avatar
-      tags: *a10
+      tags: *a14
   /api/v1/auth/login:
     post:
       operationId: AuthController_login
@@ -495,7 +688,7 @@ paths:
         '429':
           description: Too many requests
       summary: Log in with email and password
-      tags: &a11
+      tags: &a15
         - Auth
       security: []
   /api/v1/auth/register:
@@ -522,7 +715,7 @@ paths:
         '429':
           description: Too many requests
       summary: Register a new account with email and password
-      tags: *a11
+      tags: *a15
       security: []
   /api/v1/auth/verify-email-otp:
     post:
@@ -546,7 +739,7 @@ paths:
         '429':
           description: Too many requests
       summary: Verify an email address with a 6-digit one-time code
-      tags: *a11
+      tags: *a15
       security: []
   /api/v1/auth/resend-email-otp:
     post:
@@ -570,7 +763,7 @@ paths:
         '429':
           description: Too many requests
       summary: Resend an email verification code and activation link
-      tags: *a11
+      tags: *a15
       security: []
   /api/v1/auth/logout:
     post:
@@ -590,7 +783,7 @@ paths:
       security:
         - bearer: []
       summary: Log out and revoke the current refresh token
-      tags: *a11
+      tags: *a15
   /api/v1/auth/sessions:
     get:
       operationId: AuthController_listSessions
@@ -607,7 +800,7 @@ paths:
       security:
         - bearer: []
       summary: List active sessions for the authenticated user
-      tags: *a11
+      tags: *a15
   /api/v1/auth/sessions/revoke-others:
     post:
       operationId: AuthController_revokeOtherSessions
@@ -624,7 +817,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke every session except the current one
-      tags: *a11
+      tags: *a15
   /api/v1/auth/sessions/{id}/revoke:
     post:
       operationId: AuthController_revokeSession
@@ -647,7 +840,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a specific session by ID
-      tags: *a11
+      tags: *a15
   /api/v1/auth/refresh:
     post:
       operationId: AuthController_refresh
@@ -666,7 +859,7 @@ paths:
       security:
         - bearer: []
       summary: Refresh the access token using a valid refresh token
-      tags: *a11
+      tags: *a15
   /api/v1/auth/activate/{token}:
     post:
       operationId: AuthController_activate
@@ -688,7 +881,7 @@ paths:
         '429':
           description: Too many requests
       summary: Activate an account from an email verification token
-      tags: *a11
+      tags: *a15
       security: []
   /api/v1/auth/send-reset-password-link:
     post:
@@ -712,7 +905,7 @@ paths:
         '429':
           description: Too many requests
       summary: Request a password reset link
-      tags: *a11
+      tags: *a15
       security: []
   /api/v1/auth/reset-password:
     post:
@@ -736,7 +929,7 @@ paths:
         '429':
           description: Too many requests
       summary: Reset a password with a valid reset token
-      tags: *a11
+      tags: *a15
       security: []
   /api/v1/auth/google/login:
     post:
@@ -783,7 +976,7 @@ paths:
         '429':
           description: Too many requests
       summary: Get the full hierarchical interest tree
-      tags: &a12
+      tags: &a16
         - Interests
       security: []
   /api/v1/interests/categories:
@@ -802,7 +995,7 @@ paths:
         '429':
           description: Too many requests
       summary: Get top-level interest categories
-      tags: *a12
+      tags: *a16
       security: []
   /api/v1/interests/search:
     get:
@@ -839,7 +1032,7 @@ paths:
         '429':
           description: Too many requests
       summary: Search interests by name, slug, or description
-      tags: *a12
+      tags: *a16
       security: []
   /api/v1/users/me/interests:
     post:
@@ -886,10 +1079,10 @@ paths:
           description: Profile is incomplete or one or more interest IDs are invalid
         '429':
           description: Too many requests
-      security: &a13
+      security: &a17
         - bearer: []
       summary: Create an activity for automatic or manual group formation
-      tags: &a14
+      tags: &a18
         - Activities
     get:
       operationId: ActivitiesController_getMany
@@ -917,9 +1110,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedActivities'
         '429':
           description: Too many requests
-      security: *a13
+      security: *a17
       summary: List your recent activities
-      tags: *a14
+      tags: *a18
   /api/v1/activities/{id}:
     get:
       operationId: ActivitiesController_getById
@@ -944,9 +1137,9 @@ paths:
           description: Activity not found
         '429':
           description: Too many requests
-      security: *a13
+      security: *a17
       summary: Get one of your activities by ID
-      tags: *a14
+      tags: *a18
     delete:
       operationId: ActivitiesController_remove
       parameters:
@@ -974,9 +1167,9 @@ paths:
           description: Activity already cancelled or group already formed
         '429':
           description: Too many requests
-      security: *a13
+      security: *a17
       summary: Cancel one of your activities
-      tags: *a14
+      tags: *a18
   /api/v1/activities/{id}/forge:
     post:
       operationId: ActivitiesController_forge
@@ -1013,11 +1206,11 @@ paths:
             a group, or does not have enough available people
         '429':
           description: Too many requests
-      security: *a13
+      security: *a17
       summary:
         Form a group from an automatic activity and create its first plan and
         chat
-      tags: *a14
+      tags: *a18
   /api/v1/activities/{id}/keep-searching:
     post:
       operationId: ActivitiesController_keepSearching
@@ -1052,9 +1245,9 @@ paths:
           description: Activity state or forge mode does not allow keeping the search active
         '429':
           description: Too many requests
-      security: *a13
+      security: *a17
       summary: Keep an automatic activity open to try forming a group later
-      tags: *a14
+      tags: *a18
   /api/v1/activities/{id}/stop-searching:
     post:
       operationId: ActivitiesController_stopSearching
@@ -1083,9 +1276,9 @@ paths:
           description: Activity state or forge mode does not allow stopping the search
         '429':
           description: Too many requests
-      security: *a13
+      security: *a17
       summary: Stop an automatic activity from continuing its group search
-      tags: *a14
+      tags: *a18
   /api/v1/activities/{id}/forge-pending:
     post:
       operationId: ActivitiesController_forgePending
@@ -1116,11 +1309,11 @@ paths:
             request, or no longer has enough available people
         '429':
           description: Too many requests
-      security: *a13
+      security: *a17
       summary:
         Form a group from an automatic activity after enough people become
         available
-      tags: *a14
+      tags: *a18
   /api/v1/chats/link-preview:
     get:
       operationId: ChatController_getLinkPreview
@@ -1140,10 +1333,10 @@ paths:
                 $ref: '#/components/schemas/LinkPreviewEntity'
         '429':
           description: Too many requests
-      security: &a15
+      security: &a19
         - bearer: []
       summary: Get link preview details for a URL
-      tags: &a16
+      tags: &a20
         - Chat
   /api/v1/chats:
     get:
@@ -1181,9 +1374,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedChats'
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: List chats for the current user
-      tags: *a16
+      tags: *a20
   /api/v1/chats/activity-feed:
     get:
       operationId: ChatController_getActivityFeed
@@ -1220,9 +1413,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedChats'
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: List chat summaries for the activity feed
-      tags: *a16
+      tags: *a20
   /api/v1/chats/saved-messages:
     get:
       operationId: ChatController_getSavedMessages
@@ -1250,9 +1443,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedSavedMessages'
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: List saved messages for the current user
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}:
     get:
       operationId: ChatController_getById
@@ -1277,9 +1470,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Get a single chat
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/messages:
     get:
       operationId: ChatController_getMessages
@@ -1318,9 +1511,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: List messages in a chat
-      tags: *a16
+      tags: *a20
     post:
       operationId: ChatController_sendMessage
       parameters:
@@ -1352,9 +1545,9 @@ paths:
           description: Chat or reply target not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Send a message to a chat
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/messages/search:
     get:
       operationId: ChatController_searchMessages
@@ -1404,9 +1597,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Search messages in a chat
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/messages/{messageId}:
     patch:
       operationId: ChatController_updateMessage
@@ -1444,9 +1637,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Edit one of your messages
-      tags: *a16
+      tags: *a20
     delete:
       operationId: ChatController_deleteMessage
       parameters:
@@ -1477,9 +1670,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Mark one of your messages as deleted
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/messages/{messageId}/pin:
     post:
       operationId: ChatController_pinMessage
@@ -1511,9 +1704,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Pin a message in a chat
-      tags: *a16
+      tags: *a20
     delete:
       operationId: ChatController_unpinMessage
       parameters:
@@ -1544,9 +1737,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Unpin a message in a chat
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/pin:
     post:
       operationId: ChatController_pinChat
@@ -1571,9 +1764,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Pin a chat for the current user
-      tags: *a16
+      tags: *a20
     delete:
       operationId: ChatController_unpinChat
       parameters:
@@ -1597,9 +1790,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Unpin a chat for the current user
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/mute:
     post:
       operationId: ChatController_muteChat
@@ -1624,9 +1817,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Mute a chat for the current user
-      tags: *a16
+      tags: *a20
     delete:
       operationId: ChatController_unmuteChat
       parameters:
@@ -1650,9 +1843,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Unmute a chat for the current user
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/messages/{messageId}/save:
     post:
       operationId: ChatController_saveMessage
@@ -1684,9 +1877,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Save a message for the current user
-      tags: *a16
+      tags: *a20
     delete:
       operationId: ChatController_unsaveMessage
       parameters:
@@ -1717,9 +1910,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Remove a saved message for the current user
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/messages/{messageId}/forward:
     post:
       operationId: ChatController_forwardMessage
@@ -1757,9 +1950,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Forward a message to another chat
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/messages/{messageId}/reactions:
     post:
       operationId: ChatController_reactToMessage
@@ -1797,9 +1990,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Add a reaction to a message
-      tags: *a16
+      tags: *a20
     delete:
       operationId: ChatController_removeReaction
       parameters:
@@ -1837,9 +2030,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Remove one of your reactions from a message
-      tags: *a16
+      tags: *a20
   /api/v1/chats/{id}/read:
     post:
       operationId: ChatController_markRead
@@ -1870,9 +2063,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a15
+      security: *a19
       summary: Mark a chat as read
-      tags: *a16
+      tags: *a20
   /api/v1/friends:
     get:
       operationId: FriendshipsController_getManyFriends
@@ -1900,10 +2093,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: &a17
+      security: &a21
         - bearer: []
       summary: List accepted friends for the current user
-      tags: &a18
+      tags: &a22
         - Friendships
   /api/v1/friends/public/{id}:
     get:
@@ -1936,12 +2129,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedFriendships'
+                $ref: '#/components/schemas/PaginatedPublicFriends'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: List public friends of a target user
-      tags: *a18
+      tags: *a22
   /api/v1/friends/common/{id}:
     get:
       operationId: FriendshipsController_getCommonFriends
@@ -1976,9 +2169,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: List common friends with the target user
-      tags: *a18
+      tags: *a22
   /api/v1/friends/requests/incoming:
     get:
       operationId: FriendshipsController_getIncomingRequests
@@ -2006,9 +2199,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: List incoming friend requests
-      tags: *a18
+      tags: *a22
   /api/v1/friends/requests/outgoing:
     get:
       operationId: FriendshipsController_getOutgoingRequests
@@ -2036,9 +2229,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: List outgoing friend requests
-      tags: *a18
+      tags: *a22
   /api/v1/friends/blocked:
     get:
       operationId: FriendshipsController_getBlockedUsers
@@ -2063,12 +2256,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedFriendships'
+                $ref: '#/components/schemas/PaginatedBlockedUsers'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: List users blocked by the current user
-      tags: *a18
+      tags: *a22
   /api/v1/friends/requests:
     post:
       operationId: FriendshipsController_createRequest
@@ -2092,9 +2285,9 @@ paths:
             between these users
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: Send a friend request
-      tags: *a18
+      tags: *a22
   /api/v1/friends/requests/{id}/accept:
     post:
       operationId: FriendshipsController_acceptRequest
@@ -2115,9 +2308,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: Accept an incoming friend request
-      tags: *a18
+      tags: *a22
   /api/v1/friends/requests/{id}/decline:
     post:
       operationId: FriendshipsController_declineRequest
@@ -2138,9 +2331,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: Decline an incoming friend request
-      tags: *a18
+      tags: *a22
   /api/v1/friends/requests/{id}:
     delete:
       operationId: FriendshipsController_withdrawRequest
@@ -2161,9 +2354,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: Withdraw an outgoing friend request
-      tags: *a18
+      tags: *a22
   /api/v1/friends/{id}:
     delete:
       operationId: FriendshipsController_removeFriend
@@ -2184,9 +2377,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: Remove an existing friend
-      tags: *a18
+      tags: *a22
   /api/v1/friends/{id}/block:
     post:
       operationId: FriendshipsController_blockUser
@@ -2204,14 +2397,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FriendshipEntity'
-        '409':
-          description: The target user has already blocked the current user
+                $ref: '#/components/schemas/BlockedUserEntity'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: Block a user
-      tags: *a18
+      tags: *a22
     delete:
       operationId: FriendshipsController_unblockUser
       parameters:
@@ -2228,12 +2419,328 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FriendshipEntity'
+                $ref: '#/components/schemas/BlockedUserEntity'
         '429':
           description: Too many requests
-      security: *a17
+      security: *a21
       summary: Unblock a user you previously blocked
-      tags: *a18
+      tags: *a22
+  /api/v1/groups:
+    get:
+      operationId: GroupsController_getMany
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - FORMING
+              - PENDING
+              - ACTIVE
+              - PLANNING
+              - COMPLETED
+              - DISBANDED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGroups'
+        '429':
+          description: Too many requests
+      security: &a23
+        - bearer: []
+      summary: List groups for the current user
+      tags: &a24
+        - Groups
+  /api/v1/groups/home-summary:
+    get:
+      operationId: GroupsController_getHomeSummary
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - FORMING
+              - PENDING
+              - ACTIVE
+              - PLANNING
+              - COMPLETED
+              - DISBANDED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHomeGroupSummaries'
+        '429':
+          description: Too many requests
+      security: *a23
+      summary: List group summaries for the home page
+      tags: *a24
+  /api/v1/groups/activity-feed:
+    get:
+      operationId: GroupsController_getActivityFeed
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - FORMING
+              - PENDING
+              - ACTIVE
+              - PLANNING
+              - COMPLETED
+              - DISBANDED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGroups'
+        '429':
+          description: Too many requests
+      security: *a23
+      summary: List group summaries for Activity
+      tags: *a24
+  /api/v1/groups/{id}:
+    get:
+      operationId: GroupsController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '429':
+          description: Too many requests
+      security: *a23
+      summary: Get a single group
+      tags: *a24
+    patch:
+      operationId: GroupsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGroupDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '409':
+          description: The group cannot be updated in its current state
+        '429':
+          description: Too many requests
+      security: *a23
+      summary: Update a group as an admin
+      tags: *a24
+  /api/v1/groups/{id}/detail:
+    get:
+      operationId: GroupsController_getDetail
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupPlanDetailEntity'
+        '429':
+          description: Too many requests
+      security: *a23
+      summary: Get group and plan details
+      tags: *a24
+  /api/v1/groups/{id}/leave:
+    post:
+      operationId: GroupsController_leave
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '409':
+          description: The group cannot be left in its current state
+        '429':
+          description: Too many requests
+      security: *a23
+      summary: Leave a group
+      tags: *a24
+  /api/v1/groups/{id}/remove-member:
+    post:
+      operationId: GroupsController_removeMember
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveGroupMemberDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '409':
+          description: A member cannot be removed while the group is in its current state
+        '429':
+          description: Too many requests
+      security: *a23
+      summary: Remove a member from a group as an admin
+      tags: *a24
+  /api/v1/groups/{id}/disband:
+    post:
+      operationId: GroupsController_disband
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '409':
+          description: Group is already disbanded
+        '429':
+          description: Too many requests
+      security: *a23
+      summary: Disband a group as an admin
+      tags: *a24
+  /api/v1/groups/{id}/plans:
+    post:
+      operationId: GroupsController_createNextPlan
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGroupPlanDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '409':
+          description: Current plan must be finished or cancelled first
+        '429':
+          description: Too many requests
+      security: *a23
+      summary: Create a new draft plan for an existing group
+      tags: *a24
   /api/v1/explore/groups:
     get:
       operationId: ExploreController_getGroups
@@ -2380,10 +2887,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedExploreGroups'
         '429':
           description: Too many requests
-      security: &a19
+      security: &a25
         - bearer: []
       summary: Browse groups available in Explore
-      tags: &a20
+      tags: &a26
         - Explore
   /api/v1/explore/groups/{id}/join:
     post:
@@ -2416,9 +2923,9 @@ paths:
             changed
         '429':
           description: Too many requests
-      security: *a19
+      security: *a25
       summary: Join or request to join an explore group
-      tags: *a20
+      tags: *a26
   /api/v1/explore/groups/{id}/cancel-request:
     post:
       operationId: ExploreController_cancelJoinRequest
@@ -2443,325 +2950,9 @@ paths:
           description: Pending join request was already changed or cancelled
         '429':
           description: Too many requests
-      security: *a19
+      security: *a25
       summary: Cancel a pending join request for an explore group
-      tags: *a20
-  /api/v1/groups:
-    get:
-      operationId: GroupsController_getMany
-      parameters:
-        - name: page
-          required: false
-          in: query
-          schema:
-            maximum: 500
-            default: 1
-            type: number
-        - name: limit
-          required: false
-          in: query
-          schema:
-            maximum: 100
-            default: 10
-            type: number
-        - name: status
-          required: false
-          in: query
-          schema:
-            type: string
-            enum:
-              - FORMING
-              - PENDING
-              - ACTIVE
-              - PLANNING
-              - COMPLETED
-              - DISBANDED
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedGroups'
-        '429':
-          description: Too many requests
-      security: &a21
-        - bearer: []
-      summary: List groups for the current user
-      tags: &a22
-        - Groups
-  /api/v1/groups/home-summary:
-    get:
-      operationId: GroupsController_getHomeSummary
-      parameters:
-        - name: page
-          required: false
-          in: query
-          schema:
-            maximum: 500
-            default: 1
-            type: number
-        - name: limit
-          required: false
-          in: query
-          schema:
-            maximum: 100
-            default: 10
-            type: number
-        - name: status
-          required: false
-          in: query
-          schema:
-            type: string
-            enum:
-              - FORMING
-              - PENDING
-              - ACTIVE
-              - PLANNING
-              - COMPLETED
-              - DISBANDED
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedHomeGroupSummaries'
-        '429':
-          description: Too many requests
-      security: *a21
-      summary: List group summaries for the home page
-      tags: *a22
-  /api/v1/groups/activity-feed:
-    get:
-      operationId: GroupsController_getActivityFeed
-      parameters:
-        - name: page
-          required: false
-          in: query
-          schema:
-            maximum: 500
-            default: 1
-            type: number
-        - name: limit
-          required: false
-          in: query
-          schema:
-            maximum: 100
-            default: 10
-            type: number
-        - name: status
-          required: false
-          in: query
-          schema:
-            type: string
-            enum:
-              - FORMING
-              - PENDING
-              - ACTIVE
-              - PLANNING
-              - COMPLETED
-              - DISBANDED
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedGroups'
-        '429':
-          description: Too many requests
-      security: *a21
-      summary: List group summaries for Activity
-      tags: *a22
-  /api/v1/groups/{id}:
-    get:
-      operationId: GroupsController_getById
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Group ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GroupEntity'
-        '429':
-          description: Too many requests
-      security: *a21
-      summary: Get a single group
-      tags: *a22
-    patch:
-      operationId: GroupsController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Group ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateGroupDto'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GroupEntity'
-        '409':
-          description: The group cannot be updated in its current state
-        '429':
-          description: Too many requests
-      security: *a21
-      summary: Update a group as an admin
-      tags: *a22
-  /api/v1/groups/{id}/detail:
-    get:
-      operationId: GroupsController_getDetail
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Group ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GroupPlanDetailEntity'
-        '429':
-          description: Too many requests
-      security: *a21
-      summary: Get group and plan details
-      tags: *a22
-  /api/v1/groups/{id}/leave:
-    post:
-      operationId: GroupsController_leave
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Group ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GroupEntity'
-        '409':
-          description: The group cannot be left in its current state
-        '429':
-          description: Too many requests
-      security: *a21
-      summary: Leave a group
-      tags: *a22
-  /api/v1/groups/{id}/remove-member:
-    post:
-      operationId: GroupsController_removeMember
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Group ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RemoveGroupMemberDto'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GroupEntity'
-        '409':
-          description: A member cannot be removed while the group is in its current state
-        '429':
-          description: Too many requests
-      security: *a21
-      summary: Remove a member from a group as an admin
-      tags: *a22
-  /api/v1/groups/{id}/disband:
-    post:
-      operationId: GroupsController_disband
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Group ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GroupEntity'
-        '409':
-          description: Group is already disbanded
-        '429':
-          description: Too many requests
-      security: *a21
-      summary: Disband a group as an admin
-      tags: *a22
-  /api/v1/groups/{id}/plans:
-    post:
-      operationId: GroupsController_createNextPlan
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Group ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateGroupPlanDto'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GroupEntity'
-        '409':
-          description: Current plan must be finished or cancelled first
-        '429':
-          description: Too many requests
-      security: *a21
-      summary: Create a new draft plan for an existing group
-      tags: *a22
+      tags: *a26
   /api/v1/invites/received:
     get:
       operationId: InvitesController_getReceived
@@ -2800,10 +2991,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedInvites'
         '429':
           description: Too many requests
-      security: &a23
+      security: &a27
         - bearer: []
       summary: List invites received by the current user
-      tags: &a24
+      tags: &a28
         - Invites
   /api/v1/invites/sent:
     get:
@@ -2843,9 +3034,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedInvites'
         '429':
           description: Too many requests
-      security: *a23
+      security: *a27
       summary: List invites sent by the current user
-      tags: *a24
+      tags: *a28
   /api/v1/invites:
     post:
       operationId: InvitesController_create
@@ -2866,7 +3057,7 @@ paths:
         '400':
           description:
             The request targets the sender, uses an unsupported invite type or
-            expiry date, or involves a blocked relationship
+            expiry date, or an active block prevents the invite
         '403':
           description: User is not a group manager
         '404':
@@ -2878,9 +3069,9 @@ paths:
             exists
         '429':
           description: Too many requests
-      security: *a23
+      security: *a27
       summary: Send or resend a group invite
-      tags: *a24
+      tags: *a28
   /api/v1/invites/{id}/accept:
     post:
       operationId: InvitesController_accept
@@ -2901,8 +3092,8 @@ paths:
                 $ref: '#/components/schemas/InviteEntity'
         '400':
           description:
-            Join requests must be reviewed by group managers, or a blocked
-            relationship prevents acceptance
+            Join requests must be reviewed by group managers, or an active
+            block prevents acceptance
         '404':
           description: Invite not found
         '409':
@@ -2912,9 +3103,9 @@ paths:
             member
         '429':
           description: Too many requests
-      security: *a23
+      security: *a27
       summary: Accept a group invite
-      tags: *a24
+      tags: *a28
   /api/v1/invites/{id}/decline:
     post:
       operationId: InvitesController_decline
@@ -2941,9 +3132,9 @@ paths:
           description: The invite is not pending or has expired
         '429':
           description: Too many requests
-      security: *a23
+      security: *a27
       summary: Decline a group invite
-      tags: *a24
+      tags: *a28
   /api/v1/plans/{id}:
     get:
       operationId: PlansController_getById
@@ -2964,10 +3155,10 @@ paths:
                 $ref: '#/components/schemas/PlanEntity'
         '429':
           description: Too many requests
-      security: &a25
+      security: &a29
         - bearer: []
       summary: Get a plan for a group you belong to
-      tags: &a26
+      tags: &a30
         - Plans
     patch:
       operationId: PlansController_update
@@ -2996,9 +3187,9 @@ paths:
           description: The plan's current status does not allow updates
         '429':
           description: Too many requests
-      security: *a25
+      security: *a29
       summary: Update a group plan as a group admin
-      tags: *a26
+      tags: *a30
   /api/v1/plans/{id}/confirm:
     post:
       operationId: PlansController_confirm
@@ -3021,9 +3212,9 @@ paths:
           description: The plan's current status does not allow confirmation
         '429':
           description: Too many requests
-      security: *a25
+      security: *a29
       summary: Confirm a draft or planning-stage group plan
-      tags: *a26
+      tags: *a30
   /api/v1/plans/{id}/complete:
     post:
       operationId: PlansController_complete
@@ -3046,9 +3237,9 @@ paths:
           description: The plan's current status does not allow completion
         '429':
           description: Too many requests
-      security: *a25
+      security: *a29
       summary: Mark a group plan as completed
-      tags: *a26
+      tags: *a30
   /api/v1/plans/{id}/cancel:
     post:
       operationId: PlansController_cancel
@@ -3071,9 +3262,9 @@ paths:
           description: The plan's current status does not allow cancellation
         '429':
           description: Too many requests
-      security: *a25
+      security: *a29
       summary: Cancel a group plan and reopen planning for the group
-      tags: *a26
+      tags: *a30
   /api/v1/plans/{id}/proposals:
     get:
       operationId: PlanProposalsController_getMany
@@ -3096,10 +3287,10 @@ paths:
                   $ref: '#/components/schemas/PlanProposalEntity'
         '429':
           description: Too many requests
-      security: &a27
+      security: &a31
         - bearer: []
       summary: List proposals for a plan in your group
-      tags: &a28
+      tags: &a32
         - Plan Proposals
     post:
       operationId: PlanProposalsController_create
@@ -3130,9 +3321,9 @@ paths:
             pending proposal with the same value
         '429':
           description: Too many requests
-      security: *a27
+      security: *a31
       summary: Create a new proposal for a group plan
-      tags: *a28
+      tags: *a32
   /api/v1/proposals/{id}/vote:
     post:
       operationId: PlanProposalsController_vote
@@ -3161,9 +3352,9 @@ paths:
           description: The proposal or plan status does not allow voting
         '429':
           description: Too many requests
-      security: *a27
+      security: *a31
       summary: Vote on a pending plan proposal
-      tags: *a28
+      tags: *a32
   /api/v1/proposals/{id}:
     delete:
       operationId: PlanProposalsController_withdraw
@@ -3186,9 +3377,9 @@ paths:
           description: The proposal or plan status does not allow withdrawal
         '429':
           description: Too many requests
-      security: *a27
+      security: *a31
       summary: Withdraw one of your pending plan proposals
-      tags: *a28
+      tags: *a32
   /api/v1/notifications:
     get:
       operationId: NotificationsController_getMany
@@ -3250,10 +3441,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedNotifications'
         '429':
           description: Too many requests
-      security: &a29
+      security: &a33
         - bearer: []
       summary: List your notifications
-      tags: &a30
+      tags: &a34
         - Notifications
   /api/v1/notifications/unread-count:
     get:
@@ -3268,9 +3459,9 @@ paths:
                 $ref: '#/components/schemas/NotificationUnreadCountEntity'
         '429':
           description: Too many requests
-      security: *a29
+      security: *a33
       summary: Get your unread notification count
-      tags: *a30
+      tags: *a34
   /api/v1/notifications/web-push/public-key:
     get:
       operationId: NotificationsController_getWebPushPublicKey
@@ -3286,7 +3477,7 @@ paths:
           description: Too many requests
       security: []
       summary: Get the web push public key and enabled state
-      tags: *a30
+      tags: *a34
   /api/v1/notifications/web-push/subscriptions:
     get:
       operationId: NotificationsController_getWebPushSubscriptions
@@ -3302,9 +3493,9 @@ paths:
                   $ref: '#/components/schemas/WebPushSubscriptionEntity'
         '429':
           description: Too many requests
-      security: *a29
+      security: *a33
       summary: List your active web push subscriptions
-      tags: *a30
+      tags: *a34
     post:
       operationId: NotificationsController_upsertWebPushSubscription
       parameters:
@@ -3328,9 +3519,9 @@ paths:
                 $ref: '#/components/schemas/WebPushSubscriptionEntity'
         '429':
           description: Too many requests
-      security: *a29
+      security: *a33
       summary: Create or refresh a web push subscription
-      tags: *a30
+      tags: *a34
     delete:
       operationId: NotificationsController_deleteWebPushSubscription
       parameters: []
@@ -3345,9 +3536,9 @@ paths:
           description: Subscription disabled
         '429':
           description: Too many requests
-      security: *a29
+      security: *a33
       summary: Disable one of your web push subscriptions
-      tags: *a30
+      tags: *a34
   /api/v1/notifications/web-push/test:
     post:
       operationId: NotificationsController_sendTestWebPushNotification
@@ -3361,9 +3552,9 @@ paths:
                 $ref: '#/components/schemas/WebPushTestDispatchEntity'
         '429':
           description: Too many requests
-      security: *a29
+      security: *a33
       summary: Send the current user a test web push notification
-      tags: *a30
+      tags: *a34
   /api/v1/notifications/{id}/read:
     post:
       operationId: NotificationsController_markRead
@@ -3384,9 +3575,9 @@ paths:
                 $ref: '#/components/schemas/NotificationEntity'
         '429':
           description: Too many requests
-      security: *a29
+      security: *a33
       summary: Mark one notification as read
-      tags: *a30
+      tags: *a34
   /api/v1/notifications/{id}/unread:
     post:
       operationId: NotificationsController_markUnread
@@ -3407,9 +3598,9 @@ paths:
                 $ref: '#/components/schemas/NotificationEntity'
         '429':
           description: Too many requests
-      security: *a29
+      security: *a33
       summary: Mark one notification as unread
-      tags: *a30
+      tags: *a34
   /api/v1/notifications/read-all:
     post:
       operationId: NotificationsController_markAllRead
@@ -3423,9 +3614,9 @@ paths:
                 $ref: '#/components/schemas/NotificationUnreadCountEntity'
         '429':
           description: Too many requests
-      security: *a29
+      security: *a33
       summary: Mark all of your notifications as read
-      tags: *a30
+      tags: *a34
   /api/v1/ratings/groups/{id}:
     get:
       operationId: RatingsController_getGroupRatings
@@ -3466,10 +3657,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedRatings'
         '429':
           description: Too many requests
-      security: &a31
+      security: &a35
         - bearer: []
       summary: List ratings for a completed group you participated in
-      tags: &a32
+      tags: &a36
         - Ratings
   /api/v1/ratings/groups/{id}/review-state:
     get:
@@ -3490,9 +3681,9 @@ paths:
                 $ref: '#/components/schemas/GroupReviewStateEntity'
         '429':
           description: Too many requests
-      security: *a31
+      security: *a35
       summary: Get the current review prompt state for a completed group plan
-      tags: *a32
+      tags: *a36
   /api/v1/ratings:
     post:
       operationId: RatingsController_create
@@ -3509,16 +3700,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateRatingResultEntity'
+                $ref: '#/components/schemas/RatingEntity'
         '409':
           description:
             The group plan is not complete, the plan is no longer current, or
             this rating was already submitted
         '429':
           description: Too many requests
-      security: *a31
+      security: *a35
       summary: Submit a rating for a member of your completed group plan
-      tags: *a32
+      tags: *a36
   /api/v1/ratings/groups/{id}/review-deferrals:
     post:
       operationId: RatingsController_deferGroupReview
@@ -3548,9 +3739,1158 @@ paths:
             no reviews are pending
         '429':
           description: Too many requests
-      security: *a31
+      security: *a35
       summary: Defer the completed-plan review prompt until the next plan
-      tags: *a32
+      tags: *a36
+  /api/v1/reports/{reportId}/outcome-review-requests:
+    post:
+      operationId: ReportsController_createOutcomeReview
+      parameters:
+        - name: reportId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportOutcomeReviewDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportOutcomeReviewEntity'
+        '429':
+          description: Too many requests
+      security: &a37
+        - bearer: []
+      summary: Ask us to review how your report was handled
+      tags: &a38
+        - Reports
+    get:
+      operationId: ReportsController_getOutcomeReviews
+      parameters:
+        - name: reportId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportOutcomeReviewEntity'
+        '429':
+          description: Too many requests
+      security: *a37
+      summary: List review requests for one of your reports
+      tags: *a38
+  /api/v1/reports/{reportId}/information-responses:
+    post:
+      operationId: ReportsController_respondToInformationRequest
+      parameters:
+        - name: reportId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportInformationResponseDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportInformationResponseEntity'
+        '429':
+          description: Too many requests
+      security: *a37
+      summary: Send information requested for your report
+      tags: *a38
+  /api/v1/reports:
+    post:
+      operationId: ReportsController_create
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this report retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportReceiptEntity'
+        '429':
+          description: Too many requests
+      security: *a37
+      summary: Submit a safety report
+      tags: *a38
+    get:
+      operationId: ReportsController_getMany
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReportReceipts'
+        '429':
+          description: Too many requests
+      security: *a37
+      summary: List your report receipts
+      tags: *a38
+  /api/v1/reports/{id}:
+    get:
+      operationId: ReportsController_getOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportReceiptEntity'
+        '429':
+          description: Too many requests
+      security: *a37
+      summary: Get one of your report receipts
+      tags: *a38
+  /api/v1/safety/enforcement-notices:
+    get:
+      operationId: ModerationController_getEnforcementNotices
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEnforcementNotices'
+        '429':
+          description: Too many requests
+      security: &a39
+        - bearer: []
+      summary: List safety notices for your account
+      tags: &a40
+        - Safety
+  /api/v1/safety/enforcement-notices/{id}:
+    get:
+      operationId: ModerationController_getEnforcementNotice
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnforcementNoticeEntity'
+        '429':
+          description: Too many requests
+      security: *a39
+      summary: Get a safety notice for your account
+      tags: *a40
+  /api/v1/safety/enforcement-notices/{id}/appeals:
+    post:
+      operationId: ModerationController_createAppeal
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppealDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppealEntity'
+        '429':
+          description: Too many requests
+      security: *a39
+      summary: Appeal a safety notice
+      tags: *a40
+  /api/v1/safety/containments:
+    get:
+      operationId: ModerationController_getContainments
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContainments'
+        '429':
+          description: Too many requests
+      security: *a39
+      summary: List temporary safety measures for your account
+      tags: *a40
+  /api/v1/safety/containments/{id}:
+    get:
+      operationId: ModerationController_getContainment
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContainmentEntity'
+        '429':
+          description: Too many requests
+      security: *a39
+      summary: Get a temporary safety measure for your account
+      tags: *a40
+  /api/v1/safety/containments/{id}/contests:
+    post:
+      operationId: ModerationController_createContainmentContest
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContainmentContestDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContainmentContestEntity'
+        '429':
+          description: Too many requests
+      security: *a39
+      summary: Ask us to review a temporary safety measure
+      tags: *a40
+  /api/v1/operator/moderation/cases/{caseId}/assessments:
+    get:
+      operationId: OperatorAssistanceController_getAssessments
+      parameters:
+        - &a41
+          name: x-teamforge-operator-assertion
+          in: header
+          description: Short-lived signed assertion injected by the trusted operator proxy.
+          required: true
+          schema:
+            type: string
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorAssessmentListEntity'
+        '429':
+          description: Too many requests
+      security: &a42
+        - operatorAssertion: []
+      tags: &a43
+        - Operator moderation assistance
+  /api/v1/operator/moderation/cases/{caseId}/assessment-comparison:
+    get:
+      operationId: OperatorAssistanceController_compareAssessments
+      parameters:
+        - *a41
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: earlierAssessmentId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: laterAssessmentId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorAssessmentComparisonEntity'
+        '429':
+          description: Too many requests
+      security: *a42
+      tags: *a43
+  /api/v1/operator/moderation/workers:
+    get:
+      operationId: OperatorAssistanceController_getWorkers
+      parameters:
+        - *a41
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorWorkersEntity'
+        '429':
+          description: Too many requests
+      security: *a42
+      tags: *a43
+  /api/v1/operator/moderation/workers/{workerKind}/jobs:
+    get:
+      operationId: OperatorAssistanceController_getWorkerJobs
+      parameters:
+        - *a41
+        - name: workerKind
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: status
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - FAILED
+              - DEAD
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorWorkerJobsPageEntity'
+        '429':
+          description: Too many requests
+      security: *a42
+      tags: *a43
+  /api/v1/operator/moderation/workers/{workerKind}/pause:
+    post:
+      operationId: OperatorAssistanceController_pauseWorker
+      parameters:
+        - *a41
+        - name: workerKind
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperatorWorkerCommandDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorWorkerCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a42
+      tags: *a43
+  /api/v1/operator/moderation/workers/{workerKind}/resume:
+    post:
+      operationId: OperatorAssistanceController_resumeWorker
+      parameters:
+        - *a41
+        - name: workerKind
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperatorWorkerCommandDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorWorkerCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a42
+      tags: *a43
+  /api/v1/operator/moderation/workers/{workerKind}/jobs/{jobId}/replay:
+    post:
+      operationId: OperatorAssistanceController_replayJob
+      parameters:
+        - *a41
+        - name: workerKind
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: jobId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperatorWorkerCommandDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorWorkerReplayResultEntity'
+        '429':
+          description: Too many requests
+      security: *a42
+      tags: *a43
+  /api/v1/operator/moderation/session:
+    get:
+      operationId: OperatorModerationController_getSession
+      parameters:
+        - &a44
+          name: x-teamforge-operator-assertion
+          in: header
+          description: Short-lived signed assertion injected by the trusted operator proxy.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorSessionEntity'
+        '429':
+          description: Too many requests
+      security: &a45
+        - operatorAssertion: []
+      tags: &a46
+        - Operator moderation
+  /api/v1/operator/moderation/cases:
+    get:
+      operationId: OperatorModerationController_getCases
+      parameters:
+        - *a44
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: queue
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - CRITICAL_NOW
+              - HUMAN_REQUIRED
+              - APPEALS
+              - CONTAINMENT_REVIEW
+              - ROUTINE
+              - CAMPAIGNS_TRENDS
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - OPEN
+              - TRIAGING
+              - NEEDS_INFORMATION
+              - AWAITING_HUMAN_DECISION
+              - ACTION_PENDING
+              - MONITORING
+              - RESOLVED
+              - CLOSED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCasePageEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      summary: List assigned cases in an operator queue
+      tags: *a46
+  /api/v1/operator/moderation/intake:
+    get:
+      operationId: OperatorModerationController_getIntake
+      parameters:
+        - *a44
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCasePageEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}:
+    get:
+      operationId: OperatorModerationController_getCase
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCaseDetailEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      summary: Open an assigned moderation case
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/evidence:
+    get:
+      operationId: OperatorModerationController_getEvidence
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperatorEvidenceMetadataEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      summary: List evidence metadata for an assigned case
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/evidence/{evidenceId}/reveal:
+    post:
+      operationId: OperatorModerationController_revealEvidence
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: evidenceId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevealEvidenceDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorEvidenceRevealEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/child-safety-evidence/{evidenceId}/reveal:
+    post:
+      operationId: OperatorModerationController_revealChildSafetyEvidence
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: evidenceId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevealEvidenceDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorEvidenceRevealEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/assignments:
+    post:
+      operationId: OperatorModerationController_assignCase
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignOperatorCaseDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/assignments/self:
+    post:
+      operationId: OperatorModerationController_assignCaseToSelf
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelfAssignCaseDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/triage:
+    post:
+      operationId: OperatorModerationController_triageCase
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriageCaseDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/escalation:
+    post:
+      operationId: OperatorModerationController_escalateCase
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperatorCommandDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/resolution:
+    post:
+      operationId: OperatorModerationController_resolveCase
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolveCaseDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/information-requests:
+    post:
+      operationId: OperatorModerationController_requestInformation
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestInformationDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/enforcement-actions:
+    post:
+      operationId: OperatorModerationController_authorizeEnforcement
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeEnforcementDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/protective-containments:
+    post:
+      operationId: OperatorModerationController_authorizeContainment
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeContainmentDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/enforcement-actions/{actionId}/reversal:
+    post:
+      operationId: OperatorModerationController_reverseEnforcement
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: actionId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperatorCommandDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/appeals/{appealId}/decision:
+    post:
+      operationId: OperatorModerationController_decideAppeal
+      parameters:
+        - *a44
+        - name: appealId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecideAppealDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/outcome-reviews/{reviewId}/decision:
+    post:
+      operationId: OperatorModerationController_decideOutcomeReview
+      parameters:
+        - *a44
+        - name: reviewId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecideOutcomeReviewDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/cases/{caseId}/protective-containments/{containmentId}/release:
+    post:
+      operationId: OperatorModerationController_releaseContainment
+      parameters:
+        - *a44
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: containmentId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperatorCommandDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/containment-contests/{contestId}/decision:
+    post:
+      operationId: OperatorModerationController_decideContainmentContest
+      parameters:
+        - *a44
+        - name: contestId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecideContainmentContestDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
+  /api/v1/operator/moderation/break-glass-uses/{useId}/review:
+    post:
+      operationId: OperatorModerationController_reviewBreakGlassUse
+      parameters:
+        - *a44
+        - name: useId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewBreakGlassUseDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorCommandResultEntity'
+        '429':
+          description: Too many requests
+      security: *a45
+      tags: *a46
   /api/v1/settings/me:
     get:
       operationId: SettingsController_getMySettings
@@ -3564,10 +4904,10 @@ paths:
                 $ref: '#/components/schemas/UserSettingsEntity'
         '429':
           description: Too many requests
-      security: &a33
+      security: &a47
         - bearer: []
       summary: Get settings for the authenticated user
-      tags: &a34
+      tags: &a48
         - Settings
     patch:
       operationId: SettingsController_updateMySettings
@@ -3587,9 +4927,9 @@ paths:
                 $ref: '#/components/schemas/UserSettingsEntity'
         '429':
           description: Too many requests
-      security: *a33
+      security: *a47
       summary: Update settings for the authenticated user
-      tags: *a34
+      tags: *a48
 info:
   title: TeamForge API
   description:
@@ -3611,7 +4951,38 @@ components:
       bearerFormat: JWT
       type: http
       description: Paste a JWT access token.
+    operatorAssertion:
+      type: apiKey
+      in: header
+      name: x-teamforge-operator-assertion
+      description: Short-lived RS256 operator assertion injected by the trusted proxy.
   schemas:
+    AdultEligibilitySummaryEntity:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - ELIGIBLE
+            - NOT_ELIGIBLE
+            - REVIEW_REQUIRED
+            - UNKNOWN
+        accessVersion:
+          type: number
+          example: 1
+      required:
+        - status
+        - accessVersion
+    SetAdultEligibilityDto:
+      type: object
+      properties:
+        dateOfBirth:
+          type: string
+          example: 2000-06-15
+          format: date
+          writeOnly: true
+      required:
+        - dateOfBirth
     UrlResponse:
       type: object
       properties:
@@ -3620,6 +4991,274 @@ components:
           example: https://example.com
       required:
         - url
+    PersonalityOceanEntity:
+      type: object
+      properties:
+        openness:
+          type: number
+          minimum: 0
+          maximum: 100
+        conscientiousness:
+          type: number
+          minimum: 0
+          maximum: 100
+        extraversion:
+          type: number
+          minimum: 0
+          maximum: 100
+        agreeableness:
+          type: number
+          minimum: 0
+          maximum: 100
+        neuroticism:
+          type: number
+          minimum: 0
+          maximum: 100
+      required:
+        - openness
+        - conscientiousness
+        - extraversion
+        - agreeableness
+        - neuroticism
+    OwnerPersonalityAssessmentEntity:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        instrumentVersion:
+          type: string
+        scoringVersion:
+          type: string
+        displayVersion:
+          type: string
+        personalityType:
+          type: string
+          example: INFP
+        ocean:
+          $ref: '#/components/schemas/PersonalityOceanEntity'
+        lifecycle:
+          type: string
+          enum:
+            - DRAFT_RESULT
+            - CURRENT
+            - SUPERSEDED
+            - DELETED
+        provenance:
+          type: string
+          enum:
+            - ASSESSMENT_DERIVED
+            - LEGACY_CLIENT_RESULT
+        source:
+          type: string
+          enum:
+            - ONBOARDING
+            - RETAKE
+            - MIGRATION
+        quality:
+          type: string
+          enum:
+            - COMPLETE
+            - LEGACY_UNVERIFIED
+        compatibilityEligible:
+          type: boolean
+        formVersion:
+          type: string
+        completedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - assessmentId
+        - instrumentVersion
+        - scoringVersion
+        - displayVersion
+        - personalityType
+        - ocean
+        - lifecycle
+        - provenance
+        - source
+        - quality
+        - compatibilityEligible
+        - formVersion
+    PublicPersonalityProfileEntity:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        instrumentVersion:
+          type: string
+        scoringVersion:
+          type: string
+        displayVersion:
+          type: string
+        personalityType:
+          type: string
+          example: INFP
+        ocean:
+          $ref: '#/components/schemas/PersonalityOceanEntity'
+      required:
+        - assessmentId
+        - instrumentVersion
+        - scoringVersion
+        - displayVersion
+        - personalityType
+        - ocean
+    PersonalityDisclosureEntity:
+      type: object
+      properties:
+        policyVersion:
+          type: string
+        publicFields:
+          type: array
+          items:
+            type: string
+        purposeVersion:
+          type: string
+        authorizedAudiences:
+          type: array
+          items:
+            type: string
+        assessmentDisplayVersion:
+          type: string
+        compatibilitySchemaVersion:
+          type: string
+        methodologyVersion:
+          type: string
+      required:
+        - policyVersion
+        - publicFields
+        - purposeVersion
+        - authorizedAudiences
+        - assessmentDisplayVersion
+        - compatibilitySchemaVersion
+        - methodologyVersion
+    PersonalityPublicationEntity:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum:
+            - GRANTED
+            - REVOKED
+          nullable: true
+        sequence:
+          type: number
+      required:
+        - sequence
+    OwnerPersonalityStateEntity:
+      type: object
+      properties:
+        assessmentGeneration:
+          type: number
+        draft:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/OwnerPersonalityAssessmentEntity'
+        current:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/OwnerPersonalityAssessmentEntity'
+        publicProfile:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PublicPersonalityProfileEntity'
+        disclosure:
+          $ref: '#/components/schemas/PersonalityDisclosureEntity'
+        publication:
+          $ref: '#/components/schemas/PersonalityPublicationEntity'
+      required:
+        - assessmentGeneration
+        - disclosure
+        - publication
+    CreateAssessmentAttemptDto:
+      type: object
+      properties:
+        formVersion:
+          type: string
+          enum:
+            - IPIP_30_V1
+            - IPIP_50_V1
+            - IPIP_150_V1
+        source:
+          type: string
+          enum:
+            - ONBOARDING
+            - RETAKE
+      required:
+        - formVersion
+        - source
+    AssessmentAttemptEntity:
+      type: object
+      properties:
+        attemptId:
+          type: string
+        formVersion:
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+      required:
+        - attemptId
+        - formVersion
+        - expiresAt
+    PersonalityAnswerDto:
+      type: object
+      properties:
+        questionId:
+          type: number
+          minimum: 1
+          maximum: 150
+        value:
+          type: number
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+      required:
+        - questionId
+        - value
+    SubmitAssessmentDto:
+      type: object
+      properties:
+        answers:
+          minItems: 30
+          maxItems: 150
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonalityAnswerDto'
+      required:
+        - answers
+    SubmittedPersonalityAssessmentEntity:
+      type: object
+      properties:
+        assessment:
+          $ref: '#/components/schemas/OwnerPersonalityAssessmentEntity'
+        publicProjectionPreview:
+          $ref: '#/components/schemas/PublicPersonalityProfileEntity'
+        disclosure:
+          $ref: '#/components/schemas/PersonalityDisclosureEntity'
+      required:
+        - assessment
+        - publicProjectionPreview
+        - disclosure
+    PublishPersonalityDto:
+      type: object
+      properties:
+        acknowledged:
+          type: boolean
+          enum:
+            - true
+        policyVersion:
+          type: string
+          example: personality-publication-v1
+      required:
+        - acknowledged
+        - policyVersion
     InterestEntity:
       type: object
       properties:
@@ -3683,9 +5322,11 @@ components:
         avatar:
           type: string
           example: https://example.com/avatar.png
+          nullable: true
         bio:
           type: string
           example: Software engineer and hiking enthusiast
+          nullable: true
         authProvider:
           type: string
           enum:
@@ -3752,6 +5393,11 @@ components:
         profileComplete:
           type: boolean
           example: false
+        personalitySetupComplete:
+          type: boolean
+          example: false
+        adultEligibility:
+          $ref: '#/components/schemas/AdultEligibilitySummaryEntity'
         interests:
           type: array
           items:
@@ -3760,6 +5406,8 @@ components:
         - id
         - name
         - email
+        - avatar
+        - bio
         - authProvider
         - emailVerified
         - createdAt
@@ -3767,6 +5415,7 @@ components:
         - searchStatus
         - trustScore
         - profileComplete
+        - personalitySetupComplete
     Success:
       type: object
       properties:
@@ -3790,13 +5439,18 @@ components:
         bio:
           type: string
           example: Software engineer and hiking enthusiast
+        canReport:
+          type: boolean
+          example: true
         createdAt:
           format: date-time
           type: string
           example: 2024-01-01T00:00:00Z
+          nullable: true
         age:
           type: number
           example: 25
+          nullable: true
         gender:
           type: string
           enum:
@@ -3804,43 +5458,42 @@ components:
             - FEMALE
             - NON_BINARY
             - OTHER
+          nullable: true
         city:
           type: string
           example: London
-        personalityType:
-          type: string
-          example: ENTJ
-        oceanO:
-          type: number
-          example: 80
-        oceanC:
-          type: number
-          example: 80
-        oceanE:
-          type: number
-          example: 80
-        oceanA:
-          type: number
-          example: 80
-        oceanN:
-          type: number
-          example: 80
-        trustScore:
-          type: number
-          example: 0.5
+          nullable: true
         showFriendsListOnProfile:
           type: boolean
           example: true
+        viewerContext:
+          type: string
+          enum:
+            - SELF
+            - CURRENT_GROUP
+            - ACCEPTED_FRIEND
+            - MINIMAL
         interests:
           type: array
           items:
             $ref: '#/components/schemas/InterestEntity'
+        personalityProfile:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PublicPersonalityProfileEntity'
       required:
         - id
         - name
+        - canReport
         - createdAt
-        - trustScore
+        - age
+        - gender
+        - city
         - showFriendsListOnProfile
+        - viewerContext
+        - interests
+        - personalityProfile
     UpdateUserDto:
       type: object
       properties:
@@ -3853,6 +5506,11 @@ components:
         age:
           type: number
           example: 25
+        dateOfBirth:
+          type: string
+          example: 2000-06-15
+          format: date
+          writeOnly: true
         gender:
           type: string
           enum:
@@ -3871,24 +5529,6 @@ components:
           type: number
           example: -0.1278
           nullable: true
-        personalityType:
-          type: string
-          example: ENTJ
-        oceanO:
-          type: number
-          example: 80
-        oceanC:
-          type: number
-          example: 80
-        oceanE:
-          type: number
-          example: 80
-        oceanA:
-          type: number
-          example: 80
-        oceanN:
-          type: number
-          example: 80
     LoginDto:
       type: object
       properties:
@@ -3931,6 +5571,11 @@ components:
         age:
           type: number
           example: 23
+        dateOfBirth:
+          type: string
+          example: 2000-06-15
+          format: date
+          writeOnly: true
         city:
           type: string
           example: London
@@ -4614,14 +6259,9 @@ components:
             - ADMIN
             - MODERATOR
             - MEMBER
-        compatibilityScore:
-          type: number
-          example: 0.8421
-          nullable: true
       required:
         - userId
         - role
-        - compatibilityScore
     ForgedGroupEntity:
       type: object
       properties:
@@ -5082,23 +6722,15 @@ components:
           type: string
           example: London
           nullable: true
-        personalityType:
-          type: string
-          example: ENTJ
-          nullable: true
-        trustScore:
-          type: number
-          example: 0.74
         onlineStatus:
           type: string
-          enum: &a40
+          enum: &a54
             - ONLINE
             - AWAY
             - OFFLINE
       required:
         - id
         - name
-        - trustScore
     FriendshipPrivateChatEntity:
       type: object
       properties:
@@ -5183,6 +6815,70 @@ components:
       required:
         - meta
         - items
+    PublicFriendSummaryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1user123
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+      required:
+        - id
+        - name
+        - avatar
+        - city
+    PaginatedPublicFriends:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicFriendSummaryEntity'
+      required:
+        - meta
+        - items
+    BlockedUserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1user123
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          nullable: true
+        blockedAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - name
+        - avatar
+        - blockedAt
+    PaginatedBlockedUsers:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockedUserEntity'
+      required:
+        - meta
+        - items
     CreateFriendRequestDto:
       type: object
       properties:
@@ -5221,316 +6917,6 @@ components:
       required:
         - originalUrl
         - variants
-    ExploreInterestEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1interest123
-        name:
-          type: string
-          example: Basketball
-        slug:
-          type: string
-          example: basketball
-      required:
-        - id
-        - name
-        - slug
-    ExploreActivityEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1activity123
-        title:
-          type: string
-          example: Friday basketball run
-        city:
-          type: string
-          example: London
-          nullable: true
-        visibility:
-          type: string
-          enum:
-            - PUBLIC
-            - FRIENDS_ONLY
-            - INVITE_ONLY
-        access:
-          type: string
-          enum:
-            - OPEN
-            - BY_REQUEST
-        interests:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExploreInterestEntity'
-      required:
-        - id
-        - title
-        - visibility
-        - access
-        - interests
-    ExplorePlanEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1plan123
-        title:
-          type: string
-          example: Friday evening basketball
-        category:
-          type: string
-          enum:
-            - TECH
-            - SPORTS
-            - ARTS
-            - SOCIAL
-            - OUTDOORS
-            - LEARNING
-            - MUSIC
-            - FOOD
-            - GAMING
-            - WELLNESS
-            - TRAVEL
-            - OTHER
-        dateTime:
-          format: date-time
-          type: string
-          example: 2026-04-30T18:30:00.000Z
-          nullable: true
-        scheduleMode:
-          type: string
-          enum:
-            - TO_BE_DECIDED
-            - FIXED
-          nullable: true
-        locationMode:
-          type: string
-          enum:
-            - IN_PERSON
-            - ONLINE
-            - TBD
-        cost:
-          type: string
-          enum:
-            - FREE
-            - PAID
-      required:
-        - id
-        - title
-        - category
-        - scheduleMode
-        - locationMode
-        - cost
-    ExploreMemberEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1user123
-        name:
-          type: string
-          example: John Doe
-        avatar:
-          type: string
-          example: https://example.com/avatar.png
-          nullable: true
-        avatarMedia:
-          nullable: true
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/ImageMediaEntity'
-        personalityType:
-          type: string
-          example: ENTJ
-          nullable: true
-        trustScore:
-          type: number
-          example: 0.72
-      required:
-        - id
-        - name
-        - trustScore
-    CompatibilityEntity:
-      type: object
-      properties:
-        interestOverlap:
-          type: number
-          example: 0.7
-        personalityCompatibility:
-          type: number
-          example: 0.65
-        cityAlignment:
-          type: number
-          example: 1
-        ageAlignment:
-          type: number
-          example: 0.83
-        trustScore:
-          type: number
-          example: 0.68
-        friendshipProximity:
-          type: number
-          example: 0.33
-        total:
-          type: number
-          example: 0.7215
-      required:
-        - interestOverlap
-        - personalityCompatibility
-        - cityAlignment
-        - ageAlignment
-        - trustScore
-        - friendshipProximity
-        - total
-    ExploreGroupEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1group123
-        name:
-          type: string
-          example: Friday Basketball Crew
-        description:
-          type: string
-          example: Weekly pickup group for after-work games
-          nullable: true
-        avatar:
-          type: string
-          example: https://example.com/group-avatar.png
-          nullable: true
-        avatarMedia:
-          nullable: true
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/ImageMediaEntity'
-        status:
-          type: string
-          enum:
-            - FORMING
-            - PENDING
-            - ACTIVE
-            - PLANNING
-            - COMPLETED
-            - DISBANDED
-        maxMembers:
-          type: number
-          example: 6
-        updatedAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-        version:
-          type: number
-          example: 1777560000000
-        activeMembersCount:
-          type: number
-          example: 4
-        access:
-          type: string
-          enum:
-            - OPEN
-            - BY_REQUEST
-        activity:
-          $ref: '#/components/schemas/ExploreActivityEntity'
-        plan:
-          nullable: true
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/ExplorePlanEntity'
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExploreMemberEntity'
-        compatibility:
-          $ref: '#/components/schemas/CompatibilityEntity'
-      required:
-        - id
-        - name
-        - status
-        - maxMembers
-        - updatedAt
-        - version
-        - activeMembersCount
-        - access
-        - activity
-        - members
-        - compatibility
-    ExploreViewInsightEntity:
-      type: object
-      properties:
-        summary:
-          type: string
-          example: Showing available groups around Graphic Design.
-        bullets:
-          example:
-            - 9 plans are already scheduled.
-            - 6 groups can be joined without a request.
-            - 3 smaller groups still have room for more members.
-            - Graphic Design appears most often in these results.
-          type: array
-          items:
-            type: string
-      required:
-        - summary
-        - bullets
-    PaginatedExploreGroups:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/PaginationMeta'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExploreGroupEntity'
-        insight:
-          $ref: '#/components/schemas/ExploreViewInsightEntity'
-      required:
-        - meta
-        - items
-        - insight
-    ExploreJoinResultEntity:
-      type: object
-      properties:
-        status:
-          type: string
-          enum:
-            - JOINED
-            - REQUESTED
-        groupId:
-          type: string
-          example: clx1group123
-        chatId:
-          type: string
-          example: clx1chat123
-          nullable: true
-        message:
-          type: string
-          example: You joined the group.
-      required:
-        - status
-        - groupId
-        - message
-    ExploreJoinRequestCancelResultEntity:
-      type: object
-      properties:
-        status:
-          type: string
-          enum:
-            - CANCELLED
-        groupId:
-          type: string
-          example: clx1group123
-        message:
-          type: string
-          example: Your join request was cancelled.
-      required:
-        - status
-        - groupId
-        - message
     GroupActivitySummaryEntity:
       type: object
       properties:
@@ -5590,7 +6976,7 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: &a35
+          enum: &a49
             - TECH
             - SPORTS
             - ARTS
@@ -5605,7 +6991,7 @@ components:
             - OTHER
         status:
           type: string
-          enum: &a36
+          enum: &a50
             - DRAFT
             - PROPOSED
             - CONFIRMED
@@ -5614,7 +7000,7 @@ components:
             - CANCELLED
         scheduleMode:
           type: string
-          enum: &a37
+          enum: &a51
             - TO_BE_DECIDED
             - FIXED
           nullable: true
@@ -5624,7 +7010,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: &a38
+          enum: &a52
             - IN_PERSON
             - ONLINE
             - TBD
@@ -5639,7 +7025,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: &a39
+          enum: &a53
             - FREE
             - PAID
       required:
@@ -5661,13 +7047,13 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: *a35
+          enum: *a49
         status:
           type: string
-          enum: *a36
+          enum: *a50
         scheduleMode:
           type: string
-          enum: *a37
+          enum: *a51
           nullable: true
         dateTime:
           format: date-time
@@ -5675,7 +7061,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: *a38
+          enum: *a52
         location:
           type: string
           example: Regents Park Courts
@@ -5687,7 +7073,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: *a39
+          enum: *a53
       required:
         - id
         - title
@@ -5713,19 +7099,12 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/ImageMediaEntity'
-        personalityType:
-          type: string
-          example: ENTJ
-        trustScore:
-          type: number
-          example: 0.72
         onlineStatus:
           type: string
-          enum: *a40
+          enum: *a54
       required:
         - id
         - name
-        - trustScore
     GroupMemberEntity:
       type: object
       properties:
@@ -5746,10 +7125,6 @@ components:
           format: date-time
           type: string
           example: 2026-04-28T10:00:00.000Z
-          nullable: true
-        compatibilityScore:
-          type: number
-          example: 0.8421
           nullable: true
         user:
           $ref: '#/components/schemas/GroupMemberUserEntity'
@@ -6254,17 +7629,6 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/ImageMediaEntity'
-        personalityType:
-          type: string
-          example: ENTJ
-          nullable: true
-        trustScore:
-          type: number
-          example: 0.72
-        compatibilityScore:
-          type: number
-          example: 0.82
-          nullable: true
         role:
           type: string
           enum:
@@ -6282,7 +7646,6 @@ components:
         - id
         - userId
         - name
-        - trustScore
         - role
     GroupPlanViewerEntity:
       type: object
@@ -6361,7 +7724,6 @@ components:
             - SOCIAL_PACE
             - LOCATION
             - KNOWN_CONNECTION
-            - RELIABILITY
             - LIFE_STAGE
         label:
           type: string
@@ -6650,6 +8012,300 @@ components:
         costDetails:
           type: string
           example: Court booking split between the group
+    ExploreInterestEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1interest123
+        name:
+          type: string
+          example: Basketball
+        slug:
+          type: string
+          example: basketball
+      required:
+        - id
+        - name
+        - slug
+    ExploreActivityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1activity123
+        title:
+          type: string
+          example: Friday basketball run
+        city:
+          type: string
+          example: London
+          nullable: true
+        visibility:
+          type: string
+          enum:
+            - PUBLIC
+            - FRIENDS_ONLY
+            - INVITE_ONLY
+        access:
+          type: string
+          enum:
+            - OPEN
+            - BY_REQUEST
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExploreInterestEntity'
+      required:
+        - id
+        - title
+        - visibility
+        - access
+        - interests
+    ExplorePlanEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1plan123
+        title:
+          type: string
+          example: Friday evening basketball
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        dateTime:
+          format: date-time
+          type: string
+          example: 2026-04-30T18:30:00.000Z
+          nullable: true
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+      required:
+        - id
+        - title
+        - category
+        - scheduleMode
+        - locationMode
+        - cost
+    ExploreMemberEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1user123
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          example: https://example.com/avatar.png
+          nullable: true
+        avatarMedia:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ImageMediaEntity'
+      required:
+        - id
+        - name
+    CompatibilityEntity:
+      type: object
+      properties:
+        interestOverlap:
+          type: number
+          example: 0.7
+        cityAlignment:
+          type: number
+          example: 1
+        ageAlignment:
+          type: number
+          example: 0.83
+        friendshipProximity:
+          type: number
+          example: 0.33
+        total:
+          type: number
+          example: 0.7215
+      required:
+        - interestOverlap
+        - cityAlignment
+        - ageAlignment
+        - friendshipProximity
+        - total
+    ExploreGroupEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1group123
+        name:
+          type: string
+          example: Friday Basketball Crew
+        description:
+          type: string
+          example: Weekly pickup group for after-work games
+          nullable: true
+        avatar:
+          type: string
+          example: https://example.com/group-avatar.png
+          nullable: true
+        avatarMedia:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ImageMediaEntity'
+        status:
+          type: string
+          enum:
+            - FORMING
+            - PENDING
+            - ACTIVE
+            - PLANNING
+            - COMPLETED
+            - DISBANDED
+        maxMembers:
+          type: number
+          example: 6
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        version:
+          type: number
+          example: 1777560000000
+        activeMembersCount:
+          type: number
+          example: 4
+        access:
+          type: string
+          enum:
+            - OPEN
+            - BY_REQUEST
+        activity:
+          $ref: '#/components/schemas/ExploreActivityEntity'
+        plan:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ExplorePlanEntity'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExploreMemberEntity'
+        compatibility:
+          $ref: '#/components/schemas/CompatibilityEntity'
+      required:
+        - id
+        - name
+        - status
+        - maxMembers
+        - updatedAt
+        - version
+        - activeMembersCount
+        - access
+        - activity
+        - members
+        - compatibility
+    ExploreViewInsightEntity:
+      type: object
+      properties:
+        summary:
+          type: string
+          example: Showing available groups around Graphic Design.
+        bullets:
+          example:
+            - 9 plans are already scheduled.
+            - 6 groups can be joined without a request.
+            - 3 smaller groups still have room for more members.
+            - Graphic Design appears most often in these results.
+          type: array
+          items:
+            type: string
+      required:
+        - summary
+        - bullets
+    PaginatedExploreGroups:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExploreGroupEntity'
+        insight:
+          $ref: '#/components/schemas/ExploreViewInsightEntity'
+      required:
+        - meta
+        - items
+        - insight
+    ExploreJoinResultEntity:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - JOINED
+            - REQUESTED
+        groupId:
+          type: string
+          example: clx1group123
+        chatId:
+          type: string
+          example: clx1chat123
+          nullable: true
+        message:
+          type: string
+          example: You joined the group.
+      required:
+        - status
+        - groupId
+        - message
+    ExploreJoinRequestCancelResultEntity:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - CANCELLED
+        groupId:
+          type: string
+          example: clx1group123
+        message:
+          type: string
+          example: Your join request was cancelled.
+      required:
+        - status
+        - groupId
+        - message
     InviteGroupEntity:
       type: object
       properties:
@@ -6697,17 +8353,9 @@ components:
           type: string
           example: https://example.com/avatar.png
           nullable: true
-        personalityType:
-          type: string
-          example: ENTJ
-          nullable: true
-        trustScore:
-          type: number
-          example: 0.73
       required:
         - id
         - name
-        - trustScore
     InviteEntity:
       type: object
       properties:
@@ -7315,7 +8963,7 @@ components:
       properties:
         issue:
           type: string
-          enum: &a41
+          enum: &a55
             - certificate-error
             - network-error
             - no-subscriptions
@@ -7339,7 +8987,7 @@ components:
           example: true
         issue:
           type: string
-          enum: *a41
+          enum: *a55
           example: certificate-error
           nullable: true
         diagnostics:
@@ -7379,17 +9027,9 @@ components:
           type: string
           example: https://example.com/avatar.png
           nullable: true
-        personalityType:
-          type: string
-          example: ENTJ
-          nullable: true
-        trustScore:
-          type: number
-          example: 0.74
       required:
         - id
         - name
-        - trustScore
     RatingEntity:
       type: object
       properties:
@@ -7557,49 +9197,6 @@ components:
         - planId
         - rateeId
         - score
-    TrustScoreLogEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1trustlog123
-        score:
-          type: number
-          example: 0.68
-        change:
-          type: number
-          example: 0.03
-        reason:
-          type: string
-          example: Received a 5/5 rating from John Doe in group Friday Basketball Crew
-          nullable: true
-        createdAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-        userId:
-          type: string
-          example: clx1user456
-      required:
-        - id
-        - score
-        - change
-        - createdAt
-        - userId
-    CreateRatingResultEntity:
-      type: object
-      properties:
-        rating:
-          $ref: '#/components/schemas/RatingEntity'
-        trustScoreLog:
-          $ref: '#/components/schemas/TrustScoreLogEntity'
-        updatedTrustScore:
-          type: number
-          example: 0.68
-      required:
-        - rating
-        - trustScoreLog
-        - updatedTrustScore
     DeferGroupReviewDto:
       type: object
       properties:
@@ -7614,6 +9211,1990 @@ components:
       required:
         - planId
         - reason
+    CreateReportOutcomeReviewDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 20
+          maxLength: 2000
+      required:
+        - reason
+    ReportOutcomeReviewEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - RECEIVED
+            - REVIEWING
+            - NEEDS_INFORMATION
+            - RESOLVED
+            - EXPIRED
+        result:
+          type: string
+          enum:
+            - HANDLING_CONFIRMED
+            - CASE_REOPENED
+          nullable: true
+        submittedAt:
+          format: date-time
+          type: string
+        resolvedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - status
+        - submittedAt
+    CreateReportInformationResponseDto:
+      type: object
+      properties:
+        requestId:
+          type: string
+        response:
+          type: string
+          minLength: 20
+          maxLength: 2000
+      required:
+        - requestId
+        - response
+    ReportInformationResponseEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        requestId:
+          type: string
+        submittedAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - requestId
+        - submittedAt
+    CreateReportDto:
+      type: object
+      properties:
+        targetType:
+          type: string
+          enum:
+            - PROFILE
+            - MESSAGE
+            - ATTACHMENT
+            - GROUP
+            - PLAN
+            - ACTIVITY
+        targetId:
+          type: string
+          example: clx1target123
+        category:
+          type: string
+          enum:
+            - HARASSMENT
+            - UNWANTED_SEXUAL_CONDUCT
+            - THREAT_OR_VIOLENCE
+            - STALKING_OR_PRIVACY
+            - SCAM_OR_FRAUD
+            - IMPERSONATION
+            - HATE_OR_DISCRIMINATION
+            - SELF_HARM_CONCERN
+            - UNDERAGE_SAFETY
+            - SPAM
+            - OTHER
+        description:
+          type: string
+          maxLength: 2000
+        immediateSafety:
+          type: boolean
+          default: false
+        selectedRelatedMessageIds:
+          maxItems: 20
+          type: array
+          items:
+            type: string
+        blockRequested:
+          type: boolean
+          default: false
+        leaveRequested:
+          type: boolean
+          default: false
+      required:
+        - targetType
+        - targetId
+        - category
+    ReportInformationRequestEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        prompt:
+          type: string
+        requestedAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - prompt
+        - requestedAt
+        - expiresAt
+    ReportReceiptEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceCode:
+          type: string
+          example: TF-7K4M2Q9P
+        status:
+          type: string
+          enum:
+            - RECEIVED
+            - BEING_REVIEWED
+            - NEEDS_INFORMATION
+            - RESOLVED
+        submittedAt:
+          format: date-time
+          type: string
+        blockStatus:
+          type: string
+          enum:
+            - NOT_REQUESTED
+            - BLOCKED
+            - FAILED
+            - NOT_APPLICABLE
+        category:
+          type: string
+          enum:
+            - HARASSMENT
+            - UNWANTED_SEXUAL_CONDUCT
+            - THREAT_OR_VIOLENCE
+            - STALKING_OR_PRIVACY
+            - SCAM_OR_FRAUD
+            - IMPERSONATION
+            - HATE_OR_DISCRIMINATION
+            - SELF_HARM_CONCERN
+            - UNDERAGE_SAFETY
+            - SPAM
+            - OTHER
+        leaveStatus:
+          type: string
+          enum:
+            - NOT_REQUESTED
+            - LEFT
+            - FAILED
+            - NOT_APPLICABLE
+        informationRequest:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ReportInformationRequestEntity'
+        outcomeReviewStatus:
+          type: string
+          enum:
+            - RECEIVED
+            - REVIEWING
+            - NEEDS_INFORMATION
+            - RESOLVED
+            - EXPIRED
+          nullable: true
+        publicOutcome:
+          type: string
+          enum:
+            - ACTION_TAKEN
+            - NO_RULE_BREACH_FOUND
+            - NOT_ENOUGH_INFORMATION
+            - REVIEW_COMPLETED
+          nullable: true
+        resolvedAt:
+          format: date-time
+          type: string
+          nullable: true
+        outcomeReviewEligibility:
+          type: object
+          example:
+            canRequest: true
+            deadline: 2026-08-15T12:00:00.000Z
+            reasonCode: AVAILABLE
+      required:
+        - id
+        - referenceCode
+        - status
+        - submittedAt
+        - blockStatus
+        - category
+        - leaveStatus
+        - publicOutcome
+        - resolvedAt
+        - outcomeReviewEligibility
+    PaginatedReportReceipts:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportReceiptEntity'
+      required:
+        - meta
+        - items
+    AppealEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - RECEIVED
+            - REVIEWING
+            - UPHELD
+            - MODIFIED
+            - OVERTURNED
+            - EXPIRED
+        submittedAt:
+          format: date-time
+          type: string
+        decidedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - status
+        - submittedAt
+    EnforcementNoticeEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        state:
+          type: string
+          enum:
+            - PENDING
+            - ACTIVE
+            - EXPIRED
+            - REVERSED
+            - FAILED
+        startsAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+          nullable: true
+        canAppeal:
+          type: boolean
+        appealDueAt:
+          format: date-time
+          type: string
+          nullable: true
+        appeal:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/AppealEntity'
+      required:
+        - id
+        - title
+        - message
+        - state
+        - startsAt
+        - canAppeal
+    PaginatedEnforcementNotices:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnforcementNoticeEntity'
+      required:
+        - meta
+        - items
+    CreateAppealDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 20
+          maxLength: 2000
+      required:
+        - reason
+    ContainmentContestEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - RECEIVED
+            - REVIEWING
+            - UPHELD
+            - RELEASED
+            - EXPIRED
+        submittedAt:
+          format: date-time
+          type: string
+        decidedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - status
+        - submittedAt
+    ContainmentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        state:
+          type: string
+          enum:
+            - ACTIVE
+            - RELEASED
+            - EXPIRED
+            - FAILED
+        startedAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+        canContest:
+          type: boolean
+        contest:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ContainmentContestEntity'
+      required:
+        - id
+        - title
+        - message
+        - state
+        - startedAt
+        - expiresAt
+        - canContest
+    PaginatedContainments:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainmentEntity'
+      required:
+        - meta
+        - items
+    CreateContainmentContestDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 20
+          maxLength: 2000
+      required:
+        - reason
+    OperatorAssessmentReleaseEntity:
+      type: object
+      properties:
+        provider:
+          type: string
+        modelVersion:
+          type: string
+        promptVersion:
+          type: string
+        policyVersion:
+          type: string
+        schemaVersion:
+          type: string
+      required:
+        - provider
+        - modelVersion
+        - promptVersion
+        - policyVersion
+        - schemaVersion
+    OperatorAssessmentLabelEntity:
+      type: object
+      properties:
+        code:
+          type: string
+        displayLabel:
+          type: string
+        evidenceIds:
+          type: array
+          items:
+            type: string
+      required:
+        - code
+        - displayLabel
+        - evidenceIds
+    OperatorAssessmentActionEntity:
+      type: object
+      properties:
+        code:
+          type: string
+        displayLabel:
+          type: string
+      required:
+        - code
+        - displayLabel
+    OperatorAssessmentRationaleEntity:
+      type: object
+      properties:
+        text:
+          type: string
+        evidenceIds:
+          type: array
+          items:
+            type: string
+      required:
+        - text
+        - evidenceIds
+    OperatorAssessmentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        jobId:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        runMode:
+          type: string
+          enum:
+            - SHADOW
+        release:
+          $ref: '#/components/schemas/OperatorAssessmentReleaseEntity'
+        policyLabels:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorAssessmentLabelEntity'
+        uncertainty:
+          type: string
+          enum:
+            - UNKNOWN
+            - LOW
+            - MEDIUM
+            - HIGH
+        suggestedSeverity:
+          type: string
+          enum:
+            - P0
+            - P1
+            - P2
+            - P3
+            - P4
+          nullable: true
+        suggestedAction:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/OperatorAssessmentActionEntity'
+        rationale:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorAssessmentRationaleEntity'
+        operatorOutcome:
+          type: string
+          enum:
+            - NOT_REVIEWED
+            - FOLLOWED
+            - CHANGED
+            - NOT_USED
+        decisionId:
+          type: string
+          nullable: true
+      required:
+        - id
+        - jobId
+        - createdAt
+        - runMode
+        - release
+        - policyLabels
+        - uncertainty
+        - rationale
+        - operatorOutcome
+    OperatorAssessmentListEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - NOT_REQUESTED
+            - QUEUED
+            - RUNNING
+            - AVAILABLE
+            - RETRYING
+            - UNAVAILABLE
+            - SKIPPED_SPECIALIST_ROUTE
+        stateReasonCode:
+          type: string
+          nullable: true
+        assessments:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorAssessmentEntity'
+      required:
+        - state
+        - assessments
+    OperatorAssessmentChangeEntity:
+      type: object
+      properties:
+        field:
+          type: string
+        displayLabel:
+          type: string
+        earlierValue:
+          type: object
+          nullable: true
+        laterValue:
+          type: object
+          nullable: true
+        state:
+          type: string
+          enum:
+            - UNCHANGED
+            - CHANGED
+            - ADDED
+            - REMOVED
+      required:
+        - field
+        - displayLabel
+        - earlierValue
+        - laterValue
+        - state
+    OperatorAssessmentComparisonEntity:
+      type: object
+      properties:
+        earlierAssessmentId:
+          type: string
+        laterAssessmentId:
+          type: string
+        compatible:
+          type: boolean
+        reasonCode:
+          type: string
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorAssessmentChangeEntity'
+      required:
+        - earlierAssessmentId
+        - laterAssessmentId
+        - compatible
+        - reasonCode
+        - changes
+    OperatorWorkerEntity:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - MODERATION_ASSISTANCE
+            - EVIDENCE_PRESERVATION
+            - DOMAIN_EVENT_OUTBOX
+        displayName:
+          type: string
+        mode:
+          type: string
+          enum:
+            - DISABLED
+            - SHADOW
+            - ENFORCING
+        state:
+          type: string
+          enum:
+            - HEALTHY
+            - DELAYED
+            - PAUSED
+            - UNAVAILABLE
+        version:
+          type: number
+        queueDepth:
+          type: number
+        oldestQueuedAt:
+          format: date-time
+          type: string
+          nullable: true
+        activeLeases:
+          type: number
+        failedJobs:
+          type: number
+        deadJobs:
+          type: number
+        lastSuccessAt:
+          format: date-time
+          type: string
+          nullable: true
+        lastHeartbeatAt:
+          format: date-time
+          type: string
+          nullable: true
+        pausedAt:
+          format: date-time
+          type: string
+          nullable: true
+        pauseReasonCode:
+          type: string
+          nullable: true
+      required:
+        - kind
+        - displayName
+        - mode
+        - state
+        - version
+        - queueDepth
+        - activeLeases
+        - failedJobs
+        - deadJobs
+    OperatorWorkersEntity:
+      type: object
+      properties:
+        generatedAt:
+          format: date-time
+          type: string
+        assistanceMode:
+          type: string
+          enum:
+            - DISABLED
+            - SHADOW
+            - PAUSED
+        automaticActionsEnabled:
+          type: boolean
+        workers:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorWorkerEntity'
+      required:
+        - generatedAt
+        - assistanceMode
+        - automaticActionsEnabled
+        - workers
+    OperatorWorkerJobEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        caseReference:
+          type: string
+          nullable: true
+        kind:
+          type: string
+        status:
+          type: string
+          enum:
+            - FAILED
+            - DEAD
+        attempts:
+          type: number
+        lifetimeAttempts:
+          type: number
+        maxAttempts:
+          type: number
+        version:
+          type: number
+        nextRetryAt:
+          format: date-time
+          type: string
+          nullable: true
+        lastErrorCode:
+          type: string
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - kind
+        - status
+        - attempts
+        - lifetimeAttempts
+        - maxAttempts
+        - version
+        - createdAt
+        - updatedAt
+    OperatorWorkerJobsPageEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorWorkerJobEntity'
+        page:
+          type: number
+        limit:
+          type: number
+        total:
+          type: number
+        workerKind:
+          type: string
+          enum:
+            - MODERATION_ASSISTANCE
+            - EVIDENCE_PRESERVATION
+            - DOMAIN_EVENT_OUTBOX
+      required:
+        - data
+        - page
+        - limit
+        - total
+        - workerKind
+    OperatorWorkerCommandDto:
+      type: object
+      properties:
+        idempotencyKey:
+          type: string
+          example: worker-command-018f3f2f
+        expectedVersion:
+          type: number
+          example: 1
+          minimum: 1
+        reasonCode:
+          type: string
+          example: PROVIDER_MAINTENANCE
+      required:
+        - idempotencyKey
+        - expectedVersion
+        - reasonCode
+    OperatorWorkerCommandResultEntity:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - MODERATION_ASSISTANCE
+            - EVIDENCE_PRESERVATION
+            - DOMAIN_EVENT_OUTBOX
+        state:
+          type: string
+          enum:
+            - RUNNING
+            - PAUSED
+        version:
+          type: number
+      required:
+        - kind
+        - state
+        - version
+    OperatorWorkerReplayResultEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+        version:
+          type: number
+      required:
+        - id
+        - status
+        - version
+    OperatorSessionEntity:
+      type: object
+      properties:
+        accountId:
+          type: string
+        displayName:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - OWNER_ADMIN
+              - MODERATOR
+              - APPEAL_REVIEWER
+              - READ_ONLY
+              - CHILD_SAFETY_SPECIALIST
+              - LEGAL_REVIEWER
+        stepUpAt:
+          format: date-time
+          type: string
+          nullable: true
+        breakGlass:
+          type: boolean
+      required:
+        - accountId
+        - displayName
+        - roles
+        - breakGlass
+    OperatorCaseSummaryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        reference:
+          type: string
+          example: CASE-A1B2C3D4
+        status:
+          type: string
+          enum: &a56
+            - OPEN
+            - TRIAGING
+            - NEEDS_INFORMATION
+            - AWAITING_HUMAN_DECISION
+            - ACTION_PENDING
+            - MONITORING
+            - RESOLVED
+            - CLOSED
+        severity:
+          type: string
+          enum: &a57
+            - P0
+            - P1
+            - P2
+            - P3
+            - P4
+          nullable: true
+        policyLabels:
+          type: array
+          items:
+            type: string
+        evidenceCompleteness:
+          type: string
+          enum: &a58
+            - UNKNOWN
+            - COMPLETE
+            - PARTIAL
+            - UNAVAILABLE
+            - CONFLICTING
+        uncertainty:
+          type: string
+          enum: &a59
+            - UNKNOWN
+            - LOW
+            - MEDIUM
+            - HIGH
+        mandatoryHumanReasons:
+          type: array
+          items:
+            type: string
+        reportCount:
+          type: number
+        dueAt:
+          format: date-time
+          type: string
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        closedAt:
+          format: date-time
+          type: string
+          nullable: true
+        version:
+          type: number
+      required:
+        - id
+        - reference
+        - status
+        - policyLabels
+        - evidenceCompleteness
+        - uncertainty
+        - mandatoryHumanReasons
+        - reportCount
+        - createdAt
+        - updatedAt
+        - version
+    OperatorCasePageEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorCaseSummaryEntity'
+        page:
+          type: number
+        limit:
+          type: number
+        total:
+          type: number
+        queue:
+          type: string
+      required:
+        - data
+        - page
+        - limit
+        - total
+    OperatorReportEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceCode:
+          type: string
+        category:
+          type: string
+          enum:
+            - HARASSMENT
+            - UNWANTED_SEXUAL_CONDUCT
+            - THREAT_OR_VIOLENCE
+            - STALKING_OR_PRIVACY
+            - SCAM_OR_FRAUD
+            - IMPERSONATION
+            - HATE_OR_DISCRIMINATION
+            - SELF_HARM_CONCERN
+            - UNDERAGE_SAFETY
+            - SPAM
+            - OTHER
+        targetType:
+          type: string
+          enum:
+            - PROFILE
+            - MESSAGE
+            - ATTACHMENT
+            - GROUP
+            - PLAN
+            - ACTIVITY
+        publicStatus:
+          type: string
+          enum:
+            - RECEIVED
+            - BEING_REVIEWED
+            - NEEDS_INFORMATION
+            - RESOLVED
+        immediateSafety:
+          type: boolean
+        submittedAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - referenceCode
+        - category
+        - targetType
+        - publicStatus
+        - immediateSafety
+        - submittedAt
+    OperatorCaseReportLinkEntity:
+      type: object
+      properties:
+        linkedAt:
+          format: date-time
+          type: string
+        report:
+          $ref: '#/components/schemas/OperatorReportEntity'
+      required:
+        - linkedAt
+        - report
+    OperatorDecisionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        sequence:
+          type: number
+        actorType:
+          type: string
+          enum:
+            - SYSTEM_RULE
+            - HUMAN_OPERATOR
+            - APPEAL_REVIEWER
+        kind:
+          type: string
+          enum:
+            - TRIAGE
+            - REQUEST_INFORMATION
+            - LINK_EXACT_DUPLICATE
+            - CLOSE_TECHNICAL_INVALID
+            - FIND_NO_POLICY_VIOLATION
+            - FIND_POLICY_VIOLATION
+            - AUTHORIZE_CONTAINMENT
+            - AUTHORIZE_ENFORCEMENT
+            - MODIFY_ENFORCEMENT
+            - REVERSE_ENFORCEMENT
+            - RELEASE_CONTAINMENT
+            - DECIDE_APPEAL
+            - DECIDE_CONTAINMENT_CONTEST
+            - DECIDE_REPORT_OUTCOME_REVIEW
+            - RESOLVE_CASE
+            - REOPEN_CASE
+        previousCaseStatus:
+          type: string
+          enum:
+            - OPEN
+            - TRIAGING
+            - NEEDS_INFORMATION
+            - AWAITING_HUMAN_DECISION
+            - ACTION_PENDING
+            - MONITORING
+            - RESOLVED
+            - CLOSED
+        nextCaseStatus:
+          type: string
+          enum:
+            - OPEN
+            - TRIAGING
+            - NEEDS_INFORMATION
+            - AWAITING_HUMAN_DECISION
+            - ACTION_PENDING
+            - MONITORING
+            - RESOLVED
+            - CLOSED
+        policyCodes:
+          type: array
+          items:
+            type: string
+        policyVersion:
+          type: string
+        operatorAccountId:
+          type: string
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - sequence
+        - actorType
+        - kind
+        - previousCaseStatus
+        - nextCaseStatus
+        - policyCodes
+        - policyVersion
+        - createdAt
+    OperatorEnforcementActionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        actionType:
+          type: string
+          enum:
+            - WARNING
+            - OUTBOUND_RATE_LIMIT
+            - NEW_STRANGER_CONTACT_RESTRICTION
+            - ACCEPTED_CHAT_RESTRICTION
+            - TEMPORARY_ACCOUNT_SUSPENSION
+            - PERMANENT_ACCOUNT_BAN
+            - ITEM_REMOVAL
+            - GROUP_RESTRICTION
+        scope:
+          type: string
+          enum:
+            - ACCOUNT
+            - NEW_STRANGER_CONTACT
+            - ACCEPTED_CHAT
+            - ITEM
+            - GROUP
+        state:
+          type: string
+          enum:
+            - PENDING
+            - ACTIVE
+            - EXPIRED
+            - REVERSED
+            - FAILED
+        startsAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+          nullable: true
+        activatedAt:
+          format: date-time
+          type: string
+          nullable: true
+        reversedAt:
+          format: date-time
+          type: string
+          nullable: true
+        appealDueAt:
+          format: date-time
+          type: string
+          nullable: true
+        version:
+          type: number
+      required:
+        - id
+        - actionType
+        - scope
+        - state
+        - startsAt
+        - version
+    OperatorContainmentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        scope:
+          type: string
+          enum:
+            - ITEM_QUARANTINE
+            - FORGE_PROPOSAL_HOLD
+            - NEW_STRANGER_CONTACT_PAUSE
+        state:
+          type: string
+          enum:
+            - ACTIVE
+            - RELEASED
+            - EXPIRED
+            - FAILED
+        startedAt:
+          format: date-time
+          type: string
+        mandatoryReviewAt:
+          format: date-time
+          type: string
+        hardExpiresAt:
+          format: date-time
+          type: string
+        releasedAt:
+          format: date-time
+          type: string
+          nullable: true
+        version:
+          type: number
+      required:
+        - id
+        - scope
+        - state
+        - startedAt
+        - mandatoryReviewAt
+        - hardExpiresAt
+        - version
+    OperatorAppealEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        actionId:
+          type: string
+        status:
+          type: string
+          enum:
+            - RECEIVED
+            - REVIEWING
+            - UPHELD
+            - MODIFIED
+            - OVERTURNED
+            - EXPIRED
+        receivedAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+        decidedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - actionId
+        - status
+        - receivedAt
+        - expiresAt
+    OperatorOutcomeReviewEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - RECEIVED
+            - REVIEWING
+            - NEEDS_INFORMATION
+            - RESOLVED
+            - EXPIRED
+        result:
+          type: string
+          enum:
+            - HANDLING_CONFIRMED
+            - CASE_REOPENED
+          nullable: true
+        receivedAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+        resolvedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - status
+        - receivedAt
+        - expiresAt
+    OperatorAssignmentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        operatorAccountId:
+          type: string
+        assignedAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+        revokedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - operatorAccountId
+        - assignedAt
+        - expiresAt
+    OperatorBreakGlassReviewEntity:
+      type: object
+      properties:
+        required:
+          type: boolean
+        outcome:
+          type: string
+          nullable: true
+        reviewedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - required
+    OperatorCaseDetailEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        reference:
+          type: string
+          example: CASE-A1B2C3D4
+        status:
+          type: string
+          enum: *a56
+        severity:
+          type: string
+          enum: *a57
+          nullable: true
+        policyLabels:
+          type: array
+          items:
+            type: string
+        evidenceCompleteness:
+          type: string
+          enum: *a58
+        uncertainty:
+          type: string
+          enum: *a59
+        mandatoryHumanReasons:
+          type: array
+          items:
+            type: string
+        reportCount:
+          type: number
+        dueAt:
+          format: date-time
+          type: string
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        closedAt:
+          format: date-time
+          type: string
+          nullable: true
+        version:
+          type: number
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorCaseReportLinkEntity'
+        decisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorDecisionEntity'
+        enforcementActions:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorEnforcementActionEntity'
+        protectiveContainments:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorContainmentEntity'
+        appeals:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorAppealEntity'
+        outcomeReviewRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorOutcomeReviewEntity'
+        operatorAssignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorAssignmentEntity'
+        breakGlassReviewRequired:
+          type: boolean
+        breakGlassReview:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/OperatorBreakGlassReviewEntity'
+      required:
+        - id
+        - reference
+        - status
+        - policyLabels
+        - evidenceCompleteness
+        - uncertainty
+        - mandatoryHumanReasons
+        - reportCount
+        - createdAt
+        - updatedAt
+        - version
+        - reports
+        - decisions
+        - enforcementActions
+        - protectiveContainments
+        - appeals
+        - outcomeReviewRequests
+        - operatorAssignments
+        - breakGlassReviewRequired
+    OperatorEvidenceMetadataEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        sourceType:
+          type: string
+          enum:
+            - PROFILE
+            - MESSAGE
+            - ATTACHMENT
+            - GROUP
+            - PLAN
+            - ACTIVITY
+        sourceId:
+          type: string
+        sourceVersion:
+          type: string
+        sensitivity:
+          type: string
+        preservationState:
+          type: string
+        preservedAt:
+          format: date-time
+          type: string
+          nullable: true
+        retentionUntil:
+          format: date-time
+          type: string
+        purgedAt:
+          format: date-time
+          type: string
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - sourceType
+        - sourceId
+        - sourceVersion
+        - sensitivity
+        - preservationState
+        - retentionUntil
+        - createdAt
+    RevealEvidenceDto:
+      type: object
+      properties:
+        reasonCode:
+          type: string
+          example: CASE_REVIEW
+      required:
+        - reasonCode
+    OperatorEvidenceRevealEntity:
+      type: object
+      properties:
+        capturedAt:
+          type: string
+        relationshipBasis:
+          type: string
+        reporterNarrative:
+          type: string
+          nullable: true
+        sourceId:
+          type: string
+        sourceVersion:
+          type: string
+        targetType:
+          type: string
+        target:
+          type: object
+        context:
+          type: array
+          items:
+            type: object
+      required:
+        - capturedAt
+        - relationshipBasis
+        - sourceId
+        - sourceVersion
+        - targetType
+        - target
+        - context
+    AssignOperatorCaseDto:
+      type: object
+      properties:
+        operatorAccountId:
+          type: string
+        reasonCode:
+          type: string
+          example: QUEUE_ASSIGNMENT
+        expiresAt:
+          type: string
+      required:
+        - operatorAccountId
+        - reasonCode
+        - expiresAt
+    OperatorCommandResultEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        decisionId:
+          type: string
+        operatorAccountId:
+          type: string
+        reportId:
+          type: string
+        templateCode:
+          type: string
+        actionType:
+          type: string
+        scope:
+          type: string
+        status:
+          type: string
+        state:
+          type: string
+        result:
+          type: string
+        replacementActionId:
+          type: string
+          nullable: true
+        assignedAt:
+          format: date-time
+          type: string
+        requestedAt:
+          format: date-time
+          type: string
+        startsAt:
+          format: date-time
+          type: string
+        mandatoryReviewAt:
+          format: date-time
+          type: string
+        hardExpiresAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+          nullable: true
+        appealDueAt:
+          format: date-time
+          type: string
+          nullable: true
+        reviewedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+    SelfAssignCaseDto:
+      type: object
+      properties:
+        reasonCode:
+          type: string
+        expiresAt:
+          type: string
+      required:
+        - reasonCode
+        - expiresAt
+    TriageCaseDto:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        assistanceDisposition:
+          type: string
+          enum: &a60
+            - FOLLOWED
+            - CHANGED
+            - NOT_USED
+        idempotencyKey:
+          type: string
+          example: operator-command-018f3f2f
+        reasonCode:
+          type: string
+          example: POLICY_REVIEW_COMPLETED
+        policyCodes:
+          example: &a61
+            - SAFETY_ABUSE
+          type: array
+          items:
+            type: array
+        policyVersion:
+          type: string
+          example: 2026-07-15
+        rationale:
+          type: string
+          maxLength: 1000
+        severity:
+          type: string
+          enum:
+            - P0
+            - P1
+            - P2
+            - P3
+            - P4
+        evidenceCompleteness:
+          type: string
+          enum:
+            - UNKNOWN
+            - COMPLETE
+            - PARTIAL
+            - UNAVAILABLE
+            - CONFLICTING
+        uncertainty:
+          type: string
+          enum:
+            - UNKNOWN
+            - LOW
+            - MEDIUM
+            - HIGH
+        mandatoryHumanReasons:
+          type: array
+          items:
+            type: string
+            enum:
+              - CHILD_SAFETY
+              - IMMINENT_HARM
+              - SELF_HARM
+              - EXTORTION
+              - STALKING_OR_DOXXING
+              - IDENTITY_OR_AGE_DISPUTE
+              - REAL_WORLD_INCIDENT
+              - ACCEPTED_CHAT_RESTRICTION
+              - ACCOUNT_SUSPENSION_OR_BAN
+              - APPEAL_OR_RESTORATION
+              - CONFLICTING_OR_INCOMPLETE_EVIDENCE
+              - LEGAL_OR_STATUTORY
+              - POLICY_EXCEPTION
+        dueAt:
+          type: string
+          format: date-time
+      required:
+        - idempotencyKey
+        - reasonCode
+        - policyCodes
+        - policyVersion
+        - severity
+        - evidenceCompleteness
+        - uncertainty
+        - mandatoryHumanReasons
+    OperatorCommandDto:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        assistanceDisposition:
+          type: string
+          enum: *a60
+        idempotencyKey:
+          type: string
+          example: operator-command-018f3f2f
+        reasonCode:
+          type: string
+          example: POLICY_REVIEW_COMPLETED
+        policyCodes:
+          example: *a61
+          type: array
+          items:
+            type: array
+        policyVersion:
+          type: string
+          example: 2026-07-15
+        rationale:
+          type: string
+          maxLength: 1000
+      required:
+        - idempotencyKey
+        - reasonCode
+        - policyCodes
+        - policyVersion
+    ResolveCaseDto:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        assistanceDisposition:
+          type: string
+          enum: *a60
+        idempotencyKey:
+          type: string
+          example: operator-command-018f3f2f
+        reasonCode:
+          type: string
+          example: POLICY_REVIEW_COMPLETED
+        policyCodes:
+          example: *a61
+          type: array
+          items:
+            type: array
+        policyVersion:
+          type: string
+          example: 2026-07-15
+        rationale:
+          type: string
+          maxLength: 1000
+        publicOutcome:
+          type: string
+          enum:
+            - ACTION_TAKEN
+            - NO_RULE_BREACH_FOUND
+            - NOT_ENOUGH_INFORMATION
+            - REVIEW_COMPLETED
+      required:
+        - idempotencyKey
+        - reasonCode
+        - policyCodes
+        - policyVersion
+        - publicOutcome
+    RequestInformationDto:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        assistanceDisposition:
+          type: string
+          enum: *a60
+        idempotencyKey:
+          type: string
+          example: operator-command-018f3f2f
+        reasonCode:
+          type: string
+          example: POLICY_REVIEW_COMPLETED
+        policyCodes:
+          example: *a61
+          type: array
+          items:
+            type: array
+        policyVersion:
+          type: string
+          example: 2026-07-15
+        rationale:
+          type: string
+          maxLength: 1000
+        reportId:
+          type: string
+        templateCode:
+          type: string
+          enum:
+            - MORE_CONTEXT
+            - WHEN_AND_WHERE
+            - WHO_WAS_INVOLVED
+            - WHAT_HAPPENED_NEXT
+            - SAFETY_CONCERN_DETAILS
+        expiresAt:
+          type: string
+      required:
+        - idempotencyKey
+        - reasonCode
+        - policyCodes
+        - policyVersion
+        - reportId
+        - templateCode
+        - expiresAt
+    AuthorizeEnforcementDto:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        assistanceDisposition:
+          type: string
+          enum: *a60
+        idempotencyKey:
+          type: string
+          example: operator-command-018f3f2f
+        reasonCode:
+          type: string
+          example: POLICY_REVIEW_COMPLETED
+        policyCodes:
+          example: *a61
+          type: array
+          items:
+            type: array
+        policyVersion:
+          type: string
+          example: 2026-07-15
+        rationale:
+          type: string
+          maxLength: 1000
+        actionType:
+          type: string
+          enum: &a62
+            - WARNING
+            - OUTBOUND_RATE_LIMIT
+            - NEW_STRANGER_CONTACT_RESTRICTION
+            - ACCEPTED_CHAT_RESTRICTION
+            - TEMPORARY_ACCOUNT_SUSPENSION
+            - PERMANENT_ACCOUNT_BAN
+            - ITEM_REMOVAL
+            - GROUP_RESTRICTION
+        scope:
+          type: string
+          enum: &a63
+            - ACCOUNT
+            - NEW_STRANGER_CONTACT
+            - ACCEPTED_CHAT
+            - ITEM
+            - GROUP
+        evidenceId:
+          type: string
+        targetType:
+          type: string
+          enum: &a64
+            - PROFILE
+            - MESSAGE
+            - ATTACHMENT
+            - GROUP
+            - PLAN
+            - ACTIVITY
+        targetId:
+          type: string
+        expiresAt:
+          type: string
+      required:
+        - idempotencyKey
+        - reasonCode
+        - policyCodes
+        - policyVersion
+        - actionType
+        - scope
+        - evidenceId
+    AuthorizeContainmentDto:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        assistanceDisposition:
+          type: string
+          enum: *a60
+        idempotencyKey:
+          type: string
+          example: operator-command-018f3f2f
+        reasonCode:
+          type: string
+          example: POLICY_REVIEW_COMPLETED
+        policyCodes:
+          example: *a61
+          type: array
+          items:
+            type: array
+        policyVersion:
+          type: string
+          example: 2026-07-15
+        rationale:
+          type: string
+          maxLength: 1000
+        scope:
+          type: string
+          enum:
+            - ITEM_QUARANTINE
+            - FORGE_PROPOSAL_HOLD
+            - NEW_STRANGER_CONTACT_PAUSE
+        evidenceId:
+          type: string
+        mandatoryReviewAt:
+          type: string
+        hardExpiresAt:
+          type: string
+      required:
+        - idempotencyKey
+        - reasonCode
+        - policyCodes
+        - policyVersion
+        - scope
+        - evidenceId
+        - mandatoryReviewAt
+        - hardExpiresAt
+    DecideAppealDto:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        assistanceDisposition:
+          type: string
+          enum: *a60
+        idempotencyKey:
+          type: string
+          example: operator-command-018f3f2f
+        reasonCode:
+          type: string
+          example: POLICY_REVIEW_COMPLETED
+        policyCodes:
+          example: *a61
+          type: array
+          items:
+            type: array
+        policyVersion:
+          type: string
+          example: 2026-07-15
+        rationale:
+          type: string
+          maxLength: 1000
+        result:
+          type: string
+          enum:
+            - UPHELD
+            - MODIFIED
+            - OVERTURNED
+        replacementActionType:
+          type: string
+          enum: *a62
+        replacementScope:
+          type: string
+          enum: *a63
+        replacementEvidenceId:
+          type: string
+        replacementTargetType:
+          type: string
+          enum: *a64
+        replacementTargetId:
+          type: string
+        replacementExpiresAt:
+          type: string
+      required:
+        - idempotencyKey
+        - reasonCode
+        - policyCodes
+        - policyVersion
+        - result
+    DecideOutcomeReviewDto:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        assistanceDisposition:
+          type: string
+          enum: *a60
+        idempotencyKey:
+          type: string
+          example: operator-command-018f3f2f
+        reasonCode:
+          type: string
+          example: POLICY_REVIEW_COMPLETED
+        policyCodes:
+          example: *a61
+          type: array
+          items:
+            type: array
+        policyVersion:
+          type: string
+          example: 2026-07-15
+        rationale:
+          type: string
+          maxLength: 1000
+        result:
+          type: string
+          enum:
+            - HANDLING_CONFIRMED
+            - CASE_REOPENED
+      required:
+        - idempotencyKey
+        - reasonCode
+        - policyCodes
+        - policyVersion
+        - result
+    DecideContainmentContestDto:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        assistanceDisposition:
+          type: string
+          enum: *a60
+        idempotencyKey:
+          type: string
+          example: operator-command-018f3f2f
+        reasonCode:
+          type: string
+          example: POLICY_REVIEW_COMPLETED
+        policyCodes:
+          example: *a61
+          type: array
+          items:
+            type: array
+        policyVersion:
+          type: string
+          example: 2026-07-15
+        rationale:
+          type: string
+          maxLength: 1000
+        result:
+          type: string
+          enum:
+            - UPHELD
+            - RELEASED
+      required:
+        - idempotencyKey
+        - reasonCode
+        - policyCodes
+        - policyVersion
+        - result
+    ReviewBreakGlassUseDto:
+      type: object
+      properties:
+        outcome:
+          type: string
+          enum:
+            - APPROVED
+            - CONCERNS_ESCALATED
+            - POLICY_BREACH
+        reasonCode:
+          type: string
+      required:
+        - outcome
+        - reasonCode
     UserSettingsEntity:
       type: object
       properties:
@@ -7657,14 +11238,14 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: &a42
+          enum: &a65
             - system
             - light
             - dark
           example: system
         themeStyle:
           type: string
-          enum: &a43
+          enum: &a66
             - classic
             - glass
             - ink
@@ -7672,7 +11253,7 @@ components:
           example: classic
         themeColor:
           type: string
-          enum: &a44
+          enum: &a67
             - graphite
             - forge
             - harbor
@@ -7760,15 +11341,15 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: *a42
+          enum: *a65
           example: system
         themeStyle:
           type: string
-          enum: *a43
+          enum: *a66
           example: classic
         themeColor:
           type: string
-          enum: *a44
+          enum: *a67
           example: graphite
         showAgeOnProfile:
           type: boolean

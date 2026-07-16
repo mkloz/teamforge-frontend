@@ -1,5 +1,6 @@
 import {
   ActivityRouteLoading,
+  accountActionDetailPageModule,
   activityPageModule,
   ExploreRouteLoading,
   explorePageModule,
@@ -11,7 +12,12 @@ import {
   homePageModule,
   ProfileRouteLoading,
   profilePageModule,
+  restrictionDetailPageModule,
+  SafetyDetailRouteLoading,
+  SafetyRouteLoading,
   SettingsRouteLoading,
+  safetyPageModule,
+  safetyReportDetailPageModule,
   settingsPageModule,
   userDetailPageModule,
 } from "@/app/router/app-routes/route-modules";
@@ -33,6 +39,7 @@ import { validateExploreRouteSearch } from "@/shared/navigation";
 import { validateActivityRouteSearch } from "@/shared/navigation/activity-navigation";
 import { validateForgeRouteSearch } from "@/shared/navigation/forge-navigation";
 import { validateHomeRouteSearch } from "@/shared/navigation/home-navigation";
+import { validateSafetySearch } from "@/shared/navigation/safety-navigation";
 import { validateSettingsRouteSearch } from "@/shared/navigation/settings-navigation";
 
 export const homeRouteOptions = {
@@ -172,6 +179,88 @@ export const settingsRouteOptions = {
     description: "Your account settings did not load.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
+  }),
+};
+
+export const safetyRouteOptions = {
+  path: "/safety" as const,
+  validateSearch: validateSafetySearch,
+  loader: createRouteModuleLoader(safetyPageModule, SafetyRouteLoading),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: SafetyRouteLoading,
+  component: createLazyPageRoute(
+    safetyPageModule.Component,
+    <SafetyRouteLoading />,
+  ),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.safety,
+    title: "Safety Center could not load",
+    description: "Your safety information did not load.",
+    fallbackTo: "/home",
+    fallbackLabel: "Back to home",
+  }),
+};
+
+export const safetyReportDetailRouteOptions = {
+  path: "/safety/reports/$reportId" as const,
+  loader: createRouteModuleLoader(
+    safetyReportDetailPageModule,
+    SafetyDetailRouteLoading,
+  ),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: SafetyDetailRouteLoading,
+  component: createLazyPageRoute(
+    safetyReportDetailPageModule.Component,
+    <SafetyDetailRouteLoading />,
+  ),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.safetyReport,
+    title: "Report details could not load",
+    description: "This report is unavailable right now.",
+    fallbackTo: "/safety",
+    fallbackLabel: "Back to Safety Center",
+  }),
+};
+
+export const accountActionDetailRouteOptions = {
+  path: "/safety/account-actions/$noticeId" as const,
+  loader: createRouteModuleLoader(
+    accountActionDetailPageModule,
+    SafetyDetailRouteLoading,
+  ),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: SafetyDetailRouteLoading,
+  component: createLazyPageRoute(
+    accountActionDetailPageModule.Component,
+    <SafetyDetailRouteLoading />,
+  ),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.safetyAccountAction,
+    title: "Account action could not load",
+    description: "This notice is unavailable right now.",
+    fallbackTo: "/safety",
+    fallbackLabel: "Back to Safety Center",
+  }),
+};
+
+export const restrictionDetailRouteOptions = {
+  path: "/safety/restrictions/$containmentId" as const,
+  loader: createRouteModuleLoader(
+    restrictionDetailPageModule,
+    SafetyDetailRouteLoading,
+  ),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: SafetyDetailRouteLoading,
+  component: createLazyPageRoute(
+    restrictionDetailPageModule.Component,
+    <SafetyDetailRouteLoading />,
+  ),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.safetyRestriction,
+    title: "Safety restriction could not load",
+    description: "This restriction is unavailable right now.",
+    fallbackTo: "/safety",
+    fallbackLabel: "Back to Safety Center",
   }),
 };
 

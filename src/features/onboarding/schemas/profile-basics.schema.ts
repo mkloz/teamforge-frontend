@@ -1,10 +1,12 @@
 import { z } from "zod";
 
 import { genderSchema } from "@/shared/schemas/enums";
+import { DateOfBirthValidator } from "@/shared/validators/date-of-birth.validator";
 
 const agePattern = /^\d+$/;
 
 export const profileBasicsSchema = z.object({
+  dateOfBirth: DateOfBirthValidator,
   age: z
     .string()
     .trim()

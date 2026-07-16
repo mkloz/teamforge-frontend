@@ -166,7 +166,6 @@ function toUnifiedMessageSender(
     id: sender.id,
     name: sender.name,
     avatar: sender.avatar,
-    trustScore: 0,
   };
 }
 
