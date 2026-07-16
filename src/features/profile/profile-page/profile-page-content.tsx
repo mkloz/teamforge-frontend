@@ -1,13 +1,18 @@
 import { type ReactNode, useRef } from "react";
 import { ProfileHero } from "@/features/profile/components/profile-hero";
 import { ProfileCompactHeader } from "@/features/profile/components/profile-hero/profile-compact-header";
+import { ProfilePortraitSection } from "@/features/profile/components/profile-portrait-section";
+import { DeferredProfileInsights } from "@/features/profile/profile-page/profile-page-content/deferred-profile-insights";
+import { ProfileDeferredInsightsFallback } from "@/features/profile/profile-page/profile-page-content/profile-deferred-insights-fallback";
 import { ProfileHeaderActions } from "@/features/profile/profile-page/profile-page-content/profile-header-actions";
 import {
   buildProfileCoreModel,
+  getCompactSocialRead,
   getProfileQrUrl,
   getShouldShowUserMenu,
 } from "@/features/profile/profile-page/profile-page-content/profile-page-state";
-import { SelfProfileSections } from "@/features/profile/profile-page/profile-page-content/self-profile-sections";
+import { ProfilePortraitSectionFallback } from "@/features/profile/profile-page/profile-page-content/profile-portrait-section-fallback";
+import { useProfileInsights } from "@/features/profile/profile-page/profile-page-content/use-profile-insights";
 import type { User } from "@/shared/schemas";
 
 import { useProfileCollapsibleHeader } from "../hooks/use-profile-collapsible-header";
@@ -29,6 +34,10 @@ export function ProfilePageContent({
   const profilePageRef = useRef<HTMLDivElement | null>(null);
   const profileHeroRowRef = useRef<HTMLDivElement | null>(null);
   const profileCore = buildProfileCoreModel(profile);
+  const profileInsights = useProfileInsights(profile);
+  const socialRead = profileInsights
+    ? getCompactSocialRead(profileInsights.portrait.lead)
+    : null;
   const shouldShowUserMenu = getShouldShowUserMenu(showUserMenu, mode);
   const profileQrUrl = getProfileQrUrl(profile.id);
 
@@ -52,12 +61,27 @@ export function ProfilePageContent({
         <ProfileHero
           user={profile}
           archetype={profileCore.archetype}
+          socialRead={socialRead}
           renderActions={renderActions}
           showMissingDetailsAction={mode === "self"}
           heroRowRef={profileHeroRowRef}
         />
 
-        <SelfProfileSections profile={profile} />
+        {profileInsights ? (
+          <ProfilePortraitSection portrait={profileInsights.portrait} />
+        ) : (
+          <ProfilePortraitSectionFallback />
+        )}
+
+        {profileInsights ? (
+          <DeferredProfileInsights
+            dimensionScores={profileCore.dimensionScores}
+            oceanScores={profileCore.oceanScores}
+            profileInsights={profileInsights}
+          />
+        ) : (
+          <ProfileDeferredInsightsFallback />
+        )}
       </div>
     </div>
   );

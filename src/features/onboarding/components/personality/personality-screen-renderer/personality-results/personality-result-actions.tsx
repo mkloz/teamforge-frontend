@@ -1,13 +1,8 @@
-import { ArrowRight, Eye, EyeOff, RefreshCcw, Trash2 } from "lucide-react";
+import { ArrowRight, Check, RefreshCcw, Trash2 } from "lucide-react";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 
-type ResultAction =
-  | "publish"
-  | "keep-private"
-  | "discard"
-  | "delete-all"
-  | "retake";
+type ResultAction = "publish" | "discard" | "delete-all" | "retake";
 
 interface PersonalityResultActionsProps {
   actionsAvailable: boolean;
@@ -18,13 +13,11 @@ interface PersonalityResultActionsProps {
   hasDraft: boolean;
   isOnline: boolean;
   isLegacyResult: boolean;
-  isPublished: boolean;
-  isResultPrivate: boolean;
+  isSaved: boolean;
   onContinue: () => void;
   onDiscard: () => void;
   onDeleteAll: () => void;
-  onKeepPrivate: () => void;
-  onPublish: () => void;
+  onSave: () => void;
   onRetake: () => void;
 }
 
@@ -37,63 +30,36 @@ export function PersonalityResultActions({
   hasDraft,
   isOnline,
   isLegacyResult,
-  isPublished,
-  isResultPrivate,
+  isSaved,
   onContinue,
   onDiscard,
   onDeleteAll,
-  onKeepPrivate,
-  onPublish,
+  onSave,
   onRetake,
 }: PersonalityResultActionsProps) {
   const isBusy = activeAction !== null;
 
   return (
     <section className="mt-auto flex flex-col gap-4 border-border/70 border-t pt-6">
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3">
         <Button
           disabled={
             !isOnline ||
             !actionsAvailable ||
             isBusy ||
-            isPublished ||
+            isSaved ||
             isLegacyResult
           }
           loading={activeAction === "publish"}
-          onClick={onPublish}
+          onClick={onSave}
         >
-          <Eye size={16} strokeWidth={2} />
-          {isPublished
-            ? "Published"
+          <Check size={16} strokeWidth={2} />
+          {isSaved
+            ? "Saved to profile"
             : isLegacyResult
               ? "New assessment required"
-              : "Publish result"}
+              : "Use this result"}
         </Button>
-        <ActionDialog
-          cancelLabel="Go back"
-          confirmLabel="Keep private"
-          description={
-            isPublished
-              ? "This withdraws the result from group formation. TeamForge will stop showing or using it in the published contexts listed above."
-              : "This saves the result for you without using or showing it in group formation."
-          }
-          disabled={!isOnline || !actionsAvailable || isBusy || isResultPrivate}
-          loading={activeAction === "keep-private"}
-          onConfirm={onKeepPrivate}
-          title="Keep this result private?"
-          trigger={
-            <Button
-              variant="outline"
-              disabled={
-                !isOnline || !actionsAvailable || isBusy || isResultPrivate
-              }
-              loading={activeAction === "keep-private"}
-            >
-              <EyeOff size={16} strokeWidth={2} />
-              {isResultPrivate ? "Kept private" : "Keep private"}
-            </Button>
-          }
-        />
       </div>
 
       <Button disabled={!canContinue || isBusy} onClick={onContinue}>
@@ -103,7 +69,7 @@ export function PersonalityResultActions({
 
       {!canContinue ? (
         <p className="text-center text-muted-foreground text-xs leading-relaxed">
-          Choose Publish result or Keep private before continuing.
+          Save this result before continuing.
         </p>
       ) : null}
 
@@ -143,7 +109,7 @@ export function PersonalityResultActions({
           <ActionDialog
             cancelLabel="Keep draft"
             confirmLabel="Discard draft"
-            description="This removes the unpublished draft. Your previous saved result and publication choice stay unchanged."
+            description="This removes the draft. Your previous saved result stays unchanged."
             disabled={!isOnline || !actionsAvailable || isBusy}
             loading={activeAction === "discard"}
             onConfirm={onDiscard}
@@ -166,7 +132,7 @@ export function PersonalityResultActions({
       <ActionDialog
         cancelLabel="Keep result"
         confirmLabel="Delete all"
-        description="This removes every saved personality result and withdraws it from group formation. It does not delete your other account data. You cannot undo this."
+        description="This removes every saved personality result from your profile and group formation. It does not delete your other account data. You cannot undo this."
         disabled={!isOnline || !actionsAvailable || isBusy}
         loading={activeAction === "delete-all"}
         onConfirm={onDeleteAll}

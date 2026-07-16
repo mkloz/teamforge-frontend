@@ -2,10 +2,8 @@ import { m } from "framer-motion";
 
 import { resultsContainer } from "@/features/onboarding/constants/motion";
 import type { PersonalityAssessmentQueryStatus } from "@/features/onboarding/hooks/use-personality-test-page-flow";
-import { getPersonalityAudienceText } from "@/features/onboarding/lib/personality-disclosure-copy";
 import { getPersonalityResultViewModel } from "@/features/onboarding/lib/personality-results";
 import { Button } from "@/shared/components/ui/button";
-import type { PersonalityDisclosure } from "@/shared/schemas/personality-assessment";
 import type { PublicPersonalityProfile } from "@/shared/schemas/public-personality-profile";
 
 import { PersonalityResultActions } from "./personality-result-actions";
@@ -14,29 +12,21 @@ import { PersonalityResultSummary } from "./personality-result-summary";
 import { PersonalityTraitMap } from "./personality-trait-map";
 import { SectionHeading } from "./section-heading";
 
-type ResultAction =
-  | "publish"
-  | "keep-private"
-  | "discard"
-  | "delete-all"
-  | "retake";
+type ResultAction = "publish" | "discard" | "delete-all" | "retake";
 
 interface PersonalityResultsProps {
   activeResultAction: ResultAction | null;
   canContinue: boolean;
   continueLabel?: string;
-  disclosure: PersonalityDisclosure;
   error: string | null;
   hasDraft: boolean;
   isOnline: boolean;
-  isPublished: boolean;
+  isSaved: boolean;
   isLegacyResult: boolean;
-  isResultPrivate: boolean;
   onContinue: () => void;
   onDiscard: () => void;
   onDeleteAll: () => void;
-  onKeepPrivate: () => void;
-  onPublish: () => void;
+  onSave: () => void;
   onRetake: () => void;
   onRetryState: () => void;
   profile: PublicPersonalityProfile;
@@ -47,26 +37,20 @@ export function PersonalityResults({
   activeResultAction,
   canContinue,
   continueLabel = "Continue",
-  disclosure,
   error,
   hasDraft,
   isOnline,
-  isPublished,
+  isSaved,
   isLegacyResult,
-  isResultPrivate,
   onContinue,
   onDiscard,
   onDeleteAll,
-  onKeepPrivate,
-  onPublish,
+  onSave,
   onRetake,
   onRetryState,
   profile,
   stateStatus,
 }: PersonalityResultsProps) {
-  const audienceText = getPersonalityAudienceText(
-    disclosure.authorizedAudiences,
-  );
   const viewModel = getPersonalityResultViewModel(profile);
 
   return (
@@ -109,14 +93,13 @@ export function PersonalityResults({
 
       <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
         <SectionHeading
-          eyebrow="Privacy choice"
-          title="Choose how TeamForge uses it"
+          eyebrow="Your TeamForge profile"
+          title="A portrait people can understand"
         />
         <p className="text-pretty text-ink/82 text-sm leading-relaxed">
-          If you publish, TeamForge can use this type and these five scores when
-          forming groups. They can be shown to {audienceText}. Keeping the
-          result private saves it for you and leaves it out of group formation.
-          It is never posted to the open web.
+          Save this result to add the portrait to your profile. Other signed-in
+          TeamForge users can see it, and TeamForge can use it when forming
+          groups.
         </p>
         <p className="text-pretty text-muted-foreground text-xs leading-relaxed">
           Your answers were used for this assessment and are not saved.
@@ -128,9 +111,9 @@ export function PersonalityResults({
           className="text-pretty border-spark-amber/60 border-l-2 py-1 pl-4 text-ink text-sm leading-relaxed"
           role="status"
         >
-          This result came from the earlier assessment flow. You can keep it
-          private, but you need to take the current assessment before publishing
-          it.
+          This result came from the earlier assessment flow. Retake the current
+          assessment to refresh the portrait used on your profile and in group
+          formation.
         </p>
       ) : null}
 
@@ -144,14 +127,12 @@ export function PersonalityResults({
         error={error}
         hasDraft={hasDraft}
         isOnline={isOnline}
-        isPublished={isPublished}
+        isSaved={isSaved}
         isLegacyResult={isLegacyResult}
-        isResultPrivate={isResultPrivate}
         onContinue={onContinue}
         onDiscard={onDiscard}
         onDeleteAll={onDeleteAll}
-        onKeepPrivate={onKeepPrivate}
-        onPublish={onPublish}
+        onSave={onSave}
         onRetake={onRetake}
       />
     </m.div>
@@ -172,7 +153,7 @@ function AssessmentStateNotice({
         role="alert"
       >
         <p className="text-muted-foreground text-sm leading-relaxed">
-          We could not refresh the saved publication status. Review is still
+          We could not refresh the saved result status. Review is still
           available, but refresh before changing it.
         </p>
         <Button variant="outline" size="sm" className="w-fit" onClick={onRetry}>
@@ -184,7 +165,7 @@ function AssessmentStateNotice({
 
   return status === "refreshing" ? (
     <p className="text-center text-muted-foreground text-sm" role="status">
-      Refreshing saved publication status
+      Refreshing saved result status
     </p>
   ) : null;
 }

@@ -2,7 +2,7 @@ import { useParams, useSearch } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { usePublicProfile } from "@/features/profile/hooks/use-profile";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
-import { ViewerProfilePageContent } from "@/features/profile/user-detail-page/viewer-profile-page-content";
+import { ProfilePageContent } from "@/features/profile/profile-page/profile-page-content";
 import { SkeletonButton } from "@/shared/components/loading/skeleton-patterns";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
@@ -100,9 +100,10 @@ function UserDetailProfile({
   spotlightConnect: boolean;
 }) {
   return (
-    <ViewerProfilePageContent
+    <ProfilePageContent
       profile={profile}
-      actions={
+      mode="public"
+      renderActions={() => (
         <Suspense
           fallback={<PublicProfileActionsFallback userName={profile.name} />}
         >
@@ -111,7 +112,8 @@ function UserDetailProfile({
             spotlightConnect={spotlightConnect}
           />
         </Suspense>
-      }
+      )}
+      showUserMenu={false}
     />
   );
 }

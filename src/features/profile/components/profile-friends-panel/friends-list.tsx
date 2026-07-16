@@ -2,7 +2,6 @@ import { Loader2, UserMinus } from "lucide-react";
 import { useProfileFriends } from "@/features/profile/hooks/use-profile-friends";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { FriendCard } from "./friend-card";
 import { FriendMessageAction } from "./friend-message-action";
 import { FriendsListEmptyState } from "./friendship-list-helpers";
@@ -10,7 +9,7 @@ import { getFriendshipMessageChatId } from "./friendship-list-utils";
 
 type FriendListItem = ReturnType<typeof useProfileFriends>["friends"][number];
 
-export function FriendsList({ className }: { className?: string } = {}) {
+export function FriendsList() {
   const {
     friends,
     isLoading,
@@ -44,7 +43,7 @@ export function FriendsList({ className }: { className?: string } = {}) {
   }
 
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
+    <div className="flex flex-col gap-1">
       {friends.map((friendship) => (
         <FriendListCard
           key={friendship.counterpart.id}

@@ -34,12 +34,7 @@ import {
 import { usePersonalityTestStore } from "../store/personality-test-store";
 import { usePersonalityTest } from "./use-personality-test";
 
-type AssessmentResultAction =
-  | "publish"
-  | "keep-private"
-  | "discard"
-  | "delete-all"
-  | "retake";
+type AssessmentResultAction = "publish" | "discard" | "delete-all" | "retake";
 
 export type PersonalityAssessmentQueryStatus =
   | "error"
@@ -275,12 +270,6 @@ export function usePersonalityTestPageFlow() {
     );
   }
 
-  async function keepResultPrivate() {
-    await runResultAction("keep-private", () =>
-      PersonalityAssessmentApi.keepPrivate(),
-    );
-  }
-
   async function discardDraft() {
     const nextState = await runResultAction("discard", () =>
       PersonalityAssessmentApi.discardDraft(),
@@ -358,9 +347,7 @@ export function usePersonalityTestPageFlow() {
 
   async function continueToInterests() {
     if (assessmentQuery.data?.draft || !assessmentQuery.data?.current) {
-      setResultActionError(
-        "Publish the result or keep it private before continuing.",
-      );
+      setResultActionError("Save this result before continuing.");
       return;
     }
 
@@ -465,13 +452,9 @@ export function usePersonalityTestPageFlow() {
       error: resultActionError,
       hasDraft: assessmentQuery.data?.draft != null,
       onRetryState: () => void assessmentQuery.refetch(),
-      isPublished:
+      isSaved:
         assessmentQuery.data?.publication.decision === "GRANTED" &&
         assessmentQuery.data.publicProfile?.assessmentId ===
-          displayedProfile?.assessmentId,
-      isResultPrivate:
-        assessmentQuery.data?.publication.decision === "REVOKED" &&
-        assessmentQuery.data.current?.assessmentId ===
           displayedProfile?.assessmentId,
       isLegacyResult:
         assessmentQuery.data?.current?.assessmentId ===
@@ -479,8 +462,7 @@ export function usePersonalityTestPageFlow() {
         assessmentQuery.data?.current?.quality === "LEGACY_UNVERIFIED",
       onDiscard: discardDraft,
       onDeleteAll: deleteAllPersonalityData,
-      onKeepPrivate: keepResultPrivate,
-      onPublish: publishResult,
+      onSave: publishResult,
       onRetake: retakeAssessment,
       preview: displayedProfile,
       stateStatus: assessmentStateStatus,

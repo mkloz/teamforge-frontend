@@ -5802,7 +5802,6 @@ components:
           format: date-time
           type: string
           example: 2024-01-01T00:00:00Z
-          nullable: true
         age:
           type: number
           example: 25
@@ -5822,6 +5821,11 @@ components:
         showFriendsListOnProfile:
           type: boolean
           example: true
+        trustScore:
+          type: number
+          example: 0.82
+          minimum: 0
+          maximum: 1
         viewerContext:
           type: string
           enum:
@@ -5847,6 +5851,7 @@ components:
         - gender
         - city
         - showFriendsListOnProfile
+        - trustScore
         - viewerContext
         - interests
         - personalityProfile

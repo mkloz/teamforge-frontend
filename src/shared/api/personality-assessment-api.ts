@@ -59,14 +59,6 @@ export class PersonalityAssessmentApi {
     return personalityAssessmentStateSchema.parse(value);
   }
 
-  static async keepPrivate() {
-    const value = await apiClient
-      .post("users/me/personality-assessment/keep-private")
-      .json<unknown>();
-
-    return personalityAssessmentStateSchema.parse(value);
-  }
-
   static async discardDraft() {
     const value = await apiClient
       .delete("users/me/personality-assessment/draft")

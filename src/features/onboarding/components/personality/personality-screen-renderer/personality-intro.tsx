@@ -4,14 +4,11 @@ import {
   OnboardingIntroBenefitList,
 } from "@/features/onboarding/components/onboarding-intro-parts";
 import type { PersonalityAssessmentQueryStatus } from "@/features/onboarding/hooks/use-personality-test-page-flow";
-import { getPersonalityAudienceText } from "@/features/onboarding/lib/personality-disclosure-copy";
 import { Button } from "@/shared/components/ui/button";
-import type { PersonalityDisclosure } from "@/shared/schemas/personality-assessment";
 import { PersonalityScreenShell } from "./personality-screen-layout";
 
 interface PersonalityIntroProps {
   backLabel: string;
-  disclosure: PersonalityDisclosure | null;
   onBack: () => void;
   onRetryState: () => void;
   onStart: () => void;
@@ -20,13 +17,12 @@ interface PersonalityIntroProps {
 
 export function PersonalityIntro({
   backLabel,
-  disclosure,
   onBack,
   onRetryState,
   onStart,
   stateStatus,
 }: PersonalityIntroProps) {
-  const benefits = getDisclosureBenefits(disclosure);
+  const benefits = getAssessmentBenefits();
   const stateReady = stateStatus === "ready";
 
   return (
@@ -72,11 +68,7 @@ export function PersonalityIntro({
   );
 }
 
-function getDisclosureBenefits(disclosure: PersonalityDisclosure | null) {
-  const audience = disclosure
-    ? getPersonalityAudienceText(disclosure.authorizedAudiences)
-    : "people in a live group proposal with you and members of your current groups";
-
+function getAssessmentBenefits() {
   return [
     {
       icon: Lock,
@@ -84,11 +76,11 @@ function getDisclosureBenefits(disclosure: PersonalityDisclosure | null) {
     },
     {
       icon: Eye,
-      text: `If you publish, ${audience} can see your four-letter type and five trait scores from 0 to 100. The result is not public on the open web.`,
+      text: "When you save the result, other signed-in TeamForge users can see your four-letter type and five trait scores from 0 to 100.",
     },
     {
       icon: RefreshCcw,
-      text: "TeamForge uses a published result to calculate and explain compatibility for group formation. It is not a safety score or a promise that people will become friends.",
+      text: "TeamForge uses the saved result to calculate and explain compatibility for group formation. It is not a safety score or a promise that people will become friends.",
     },
     {
       icon: RefreshCcw,

@@ -158,7 +158,6 @@ function renderIntroScreen({
     <PersonalityIntro
       {...navigation.intro}
       backLabel={backLabel}
-      disclosure={assessment.disclosure}
       onRetryState={assessment.onRetryState}
       stateStatus={assessment.stateStatus}
     />
@@ -258,7 +257,6 @@ function renderResultsScreen({
   return (
     <PersonalityResults
       {...assessment}
-      disclosure={assessment.disclosure}
       profile={assessment.preview}
       onContinue={onContinue}
       continueLabel={continueLabel}

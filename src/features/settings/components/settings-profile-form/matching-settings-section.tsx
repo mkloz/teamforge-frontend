@@ -281,13 +281,13 @@ function getPersonalityStatusLabel(query: {
   }
 
   if (state?.publicProfile) {
-    return `${state.publicProfile.personalityType} published`;
+    return `${state.publicProfile.personalityType} saved`;
   }
 
   if (state?.current) {
     return state.current.provenance === "LEGACY_CLIENT_RESULT"
       ? `${state.current.personalityType} · retake needed`
-      : `${state.current.personalityType} private`;
+      : `${state.current.personalityType} saved`;
   }
 
   return "Not set";

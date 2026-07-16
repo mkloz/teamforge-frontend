@@ -3,7 +3,7 @@ import { z } from "zod";
 import { genderSchema } from "./enums";
 import { imageMediaSchema } from "./media";
 import { publicPersonalityProfileSchema } from "./public-personality-profile";
-import { interestSchema } from "./user";
+import { interestSchema, userSchema } from "./user";
 
 export const viewerProfileContextSchema = z.enum([
   "SELF",
@@ -12,7 +12,7 @@ export const viewerProfileContextSchema = z.enum([
   "MINIMAL",
 ]);
 
-export const viewerProfileSchema = z.object({
+const viewerProfileResponseSchema = z.object({
   viewerContext: viewerProfileContextSchema,
   canReport: z.boolean(),
   id: z.string(),
@@ -20,14 +20,58 @@ export const viewerProfileSchema = z.object({
   avatar: z.string().nullable(),
   avatarMedia: imageMediaSchema.nullable().optional(),
   bio: z.string().nullable(),
-  createdAt: z.string().datetime().nullable(),
+  createdAt: z.string().datetime(),
   age: z.number().nullable(),
   gender: genderSchema.nullable(),
   city: z.string().nullable(),
   interests: z.array(interestSchema),
   showFriendsListOnProfile: z.boolean(),
   personalityProfile: publicPersonalityProfileSchema.nullable(),
+  trustScore: z.number(),
 });
+
+export const viewerProfileSchema = viewerProfileResponseSchema.transform(
+  (profile) => {
+    const personality = profile.personalityProfile;
+    const user = userSchema.parse({
+      id: profile.id,
+      email: `${profile.id}@teamforge.local`,
+      name: profile.name,
+      avatar: profile.avatar,
+      bio: profile.bio,
+      authProvider: "EMAIL",
+      googleId: null,
+      emailVerified: false,
+      createdAt: profile.createdAt,
+      updatedAt: profile.createdAt,
+      age: profile.age,
+      gender: profile.gender,
+      city: profile.city,
+      locationLat: null,
+      locationLng: null,
+      personalityType: personality?.personalityType ?? null,
+      oceanO: personality?.ocean.openness ?? null,
+      oceanC: personality?.ocean.conscientiousness ?? null,
+      oceanE: personality?.ocean.extraversion ?? null,
+      oceanA: personality?.ocean.agreeableness ?? null,
+      oceanN: personality?.ocean.neuroticism ?? null,
+      searchStatus: "IDLE",
+      trustScore: profile.trustScore,
+      profileComplete: personality !== null,
+      personalitySetupComplete: personality !== null,
+      showFriendsListOnProfile: profile.showFriendsListOnProfile,
+      interests: profile.interests,
+    });
+
+    return {
+      ...user,
+      avatarMedia: profile.avatarMedia,
+      canReport: profile.canReport,
+      personalityProfile: personality,
+      viewerContext: profile.viewerContext,
+    };
+  },
+);
 
 export type ViewerProfileContext = z.infer<typeof viewerProfileContextSchema>;
 export type ViewerProfile = z.infer<typeof viewerProfileSchema>;
