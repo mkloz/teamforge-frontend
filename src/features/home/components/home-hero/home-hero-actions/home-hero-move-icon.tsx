@@ -4,6 +4,7 @@ import {
   Flame,
   type LucideIcon,
   Mail,
+  Search,
   ShieldCheck,
 } from "lucide-react";
 import type { HomeNextMove } from "@/features/home/lib/home-insights";
@@ -16,6 +17,8 @@ interface HomeHeroMoveIconProps {
 type HomeMoveKind = HomeNextMove["kind"];
 
 const HOME_HERO_MOVE_ICONS: Record<HomeMoveKind, LucideIcon> = {
+  "auto-request": Search,
+  "auto-request-unavailable": Search,
   forge: Flame,
   invitation: Mail,
   plan: CalendarCheck2,

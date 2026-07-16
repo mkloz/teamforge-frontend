@@ -1,12 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import type { ReactElement } from "react";
+import {
+  clearAutoForgeRequestWizardDraft,
+  saveAutoForgeRequestAsWizardDraft,
+} from "@/features/forge/public/auto-forge-request";
 import type { HomeNextMove } from "@/features/home/lib/home-insights";
 import { Button } from "@/shared/components/ui/button";
 import {
   buildActivityGroupNavigation,
   buildExploreNavigation,
   buildForgeLaunchNavigation,
+  buildForgeNavigation,
   buildGroupPlanDetailNavigation,
   buildHomeNavigation,
   buildInterestsEditNavigation,
@@ -26,6 +31,67 @@ type HeroActionRenderer = (move: HomeNextMove) => ReactElement;
 type HeroActionRenderers = Record<HomeMoveKind, HeroActionRenderer>;
 
 const PRIMARY_ACTION_RENDERERS = {
+  "auto-request-unavailable": (move) => {
+    const requestMove = getHomeMoveByKind(move, "auto-request-unavailable");
+
+    return (
+      <Button asChild variant="primary" className={heroActionClassName}>
+        <a href="#forge-request-heading">{requestMove.primaryLabel}</a>
+      </Button>
+    );
+  },
+  "auto-request": (move) => {
+    const requestMove = getHomeMoveByKind(move, "auto-request");
+    const canEdit =
+      requestMove.request.lifecycle === "DRAFT" ||
+      requestMove.request.lifecycle === "SEARCHING" ||
+      (requestMove.request.lifecycle === "PAUSED" &&
+        requestMove.request.pauseReason === "USER");
+
+    if (requestMove.startsNewRequest) {
+      return (
+        <Button asChild variant="primary" className={heroActionClassName}>
+          <Link
+            {...buildForgeLaunchNavigation()}
+            onClick={() =>
+              clearAutoForgeRequestWizardDraft(requestMove.request.id)
+            }
+          >
+            {requestMove.primaryLabel}
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      );
+    }
+
+    if (canEdit) {
+      return (
+        <Button asChild variant="primary" className={heroActionClassName}>
+          <Link
+            {...buildForgeNavigation({
+              open: true,
+              step: 3,
+              mode: "auto",
+              activityId: requestMove.request.activity.id,
+              requestId: requestMove.request.id,
+            })}
+            onClick={() =>
+              saveAutoForgeRequestAsWizardDraft(requestMove.request)
+            }
+          >
+            {requestMove.primaryLabel}
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      );
+    }
+
+    return (
+      <Button asChild variant="primary" className={heroActionClassName}>
+        <a href="#forge-request-heading">{requestMove.primaryLabel}</a>
+      </Button>
+    );
+  },
   profile: (move) => (
     <ProfilePrimaryAction move={getHomeMoveByKind(move, "profile")} />
   ),
@@ -91,6 +157,24 @@ const PRIMARY_ACTION_RENDERERS = {
 } satisfies HeroActionRenderers;
 
 const SECONDARY_ACTION_RENDERERS = {
+  "auto-request-unavailable": (move) => {
+    const requestMove = getHomeMoveByKind(move, "auto-request-unavailable");
+
+    return (
+      <Button asChild variant="outline" className={heroActionClassName}>
+        <Link {...buildExploreNavigation()}>{requestMove.secondaryLabel}</Link>
+      </Button>
+    );
+  },
+  "auto-request": (move) => {
+    const requestMove = getHomeMoveByKind(move, "auto-request");
+
+    return (
+      <Button asChild variant="outline" className={heroActionClassName}>
+        <a href="#forge-request-heading">{requestMove.secondaryLabel}</a>
+      </Button>
+    );
+  },
   profile: (move) => {
     const profileMove = getHomeMoveByKind(move, "profile");
 

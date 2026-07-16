@@ -6,7 +6,7 @@ import {
 import type { ForgeWizardData } from "@/features/forge/lib/forge-wizard";
 
 const DEFAULT_FORGE_EXECUTION_MESSAGE =
-  "Finish the plan details before forming the group.";
+  "Finish the plan details before continuing.";
 const ISSUE_MESSAGE_FIELDS = new Set<unknown>([
   "planName",
   "planDate",
@@ -16,13 +16,15 @@ const ISSUE_MESSAGE_FIELDS = new Set<unknown>([
   "planCostAmount",
 ]);
 const ISSUE_FIELD_MESSAGES = new Map<unknown, string>([
-  ["selectedActivity", "Choose an activity before forming the group."],
+  ["selectedActivity", "Choose an activity before continuing."],
   ["autoMinSize", "Keep the minimum group size below the maximum."],
 ]);
 
 function buildRawForgeExecutionInput(state: ForgeWizardData) {
   return {
+    forgeScope: state.forgeScope,
     selectedActivity: state.selectedActivity,
+    planCategory: state.planCategory,
     planName: state.planName,
     planDescription: state.planDescription,
     planScheduleMode: state.planScheduleMode,
@@ -110,7 +112,7 @@ function getForgeValidationMessage(state: ForgeWizardData, issues: ZodIssue[]) {
   const scheduleMessage = getPlanScheduleValidationMessage(state);
 
   if (!state.selectedActivity) {
-    return "Choose an activity before forming the group.";
+    return "Choose an activity before continuing.";
   }
 
   if (planNameMessage) {
@@ -126,7 +128,7 @@ function getForgeValidationMessage(state: ForgeWizardData, issues: ZodIssue[]) {
 
 function getPlanNameValidationMessage(planName: string) {
   if (planName.length === 0) {
-    return "Add a plan name before forming the group.";
+    return "Add a plan name before continuing.";
   }
 
   if (planName.length < 3) {
@@ -137,19 +139,24 @@ function getPlanNameValidationMessage(planName: string) {
 }
 
 function getPlanScheduleValidationMessage({
+  planScheduleMode,
   planDate,
   planTime,
 }: ForgeWizardData) {
+  if (planScheduleMode === "TO_BE_DECIDED") {
+    return null;
+  }
+
   if (!planDate && !planTime) {
-    return "Add a date and time before forming the group.";
+    return "Add a date and time before continuing.";
   }
 
   if (!planDate) {
-    return "Add a date before forming the group.";
+    return "Add a date before continuing.";
   }
 
   if (!planTime) {
-    return "Add a time before forming the group.";
+    return "Add a time before continuing.";
   }
 
   return null;

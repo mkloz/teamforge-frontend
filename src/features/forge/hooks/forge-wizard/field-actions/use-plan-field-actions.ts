@@ -1,4 +1,8 @@
-import type { LocationType } from "@/features/forge/lib/forge-contract";
+import type {
+  ForgeScope,
+  LocationType,
+  PlanScheduleMode,
+} from "@/features/forge/lib/forge-contract";
 
 import type { BaseFieldActionOptions } from "./types";
 
@@ -17,6 +21,23 @@ export function usePlanFieldActions({ setField }: BaseFieldActionOptions) {
 
   function setPlanTime(value: string) {
     setField("planTime", value);
+  }
+
+  function setPlanScheduleMode(value: PlanScheduleMode) {
+    setField("planScheduleMode", value);
+
+    if (value === "TO_BE_DECIDED") {
+      setField("planDate", "");
+      setField("planTime", "");
+    }
+  }
+
+  function setForgeScope(value: ForgeScope) {
+    setField("forgeScope", value);
+    setField("locationType", "TBD");
+    setField("planLocation", "");
+    setField("planLocationLat", null);
+    setField("planLocationLng", null);
   }
 
   function setPlanLocation(value: string) {
@@ -58,6 +79,7 @@ export function usePlanFieldActions({ setField }: BaseFieldActionOptions) {
   }
 
   return {
+    setForgeScope,
     setLocationType,
     setPlanCost,
     setPlanCostAmount,
@@ -66,6 +88,7 @@ export function usePlanFieldActions({ setField }: BaseFieldActionOptions) {
     setPlanDescription,
     setPlanLocation,
     setPlanLocationCoordinates,
+    setPlanScheduleMode,
     setPlanName,
     setPlanTime,
   };

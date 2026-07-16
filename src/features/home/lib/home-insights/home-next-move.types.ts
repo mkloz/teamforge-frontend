@@ -1,6 +1,16 @@
+import type { AutoForgeRequest } from "@/features/forge/public/auto-forge-request";
 import type { HomeViewer } from "@/features/home/lib/home-contract";
 
 export type HomeNextMove =
+  | {
+      kind: "auto-request-unavailable";
+      eyebrow: string;
+      title: string;
+      body: string;
+      primaryLabel: string;
+      secondaryLabel: string;
+      signal: string;
+    }
   | {
       kind: "profile";
       eyebrow: string;
@@ -41,6 +51,17 @@ export type HomeNextMove =
       secondaryLabel: string;
       signal: string;
       groupId: string;
+    }
+  | {
+      kind: "auto-request";
+      eyebrow: string;
+      title: string;
+      body: string;
+      primaryLabel: string;
+      secondaryLabel: string;
+      signal: string;
+      request: AutoForgeRequest;
+      startsNewRequest: boolean;
     }
   | {
       kind: "forge";

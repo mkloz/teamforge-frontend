@@ -45,6 +45,7 @@ export function buildFailedForgeResult({
 function getFailedForgeRequestIds(requestIds: ForgeRequestIds | undefined) {
   return (
     requestIds ?? {
+      autoForgeRequest: null,
       createActivity: null,
       forgeActivity: null,
     }

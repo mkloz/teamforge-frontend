@@ -40,8 +40,8 @@ function renderActivityStep({
   );
 }
 
-function renderTemplatesStep({ actions, fw }: CurrentForgeStepProps) {
-  return <TemplatesStepPanel actions={actions} fw={fw} />;
+function renderTemplatesStep({ fw }: CurrentForgeStepProps) {
+  return <TemplatesStepPanel fw={fw} />;
 }
 
 function renderPlanStep({ fw }: CurrentForgeStepProps) {

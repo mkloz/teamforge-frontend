@@ -45,6 +45,7 @@ interface ForgeDraftRouteState {
 
 interface ForgeRouteQueryState {
   activityId: string | null;
+  requestId: string | null;
   groupId: string | null;
   ideaDetail: string | null;
   ideaEventDescription: string | null;
@@ -73,6 +74,7 @@ export function useForgeRouteState() {
       step: parseAsInteger,
       mode: parseAsStringLiteral(forgeSearchModeValues),
       activityId: parseAsString,
+      requestId: parseAsString,
       groupId: parseAsString,
       ideaTitle: parseAsString,
       ideaDetail: parseAsString,
@@ -186,6 +188,7 @@ function getWizardRouteState(
       draftRouteState.activityId,
       shouldResumeDraft,
     ),
+    requestId: routeState.requestId,
     groupId: getRouteValueWithDraftFallback(
       routeState.groupId,
       draftRouteState.groupId,
@@ -229,6 +232,7 @@ function getOpenWizardRouteState(options: OpenWizardOptions | undefined) {
 
   return {
     open: true,
+    requestId: null,
     step: getOpenWizardStep(routeOptions.step, routeOptions.idea),
     mode: getOpenWizardMode(routeOptions.mode),
     ideaTitle: ideaRouteState.title,
@@ -280,6 +284,7 @@ function getClosedWizardRouteState() {
     step: null,
     mode: null,
     activityId: null,
+    requestId: null,
     groupId: null,
     ideaTitle: null,
     ideaDetail: null,
@@ -296,6 +301,7 @@ function getForgeTargetsRouteState(targets: {
   return {
     activityId: targets.activityId ?? null,
     groupId: targets.groupId ?? null,
+    requestId: null,
   };
 }
 

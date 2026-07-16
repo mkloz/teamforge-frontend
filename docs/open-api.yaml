@@ -1189,7 +1189,7 @@ paths:
               $ref: '#/components/schemas/ForgeActivityDto'
       responses:
         '201':
-          description: Group formed
+          description: Manual group created
           content:
             application/json:
               schema:
@@ -1202,17 +1202,16 @@ paths:
           description: Activity not found
         '409':
           description:
-            The activity cannot form a group in its current state, already has
-            a group, or does not have enough available people
+            The activity is automatic, cannot form a group in its current
+            state, or already has a group
         '429':
           description: Too many requests
       security: *a17
-      summary:
-        Form a group from an automatic activity and create its first plan and
-        chat
+      summary: Create a manual group with its first plan and chat
       tags: *a18
   /api/v1/activities/{id}/keep-searching:
     post:
+      deprecated: true
       operationId: ActivitiesController_keepSearching
       parameters:
         - name: id
@@ -1229,12 +1228,6 @@ paths:
             schema:
               $ref: '#/components/schemas/ForgeActivityDto'
       responses:
-        '200':
-          description: Activity will keep searching for a group
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActivityEntity'
         '400':
           description: Invalid forge payload
         '403':
@@ -1242,14 +1235,15 @@ paths:
         '404':
           description: Activity not found
         '409':
-          description: Activity state or forge mode does not allow keeping the search active
+          description: This legacy endpoint is no longer available
         '429':
           description: Too many requests
       security: *a17
-      summary: Keep an automatic activity open to try forming a group later
+      summary: Legacy endpoint; use an automatic group request instead
       tags: *a18
   /api/v1/activities/{id}/stop-searching:
     post:
+      deprecated: true
       operationId: ActivitiesController_stopSearching
       parameters:
         - name: id
@@ -1260,12 +1254,6 @@ paths:
             example: ckaqbclqnwqwfewgwsef
             type: string
       responses:
-        '200':
-          description: Activity stopped searching for a group
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActivityEntity'
         '400':
           description: Invalid activity ID
         '403':
@@ -1273,14 +1261,15 @@ paths:
         '404':
           description: Activity not found
         '409':
-          description: Activity state or forge mode does not allow stopping the search
+          description: This legacy endpoint is no longer available
         '429':
           description: Too many requests
       security: *a17
-      summary: Stop an automatic activity from continuing its group search
+      summary: Legacy endpoint; pause or cancel the group request instead
       tags: *a18
   /api/v1/activities/{id}/forge-pending:
     post:
+      deprecated: true
       operationId: ActivitiesController_forgePending
       parameters:
         - name: id
@@ -1291,12 +1280,6 @@ paths:
             example: ckaqbclqnwqwfewgwsef
             type: string
       responses:
-        '201':
-          description: Group formed from the pending activity
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ForgeActivityResultEntity'
         '400':
           description: Invalid activity ID
         '403':
@@ -1304,16 +1287,263 @@ paths:
         '404':
           description: Activity not found
         '409':
-          description:
-            The activity is not waiting for a group, has no saved group
-            request, or no longer has enough available people
+          description: This legacy endpoint is no longer available
         '429':
           description: Too many requests
       security: *a17
-      summary:
-        Form a group from an automatic activity after enough people become
-        available
+      summary: Legacy endpoint; review the automatic group request instead
       tags: *a18
+  /api/v1/activities/{activityId}/auto-forge-requests:
+    post:
+      operationId: AutoForgeRequestsController_create
+      parameters:
+        - name: activityId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this command retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAutoForgeRequestDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoForgeRequestEntity'
+        '400':
+          description: Invalid request or idempotency key
+        '404':
+          description: Activity not found
+        '409':
+          description: State, policy, or command conflict
+        '429':
+          description: Too many requests
+      security: &a19
+        - bearer: []
+      summary: Start an automatic group request
+      tags: &a20
+        - Automatic group requests
+  /api/v1/auto-forge-requests/current:
+    get:
+      operationId: AutoForgeRequestsController_current
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentAutoForgeRequestEntity'
+        '429':
+          description: Too many requests
+      security: *a19
+      summary: Get your current automatic group request
+      tags: *a20
+  /api/v1/auto-forge-requests/{id}:
+    patch:
+      operationId: AutoForgeRequestsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this command retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAutoForgeRequestDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoForgeRequestEntity'
+        '400':
+          description: Invalid request or idempotency key
+        '404':
+          description: Group request or activity not found
+        '409':
+          description: State, policy, or command conflict
+        '429':
+          description: Too many requests
+      security: *a19
+      summary: Edit an automatic group request
+      tags: *a20
+    delete:
+      operationId: AutoForgeRequestsController_cancel
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this command retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutoForgeRequestCommandDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoForgeRequestEntity'
+        '400':
+          description: Invalid idempotency key
+        '404':
+          description: Group request not found
+        '409':
+          description: State, policy, or command conflict
+        '429':
+          description: Too many requests
+      security: *a19
+      summary: Cancel an automatic group request
+      tags: *a20
+  /api/v1/auto-forge-requests/{id}/pause:
+    post:
+      operationId: AutoForgeRequestsController_pause
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this command retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutoForgeRequestCommandDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoForgeRequestEntity'
+        '400':
+          description: Invalid idempotency key
+        '404':
+          description: Group request not found
+        '409':
+          description: State, policy, or command conflict
+        '429':
+          description: Too many requests
+      security: *a19
+      summary: Pause an automatic group request
+      tags: *a20
+  /api/v1/auto-forge-requests/{id}/resume:
+    post:
+      operationId: AutoForgeRequestsController_resume
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this command retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutoForgeRequestCommandDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoForgeRequestEntity'
+        '400':
+          description: Invalid idempotency key
+        '404':
+          description: Group request or activity not found
+        '409':
+          description: State, policy, or command conflict
+        '429':
+          description: Too many requests
+      security: *a19
+      summary: Resume an automatic group request
+      tags: *a20
+  /api/v1/auto-forge-requests/{id}/retry:
+    post:
+      operationId: AutoForgeRequestsController_retry
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          description: A UUID identifying this command retry
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutoForgeRequestCommandDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoForgeRequestEntity'
+        '400':
+          description: Invalid idempotency key
+        '404':
+          description: Group request or activity not found
+        '409':
+          description: State, policy, or command conflict
+        '429':
+          description: Too many requests
+      security: *a19
+      summary: Try an automatic group request again
+      tags: *a20
   /api/v1/chats/link-preview:
     get:
       operationId: ChatController_getLinkPreview
@@ -1333,10 +1563,10 @@ paths:
                 $ref: '#/components/schemas/LinkPreviewEntity'
         '429':
           description: Too many requests
-      security: &a19
+      security: &a21
         - bearer: []
       summary: Get link preview details for a URL
-      tags: &a20
+      tags: &a22
         - Chat
   /api/v1/chats:
     get:
@@ -1374,9 +1604,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedChats'
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: List chats for the current user
-      tags: *a20
+      tags: *a22
   /api/v1/chats/activity-feed:
     get:
       operationId: ChatController_getActivityFeed
@@ -1413,9 +1643,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedChats'
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: List chat summaries for the activity feed
-      tags: *a20
+      tags: *a22
   /api/v1/chats/saved-messages:
     get:
       operationId: ChatController_getSavedMessages
@@ -1443,9 +1673,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedSavedMessages'
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: List saved messages for the current user
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}:
     get:
       operationId: ChatController_getById
@@ -1470,9 +1700,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Get a single chat
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/messages:
     get:
       operationId: ChatController_getMessages
@@ -1511,9 +1741,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: List messages in a chat
-      tags: *a20
+      tags: *a22
     post:
       operationId: ChatController_sendMessage
       parameters:
@@ -1545,9 +1775,9 @@ paths:
           description: Chat or reply target not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Send a message to a chat
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/messages/search:
     get:
       operationId: ChatController_searchMessages
@@ -1597,9 +1827,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Search messages in a chat
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/messages/{messageId}:
     patch:
       operationId: ChatController_updateMessage
@@ -1637,9 +1867,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Edit one of your messages
-      tags: *a20
+      tags: *a22
     delete:
       operationId: ChatController_deleteMessage
       parameters:
@@ -1670,9 +1900,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Mark one of your messages as deleted
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/messages/{messageId}/pin:
     post:
       operationId: ChatController_pinMessage
@@ -1704,9 +1934,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Pin a message in a chat
-      tags: *a20
+      tags: *a22
     delete:
       operationId: ChatController_unpinMessage
       parameters:
@@ -1737,9 +1967,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Unpin a message in a chat
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/pin:
     post:
       operationId: ChatController_pinChat
@@ -1764,9 +1994,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Pin a chat for the current user
-      tags: *a20
+      tags: *a22
     delete:
       operationId: ChatController_unpinChat
       parameters:
@@ -1790,9 +2020,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Unpin a chat for the current user
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/mute:
     post:
       operationId: ChatController_muteChat
@@ -1817,9 +2047,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Mute a chat for the current user
-      tags: *a20
+      tags: *a22
     delete:
       operationId: ChatController_unmuteChat
       parameters:
@@ -1843,9 +2073,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Unmute a chat for the current user
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/messages/{messageId}/save:
     post:
       operationId: ChatController_saveMessage
@@ -1877,9 +2107,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Save a message for the current user
-      tags: *a20
+      tags: *a22
     delete:
       operationId: ChatController_unsaveMessage
       parameters:
@@ -1910,9 +2140,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Remove a saved message for the current user
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/messages/{messageId}/forward:
     post:
       operationId: ChatController_forwardMessage
@@ -1950,9 +2180,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Forward a message to another chat
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/messages/{messageId}/reactions:
     post:
       operationId: ChatController_reactToMessage
@@ -1990,9 +2220,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Add a reaction to a message
-      tags: *a20
+      tags: *a22
     delete:
       operationId: ChatController_removeReaction
       parameters:
@@ -2030,9 +2260,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Remove one of your reactions from a message
-      tags: *a20
+      tags: *a22
   /api/v1/chats/{id}/read:
     post:
       operationId: ChatController_markRead
@@ -2063,9 +2293,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a19
+      security: *a21
       summary: Mark a chat as read
-      tags: *a20
+      tags: *a22
   /api/v1/friends:
     get:
       operationId: FriendshipsController_getManyFriends
@@ -2093,10 +2323,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: &a21
+      security: &a23
         - bearer: []
       summary: List accepted friends for the current user
-      tags: &a22
+      tags: &a24
         - Friendships
   /api/v1/friends/public/{id}:
     get:
@@ -2132,9 +2362,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedPublicFriends'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: List public friends of a target user
-      tags: *a22
+      tags: *a24
   /api/v1/friends/common/{id}:
     get:
       operationId: FriendshipsController_getCommonFriends
@@ -2169,9 +2399,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: List common friends with the target user
-      tags: *a22
+      tags: *a24
   /api/v1/friends/requests/incoming:
     get:
       operationId: FriendshipsController_getIncomingRequests
@@ -2199,9 +2429,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: List incoming friend requests
-      tags: *a22
+      tags: *a24
   /api/v1/friends/requests/outgoing:
     get:
       operationId: FriendshipsController_getOutgoingRequests
@@ -2229,9 +2459,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: List outgoing friend requests
-      tags: *a22
+      tags: *a24
   /api/v1/friends/blocked:
     get:
       operationId: FriendshipsController_getBlockedUsers
@@ -2259,9 +2489,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedBlockedUsers'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: List users blocked by the current user
-      tags: *a22
+      tags: *a24
   /api/v1/friends/requests:
     post:
       operationId: FriendshipsController_createRequest
@@ -2285,9 +2515,9 @@ paths:
             between these users
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: Send a friend request
-      tags: *a22
+      tags: *a24
   /api/v1/friends/requests/{id}/accept:
     post:
       operationId: FriendshipsController_acceptRequest
@@ -2308,9 +2538,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: Accept an incoming friend request
-      tags: *a22
+      tags: *a24
   /api/v1/friends/requests/{id}/decline:
     post:
       operationId: FriendshipsController_declineRequest
@@ -2331,9 +2561,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: Decline an incoming friend request
-      tags: *a22
+      tags: *a24
   /api/v1/friends/requests/{id}:
     delete:
       operationId: FriendshipsController_withdrawRequest
@@ -2354,9 +2584,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: Withdraw an outgoing friend request
-      tags: *a22
+      tags: *a24
   /api/v1/friends/{id}:
     delete:
       operationId: FriendshipsController_removeFriend
@@ -2377,9 +2607,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: Remove an existing friend
-      tags: *a22
+      tags: *a24
   /api/v1/friends/{id}/block:
     post:
       operationId: FriendshipsController_blockUser
@@ -2400,9 +2630,9 @@ paths:
                 $ref: '#/components/schemas/BlockedUserEntity'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: Block a user
-      tags: *a22
+      tags: *a24
     delete:
       operationId: FriendshipsController_unblockUser
       parameters:
@@ -2422,9 +2652,9 @@ paths:
                 $ref: '#/components/schemas/BlockedUserEntity'
         '429':
           description: Too many requests
-      security: *a21
+      security: *a23
       summary: Unblock a user you previously blocked
-      tags: *a22
+      tags: *a24
   /api/v1/groups:
     get:
       operationId: GroupsController_getMany
@@ -2464,10 +2694,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedGroups'
         '429':
           description: Too many requests
-      security: &a23
+      security: &a25
         - bearer: []
       summary: List groups for the current user
-      tags: &a24
+      tags: &a26
         - Groups
   /api/v1/groups/home-summary:
     get:
@@ -2508,9 +2738,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedHomeGroupSummaries'
         '429':
           description: Too many requests
-      security: *a23
+      security: *a25
       summary: List group summaries for the home page
-      tags: *a24
+      tags: *a26
   /api/v1/groups/activity-feed:
     get:
       operationId: GroupsController_getActivityFeed
@@ -2550,9 +2780,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedGroups'
         '429':
           description: Too many requests
-      security: *a23
+      security: *a25
       summary: List group summaries for Activity
-      tags: *a24
+      tags: *a26
   /api/v1/groups/{id}:
     get:
       operationId: GroupsController_getById
@@ -2573,9 +2803,9 @@ paths:
                 $ref: '#/components/schemas/GroupEntity'
         '429':
           description: Too many requests
-      security: *a23
+      security: *a25
       summary: Get a single group
-      tags: *a24
+      tags: *a26
     patch:
       operationId: GroupsController_update
       parameters:
@@ -2603,9 +2833,9 @@ paths:
           description: The group cannot be updated in its current state
         '429':
           description: Too many requests
-      security: *a23
+      security: *a25
       summary: Update a group as an admin
-      tags: *a24
+      tags: *a26
   /api/v1/groups/{id}/detail:
     get:
       operationId: GroupsController_getDetail
@@ -2626,9 +2856,9 @@ paths:
                 $ref: '#/components/schemas/GroupPlanDetailEntity'
         '429':
           description: Too many requests
-      security: *a23
+      security: *a25
       summary: Get group and plan details
-      tags: *a24
+      tags: *a26
   /api/v1/groups/{id}/leave:
     post:
       operationId: GroupsController_leave
@@ -2651,9 +2881,9 @@ paths:
           description: The group cannot be left in its current state
         '429':
           description: Too many requests
-      security: *a23
+      security: *a25
       summary: Leave a group
-      tags: *a24
+      tags: *a26
   /api/v1/groups/{id}/remove-member:
     post:
       operationId: GroupsController_removeMember
@@ -2682,9 +2912,9 @@ paths:
           description: A member cannot be removed while the group is in its current state
         '429':
           description: Too many requests
-      security: *a23
+      security: *a25
       summary: Remove a member from a group as an admin
-      tags: *a24
+      tags: *a26
   /api/v1/groups/{id}/disband:
     post:
       operationId: GroupsController_disband
@@ -2707,9 +2937,9 @@ paths:
           description: Group is already disbanded
         '429':
           description: Too many requests
-      security: *a23
+      security: *a25
       summary: Disband a group as an admin
-      tags: *a24
+      tags: *a26
   /api/v1/groups/{id}/plans:
     post:
       operationId: GroupsController_createNextPlan
@@ -2738,9 +2968,9 @@ paths:
           description: Current plan must be finished or cancelled first
         '429':
           description: Too many requests
-      security: *a23
+      security: *a25
       summary: Create a new draft plan for an existing group
-      tags: *a24
+      tags: *a26
   /api/v1/explore/groups:
     get:
       operationId: ExploreController_getGroups
@@ -2887,10 +3117,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedExploreGroups'
         '429':
           description: Too many requests
-      security: &a25
+      security: &a27
         - bearer: []
       summary: Browse groups available in Explore
-      tags: &a26
+      tags: &a28
         - Explore
   /api/v1/explore/groups/{id}/join:
     post:
@@ -2923,9 +3153,9 @@ paths:
             changed
         '429':
           description: Too many requests
-      security: *a25
+      security: *a27
       summary: Join or request to join an explore group
-      tags: *a26
+      tags: *a28
   /api/v1/explore/groups/{id}/cancel-request:
     post:
       operationId: ExploreController_cancelJoinRequest
@@ -2950,9 +3180,9 @@ paths:
           description: Pending join request was already changed or cancelled
         '429':
           description: Too many requests
-      security: *a25
+      security: *a27
       summary: Cancel a pending join request for an explore group
-      tags: *a26
+      tags: *a28
   /api/v1/forge/availability:
     get:
       operationId: ForgeCandidateAvailabilityController_get
@@ -2966,10 +3196,10 @@ paths:
                 $ref: '#/components/schemas/ForgeCandidateAvailabilityEntity'
         '429':
           description: Too many requests
-      security: &a27
+      security: &a29
         - bearer: []
       summary: Get your proposal availability
-      tags: &a28
+      tags: &a30
         - Forge candidate availability
     put:
       operationId: ForgeCandidateAvailabilityController_update
@@ -2999,9 +3229,9 @@ paths:
           description: Policy, eligibility, revision, or idempotency conflict
         '429':
           description: Too many requests
-      security: *a27
+      security: *a29
       summary: Set your proposal availability and scopes
-      tags: *a28
+      tags: *a30
   /api/v1/forge/availability/pause:
     post:
       operationId: ForgeCandidateAvailabilityController_pause
@@ -3033,9 +3263,9 @@ paths:
           description: Policy, revision, or idempotency conflict
         '429':
           description: Too many requests
-      security: *a27
+      security: *a29
       summary: Pause new group proposals
-      tags: *a28
+      tags: *a30
   /api/v1/forge/availability/reconfirm:
     post:
       operationId: ForgeCandidateAvailabilityController_reconfirm
@@ -3067,9 +3297,9 @@ paths:
           description: Policy, eligibility, revision, or idempotency conflict
         '429':
           description: Too many requests
-      security: *a27
+      security: *a29
       summary: Renew your proposal availability
-      tags: *a28
+      tags: *a30
   /api/v1/invites/received:
     get:
       operationId: InvitesController_getReceived
@@ -3108,10 +3338,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedInvites'
         '429':
           description: Too many requests
-      security: &a29
+      security: &a31
         - bearer: []
       summary: List invites received by the current user
-      tags: &a30
+      tags: &a32
         - Invites
   /api/v1/invites/sent:
     get:
@@ -3151,9 +3381,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedInvites'
         '429':
           description: Too many requests
-      security: *a29
+      security: *a31
       summary: List invites sent by the current user
-      tags: *a30
+      tags: *a32
   /api/v1/invites:
     post:
       operationId: InvitesController_create
@@ -3186,9 +3416,9 @@ paths:
             exists
         '429':
           description: Too many requests
-      security: *a29
+      security: *a31
       summary: Send or resend a group invite
-      tags: *a30
+      tags: *a32
   /api/v1/invites/{id}/accept:
     post:
       operationId: InvitesController_accept
@@ -3220,9 +3450,9 @@ paths:
             member
         '429':
           description: Too many requests
-      security: *a29
+      security: *a31
       summary: Accept a group invite
-      tags: *a30
+      tags: *a32
   /api/v1/invites/{id}/decline:
     post:
       operationId: InvitesController_decline
@@ -3249,9 +3479,9 @@ paths:
           description: The invite is not pending or has expired
         '429':
           description: Too many requests
-      security: *a29
+      security: *a31
       summary: Decline a group invite
-      tags: *a30
+      tags: *a32
   /api/v1/plans/{id}:
     get:
       operationId: PlansController_getById
@@ -3272,10 +3502,10 @@ paths:
                 $ref: '#/components/schemas/PlanEntity'
         '429':
           description: Too many requests
-      security: &a31
+      security: &a33
         - bearer: []
       summary: Get a plan for a group you belong to
-      tags: &a32
+      tags: &a34
         - Plans
     patch:
       operationId: PlansController_update
@@ -3304,9 +3534,9 @@ paths:
           description: The plan's current status does not allow updates
         '429':
           description: Too many requests
-      security: *a31
+      security: *a33
       summary: Update a group plan as a group admin
-      tags: *a32
+      tags: *a34
   /api/v1/plans/{id}/confirm:
     post:
       operationId: PlansController_confirm
@@ -3329,9 +3559,9 @@ paths:
           description: The plan's current status does not allow confirmation
         '429':
           description: Too many requests
-      security: *a31
+      security: *a33
       summary: Confirm a draft or planning-stage group plan
-      tags: *a32
+      tags: *a34
   /api/v1/plans/{id}/complete:
     post:
       operationId: PlansController_complete
@@ -3354,9 +3584,9 @@ paths:
           description: The plan's current status does not allow completion
         '429':
           description: Too many requests
-      security: *a31
+      security: *a33
       summary: Mark a group plan as completed
-      tags: *a32
+      tags: *a34
   /api/v1/plans/{id}/cancel:
     post:
       operationId: PlansController_cancel
@@ -3379,9 +3609,9 @@ paths:
           description: The plan's current status does not allow cancellation
         '429':
           description: Too many requests
-      security: *a31
+      security: *a33
       summary: Cancel a group plan and reopen planning for the group
-      tags: *a32
+      tags: *a34
   /api/v1/plans/{id}/proposals:
     get:
       operationId: PlanProposalsController_getMany
@@ -3404,10 +3634,10 @@ paths:
                   $ref: '#/components/schemas/PlanProposalEntity'
         '429':
           description: Too many requests
-      security: &a33
+      security: &a35
         - bearer: []
       summary: List proposals for a plan in your group
-      tags: &a34
+      tags: &a36
         - Plan Proposals
     post:
       operationId: PlanProposalsController_create
@@ -3438,9 +3668,9 @@ paths:
             pending proposal with the same value
         '429':
           description: Too many requests
-      security: *a33
+      security: *a35
       summary: Create a new proposal for a group plan
-      tags: *a34
+      tags: *a36
   /api/v1/proposals/{id}/vote:
     post:
       operationId: PlanProposalsController_vote
@@ -3469,9 +3699,9 @@ paths:
           description: The proposal or plan status does not allow voting
         '429':
           description: Too many requests
-      security: *a33
+      security: *a35
       summary: Vote on a pending plan proposal
-      tags: *a34
+      tags: *a36
   /api/v1/proposals/{id}:
     delete:
       operationId: PlanProposalsController_withdraw
@@ -3494,9 +3724,9 @@ paths:
           description: The proposal or plan status does not allow withdrawal
         '429':
           description: Too many requests
-      security: *a33
+      security: *a35
       summary: Withdraw one of your pending plan proposals
-      tags: *a34
+      tags: *a36
   /api/v1/notifications:
     get:
       operationId: NotificationsController_getMany
@@ -3558,10 +3788,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedNotifications'
         '429':
           description: Too many requests
-      security: &a35
+      security: &a37
         - bearer: []
       summary: List your notifications
-      tags: &a36
+      tags: &a38
         - Notifications
   /api/v1/notifications/unread-count:
     get:
@@ -3576,9 +3806,9 @@ paths:
                 $ref: '#/components/schemas/NotificationUnreadCountEntity'
         '429':
           description: Too many requests
-      security: *a35
+      security: *a37
       summary: Get your unread notification count
-      tags: *a36
+      tags: *a38
   /api/v1/notifications/web-push/public-key:
     get:
       operationId: NotificationsController_getWebPushPublicKey
@@ -3594,7 +3824,7 @@ paths:
           description: Too many requests
       security: []
       summary: Get the web push public key and enabled state
-      tags: *a36
+      tags: *a38
   /api/v1/notifications/web-push/subscriptions:
     get:
       operationId: NotificationsController_getWebPushSubscriptions
@@ -3610,9 +3840,9 @@ paths:
                   $ref: '#/components/schemas/WebPushSubscriptionEntity'
         '429':
           description: Too many requests
-      security: *a35
+      security: *a37
       summary: List your active web push subscriptions
-      tags: *a36
+      tags: *a38
     post:
       operationId: NotificationsController_upsertWebPushSubscription
       parameters:
@@ -3636,9 +3866,9 @@ paths:
                 $ref: '#/components/schemas/WebPushSubscriptionEntity'
         '429':
           description: Too many requests
-      security: *a35
+      security: *a37
       summary: Create or refresh a web push subscription
-      tags: *a36
+      tags: *a38
     delete:
       operationId: NotificationsController_deleteWebPushSubscription
       parameters: []
@@ -3653,9 +3883,9 @@ paths:
           description: Subscription disabled
         '429':
           description: Too many requests
-      security: *a35
+      security: *a37
       summary: Disable one of your web push subscriptions
-      tags: *a36
+      tags: *a38
   /api/v1/notifications/web-push/test:
     post:
       operationId: NotificationsController_sendTestWebPushNotification
@@ -3669,9 +3899,9 @@ paths:
                 $ref: '#/components/schemas/WebPushTestDispatchEntity'
         '429':
           description: Too many requests
-      security: *a35
+      security: *a37
       summary: Send the current user a test web push notification
-      tags: *a36
+      tags: *a38
   /api/v1/notifications/{id}/read:
     post:
       operationId: NotificationsController_markRead
@@ -3692,9 +3922,9 @@ paths:
                 $ref: '#/components/schemas/NotificationEntity'
         '429':
           description: Too many requests
-      security: *a35
+      security: *a37
       summary: Mark one notification as read
-      tags: *a36
+      tags: *a38
   /api/v1/notifications/{id}/unread:
     post:
       operationId: NotificationsController_markUnread
@@ -3715,9 +3945,9 @@ paths:
                 $ref: '#/components/schemas/NotificationEntity'
         '429':
           description: Too many requests
-      security: *a35
+      security: *a37
       summary: Mark one notification as unread
-      tags: *a36
+      tags: *a38
   /api/v1/notifications/read-all:
     post:
       operationId: NotificationsController_markAllRead
@@ -3731,9 +3961,9 @@ paths:
                 $ref: '#/components/schemas/NotificationUnreadCountEntity'
         '429':
           description: Too many requests
-      security: *a35
+      security: *a37
       summary: Mark all of your notifications as read
-      tags: *a36
+      tags: *a38
   /api/v1/ratings/groups/{id}:
     get:
       operationId: RatingsController_getGroupRatings
@@ -3774,10 +4004,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedRatings'
         '429':
           description: Too many requests
-      security: &a37
+      security: &a39
         - bearer: []
       summary: List ratings for a completed group you participated in
-      tags: &a38
+      tags: &a40
         - Ratings
   /api/v1/ratings/groups/{id}/review-state:
     get:
@@ -3798,9 +4028,9 @@ paths:
                 $ref: '#/components/schemas/GroupReviewStateEntity'
         '429':
           description: Too many requests
-      security: *a37
+      security: *a39
       summary: Get the current review prompt state for a completed group plan
-      tags: *a38
+      tags: *a40
   /api/v1/ratings:
     post:
       operationId: RatingsController_create
@@ -3824,9 +4054,9 @@ paths:
             this rating was already submitted
         '429':
           description: Too many requests
-      security: *a37
+      security: *a39
       summary: Submit a rating for a member of your completed group plan
-      tags: *a38
+      tags: *a40
   /api/v1/ratings/groups/{id}/review-deferrals:
     post:
       operationId: RatingsController_deferGroupReview
@@ -3856,9 +4086,9 @@ paths:
             no reviews are pending
         '429':
           description: Too many requests
-      security: *a37
+      security: *a39
       summary: Defer the completed-plan review prompt until the next plan
-      tags: *a38
+      tags: *a40
   /api/v1/reports/{reportId}/outcome-review-requests:
     post:
       operationId: ReportsController_createOutcomeReview
@@ -3888,10 +4118,10 @@ paths:
                 $ref: '#/components/schemas/ReportOutcomeReviewEntity'
         '429':
           description: Too many requests
-      security: &a39
+      security: &a41
         - bearer: []
       summary: Ask us to review how your report was handled
-      tags: &a40
+      tags: &a42
         - Reports
     get:
       operationId: ReportsController_getOutcomeReviews
@@ -3912,9 +4142,9 @@ paths:
                   $ref: '#/components/schemas/ReportOutcomeReviewEntity'
         '429':
           description: Too many requests
-      security: *a39
+      security: *a41
       summary: List review requests for one of your reports
-      tags: *a40
+      tags: *a42
   /api/v1/reports/{reportId}/information-responses:
     post:
       operationId: ReportsController_respondToInformationRequest
@@ -3944,9 +4174,9 @@ paths:
                 $ref: '#/components/schemas/ReportInformationResponseEntity'
         '429':
           description: Too many requests
-      security: *a39
+      security: *a41
       summary: Send information requested for your report
-      tags: *a40
+      tags: *a42
   /api/v1/reports:
     post:
       operationId: ReportsController_create
@@ -3972,9 +4202,9 @@ paths:
                 $ref: '#/components/schemas/ReportReceiptEntity'
         '429':
           description: Too many requests
-      security: *a39
+      security: *a41
       summary: Submit a safety report
-      tags: *a40
+      tags: *a42
     get:
       operationId: ReportsController_getMany
       parameters:
@@ -4001,9 +4231,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedReportReceipts'
         '429':
           description: Too many requests
-      security: *a39
+      security: *a41
       summary: List your report receipts
-      tags: *a40
+      tags: *a42
   /api/v1/reports/{id}:
     get:
       operationId: ReportsController_getOne
@@ -4023,9 +4253,9 @@ paths:
                 $ref: '#/components/schemas/ReportReceiptEntity'
         '429':
           description: Too many requests
-      security: *a39
+      security: *a41
       summary: Get one of your report receipts
-      tags: *a40
+      tags: *a42
   /api/v1/safety/enforcement-notices:
     get:
       operationId: ModerationController_getEnforcementNotices
@@ -4053,10 +4283,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedEnforcementNotices'
         '429':
           description: Too many requests
-      security: &a41
+      security: &a43
         - bearer: []
       summary: List safety notices for your account
-      tags: &a42
+      tags: &a44
         - Safety
   /api/v1/safety/enforcement-notices/{id}:
     get:
@@ -4076,9 +4306,9 @@ paths:
                 $ref: '#/components/schemas/EnforcementNoticeEntity'
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Get a safety notice for your account
-      tags: *a42
+      tags: *a44
   /api/v1/safety/enforcement-notices/{id}/appeals:
     post:
       operationId: ModerationController_createAppeal
@@ -4108,9 +4338,9 @@ paths:
                 $ref: '#/components/schemas/AppealEntity'
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Appeal a safety notice
-      tags: *a42
+      tags: *a44
   /api/v1/safety/containments:
     get:
       operationId: ModerationController_getContainments
@@ -4138,9 +4368,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedContainments'
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: List temporary safety measures for your account
-      tags: *a42
+      tags: *a44
   /api/v1/safety/containments/{id}:
     get:
       operationId: ModerationController_getContainment
@@ -4159,9 +4389,9 @@ paths:
                 $ref: '#/components/schemas/ContainmentEntity'
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Get a temporary safety measure for your account
-      tags: *a42
+      tags: *a44
   /api/v1/safety/containments/{id}/contests:
     post:
       operationId: ModerationController_createContainmentContest
@@ -4191,14 +4421,14 @@ paths:
                 $ref: '#/components/schemas/ContainmentContestEntity'
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Ask us to review a temporary safety measure
-      tags: *a42
+      tags: *a44
   /api/v1/operator/moderation/cases/{caseId}/assessments:
     get:
       operationId: OperatorAssistanceController_getAssessments
       parameters:
-        - &a43
+        - &a45
           name: x-teamforge-operator-assertion
           in: header
           description: Short-lived signed assertion injected by the trusted operator proxy.
@@ -4219,15 +4449,15 @@ paths:
                 $ref: '#/components/schemas/OperatorAssessmentListEntity'
         '429':
           description: Too many requests
-      security: &a44
+      security: &a46
         - operatorAssertion: []
-      tags: &a45
+      tags: &a47
         - Operator moderation assistance
   /api/v1/operator/moderation/cases/{caseId}/assessment-comparison:
     get:
       operationId: OperatorAssistanceController_compareAssessments
       parameters:
-        - *a43
+        - *a45
         - name: caseId
           required: true
           in: path
@@ -4252,13 +4482,13 @@ paths:
                 $ref: '#/components/schemas/OperatorAssessmentComparisonEntity'
         '429':
           description: Too many requests
-      security: *a44
-      tags: *a45
+      security: *a46
+      tags: *a47
   /api/v1/operator/moderation/workers:
     get:
       operationId: OperatorAssistanceController_getWorkers
       parameters:
-        - *a43
+        - *a45
       responses:
         '200':
           description: ''
@@ -4268,13 +4498,13 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkersEntity'
         '429':
           description: Too many requests
-      security: *a44
-      tags: *a45
+      security: *a46
+      tags: *a47
   /api/v1/operator/moderation/workers/{workerKind}/jobs:
     get:
       operationId: OperatorAssistanceController_getWorkerJobs
       parameters:
-        - *a43
+        - *a45
         - name: workerKind
           required: true
           in: path
@@ -4311,13 +4541,13 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkerJobsPageEntity'
         '429':
           description: Too many requests
-      security: *a44
-      tags: *a45
+      security: *a46
+      tags: *a47
   /api/v1/operator/moderation/workers/{workerKind}/pause:
     post:
       operationId: OperatorAssistanceController_pauseWorker
       parameters:
-        - *a43
+        - *a45
         - name: workerKind
           required: true
           in: path
@@ -4338,13 +4568,13 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkerCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a44
-      tags: *a45
+      security: *a46
+      tags: *a47
   /api/v1/operator/moderation/workers/{workerKind}/resume:
     post:
       operationId: OperatorAssistanceController_resumeWorker
       parameters:
-        - *a43
+        - *a45
         - name: workerKind
           required: true
           in: path
@@ -4365,13 +4595,13 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkerCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a44
-      tags: *a45
+      security: *a46
+      tags: *a47
   /api/v1/operator/moderation/workers/{workerKind}/jobs/{jobId}/replay:
     post:
       operationId: OperatorAssistanceController_replayJob
       parameters:
-        - *a43
+        - *a45
         - name: workerKind
           required: true
           in: path
@@ -4397,13 +4627,13 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkerReplayResultEntity'
         '429':
           description: Too many requests
-      security: *a44
-      tags: *a45
+      security: *a46
+      tags: *a47
   /api/v1/operator/moderation/session:
     get:
       operationId: OperatorModerationController_getSession
       parameters:
-        - &a46
+        - &a48
           name: x-teamforge-operator-assertion
           in: header
           description: Short-lived signed assertion injected by the trusted operator proxy.
@@ -4419,15 +4649,15 @@ paths:
                 $ref: '#/components/schemas/OperatorSessionEntity'
         '429':
           description: Too many requests
-      security: &a47
+      security: &a49
         - operatorAssertion: []
-      tags: &a48
+      tags: &a50
         - Operator moderation
   /api/v1/operator/moderation/cases:
     get:
       operationId: OperatorModerationController_getCases
       parameters:
-        - *a46
+        - *a48
         - name: page
           required: false
           in: query
@@ -4477,14 +4707,14 @@ paths:
                 $ref: '#/components/schemas/OperatorCasePageEntity'
         '429':
           description: Too many requests
-      security: *a47
+      security: *a49
       summary: List assigned cases in an operator queue
-      tags: *a48
+      tags: *a50
   /api/v1/operator/moderation/intake:
     get:
       operationId: OperatorModerationController_getIntake
       parameters:
-        - *a46
+        - *a48
         - name: page
           required: false
           in: query
@@ -4508,13 +4738,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCasePageEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}:
     get:
       operationId: OperatorModerationController_getCase
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4529,14 +4759,14 @@ paths:
                 $ref: '#/components/schemas/OperatorCaseDetailEntity'
         '429':
           description: Too many requests
-      security: *a47
+      security: *a49
       summary: Open an assigned moderation case
-      tags: *a48
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/evidence:
     get:
       operationId: OperatorModerationController_getEvidence
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4553,14 +4783,14 @@ paths:
                   $ref: '#/components/schemas/OperatorEvidenceMetadataEntity'
         '429':
           description: Too many requests
-      security: *a47
+      security: *a49
       summary: List evidence metadata for an assigned case
-      tags: *a48
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/evidence/{evidenceId}/reveal:
     post:
       operationId: OperatorModerationController_revealEvidence
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4586,13 +4816,13 @@ paths:
                 $ref: '#/components/schemas/OperatorEvidenceRevealEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/child-safety-evidence/{evidenceId}/reveal:
     post:
       operationId: OperatorModerationController_revealChildSafetyEvidence
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4618,13 +4848,13 @@ paths:
                 $ref: '#/components/schemas/OperatorEvidenceRevealEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/assignments:
     post:
       operationId: OperatorModerationController_assignCase
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4645,13 +4875,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/assignments/self:
     post:
       operationId: OperatorModerationController_assignCaseToSelf
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4672,13 +4902,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/triage:
     post:
       operationId: OperatorModerationController_triageCase
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4699,13 +4929,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/escalation:
     post:
       operationId: OperatorModerationController_escalateCase
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4726,13 +4956,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/resolution:
     post:
       operationId: OperatorModerationController_resolveCase
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4753,13 +4983,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/information-requests:
     post:
       operationId: OperatorModerationController_requestInformation
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4780,13 +5010,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/enforcement-actions:
     post:
       operationId: OperatorModerationController_authorizeEnforcement
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4807,13 +5037,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/protective-containments:
     post:
       operationId: OperatorModerationController_authorizeContainment
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4834,13 +5064,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/enforcement-actions/{actionId}/reversal:
     post:
       operationId: OperatorModerationController_reverseEnforcement
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4866,13 +5096,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/appeals/{appealId}/decision:
     post:
       operationId: OperatorModerationController_decideAppeal
       parameters:
-        - *a46
+        - *a48
         - name: appealId
           required: true
           in: path
@@ -4893,13 +5123,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/outcome-reviews/{reviewId}/decision:
     post:
       operationId: OperatorModerationController_decideOutcomeReview
       parameters:
-        - *a46
+        - *a48
         - name: reviewId
           required: true
           in: path
@@ -4920,13 +5150,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/cases/{caseId}/protective-containments/{containmentId}/release:
     post:
       operationId: OperatorModerationController_releaseContainment
       parameters:
-        - *a46
+        - *a48
         - name: caseId
           required: true
           in: path
@@ -4952,13 +5182,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/containment-contests/{contestId}/decision:
     post:
       operationId: OperatorModerationController_decideContainmentContest
       parameters:
-        - *a46
+        - *a48
         - name: contestId
           required: true
           in: path
@@ -4979,13 +5209,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/break-glass-uses/{useId}/review:
     post:
       operationId: OperatorModerationController_reviewBreakGlassUse
       parameters:
-        - *a46
+        - *a48
         - name: useId
           required: true
           in: path
@@ -5006,8 +5236,8 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a47
-      tags: *a48
+      security: *a49
+      tags: *a50
   /api/v1/settings/me:
     get:
       operationId: SettingsController_getMySettings
@@ -5021,10 +5251,10 @@ paths:
                 $ref: '#/components/schemas/UserSettingsEntity'
         '429':
           description: Too many requests
-      security: &a49
+      security: &a51
         - bearer: []
       summary: Get settings for the authenticated user
-      tags: &a50
+      tags: &a52
         - Settings
     patch:
       operationId: SettingsController_updateMySettings
@@ -5044,9 +5274,9 @@ paths:
                 $ref: '#/components/schemas/UserSettingsEntity'
         '429':
           description: Too many requests
-      security: *a49
+      security: *a51
       summary: Update settings for the authenticated user
-      tags: *a50
+      tags: *a52
 info:
   title: TeamForge API
   description:
@@ -6508,6 +6738,398 @@ components:
         - chat
         - group
         - plan
+    AutoForgePlanDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Friday evening basketball
+        description:
+          type: string
+          example: Casual games at the local courts
+          nullable: true
+        coverImage:
+          type: string
+          example: teal-grid
+          nullable: true
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          default: TO_BE_DECIDED
+        dateTime:
+          type: string
+          example: 2099-05-02T18:30:00.000Z
+          format: date-time
+          nullable: true
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        location:
+          type: string
+          example: Regents Park Courts
+          nullable: true
+        locationLat:
+          type: number
+          example: 51.5313
+          nullable: true
+        locationLng:
+          type: number
+          example: -0.1569
+          nullable: true
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+        costAmount:
+          type: number
+          example: 12.5
+          nullable: true
+        costDetails:
+          type: string
+          example: Court booking split between the group
+          nullable: true
+      required:
+        - title
+        - category
+        - locationMode
+        - cost
+    CreateAutoForgeRequestDto:
+      type: object
+      properties:
+        groupSize:
+          type: number
+          example: 4
+          minimum: 2
+          maximum: 8
+        scope:
+          type: string
+          enum: &a53
+            - LOCAL
+            - ONLINE
+        maxDistanceKm:
+          type: number
+          description: Maximum travel distance for a local request
+          example: 40
+          minimum: 15
+          maximum: 80
+          nullable: true
+        plan:
+          $ref: '#/components/schemas/AutoForgePlanDto'
+        policyVersion:
+          type: string
+          example: auto-forge-request-v1
+      required:
+        - groupSize
+        - scope
+        - plan
+        - policyVersion
+    AutoForgeRequestInterestEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+        - id
+        - name
+        - slug
+    AutoForgeRequestActivityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoForgeRequestInterestEntity'
+      required:
+        - id
+        - title
+        - description
+        - interests
+    AutoForgeRequestPlanEntity:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        coverImage:
+          type: string
+          nullable: true
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+        dateTime:
+          format: date-time
+          type: string
+          nullable: true
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        location:
+          type: string
+          nullable: true
+        locationLat:
+          type: number
+          nullable: true
+        locationLng:
+          type: number
+          nullable: true
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+        costAmount:
+          type: number
+          nullable: true
+        costDetails:
+          type: string
+          nullable: true
+      required:
+        - title
+        - description
+        - coverImage
+        - category
+        - scheduleMode
+        - dateTime
+        - locationMode
+        - location
+        - locationLat
+        - locationLng
+        - cost
+        - costAmount
+        - costDetails
+    AutoForgeRequestEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        requesterId:
+          type: string
+        activity:
+          $ref: '#/components/schemas/AutoForgeRequestActivityEntity'
+        lifecycle:
+          type: string
+          enum:
+            - DRAFT
+            - SEARCHING
+            - RESERVED
+            - PROPOSED
+            - FORMED
+            - PAUSED
+            - EXPIRED
+            - CANCELLED
+        pauseReason:
+          type: string
+          enum:
+            - USER
+            - CANDIDATE_SEAT
+            - AUTOMATIC_GROUP_CAPACITY
+            - AUTOMATIC_RETRY_FAILURE
+          nullable: true
+        revision:
+          type: number
+        groupSize:
+          type: number
+          minimum: 2
+          maximum: 8
+        scope:
+          type: string
+          enum:
+            - LOCAL
+            - ONLINE
+        maxDistanceKm:
+          type: number
+          nullable: true
+          minimum: 15
+          maximum: 80
+        plan:
+          $ref: '#/components/schemas/AutoForgeRequestPlanEntity'
+        freshUntil:
+          format: date-time
+          type: string
+        searchStartedAt:
+          format: date-time
+          type: string
+          nullable: true
+        pausedAt:
+          format: date-time
+          type: string
+          nullable: true
+        cancelledAt:
+          format: date-time
+          type: string
+          nullable: true
+        expiredAt:
+          format: date-time
+          type: string
+          nullable: true
+        lastAttemptAt:
+          format: date-time
+          type: string
+          nullable: true
+        nextAttemptAt:
+          format: date-time
+          type: string
+          nullable: true
+        manualRetryAvailableAt:
+          format: date-time
+          type: string
+          nullable: true
+        canRetryNow:
+          type: boolean
+        lastAttemptOutcome:
+          type: string
+          enum:
+            - SEARCH_RETRY_SCHEDULED
+            - WORKER_ERROR
+          nullable: true
+        attemptCount:
+          type: number
+        consecutiveFailureCount:
+          type: number
+        policyVersion:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - requesterId
+        - activity
+        - lifecycle
+        - pauseReason
+        - revision
+        - groupSize
+        - scope
+        - maxDistanceKm
+        - plan
+        - freshUntil
+        - searchStartedAt
+        - pausedAt
+        - cancelledAt
+        - expiredAt
+        - lastAttemptAt
+        - nextAttemptAt
+        - manualRetryAvailableAt
+        - canRetryNow
+        - lastAttemptOutcome
+        - attemptCount
+        - consecutiveFailureCount
+        - policyVersion
+        - createdAt
+        - updatedAt
+    CurrentAutoForgeRequestEntity:
+      type: object
+      properties:
+        request:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/AutoForgeRequestEntity'
+      required:
+        - request
+    UpdateAutoForgeRequestDto:
+      type: object
+      properties:
+        groupSize:
+          type: number
+          example: 4
+          minimum: 2
+          maximum: 8
+        scope:
+          type: string
+          enum: *a53
+        maxDistanceKm:
+          type: number
+          description: Maximum travel distance for a local request
+          example: 40
+          minimum: 15
+          maximum: 80
+          nullable: true
+        plan:
+          $ref: '#/components/schemas/AutoForgePlanDto'
+        policyVersion:
+          type: string
+          example: auto-forge-request-v1
+        expectedRevision:
+          type: number
+          example: 1
+          minimum: 1
+      required:
+        - groupSize
+        - scope
+        - plan
+        - policyVersion
+        - expectedRevision
+    AutoForgeRequestCommandDto:
+      type: object
+      properties:
+        expectedRevision:
+          type: number
+          example: 1
+          minimum: 1
+        policyVersion:
+          type: string
+          example: auto-forge-request-v1
+      required:
+        - expectedRevision
+        - policyVersion
     LinkPreviewEntity:
       type: object
       properties:
@@ -6850,7 +7472,7 @@ components:
           nullable: true
         onlineStatus:
           type: string
-          enum: &a56
+          enum: &a59
             - ONLINE
             - AWAY
             - OFFLINE
@@ -7102,7 +7724,7 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: &a51
+          enum: &a54
             - TECH
             - SPORTS
             - ARTS
@@ -7117,7 +7739,7 @@ components:
             - OTHER
         status:
           type: string
-          enum: &a52
+          enum: &a55
             - DRAFT
             - PROPOSED
             - CONFIRMED
@@ -7126,7 +7748,7 @@ components:
             - CANCELLED
         scheduleMode:
           type: string
-          enum: &a53
+          enum: &a56
             - TO_BE_DECIDED
             - FIXED
           nullable: true
@@ -7136,7 +7758,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: &a54
+          enum: &a57
             - IN_PERSON
             - ONLINE
             - TBD
@@ -7151,7 +7773,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: &a55
+          enum: &a58
             - FREE
             - PAID
       required:
@@ -7173,13 +7795,13 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: *a51
+          enum: *a54
         status:
           type: string
-          enum: *a52
+          enum: *a55
         scheduleMode:
           type: string
-          enum: *a53
+          enum: *a56
           nullable: true
         dateTime:
           format: date-time
@@ -7187,7 +7809,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: *a54
+          enum: *a57
         location:
           type: string
           example: Regents Park Courts
@@ -7199,7 +7821,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: *a55
+          enum: *a58
       required:
         - id
         - title
@@ -7227,7 +7849,7 @@ components:
             - $ref: '#/components/schemas/ImageMediaEntity'
         onlineStatus:
           type: string
-          enum: *a56
+          enum: *a59
       required:
         - id
         - name
@@ -9186,7 +9808,7 @@ components:
       properties:
         issue:
           type: string
-          enum: &a57
+          enum: &a60
             - certificate-error
             - network-error
             - no-subscriptions
@@ -9210,7 +9832,7 @@ components:
           example: true
         issue:
           type: string
-          enum: *a57
+          enum: *a60
           example: certificate-error
           nullable: true
         diagnostics:
@@ -10277,7 +10899,7 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: &a58
+          enum: &a61
             - OPEN
             - TRIAGING
             - NEEDS_INFORMATION
@@ -10288,7 +10910,7 @@ components:
             - CLOSED
         severity:
           type: string
-          enum: &a59
+          enum: &a62
             - P0
             - P1
             - P2
@@ -10301,7 +10923,7 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: &a60
+          enum: &a63
             - UNKNOWN
             - COMPLETE
             - PARTIAL
@@ -10309,7 +10931,7 @@ components:
             - CONFLICTING
         uncertainty:
           type: string
-          enum: &a61
+          enum: &a64
             - UNKNOWN
             - LOW
             - MEDIUM
@@ -10718,10 +11340,10 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: *a58
+          enum: *a61
         severity:
           type: string
-          enum: *a59
+          enum: *a62
           nullable: true
         policyLabels:
           type: array
@@ -10729,10 +11351,10 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: *a60
+          enum: *a63
         uncertainty:
           type: string
-          enum: *a61
+          enum: *a64
         mandatoryHumanReasons:
           type: array
           items:
@@ -10979,7 +11601,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: &a62
+          enum: &a65
             - FOLLOWED
             - CHANGED
             - NOT_USED
@@ -10990,7 +11612,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: &a63
+          example: &a66
             - SAFETY_ABUSE
           type: array
           items:
@@ -11061,7 +11683,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a62
+          enum: *a65
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -11069,7 +11691,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a63
+          example: *a66
           type: array
           items:
             type: array
@@ -11091,7 +11713,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a62
+          enum: *a65
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -11099,7 +11721,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a63
+          example: *a66
           type: array
           items:
             type: array
@@ -11129,7 +11751,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a62
+          enum: *a65
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -11137,7 +11759,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a63
+          example: *a66
           type: array
           items:
             type: array
@@ -11174,7 +11796,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a62
+          enum: *a65
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -11182,7 +11804,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a63
+          example: *a66
           type: array
           items:
             type: array
@@ -11194,7 +11816,7 @@ components:
           maxLength: 1000
         actionType:
           type: string
-          enum: &a64
+          enum: &a67
             - WARNING
             - OUTBOUND_RATE_LIMIT
             - NEW_STRANGER_CONTACT_RESTRICTION
@@ -11205,7 +11827,7 @@ components:
             - GROUP_RESTRICTION
         scope:
           type: string
-          enum: &a65
+          enum: &a68
             - ACCOUNT
             - NEW_STRANGER_CONTACT
             - ACCEPTED_CHAT
@@ -11215,7 +11837,7 @@ components:
           type: string
         targetType:
           type: string
-          enum: &a66
+          enum: &a69
             - PROFILE
             - MESSAGE
             - ATTACHMENT
@@ -11241,7 +11863,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a62
+          enum: *a65
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -11249,7 +11871,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a63
+          example: *a66
           type: array
           items:
             type: array
@@ -11287,7 +11909,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a62
+          enum: *a65
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -11295,7 +11917,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a63
+          example: *a66
           type: array
           items:
             type: array
@@ -11313,15 +11935,15 @@ components:
             - OVERTURNED
         replacementActionType:
           type: string
-          enum: *a64
+          enum: *a67
         replacementScope:
           type: string
-          enum: *a65
+          enum: *a68
         replacementEvidenceId:
           type: string
         replacementTargetType:
           type: string
-          enum: *a66
+          enum: *a69
         replacementTargetId:
           type: string
         replacementExpiresAt:
@@ -11339,7 +11961,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a62
+          enum: *a65
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -11347,7 +11969,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a63
+          example: *a66
           type: array
           items:
             type: array
@@ -11375,7 +11997,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a62
+          enum: *a65
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -11383,7 +12005,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a63
+          example: *a66
           type: array
           items:
             type: array
@@ -11465,14 +12087,14 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: &a67
+          enum: &a70
             - system
             - light
             - dark
           example: system
         themeStyle:
           type: string
-          enum: &a68
+          enum: &a71
             - classic
             - glass
             - ink
@@ -11480,7 +12102,7 @@ components:
           example: classic
         themeColor:
           type: string
-          enum: &a69
+          enum: &a72
             - graphite
             - forge
             - harbor
@@ -11572,15 +12194,15 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: *a67
+          enum: *a70
           example: system
         themeStyle:
           type: string
-          enum: *a68
+          enum: *a71
           example: classic
         themeColor:
           type: string
-          enum: *a69
+          enum: *a72
           example: graphite
         showAgeOnProfile:
           type: boolean

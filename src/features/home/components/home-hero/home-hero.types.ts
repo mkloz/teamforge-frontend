@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { AutoForgeRequest } from "@/features/forge/public/auto-forge-request";
 import type {
   HomeViewer,
   PlannedGroup,
@@ -11,6 +12,8 @@ import type { ExploreGroup, Invite } from "@/shared/schemas";
 export type HomeNextMove = ReturnType<typeof buildHomeNextMove>;
 
 export interface HomeHeroData {
+  autoForgeRequest: AutoForgeRequest | null;
+  autoForgeRequestUnavailable: boolean;
   groups: HomeGroup[];
   invitations: Invite[];
   plans: PlannedGroup[];

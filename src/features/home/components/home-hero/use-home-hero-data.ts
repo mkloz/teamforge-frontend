@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { currentAutoForgeRequestQueryOptions } from "@/features/forge/public/auto-forge-request";
 import { homeQueries } from "@/features/home/api/home-queries";
 import type {
   HomeHeroData,
@@ -11,6 +12,7 @@ import type { ExploreGroup } from "@/shared/schemas";
 const EMPTY_RECOMMENDATIONS: ExploreGroup[] = [];
 
 export function useHomeHeroData(): HomeHeroLoadState {
+  const autoForgeRequestQuery = useQuery(currentAutoForgeRequestQueryOptions());
   const { viewer, isLoading: viewerLoading } = useHomeViewerState();
   const homeData = useHomeData({
     include: {
@@ -23,6 +25,9 @@ export function useHomeHeroData(): HomeHeroLoadState {
   const { stats, invitations, plans, groups } = homeData;
   const isCoreHeroDataLoading = getIsCoreHeroDataLoading(homeData);
   const shouldLoadRecommendations = shouldLoadHomeHeroRecommendations({
+    autoForgeRequest: autoForgeRequestQuery.data ?? null,
+    autoForgeRequestUnavailable:
+      autoForgeRequestQuery.isError && !autoForgeRequestQuery.data,
     groups,
     invitations,
     isCoreHeroDataLoading,
@@ -45,6 +50,9 @@ export function useHomeHeroData(): HomeHeroLoadState {
 
   return {
     heroData: {
+      autoForgeRequest: autoForgeRequestQuery.data ?? null,
+      autoForgeRequestUnavailable:
+        autoForgeRequestQuery.isError && !autoForgeRequestQuery.data,
       groups,
       invitations,
       plans,
@@ -52,18 +60,29 @@ export function useHomeHeroData(): HomeHeroLoadState {
       stats,
       viewer,
     },
-    isLoading: viewerLoading || isHeroDataLoading,
+    isLoading:
+      viewerLoading || isHeroDataLoading || autoForgeRequestQuery.isLoading,
   };
 }
 
 function shouldLoadHomeHeroRecommendations({
+  autoForgeRequest,
+  autoForgeRequestUnavailable,
   groups,
   invitations,
   isCoreHeroDataLoading,
   plans,
   viewer,
   viewerLoading,
-}: Pick<HomeHeroData, "groups" | "invitations" | "plans" | "viewer"> & {
+}: Pick<
+  HomeHeroData,
+  | "autoForgeRequest"
+  | "autoForgeRequestUnavailable"
+  | "groups"
+  | "invitations"
+  | "plans"
+  | "viewer"
+> & {
   isCoreHeroDataLoading: boolean;
   viewerLoading: boolean;
 }) {
@@ -72,6 +91,8 @@ function shouldLoadHomeHeroRecommendations({
   }
 
   return !hasPriorityHomeMove({
+    autoForgeRequest,
+    autoForgeRequestUnavailable,
     groups,
     invitations,
     plans,
@@ -104,13 +125,25 @@ function getIsCoreHeroDataLoading(homeData: ReturnType<typeof useHomeData>) {
 }
 
 function hasPriorityHomeMove({
+  autoForgeRequest,
+  autoForgeRequestUnavailable,
   groups,
   invitations,
   plans,
   viewer,
-}: Pick<HomeHeroData, "groups" | "invitations" | "plans" | "viewer">) {
+}: Pick<
+  HomeHeroData,
+  | "autoForgeRequest"
+  | "autoForgeRequestUnavailable"
+  | "groups"
+  | "invitations"
+  | "plans"
+  | "viewer"
+>) {
   return (
     Boolean(viewer.nextStep) ||
+    autoForgeRequest !== null ||
+    autoForgeRequestUnavailable ||
     invitations.length > 0 ||
     plans.length > 0 ||
     groups.length > 0

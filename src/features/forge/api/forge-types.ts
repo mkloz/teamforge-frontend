@@ -15,6 +15,7 @@ export interface ForgeExecutionResult {
   planId: string | null;
   searchKept?: boolean;
   requestIds: {
+    autoForgeRequest: string | null;
     createActivity: string | null;
     forgeActivity: string | null;
   };

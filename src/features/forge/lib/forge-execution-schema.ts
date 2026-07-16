@@ -5,6 +5,7 @@ import {
   activityVisibilitySchema,
   costTypeSchema,
   locationModeSchema,
+  planCategorySchema,
 } from "@/shared/schemas";
 
 const optionalTextSchema = z.string().max(1000);
@@ -52,15 +53,17 @@ function isValidTimeValue(value: string) {
 
 const dateValueSchema = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Add a date before forming the group.")
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Add a date before continuing.")
   .refine(isValidDateValue, "Choose a valid date for the plan.");
 const timeValueSchema = z
   .string()
-  .regex(/^\d{2}:\d{2}$/, "Add a time before forming the group.")
+  .regex(/^\d{2}:\d{2}$/, "Add a time before continuing.")
   .refine(isValidTimeValue, "Choose a valid time for the plan.");
 
 const forgeExecutionBaseSchema = z.object({
+  forgeScope: z.enum(["LOCAL", "ONLINE"]),
   selectedActivity: z.string().trim().min(1).max(80).nullable(),
+  planCategory: planCategorySchema.nullable(),
   planName: z
     .string()
     .trim()
@@ -70,9 +73,9 @@ const forgeExecutionBaseSchema = z.object({
     500,
     "Shorten the plan context before continuing.",
   ),
-  planScheduleMode: z.literal("FIXED"),
-  planDate: dateValueSchema,
-  planTime: timeValueSchema,
+  planScheduleMode: z.enum(["TO_BE_DECIDED", "FIXED"]),
+  planDate: z.string().max(10),
+  planTime: z.string().max(5),
   planLocation: z.string().max(160, "Shorten the location before continuing."),
   planLocationLat: optionalCoordinateSchema,
   planLocationLng: optionalCoordinateSchema,
@@ -109,10 +112,8 @@ function addForgeExecutionIssues(
   input: ForgeExecutionBaseInput,
   ctx: ForgeExecutionRefinementContext,
 ) {
-  const planDateTime = buildLocalDateTime(input.planDate, input.planTime);
-
   addSelectedActivityIssue(input, ctx);
-  addFuturePlanDateTimeIssue(planDateTime, ctx);
+  addPlanScheduleIssues(input, ctx);
   addPlanLocationIssue(input, ctx);
   addCoordinateIssues(input, ctx);
   addPlanCostIssue(input, ctx);
@@ -129,15 +130,47 @@ function addSelectedActivityIssue(
 
   ctx.addIssue({
     code: "custom",
-    message: "Choose an activity before forming the group.",
+    message: "Choose an activity before continuing.",
     path: ["selectedActivity"],
   });
 }
 
-function addFuturePlanDateTimeIssue(
-  planDateTime: Date,
+function addPlanScheduleIssues(
+  input: ForgeExecutionBaseInput,
   ctx: ForgeExecutionRefinementContext,
 ) {
+  if (input.planScheduleMode === "TO_BE_DECIDED") {
+    if (input.planDate || input.planTime) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Clear the date and time when the group will decide together.",
+        path: ["planDate"],
+      });
+    }
+    return;
+  }
+
+  const dateResult = dateValueSchema.safeParse(input.planDate);
+  if (!dateResult.success) {
+    ctx.addIssue({
+      code: "custom",
+      message: dateResult.error.issues[0]?.message ?? "Choose a valid date.",
+      path: ["planDate"],
+    });
+  }
+
+  const timeResult = timeValueSchema.safeParse(input.planTime);
+  if (!timeResult.success) {
+    ctx.addIssue({
+      code: "custom",
+      message: timeResult.error.issues[0]?.message ?? "Choose a valid time.",
+      path: ["planTime"],
+    });
+  }
+
+  if (!dateResult.success || !timeResult.success) return;
+
+  const planDateTime = buildLocalDateTime(input.planDate, input.planTime);
   if (
     !Number.isNaN(planDateTime.getTime()) &&
     planDateTime.getTime() > Date.now()

@@ -2,9 +2,13 @@ import { DateTimeSection } from "./date-time-section";
 import { EventTitleSection } from "./event-title-section";
 import { LocationSection } from "./location-section";
 import { PlanDetailsSection } from "./plan-details-section";
+import { ScopeSection } from "./scope-section";
 import type { Step2PlanProps } from "./types";
 
 export function Step2Plan({
+  forgeMode,
+  forgeScope,
+  onForgeScopeChange,
   planName,
   onPlanNameChange,
   planDescription,
@@ -13,6 +17,8 @@ export function Step2Plan({
   onPlanDateChange,
   planTime,
   onPlanTimeChange,
+  planScheduleMode,
+  onPlanScheduleModeChange,
   planLocation,
   onPlanLocationChange,
   planLocationLat,
@@ -41,7 +47,14 @@ export function Step2Plan({
         planDescription={planDescription}
       />
 
+      {forgeMode === "AUTO" ? (
+        <ScopeSection value={forgeScope} onChange={onForgeScopeChange} />
+      ) : null}
+
       <DateTimeSection
+        scheduleMode={forgeMode === "AUTO" ? planScheduleMode : "FIXED"}
+        onScheduleModeChange={onPlanScheduleModeChange}
+        canDecideTogether={forgeMode === "AUTO"}
         onPlanDateChange={onPlanDateChange}
         onPlanTimeChange={onPlanTimeChange}
         planDate={planDate}
@@ -49,6 +62,7 @@ export function Step2Plan({
       />
 
       <LocationSection
+        forgeScope={forgeMode === "AUTO" ? forgeScope : null}
         locationType={locationType}
         onLocationTypeChange={onLocationTypeChange}
         onPlanLocationChange={onPlanLocationChange}

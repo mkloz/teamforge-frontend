@@ -1,4 +1,10 @@
-import { ArrowRight, Cpu, Network, RefreshCw, UsersRound } from "lucide-react";
+import {
+  ArrowRight,
+  Flame,
+  Network,
+  RefreshCw,
+  UsersRound,
+} from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 interface PrimaryButtonProps {
@@ -65,9 +71,11 @@ export function ManualForgeButton({
 
 export function AutoForgeButton({
   disabled = false,
+  label = "Forge my group",
   onClick,
 }: {
   disabled?: boolean;
+  label?: string;
   onClick: () => void;
 }) {
   return (
@@ -77,16 +85,16 @@ export function AutoForgeButton({
         disabled={disabled}
         variant="primary"
         size="lg"
-        aria-label="Forge my group"
+        aria-label={label}
         className="h-14 w-full"
       >
-        <Cpu
+        <Flame
           size={18}
           aria-hidden="true"
           className="shrink-0 transition-transform group-hover:rotate-12"
         />
         <span className="truncate">
-          <span>Forge my group</span>
+          <span>{label}</span>
         </span>
         <Network size={14} aria-hidden="true" className="shrink-0 opacity-80" />
       </Button>

@@ -1,16 +1,16 @@
-import { Step2Templates } from "@/features/forge/components/steps/step2-templates";
+import { MethodSection } from "@/features/forge/components/steps/step3-group/method-section";
 
 import type { CurrentForgeStepProps } from "./types";
 
-type TemplatesStepPanelProps = Pick<CurrentForgeStepProps, "actions" | "fw">;
+type TemplatesStepPanelProps = Pick<CurrentForgeStepProps, "fw">;
 
-export function TemplatesStepPanel({ actions, fw }: TemplatesStepPanelProps) {
+export function TemplatesStepPanel({ fw }: TemplatesStepPanelProps) {
   return (
-    <Step2Templates
-      appliedTemplateId={fw.appliedTemplateId}
-      selectedActivity={fw.selectedActivity}
-      onTemplateToggle={actions.toggleStepTemplate}
-      onStartBlank={actions.startBlankPlan}
-    />
+    <div className="pb-4">
+      <MethodSection
+        forgeMode={fw.forgeMode}
+        onForgeModeChange={fw.setForgeMode}
+      />
+    </div>
   );
 }

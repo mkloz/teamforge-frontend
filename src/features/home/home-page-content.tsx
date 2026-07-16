@@ -5,6 +5,7 @@ interface HomePageContentProps {
   friendsInvitation: ReactNode;
   groupsGrid: ReactNode;
   hero: ReactNode;
+  forgeRequest?: ReactNode;
   recommendedGroups: ReactNode;
   sentInvitationsReview?: ReactNode;
   upcomingPlans: ReactNode;
@@ -15,6 +16,7 @@ export function HomePageContent({
   friendsInvitation,
   groupsGrid,
   hero,
+  forgeRequest,
   recommendedGroups,
   sentInvitationsReview,
   upcomingPlans,
@@ -24,6 +26,7 @@ export function HomePageContent({
       <div className="grid grid-cols-1 gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] lg:gap-12 xl:gap-14">
         <div className="flex min-w-0 flex-col gap-10 lg:gap-12">
           {hero}
+          {forgeRequest}
           {sentInvitationsReview}
           {attentionQueue}
           {upcomingPlans}

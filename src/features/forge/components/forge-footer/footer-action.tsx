@@ -4,6 +4,7 @@ import {
   Step3FooterAction,
   Step4FooterAction,
   Step5FailedFooterAction,
+  Step5SearchingFooterAction,
   Step5SuccessFooterAction,
   Step6FooterAction,
   Step7FooterAction,
@@ -57,6 +58,10 @@ function renderStepFooterAction(fw: ForgeFooterChildProps["fw"]) {
 function renderStep5FooterAction(fw: ForgeFooterChildProps["fw"]) {
   if (fw.forgeResult === "SUCCESS") {
     return <Step5SuccessFooterAction fw={fw} />;
+  }
+
+  if (fw.forgeResult === "SEARCHING") {
+    return <Step5SearchingFooterAction fw={fw} />;
   }
 
   if (fw.forgeResult === "FAILED") {

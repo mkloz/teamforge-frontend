@@ -3,12 +3,15 @@ import type {
   ForgeMode,
   ForgeParticipant,
   ForgeResult,
+  ForgeScope,
   GroupSizeMode,
   LocationType,
   PlanScheduleMode,
   Visibility,
 } from "@/features/forge/lib/forge-contract";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
+import type { AutoForgeRequest } from "@/features/forge/schemas/auto-forge-request.schema";
+import type { PlanCategory } from "@/shared/schemas";
 
 export type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type NavDirection = "forward" | "back";
@@ -17,6 +20,7 @@ export interface ForgeWizardData {
   step: Step;
   navDirection: NavDirection;
   selectedActivity: string | null;
+  planCategory: PlanCategory | null;
   appliedTemplateId: string | null;
   planName: string;
   planDescription: string;
@@ -26,6 +30,7 @@ export interface ForgeWizardData {
   planLocation: string;
   planLocationLat: number | null;
   planLocationLng: number | null;
+  forgeScope: ForgeScope;
   locationType: LocationType;
   planCost: "FREE" | "PAID";
   planCostAmount: string;
@@ -50,6 +55,9 @@ export interface ForgeWizardData {
   templateCoverImage: string | null;
   avatarImage: string | null;
   activityId: string | null;
+  autoForgeRequestId: string | null;
+  autoForgeRequestRevision: number | null;
+  autoForgeRequestLifecycle: AutoForgeRequest["lifecycle"] | null;
   groupId: string | null;
   chatId: string | null;
   planId: string | null;
@@ -59,6 +67,7 @@ export interface ForgeWizardData {
 
 export type ForgeWizardField =
   | "selectedActivity"
+  | "planCategory"
   | "appliedTemplateId"
   | "planName"
   | "planDescription"
@@ -68,6 +77,7 @@ export type ForgeWizardField =
   | "planLocation"
   | "planLocationLat"
   | "planLocationLng"
+  | "forgeScope"
   | "locationType"
   | "planCost"
   | "planCostAmount"
@@ -88,6 +98,9 @@ export type ForgeWizardField =
   | "coverImage"
   | "avatarImage"
   | "activityId"
+  | "autoForgeRequestId"
+  | "autoForgeRequestRevision"
+  | "autoForgeRequestLifecycle"
   | "groupId"
   | "chatId"
   | "planId"

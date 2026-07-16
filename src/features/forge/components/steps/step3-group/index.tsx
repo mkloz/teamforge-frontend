@@ -1,14 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 
 import { forgeFriendCandidatesQueryOptions } from "@/features/forge/api/forge-query-options";
 import { GroupIdentityFields } from "@/features/forge/components/group-identity-fields/index";
 
-import { AutoGroupDetails } from "./auto-group-details";
 import { ManualGroupDetails } from "./manual-group-details";
-import { MethodSection } from "./method-section";
 import { PrivacySection } from "./privacy-section";
 import type { Step3GroupProps } from "./types";
 
@@ -16,23 +13,8 @@ const EMPTY_GROUP_NAMES: string[] = [];
 
 export function Step3Group({
   forgeMode,
-  onForgeModeChange,
   fixedSize,
   onFixedSizeChange,
-  groupSizeMode,
-  onGroupSizeModeChange,
-  autoMinSize,
-  autoMaxSize,
-  onAutoSizeRangeChange,
-  locationType,
-  compatibilityWeight,
-  onCompatibilityWeightChange,
-  diversityWeight,
-  onDiversityWeightChange,
-  networkReachWeight,
-  onNetworkReachWeightChange,
-  maxDistanceKm,
-  onMaxDistanceKmChange,
   visibility,
   onVisibilityChange,
   groupName = "",
@@ -44,31 +26,29 @@ export function Step3Group({
   existingGroupNames = EMPTY_GROUP_NAMES,
   selectedActivity,
 }: Step3GroupProps) {
-  const [algorithmsExpanded, setAlgorithmsExpanded] = useState(false);
   const { data: friends = [], isLoading: isLoadingFriends } = useQuery(
     forgeFriendCandidatesQueryOptions(),
   );
 
   return (
     <div className="flex flex-col gap-5 pb-4">
-      <GroupIdentityFields
-        groupName={groupName}
-        onGroupNameChange={(v) => onGroupNameChange?.(v)}
-        groupDescription={groupDescription}
-        onGroupDescriptionChange={(v) => onGroupDescriptionChange?.(v)}
-        selectedActivity={selectedActivity}
-        existingGroupNames={existingGroupNames}
-      />
+      {forgeMode === "MANUAL" ? (
+        <>
+          <GroupIdentityFields
+            groupName={groupName}
+            onGroupNameChange={(v) => onGroupNameChange?.(v)}
+            groupDescription={groupDescription}
+            onGroupDescriptionChange={(v) => onGroupDescriptionChange?.(v)}
+            selectedActivity={selectedActivity}
+            existingGroupNames={existingGroupNames}
+          />
 
-      <PrivacySection
-        visibility={visibility}
-        onVisibilityChange={onVisibilityChange}
-      />
-
-      <MethodSection
-        forgeMode={forgeMode}
-        onForgeModeChange={onForgeModeChange}
-      />
+          <PrivacySection
+            visibility={visibility}
+            onVisibilityChange={onVisibilityChange}
+          />
+        </>
+      ) : null}
 
       <section className="flex flex-col gap-3.5 border-border/25 border-t pt-4">
         <div className="flex items-baseline gap-3 px-0.5">
@@ -85,26 +65,15 @@ export function Step3Group({
             isLoadingFriends={isLoadingFriends}
           />
         ) : (
-          <AutoGroupDetails
-            algorithmsExpanded={algorithmsExpanded}
-            onAlgorithmsExpandedChange={setAlgorithmsExpanded}
-            autoMaxSize={autoMaxSize}
-            autoMinSize={autoMinSize}
-            compatibilityWeight={compatibilityWeight}
-            diversityWeight={diversityWeight}
-            fixedSize={fixedSize}
-            groupSizeMode={groupSizeMode}
-            locationType={locationType}
-            maxDistanceKm={maxDistanceKm}
-            onAutoSizeRangeChange={onAutoSizeRangeChange}
-            onCompatibilityWeightChange={onCompatibilityWeightChange}
-            onDiversityWeightChange={onDiversityWeightChange}
-            onFixedSizeChange={onFixedSizeChange}
-            onGroupSizeModeChange={onGroupSizeModeChange}
-            onMaxDistanceKmChange={onMaxDistanceKmChange}
-            onNetworkReachWeightChange={onNetworkReachWeightChange}
-            networkReachWeight={networkReachWeight}
-          />
+          <div className="grid gap-1 rounded-2xl border border-border bg-card p-4">
+            <p className="font-semibold text-foreground text-sm">
+              Four people, with a minimum of three
+            </p>
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              This request targets four people and uses three as the minimum
+              group size.
+            </p>
+          </div>
         )}
       </section>
     </div>

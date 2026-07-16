@@ -17,6 +17,13 @@ export function useForgeSettingsFieldActions({
 }: ForgeSettingsFieldActionOptions) {
   function setForgeMode(value: ForgeMode) {
     setField("forgeMode", value);
+    setField("planScheduleMode", value === "AUTO" ? "TO_BE_DECIDED" : "FIXED");
+
+    if (value === "AUTO") {
+      setField("planDate", "");
+      setField("planTime", "");
+    }
+
     syncMode(value, { history: "replace" });
   }
 

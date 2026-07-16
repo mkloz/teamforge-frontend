@@ -88,6 +88,15 @@ export function useForgeWizardRouteSync({
         field: "forgeMode",
         value: routeMode,
       });
+      dispatch({
+        type: "set-field",
+        field: "planScheduleMode",
+        value: routeMode === "AUTO" ? "TO_BE_DECIDED" : "FIXED",
+      });
+      if (routeMode === "AUTO") {
+        dispatch({ type: "set-field", field: "planDate", value: "" });
+        dispatch({ type: "set-field", field: "planTime", value: "" });
+      }
     }
   }, [dispatch, routeMode]);
 

@@ -8,27 +8,43 @@ export function getForgeStepMetadata(fw: ForgeWizardState) {
       title: "What are we doing?",
     },
     2: {
-      hint: "Choose a template, then edit any detail.",
-      sub: "Suggested Templates",
-      title: "Pick a starting point",
+      hint: "Let TeamForge search, or invite people yourself.",
+      sub: "Formation method",
+      title: "How should this group start?",
     },
     3: {
       hint: "Add what you know now. The group can decide the rest.",
-      sub: "Planning Details",
-      title: "When and where?",
+      sub: fw.forgeMode === "AUTO" ? "Scope and plan" : "Plan details",
+      title: "Set the plan",
     },
     4: {
-      hint: "TeamForge uses your profile and group preferences",
-      sub: "Group Preferences",
-      title: "Who are we looking for?",
+      hint:
+        fw.forgeMode === "AUTO"
+          ? "Check the request before starting the search."
+          : "Check the group details before forming it.",
+      sub: fw.forgeMode === "AUTO" ? "Review" : "Group setup",
+      title:
+        fw.forgeMode === "AUTO" ? "Review the request" : "Set up the group",
     },
     5: {
       hint:
-        fw.forgeResult === "FAILED"
-          ? "Adjust the group settings, then try again"
-          : "Review the group before continuing",
-      sub: fw.forgeResult === "FAILED" ? "Let's try adjusting" : "Success",
-      title: fw.forgeResult === "FAILED" ? "No group yet" : "We found a group!",
+        fw.forgeResult === "SEARCHING"
+          ? "Home will show the current request and check timing"
+          : fw.forgeResult === "FAILED"
+            ? "Adjust the group settings, then try again"
+            : "Review the group before continuing",
+      sub:
+        fw.forgeResult === "SEARCHING"
+          ? "Request saved"
+          : fw.forgeResult === "FAILED"
+            ? "Let's try adjusting"
+            : "Success",
+      title:
+        fw.forgeResult === "SEARCHING"
+          ? "Your request is active"
+          : fw.forgeResult === "FAILED"
+            ? "No group yet"
+            : "We found a group!",
     },
     6: {
       hint: "You can change this anytime from the group settings",

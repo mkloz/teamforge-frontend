@@ -15,6 +15,7 @@ export interface ForgeRouteSearch {
   step?: number;
   mode?: ForgeSearchMode;
   activityId?: string;
+  requestId?: string;
   groupId?: string;
   ideaTitle?: string;
   ideaDetail?: string;
@@ -78,6 +79,7 @@ export function validateForgeRouteSearch(
     step: parseRouteStep(search.step),
     mode: isForgeSearchMode(search.mode) ? search.mode : undefined,
     activityId: parseOptionalSearchString(search.activityId),
+    requestId: parseOptionalSearchString(search.requestId),
     groupId: parseOptionalSearchString(search.groupId),
     ideaTitle: parseOptionalSearchText(
       search.ideaTitle,

@@ -1,5 +1,6 @@
 import { ForgeApi } from "@/features/forge/api/forge.api";
 import {
+  invalidateCurrentAutoForgeRequest,
   invalidateForgeSearchState,
   invalidateRecentForgeActivities,
 } from "@/features/forge/api/forge-cache";
@@ -14,10 +15,12 @@ import type {
   SaveForgedIdentityInput,
   SendManualInvitesInput,
 } from "@/features/forge/api/forge-types";
+import { buildAutoForgeRequestInput } from "@/features/forge/lib/auto-forge-request-builder";
 import {
   buildCreateActivityInput,
   buildForgeActivityInput,
 } from "@/features/forge/lib/forge-activity-builders";
+import type { UpdateAutoForgeRequestInput } from "@/features/forge/schemas/auto-forge-request.schema";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
 
@@ -28,48 +31,42 @@ export class MissingForgeInterestSignalsError extends Error {
   }
 }
 
+export class AutoForgeRequestSubmissionError extends Error {
+  readonly activityId: string;
+  override readonly cause: unknown;
+
+  constructor(activityId: string, cause: unknown) {
+    super("The activity was saved, but the Forge request was not confirmed.");
+    this.name = "AutoForgeRequestSubmissionError";
+    this.activityId = activityId;
+    this.cause = cause;
+  }
+}
+
 async function getCurrentUser() {
   return appQueryClient.ensureQueryData(currentUserQueryOptions());
 }
 
-function buildModeForgeInput(
-  input: AutoForgeExecutionInput,
-  forgeMode: "AUTO" | "MANUAL",
-) {
+function buildManualForgeInput(input: AutoForgeExecutionInput) {
   return buildForgeActivityInput(
-    forgeMode === "MANUAL"
-      ? {
-          ...input,
-          groupSizeMode: "FIXED",
-        }
-      : input,
     {
-      includeMatchingPreferences: forgeMode === "AUTO",
+      ...input,
+      groupSizeMode: "FIXED",
+    },
+    {
+      includeMatchingPreferences: false,
     },
   );
 }
 
-async function keepAutoSearchOpen(
-  activityId: string,
-  forgeInput: ReturnType<typeof buildForgeActivityInput>,
-) {
-  try {
-    await ForgeApi.keepSearching(activityId, forgeInput);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function executeForge(
+async function executeManualForge(
   input: AutoForgeExecutionInput,
-  forgeMode: "AUTO" | "MANUAL",
 ): Promise<ForgeExecutionResult> {
   const currentUser = await getCurrentUser();
   const createActivityInput = buildCreateActivityInput(
     currentUser,
     input,
-    forgeMode,
+    "MANUAL",
   );
 
   if (createActivityInput.interestIds.length === 0) {
@@ -81,29 +78,17 @@ async function executeForge(
   void invalidateRecentForgeActivities();
 
   const activityId = activityResult.data.id;
-  const forgeInput = buildModeForgeInput(input, forgeMode);
+  const forgeInput = buildManualForgeInput(input);
 
   let forgeResult: Awaited<ReturnType<typeof ForgeApi.forgeActivity>>;
 
   try {
     forgeResult = await ForgeApi.forgeActivity(activityId, forgeInput);
   } catch {
-    if (forgeMode === "AUTO") {
-      const searchKept = await keepAutoSearchOpen(activityId, forgeInput);
-
-      return buildFailedForgeResult({
-        activityId,
-        searchKept,
-        requestIds: {
-          createActivity: activityResult.requestId,
-          forgeActivity: null,
-        },
-      });
-    }
-
     return buildFailedForgeResult({
       activityId,
       requestIds: {
+        autoForgeRequest: null,
         createActivity: activityResult.requestId,
         forgeActivity: null,
       },
@@ -114,19 +99,6 @@ async function executeForge(
     createActivityRequestId: activityResult.requestId,
     currentUserId: currentUser.id,
     forgeResult,
-  });
-}
-
-async function executePendingAutoForgeRequest(
-  activityId: string,
-): Promise<ForgeExecutionResult> {
-  const currentUser = await getCurrentUser();
-  const forgeResult = await ForgeApi.forgePendingActivity(activityId);
-
-  return buildForgeSuccessResult({
-    currentUserId: currentUser.id,
-    forgeResult,
-    createActivityRequestId: null,
   });
 }
 
@@ -148,6 +120,7 @@ async function buildForgeSuccessResult({
     group,
     planId: forgeResult.data.plan.id,
     requestIds: {
+      autoForgeRequest: null,
       createActivity: createActivityRequestId,
       forgeActivity: forgeResult.requestId,
     },
@@ -155,18 +128,146 @@ async function buildForgeSuccessResult({
 }
 
 export class ForgeCommands {
-  static async executeManualForge(input: AutoForgeExecutionInput) {
-    return executeForge(input, "MANUAL");
-  }
-
-  static async executeAutoForge(input: AutoForgeExecutionInput) {
-    return executeForge(input, "AUTO");
-  }
-
-  static async executePendingAutoForge(
+  static createAutoForgeRequest(
     activityId: string,
+    input: AutoForgeExecutionInput,
+    idempotencyKey: string,
+  ) {
+    return ForgeApi.createAutoForgeRequest(
+      activityId,
+      buildAutoForgeRequestInput(input),
+      idempotencyKey,
+    );
+  }
+
+  static updateAutoForgeRequest(
+    requestId: string,
+    input: UpdateAutoForgeRequestInput,
+    idempotencyKey: string,
+  ) {
+    return ForgeApi.updateAutoForgeRequest(requestId, input, idempotencyKey);
+  }
+
+  static async runAutoForgeRequestAction(
+    requestId: string,
+    action: "pause" | "resume" | "cancel" | "retry",
+    payload: { expectedRevision: number; policyVersion: string },
+    idempotencyKey: string,
+  ) {
+    const result = await ForgeApi.runAutoForgeRequestCommand(
+      requestId,
+      action,
+      payload,
+      idempotencyKey,
+    );
+
+    if (action === "cancel") {
+      await invalidateCurrentAutoForgeRequest();
+    }
+
+    return result;
+  }
+
+  static async executeManualForge(input: AutoForgeExecutionInput) {
+    return executeManualForge(input);
+  }
+
+  static async executeAutoForge(
+    input: AutoForgeExecutionInput,
+    idempotencyKeys: { request: string; resume: string },
+    existingActivityId?: string | null,
+    existingRequest?: {
+      id: string;
+      revision: number;
+      lifecycle: "DRAFT" | "SEARCHING" | "PAUSED";
+    } | null,
   ): Promise<ForgeExecutionResult> {
-    return executePendingAutoForgeRequest(activityId);
+    if (existingRequest) {
+      const resumeExpectedRevision = existingRequest.revision + 1;
+      const updated = await ForgeCommands.updateAutoForgeRequest(
+        existingRequest.id,
+        {
+          ...buildAutoForgeRequestInput(input),
+          expectedRevision: existingRequest.revision,
+        },
+        idempotencyKeys.request,
+      );
+      const activeRequest =
+        existingRequest.lifecycle === "DRAFT" ||
+        existingRequest.lifecycle === "PAUSED"
+          ? await ForgeCommands.runAutoForgeRequestAction(
+              existingRequest.id,
+              "resume",
+              {
+                expectedRevision: resumeExpectedRevision,
+                policyVersion: updated.data.policyVersion,
+              },
+              idempotencyKeys.resume,
+            )
+          : updated;
+
+      await invalidateForgeSearchState();
+
+      return {
+        forgeResult: "SEARCHING",
+        participants: [],
+        activityId: existingActivityId ?? activeRequest.data.activity.id,
+        groupId: null,
+        chatId: null,
+        planId: null,
+        requestIds: {
+          autoForgeRequest: activeRequest.requestId,
+          createActivity: null,
+          forgeActivity: null,
+        },
+      };
+    }
+
+    const currentUser = await getCurrentUser();
+    const createActivityInput = buildCreateActivityInput(
+      currentUser,
+      input,
+      "AUTO",
+    );
+
+    if (createActivityInput.interestIds.length === 0) {
+      throw new MissingForgeInterestSignalsError();
+    }
+
+    const activityResult = existingActivityId
+      ? null
+      : await ForgeApi.createActivity(createActivityInput);
+    const activityId = existingActivityId ?? activityResult?.data.id;
+
+    if (!activityId) {
+      throw new Error("The activity could not be created.");
+    }
+
+    void invalidateRecentForgeActivities();
+
+    const requestResult = await ForgeCommands.createAutoForgeRequest(
+      activityId,
+      input,
+      idempotencyKeys.request,
+    ).catch((error) => {
+      throw new AutoForgeRequestSubmissionError(activityId, error);
+    });
+
+    await invalidateForgeSearchState();
+
+    return {
+      forgeResult: "SEARCHING",
+      participants: [],
+      activityId,
+      groupId: null,
+      chatId: null,
+      planId: null,
+      requestIds: {
+        autoForgeRequest: requestResult.requestId,
+        createActivity: activityResult?.requestId ?? null,
+        forgeActivity: null,
+      },
+    };
   }
 
   static async saveForgedIdentity(input: SaveForgedIdentityInput) {

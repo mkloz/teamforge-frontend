@@ -12,6 +12,8 @@ import { useHomeCollapsibleHero } from "@/features/home/hooks/use-home-collapsib
 import { buildHomeNextMove } from "@/features/home/lib/home-insights";
 
 export function HomeHeroView({
+  autoForgeRequest,
+  autoForgeRequestUnavailable,
   compactNotificationButton,
   groups,
   invitations,
@@ -25,6 +27,8 @@ export function HomeHeroView({
   const heroRef = useRef<HTMLElement | null>(null);
   const { isCompactVisible } = useHomeCollapsibleHero({ ref: heroRef });
   const nextMove = buildHomeNextMove({
+    autoForgeRequest,
+    autoForgeRequestUnavailable,
     viewer,
     stats,
     invitations,

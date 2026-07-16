@@ -29,6 +29,8 @@ export function applyForgeExecutionResult(
     syncTargets,
   }: ForgeResultSideEffectOptions,
 ) {
+  const completed =
+    result.forgeResult === "SUCCESS" || result.forgeResult === "SEARCHING";
   const targetStep = result.forgeResult === "SUCCESS" ? successStep : 5;
 
   dispatch({
@@ -46,15 +48,12 @@ export function applyForgeExecutionResult(
     groupId: result.groupId,
   });
   syncStep(targetStep, { history: "push" });
-  trackMutationOutcome(
-    mutationName,
-    result.forgeResult === "SUCCESS" ? "success" : "error",
-    {
-      result: result.forgeResult,
-      createActivityRequestId: result.requestIds.createActivity,
-      forgeActivityRequestId: result.requestIds.forgeActivity,
-    },
-  );
+  trackMutationOutcome(mutationName, completed ? "success" : "error", {
+    result: result.forgeResult,
+    createActivityRequestId: result.requestIds.createActivity,
+    autoForgeRequestId: result.requestIds.autoForgeRequest,
+    forgeActivityRequestId: result.requestIds.forgeActivity,
+  });
 }
 
 export function applyForgeExecutionFailure(

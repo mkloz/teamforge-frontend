@@ -5,6 +5,9 @@ import type { ForgeWizardChildProps } from "../types";
 export function PlanStepPanel({ fw }: ForgeWizardChildProps) {
   return (
     <Step2Plan
+      forgeMode={fw.forgeMode}
+      forgeScope={fw.forgeScope}
+      onForgeScopeChange={fw.setForgeScope}
       planName={fw.planName}
       onPlanNameChange={fw.setPlanName}
       planDescription={fw.planDescription}
@@ -13,6 +16,8 @@ export function PlanStepPanel({ fw }: ForgeWizardChildProps) {
       onPlanDateChange={fw.setPlanDate}
       planTime={fw.planTime}
       onPlanTimeChange={fw.setPlanTime}
+      planScheduleMode={fw.planScheduleMode}
+      onPlanScheduleModeChange={fw.setPlanScheduleMode}
       planLocation={fw.planLocation}
       onPlanLocationChange={fw.setPlanLocation}
       planLocationLat={fw.planLocationLat}

@@ -1,4 +1,12 @@
 import { z } from "zod";
+import {
+  autoForgeRequestCommandSchema,
+  autoForgeRequestSchema,
+  createAutoForgeRequestInputSchema,
+  currentAutoForgeRequestSchema,
+  type UpdateAutoForgeRequestInput,
+  updateAutoForgeRequestInputSchema,
+} from "@/features/forge/schemas/auto-forge-request.schema";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import { getFriends as sharedGetFriends } from "@/shared/api/friendship-membership-api";
 import {
@@ -65,6 +73,70 @@ const recentActivitySchema = z.object({
 export type RecentForgeActivity = z.infer<typeof recentActivitySchema>;
 
 export class ForgeApi {
+  static async getCurrentAutoForgeRequest() {
+    const response = await apiClient
+      .get("auto-forge-requests/current")
+      .json<unknown>();
+
+    return currentAutoForgeRequestSchema.parse(response).request;
+  }
+
+  static async createAutoForgeRequest(
+    activityId: string,
+    payload: unknown,
+    idempotencyKey: string,
+  ) {
+    const response = await apiClient.post(
+      `activities/${activityId}/auto-forge-requests`,
+      {
+        headers: { "Idempotency-Key": idempotencyKey },
+        json: createAutoForgeRequestInputSchema.parse(payload),
+      },
+    );
+
+    return parseJsonWithRequestId(response, (value) =>
+      autoForgeRequestSchema.parse(value),
+    );
+  }
+
+  static async updateAutoForgeRequest(
+    requestId: string,
+    payload: UpdateAutoForgeRequestInput,
+    idempotencyKey: string,
+  ) {
+    const response = await apiClient.patch(`auto-forge-requests/${requestId}`, {
+      headers: { "Idempotency-Key": idempotencyKey },
+      json: updateAutoForgeRequestInputSchema.parse(payload),
+    });
+
+    return parseJsonWithRequestId(response, (value) =>
+      autoForgeRequestSchema.parse(value),
+    );
+  }
+
+  static async runAutoForgeRequestCommand(
+    requestId: string,
+    action: "pause" | "resume" | "cancel" | "retry",
+    payload: unknown,
+    idempotencyKey: string,
+  ) {
+    const options = {
+      headers: { "Idempotency-Key": idempotencyKey },
+      json: autoForgeRequestCommandSchema.parse(payload),
+    };
+    const response =
+      action === "cancel"
+        ? await apiClient.delete(`auto-forge-requests/${requestId}`, options)
+        : await apiClient.post(
+            `auto-forge-requests/${requestId}/${action}`,
+            options,
+          );
+
+    return parseJsonWithRequestId(response, (value) =>
+      autoForgeRequestSchema.parse(value),
+    );
+  }
+
   static async getFriends() {
     return sharedGetFriends(50);
   }

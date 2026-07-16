@@ -14,7 +14,7 @@ const STEP_ONE_EMPTY_HINT: HintStripMessage = {
 };
 const STEP_ONE_SELECTED_HINT: HintStripMessage = {
   key: "h1-selected",
-  text: "Next: add the plan details",
+  text: "Next: choose how the group should start",
 };
 const STEP_FIVE_SUCCESS_HINT: HintStripMessage = {
   key: "h5-success",
@@ -23,8 +23,8 @@ const STEP_FIVE_SUCCESS_HINT: HintStripMessage = {
 const STATIC_STEP_HINTS: Partial<
   Record<ForgeFooterChildProps["fw"]["step"], HintStripMessage>
 > = {
-  2: { key: "h2", text: "Choose a starting point for this plan" },
-  3: { key: "h3", text: "Next: tune who should find this group" },
+  2: { key: "h2", text: "Next: set the scope and plan details" },
+  3: { key: "h3", text: "Next: review this request" },
   7: { key: "h7", text: "Final step. Invite people to the group." },
 };
 

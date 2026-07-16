@@ -1,6 +1,8 @@
+import { type RefObject, useRef } from "react";
 import { ZodError } from "zod";
 
 import {
+  AutoForgeRequestSubmissionError,
   ForgeCommands,
   MissingForgeInterestSignalsError,
 } from "@/features/forge/api/forge-commands";
@@ -26,17 +28,23 @@ function executeForgeCommand(
   mode: ForgeExecutionMode,
   state: UseForgeWizardSubmitActionsOptions["state"],
   input: AutoForgeExecutionInput | null,
+  autoRequestKeys: AutoRequestKeys | null,
 ) {
-  if (mode === "AUTO" && state.activityId) {
-    return ForgeCommands.executePendingAutoForge(state.activityId);
-  }
-
   if (!input) {
     throw new Error("Forge execution input was not validated.");
   }
 
   if (mode === "AUTO") {
-    return ForgeCommands.executeAutoForge(input);
+    if (!autoRequestKeys) {
+      throw new Error("The Forge request key was not prepared.");
+    }
+
+    return ForgeCommands.executeAutoForge(
+      input,
+      autoRequestKeys,
+      state.activityId,
+      getExistingAutoForgeRequest(state),
+    );
   }
 
   return ForgeCommands.executeManualForge(input);
@@ -47,6 +55,7 @@ interface UseForgeExecutionActionsOptions
     UseForgeWizardSubmitActionsOptions,
     "dispatch" | "runForgeAnimation" | "state" | "syncStep" | "syncTargets"
   > {
+  setField: UseForgeWizardSubmitActionsOptions["setField"];
   markSearchKept: (activityId: string) => void;
 }
 
@@ -57,7 +66,7 @@ type ForgeMutationName = ReturnType<typeof getForgeMutationName>;
 interface ForgeExecutionErrorContext
   extends Pick<
     UseForgeExecutionActionsOptions,
-    "dispatch" | "state" | "syncStep" | "syncTargets"
+    "dispatch" | "setField" | "state" | "syncStep" | "syncTargets"
   > {
   mutationName: ForgeMutationName;
 }
@@ -66,6 +75,7 @@ interface ForgeAnimationExecutionContext
   extends ForgeExecutionErrorContext,
     Pick<UseForgeExecutionActionsOptions, "markSearchKept"> {
   mode: ForgeExecutionMode;
+  autoRequestKeys: AutoRequestKeys | null;
   validation: ForgeExecutionValidation | null;
 }
 
@@ -79,17 +89,25 @@ export function useForgeExecutionActions({
   dispatch,
   markSearchKept,
   runForgeAnimation,
+  setField,
   state,
   syncStep,
   syncTargets,
 }: UseForgeExecutionActionsOptions) {
+  const autoOperationRef = useRef<{
+    fingerprint: string;
+    idempotencyKeys: AutoRequestKeys;
+  } | null>(null);
   const { guardOfflineAction } = useOfflineActionGuard();
 
   function executeForge(mode: ForgeExecutionMode) {
     if (
       guardOfflineAction({
         id: "forge-execution-offline",
-        description: "Reconnect before forming a TeamForge group.",
+        description:
+          mode === "AUTO"
+            ? "Reconnect before starting this group request."
+            : "Reconnect before forming a TeamForge group.",
       })
     ) {
       return;
@@ -106,13 +124,20 @@ export function useForgeExecutionActions({
       return;
     }
 
+    const autoRequestKeys =
+      mode === "AUTO" && validation?.input
+        ? getAutoRequestKeys(autoOperationRef, validation.input, state)
+        : null;
+
     runForgeAnimation(async () => {
       await runForgeExecution({
         dispatch,
         markSearchKept,
         mode,
+        autoRequestKeys,
         mutationName,
         state,
+        setField,
         syncStep,
         syncTargets,
         validation,
@@ -141,19 +166,10 @@ function getForgeMutationName(mode: ForgeExecutionMode) {
 }
 
 function getForgeExecutionValidationForMode(
-  mode: ForgeExecutionMode,
+  _mode: ForgeExecutionMode,
   state: UseForgeWizardSubmitActionsOptions["state"],
 ) {
-  return canReusePendingAutoForge(mode, state)
-    ? null
-    : getForgeExecutionValidation(state);
-}
-
-function canReusePendingAutoForge(
-  mode: ForgeExecutionMode,
-  state: UseForgeWizardSubmitActionsOptions["state"],
-) {
-  return mode === "AUTO" && Boolean(state.activityId);
+  return getForgeExecutionValidation(state);
 }
 
 function handleForgePlanValidationBlock(
@@ -164,7 +180,7 @@ function handleForgePlanValidationBlock(
   }: Pick<UseForgeExecutionActionsOptions, "dispatch" | "syncStep">,
 ) {
   const message =
-    validation.message ?? "Finish the plan details before forming the group.";
+    validation.message ?? "Finish the plan details before continuing.";
 
   showForgePlanValidationToast(new Error(message), message);
   returnToForgePlanStep({ dispatch, syncStep });
@@ -180,6 +196,18 @@ function handleForgeExecutionError(
         "Add at least one interest so TeamForge can use your profile when forming the group.",
       id: "forge-missing-interest-signals",
       title: "Interests needed",
+    });
+    return null;
+  }
+
+  if (error instanceof AutoForgeRequestSubmissionError) {
+    context.setField("activityId", error.activityId);
+    context.syncTargets({ activityId: error.activityId, groupId: null });
+    showAppErrorToast(error, {
+      fallbackMessage:
+        "Your activity was saved, but the Forge request could not be confirmed. Try again to safely resend it.",
+      id: "auto-forge-request-submit",
+      title: "Request not confirmed",
     });
     return null;
   }
@@ -203,6 +231,7 @@ async function runForgeExecution(context: ForgeAnimationExecutionContext) {
     context.mode,
     context.state,
     context.validation?.input ?? null,
+    context.autoRequestKeys,
   ).catch((error) => handleForgeExecutionError(error, context));
 
   if (!result) {
@@ -227,6 +256,60 @@ function handleForgeExecutionSuccess(
   if (result.activityId && result.searchKept) {
     context.markSearchKept(result.activityId);
   }
+}
+
+interface AutoRequestKeys {
+  request: string;
+  resume: string;
+}
+
+function getAutoRequestKeys(
+  operationRef: RefObject<{
+    fingerprint: string;
+    idempotencyKeys: AutoRequestKeys;
+  } | null>,
+  input: AutoForgeExecutionInput,
+  state: UseForgeWizardSubmitActionsOptions["state"],
+) {
+  const fingerprint = JSON.stringify({
+    input,
+    requestId: state.autoForgeRequestId,
+    revision: state.autoForgeRequestRevision,
+  });
+
+  if (operationRef.current?.fingerprint === fingerprint) {
+    return operationRef.current.idempotencyKeys;
+  }
+
+  const idempotencyKeys = {
+    request: crypto.randomUUID(),
+    resume: crypto.randomUUID(),
+  };
+  operationRef.current = { fingerprint, idempotencyKeys };
+  return idempotencyKeys;
+}
+
+function getExistingAutoForgeRequest(
+  state: UseForgeWizardSubmitActionsOptions["state"],
+) {
+  if (!state.autoForgeRequestId || !state.autoForgeRequestRevision) {
+    return null;
+  }
+
+  const lifecycle = state.autoForgeRequestLifecycle;
+  if (
+    lifecycle !== "DRAFT" &&
+    lifecycle !== "SEARCHING" &&
+    lifecycle !== "PAUSED"
+  ) {
+    return null;
+  }
+
+  return {
+    id: state.autoForgeRequestId,
+    revision: state.autoForgeRequestRevision,
+    lifecycle,
+  };
 }
 
 function handleForgeZodExecutionError(

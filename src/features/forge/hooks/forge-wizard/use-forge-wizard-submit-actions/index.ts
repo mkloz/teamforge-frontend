@@ -27,6 +27,7 @@ export function useForgeWizardSubmitActions({
     dispatch,
     markSearchKept,
     runForgeAnimation,
+    setField,
     state,
     syncStep,
     syncTargets,

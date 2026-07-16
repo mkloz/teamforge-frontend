@@ -20,6 +20,7 @@ import {
 import type { ForgeIdeaLaunch } from "@/shared/navigation/forge-navigation";
 
 interface UseForgeWizardOptions {
+  initialDraft?: ForgeWizardData | null;
   onClose: () => void;
   routeStep: Step;
   routeMode: ForgeMode;
@@ -39,6 +40,7 @@ interface UseForgeWizardOptions {
 }
 
 export function useForgeWizard({
+  initialDraft,
   onClose,
   routeStep,
   routeMode,
@@ -50,7 +52,9 @@ export function useForgeWizard({
   syncTargets,
   enterGroupHub,
 }: UseForgeWizardOptions) {
-  const initialDraftRef = useRef(useForgeWizardDraftStore.getState().draft);
+  const initialDraftRef = useRef(
+    initialDraft ?? useForgeWizardDraftStore.getState().draft,
+  );
   const saveDraft = useForgeWizardDraftStore((store) => store.saveDraft);
   const clearDraft = useForgeWizardDraftStore((store) => store.clearDraft);
   const hasPersistedStateRef = useRef(false);
@@ -230,9 +234,21 @@ function createInitialForgeWizardStateForRoute(input: {
 }) {
   const initialState = getInitialForgeWizardState(input.draft);
   const hasLiveState = hasLiveForgeState(initialState);
+  const routeChangedMode = initialState.forgeMode !== input.routeMode;
   const baseState = {
     ...initialState,
     forgeMode: input.routeMode,
+    planScheduleMode: routeChangedMode
+      ? getDefaultScheduleMode(input.routeMode)
+      : initialState.planScheduleMode,
+    planDate:
+      routeChangedMode && input.routeMode === "AUTO"
+        ? ""
+        : initialState.planDate,
+    planTime:
+      routeChangedMode && input.routeMode === "AUTO"
+        ? ""
+        : initialState.planTime,
     step: getInitialRouteStep(input.routeStep, hasLiveState),
   };
 
@@ -247,6 +263,10 @@ function createInitialForgeWizardStateForRoute(input: {
     template: selection.template,
     templateId: selection.id,
   });
+}
+
+function getDefaultScheduleMode(mode: ForgeMode) {
+  return mode === "AUTO" ? "TO_BE_DECIDED" : "FIXED";
 }
 
 function getInitialForgeWizardState(draft: ForgeWizardData | null) {

@@ -26,9 +26,6 @@ export function Step1FooterAction({
   fw,
   onDisabledStep1Continue,
 }: Step1FooterActionProps) {
-  const hasRecentActivitySelected =
-    fw.appliedTemplateId?.startsWith("recent:") ?? false;
-
   return (
     <FooterActionMotion
       motionKey="s1"
@@ -39,11 +36,6 @@ export function Step1FooterAction({
         label={getStep1ContinueLabel(Boolean(fw.selectedActivity))}
         icon={<ChevronRight size={16} />}
         onClick={() => {
-          if (hasRecentActivitySelected) {
-            fw.goToStep(3);
-            return;
-          }
-
           fw.goNext();
         }}
         disabled={!fw.canAdvanceStep1}
@@ -56,7 +48,7 @@ export function Step2FooterAction({ fw }: ForgeFooterChildProps) {
   return (
     <FooterActionMotion motionKey="s2">
       <PrimaryButton
-        label="Start blank plan"
+        label="Continue to scope and plan"
         icon={<ChevronRight size={16} />}
         onClick={fw.goNext}
       />
@@ -68,7 +60,9 @@ export function Step3FooterAction({ fw }: ForgeFooterChildProps) {
   return (
     <FooterActionMotion motionKey="s3">
       <PrimaryButton
-        label="Continue to group setup"
+        label={
+          fw.forgeMode === "AUTO" ? "Review request" : "Continue to group setup"
+        }
         icon={<ChevronRight size={16} />}
         onClick={fw.goNext}
         disabled={!fw.canAdvanceStep2}
@@ -88,13 +82,30 @@ export function Step4FooterAction({ fw }: ForgeFooterChildProps) {
           disabled={!isOnline}
         />
       ) : (
-        <AutoForgeButton onClick={fw.handleAutoForge} disabled={!isOnline} />
+        <AutoForgeButton
+          onClick={fw.handleAutoForge}
+          disabled={!isOnline}
+          label={getAutoForgeActionLabel(fw)}
+        />
       )}
       {!isOnline ? (
-        <ForgeFooterOfflineNotice message="Reconnect before forming a group." />
+        <ForgeFooterOfflineNotice
+          message={
+            fw.forgeMode === "AUTO"
+              ? "Reconnect before starting this request."
+              : "Reconnect before forming a group."
+          }
+        />
       ) : null}
     </FooterActionMotion>
   );
+}
+
+function getAutoForgeActionLabel(fw: ForgeFooterChildProps["fw"]) {
+  if (!fw.autoForgeRequestId) return "Start search";
+  if (fw.autoForgeRequestLifecycle === "DRAFT") return "Save and start search";
+  if (fw.autoForgeRequestLifecycle === "PAUSED") return "Save and resume";
+  return "Save changes";
 }
 
 export function Step5SuccessFooterAction({ fw }: ForgeFooterChildProps) {
@@ -104,6 +115,18 @@ export function Step5SuccessFooterAction({ fw }: ForgeFooterChildProps) {
         label="Continue to group details"
         icon={<ChevronRight size={16} />}
         onClick={fw.goNext}
+      />
+    </FooterActionMotion>
+  );
+}
+
+export function Step5SearchingFooterAction({ fw }: ForgeFooterChildProps) {
+  return (
+    <FooterActionMotion motionKey="s5-searching">
+      <PrimaryButton
+        label="Done"
+        icon={<Check size={18} />}
+        onClick={fw.close}
       />
     </FooterActionMotion>
   );

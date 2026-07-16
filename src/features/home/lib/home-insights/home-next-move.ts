@@ -1,3 +1,4 @@
+import type { AutoForgeRequest } from "@/features/forge/public/auto-forge-request";
 import type {
   HomeViewer,
   PlannedGroup,
@@ -20,6 +21,8 @@ import { getDateMeta, sortPlansByUrgency } from "./plan-timing";
 import { getProfileMoveCopy } from "./profile-move-copy";
 
 interface BuildHomeNextMoveInput {
+  autoForgeRequest: AutoForgeRequest | null;
+  autoForgeRequestUnavailable: boolean;
   viewer: HomeViewer;
   stats: UserStats;
   invitations: Invite[];
@@ -34,6 +37,8 @@ type HomeNextMoveCandidateBuilder = (
 
 const HOME_NEXT_MOVE_CANDIDATES: HomeNextMoveCandidateBuilder[] = [
   buildProfileNextMove,
+  buildAutoForgeRequestUnavailableMove,
+  buildAutoForgeRequestNextMove,
   buildInvitationNextMove,
   buildProposedPlanNextMove,
   buildTodayOrPastPlanNextMove,
@@ -42,6 +47,104 @@ const HOME_NEXT_MOVE_CANDIDATES: HomeNextMoveCandidateBuilder[] = [
   buildRecommendationNextMove,
   buildFirstForgeNextMove,
 ];
+
+function buildAutoForgeRequestUnavailableMove({
+  autoForgeRequest,
+  autoForgeRequestUnavailable,
+}: BuildHomeNextMoveInput): HomeNextMove | null {
+  if (!autoForgeRequestUnavailable || autoForgeRequest) return null;
+
+  return {
+    kind: "auto-request-unavailable",
+    eyebrow: "Request status unavailable",
+    title: "Refresh before starting something new",
+    body: "TeamForge could not confirm whether you already have an active request. Use the status card below to try again before making another one.",
+    primaryLabel: "Check request status",
+    secondaryLabel: "Browse groups",
+    signal: "Status unknown",
+  };
+}
+
+function buildAutoForgeRequestNextMove({
+  autoForgeRequest,
+}: BuildHomeNextMoveInput): HomeNextMove | null {
+  if (!autoForgeRequest) return null;
+
+  const copy = getAutoForgeRequestMoveCopy(autoForgeRequest);
+
+  return {
+    kind: "auto-request",
+    request: autoForgeRequest,
+    ...copy,
+  };
+}
+
+function getAutoForgeRequestMoveCopy(request: AutoForgeRequest) {
+  if (request.lifecycle === "DRAFT") {
+    return {
+      eyebrow: "Request saved as a draft",
+      title: `Review ${request.activity.title}`,
+      body: "Check the scope and plan details before starting the search.",
+      primaryLabel: "Review request",
+      secondaryLabel: "Request controls",
+      signal: "Not searching yet",
+      startsNewRequest: false,
+    };
+  }
+
+  if (request.lifecycle === "SEARCHING") {
+    return {
+      eyebrow: "Search in progress",
+      title: request.activity.title,
+      body: "Your request is active. TeamForge will check it again automatically; you can still adjust or pause it.",
+      primaryLabel: "Edit request",
+      secondaryLabel: "Request controls",
+      signal: "Searching",
+      startsNewRequest: false,
+    };
+  }
+
+  if (request.lifecycle === "PAUSED") {
+    const canEdit = request.pauseReason === "USER";
+    const automaticRetryFailed =
+      request.pauseReason === "AUTOMATIC_RETRY_FAILURE";
+    return {
+      eyebrow: "Search paused",
+      title: request.activity.title,
+      body: canEdit
+        ? "You paused this request. Adjust it or resume when you are ready."
+        : automaticRetryFailed
+          ? "We hit repeated errors while checking this request, so we paused it. Open the status to try again."
+          : "This request is paused while another TeamForge action is resolved.",
+      primaryLabel: canEdit ? "Edit request" : "View status",
+      secondaryLabel: "Request controls",
+      signal: "Paused",
+      startsNewRequest: false,
+    };
+  }
+
+  if (request.lifecycle === "EXPIRED") {
+    return {
+      eyebrow: "Request expired",
+      title: request.activity.title,
+      body: "This request is no longer searching. Start a new one when the plan still works for you.",
+      primaryLabel: "Start a new request",
+      secondaryLabel: "Request details",
+      signal: "Search ended",
+      startsNewRequest: true,
+    };
+  }
+
+  return {
+    eyebrow: "Request status",
+    title: request.activity.title,
+    body: "This request has moved beyond editing. Open its status for the latest available details.",
+    primaryLabel: "View status",
+    secondaryLabel: "Browse groups",
+    signal: "Status changed",
+    startsNewRequest: false,
+  };
+}
 
 export function buildHomeNextMove(input: BuildHomeNextMoveInput): HomeNextMove {
   for (const buildCandidate of HOME_NEXT_MOVE_CANDIDATES) {

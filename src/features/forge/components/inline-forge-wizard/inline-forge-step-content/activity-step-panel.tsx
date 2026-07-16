@@ -14,6 +14,8 @@ export function ActivityStepPanel({
 }: ActivityStepPanelProps) {
   return (
     <Step1Activity
+      forgeMode={fw.forgeMode}
+      onForgeModeChange={fw.setForgeMode}
       appliedTemplateId={fw.appliedTemplateId}
       selectedActivity={fw.selectedActivity}
       onSelect={(activity) => fw.setSelectedActivity(activity)}

@@ -11,7 +11,7 @@ import { FieldLabel } from "./field-label";
 import { SectionCard } from "./section-card";
 import { SectionHeader } from "./section-header";
 import { LOCATION_TYPES } from "./step2-plan.constants";
-import type { LocationType } from "./types";
+import type { ForgeScope, LocationType } from "./types";
 
 const EMPTY_SELECTED_PLAN_LOCATION = {
   address: "",
@@ -20,6 +20,7 @@ const EMPTY_SELECTED_PLAN_LOCATION = {
 };
 
 interface LocationSectionProps {
+  forgeScope: ForgeScope | null;
   locationType: LocationType;
   onLocationTypeChange: (value: LocationType) => void;
   onPlanLocationChange: (value: string) => void;
@@ -45,6 +46,7 @@ interface LocationSectionRenderState {
 }
 
 export function LocationSection({
+  forgeScope,
   locationType,
   onLocationTypeChange,
   onPlanLocationChange,
@@ -54,15 +56,22 @@ export function LocationSection({
   planLocationLng,
 }: LocationSectionProps) {
   const renderState = getLocationSectionRenderState(locationType);
+  const locationOptions = LOCATION_TYPE_TABS.filter(({ id }) =>
+    forgeScope === "LOCAL"
+      ? id !== "ONLINE"
+      : forgeScope === "ONLINE"
+        ? id !== "IN_PERSON"
+        : true,
+  );
 
   return (
     <SectionCard>
-      <SectionHeader title="Where" />
+      <SectionHeader title="Exact plan location" />
 
       <SegmentedTabs
         ariaLabel="Location type"
         fill
-        options={LOCATION_TYPE_TABS}
+        options={locationOptions}
         value={locationType}
         onChange={onLocationTypeChange}
       />
@@ -215,7 +224,7 @@ function LocationTbdNotice() {
     <div className="fade-in flex animate-in items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 duration-200">
       <Globe size={12} className="shrink-0 text-muted-foreground/50" />
       <p className="text-muted-foreground/70 text-xs leading-snug">
-        The group can decide the location after everyone joins.
+        The group can decide the exact venue or meeting link after it forms.
       </p>
     </div>
   );

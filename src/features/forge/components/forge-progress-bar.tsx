@@ -18,15 +18,17 @@ interface ForgeProgressStep {
 
 const PRE_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
   { s: 1, label: "Activity" },
-  { s: 2, label: "Template" },
+  { s: 2, label: "Formation method" },
   { s: 3, label: "Plan" },
   { s: 4, label: "Group" },
 ];
 
-const POST_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
-  { s: 5, label: "Result" },
-  { s: 6, label: "Details" },
-  { s: 7, label: "Invite" },
+const AUTO_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
+  { s: 1, label: "Activity" },
+  { s: 2, label: "Formation method" },
+  { s: 3, label: "Scope and plan" },
+  { s: 4, label: "Review" },
+  { s: 5, label: "Search state" },
 ];
 
 const MANUAL_POST_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
@@ -40,13 +42,15 @@ function getProgressSteps(
   isPreForge: boolean,
   forgeMode: ForgeMode,
 ): ForgeProgressStep[] {
+  if (forgeMode === "AUTO") {
+    return AUTO_FORGE_PROGRESS_STEPS;
+  }
+
   if (isPreForge) {
     return PRE_FORGE_PROGRESS_STEPS;
   }
 
-  return forgeMode === "MANUAL"
-    ? MANUAL_POST_FORGE_PROGRESS_STEPS
-    : POST_FORGE_PROGRESS_STEPS;
+  return MANUAL_POST_FORGE_PROGRESS_STEPS;
 }
 
 function getProgressStepState(s: Step, step: Step) {

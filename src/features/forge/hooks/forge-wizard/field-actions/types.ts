@@ -1,7 +1,9 @@
 import type {
   ForgeMode,
+  ForgeScope,
   GroupSizeMode,
   LocationType,
+  PlanScheduleMode,
   Visibility,
 } from "@/features/forge/lib/forge-contract";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
@@ -49,6 +51,7 @@ export interface ActivityFieldActions {
 }
 
 export interface PlanFieldActions {
+  setForgeScope: (value: ForgeScope) => void;
   setLocationType: (value: LocationType) => void;
   setPlanCost: (value: "FREE" | "PAID") => void;
   setPlanCostAmount: (value: string) => void;
@@ -57,6 +60,7 @@ export interface PlanFieldActions {
   setPlanDescription: (value: string) => void;
   setPlanLocation: (value: string) => void;
   setPlanLocationCoordinates: (lat: number | null, lng: number | null) => void;
+  setPlanScheduleMode: (value: PlanScheduleMode) => void;
   setPlanName: (value: string) => void;
   setPlanTime: (value: string) => void;
 }

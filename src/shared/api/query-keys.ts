@@ -60,6 +60,7 @@ export const APP_QUERY_KEYS = {
     blockedUsers: ["settings", "blocked-users"] as const,
   },
   forge: {
+    currentAutoRequest: ["forge", "auto-request", "current"] as const,
     friends: ["forge", "friends"] as const,
     recentActivities: ["forge", "recent-activities"] as const,
   },

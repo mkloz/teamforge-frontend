@@ -1,5 +1,6 @@
 import { lazy, type ReactNode, Suspense, useEffect, useRef } from "react";
 import { AttentionQueue } from "@/features/home/components/attention-queue";
+import { AutoForgeRequestStatus } from "@/features/home/components/auto-forge-request-status";
 import { GroupsGrid } from "@/features/home/components/groups-grid";
 import { HomeHero } from "@/features/home/components/home-hero";
 import { HomeOfflineLaunchState } from "@/features/home/components/home-offline-launch-state";
@@ -175,6 +176,7 @@ export function HomePage() {
   return (
     <HomePageContent
       hero={<HomeHero />}
+      forgeRequest={<AutoForgeRequestStatus />}
       sentInvitationsReview={getSentInvitationsReviewSlot({
         focusedInviteId,
         invitations: sentInvitations,

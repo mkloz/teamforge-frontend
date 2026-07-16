@@ -1,6 +1,11 @@
 export type LocationType = "IN_PERSON" | "ONLINE" | "TBD";
+export type ForgeScope = "LOCAL" | "ONLINE";
+export type PlanScheduleMode = "TO_BE_DECIDED" | "FIXED";
 
 export interface Step2PlanProps {
+  forgeMode: "AUTO" | "MANUAL";
+  forgeScope: ForgeScope;
+  onForgeScopeChange: (value: ForgeScope) => void;
   planName: string;
   onPlanNameChange: (v: string) => void;
   planDescription: string;
@@ -9,6 +14,8 @@ export interface Step2PlanProps {
   onPlanDateChange: (v: string) => void;
   planTime: string;
   onPlanTimeChange: (v: string) => void;
+  planScheduleMode: PlanScheduleMode;
+  onPlanScheduleModeChange: (value: PlanScheduleMode) => void;
   planLocation: string;
   onPlanLocationChange: (v: string) => void;
   planLocationLat: number | null;
