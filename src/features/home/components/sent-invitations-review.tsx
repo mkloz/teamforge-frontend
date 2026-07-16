@@ -31,10 +31,7 @@ export function SentInvitationsReview({
   const focusedInvite = getFocusedInvite(invitations, focusedInviteId);
 
   return (
-    <section
-      ref={sectionRef}
-      className="mb-6 rounded-xl border border-border bg-card/90 p-4 shadow-sm"
-    >
+    <section ref={sectionRef} className="mb-6 border-border/70 border-y py-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <StatusPill
@@ -85,7 +82,7 @@ function FocusedSentInviteStatus({ invite }: { invite: Invite }) {
   const status = getInviteStatusCopy(invite.status);
 
   return (
-    <article className="mt-4 rounded-xl border border-forge-teal/40 bg-forge-teal/5 p-4">
+    <article className="mt-4 border-border/70 border-t pt-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-bold text-muted-foreground text-xs">
@@ -111,7 +108,7 @@ function FocusedSentInviteStatus({ invite }: { invite: Invite }) {
         </StatusPill>
       </div>
 
-      <div className="mt-4 rounded-xl border border-border/70 bg-canvas/70 px-4 py-3 font-medium text-muted-foreground text-sm">
+      <div className="mt-4 border-primary/35 border-l-2 py-1 pl-3 font-medium text-muted-foreground text-sm">
         {getInviteStatusSentence(invite)}
       </div>
     </article>
@@ -120,7 +117,7 @@ function FocusedSentInviteStatus({ invite }: { invite: Invite }) {
 
 function MissingSentInviteStatus() {
   return (
-    <div className="mt-4 rounded-xl border border-border/70 bg-canvas/70 px-4 py-5 font-medium text-muted-foreground text-sm">
+    <div className="mt-4 border-border/70 border-t py-5 font-medium text-muted-foreground text-sm">
       That invite is no longer available in your recent sent history.
     </div>
   );

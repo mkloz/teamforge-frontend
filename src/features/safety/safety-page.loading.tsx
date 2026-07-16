@@ -1,32 +1,21 @@
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
-export function SafetyPageLoading() {
-  return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 md:px-8 md:py-10">
-      <div className="grid gap-2">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-5 w-full max-w-lg" />
-      </div>
-      <div className="flex gap-2">
-        {["one", "two", "three"].map((item) => (
-          <Skeleton key={item} className="h-10 w-32 rounded-full" />
-        ))}
-      </div>
-      <div className="grid gap-3">
-        {["first", "second", "third"].map((item) => (
-          <Skeleton key={item} className="h-32 w-full rounded-2xl" />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export function SafetyDetailLoading() {
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 md:px-8 md:py-10">
+    <div className="mx-auto flex w-full max-w-3xl flex-col px-4 py-6 md:px-8 md:py-10">
       <Skeleton className="h-10 w-36" />
-      <Skeleton className="h-40 w-full rounded-2xl" />
-      <Skeleton className="h-56 w-full rounded-2xl" />
+      <div className="mt-6 border-border border-b pb-6">
+        <Skeleton className="h-5 w-24 rounded-full" />
+        <Skeleton className="mt-4 h-8 w-full max-w-md" />
+        <Skeleton className="mt-2 h-4 w-full max-w-lg" />
+      </div>
+      {["first", "second"].map((item) => (
+        <div key={item} className="border-border border-b py-6 last:border-b-0">
+          <Skeleton className="h-6 w-44" />
+          <Skeleton className="mt-5 h-4 w-full" />
+          <Skeleton className="mt-3 h-4 w-2/3" />
+        </div>
+      ))}
     </div>
   );
 }

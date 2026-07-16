@@ -38,7 +38,7 @@ export function ReportReceipt({
         </div>
       </div>
 
-      <dl className="grid gap-3 rounded-2xl border border-border bg-card p-4 text-sm">
+      <dl className="divide-y divide-border/70 border-border/70 border-y text-sm">
         <ReceiptRow label="Reference" value={receipt.referenceCode} />
         <ReceiptRow
           label="Status"
@@ -103,7 +103,7 @@ function getActionStatusLabel(status: string) {
 
 function ReceiptRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid gap-1 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-3">
+    <div className="grid gap-1 py-3 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-3">
       <dt className="font-semibold text-slate-muted">{label}</dt>
       <dd className="wrap-break-word font-medium text-ink">{value}</dd>
     </div>

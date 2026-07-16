@@ -124,7 +124,7 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             />
             <MenuLinkItem
               icon={Shield}
-              label="Safety Center"
+              label="Safety"
               description="Reports and account actions"
               navigation={buildSafetyNavigation()}
             />

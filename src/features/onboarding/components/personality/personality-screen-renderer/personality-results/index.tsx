@@ -3,12 +3,14 @@ import { m } from "framer-motion";
 import { resultsContainer } from "@/features/onboarding/constants/motion";
 import type { PersonalityAssessmentQueryStatus } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import { getPersonalityAudienceText } from "@/features/onboarding/lib/personality-disclosure-copy";
+import { getPersonalityResultViewModel } from "@/features/onboarding/lib/personality-results";
 import { Button } from "@/shared/components/ui/button";
 import type { PersonalityDisclosure } from "@/shared/schemas/personality-assessment";
 import type { PublicPersonalityProfile } from "@/shared/schemas/public-personality-profile";
 
 import { PersonalityResultActions } from "./personality-result-actions";
 import { PersonalityResultHero } from "./personality-result-hero";
+import { PersonalityResultSummary } from "./personality-result-summary";
 import { PersonalityTraitMap } from "./personality-trait-map";
 import { SectionHeading } from "./section-heading";
 
@@ -65,6 +67,7 @@ export function PersonalityResults({
   const audienceText = getPersonalityAudienceText(
     disclosure.authorizedAudiences,
   );
+  const viewModel = getPersonalityResultViewModel(profile);
 
   return (
     <m.div
@@ -75,38 +78,54 @@ export function PersonalityResults({
     >
       <PersonalityResultHero personalityType={profile.personalityType} />
 
+      <PersonalityResultSummary profile={viewModel.profile} />
+
       <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
         <SectionHeading
-          eyebrow="Your result"
-          title="Five broad personality traits"
+          eyebrow="Personality summary"
+          title="How you may contribute to a group"
+        />
+        <p className="text-pretty font-medium text-base text-ink/82 leading-relaxed">
+          {viewModel.groupRead}
+        </p>
+      </section>
+
+      <PersonalityTraitMap
+        dimensionScores={viewModel.dimensionScores}
+        oceanScores={viewModel.oceanScores}
+      />
+
+      <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
+        <SectionHeading
+          eyebrow="Keep in mind"
+          title="An estimate, not a diagnosis"
         />
         <p className="text-pretty text-muted-foreground text-sm leading-relaxed">
           This is an estimate based on your answers. It is not a diagnosis or a
           fixed description of who you are. It does not measure safety or
           guarantee how well a group will work.
         </p>
-        <PersonalityTraitMap oceanScores={profile.ocean} />
       </section>
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+      <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
         <SectionHeading
-          eyebrow="Before you publish"
-          title="What publication allows"
+          eyebrow="Privacy choice"
+          title="Choose how TeamForge uses it"
         />
         <p className="text-pretty text-ink/82 text-sm leading-relaxed">
-          Publishing lets TeamForge use this exact type and these five scores
-          for {audienceText}. Keeping it private stores the result for you.
-          TeamForge will not use it when forming groups. It is never published
-          on the open web.
+          If you publish, TeamForge can use this type and these five scores when
+          forming groups. They can be shown to {audienceText}. Keeping the
+          result private saves it for you and leaves it out of group formation.
+          It is never posted to the open web.
         </p>
         <p className="text-pretty text-muted-foreground text-xs leading-relaxed">
-          Your answers were used for this submission and are not saved.
+          Your answers were used for this assessment and are not saved.
         </p>
       </section>
 
       {isLegacyResult ? (
         <p
-          className="text-pretty rounded-2xl border border-border bg-muted/40 p-4 text-ink text-sm leading-relaxed"
+          className="text-pretty border-spark-amber/60 border-l-2 py-1 pl-4 text-ink text-sm leading-relaxed"
           role="status"
         >
           This result came from the earlier assessment flow. You can keep it
@@ -149,7 +168,7 @@ function AssessmentStateNotice({
   if (status === "error") {
     return (
       <div
-        className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4"
+        className="flex flex-col gap-3 border-destructive/60 border-l-2 py-1 pl-4"
         role="alert"
       >
         <p className="text-muted-foreground text-sm leading-relaxed">

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
+import { RefreshCw } from "lucide-react";
 import { safetyQueries } from "@/features/safety/api/safety-queries";
 import {
   InformationResponseForm,
@@ -8,7 +9,7 @@ import {
 import {
   DetailRows,
   ReviewStatus,
-  SafetyDetailCard,
+  SafetyDetailSection,
   SafetyDetailShell,
   SafetyOfflineNotice,
 } from "@/features/safety/components/safety-detail-parts";
@@ -21,6 +22,8 @@ import {
 } from "@/features/safety/lib/safety-language";
 import { SafetyDetailLoading } from "@/features/safety/safety-page.loading";
 import { PageErrorState } from "@/shared/components/page-error-state";
+import { Button } from "@/shared/components/ui/button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
@@ -57,13 +60,14 @@ export function SafetyReportDetailPage() {
 
   return (
     <SafetyDetailShell
+      backSection="reports"
       title={formatCategory(report.category)}
       description={`Reference ${report.referenceCode}`}
       status={REPORT_STATUS_LABELS[report.status]}
     >
       {!isOnline ? <SafetyOfflineNotice /> : null}
 
-      <SafetyDetailCard title="Report status">
+      <SafetyDetailSection title="Report status">
         <DetailRows
           rows={[
             { label: "Status", value: REPORT_STATUS_LABELS[report.status] },
@@ -78,7 +82,7 @@ export function SafetyReportDetailPage() {
           ]}
         />
         {report.informationRequest ? (
-          <div className="grid gap-1 rounded-xl bg-accent/8 p-4">
+          <div className="grid gap-1 border-accent/45 border-l-2 py-1 pl-4">
             <p className="font-semibold text-ink text-sm">
               More information needed
             </p>
@@ -96,10 +100,16 @@ export function SafetyReportDetailPage() {
             </div>
           </div>
         ) : null}
-      </SafetyDetailCard>
+      </SafetyDetailSection>
 
-      {review ? (
-        <SafetyDetailCard title="Outcome review request">
+      {reviewsQuery.isLoading ? <OutcomeReviewLoading /> : null}
+
+      {reviewsQuery.isError ? (
+        <OutcomeReviewError onRetry={() => void reviewsQuery.refetch()} />
+      ) : null}
+
+      {reviewsQuery.isSuccess && review ? (
+        <SafetyDetailSection title="Outcome review request">
           <ReviewStatus
             label={OUTCOME_REVIEW_STATUS_LABELS[review.status]}
             submittedAt={review.submittedAt}
@@ -118,11 +128,13 @@ export function SafetyReportDetailPage() {
               ]}
             />
           ) : null}
-        </SafetyDetailCard>
+        </SafetyDetailSection>
       ) : null}
 
-      {!review && report.outcomeReviewEligibility.canRequest ? (
-        <SafetyDetailCard title="Review this outcome">
+      {reviewsQuery.isSuccess &&
+      !review &&
+      report.outcomeReviewEligibility.canRequest ? (
+        <SafetyDetailSection title="Review this outcome">
           {report.outcomeReviewEligibility.deadline ? (
             <p className="text-slate-muted text-sm">
               Request by{" "}
@@ -130,8 +142,38 @@ export function SafetyReportDetailPage() {
             </p>
           ) : null}
           <OutcomeReviewForm reportId={reportId} />
-        </SafetyDetailCard>
+        </SafetyDetailSection>
       ) : null}
     </SafetyDetailShell>
+  );
+}
+
+function OutcomeReviewLoading() {
+  return (
+    <section
+      className="grid gap-4 border-border border-b py-6 last:border-b-0"
+      aria-busy="true"
+    >
+      <output className="sr-only">Loading outcome review status</output>
+      <Skeleton className="h-6 w-52" />
+      <Skeleton className="h-14 w-full" />
+    </section>
+  );
+}
+
+function OutcomeReviewError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <SafetyDetailSection title="Outcome review request">
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-slate-muted text-sm" role="alert">
+          The review status could not load. Refresh it before sending a new
+          request.
+        </p>
+        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+          <RefreshCw className="size-4" aria-hidden="true" />
+          Try again
+        </Button>
+      </div>
+    </SafetyDetailSection>
   );
 }

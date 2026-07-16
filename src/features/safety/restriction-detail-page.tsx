@@ -5,7 +5,7 @@ import { ContainmentContestForm } from "@/features/safety/components/review-requ
 import {
   DetailRows,
   ReviewStatus,
-  SafetyDetailCard,
+  SafetyDetailSection,
   SafetyDetailShell,
   SafetyOfflineNotice,
 } from "@/features/safety/components/safety-detail-parts";
@@ -49,12 +49,13 @@ export function RestrictionDetailPage() {
   const containment = query.data;
   return (
     <SafetyDetailShell
+      backSection="restrictions"
       title={containment.title}
       description={containment.message}
       status={RESTRICTION_STATE_LABELS[containment.state]}
     >
       {!isOnline ? <SafetyOfflineNotice /> : null}
-      <SafetyDetailCard title="What this means">
+      <SafetyDetailSection title="What this means">
         <DetailRows
           rows={[
             {
@@ -67,22 +68,22 @@ export function RestrictionDetailPage() {
             },
           ]}
         />
-      </SafetyDetailCard>
+      </SafetyDetailSection>
 
       {containment.contest ? (
-        <SafetyDetailCard title="Restriction review request">
+        <SafetyDetailSection title="Restriction review request">
           <ReviewStatus
             label={CONTEST_STATUS_LABELS[containment.contest.status]}
             submittedAt={containment.contest.submittedAt}
             decidedAt={containment.contest.decidedAt}
           />
-        </SafetyDetailCard>
+        </SafetyDetailSection>
       ) : null}
 
       {!containment.contest && containment.canContest ? (
-        <SafetyDetailCard title="Review this restriction">
+        <SafetyDetailSection title="Review this restriction">
           <ContainmentContestForm containmentId={containmentId} />
-        </SafetyDetailCard>
+        </SafetyDetailSection>
       ) : null}
     </SafetyDetailShell>
   );

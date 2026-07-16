@@ -1,3 +1,4 @@
+import { redirect } from "@tanstack/react-router";
 import {
   ActivityRouteLoading,
   accountActionDetailPageModule,
@@ -14,9 +15,7 @@ import {
   profilePageModule,
   restrictionDetailPageModule,
   SafetyDetailRouteLoading,
-  SafetyRouteLoading,
   SettingsRouteLoading,
-  safetyPageModule,
   safetyReportDetailPageModule,
   settingsPageModule,
   userDetailPageModule,
@@ -39,7 +38,10 @@ import { validateExploreRouteSearch } from "@/shared/navigation";
 import { validateActivityRouteSearch } from "@/shared/navigation/activity-navigation";
 import { validateForgeRouteSearch } from "@/shared/navigation/forge-navigation";
 import { validateHomeRouteSearch } from "@/shared/navigation/home-navigation";
-import { validateSafetySearch } from "@/shared/navigation/safety-navigation";
+import {
+  buildSafetyNavigation,
+  validateSafetySearch,
+} from "@/shared/navigation/safety-navigation";
 import { validateSettingsRouteSearch } from "@/shared/navigation/settings-navigation";
 
 export const homeRouteOptions = {
@@ -185,20 +187,16 @@ export const settingsRouteOptions = {
 export const safetyRouteOptions = {
   path: "/safety" as const,
   validateSearch: validateSafetySearch,
-  loader: createRouteModuleLoader(safetyPageModule, SafetyRouteLoading),
-  staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: SafetyRouteLoading,
-  component: createLazyPageRoute(
-    safetyPageModule.Component,
-    <SafetyRouteLoading />,
-  ),
-  errorComponent: createRouteErrorComponent({
-    scope: routeErrorScopes.safety,
-    title: "Safety Center could not load",
-    description: "Your safety information did not load.",
-    fallbackTo: "/home",
-    fallbackLabel: "Back to home",
-  }),
+  beforeLoad: ({
+    search,
+  }: {
+    search: ReturnType<typeof validateSafetySearch>;
+  }) => {
+    throw redirect({
+      ...buildSafetyNavigation(search.section),
+      replace: true,
+    });
+  },
 };
 
 export const safetyReportDetailRouteOptions = {
@@ -218,7 +216,7 @@ export const safetyReportDetailRouteOptions = {
     title: "Report details could not load",
     description: "This report is unavailable right now.",
     fallbackTo: "/safety",
-    fallbackLabel: "Back to Safety Center",
+    fallbackLabel: "Back to safety settings",
   }),
 };
 
@@ -239,7 +237,7 @@ export const accountActionDetailRouteOptions = {
     title: "Account action could not load",
     description: "This notice is unavailable right now.",
     fallbackTo: "/safety",
-    fallbackLabel: "Back to Safety Center",
+    fallbackLabel: "Back to safety settings",
   }),
 };
 
@@ -260,7 +258,7 @@ export const restrictionDetailRouteOptions = {
     title: "Safety restriction could not load",
     description: "This restriction is unavailable right now.",
     fallbackTo: "/safety",
-    fallbackLabel: "Back to Safety Center",
+    fallbackLabel: "Back to safety settings",
   }),
 };
 

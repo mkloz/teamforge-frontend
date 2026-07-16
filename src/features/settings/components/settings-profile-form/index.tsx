@@ -1,6 +1,7 @@
 import { lazy, type ReactNode, Suspense } from "react";
 import { AdultEligibilitySection } from "@/features/settings/components/adult-eligibility-section";
 import {
+  SafetySettingsOverviewSkeleton,
   SettingsActiveSessionsSkeleton,
   SettingsBlockedUsersSkeleton,
   SettingsPreferencesSkeleton,
@@ -32,6 +33,13 @@ const BlockedUsersSection = lazy(() =>
   import("@/features/settings/components/blocked-users-section").then(
     (module) => ({
       default: module.BlockedUsersSection,
+    }),
+  ),
+);
+const SafetySettingsOverview = lazy(() =>
+  import("@/features/safety/public/safety-settings-overview").then(
+    (module) => ({
+      default: module.SafetySettingsOverview,
     }),
   ),
 );
@@ -210,16 +218,21 @@ function SafetySettingsPanel({
   safety,
 }: Pick<SettingsProfileFormProps, "safety">) {
   return (
-    <Suspense fallback={<SettingsBlockedUsersSkeleton />}>
-      <BlockedUsersSection
-        blockedUsers={safety.blockedUsers}
-        errorMessage={safety.blockedUsersError}
-        isOnline={safety.isOnline}
-        isLoading={safety.isLoadingBlockedUsers}
-        unblockingUserId={safety.unblockingUserId}
-        onUnblockUser={safety.onUnblockUser}
-      />
-    </Suspense>
+    <div className="grid gap-9">
+      <Suspense fallback={<SafetySettingsOverviewSkeleton />}>
+        <SafetySettingsOverview />
+      </Suspense>
+      <Suspense fallback={<SettingsBlockedUsersSkeleton />}>
+        <BlockedUsersSection
+          blockedUsers={safety.blockedUsers}
+          errorMessage={safety.blockedUsersError}
+          isOnline={safety.isOnline}
+          isLoading={safety.isLoadingBlockedUsers}
+          unblockingUserId={safety.unblockingUserId}
+          onUnblockUser={safety.onUnblockUser}
+        />
+      </Suspense>
+    </div>
   );
 }
 

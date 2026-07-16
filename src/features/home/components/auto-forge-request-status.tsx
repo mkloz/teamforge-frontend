@@ -77,7 +77,7 @@ function RequestStatusCard({
         description={view.description}
       />
 
-      <div className="grid gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <div className="grid gap-5 border-border/70 border-y py-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <StatusPill
             size="sm"
@@ -128,8 +128,8 @@ function RequestTiming({ request }: { request: AutoForgeRequest }) {
   if (request.lifecycle !== "SEARCHING") return null;
 
   return (
-    <dl className="grid gap-3 rounded-2xl bg-muted/45 p-4 text-sm sm:grid-cols-2">
-      <div className="grid gap-1">
+    <dl className="grid border-border/70 border-y text-sm sm:grid-cols-2">
+      <div className="grid gap-1 py-3 sm:pr-5">
         <dt className="text-muted-foreground text-xs">Last check</dt>
         <dd className="font-medium text-foreground">
           {request.lastAttemptAt
@@ -137,7 +137,7 @@ function RequestTiming({ request }: { request: AutoForgeRequest }) {
             : "Not checked yet"}
         </dd>
       </div>
-      <div className="grid gap-1">
+      <div className="grid gap-1 border-border/70 border-t py-3 sm:border-t-0 sm:border-l sm:pl-5">
         <dt className="text-muted-foreground text-xs">Next scheduled check</dt>
         <dd className="font-medium text-foreground">
           {request.nextAttemptAt

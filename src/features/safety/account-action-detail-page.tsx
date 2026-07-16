@@ -5,7 +5,7 @@ import { EnforcementAppealForm } from "@/features/safety/components/review-reque
 import {
   DetailRows,
   ReviewStatus,
-  SafetyDetailCard,
+  SafetyDetailSection,
   SafetyDetailShell,
   SafetyOfflineNotice,
 } from "@/features/safety/components/safety-detail-parts";
@@ -49,12 +49,13 @@ export function AccountActionDetailPage() {
   const notice = query.data;
   return (
     <SafetyDetailShell
+      backSection="account-actions"
       title={notice.title}
       description={notice.message}
       status={ACCOUNT_ACTION_STATE_LABELS[notice.state]}
     >
       {!isOnline ? <SafetyOfflineNotice /> : null}
-      <SafetyDetailCard title="What this means">
+      <SafetyDetailSection title="What this means">
         <DetailRows
           rows={[
             { label: "Starts", value: formatSafetyDate(notice.startsAt) },
@@ -62,22 +63,22 @@ export function AccountActionDetailPage() {
             { label: "Appeal by", value: formatSafetyDate(notice.appealDueAt) },
           ]}
         />
-      </SafetyDetailCard>
+      </SafetyDetailSection>
 
       {notice.appeal ? (
-        <SafetyDetailCard title="Appeal">
+        <SafetyDetailSection title="Appeal">
           <ReviewStatus
             label={APPEAL_STATUS_LABELS[notice.appeal.status]}
             submittedAt={notice.appeal.submittedAt}
             decidedAt={notice.appeal.decidedAt}
           />
-        </SafetyDetailCard>
+        </SafetyDetailSection>
       ) : null}
 
       {!notice.appeal && notice.canAppeal ? (
-        <SafetyDetailCard title="Appeal this action">
+        <SafetyDetailSection title="Appeal this action">
           <EnforcementAppealForm noticeId={noticeId} />
-        </SafetyDetailCard>
+        </SafetyDetailSection>
       ) : null}
     </SafetyDetailShell>
   );

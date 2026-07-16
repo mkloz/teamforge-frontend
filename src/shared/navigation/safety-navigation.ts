@@ -2,10 +2,9 @@ export type SafetySection = "reports" | "account-actions" | "restrictions";
 
 export function buildSafetyNavigation(section?: SafetySection) {
   return {
-    to: "/safety",
-    search: {
-      section: section && section !== "reports" ? section : undefined,
-    },
+    to: "/settings",
+    search: { section: "safety" },
+    hash: section ? `safety-${section}` : undefined,
   } as const;
 }
 
@@ -27,7 +26,9 @@ export function buildSafetyRestrictionNavigation(containmentId: string) {
   } as const;
 }
 
-export function validateSafetySearch(search: Record<string, unknown>) {
+export function validateSafetySearch(search: Record<string, unknown>): {
+  section?: SafetySection;
+} {
   const section = search.section;
 
   return {

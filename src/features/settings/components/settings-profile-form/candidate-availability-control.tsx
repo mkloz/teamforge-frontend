@@ -5,7 +5,9 @@ import type { CandidateAvailabilityState } from "@/features/settings/hooks/use-c
 import type { CandidateAvailability } from "@/features/settings/schemas/candidate-availability.schema";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { Notice } from "@/shared/components/ui/notice";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import { cn } from "@/shared/lib/utils";
 import { buildSettingsNavigation } from "@/shared/navigation";
 import { NotificationPreferenceRow } from "./settings-form-controls";
 
@@ -79,10 +81,10 @@ export function CandidateAvailabilityControl({
       </p>
 
       {availability.legacyAvailabilityPrompt && !availability.lifecycle ? (
-        <p className="rounded-2xl border border-border bg-muted/40 p-4 text-ink text-sm leading-relaxed">
+        <Notice tone="neutral" size="md">
           You previously allowed automatic group forming. Review the new choices
           below; nothing has been enabled for you.
-        </p>
+        </Notice>
       ) : null}
 
       <fieldset className="grid gap-0 lg:grid-cols-2 lg:gap-8">
@@ -206,7 +208,7 @@ function AvailabilityFacts({
   }
 
   return (
-    <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 text-sm sm:grid-cols-2">
+    <dl className="grid border-border/70 border-y text-sm sm:grid-cols-2">
       {availability.availableUntil ? (
         <AvailabilityFact
           icon={Clock3}
@@ -216,30 +218,39 @@ function AvailabilityFacts({
       ) : null}
       {hasActiveCooldown && availability.proposalCooldownUntil ? (
         <AvailabilityFact
+          separated={Boolean(availability.availableUntil)}
           icon={Clock3}
           label="New proposals paused until"
           value={formatDate(availability.proposalCooldownUntil)}
         />
       ) : null}
-    </div>
+    </dl>
   );
 }
 
 function AvailabilityFact({
   icon: Icon,
   label,
+  separated = false,
   value,
 }: {
   icon: typeof Clock3;
   label: string;
+  separated?: boolean;
   value: string;
 }) {
   return (
-    <div className="flex items-start gap-2">
+    <div
+      className={cn(
+        "flex items-start gap-2 py-3",
+        separated &&
+          "border-border/70 border-t sm:border-t-0 sm:border-l sm:pl-5",
+      )}
+    >
       <Icon className="mt-0.5 size-4 text-forge-teal" aria-hidden="true" />
       <div>
-        <p className="text-muted-foreground text-xs">{label}</p>
-        <p className="font-medium text-ink">{value}</p>
+        <dt className="text-muted-foreground text-xs">{label}</dt>
+        <dd className="font-medium text-ink">{value}</dd>
       </div>
     </div>
   );

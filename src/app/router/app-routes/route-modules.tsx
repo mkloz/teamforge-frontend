@@ -79,12 +79,6 @@ export const SettingsRouteLoading = createLazyRouteLoading(
   { mode: "route" },
 );
 
-export const safetyPageModule = createLazyRouteModule(() =>
-  import("@/features/safety/safety-page").then((m) => ({
-    default: m.SafetyPage,
-  })),
-);
-
 export const safetyReportDetailPageModule = createLazyRouteModule(() =>
   import("@/features/safety/report-detail-page").then((m) => ({
     default: m.SafetyReportDetailPage,
@@ -101,14 +95,6 @@ export const restrictionDetailPageModule = createLazyRouteModule(() =>
   import("@/features/safety/restriction-detail-page").then((m) => ({
     default: m.RestrictionDetailPage,
   })),
-);
-
-export const SafetyRouteLoading = createLazyRouteLoading(
-  () =>
-    import("@/features/safety/safety-page.loading").then((m) => ({
-      default: m.SafetyPageLoading,
-    })),
-  { mode: "route" },
 );
 
 export const SafetyDetailRouteLoading = createLazyRouteLoading(

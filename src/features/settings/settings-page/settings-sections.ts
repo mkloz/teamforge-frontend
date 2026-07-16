@@ -60,9 +60,9 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     id: "safety",
     label: "Safety",
     description: "Reports, account actions, and blocked people",
-    headline: "Review your safety options",
+    headline: "Manage reports and account safety",
     summary:
-      "Open the Safety Center, review blocked people, and change access controls.",
+      "See reports you sent, review any action on your account, and manage people you’ve blocked.",
     icon: Shield,
   },
   {

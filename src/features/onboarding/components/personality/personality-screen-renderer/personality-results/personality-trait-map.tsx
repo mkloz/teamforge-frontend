@@ -1,40 +1,45 @@
+import { DimensionSpectrum } from "@/shared/components/psychometrics/dimension-spectrum";
+import { OceanChart } from "@/shared/components/psychometrics/ocean-chart";
 import type { PersonalityTraitScores } from "@/shared/schemas/public-personality-profile";
+import type { DimensionScore } from "@/shared/types/psychometrics";
 
-const TRAITS: Array<{ key: keyof PersonalityTraitScores; label: string }> = [
-  { key: "openness", label: "Openness" },
-  { key: "conscientiousness", label: "Conscientiousness" },
-  { key: "extraversion", label: "Extraversion" },
-  { key: "agreeableness", label: "Agreeableness" },
-  { key: "neuroticism", label: "Emotional sensitivity" },
-];
+import { SectionHeading } from "./section-heading";
 
 interface PersonalityTraitMapProps {
+  dimensionScores: DimensionScore[];
   oceanScores: PersonalityTraitScores;
 }
 
-export function PersonalityTraitMap({ oceanScores }: PersonalityTraitMapProps) {
+export function PersonalityTraitMap({
+  dimensionScores,
+  oceanScores,
+}: PersonalityTraitMapProps) {
   return (
-    <div className="flex flex-col gap-4">
-      {TRAITS.map((trait) => {
-        const score = oceanScores[trait.key];
-
-        return (
-          <div key={trait.key} className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-3 text-xs">
-              <span className="font-semibold text-ink">{trait.label}</span>
-              <span className="font-bold text-forge-teal">{score}%</span>
-            </div>
-            <progress
-              aria-label={trait.label}
-              className="h-2 w-full overflow-hidden rounded-full accent-primary"
-              max={100}
-              value={score}
-            >
-              {score}%
-            </progress>
+    <section className="grid gap-9">
+      <div className="grid gap-8 md:grid-cols-2 md:items-stretch">
+        <section className="flex h-full flex-col gap-5">
+          <SectionHeading eyebrow="Type dimensions" title="Four dimensions" />
+          <div className="flex flex-1 flex-col justify-center gap-4">
+            {dimensionScores.map((score) => (
+              <DimensionSpectrum key={score.dimension} score={score} />
+            ))}
           </div>
-        );
-      })}
-    </div>
+        </section>
+
+        <section className="flex h-full flex-col gap-5 border-border/60 border-t pt-6 md:border-t-0 md:border-l md:pt-0 md:pl-3">
+          <SectionHeading eyebrow="Trait map" title="Big Five traits" />
+          <div className="flex flex-1 items-center justify-center md:hidden">
+            <OceanChart scores={oceanScores} />
+          </div>
+          <div className="hidden flex-1 items-center justify-center md:flex">
+            <OceanChart
+              scores={oceanScores}
+              interactive={false}
+              showDetails={false}
+            />
+          </div>
+        </section>
+      </div>
+    </section>
   );
 }

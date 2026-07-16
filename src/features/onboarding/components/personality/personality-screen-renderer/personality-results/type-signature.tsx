@@ -28,7 +28,7 @@ export function TypeSignature({ personalityType }: TypeSignatureProps) {
         <m.div
           key={`${letter}-${TYPE_DIMENSION_LABELS[index]}`}
           variants={popDownItem}
-          className="w-14 text-center"
+          className="w-16 text-center sm:w-20"
         >
           <span className="block font-black text-5xl text-ink leading-none tracking-tight sm:text-6xl">
             {letter}

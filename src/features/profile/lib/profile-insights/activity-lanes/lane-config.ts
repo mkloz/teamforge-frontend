@@ -43,7 +43,7 @@ export const laneDrafts: Record<
     label: "Rhythm",
   },
   general: {
-    description: "Extra cues the matcher can combine with nearby profiles.",
+    description: "Extra cues TeamForge can use when forming nearby groups.",
     label: "Other interests",
   },
 };
