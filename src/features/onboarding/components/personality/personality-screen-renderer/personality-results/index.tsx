@@ -12,7 +12,6 @@ import { PersonalityResultActions } from "./personality-result-actions";
 import { PersonalityResultHero } from "./personality-result-hero";
 import { PersonalityResultSummary } from "./personality-result-summary";
 import { PersonalityTraitMap } from "./personality-trait-map";
-import { PrivatePersonalityResult } from "./private-personality-result";
 import { SectionHeading } from "./section-heading";
 
 type ResultAction =
@@ -77,64 +76,52 @@ export function PersonalityResults({
       animate="visible"
       className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col gap-8 py-8 sm:py-10"
     >
-      <PersonalityResultHero
-        compact={isResultPrivate}
-        personalityType={profile.personalityType}
+      <PersonalityResultHero personalityType={profile.personalityType} />
+
+      <PersonalityResultSummary profile={viewModel.profile} />
+
+      <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
+        <SectionHeading
+          eyebrow="Personality summary"
+          title="How you may contribute to a group"
+        />
+        <p className="text-pretty font-medium text-base text-ink/82 leading-relaxed">
+          {viewModel.groupRead}
+        </p>
+      </section>
+
+      <PersonalityTraitMap
+        dimensionScores={viewModel.dimensionScores}
+        oceanScores={viewModel.oceanScores}
       />
 
-      {isResultPrivate ? (
-        <PrivatePersonalityResult
-          audienceText={audienceText}
-          oceanScores={profile.ocean}
+      <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
+        <SectionHeading
+          eyebrow="Keep in mind"
+          title="An estimate, not a diagnosis"
         />
-      ) : (
-        <>
-          <PersonalityResultSummary profile={viewModel.profile} />
+        <p className="text-pretty text-muted-foreground text-sm leading-relaxed">
+          This is an estimate based on your answers. It is not a diagnosis or a
+          fixed description of who you are. It does not measure safety or
+          guarantee how well a group will work.
+        </p>
+      </section>
 
-          <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
-            <SectionHeading
-              eyebrow="Personality summary"
-              title="How you may contribute to a group"
-            />
-            <p className="text-pretty font-medium text-base text-ink/82 leading-relaxed">
-              {viewModel.groupRead}
-            </p>
-          </section>
-
-          <PersonalityTraitMap
-            dimensionScores={viewModel.dimensionScores}
-            oceanScores={viewModel.oceanScores}
-          />
-
-          <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
-            <SectionHeading
-              eyebrow="Keep in mind"
-              title="An estimate, not a diagnosis"
-            />
-            <p className="text-pretty text-muted-foreground text-sm leading-relaxed">
-              This is an estimate based on your answers. It is not a diagnosis
-              or a fixed description of who you are. It does not measure safety
-              or guarantee how well a group will work.
-            </p>
-          </section>
-
-          <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
-            <SectionHeading
-              eyebrow="Privacy choice"
-              title="Choose how TeamForge uses it"
-            />
-            <p className="text-pretty text-ink/82 text-sm leading-relaxed">
-              If you publish, TeamForge can use this type and these five scores
-              when forming groups. They can be shown to {audienceText}. Keeping
-              the result private saves it for you and leaves it out of group
-              formation. It is never posted to the open web.
-            </p>
-            <p className="text-pretty text-muted-foreground text-xs leading-relaxed">
-              Your answers were used for this assessment and are not saved.
-            </p>
-          </section>
-        </>
-      )}
+      <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
+        <SectionHeading
+          eyebrow="Privacy choice"
+          title="Choose how TeamForge uses it"
+        />
+        <p className="text-pretty text-ink/82 text-sm leading-relaxed">
+          If you publish, TeamForge can use this type and these five scores when
+          forming groups. They can be shown to {audienceText}. Keeping the
+          result private saves it for you and leaves it out of group formation.
+          It is never posted to the open web.
+        </p>
+        <p className="text-pretty text-muted-foreground text-xs leading-relaxed">
+          Your answers were used for this assessment and are not saved.
+        </p>
+      </section>
 
       {isLegacyResult ? (
         <p

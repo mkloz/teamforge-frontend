@@ -14,14 +14,10 @@ const TYPE_DIMENSION_LABELS = [
 ];
 
 interface TypeSignatureProps {
-  compact?: boolean;
   personalityType: PersonalityType;
 }
 
-export function TypeSignature({
-  compact = false,
-  personalityType,
-}: TypeSignatureProps) {
+export function TypeSignature({ personalityType }: TypeSignatureProps) {
   return (
     <m.div
       variants={resultsContainer}
@@ -32,7 +28,7 @@ export function TypeSignature({
         <m.div
           key={`${letter}-${TYPE_DIMENSION_LABELS[index]}`}
           variants={popDownItem}
-          className={compact ? "w-14 text-center" : "w-16 text-center sm:w-20"}
+          className="w-16 text-center sm:w-20"
         >
           <span className="block font-black text-5xl text-ink leading-none tracking-tight sm:text-6xl">
             {letter}

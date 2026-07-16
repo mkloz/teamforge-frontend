@@ -1,12 +1,14 @@
+import { Link } from "@tanstack/react-router";
 import { type ReactNode, type Ref, useState } from "react";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
-import { SkeletonText } from "@/shared/components/loading/skeleton-patterns";
+import { Button } from "@/shared/components/ui/button";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/shared/components/ui/sheet";
+import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 import type { User } from "@/shared/schemas";
 import { ProfileFriendsPanel } from "../profile-friends-panel";
 import { ProfileActions } from "./profile-actions";
@@ -66,6 +68,7 @@ export function ProfileHero({
           </div>
 
           <ExpandedProfileSummary
+            canEdit={isSelf && showMissingDetailsAction}
             hasBio={hasBio}
             socialRead={socialRead}
             userBio={user.bio}
@@ -94,6 +97,7 @@ export function ProfileHero({
 }
 
 interface ExpandedProfileSummaryProps {
+  canEdit: boolean;
   children: ReactNode;
   hasBio: boolean;
   socialRead?: string | null;
@@ -101,6 +105,7 @@ interface ExpandedProfileSummaryProps {
 }
 
 function ExpandedProfileSummary({
+  canEdit,
   children,
   hasBio,
   socialRead,
@@ -116,16 +121,32 @@ function ExpandedProfileSummary({
             {summary}
           </p>
         ) : (
-          <SkeletonText
-            className="relative z-10 w-full max-w-xl"
-            lineClassName="h-4 md:h-5"
-            lines={2}
-            widths={["w-full", "w-4/5"]}
-          />
+          <MissingProfileSummary canEdit={canEdit} />
         )}
       </blockquote>
 
       {children}
+    </div>
+  );
+}
+
+function MissingProfileSummary({ canEdit }: { canEdit: boolean }) {
+  if (!canEdit) {
+    return (
+      <p className="text-pretty text-slate-muted text-sm leading-relaxed">
+        No introduction has been added yet.
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-start gap-3">
+      <p className="text-pretty text-slate-muted text-sm leading-relaxed">
+        Add a short introduction so people know what kinds of plans you enjoy.
+      </p>
+      <Button asChild variant="outline" size="sm">
+        <Link {...buildSettingsNavigation("account")}>Add an introduction</Link>
+      </Button>
     </div>
   );
 }

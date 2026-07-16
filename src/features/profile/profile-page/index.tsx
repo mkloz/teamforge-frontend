@@ -9,8 +9,7 @@ export function ProfilePage() {
   const { profile, isLoading, error, refetch } = useProfile();
   const pageMetadata = createTeamForgePageMetadata({
     title: profile?.name ? `${profile.name}'s profile` : "Profile",
-    description:
-      "Review your TeamForge profile, personality signals, interests, and group fit.",
+    description: "Review your TeamForge profile, interests, and connections.",
   });
 
   usePageMetadata(pageMetadata);
