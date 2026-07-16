@@ -33,6 +33,7 @@ function readProposalValues(
 }
 
 interface UsePlanProposalFormOptions {
+  initialField?: ProposalField;
   onOpenChange?: (open: boolean) => void;
   open?: boolean;
 }
@@ -41,9 +42,12 @@ export function usePlanProposalForm(
   plan: Plan,
   options: UsePlanProposalFormOptions = {},
 ) {
+  const initialField = options.initialField ?? "TITLE";
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
-  const [field, setField] = useState<ProposalField>("TITLE");
-  const [value, setValue] = useState(plan.title);
+  const [field, setField] = useState<ProposalField>(initialField);
+  const [value, setValue] = useState(
+    getCurrentProposalValue(plan, initialField),
+  );
   const [locationValue, setLocationValue] = useState(() =>
     getLocationProposalInput(plan),
   );
@@ -62,8 +66,8 @@ export function usePlanProposalForm(
     useCreatePlanProposal(plan, {
       onCreated: () => {
         setFormOpen(false);
-        setField("TITLE");
-        setValue(plan.title);
+        setField(initialField);
+        setValue(getCurrentProposalValue(plan, initialField));
         setLocationValue(getLocationProposalInput(plan));
       },
     });

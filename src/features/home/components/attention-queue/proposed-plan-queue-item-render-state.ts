@@ -23,16 +23,24 @@ type PlanMetaField = "category" | "cost" | "location" | "time";
 
 const planActionIconMap: Record<PlanAttentionKind, LucideIcon> = {
   details: CalendarPlus,
+  "propose-location": MapPinPlus,
+  "propose-time": CalendarPlus,
   review: ClipboardCheck,
   time: Clock3,
   venue: MapPinPlus,
+  "vote-location": MapPinPlus,
+  "vote-time": Clock3,
 };
 
 const changingPlanMetaFields: Record<PlanAttentionKind, PlanMetaField[]> = {
   details: ["location", "time"],
+  "propose-location": ["location"],
+  "propose-time": ["time"],
   review: [],
   time: ["time"],
   venue: ["location"],
+  "vote-location": ["location"],
+  "vote-time": ["time"],
 };
 
 export function getProposedPlanQueueItemRenderState(group: AttentionQueuePlan) {
@@ -85,6 +93,14 @@ function isPlanMetaChanging(kind: PlanAttentionKind, field: PlanMetaField) {
 function getCompactActionLabel(label: string) {
   if (label.startsWith("Set")) {
     return "Set";
+  }
+
+  if (label.startsWith("Propose")) {
+    return "Propose";
+  }
+
+  if (label.startsWith("Vote")) {
+    return "Vote";
   }
 
   return "Review";

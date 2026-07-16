@@ -19,6 +19,7 @@ export function ConversationPlanProposalDialog({
 
   return (
     <PlanChangeDialog
+      key={activePlan.nextRequiredAction ?? "standard"}
       open={isOpen}
       onOpenChange={onOpenChange}
       plan={activePlan}

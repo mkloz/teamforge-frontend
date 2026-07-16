@@ -18,6 +18,7 @@ interface ProposalActionsProps {
 
 interface ProposalActionsState {
   canVote: boolean;
+  canVoteOnPlanChange: boolean;
   hasVoted: boolean;
   isPending: boolean;
   isProposer: boolean;
@@ -46,7 +47,11 @@ export function ProposalActions({
   if (!state.canVote) {
     return (
       <>
-        <ProposalVoteStatus actionState={actionState} />
+        <ProposalVoteStatus
+          actionState={actionState}
+          canVoteOnPlanChange={state.canVoteOnPlanChange}
+          hasVoted={state.hasVoted}
+        />
         <ProposalWithdrawAction
           isOnline={state.isOnline}
           isProposer={state.isProposer}
@@ -80,7 +85,7 @@ export function ProposalActions({
         title={actionState.voteTitle}
       >
         <X size={14} />
-        Oppose
+        Not this one
       </Button>
       <ProposalWithdrawAction
         isOnline={state.isOnline}
@@ -94,16 +99,20 @@ export function ProposalActions({
 
 function ProposalVoteStatus({
   actionState,
+  canVoteOnPlanChange,
+  hasVoted,
 }: {
   actionState: ProposalActionState;
+  canVoteOnPlanChange: boolean;
+  hasVoted: boolean;
 }) {
-  if (actionState.showOfflineHint) {
-    return <ProposalOfflineHint show />;
-  }
+  const statusLabel = hasVoted
+    ? "Vote recorded"
+    : canVoteOnPlanChange
+      ? actionState.statusLabel
+      : "Voting unavailable";
 
-  return (
-    <div className={PROPOSAL_STATUS_CLASS_NAME}>{actionState.statusLabel}</div>
-  );
+  return <div className={PROPOSAL_STATUS_CLASS_NAME}>{statusLabel}</div>;
 }
 
 function ProposalOfflineHint({ show }: { show: boolean }) {

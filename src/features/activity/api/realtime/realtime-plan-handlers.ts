@@ -1,8 +1,8 @@
 import type { ActivityGroupSelectionData } from "@/features/activity/api/activity-query-data";
-import { ACTIVITY_GROUPS_QUERY_KEY } from "@/features/activity/api/activity-query-keys";
 import type { ActivityRealtimeContext } from "@/features/activity/api/realtime/activity-realtime-types";
 import type { Group, Plan } from "@/features/activity/lib/activity-contract";
 import { appQueryClient } from "@/shared/api/query-client";
+import { invalidatePlanDecisionSurfaces } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { PlanProposal, PlanUpdateKind, User } from "@/shared/schemas";
 
@@ -22,12 +22,7 @@ interface NextRealtimePlanState {
 }
 
 export async function handleRealtimePlanUpdated(groupId: string) {
-  await Promise.all([
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.groupSelectionById(groupId),
-    }),
-    appQueryClient.invalidateQueries({ queryKey: ACTIVITY_GROUPS_QUERY_KEY }),
-  ]);
+  await invalidatePlanDecisionSurfaces({ groupId });
 }
 
 export function applyRealtimePlanUpdate(
@@ -58,8 +53,9 @@ export function applyRealtimePlanUpdate(
       }),
   );
 
-  void appQueryClient.invalidateQueries({
-    queryKey: ACTIVITY_GROUPS_QUERY_KEY,
+  void invalidatePlanDecisionSurfaces({
+    groupId,
+    planId: plan.id,
   });
 }
 

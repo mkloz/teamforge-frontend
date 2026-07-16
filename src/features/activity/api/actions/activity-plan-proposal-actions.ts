@@ -3,14 +3,7 @@ import {
   type CreatePlanProposalDto,
   type VotePlanProposalDto,
 } from "@/features/activity/api/activity.api";
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-
-function getGroupSelectionQueryKey(groupId?: string) {
-  return groupId
-    ? APP_QUERY_KEYS.activity.groupSelectionById(groupId)
-    : APP_QUERY_KEYS.activity.groupSelection;
-}
+import { invalidatePlanDecisionSurfaces } from "@/shared/api/query-invalidation";
 
 export const ActivityPlanProposalActions = {
   async createPlanProposal(
@@ -20,11 +13,9 @@ export const ActivityPlanProposalActions = {
   ) {
     const proposal = await ActivityApi.createPlanProposal(planId, payload);
 
-    await appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.planProposals(planId),
-    });
-    await appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.groupSelectionById(groupId),
+    await invalidatePlanDecisionSurfaces({
+      groupId,
+      planId: proposal.planId,
     });
 
     return proposal;
@@ -37,11 +28,9 @@ export const ActivityPlanProposalActions = {
   ) {
     const proposal = await ActivityApi.votePlanProposal(proposalId, payload);
 
-    await appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.planProposals(proposal.planId),
-    });
-    await appQueryClient.invalidateQueries({
-      queryKey: getGroupSelectionQueryKey(groupId),
+    await invalidatePlanDecisionSurfaces({
+      groupId,
+      planId: proposal.planId,
     });
 
     return proposal;
@@ -50,11 +39,9 @@ export const ActivityPlanProposalActions = {
   async withdrawPlanProposal(proposalId: string, groupId?: string) {
     const proposal = await ActivityApi.withdrawPlanProposal(proposalId);
 
-    await appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.planProposals(proposal.planId),
-    });
-    await appQueryClient.invalidateQueries({
-      queryKey: getGroupSelectionQueryKey(groupId),
+    await invalidatePlanDecisionSurfaces({
+      groupId,
+      planId: proposal.planId,
     });
 
     return proposal;

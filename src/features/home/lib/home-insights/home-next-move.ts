@@ -285,11 +285,15 @@ function getInviteExpiryTimestamp(invite: Invite) {
 }
 
 function getFirstProposedPlan(plans: PlannedGroup[]) {
-  return sortPlansByUrgency(plans.filter(isProposedPlan))[0];
+  return sortPlansByUrgency(plans.filter(isPlanDecisionNeeded))[0];
 }
 
-function isProposedPlan(group: PlannedGroup) {
-  return group.plan.status === "PROPOSED";
+function isPlanDecisionNeeded(group: PlannedGroup) {
+  const action = group.plan.nextRequiredAction;
+
+  return action === null
+    ? group.plan.status === "PROPOSED"
+    : action !== "READY";
 }
 
 function getFirstTodayOrPastPlan(plans: PlannedGroup[]) {

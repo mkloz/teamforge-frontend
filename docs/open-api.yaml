@@ -3252,6 +3252,251 @@ paths:
       security: *a29
       summary: Create a new draft plan for an existing group
       tags: *a30
+  /api/v1/plans/{id}:
+    get:
+      operationId: PlansController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '429':
+          description: Too many requests
+      security: &a31
+        - bearer: []
+      summary: Get a plan for a group you belong to
+      tags: &a32
+        - Plans
+    patch:
+      operationId: PlansController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePlanDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '409':
+          description: The plan's current status does not allow updates
+        '429':
+          description: Too many requests
+      security: *a31
+      summary: Update a group plan as a group admin
+      tags: *a32
+  /api/v1/plans/{id}/confirm:
+    post:
+      operationId: PlansController_confirm
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '409':
+          description: The plan's current status does not allow confirmation
+        '429':
+          description: Too many requests
+      security: *a31
+      summary: Confirm a draft or planning-stage group plan
+      tags: *a32
+  /api/v1/plans/{id}/complete:
+    post:
+      operationId: PlansController_complete
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '409':
+          description: The plan's current status does not allow completion
+        '429':
+          description: Too many requests
+      security: *a31
+      summary: Mark a group plan as completed
+      tags: *a32
+  /api/v1/plans/{id}/cancel:
+    post:
+      operationId: PlansController_cancel
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '409':
+          description: The plan's current status does not allow cancellation
+        '429':
+          description: Too many requests
+      security: *a31
+      summary: Cancel a group plan and reopen planning for the group
+      tags: *a32
+  /api/v1/plans/{id}/proposals:
+    get:
+      operationId: PlanProposalsController_getMany
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanProposalEntity'
+        '429':
+          description: Too many requests
+      security: &a33
+        - bearer: []
+      summary: List proposals for a plan in your group
+      tags: &a34
+        - Plan Proposals
+    post:
+      operationId: PlanProposalsController_create
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlanProposalDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanProposalEntity'
+        '409':
+          description:
+            The plan no longer accepts proposals, or this field already has a
+            pending proposal with the same value
+        '429':
+          description: Too many requests
+      security: *a33
+      summary: Create a new proposal for a group plan
+      tags: *a34
+  /api/v1/proposals/{id}/vote:
+    post:
+      operationId: PlanProposalsController_vote
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Proposal ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VotePlanProposalDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanProposalEntity'
+        '409':
+          description: The proposal or plan status does not allow voting
+        '429':
+          description: Too many requests
+      security: *a33
+      summary: Vote on a pending plan proposal
+      tags: *a34
+  /api/v1/proposals/{id}:
+    delete:
+      operationId: PlanProposalsController_withdraw
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Proposal ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanProposalEntity'
+        '409':
+          description: The proposal or plan status does not allow withdrawal
+        '429':
+          description: Too many requests
+      security: *a33
+      summary: Withdraw one of your pending plan proposals
+      tags: *a34
   /api/v1/explore/groups:
     get:
       operationId: ExploreController_getGroups
@@ -3398,10 +3643,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedExploreGroups'
         '429':
           description: Too many requests
-      security: &a31
+      security: &a35
         - bearer: []
       summary: Browse groups available in Explore
-      tags: &a32
+      tags: &a36
         - Explore
   /api/v1/explore/groups/{id}/join:
     post:
@@ -3434,9 +3679,9 @@ paths:
             changed
         '429':
           description: Too many requests
-      security: *a31
+      security: *a35
       summary: Join or request to join an explore group
-      tags: *a32
+      tags: *a36
   /api/v1/explore/groups/{id}/cancel-request:
     post:
       operationId: ExploreController_cancelJoinRequest
@@ -3461,9 +3706,9 @@ paths:
           description: Pending join request was already changed or cancelled
         '429':
           description: Too many requests
-      security: *a31
+      security: *a35
       summary: Cancel a pending join request for an explore group
-      tags: *a32
+      tags: *a36
   /api/v1/invites/received:
     get:
       operationId: InvitesController_getReceived
@@ -3502,10 +3747,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedInvites'
         '429':
           description: Too many requests
-      security: &a33
+      security: &a37
         - bearer: []
       summary: List invites received by the current user
-      tags: &a34
+      tags: &a38
         - Invites
   /api/v1/invites/sent:
     get:
@@ -3545,9 +3790,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedInvites'
         '429':
           description: Too many requests
-      security: *a33
+      security: *a37
       summary: List invites sent by the current user
-      tags: *a34
+      tags: *a38
   /api/v1/invites:
     post:
       operationId: InvitesController_create
@@ -3580,9 +3825,9 @@ paths:
             exists
         '429':
           description: Too many requests
-      security: *a33
+      security: *a37
       summary: Send or resend a group invite
-      tags: *a34
+      tags: *a38
   /api/v1/invites/{id}/accept:
     post:
       operationId: InvitesController_accept
@@ -3614,9 +3859,9 @@ paths:
             member
         '429':
           description: Too many requests
-      security: *a33
+      security: *a37
       summary: Accept a group invite
-      tags: *a34
+      tags: *a38
   /api/v1/invites/{id}/decline:
     post:
       operationId: InvitesController_decline
@@ -3643,253 +3888,8 @@ paths:
           description: The invite is not pending or has expired
         '429':
           description: Too many requests
-      security: *a33
+      security: *a37
       summary: Decline a group invite
-      tags: *a34
-  /api/v1/plans/{id}:
-    get:
-      operationId: PlansController_getById
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Plan ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlanEntity'
-        '429':
-          description: Too many requests
-      security: &a35
-        - bearer: []
-      summary: Get a plan for a group you belong to
-      tags: &a36
-        - Plans
-    patch:
-      operationId: PlansController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Plan ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePlanDto'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlanEntity'
-        '409':
-          description: The plan's current status does not allow updates
-        '429':
-          description: Too many requests
-      security: *a35
-      summary: Update a group plan as a group admin
-      tags: *a36
-  /api/v1/plans/{id}/confirm:
-    post:
-      operationId: PlansController_confirm
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Plan ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlanEntity'
-        '409':
-          description: The plan's current status does not allow confirmation
-        '429':
-          description: Too many requests
-      security: *a35
-      summary: Confirm a draft or planning-stage group plan
-      tags: *a36
-  /api/v1/plans/{id}/complete:
-    post:
-      operationId: PlansController_complete
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Plan ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlanEntity'
-        '409':
-          description: The plan's current status does not allow completion
-        '429':
-          description: Too many requests
-      security: *a35
-      summary: Mark a group plan as completed
-      tags: *a36
-  /api/v1/plans/{id}/cancel:
-    post:
-      operationId: PlansController_cancel
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Plan ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlanEntity'
-        '409':
-          description: The plan's current status does not allow cancellation
-        '429':
-          description: Too many requests
-      security: *a35
-      summary: Cancel a group plan and reopen planning for the group
-      tags: *a36
-  /api/v1/plans/{id}/proposals:
-    get:
-      operationId: PlanProposalsController_getMany
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Plan ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PlanProposalEntity'
-        '429':
-          description: Too many requests
-      security: &a37
-        - bearer: []
-      summary: List proposals for a plan in your group
-      tags: &a38
-        - Plan Proposals
-    post:
-      operationId: PlanProposalsController_create
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Plan ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreatePlanProposalDto'
-      responses:
-        '201':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlanProposalEntity'
-        '409':
-          description:
-            The plan no longer accepts proposals, or this field already has a
-            pending proposal with the same value
-        '429':
-          description: Too many requests
-      security: *a37
-      summary: Create a new proposal for a group plan
-      tags: *a38
-  /api/v1/proposals/{id}/vote:
-    post:
-      operationId: PlanProposalsController_vote
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Proposal ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VotePlanProposalDto'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlanProposalEntity'
-        '409':
-          description: The proposal or plan status does not allow voting
-        '429':
-          description: Too many requests
-      security: *a37
-      summary: Vote on a pending plan proposal
-      tags: *a38
-  /api/v1/proposals/{id}:
-    delete:
-      operationId: PlanProposalsController_withdraw
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Proposal ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlanProposalEntity'
-        '409':
-          description: The proposal or plan status does not allow withdrawal
-        '429':
-          description: Too many requests
-      security: *a37
-      summary: Withdraw one of your pending plan proposals
       tags: *a38
   /api/v1/notifications:
     get:
@@ -6395,6 +6395,10 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        revision:
+          type: number
+          example: 1
+          minimum: 1
         scheduleMode:
           type: string
           enum:
@@ -6412,6 +6416,19 @@ components:
             - IN_PERSON
             - ONLINE
             - TBD
+        isScheduleResolved:
+          type: boolean
+        isLocationResolved:
+          type: boolean
+        nextRequiredAction:
+          type: string
+          enum:
+            - PROPOSE_LOCATION
+            - PROPOSE_TIME
+            - READY
+            - VOTE_LOCATION
+            - VOTE_TIME
+          nullable: true
         location:
           type: string
           example: Riverside Courts
@@ -6468,8 +6485,11 @@ components:
         - title
         - category
         - status
+        - revision
         - scheduleMode
         - locationMode
+        - isScheduleResolved
+        - isLocationResolved
         - cost
         - createdAt
         - updatedAt
@@ -8438,6 +8458,23 @@ components:
           enum: &a61
             - FREE
             - PAID
+        revision:
+          type: number
+          example: 3
+          minimum: 1
+        isScheduleResolved:
+          type: boolean
+        isLocationResolved:
+          type: boolean
+        nextRequiredAction:
+          type: string
+          enum:
+            - PROPOSE_LOCATION
+            - PROPOSE_TIME
+            - READY
+            - VOTE_LOCATION
+            - VOTE_TIME
+          nullable: true
       required:
         - id
         - title
@@ -8446,6 +8483,9 @@ components:
         - scheduleMode
         - locationMode
         - cost
+        - revision
+        - isScheduleResolved
+        - isLocationResolved
     GroupPlanHistoryItemEntity:
       type: object
       properties:
@@ -8839,6 +8879,10 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        revision:
+          type: number
+          example: 3
+          minimum: 1
         scheduleMode:
           type: string
           enum:
@@ -8856,6 +8900,18 @@ components:
             - IN_PERSON
             - ONLINE
             - TBD
+        isScheduleResolved:
+          type: boolean
+        isLocationResolved:
+          type: boolean
+        nextRequiredAction:
+          type: string
+          enum:
+            - PROPOSE_LOCATION
+            - PROPOSE_TIME
+            - READY
+            - VOTE_LOCATION
+            - VOTE_TIME
         location:
           type: string
           example: Regents Park Courts
@@ -8870,8 +8926,12 @@ components:
         - title
         - category
         - status
+        - revision
         - scheduleMode
         - locationMode
+        - isScheduleResolved
+        - isLocationResolved
+        - nextRequiredAction
         - cost
     HomeGroupMemberEntity:
       type: object
@@ -9094,6 +9154,10 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - CANCELLED
+        revision:
+          type: number
+          example: 3
+          minimum: 1
         scheduleMode:
           type: string
           enum:
@@ -9110,6 +9174,19 @@ components:
             - IN_PERSON
             - ONLINE
             - TBD
+        isScheduleResolved:
+          type: boolean
+        isLocationResolved:
+          type: boolean
+        nextRequiredAction:
+          type: string
+          enum:
+            - PROPOSE_LOCATION
+            - PROPOSE_TIME
+            - READY
+            - VOTE_LOCATION
+            - VOTE_TIME
+          nullable: true
         location:
           type: string
           nullable: true
@@ -9135,8 +9212,11 @@ components:
         - title
         - category
         - status
+        - revision
         - scheduleMode
         - locationMode
+        - isScheduleResolved
+        - isLocationResolved
         - cost
     GroupPlanDetailMemberEntity:
       type: object
@@ -9345,6 +9425,9 @@ components:
         proposedValue:
           type: string
           example: New value
+        basePlanRevision:
+          type: number
+          example: 1
         status:
           type: string
           enum:
@@ -9372,6 +9455,15 @@ components:
         proposerId:
           type: string
           example: clx1user123
+        approvalThreshold:
+          type: number
+          example: 3
+        activeApprovalCount:
+          type: number
+          example: 1
+        eligibleVoterCount:
+          type: number
+          example: 4
         proposer:
           $ref: '#/components/schemas/ProposalAuthorEntity'
         votes:
@@ -9385,11 +9477,15 @@ components:
         - id
         - field
         - proposedValue
+        - basePlanRevision
         - status
         - createdAt
         - updatedAt
         - planId
         - proposerId
+        - approvalThreshold
+        - activeApprovalCount
+        - eligibleVoterCount
         - proposer
         - votes
         - version
@@ -9547,6 +9643,310 @@ components:
         costDetails:
           type: string
           example: Court booking split between the group
+    PlanGroupActivityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1activity123
+        title:
+          type: string
+          example: Friday basketball run
+        status:
+          type: string
+          enum:
+            - OPEN
+            - MATCHING
+            - MATCHED
+            - CLOSED
+            - CANCELLED
+      required:
+        - id
+        - title
+        - status
+    PlanGroupMemberEntity:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: clx1user123
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - MODERATOR
+            - MEMBER
+      required:
+        - userId
+        - role
+    PlanGroupEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1group123
+        name:
+          type: string
+          example: Friday Basketball Crew
+        status:
+          type: string
+          enum:
+            - FORMING
+            - PENDING
+            - ACTIVE
+            - PLANNING
+            - COMPLETED
+            - DISBANDED
+        currentPlanId:
+          type: string
+          example: clx1plan123
+          nullable: true
+        activity:
+          $ref: '#/components/schemas/PlanGroupActivityEntity'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanGroupMemberEntity'
+      required:
+        - id
+        - name
+        - status
+        - activity
+        - members
+    PlanEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1plan123
+        title:
+          type: string
+          example: Friday evening basketball
+        description:
+          type: string
+          example: Casual run at the local courts
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        coverImage:
+          type: string
+          example: https://example.com/cover.png
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PROPOSED
+            - CONFIRMED
+            - IN_PROGRESS
+            - COMPLETED
+            - CANCELLED
+        revision:
+          type: number
+          example: 3
+          minimum: 1
+        scheduleMode:
+          type: string
+          enum:
+            - TO_BE_DECIDED
+            - FIXED
+          nullable: true
+        dateTime:
+          format: date-time
+          type: string
+          example: 2026-04-30T18:30:00.000Z
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        isScheduleResolved:
+          type: boolean
+        isLocationResolved:
+          type: boolean
+        nextRequiredAction:
+          type: string
+          enum:
+            - PROPOSE_LOCATION
+            - PROPOSE_TIME
+            - READY
+            - VOTE_LOCATION
+            - VOTE_TIME
+          nullable: true
+        location:
+          type: string
+          example: Regents Park Courts
+        locationLat:
+          type: number
+          example: 51.5313
+        locationLng:
+          type: number
+          example: -0.1569
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+        costAmount:
+          type: number
+          example: 12.5
+        costDetails:
+          type: string
+          example: Court booking split between the group
+        completedAt:
+          format: date-time
+          type: string
+          example: 2026-05-01T21:00:00.000Z
+          nullable: true
+        cancelledAt:
+          format: date-time
+          type: string
+          example: 2026-04-29T11:00:00.000Z
+          nullable: true
+        startingSoonSentAt:
+          format: date-time
+          type: string
+          example: 2026-04-30T17:45:00.000Z
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        groupId:
+          type: string
+          example: clx1group123
+        version:
+          type: number
+          example: 1777560000000
+        governance:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/GroupGovernanceEntity'
+        group:
+          $ref: '#/components/schemas/PlanGroupEntity'
+      required:
+        - id
+        - title
+        - category
+        - status
+        - revision
+        - scheduleMode
+        - locationMode
+        - isScheduleResolved
+        - isLocationResolved
+        - cost
+        - createdAt
+        - updatedAt
+        - groupId
+        - version
+        - group
+    UpdatePlanDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Friday evening basketball
+        description:
+          type: string
+          example: Casual run at the local courts
+        coverImage:
+          type: string
+          example: teal-grid
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        dateTime:
+          type: string
+          example: 2026-04-30T18:30:00.000Z
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        location:
+          type: string
+          example: Regents Park Courts
+        locationLat:
+          type: number
+          example: 51.5313
+        locationLng:
+          type: number
+          example: -0.1569
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+        costAmount:
+          type: number
+          example: 12.5
+        costDetails:
+          type: string
+          example: Court booking split between the group
+    CreatePlanProposalDto:
+      type: object
+      properties:
+        field:
+          type: string
+          enum:
+            - TITLE
+            - DESCRIPTION
+            - DATE_TIME
+            - LOCATION
+            - COST
+            - CATEGORY
+        proposedValue:
+          type: string
+          example: 2026-05-01T18:30:00.000Z
+          description:
+            Send the proposed value as a string. For LOCATION, send a
+            JSON-encoded string such as
+            {"locationMode":"TBD","location":null,"locationLat":null,"locationLng":null}.
+            For COST, send FREE, PAID, or a JSON-encoded string such as
+            {"cost":"PAID","costAmount":12.5,"costDetails":"Court booking"}.
+      required:
+        - field
+        - proposedValue
+    VotePlanProposalDto:
+      type: object
+      properties:
+        vote:
+          type: string
+          enum:
+            - APPROVE
+            - REJECT
+      required:
+        - vote
     ExploreInterestEntity:
       type: object
       properties:
@@ -10005,290 +10405,6 @@ components:
       required:
         - groupId
         - inviteeId
-    PlanGroupActivityEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1activity123
-        title:
-          type: string
-          example: Friday basketball run
-        status:
-          type: string
-          enum:
-            - OPEN
-            - MATCHING
-            - MATCHED
-            - CLOSED
-            - CANCELLED
-      required:
-        - id
-        - title
-        - status
-    PlanGroupMemberEntity:
-      type: object
-      properties:
-        userId:
-          type: string
-          example: clx1user123
-        role:
-          type: string
-          enum:
-            - ADMIN
-            - MODERATOR
-            - MEMBER
-      required:
-        - userId
-        - role
-    PlanGroupEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1group123
-        name:
-          type: string
-          example: Friday Basketball Crew
-        status:
-          type: string
-          enum:
-            - FORMING
-            - PENDING
-            - ACTIVE
-            - PLANNING
-            - COMPLETED
-            - DISBANDED
-        currentPlanId:
-          type: string
-          example: clx1plan123
-          nullable: true
-        activity:
-          $ref: '#/components/schemas/PlanGroupActivityEntity'
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlanGroupMemberEntity'
-      required:
-        - id
-        - name
-        - status
-        - activity
-        - members
-    PlanEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1plan123
-        title:
-          type: string
-          example: Friday evening basketball
-        description:
-          type: string
-          example: Casual run at the local courts
-        category:
-          type: string
-          enum:
-            - TECH
-            - SPORTS
-            - ARTS
-            - SOCIAL
-            - OUTDOORS
-            - LEARNING
-            - MUSIC
-            - FOOD
-            - GAMING
-            - WELLNESS
-            - TRAVEL
-            - OTHER
-        coverImage:
-          type: string
-          example: https://example.com/cover.png
-        status:
-          type: string
-          enum:
-            - DRAFT
-            - PROPOSED
-            - CONFIRMED
-            - IN_PROGRESS
-            - COMPLETED
-            - CANCELLED
-        scheduleMode:
-          type: string
-          enum:
-            - TO_BE_DECIDED
-            - FIXED
-          nullable: true
-        dateTime:
-          format: date-time
-          type: string
-          example: 2026-04-30T18:30:00.000Z
-        locationMode:
-          type: string
-          enum:
-            - IN_PERSON
-            - ONLINE
-            - TBD
-        location:
-          type: string
-          example: Regents Park Courts
-        locationLat:
-          type: number
-          example: 51.5313
-        locationLng:
-          type: number
-          example: -0.1569
-        cost:
-          type: string
-          enum:
-            - FREE
-            - PAID
-        costAmount:
-          type: number
-          example: 12.5
-        costDetails:
-          type: string
-          example: Court booking split between the group
-        completedAt:
-          format: date-time
-          type: string
-          example: 2026-05-01T21:00:00.000Z
-          nullable: true
-        cancelledAt:
-          format: date-time
-          type: string
-          example: 2026-04-29T11:00:00.000Z
-          nullable: true
-        startingSoonSentAt:
-          format: date-time
-          type: string
-          example: 2026-04-30T17:45:00.000Z
-          nullable: true
-        createdAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-        updatedAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-        groupId:
-          type: string
-          example: clx1group123
-        version:
-          type: number
-          example: 1777560000000
-        governance:
-          nullable: true
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/GroupGovernanceEntity'
-        group:
-          $ref: '#/components/schemas/PlanGroupEntity'
-      required:
-        - id
-        - title
-        - category
-        - status
-        - scheduleMode
-        - locationMode
-        - cost
-        - createdAt
-        - updatedAt
-        - groupId
-        - version
-        - group
-    UpdatePlanDto:
-      type: object
-      properties:
-        title:
-          type: string
-          example: Friday evening basketball
-        description:
-          type: string
-          example: Casual run at the local courts
-        coverImage:
-          type: string
-          example: teal-grid
-        category:
-          type: string
-          enum:
-            - TECH
-            - SPORTS
-            - ARTS
-            - SOCIAL
-            - OUTDOORS
-            - LEARNING
-            - MUSIC
-            - FOOD
-            - GAMING
-            - WELLNESS
-            - TRAVEL
-            - OTHER
-        dateTime:
-          type: string
-          example: 2026-04-30T18:30:00.000Z
-        locationMode:
-          type: string
-          enum:
-            - IN_PERSON
-            - ONLINE
-            - TBD
-        location:
-          type: string
-          example: Regents Park Courts
-        locationLat:
-          type: number
-          example: 51.5313
-        locationLng:
-          type: number
-          example: -0.1569
-        cost:
-          type: string
-          enum:
-            - FREE
-            - PAID
-        costAmount:
-          type: number
-          example: 12.5
-        costDetails:
-          type: string
-          example: Court booking split between the group
-    CreatePlanProposalDto:
-      type: object
-      properties:
-        field:
-          type: string
-          enum:
-            - TITLE
-            - DESCRIPTION
-            - DATE_TIME
-            - LOCATION
-            - COST
-            - CATEGORY
-        proposedValue:
-          type: string
-          example: 2026-05-01T18:30:00.000Z
-          description:
-            Send the proposed value as a string. For LOCATION, send a
-            JSON-encoded string such as
-            {"locationMode":"TBD","location":null,"locationLat":null,"locationLng":null}.
-            For COST, send FREE, PAID, or a JSON-encoded string such as
-            {"cost":"PAID","costAmount":12.5,"costDetails":"Court booking"}.
-      required:
-        - field
-        - proposedValue
-    VotePlanProposalDto:
-      type: object
-      properties:
-        vote:
-          type: string
-          enum:
-            - APPROVE
-            - REJECT
-      required:
-        - vote
     NotificationEntity:
       type: object
       properties:

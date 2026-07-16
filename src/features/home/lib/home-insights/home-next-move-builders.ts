@@ -48,16 +48,63 @@ export function buildInvitationMove(invite: Invite): HomeNextMove {
 }
 
 export function buildProposedPlanMove(group: PlannedGroup): HomeNextMove {
+  const copy = getPlanningMoveCopy(group.plan.nextRequiredAction);
+
   return {
     kind: "plan",
-    eyebrow: "Settle the plan",
+    eyebrow: copy.eyebrow,
     title: group.plan.title,
-    body: "A decision is open for this plan. Pick a direction so the group can move from discussion to action.",
-    primaryLabel: "Open plan",
+    body: copy.body,
+    primaryLabel: copy.primaryLabel,
     secondaryLabel: "Open activity",
     signal: getHeroPlanSignal(group.plan),
     groupId: group.id,
     planId: group.plan.id,
+  };
+}
+
+function getPlanningMoveCopy(
+  action: PlannedGroup["plan"]["nextRequiredAction"],
+) {
+  if (action === null) {
+    return {
+      eyebrow: "Settle the plan",
+      body: "A decision is open for this plan. Pick a direction so the group can move from discussion to action.",
+      primaryLabel: "Open plan",
+    };
+  }
+
+  const copyByAction = {
+    PROPOSE_LOCATION: {
+      eyebrow: "Choose the place",
+      body: "The group has a time. Propose a place for everyone to consider.",
+      primaryLabel: "Propose a place",
+    },
+    PROPOSE_TIME: {
+      eyebrow: "Choose the time",
+      body: "Your group is ready to plan. Propose a time for everyone to consider.",
+      primaryLabel: "Propose a time",
+    },
+    VOTE_LOCATION: {
+      eyebrow: "Place to decide",
+      body: "A place is waiting for your vote.",
+      primaryLabel: "Vote on the place",
+    },
+    VOTE_TIME: {
+      eyebrow: "Time to decide",
+      body: "A time is waiting for your vote.",
+      primaryLabel: "Vote on the time",
+    },
+  } as const;
+
+  if (action !== "READY") {
+    return copyByAction[action];
+  }
+
+  return {
+    eyebrow: "Review the plan",
+    body: "The time and place are agreed. Review the plan before you go.",
+    primaryLabel: "Open plan",
   };
 }
 

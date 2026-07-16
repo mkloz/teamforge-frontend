@@ -8,6 +8,7 @@ import {
   invalidateGroupMembershipSurfaces,
   invalidateInvitationSurfaces,
   invalidateNotificationSurfaces,
+  invalidatePlanDecisionSurfaces,
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
@@ -15,18 +16,6 @@ async function invalidateGroupPlanDetail(groupId: string) {
   await appQueryClient.invalidateQueries({
     queryKey: APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
   });
-}
-
-async function invalidatePlanningSurfaces(groupId: string) {
-  await Promise.all([
-    invalidateGroupPlanDetail(groupId),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.groupSelectionById(groupId),
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.home.plans,
-    }),
-  ]);
 }
 
 export const GroupPlanDetailCommands = {
@@ -86,7 +75,10 @@ export const GroupPlanDetailCommands = {
   ) {
     const result = await GroupPlanDetailApi.createPlanProposal(planId, payload);
 
-    await invalidatePlanningSurfaces(groupId);
+    await invalidatePlanDecisionSurfaces({
+      groupId,
+      planId: result.data.planId,
+    });
 
     return result;
   },
@@ -101,7 +93,10 @@ export const GroupPlanDetailCommands = {
       payload,
     );
 
-    await invalidatePlanningSurfaces(groupId);
+    await invalidatePlanDecisionSurfaces({
+      groupId,
+      planId: result.data.planId,
+    });
 
     return result;
   },
@@ -109,7 +104,10 @@ export const GroupPlanDetailCommands = {
   async withdrawPlanProposal(groupId: string, proposalId: string) {
     const result = await GroupPlanDetailApi.withdrawPlanProposal(proposalId);
 
-    await invalidatePlanningSurfaces(groupId);
+    await invalidatePlanDecisionSurfaces({
+      groupId,
+      planId: result.data.planId,
+    });
 
     return result;
   },

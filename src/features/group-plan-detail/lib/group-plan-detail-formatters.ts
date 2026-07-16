@@ -1,3 +1,4 @@
+import { isGroupPlanMemberRelationship } from "@/features/group-plan-detail/lib/group-plan-access";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 
 const dateFormatter = new Intl.DateTimeFormat("en-GB", {
@@ -79,7 +80,13 @@ function isOnlinePlan(detail: GroupPlanDetail) {
 }
 
 function getPlacePlanLocation(detail: GroupPlanDetail) {
-  return detail.plan?.location ?? detail.activity.city;
+  return canViewExactPlanLocation(detail)
+    ? (detail.plan?.location ?? detail.activity.city)
+    : detail.activity.city;
+}
+
+function canViewExactPlanLocation(detail: GroupPlanDetail) {
+  return isGroupPlanMemberRelationship(detail.viewer.relationship);
 }
 
 export function formatStatusLabel(value: string) {

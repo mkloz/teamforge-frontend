@@ -14,17 +14,20 @@ import type {
   AttentionQueuePlan,
 } from "./attention-queue.types";
 
-export type PlanAttentionKind = "details" | "review" | "time" | "venue";
+export type PlanAttentionKind =
+  | "details"
+  | "propose-location"
+  | "propose-time"
+  | "review"
+  | "time"
+  | "venue"
+  | "vote-location"
+  | "vote-time";
 
 interface PlanAttentionModel {
   actionLabel: string;
   description: string;
   kind: PlanAttentionKind;
-}
-
-interface PlanAttentionNeeds {
-  needsLocation: boolean;
-  needsTime: boolean;
 }
 
 const MILLISECONDS_PER_DAY = 86_400_000;
@@ -34,6 +37,16 @@ const PLAN_ATTENTION_MODELS = {
     actionLabel: "Set details",
     description: "Pick the time and venue.",
     kind: "details",
+  },
+  "propose-location": {
+    actionLabel: "Propose a place",
+    description: "Choose a place for the group to consider.",
+    kind: "propose-location",
+  },
+  "propose-time": {
+    actionLabel: "Propose a time",
+    description: "Choose a time for the group to consider.",
+    kind: "propose-time",
   },
   review: {
     actionLabel: "Review plan",
@@ -50,7 +63,25 @@ const PLAN_ATTENTION_MODELS = {
     description: "Pick where this happens.",
     kind: "venue",
   },
+  "vote-location": {
+    actionLabel: "Vote on a place",
+    description: "A place is waiting for your vote.",
+    kind: "vote-location",
+  },
+  "vote-time": {
+    actionLabel: "Vote on a time",
+    description: "A time is waiting for your vote.",
+    kind: "vote-time",
+  },
 } satisfies Record<PlanAttentionKind, PlanAttentionModel>;
+
+const PLAN_ATTENTION_KIND_BY_ACTION = {
+  PROPOSE_LOCATION: "propose-location",
+  PROPOSE_TIME: "propose-time",
+  READY: "review",
+  VOTE_LOCATION: "vote-location",
+  VOTE_TIME: "vote-time",
+} as const;
 
 const PROFILE_STEP_META_BY_KIND = {
   account: ["Profile setup"],
@@ -127,19 +158,20 @@ export function getFriendRequestMeta(request: AttentionQueueFriendRequest) {
 export function getPlanAttentionModel(
   group: AttentionQueuePlan,
 ): PlanAttentionModel {
-  const plan = group.plan;
-  const attentionKind = getPlanAttentionKind({
-    needsLocation: plan.locationMode === "TBD" || !plan.location?.trim(),
-    needsTime: !plan.dateTime,
-  });
+  const action = group.plan.nextRequiredAction;
+  const attentionKind = action
+    ? PLAN_ATTENTION_KIND_BY_ACTION[action]
+    : getLegacyPlanAttentionKind(group.plan);
 
   return { ...PLAN_ATTENTION_MODELS[attentionKind] };
 }
 
-function getPlanAttentionKind({
-  needsLocation,
-  needsTime,
-}: PlanAttentionNeeds): PlanAttentionKind {
+function getLegacyPlanAttentionKind(
+  plan: AttentionQueuePlan["plan"],
+): PlanAttentionKind {
+  const needsLocation = plan.locationMode === "TBD" || !plan.location?.trim();
+  const needsTime = !plan.dateTime;
+
   if (needsLocation && needsTime) {
     return "details";
   }
@@ -148,11 +180,7 @@ function getPlanAttentionKind({
     return "venue";
   }
 
-  if (needsTime) {
-    return "time";
-  }
-
-  return "review";
+  return needsTime ? "time" : "review";
 }
 
 export function getPlanMeta(group: PlannedGroup) {

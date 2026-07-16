@@ -5,9 +5,7 @@ import { getMessagePreviewText } from "@/features/activity/lib/unify-conversatio
 
 export function getMessageClipboardContent(message: UnifiedMessage) {
   if (message.proposal) {
-    return buildProposalClipboardText(message.proposal, {
-      eligibleVoterCount: message.proposalEligibleVoterCount,
-    });
+    return buildProposalClipboardText(message.proposal);
   }
 
   return message.content.trim();

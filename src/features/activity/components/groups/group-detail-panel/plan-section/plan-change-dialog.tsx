@@ -31,7 +31,11 @@ export function PlanChangeDialog({
   plan,
   trigger,
 }: PlanChangeDialogProps) {
-  const form = usePlanProposalForm(plan, { onOpenChange, open });
+  const form = usePlanProposalForm(plan, {
+    initialField: getInitialProposalField(plan.nextRequiredAction),
+    onOpenChange,
+    open,
+  });
 
   function handleOpenChange(nextOpen: boolean) {
     if (nextOpen) {
@@ -93,6 +97,20 @@ export function PlanChangeDialog({
       </Dialog>
     </LazyMotion>
   );
+}
+
+function getInitialProposalField(
+  nextRequiredAction: Plan["nextRequiredAction"],
+) {
+  if (nextRequiredAction === "PROPOSE_TIME") {
+    return "DATE_TIME" as const;
+  }
+
+  if (nextRequiredAction === "PROPOSE_LOCATION") {
+    return "LOCATION" as const;
+  }
+
+  return "TITLE" as const;
 }
 
 function PlanChangeDialogHeader({ onClose }: { onClose: () => void }) {

@@ -46,7 +46,7 @@ export function buildProposalMessage(
     hasVoted: !isPending || hasUserVoted,
     isSystem: false,
     proposal,
-    proposalEligibleVoterCount: countEligibleProposalVoters(participants),
+    proposalEligibleVoterCount: proposal.eligibleVoterCount,
     proposalVoters: proposal.votes.map((vote) => {
       const participant = participantsIndex.get(vote.userId);
 
@@ -62,8 +62,4 @@ export function buildProposalMessage(
       };
     }),
   };
-}
-
-function countEligibleProposalVoters(participants: ActivityParticipant[]) {
-  return participants.length;
 }

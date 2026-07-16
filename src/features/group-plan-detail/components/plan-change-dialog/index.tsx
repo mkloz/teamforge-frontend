@@ -19,12 +19,14 @@ import type { PlanProposalField } from "@/shared/schemas/enums";
 interface PlanChangeDialogProps {
   detail: GroupPlanDetail;
   disabled?: boolean;
+  initialField?: PlanProposalField;
   initialOpen?: boolean;
   isCreating: boolean;
   isOnline?: boolean;
   onCreate: (payload: CreateGroupPlanProposalPayload) => Promise<unknown>;
   onOpenChange?: (open: boolean) => void;
   open?: boolean;
+  triggerLabel?: string;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -32,20 +34,25 @@ interface PlanChangeDialogProps {
 export function PlanChangeDialog({
   detail,
   disabled = false,
+  initialField,
   initialOpen = false,
   isCreating,
   isOnline = true,
   onCreate,
   onOpenChange,
   open,
+  triggerLabel = "What would you change?",
 }: PlanChangeDialogProps) {
   const [internalOpen, setInternalOpen] = useState(initialOpen);
-  const [expanded, setExpanded] = useState<PlanProposalField | null>(null);
+  const [expanded, setExpanded] = useState<PlanProposalField | null>(
+    initialField ?? null,
+  );
   const isControlled = open !== undefined;
   const dialogOpen = open ?? internalOpen;
 
   const form = usePlanChangeForm({
     detail,
+    initialField,
     onCreate,
     onSubmitted: () => handleOpenChange(false),
   });
@@ -69,7 +76,7 @@ export function PlanChangeDialog({
     }
     if (!isOpen) {
       form.resetForm();
-      setExpanded(null);
+      setExpanded(initialField ?? null);
     }
     onOpenChange?.(isOpen);
   }
@@ -83,7 +90,7 @@ export function PlanChangeDialog({
           disabled={disabled || !form.plan}
           title={isOnline ? undefined : "Reconnect before suggesting changes."}
         >
-          What would you change?
+          {triggerLabel}
         </Button>
       </DialogTrigger>
 

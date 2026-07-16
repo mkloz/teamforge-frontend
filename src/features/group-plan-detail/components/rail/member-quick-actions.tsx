@@ -5,6 +5,7 @@ import { useGroupPlanProposalActions } from "@/features/group-plan-detail/hooks/
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Button } from "@/shared/components/ui/button";
 import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
+import type { PlanNextRequiredAction } from "@/shared/schemas/enums";
 import { isSystemManagedGroupGovernance } from "@/shared/schemas/group-governance";
 
 interface MemberQuickActionsProps {
@@ -97,7 +98,6 @@ function getMemberQuickActionCapabilities(detail: GroupPlanDetail) {
       (governance.capabilities.canEditGroupIdentity ||
         governance.capabilities.canUpdatePlanDirectly)
     : !isGovernanceUnknown && detail.viewer.canManageGroup;
-
   return {
     canInviteMembers,
     canManageGroup,
@@ -131,6 +131,12 @@ function PlanChangeQuickAction({
   detail: GroupPlanDetail;
   proposalActions: GroupPlanProposalActions;
 }) {
+  const nextAction = detail.plan?.nextRequiredAction ?? null;
+
+  if (isPlanVoteAction(nextAction)) {
+    return null;
+  }
+
   if (!capabilities.canSuggestPlanChange) {
     return null;
   }
@@ -141,6 +147,7 @@ function PlanChangeQuickAction({
       disabled={proposalActions.isSubmitting || !proposalActions.isOnline}
       isCreating={proposalActions.isCreating}
       isOnline={proposalActions.isOnline}
+      initialField={getPlanChangeInitialField(nextAction)}
       onCreate={proposalActions.createProposal}
     />
   );
@@ -151,12 +158,14 @@ function DeferredPlanChangeDialog({
   disabled,
   isCreating,
   isOnline,
+  initialField,
   onCreate,
 }: {
   detail: GroupPlanDetail;
   disabled: boolean;
   isCreating: boolean;
   isOnline: boolean;
+  initialField: "DATE_TIME" | "LOCATION" | undefined;
   onCreate: CreateProposalAction;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -191,28 +200,51 @@ function DeferredPlanChangeDialog({
       }
     >
       <PlanChangeDialog
+        key={initialField ?? "standard"}
         detail={detail}
         disabled={disabled}
         isCreating={isCreating}
         isOnline={isOnline}
+        initialField={initialField}
         onCreate={onCreate}
         open={isOpen}
         onOpenChange={setIsOpen}
+        triggerLabel={actionLabel}
       />
     </Suspense>
   );
 }
 
 function getPlanChangeActionLabel(detail: GroupPlanDetail) {
-  if (!detail.plan?.dateTime) {
-    return "Pick a time together";
+  const action = detail.plan?.nextRequiredAction;
+
+  if (action === "PROPOSE_TIME") {
+    return "Propose a time";
   }
 
-  if (!detail.plan.location || detail.plan.location === "Location TBD") {
-    return "Choose a place together";
+  if (action === "PROPOSE_LOCATION") {
+    return "Propose a place";
   }
 
   return "Suggest a plan change";
+}
+
+function getPlanChangeInitialField(action: PlanNextRequiredAction | null) {
+  if (action === "PROPOSE_TIME") {
+    return "DATE_TIME" as const;
+  }
+
+  if (action === "PROPOSE_LOCATION") {
+    return "LOCATION" as const;
+  }
+
+  return undefined;
+}
+
+function isPlanVoteAction(
+  action: PlanNextRequiredAction | null,
+): action is "VOTE_LOCATION" | "VOTE_TIME" {
+  return action === "VOTE_LOCATION" || action === "VOTE_TIME";
 }
 
 interface QuickActionLinkProps {

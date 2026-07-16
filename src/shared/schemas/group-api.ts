@@ -19,6 +19,7 @@ import {
   groupRoleSchema,
   locationModeSchema,
   planCategorySchema,
+  planNextRequiredActionSchema,
   planScheduleModeSchema,
   planStatusSchema,
 } from "./enums";
@@ -54,6 +55,13 @@ const groupPlanSummarySchema = z.object({
   governance: groupGovernanceSchema.nullish(),
 });
 
+const groupCurrentPlanSummarySchema = groupPlanSummarySchema.extend({
+  revision: z.number().int().nonnegative(),
+  isScheduleResolved: z.boolean(),
+  isLocationResolved: z.boolean(),
+  nextRequiredAction: planNextRequiredActionSchema.nullable(),
+});
+
 const groupMemberUserSummarySchema = z.object({
   ...userIdentitySummaryFields,
   ...userAvatarMediaField,
@@ -87,7 +95,7 @@ export const groupApiSchema = z
     activityId: z.string(),
     currentPlanId: z.string().nullable().optional(),
     activity: groupActivitySummarySchema,
-    plan: groupPlanSummarySchema.nullable(),
+    plan: groupCurrentPlanSummarySchema.nullable(),
     planHistory: z.array(groupPlanSummarySchema).optional(),
     chat: z
       .object({

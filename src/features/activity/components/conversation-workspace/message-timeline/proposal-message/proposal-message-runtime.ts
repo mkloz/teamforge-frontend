@@ -1,3 +1,4 @@
+import { useConversationCapabilities } from "@/features/activity/components/conversation-workspace/conversation-capability-context";
 import { getProposalMessageViewState } from "@/features/activity/components/conversation-workspace/message-timeline/proposal-message/proposal-message-view-model";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
@@ -28,7 +29,12 @@ export function useProposalMessageRuntime(
   message: UnifiedMessage,
 ): ProposalMessageRuntimeState {
   const { data: currentUser } = useCurrentUserQuery();
-  const viewState = getProposalMessageViewState(message, currentUser?.id);
+  const capabilities = useConversationCapabilities();
+  const viewState = getProposalMessageViewState(
+    message,
+    currentUser?.id,
+    capabilities.canVoteOnPlanChange,
+  );
   const { reactionGroups, isReadByOthers } = useMessageLayout({
     message,
     isOwn: message.isOwn,

@@ -10,7 +10,10 @@ import { addIncomingNotification } from "@/features/notifications/public/notific
 import { authSession } from "@/shared/api/auth-session";
 import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
-import { refreshAccessSensitiveSurfaces } from "@/shared/api/query-invalidation";
+import {
+  invalidatePlanDecisionSurfaces,
+  refreshAccessSensitiveSurfaces,
+} from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { realtimeClient } from "@/shared/api/realtime-client";
 import { shouldApplyRealtimeEvent } from "@/shared/lib/realtime-event-registry";
@@ -19,8 +22,12 @@ import {
   realtimeForgeProposalUpdatedPayloadSchema,
   realtimeGroupUpdatedPayloadSchema,
   realtimeNotificationPayloadSchema,
+  realtimePlanUpdatedPayloadSchema,
 } from "@/shared/schemas/realtime";
 import type { User } from "@/shared/schemas/user";
+
+const APP_GROUP_REALTIME_SCOPE = "app-runtime:group-updated";
+const APP_PLAN_REALTIME_SCOPE = "app-runtime:plan-updated";
 
 // These exports are consumed by AppRealtimeSync through loadAppRealtimeEvents().
 // Fallow does not trace the destructured API of that dynamic import.
@@ -41,7 +48,11 @@ function handleNotificationPayload(payload: unknown) {
 function handleGroupUpdatedPayload(payload: unknown) {
   const parsed = realtimeGroupUpdatedPayloadSchema.parse(payload);
 
-  if (!shouldApplyRealtimeEvent(parsed)) {
+  if (
+    !shouldApplyRealtimeEvent(parsed, {
+      scope: APP_GROUP_REALTIME_SCOPE,
+    })
+  ) {
     return;
   }
 
@@ -53,6 +64,23 @@ function handleGroupUpdatedPayload(payload: unknown) {
   }
 
   applyActivityGroupUpdate(currentUser.id, parsed.group);
+}
+
+function handlePlanUpdatedPayload(payload: unknown) {
+  const parsed = realtimePlanUpdatedPayloadSchema.parse(payload);
+
+  if (
+    !shouldApplyRealtimeEvent(parsed, {
+      scope: APP_PLAN_REALTIME_SCOPE,
+    })
+  ) {
+    return;
+  }
+
+  void invalidatePlanDecisionSurfaces({
+    groupId: parsed.groupId,
+    planId: parsed.planId,
+  });
 }
 
 function handleAccessChangedPayload(payload: unknown) {
@@ -157,6 +185,10 @@ export function subscribeAppRealtimeEvents() {
     "group.updated",
     handleGroupUpdatedPayload,
   );
+  const unsubscribePlanUpdate = realtimeClient.on(
+    "plan.updated",
+    handlePlanUpdatedPayload,
+  );
   const unsubscribeForgeProposalUpdate = realtimeClient.on(
     "forge.proposal.updated",
     handleForgeProposalUpdatedPayload,
@@ -167,5 +199,6 @@ export function subscribeAppRealtimeEvents() {
     unsubscribeForgeProposalUpdate();
     unsubscribeGroupUpdate();
     unsubscribeNotification();
+    unsubscribePlanUpdate();
   };
 }

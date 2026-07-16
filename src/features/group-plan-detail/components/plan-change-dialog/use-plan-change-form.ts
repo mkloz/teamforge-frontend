@@ -17,6 +17,7 @@ import type { PlanProposalField } from "@/shared/schemas/enums";
 
 interface UsePlanChangeFormParams {
   detail: GroupPlanDetail;
+  initialField?: PlanProposalField;
   onCreate: (payload: CreateGroupPlanProposalPayload) => Promise<unknown>;
   onSubmitted: () => void;
 }
@@ -53,13 +54,14 @@ const PROPOSED_VALUE_RESOLVERS: Partial<
 
 export function usePlanChangeForm({
   detail,
+  initialField = "TITLE",
   onCreate,
   onSubmitted,
 }: UsePlanChangeFormParams) {
   const plan = detail.plan;
-  const [field, setField] = useState<PlanProposalField>("TITLE");
+  const [field, setField] = useState<PlanProposalField>(initialField);
   const [value, setValue] = useState(() =>
-    plan ? getCurrentProposalValue(plan, "TITLE") : "",
+    plan ? getCurrentProposalValue(plan, initialField) : "",
   );
   const [locationValue, setLocationValue] = useState<PlanLocationValue | null>(
     () => (plan ? getPlanLocationValue(plan) : null),
@@ -69,7 +71,7 @@ export function usePlanChangeForm({
   );
   const [error, setError] = useState<string | null>(null);
 
-  function resetForm(nextField: PlanProposalField = "TITLE") {
+  function resetForm(nextField: PlanProposalField = initialField) {
     setField(nextField);
     setValue(plan ? getCurrentProposalValue(plan, nextField) : "");
     setLocationValue(plan ? getPlanLocationValue(plan) : null);

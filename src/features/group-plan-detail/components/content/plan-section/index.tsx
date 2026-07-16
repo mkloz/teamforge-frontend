@@ -35,14 +35,14 @@ interface PlanSectionState {
   cost: string;
   costSupporting?: string;
   dateTime: string;
+  dateTimeSupporting?: string;
   location: string;
   locationIcon: LucideIcon;
-  locationMode: string;
+  locationSupporting: string;
   plan: Plan;
   statusContext?: string;
   statusIcon: LucideIcon;
   statusLabel: string;
-  timeUntil?: string;
 }
 
 const PLAN_STATUS_ICONS = {
@@ -94,10 +94,11 @@ function getPlanSectionState(detail: GroupPlanDetail): PlanSectionState | null {
   return {
     cost: formatCost(plan),
     costSupporting: plan.costDetails ?? undefined,
-    dateTime: getPlanDateTimeValue(planTime),
+    dateTime: getPlanDateTimeValue(plan, planTime),
+    dateTimeSupporting: getPlanDateTimeSupporting(plan),
     location: formatLocation(detail),
     locationIcon: getLocationIcon(plan),
-    locationMode: formatStatusLabel(plan.locationMode),
+    locationSupporting: getPlanLocationSupporting(plan),
     plan,
     statusContext: getStatusContext(
       plan.status,
@@ -105,16 +106,45 @@ function getPlanSectionState(detail: GroupPlanDetail): PlanSectionState | null {
     ),
     statusIcon: PLAN_STATUS_ICONS[plan.status],
     statusLabel: formatStatusLabel(plan.status),
-    timeUntil: getPlanTimeUntil(plan),
   };
 }
 
-function getPlanDateTimeValue(planTime: PlanDateTime) {
-  return planTime.full === "Date TBD" ? planTime.date : planTime.full;
+function getPlanDateTimeValue(plan: Plan, planTime: PlanDateTime) {
+  return plan.isScheduleResolved
+    ? planTime.full
+    : "Date and time to be decided";
 }
 
 function getPlanTimeUntil(plan: Plan) {
   return plan.dateTime ? getTimeUntilEvent(plan.dateTime) : undefined;
+}
+
+function getPlanDateTimeSupporting(plan: Plan) {
+  if (plan.isScheduleResolved) {
+    return getPlanTimeUntil(plan);
+  }
+
+  if (plan.nextRequiredAction === "VOTE_TIME") {
+    return "A time is ready for your vote";
+  }
+
+  return plan.nextRequiredAction === "PROPOSE_TIME"
+    ? "Propose a time with the group"
+    : "To be decided";
+}
+
+function getPlanLocationSupporting(plan: Plan) {
+  if (plan.isLocationResolved) {
+    return formatStatusLabel(plan.locationMode);
+  }
+
+  if (plan.nextRequiredAction === "VOTE_LOCATION") {
+    return "A place is ready for your vote";
+  }
+
+  return plan.nextRequiredAction === "PROPOSE_LOCATION"
+    ? "Choose a place with the group"
+    : "To be decided";
 }
 
 function getLocationIcon(plan: Plan) {
@@ -140,13 +170,13 @@ function PlanFactsGrid({ state }: { state: PlanSectionState }) {
         icon={CalendarClock}
         label="Date & time"
         value={state.dateTime}
-        supporting={state.timeUntil}
+        supporting={state.dateTimeSupporting}
       />
       <PlanFact
         icon={state.locationIcon}
         label="Location"
         value={state.location}
-        supporting={state.locationMode}
+        supporting={state.locationSupporting}
       />
       <PlanFact
         icon={Banknote}

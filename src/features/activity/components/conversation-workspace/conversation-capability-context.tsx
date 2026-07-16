@@ -15,6 +15,7 @@ export interface ConversationCapabilities {
   canSendVoiceMessages: boolean;
   canLeaveGroup: boolean;
   canSuggestPlanChange: boolean;
+  canVoteOnPlanChange: boolean;
   chatMode: "READ_ONLY" | "STANDARD" | "TEXT_ONLY";
   isSystemManaged: boolean;
   readOnlyReason: GroupChatReadOnlyReason | null;
@@ -29,6 +30,7 @@ const STANDARD_CONVERSATION_CAPABILITIES: ConversationCapabilities = {
   canSendVoiceMessages: true,
   canLeaveGroup: true,
   canSuggestPlanChange: true,
+  canVoteOnPlanChange: true,
   chatMode: "STANDARD",
   isSystemManaged: false,
   readOnlyReason: null,
@@ -75,6 +77,7 @@ export function getConversationCapabilities(
       canSendVoiceMessages: false,
       canLeaveGroup: false,
       canSuggestPlanChange: false,
+      canVoteOnPlanChange: false,
       chatMode: "READ_ONLY",
       isSystemManaged: true,
       readOnlyReason: "ACCESS_RESTRICTED",
@@ -108,6 +111,7 @@ export function getConversationCapabilities(
       chat.capabilities.canSendVoiceMessages,
     canLeaveGroup: governance.capabilities.canLeaveGroup,
     canSuggestPlanChange: governance.capabilities.canSuggestPlanChange,
+    canVoteOnPlanChange: governance.capabilities.canVoteOnPlanChange,
     chatMode: chat.mode,
     isSystemManaged: true,
     readOnlyReason: chat.readOnlyReason,

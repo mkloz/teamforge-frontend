@@ -10,6 +10,7 @@ import {
   groupRoleSchema,
   locationModeSchema,
   planCategorySchema,
+  planNextRequiredActionSchema,
   planScheduleModeSchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
@@ -40,6 +41,10 @@ const planSchema = z.object({
   coverImageMedia: imageMediaSchema.nullable().optional(),
   status: planStatusSchema,
   scheduleMode: planScheduleModeSchema.nullish(),
+  revision: z.number().int().nonnegative(),
+  isScheduleResolved: z.boolean(),
+  isLocationResolved: z.boolean(),
+  nextRequiredAction: planNextRequiredActionSchema.nullable(),
   dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
   location: z.string().nullable(),

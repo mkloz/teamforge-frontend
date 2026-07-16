@@ -133,7 +133,10 @@ export function useConversationWorkspaceController(
   const handleCreateProposal =
     canOpenPlanProposalDialog(kind, activePlan, isCompleted) &&
     capabilities.canSuggestPlanChange &&
-    !capabilities.isSystemManaged
+    canCreatePlanProposalFromWorkspace(
+      capabilities.isSystemManaged,
+      activePlan?.nextRequiredAction ?? null,
+    )
       ? createOpenProposalDialogHandler(setIsProposalDialogOpen)
       : undefined;
   const handleUnpinPinnedMessage = createPinnedMessageUnpinHandler({
@@ -242,4 +245,21 @@ export function useConversationWorkspaceController(
     messageAreaProps,
     statusBarProps,
   };
+}
+
+function canCreatePlanProposalFromWorkspace(
+  isSystemManaged: boolean,
+  nextRequiredAction:
+    | "PROPOSE_LOCATION"
+    | "PROPOSE_TIME"
+    | "READY"
+    | "VOTE_LOCATION"
+    | "VOTE_TIME"
+    | null,
+) {
+  return (
+    !isSystemManaged ||
+    nextRequiredAction === "PROPOSE_TIME" ||
+    nextRequiredAction === "PROPOSE_LOCATION"
+  );
 }

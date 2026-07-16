@@ -24,8 +24,8 @@ const GROUP_AGE_RULES = [
 
 export function getPendingVoteHeadline(pending: number) {
   return pending === 1
-    ? "1 plan change needs your vote"
-    : `${pending} plan changes need your vote`;
+    ? "1 plan option is open"
+    : `${pending} plan options are open`;
 }
 
 export function getGroupOverviewRows(detail: GroupPlanDetail) {

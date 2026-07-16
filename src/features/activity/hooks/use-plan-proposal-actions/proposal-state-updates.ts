@@ -7,8 +7,17 @@ export function addOptimisticVote(
   vote: ProposalVote,
   now: string,
 ): PlanProposal {
+  const previousVote = proposal.votes.find(
+    (item) => item.userId === currentUser.id,
+  )?.vote;
+
   return {
     ...proposal,
+    activeApprovalCount: getOptimisticApprovalCount(
+      proposal.activeApprovalCount,
+      previousVote,
+      vote,
+    ),
     updatedAt: now,
     version: Date.parse(now),
     votes: [
@@ -20,6 +29,17 @@ export function addOptimisticVote(
       },
     ],
   };
+}
+
+function getOptimisticApprovalCount(
+  currentCount: number,
+  previousVote: ProposalVote | undefined,
+  nextVote: ProposalVote,
+) {
+  const previousApproval = previousVote === "APPROVE" ? 1 : 0;
+  const nextApproval = nextVote === "APPROVE" ? 1 : 0;
+
+  return Math.max(0, currentCount - previousApproval + nextApproval);
 }
 
 export function markProposalWithdrawn(

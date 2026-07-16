@@ -8,14 +8,10 @@ type MessageProposal = NonNullable<UnifiedMessage["proposal"]>;
 type ProposalVote = MessageProposal["votes"][number];
 type ProposalVoteValue = ProposalVote["vote"];
 
-interface ProposalVoteCounts {
-  approveCount: number;
-  rejectCount: number;
-}
-
 export function getProposalMessageViewState(
   message: UnifiedMessage,
   currentUserId?: string,
+  canVoteOnPlanChange = true,
 ) {
   const proposal = message.proposal ?? null;
 
@@ -23,32 +19,30 @@ export function getProposalMessageViewState(
     return null;
   }
 
-  const { approveCount, rejectCount } = getProposalVoteCounts(proposal.votes);
-  const totalVotes = approveCount + rejectCount;
+  const rejectCount = countProposalVotes(proposal.votes, "REJECT");
+  const activeApprovalCount = proposal.activeApprovalCount;
   const hasVoted = hasCurrentUserVoted(proposal.votes, currentUserId);
   const isPending = proposal.status === "PENDING";
   const isProposer = currentUserId === proposal.proposerId;
-  const eligibleVoterCount = getEligibleVoterCount(message, proposal);
+  const approvalThreshold = proposal.approvalThreshold;
 
   return {
-    approveCount,
-    canVote: canCurrentUserVote({ currentUserId, hasVoted, isPending }),
-    eligibleVoterCount,
+    activeApprovalCount,
+    approvalThreshold,
+    canVoteOnPlanChange,
+    canVote: canCurrentUserVote({
+      canVoteOnPlanChange,
+      currentUserId,
+      hasVoted,
+      isPending,
+    }),
     hasVoted,
     isPending,
     isProposer,
     proposal,
     proposalVoters: getProposalVoters(message),
     rejectCount,
-    totalVotes,
-    voteProgress: getVoteProgress(totalVotes, eligibleVoterCount),
-  };
-}
-
-function getProposalVoteCounts(votes: ProposalVote[]): ProposalVoteCounts {
-  return {
-    approveCount: countProposalVotes(votes, "APPROVE"),
-    rejectCount: countProposalVotes(votes, "REJECT"),
+    voteProgress: getVoteProgress(activeApprovalCount, approvalThreshold),
   };
 }
 
@@ -71,25 +65,18 @@ function hasCurrentUserVoted(
 }
 
 function canCurrentUserVote({
+  canVoteOnPlanChange,
   currentUserId,
   hasVoted,
   isPending,
 }: {
+  canVoteOnPlanChange: boolean;
   currentUserId: string | undefined;
   hasVoted: boolean;
   isPending: boolean;
 }) {
-  return isPending && Boolean(currentUserId) && !hasVoted;
-}
-
-function getEligibleVoterCount(
-  message: UnifiedMessage,
-  proposal: MessageProposal,
-) {
-  return Math.max(
-    message.proposalEligibleVoterCount ?? proposal.votes.length,
-    proposal.votes.length,
-    1,
+  return (
+    canVoteOnPlanChange && isPending && Boolean(currentUserId) && !hasVoted
   );
 }
 
@@ -97,6 +84,6 @@ function getProposalVoters(message: UnifiedMessage) {
   return message.proposalVoters ?? [];
 }
 
-function getVoteProgress(totalVotes: number, eligibleVoterCount: number) {
-  return Math.min(100, Math.round((totalVotes / eligibleVoterCount) * 100));
+function getVoteProgress(approvalCount: number, approvalThreshold: number) {
+  return Math.min(100, Math.round((approvalCount / approvalThreshold) * 100));
 }

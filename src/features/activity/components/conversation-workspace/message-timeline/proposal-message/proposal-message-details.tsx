@@ -30,16 +30,16 @@ export function ProposalMessageDetails({
   viewState,
 }: ProposalMessageDetailsProps) {
   const {
-    approveCount,
+    activeApprovalCount,
+    approvalThreshold,
     canVote,
-    eligibleVoterCount,
+    canVoteOnPlanChange,
     hasVoted,
     isPending,
     isProposer,
     proposal,
     proposalVoters,
     rejectCount,
-    totalVotes,
     voteProgress,
   } = viewState;
   const shouldShowActions = isPending;
@@ -54,7 +54,7 @@ export function ProposalMessageDetails({
       <div className="mt-2 flex flex-col gap-1.5">
         <ProposalVoters
           voters={proposalVoters}
-          score={`${totalVotes}/${eligibleVoterCount} votes`}
+          score={`${activeApprovalCount}/${approvalThreshold} approvals`}
           progress={voteProgress}
         />
 
@@ -63,7 +63,7 @@ export function ProposalMessageDetails({
             {formatProposalDate(proposal.createdAt)}
           </span>
           <span className="shrink-0 font-medium">
-            {approveCount} approve · {rejectCount} reject
+            {activeApprovalCount} approve · {rejectCount} against
           </span>
         </div>
       </div>
@@ -73,6 +73,7 @@ export function ProposalMessageDetails({
           <ProposalActions
             state={{
               canVote,
+              canVoteOnPlanChange,
               hasVoted,
               isPending,
               isProposer,

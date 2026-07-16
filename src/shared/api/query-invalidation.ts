@@ -29,6 +29,29 @@ export function invalidateHomeGroupSurfaces() {
   ]);
 }
 
+export function invalidatePlanDecisionSurfaces({
+  groupId,
+  planId,
+}: {
+  groupId?: string;
+  planId?: string;
+}) {
+  return invalidateQueries([
+    APP_QUERY_KEYS.activity.groups,
+    groupId
+      ? APP_QUERY_KEYS.activity.groupSelectionById(groupId)
+      : APP_QUERY_KEYS.activity.groupSelection,
+    planId
+      ? APP_QUERY_KEYS.activity.planProposals(planId)
+      : APP_QUERY_KEYS.activity.plans,
+    groupId
+      ? APP_QUERY_KEYS.groupPlanDetail.byId(groupId)
+      : APP_QUERY_KEYS.groupPlanDetail.all,
+    APP_QUERY_KEYS.home.groups,
+    APP_QUERY_KEYS.home.plans,
+  ]);
+}
+
 export function invalidateGroupMembershipSurfaces() {
   return Promise.all([
     resetViewerProfileQueries(),

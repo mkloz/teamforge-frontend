@@ -59,9 +59,17 @@ function applyOptimisticProposalVote(
   vote: VoteGroupPlanProposalPayload["vote"],
 ) {
   const now = getOptimisticProposalTimestamp();
+  const previousVote = proposal.votes.find(
+    (item) => item.userId === userId,
+  )?.vote;
 
   return {
     ...proposal,
+    activeApprovalCount: getOptimisticApprovalCount(
+      proposal.activeApprovalCount,
+      previousVote,
+      vote,
+    ),
     updatedAt: now,
     version: Date.parse(now),
     votes: [
@@ -73,6 +81,17 @@ function applyOptimisticProposalVote(
       },
     ],
   } satisfies PlanProposal;
+}
+
+function getOptimisticApprovalCount(
+  currentCount: number,
+  previousVote: VoteGroupPlanProposalPayload["vote"] | undefined,
+  nextVote: VoteGroupPlanProposalPayload["vote"],
+) {
+  const previousApproval = previousVote === "APPROVE" ? 1 : 0;
+  const nextApproval = nextVote === "APPROVE" ? 1 : 0;
+
+  return Math.max(0, currentCount - previousApproval + nextApproval);
 }
 
 function applyOptimisticProposalWithdraw(proposal: PlanProposal) {

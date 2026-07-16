@@ -62,9 +62,7 @@ export function useAttentionQueueState({
   const visibleRequests = requests.filter(
     (request) => !hiddenRequestIds.includes(request.requesterId),
   );
-  const proposedPlans = plans.filter(
-    (group) => group.plan.status === "PROPOSED",
-  );
+  const proposedPlans = plans.filter(isProposedPlanCandidate);
   const queueSize =
     visibleInvitations.length +
     visibleRequests.length +
@@ -193,4 +191,14 @@ export function useAttentionQueueState({
     visibleInvitations,
     visibleRequests,
   };
+}
+
+function isProposedPlanCandidate(
+  group: ReturnType<typeof useHomeData>["plans"][number],
+) {
+  const action = group.plan.nextRequiredAction;
+
+  return action === null
+    ? group.plan.status === "PROPOSED"
+    : action !== "READY";
 }

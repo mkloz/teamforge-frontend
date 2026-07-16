@@ -178,12 +178,9 @@ function getProposalTimelineFieldLabel(field: PlanProposal["field"]) {
   return PROPOSAL_TIMELINE_FIELD_LABELS[field];
 }
 
-export function buildProposalClipboardText(
-  proposal: PlanProposal,
-  options: { eligibleVoterCount?: number } = {},
-) {
+export function buildProposalClipboardText(proposal: PlanProposal) {
   const fieldLabel = PROPOSAL_FIELD_LABELS[proposal.field];
-  const voteSummary = getProposalVoteSummary(proposal, options);
+  const rejectCount = countProposalVotes(proposal, "REJECT");
 
   return [
     `Plan change: ${fieldLabel}`,
@@ -191,27 +188,8 @@ export function buildProposalClipboardText(
     `Current: ${formatProposalValue(proposal.field, proposal.currentValue)}`,
     `New: ${formatProposalValue(proposal.field, proposal.proposedValue)}`,
     `Status: ${PROPOSAL_STATUS_LABELS[proposal.status]}`,
-    `Votes: ${voteSummary.totalVotes}/${voteSummary.eligibleVoterCount} (${voteSummary.approveCount} approve, ${voteSummary.rejectCount} reject)`,
+    `Approvals: ${proposal.activeApprovalCount}/${proposal.approvalThreshold} (${rejectCount} against)`,
   ].join("\n");
-}
-
-function getProposalVoteSummary(
-  proposal: PlanProposal,
-  options: { eligibleVoterCount?: number },
-) {
-  const approveCount = countProposalVotes(proposal, "APPROVE");
-  const rejectCount = countProposalVotes(proposal, "REJECT");
-
-  return {
-    approveCount,
-    eligibleVoterCount: Math.max(
-      options.eligibleVoterCount ?? proposal.votes.length,
-      proposal.votes.length,
-      1,
-    ),
-    rejectCount,
-    totalVotes: approveCount + rejectCount,
-  };
 }
 
 function countProposalVotes(
