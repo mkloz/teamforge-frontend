@@ -19,6 +19,10 @@ interface PersonalityResultActionsProps {
   onDeleteAll: () => void;
   onSave: () => void;
   onRetake: () => void;
+  publishBlocked: boolean;
+  publishBlockedReason: string | null;
+  retakeBlocked: boolean;
+  retakeBlockedReason: string | null;
 }
 
 export function PersonalityResultActions({
@@ -36,6 +40,10 @@ export function PersonalityResultActions({
   onDeleteAll,
   onSave,
   onRetake,
+  publishBlocked,
+  publishBlockedReason,
+  retakeBlocked,
+  retakeBlockedReason,
 }: PersonalityResultActionsProps) {
   const isBusy = activeAction !== null;
 
@@ -48,8 +56,10 @@ export function PersonalityResultActions({
             !actionsAvailable ||
             isBusy ||
             isSaved ||
-            isLegacyResult
+            isLegacyResult ||
+            publishBlocked
           }
+          title={publishBlockedReason ?? undefined}
           loading={activeAction === "publish"}
           onClick={onSave}
         >
@@ -93,11 +103,11 @@ export function PersonalityResultActions({
         <Button
           variant="ghost"
           size="sm"
-          disabled={isBusy || hasDraft}
+          disabled={isBusy || hasDraft || retakeBlocked}
           title={
             hasDraft
               ? "Discard this draft before starting another assessment."
-              : undefined
+              : (retakeBlockedReason ?? undefined)
           }
           loading={activeAction === "retake"}
           onClick={onRetake}

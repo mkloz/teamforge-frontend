@@ -1,5 +1,6 @@
 import { m } from "framer-motion";
 
+import type { CompatibilityInputLockStatus } from "@/features/forge-proposals/public/proposal-review";
 import { resultsContainer } from "@/features/onboarding/constants/motion";
 import type { PersonalityAssessmentQueryStatus } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import { getPersonalityResultViewModel } from "@/features/onboarding/lib/personality-results";
@@ -20,6 +21,12 @@ interface PersonalityResultsProps {
   continueLabel?: string;
   error: string | null;
   hasDraft: boolean;
+  inputLock: {
+    isBlocked: boolean;
+    message: string | null;
+    retry: () => unknown;
+    status: CompatibilityInputLockStatus;
+  };
   isOnline: boolean;
   isSaved: boolean;
   isLegacyResult: boolean;
@@ -39,6 +46,7 @@ export function PersonalityResults({
   continueLabel = "Continue",
   error,
   hasDraft,
+  inputLock,
   isOnline,
   isSaved,
   isLegacyResult,
@@ -119,6 +127,8 @@ export function PersonalityResults({
 
       <AssessmentStateNotice onRetry={onRetryState} status={stateStatus} />
 
+      <CompatibilityInputLockNotice inputLock={inputLock} />
+
       <PersonalityResultActions
         actionsAvailable={stateStatus === "ready"}
         activeAction={activeResultAction}
@@ -126,9 +136,13 @@ export function PersonalityResults({
         continueLabel={continueLabel}
         error={error}
         hasDraft={hasDraft}
+        retakeBlocked={inputLock.isBlocked}
+        retakeBlockedReason={inputLock.message}
         isOnline={isOnline}
         isSaved={isSaved}
         isLegacyResult={isLegacyResult}
+        publishBlocked={inputLock.isBlocked}
+        publishBlockedReason={inputLock.message}
         onContinue={onContinue}
         onDiscard={onDiscard}
         onDeleteAll={onDeleteAll}
@@ -136,6 +150,35 @@ export function PersonalityResults({
         onRetake={onRetake}
       />
     </m.div>
+  );
+}
+
+function CompatibilityInputLockNotice({
+  inputLock,
+}: Pick<PersonalityResultsProps, "inputLock">) {
+  if (!inputLock.isBlocked) {
+    return null;
+  }
+
+  return (
+    <div
+      className="flex flex-col gap-3 border-border border-l-2 py-1 pl-4"
+      role={inputLock.status === "error" ? "alert" : "status"}
+    >
+      <p className="text-muted-foreground text-sm leading-relaxed">
+        {inputLock.message}
+      </p>
+      {inputLock.status === "error" ? (
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-fit"
+          onClick={() => void inputLock.retry()}
+        >
+          Try again
+        </Button>
+      ) : null}
+    </div>
   );
 }
 

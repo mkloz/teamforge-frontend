@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Brain, RefreshCcw, Tags } from "lucide-react";
+import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
 import { CandidateAvailabilityControl } from "@/features/settings/components/settings-profile-form/candidate-availability-control";
 import {
   OfflineSettingsNotice,
@@ -15,6 +16,7 @@ import { normalizeTrustScore } from "@/features/settings/components/settings-pro
 import type { CandidateAvailabilityState } from "@/features/settings/hooks/use-candidate-availability";
 import { personalityAssessmentQueryOptions } from "@/shared/api/personality-assessment-query";
 import { Button } from "@/shared/components/ui/button";
+import { Notice } from "@/shared/components/ui/notice";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import {
   buildInterestsEditNavigation,
@@ -62,11 +64,14 @@ export function MatchingSettingsSection({
   isOnline,
   onChange,
 }: MatchingSettingsSectionProps) {
-  const isDisabled = getMatchingControlsDisabled({
-    isLoadingNotificationPreferences,
-    isOnline,
-    notificationPreferences,
-  });
+  const compatibilityInputLock = useCompatibilityInputLock();
+  const isDisabled =
+    compatibilityInputLock.isBlocked ||
+    getMatchingControlsDisabled({
+      isLoadingNotificationPreferences,
+      isOnline,
+      notificationPreferences,
+    });
 
   return (
     <section className="flex flex-col gap-8">
@@ -83,6 +88,10 @@ export function MatchingSettingsSection({
         <OfflineSettingsNotice message="Reconnect before changing group proposal settings." />
       ) : null}
 
+      {compatibilityInputLock.isBlocked ? (
+        <CompatibilityInputLockNotice lock={compatibilityInputLock} />
+      ) : null}
+
       <CandidateAvailabilityControl
         hasSavedLocation={
           currentUser?.locationLat != null && currentUser.locationLng != null
@@ -93,7 +102,11 @@ export function MatchingSettingsSection({
       <MatchingPreferenceControls
         disabled={isDisabled}
         notificationPreferences={notificationPreferences}
-        onChange={onChange}
+        onChange={async (values) => {
+          if (!compatibilityInputLock.isBlocked) {
+            await onChange(values);
+          }
+        }}
         savingNotificationPreferenceKeys={savingNotificationPreferenceKeys}
       />
 
@@ -101,7 +114,10 @@ export function MatchingSettingsSection({
 
       <SavedInterestsPreview interests={currentUser?.interests} />
 
-      <MatchingEditActions />
+      <MatchingEditActions
+        interestsDisabled={compatibilityInputLock.isBlocked}
+        interestsDisabledReason={compatibilityInputLock.message}
+      />
     </section>
   );
 }
@@ -231,7 +247,13 @@ function InterestPill({ interest }: { interest: UserInterest }) {
   );
 }
 
-function MatchingEditActions() {
+function MatchingEditActions({
+  interestsDisabled,
+  interestsDisabledReason,
+}: {
+  interestsDisabled: boolean;
+  interestsDisabledReason: string | null;
+}) {
   return (
     <div className="flex flex-col gap-3 border-border border-t pt-5 md:flex-row md:items-center md:justify-between">
       <p className="text-slate-muted text-sm">
@@ -251,19 +273,54 @@ function MatchingEditActions() {
             Review personality
           </Link>
         </Button>
-        <Button asChild variant="outline" size="compact" className="min-w-0">
-          <Link
-            {...buildInterestsEditNavigation({
-              returnTo: "/settings",
-              returnSection: "matching",
-            })}
+        {interestsDisabled ? (
+          <Button
+            variant="outline"
+            size="compact"
+            className="min-w-0"
+            disabled
+            title={interestsDisabledReason ?? undefined}
           >
             <Tags className="size-4" aria-hidden="true" />
             Update interests
-          </Link>
-        </Button>
+          </Button>
+        ) : (
+          <Button asChild variant="outline" size="compact" className="min-w-0">
+            <Link
+              {...buildInterestsEditNavigation({
+                returnTo: "/settings",
+                returnSection: "matching",
+              })}
+            >
+              <Tags className="size-4" aria-hidden="true" />
+              Update interests
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
+  );
+}
+
+function CompatibilityInputLockNotice({
+  lock,
+}: {
+  lock: ReturnType<typeof useCompatibilityInputLock>;
+}) {
+  return (
+    <Notice
+      role={lock.status === "error" ? "alert" : "status"}
+      tone={lock.status === "error" ? "warning" : "neutral"}
+      action={
+        lock.status === "error" ? (
+          <Button variant="ghost" size="xs" onClick={() => void lock.retry()}>
+            Try again
+          </Button>
+        ) : null
+      }
+    >
+      {lock.message}
+    </Notice>
   );
 }
 

@@ -5,7 +5,9 @@ import {
   type LucideIcon,
   ShieldCheck,
 } from "lucide-react";
+import type { FormEvent } from "react";
 
+import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
 import { useAdultEligibilityForm } from "@/features/settings/hooks/use-adult-eligibility-form";
 import { DateOfBirthField } from "@/shared/components/profile/date-of-birth-field";
 import { Button } from "@/shared/components/ui/button";
@@ -75,6 +77,18 @@ export function AdultEligibilitySection({
   const statusContent = ELIGIBILITY_STATUS_CONTENT[status];
   const StatusIcon = statusContent.icon;
   const canSubmit = status === "UNKNOWN" || status === "NOT_ELIGIBLE";
+  const compatibilityInputLock = useCompatibilityInputLock({
+    enabled: canSubmit,
+  });
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    if (compatibilityInputLock.isBlocked) {
+      event.preventDefault();
+      return;
+    }
+
+    void onSubmit(event);
+  }
 
   return (
     <section className="border-border border-t pt-7">
@@ -99,10 +113,39 @@ export function AdultEligibilitySection({
 
         {canSubmit ? (
           <Form {...form}>
-            <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+              {compatibilityInputLock.isBlocked ? (
+                <Notice
+                  role={
+                    compatibilityInputLock.status === "error"
+                      ? "alert"
+                      : "status"
+                  }
+                  tone={
+                    compatibilityInputLock.status === "error"
+                      ? "warning"
+                      : "neutral"
+                  }
+                  action={
+                    compatibilityInputLock.status === "error" ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="xs"
+                        onClick={() => void compatibilityInputLock.retry()}
+                      >
+                        Try again
+                      </Button>
+                    ) : null
+                  }
+                >
+                  {compatibilityInputLock.message}
+                </Notice>
+              ) : null}
+
               <DateOfBirthField
                 control={form.control}
-                disabled={isSubmitting}
+                disabled={isSubmitting || compatibilityInputLock.isBlocked}
                 name="dateOfBirth"
               />
 
@@ -125,7 +168,7 @@ export function AdultEligibilitySection({
                   variant="primary"
                   size="compact"
                   loading={isSubmitting}
-                  disabled={!isOnline}
+                  disabled={!isOnline || compatibilityInputLock.isBlocked}
                 >
                   <CalendarCheck className="size-4" aria-hidden="true" />
                   {isOnline ? statusContent.actionLabel : "Reconnect to check"}

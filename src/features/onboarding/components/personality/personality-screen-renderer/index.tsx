@@ -4,6 +4,7 @@ import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
 import type { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import type { ScreenState } from "@/features/onboarding/store/personality-test-store.types";
+import { CompatibilityInputLockState } from "./compatibility-input-lock-state";
 import { PersonalityIntro } from "./personality-intro";
 import { usePersonalityScreenNavigation } from "./use-personality-screen-navigation";
 
@@ -98,6 +99,8 @@ export function PersonalityScreenRenderer({
     questionsPerPage,
     state,
   });
+  const showCompatibilityInputLock =
+    assessment.inputLock.isBlocked && state.screen.id !== "results";
   const renderedScreen = renderPersonalityScreen({
     backLabel,
     assessment,
@@ -114,7 +117,19 @@ export function PersonalityScreenRenderer({
   return (
     <MotionConfig reducedMotion="user">
       <LazyMotion features={domMax}>
-        <Suspense fallback={null}>{renderedScreen}</Suspense>
+        <Suspense fallback={null}>
+          {showCompatibilityInputLock ? (
+            <CompatibilityInputLockState
+              backLabel={backLabel}
+              message={assessment.inputLock.message}
+              onBack={onBack}
+              onRetry={assessment.inputLock.retry}
+              status={assessment.inputLock.status}
+            />
+          ) : (
+            renderedScreen
+          )}
+        </Suspense>
       </LazyMotion>
     </MotionConfig>
   );

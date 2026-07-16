@@ -16,6 +16,7 @@ import type { User } from "@/shared/schemas";
 
 interface AreaFieldsProps {
   currentUser: User | undefined;
+  disabled: boolean;
   form: UseFormReturn<SettingsProfileValues>;
 }
 
@@ -24,7 +25,7 @@ const LOCATION_SET_OPTIONS = {
   shouldValidate: true,
 } as const;
 
-export function AreaFields({ currentUser, form }: AreaFieldsProps) {
+export function AreaFields({ currentUser, disabled, form }: AreaFieldsProps) {
   const locationLat = form.watch("locationLat");
   const locationLng = form.watch("locationLng");
   const cityLabel = currentUser?.city ?? "City not set";
@@ -40,6 +41,7 @@ export function AreaFields({ currentUser, form }: AreaFieldsProps) {
               <AddressAutocomplete
                 label="City"
                 placeholder="Search your city or area..."
+                disabled={disabled}
                 value={getSettingsProfileLocationValue({
                   city: field.value,
                   locationLat,

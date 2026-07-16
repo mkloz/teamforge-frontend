@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
+import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 
@@ -26,8 +27,14 @@ export function useInterestsPageFlow() {
   const navigate = useNavigate();
   const { isEditMode, mbti, returnTo, returnSearch, returnSection } =
     useOnboardingFlowState();
+  const compatibilityInputLock = useCompatibilityInputLock({
+    enabled: isEditMode,
+  });
 
   const state = useInterests({
+    blockedSaveMessage: compatibilityInputLock.isBlocked
+      ? compatibilityInputLock.message
+      : null,
     personalityTypeHint: mbti,
     onComplete: () => {
       if (isEditMode) {
@@ -118,6 +125,7 @@ export function useInterestsPageFlow() {
 
   return {
     backLabel: buildBackToLabel(backDestination),
+    compatibilityInputLock,
     enterApp,
     goBack,
     isDone,

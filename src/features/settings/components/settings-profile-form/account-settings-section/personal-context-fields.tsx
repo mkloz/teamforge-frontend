@@ -19,10 +19,14 @@ import {
 import { GENDER_OPTIONS } from "./account-settings-constants";
 
 interface PersonalContextFieldsProps {
+  compatibilityInputsDisabled: boolean;
   form: UseFormReturn<SettingsProfileValues>;
 }
 
-export function PersonalContextFields({ form }: PersonalContextFieldsProps) {
+export function PersonalContextFields({
+  compatibilityInputsDisabled,
+  form,
+}: PersonalContextFieldsProps) {
   return (
     <div className="grid gap-5 md:grid-cols-3">
       <FormField
@@ -36,6 +40,7 @@ export function PersonalContextFields({ form }: PersonalContextFieldsProps) {
                 value={field.value ?? ""}
                 min={18}
                 max={99}
+                disabled={compatibilityInputsDisabled}
                 placeholder="24"
                 onValueChange={field.onChange}
               />
@@ -51,7 +56,11 @@ export function PersonalContextFields({ form }: PersonalContextFieldsProps) {
         render={({ field }) => (
           <FormItem className="flex flex-col">
             <FormLabel>Gender</FormLabel>
-            <Select value={field.value} onValueChange={field.onChange}>
+            <Select
+              value={field.value}
+              disabled={compatibilityInputsDisabled}
+              onValueChange={field.onChange}
+            >
               <FormControl>
                 <SelectTrigger className="data-[placeholder]:text-slate-muted">
                   <SelectValue placeholder="Select gender" />

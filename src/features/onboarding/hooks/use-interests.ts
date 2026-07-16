@@ -19,6 +19,7 @@ import { useInterestSuggestions } from "./use-interest-suggestions";
 import { useSaveInterests } from "./use-save-interests";
 
 interface UseInterestsOptions {
+  blockedSaveMessage?: string | null;
   onComplete: () => void;
   personalityTypeHint?: PersonalityType | null;
 }
@@ -26,6 +27,7 @@ interface UseInterestsOptions {
 export type UseInterestsReturn = ReturnType<typeof useInterests>;
 
 export function useInterests({
+  blockedSaveMessage = null,
   onComplete,
   personalityTypeHint = null,
 }: UseInterestsOptions) {
@@ -92,6 +94,7 @@ export function useInterests({
   const canContinue = store.selectedIds.length >= MIN_INTERESTS;
   const isAtMax = store.selectedIds.length >= MAX_INTERESTS;
   const { finalize, isOnline, isSaving, saveErrorMessage } = useSaveInterests({
+    blockedSaveMessage,
     canContinue,
     onComplete,
     selectedIds: store.selectedIds,

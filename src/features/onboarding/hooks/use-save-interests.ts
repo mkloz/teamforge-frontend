@@ -6,6 +6,7 @@ import { OnboardingCommands } from "@/features/onboarding/api/onboarding-command
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 
 interface UseSaveInterestsInput {
+  blockedSaveMessage?: string | null;
   canContinue: boolean;
   onComplete: () => void;
   selectedIds: string[];
@@ -27,6 +28,7 @@ type SaveInterestsMutation = (
 ) => Promise<unknown>;
 
 export function useSaveInterests({
+  blockedSaveMessage = null,
   canContinue,
   onComplete,
   selectedIds,
@@ -54,6 +56,11 @@ export function useSaveInterests({
     }
 
     setSaveErrorMessage(null);
+
+    if (blockedSaveMessage) {
+      setSaveErrorMessage(blockedSaveMessage);
+      return;
+    }
 
     if (shouldSkipSaveInterestsForOffline(guardOfflineAction)) {
       setSaveErrorMessage(OFFLINE_SAVE_INTERESTS_ERROR);

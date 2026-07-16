@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useBlocker, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
 import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
 import { PersonalityAssessmentApi } from "@/shared/api/personality-assessment-api";
 import {
@@ -75,6 +76,9 @@ export function usePersonalityTestPageFlow() {
   const navigate = useNavigate();
   const { isEditMode, returnTo, returnSearch, returnSection } =
     useOnboardingFlowState();
+  const compatibilityInputLock = useCompatibilityInputLock({
+    enabled: isEditMode,
+  });
   const queryClient = useQueryClient();
   const invalidateCurrentUser = useInvalidateCurrentUser();
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
@@ -119,6 +123,14 @@ export function usePersonalityTestPageFlow() {
 
   const submitCurrentAssessment = useCallback(async () => {
     if (submissionInFlightRef.current) {
+      return;
+    }
+
+    if (isEditMode && compatibilityInputLock.isBlocked) {
+      setSubmissionError(
+        compatibilityInputLock.message ??
+          "This assessment cannot be changed right now.",
+      );
       return;
     }
 
@@ -212,7 +224,13 @@ export function usePersonalityTestPageFlow() {
     } finally {
       submissionInFlightRef.current = false;
     }
-  }, [guardOfflineAction, queryClient]);
+  }, [
+    compatibilityInputLock.isBlocked,
+    compatibilityInputLock.message,
+    guardOfflineAction,
+    isEditMode,
+    queryClient,
+  ]);
 
   useEffect(() => {
     if (
@@ -255,6 +273,14 @@ export function usePersonalityTestPageFlow() {
   ]);
 
   async function publishResult() {
+    if (isEditMode && compatibilityInputLock.isBlocked) {
+      setResultActionError(
+        compatibilityInputLock.message ??
+          "This assessment cannot be changed right now.",
+      );
+      return;
+    }
+
     const disclosure =
       submittedDisclosure ?? assessmentQuery.data?.disclosure ?? null;
 
@@ -297,6 +323,14 @@ export function usePersonalityTestPageFlow() {
 
   async function retakeAssessment() {
     setResultActionError(null);
+
+    if (isEditMode && compatibilityInputLock.isBlocked) {
+      setResultActionError(
+        compatibilityInputLock.message ??
+          "This assessment cannot be changed right now.",
+      );
+      return;
+    }
 
     if (assessmentQuery.data?.draft) {
       setResultActionError(
@@ -451,6 +485,7 @@ export function usePersonalityTestPageFlow() {
         submittedDisclosure ?? assessmentQuery.data?.disclosure ?? null,
       error: resultActionError,
       hasDraft: assessmentQuery.data?.draft != null,
+      inputLock: compatibilityInputLock,
       onRetryState: () => void assessmentQuery.refetch(),
       isSaved:
         assessmentQuery.data?.publication.decision === "GRANTED" &&

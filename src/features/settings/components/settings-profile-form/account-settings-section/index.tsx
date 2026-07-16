@@ -1,4 +1,8 @@
+import { useEffect } from "react";
 import { ErrorProfileSaveVisual } from "@/assets/error-state/error-profile-save";
+import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { buildSettingsProfileFormValues } from "@/features/settings/lib/settings-profile-mappers";
+import { Button } from "@/shared/components/ui/button";
 import { Form } from "@/shared/components/ui/form";
 import { Notice } from "@/shared/components/ui/notice";
 import { OfflineNotice } from "@/shared/components/ui/offline-notice";
@@ -20,6 +24,26 @@ export function AccountSettingsSection({
   status,
   errors,
 }: AccountSettingsSectionProps) {
+  const compatibilityInputLock = useCompatibilityInputLock();
+
+  useEffect(() => {
+    if (!compatibilityInputLock.isBlocked || !currentUser) {
+      return;
+    }
+
+    const savedValues = buildSettingsProfileFormValues(currentUser);
+
+    form.resetField("age", { defaultValue: savedValues.age });
+    form.resetField("gender", { defaultValue: savedValues.gender });
+    form.resetField("city", { defaultValue: savedValues.city });
+    form.resetField("locationLat", {
+      defaultValue: savedValues.locationLat,
+    });
+    form.resetField("locationLng", {
+      defaultValue: savedValues.locationLng,
+    });
+  }, [compatibilityInputLock.isBlocked, currentUser, form]);
+
   return (
     <div className="flex flex-col gap-9">
       <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start">
@@ -45,18 +69,53 @@ export function AccountSettingsSection({
             <ProfileIdentityFields currentUser={currentUser} form={form} />
           </FormGroup>
 
+          {compatibilityInputLock.isBlocked ? (
+            <Notice
+              role={
+                compatibilityInputLock.status === "error" ? "alert" : "status"
+              }
+              tone={
+                compatibilityInputLock.status === "error"
+                  ? "warning"
+                  : "neutral"
+              }
+              size="md"
+              action={
+                compatibilityInputLock.status === "error" ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => void compatibilityInputLock.retry()}
+                  >
+                    Try again
+                  </Button>
+                ) : null
+              }
+            >
+              {compatibilityInputLock.message}
+            </Notice>
+          ) : null}
+
           <FormGroup
             title="Personal context"
             description="Update your age, gender, and city."
           >
-            <PersonalContextFields form={form} />
+            <PersonalContextFields
+              form={form}
+              compatibilityInputsDisabled={compatibilityInputLock.isBlocked}
+            />
           </FormGroup>
 
           <FormGroup
             title="Area"
             description="Your city helps nearby groups make sense. Exact coordinates stay private."
           >
-            <AreaFields currentUser={currentUser} form={form} />
+            <AreaFields
+              currentUser={currentUser}
+              form={form}
+              disabled={compatibilityInputLock.isBlocked}
+            />
           </FormGroup>
 
           {errors.saveError && (
