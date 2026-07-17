@@ -4724,6 +4724,10 @@ paths:
           required: true
           in: path
           schema:
+            enum:
+              - MODERATION_ASSISTANCE
+              - EVIDENCE_PRESERVATION
+              - DOMAIN_EVENT_OUTBOX
             type: string
         - name: page
           required: false
@@ -4767,6 +4771,10 @@ paths:
           required: true
           in: path
           schema:
+            enum:
+              - MODERATION_ASSISTANCE
+              - EVIDENCE_PRESERVATION
+              - DOMAIN_EVENT_OUTBOX
             type: string
       requestBody:
         required: true
@@ -4794,6 +4802,10 @@ paths:
           required: true
           in: path
           schema:
+            enum:
+              - MODERATION_ASSISTANCE
+              - EVIDENCE_PRESERVATION
+              - DOMAIN_EVENT_OUTBOX
             type: string
       requestBody:
         required: true
@@ -4821,6 +4833,10 @@ paths:
           required: true
           in: path
           schema:
+            enum:
+              - MODERATION_ASSISTANCE
+              - EVIDENCE_PRESERVATION
+              - DOMAIN_EVENT_OUTBOX
             type: string
         - name: jobId
           required: true
@@ -11482,16 +11498,6 @@ components:
         - code
         - displayLabel
         - evidenceIds
-    OperatorAssessmentActionEntity:
-      type: object
-      properties:
-        code:
-          type: string
-        displayLabel:
-          type: string
-      required:
-        - code
-        - displayLabel
     OperatorAssessmentRationaleEntity:
       type: object
       properties:
@@ -11504,6 +11510,85 @@ components:
       required:
         - text
         - evidenceIds
+    OperatorAssessmentRequestedActionEntity:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - NONE
+            - REQUEST_MORE_INFORMATION
+            - HUMAN_REVIEW
+            - CONTAINMENT
+            - ENFORCEMENT
+        containmentScope:
+          type: string
+          enum:
+            - ITEM_QUARANTINE
+            - FORGE_PROPOSAL_HOLD
+            - NEW_STRANGER_CONTACT_PAUSE
+          nullable: true
+        durationSeconds:
+          type: number
+          nullable: true
+        enforcementActionType:
+          type: string
+          enum:
+            - WARNING
+            - OUTBOUND_RATE_LIMIT
+            - NEW_STRANGER_CONTACT_RESTRICTION
+            - ACCEPTED_CHAT_RESTRICTION
+            - TEMPORARY_ACCOUNT_SUSPENSION
+            - PERMANENT_ACCOUNT_BAN
+            - ITEM_REMOVAL
+            - GROUP_RESTRICTION
+          nullable: true
+        enforcementScope:
+          type: string
+          enum:
+            - ACCOUNT
+            - NEW_STRANGER_CONTACT
+            - ACCEPTED_CHAT
+            - ITEM
+            - GROUP
+          nullable: true
+        evidenceIds:
+          type: array
+          items:
+            type: string
+      required:
+        - kind
+        - containmentScope
+        - durationSeconds
+        - enforcementActionType
+        - enforcementScope
+        - evidenceIds
+    OperatorAssessmentSnapshotEntity:
+      type: object
+      properties:
+        caseVersion:
+          type: number
+          nullable: true
+        configurationId:
+          type: string
+          nullable: true
+        configurationHash:
+          type: string
+          nullable: true
+      required:
+        - caseVersion
+        - configurationId
+        - configurationHash
+    OperatorAssessmentActionEntity:
+      type: object
+      properties:
+        code:
+          type: string
+        displayLabel:
+          type: string
+      required:
+        - code
+        - displayLabel
     OperatorAssessmentEntity:
       type: object
       properties:
@@ -11527,6 +11612,60 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OperatorAssessmentLabelEntity'
+        rationale:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorAssessmentRationaleEntity'
+        confidence:
+          type: number
+          maximum: 1
+          minimum: 0
+          nullable: true
+        outcome:
+          type: string
+          enum:
+            - NO_POLICY_VIOLATION
+            - POLICY_VIOLATION
+            - INDETERMINATE
+          nullable: true
+        decisionIntent:
+          type: string
+          enum:
+            - NO_ACTION
+            - REQUEST_MORE_INFORMATION
+            - ESCALATE_TO_HUMAN
+            - PROPOSE_CONTAINMENT
+            - PROPOSE_ENFORCEMENT
+          nullable: true
+        requestedAction:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/OperatorAssessmentRequestedActionEntity'
+        evidenceCompleteness:
+          type: string
+          enum:
+            - UNKNOWN
+            - COMPLETE
+            - PARTIAL
+            - UNAVAILABLE
+            - CONFLICTING
+        gateOutcome:
+          type: string
+          enum:
+            - SHADOW_RECORDED
+            - APPROVAL_REQUIRED
+            - HUMAN_ESCALATION
+            - AUTONOMOUS_DECISION_ALLOWED
+          nullable: true
+        gateReasonCodes:
+          type: array
+          items:
+            type: string
+        signalConflict:
+          type: boolean
+        snapshot:
+          $ref: '#/components/schemas/OperatorAssessmentSnapshotEntity'
         uncertainty:
           type: string
           enum:
@@ -11548,10 +11687,6 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/OperatorAssessmentActionEntity'
-        rationale:
-          type: array
-          items:
-            $ref: '#/components/schemas/OperatorAssessmentRationaleEntity'
         operatorOutcome:
           type: string
           enum:
@@ -11569,8 +11704,17 @@ components:
         - runMode
         - release
         - policyLabels
-        - uncertainty
         - rationale
+        - confidence
+        - outcome
+        - decisionIntent
+        - requestedAction
+        - evidenceCompleteness
+        - gateOutcome
+        - gateReasonCodes
+        - signalConflict
+        - snapshot
+        - uncertainty
         - operatorOutcome
     OperatorAssessmentListEntity:
       type: object
