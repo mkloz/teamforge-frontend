@@ -52,6 +52,29 @@ export type DeferGroupReviewPayload = z.infer<
   typeof deferGroupReviewPayloadSchema
 >;
 
+export const groupParticipationStatusSchema = z.enum([
+  "PARTICIPATED",
+  "DID_NOT_PARTICIPATE",
+]);
+
+export type GroupParticipationStatus = z.infer<
+  typeof groupParticipationStatusSchema
+>;
+
+// fallow-ignore-next-line unused-export
+export const recordGroupParticipationPayloadSchema = z.object({
+  planId: z.string().min(1),
+  status: groupParticipationStatusSchema,
+});
+
+export type RecordGroupParticipationPayload = z.infer<
+  typeof recordGroupParticipationPayloadSchema
+>;
+
+export const recordGroupParticipationResultSchema = z.object({
+  status: groupParticipationStatusSchema,
+});
+
 const groupReviewPlanSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -63,6 +86,8 @@ const groupReviewPlanSchema = z.object({
 export const groupReviewStateSchema = z.object({
   groupId: z.string(),
   currentPlan: groupReviewPlanSchema.nullable(),
+  canRecordParticipation: z.boolean(),
+  participationStatus: groupParticipationStatusSchema.nullable(),
   reviewableRateeIds: z.array(z.string()),
   submittedRateeIds: z.array(z.string()),
   pendingRateeIds: z.array(z.string()),

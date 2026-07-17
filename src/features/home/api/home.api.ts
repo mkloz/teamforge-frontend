@@ -3,6 +3,7 @@ import { apiClient } from "@/shared/api/api";
 import { EXPLORE_DEFAULT_DISTANCE_KM } from "@/shared/api/api-constraints";
 import { getExploreGroupsResponse } from "@/shared/api/explore-groups-api";
 import { postExploreGroupJoin } from "@/shared/api/group-membership-api";
+import { postGroupParticipationResponse } from "@/shared/api/group-participation-api";
 import {
   acceptInvite,
   declineInvite,
@@ -11,6 +12,7 @@ import {
   createPaginatedSchema,
   exploreGroupSchema,
   inviteSchema,
+  type RecordGroupParticipationPayload,
 } from "@/shared/schemas";
 
 export class HomeApi {
@@ -73,5 +75,12 @@ export class HomeApi {
 
   static async joinRecommendedGroup(groupId: string) {
     return postExploreGroupJoin(groupId);
+  }
+
+  static async recordGroupParticipation(
+    groupId: string,
+    payload: RecordGroupParticipationPayload,
+  ) {
+    return postGroupParticipationResponse(groupId, payload);
   }
 }

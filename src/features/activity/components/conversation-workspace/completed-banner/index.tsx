@@ -24,7 +24,9 @@ export function CompletedReviewGate({
   return (
     <div className="relative z-10 shrink-0 border-border border-t bg-canvas/60 backdrop-blur-sm">
       <CompletedReviewGateHeader
+        label={viewState.headerLabel}
         pendingCountLabel={viewState.pendingCountLabel}
+        showPendingCount={viewState.showPendingCount}
       />
       <CompletedReviewGateBody rating={rating} viewState={viewState} />
     </div>

@@ -25,6 +25,18 @@ export function getReviewStateValue(reviewState: GroupReviewState | undefined) {
   return reviewState ?? null;
 }
 
+export function getParticipationStatus(
+  reviewState: GroupReviewState | undefined,
+) {
+  return reviewState?.participationStatus ?? null;
+}
+
+export function getCanRecordParticipation(
+  reviewState: GroupReviewState | undefined,
+) {
+  return reviewState?.canRecordParticipation ?? false;
+}
+
 export function getShouldBlockReview(
   reviewState: GroupReviewState | undefined,
 ) {

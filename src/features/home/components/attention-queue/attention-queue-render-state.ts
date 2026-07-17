@@ -2,6 +2,7 @@ import type { HomeViewer } from "@/features/home/lib/home-contract";
 import type {
   AttentionQueueFriendRequest,
   AttentionQueueInvitation,
+  AttentionQueueParticipation,
   AttentionQueuePlan,
 } from "./attention-queue.types";
 import { formatQueueCount } from "./attention-queue-formatters";
@@ -9,6 +10,7 @@ import { formatQueueCount } from "./attention-queue-formatters";
 const COLLAPSED_QUEUE_ITEM_LIMIT = 2;
 
 interface AttentionQueueRenderStateInput {
+  pendingParticipations: AttentionQueueParticipation[];
   proposedPlans: AttentionQueuePlan[];
   queueSize: number;
   shouldShowSkeleton: boolean;
@@ -31,6 +33,10 @@ export type AttentionQueueRenderItem =
       kind: "plan";
     }
   | {
+      group: AttentionQueueParticipation;
+      kind: "participation";
+    }
+  | {
       kind: "profile";
       nextStep: NonNullable<HomeViewer["nextStep"]>;
     }
@@ -40,6 +46,7 @@ export type AttentionQueueRenderItem =
     };
 
 export function getAttentionQueueRenderState({
+  pendingParticipations,
   proposedPlans,
   queueSize,
   shouldShowSkeleton,
@@ -49,8 +56,10 @@ export function getAttentionQueueRenderState({
 }: AttentionQueueRenderStateInput) {
   const renderedInvitations = getCollapsedQueueItems(visibleInvitations);
   const renderedRequests = getCollapsedQueueItems(visibleRequests);
+  const renderedParticipations = getCollapsedQueueItems(pendingParticipations);
   const renderedPlans = getCollapsedQueueItems(proposedPlans);
   const collapsedQueueSize = getCollapsedQueueSize({
+    pendingParticipations,
     proposedPlans,
     viewer,
     visibleInvitations,
@@ -64,11 +73,13 @@ export function getAttentionQueueRenderState({
       : getQueueItems({
           hiddenItemCount,
           renderedInvitations,
+          renderedParticipations,
           renderedPlans,
           renderedRequests,
           viewer,
         }),
     queueSummary: getQueueSummary({
+      pendingParticipations,
       proposedPlans,
       viewer,
       visibleInvitations,
@@ -83,6 +94,7 @@ function getCollapsedQueueItems<Item>(items: Item[]) {
 }
 
 function getCollapsedQueueSize({
+  pendingParticipations,
   proposedPlans,
   viewer,
   visibleInvitations,
@@ -91,6 +103,7 @@ function getCollapsedQueueSize({
   return (
     getCollapsedItemCount(visibleInvitations) +
     getCollapsedItemCount(visibleRequests) +
+    getCollapsedItemCount(pendingParticipations) +
     getCollapsedItemCount(proposedPlans) +
     (viewer.nextStep ? 1 : 0)
   );
@@ -107,12 +120,14 @@ function getHiddenItemCount(queueSize: number, collapsedQueueSize: number) {
 function getQueueItems({
   hiddenItemCount,
   renderedInvitations,
+  renderedParticipations,
   renderedPlans,
   renderedRequests,
   viewer,
 }: {
   hiddenItemCount: number;
   renderedInvitations: AttentionQueueInvitation[];
+  renderedParticipations: AttentionQueueParticipation[];
   renderedPlans: AttentionQueuePlan[];
   renderedRequests: AttentionQueueFriendRequest[];
   viewer: HomeViewer;
@@ -125,6 +140,10 @@ function getQueueItems({
     ...renderedRequests.map((request) => ({
       kind: "request" as const,
       request,
+    })),
+    ...renderedParticipations.map((group) => ({
+      group,
+      kind: "participation" as const,
     })),
     ...renderedPlans.map((group) => ({
       group,
@@ -150,6 +169,7 @@ function getQueueItems({
 }
 
 function getQueueSummary({
+  pendingParticipations,
   proposedPlans,
   viewer,
   visibleInvitations,
@@ -158,6 +178,7 @@ function getQueueSummary({
   return [
     formatQueueCount(visibleInvitations.length, "invite"),
     formatQueueCount(visibleRequests.length, "request"),
+    formatQueueCount(pendingParticipations.length, "check-in"),
     formatQueueCount(proposedPlans.length, "plan"),
     viewer.nextStep ? "1 setup" : null,
   ].filter(isQueueSummaryItem);

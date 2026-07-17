@@ -1,4 +1,3 @@
-import { CompletedReviewGatePrompt } from "./completed-review-gate-prompt";
 import { CompletedReviewGateState } from "./completed-review-gate-state";
 import type {
   CompletedGroupRating,
@@ -16,7 +15,6 @@ export function CompletedReviewGateBody({
 }: CompletedReviewGateBodyProps) {
   return (
     <div className="mx-auto grid w-full max-w-2xl gap-3 px-4 py-3">
-      <CompletedReviewGatePrompt groupTitle={viewState.groupTitle} />
       <CompletedReviewGateState rating={rating} viewState={viewState} />
     </div>
   );

@@ -55,6 +55,14 @@ export function getIsReviewWaiting({
     return false;
   }
 
+  if (reviewState?.participationStatus === null) {
+    return reviewState.canRecordParticipation;
+  }
+
+  if (reviewState?.participationStatus === "DID_NOT_PARTICIPATE") {
+    return false;
+  }
+
   const currentPlanId = getCurrentReviewPlanId(reviewState, groupPlanId);
   const ratedUserIds = getRatedUserIds({
     currentPlanId,

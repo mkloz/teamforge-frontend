@@ -19,7 +19,9 @@ export function useIsReviewWaiting(group?: Group | null) {
 
   const ratingsQuery = useQuery({
     ...activityQueries.groupRatings(groupState.groupId),
-    enabled: groupState.isReviewQueryEnabled,
+    enabled:
+      groupState.isReviewQueryEnabled &&
+      reviewStateQuery.data?.participationStatus === "PARTICIPATED",
   });
 
   return getIsReviewWaiting({

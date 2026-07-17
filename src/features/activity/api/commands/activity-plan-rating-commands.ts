@@ -7,6 +7,7 @@ import { ActivityActions } from "@/features/activity/api/activity-actions";
 import type {
   CreateRatingPayload,
   DeferGroupReviewPayload,
+  RecordGroupParticipationPayload,
 } from "@/shared/schemas";
 
 export const ActivityPlanRatingCommands = {
@@ -36,5 +37,12 @@ export const ActivityPlanRatingCommands = {
 
   deferGroupReview(groupId: string, payload: DeferGroupReviewPayload) {
     return ActivityActions.deferGroupReview(groupId, payload);
+  },
+
+  recordGroupParticipation(
+    groupId: string,
+    payload: RecordGroupParticipationPayload,
+  ) {
+    return ActivityActions.recordGroupParticipation(groupId, payload);
   },
 };

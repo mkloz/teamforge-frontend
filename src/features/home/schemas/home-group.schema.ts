@@ -42,6 +42,13 @@ const homeGroupMemberSchema = z.object({
   userId: z.string(),
 });
 
+const pendingParticipationPlanSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  completedAt: z.string().datetime(),
+  responseDeadline: z.string().datetime().nullable(),
+});
+
 export const homeGroupSchema = z
   .object({
     id: z.string(),
@@ -54,6 +61,7 @@ export const homeGroupSchema = z
     version: z.number().optional(),
     activity: homeGroupActivitySchema,
     plan: homeGroupPlanSchema.nullable(),
+    pendingParticipationPlan: pendingParticipationPlanSchema.nullable(),
     members: z.array(homeGroupMemberSchema),
   })
   .transform((group) => ({

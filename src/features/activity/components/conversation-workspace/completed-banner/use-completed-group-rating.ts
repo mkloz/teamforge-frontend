@@ -10,6 +10,7 @@ import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import type {
   CreateRatingPayload,
+  GroupParticipationStatus,
   ReviewDeferralReason,
 } from "@/shared/schemas";
 
@@ -25,6 +26,7 @@ const emptyReviewDraft: ReviewDraft = {
 
 export function useCompletedGroupRating(group: Group) {
   const {
+    canRecordParticipation,
     currentUserId,
     deferReview,
     submittedRatings,
@@ -37,7 +39,11 @@ export function useCompletedGroupRating(group: Group) {
     refetch,
     submitRating,
     isDeferring,
+    isSubmittingParticipation,
     isSubmitting,
+    pendingParticipationStatus,
+    participationStatus,
+    recordParticipation,
   } = useGroupRatings(group.id);
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -168,17 +174,47 @@ export function useCompletedGroupRating(group: Group) {
     });
   };
 
+  const submitParticipation = (status: GroupParticipationStatus) => {
+    if (!currentPlanId) {
+      return;
+    }
+
+    if (
+      guardOfflineAction({
+        id: "activity-group-participation-offline",
+        description: "Reconnect before answering the plan check-in.",
+      })
+    ) {
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        await recordParticipation({ planId: currentPlanId, status });
+      } catch (error) {
+        warnInDevelopment(
+          "Completed plan participation check-in failed.",
+          error,
+        );
+      }
+    });
+  };
+
   return {
     activeUserId,
     allRated,
+    canRecordParticipation,
     comment: activeDraft.comment,
     deferActiveReview,
     isError,
     isDeferring,
     isLoading,
     isOnline,
+    isSubmittingParticipation,
     isSubmitting,
     pendingCount: pendingMembers.length,
+    pendingParticipationStatus,
+    participationStatus,
     rateableMembers,
     ratedUserIds: optimisticRatedUserIds,
     refetch,
@@ -188,6 +224,7 @@ export function useCompletedGroupRating(group: Group) {
     selectedMember,
     setComment,
     setScore,
+    submitParticipation,
     submitActiveRating,
     submittedRatings,
   };

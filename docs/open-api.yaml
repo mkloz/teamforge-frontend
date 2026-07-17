@@ -4216,6 +4216,36 @@ paths:
       security: *a41
       summary: Get the current review prompt state for a completed group plan
       tags: *a42
+  /api/v1/ratings/groups/{id}/participation-responses:
+    post:
+      operationId: RatingsController_recordParticipation
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPlanParticipationDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanParticipationResponseEntity'
+        '409':
+          description: The plan is not complete or the saved response has a different value
+        '429':
+          description: Too many requests
+      security: *a41
+      summary: Confirm whether you took part in a completed group plan
+      tags: *a42
   /api/v1/ratings:
     post:
       operationId: RatingsController_create
@@ -9016,6 +9046,29 @@ components:
         - isLocationResolved
         - nextRequiredAction
         - cost
+    HomePendingParticipationPlanEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1plan123
+        title:
+          type: string
+          example: Friday evening basketball
+        completedAt:
+          format: date-time
+          type: string
+          example: 2026-04-30T20:30:00.000Z
+        responseDeadline:
+          format: date-time
+          type: string
+          example: 2026-05-21T16:00:00.000Z
+          nullable: true
+      required:
+        - id
+        - title
+        - completedAt
+        - responseDeadline
     HomeGroupMemberEntity:
       type: object
       properties:
@@ -9068,6 +9121,11 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/HomeGroupPlanEntity'
+        pendingParticipationPlan:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/HomePendingParticipationPlanEntity'
         members:
           type: array
           items:
@@ -9080,6 +9138,7 @@ components:
         - updatedAt
         - version
         - activity
+        - pendingParticipationPlan
         - members
     PaginatedHomeGroupSummaries:
       type: object
@@ -10869,24 +10928,33 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/GroupReviewPlanEntity'
+        canRecordParticipation:
+          type: boolean
+          example: true
         reviewableRateeIds:
           example:
             - clx1user456
           type: array
           items:
-            type: array
+            type: string
         submittedRateeIds:
           example:
             - clx1user789
           type: array
           items:
-            type: array
+            type: string
         pendingRateeIds:
           example:
             - clx1user456
           type: array
           items:
-            type: array
+            type: string
+        participationStatus:
+          type: string
+          enum:
+            - PARTICIPATED
+            - DID_NOT_PARTICIPATE
+          nullable: true
         shouldBlockReview:
           type: boolean
           example: true
@@ -10906,11 +10974,37 @@ components:
           nullable: true
       required:
         - groupId
+        - canRecordParticipation
         - reviewableRateeIds
         - submittedRateeIds
         - pendingRateeIds
+        - participationStatus
         - shouldBlockReview
         - isDeferred
+    SubmitPlanParticipationDto:
+      type: object
+      properties:
+        planId:
+          type: string
+          example: clx1plan123
+        status:
+          type: string
+          enum:
+            - PARTICIPATED
+            - DID_NOT_PARTICIPATE
+      required:
+        - planId
+        - status
+    PlanParticipationResponseEntity:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - PARTICIPATED
+            - DID_NOT_PARTICIPATE
+      required:
+        - status
     CreateRatingDto:
       type: object
       properties:

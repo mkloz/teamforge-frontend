@@ -12,6 +12,8 @@ import {
   groupReviewStateSchema,
 } from "@/shared/schemas";
 
+export { postGroupParticipationResponse as recordGroupParticipation } from "@/shared/api/group-participation-api";
+
 export async function getGroupRatings(groupId: string) {
   const response = await apiClient
     .get(`ratings/groups/${groupId}`, {

@@ -1,9 +1,12 @@
 import { ActivityApi } from "@/features/activity/api/activity.api";
 import { appQueryClient } from "@/shared/api/query-client";
+import { invalidateGroupParticipationSurfaces } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type {
   CreateRatingPayload,
   DeferGroupReviewPayload,
+  GroupReviewState,
+  RecordGroupParticipationPayload,
 } from "@/shared/schemas";
 
 export const ActivityRatingActions = {
@@ -34,6 +37,25 @@ export const ActivityRatingActions = {
     await appQueryClient.invalidateQueries({
       queryKey: APP_QUERY_KEYS.activity.groupReviewState(groupId),
     });
+
+    return result;
+  },
+
+  async recordGroupParticipation(
+    groupId: string,
+    payload: RecordGroupParticipationPayload,
+  ) {
+    const result = await ActivityApi.recordGroupParticipation(groupId, payload);
+    const reviewStateKey = APP_QUERY_KEYS.activity.groupReviewState(groupId);
+
+    appQueryClient.setQueryData<GroupReviewState>(
+      reviewStateKey,
+      (reviewState) =>
+        reviewState
+          ? { ...reviewState, participationStatus: result.data.status }
+          : reviewState,
+    );
+    await invalidateGroupParticipationSurfaces(groupId);
 
     return result;
   },

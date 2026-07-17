@@ -16,30 +16,17 @@ export function CompletedReviewActions({
 }: CompletedReviewActionsProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div className="flex flex-wrap gap-2">
-        <Button
-          variant="subtle"
-          size="sm"
-          disabled={viewState.deferralDisabled}
-          loading={rating.isDeferring}
-          onClick={() => rating.deferActiveReview("NOT_PRESENT")}
-          title={viewState.deferralTitle}
-        >
-          <CalendarClock className="size-4" />
-          <span>I wasn't there</span>
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={viewState.deferralDisabled}
-          loading={rating.isDeferring}
-          onClick={() => rating.deferActiveReview("NEED_MORE_TIME")}
-          title={viewState.deferralTitle}
-        >
-          <CalendarClock className="size-4" />
-          <span>Ask next time</span>
-        </Button>
-      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={viewState.deferralDisabled}
+        loading={rating.isDeferring}
+        onClick={() => rating.deferActiveReview("NEED_MORE_TIME")}
+        title={viewState.deferralTitle}
+      >
+        <CalendarClock className="size-4" />
+        <span>Finish later</span>
+      </Button>
 
       <Button
         size="sm"

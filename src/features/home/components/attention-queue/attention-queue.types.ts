@@ -1,4 +1,5 @@
 import type { useHomeData } from "@/features/home/hooks/use-home-data";
+import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import type { useProfileFriendRequests } from "@/features/profile/public/profile-friend-requests";
 
 export type AttentionQueueInvitation = ReturnType<
@@ -12,3 +13,7 @@ export type AttentionQueuePlan = ReturnType<
 export type AttentionQueueFriendRequest = NonNullable<
   ReturnType<typeof useProfileFriendRequests>["requests"]
 >[number];
+
+export type AttentionQueueParticipation = HomeGroup & {
+  pendingParticipationPlan: NonNullable<HomeGroup["pendingParticipationPlan"]>;
+};

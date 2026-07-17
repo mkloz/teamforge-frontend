@@ -2,7 +2,10 @@ import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { RatingMutationResult } from "@/features/activity/hooks/use-group-ratings/rating-types";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import type { CreateRatingPayload } from "@/shared/schemas";
+import type {
+  CreateRatingPayload,
+  RecordGroupParticipationPayload,
+} from "@/shared/schemas";
 
 export function getCreateRatingMutationOptions(groupId: string) {
   return {
@@ -29,6 +32,16 @@ export function getDeferReviewMutationOptions(groupId: string) {
       errorToastMessage: "We couldn't save that review choice right now.",
     },
     mutationFn: ActivityCommands.deferGroupReview.bind(null, groupId),
+  };
+}
+
+export function getRecordParticipationMutationOptions(groupId: string) {
+  return {
+    meta: {
+      errorToastMessage: "We couldn't save your answer right now.",
+    },
+    mutationFn: (payload: RecordGroupParticipationPayload) =>
+      ActivityCommands.recordGroupParticipation(groupId, payload),
   };
 }
 

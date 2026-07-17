@@ -8,10 +8,13 @@ import {
 import {
   getCreateRatingMutationOptions,
   getDeferReviewMutationOptions,
+  getRecordParticipationMutationOptions,
 } from "@/features/activity/hooks/use-group-ratings/rating-mutations";
 import {
+  getCanRecordParticipation,
   getCurrentPlanId,
   getCurrentUserId,
+  getParticipationStatus,
   getPendingRateeIds,
   getPendingUserIds,
   getRatedUserIds,
@@ -24,10 +27,14 @@ import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 
 export function useGroupRatings(groupId: string) {
   const { data: currentUser } = useCurrentUserQuery();
-  const ratingsQuery = useQuery(activityQueries.groupRatings(groupId));
   const reviewStateQuery = useQuery(activityQueries.groupReviewState(groupId));
   const currentUserId = getCurrentUserId(currentUser);
   const reviewState = reviewStateQuery.data;
+  const participationStatus = getParticipationStatus(reviewState);
+  const ratingsQuery = useQuery({
+    ...activityQueries.groupRatings(groupId),
+    enabled: participationStatus === "PARTICIPATED",
+  });
   const currentPlanId = getCurrentPlanId(reviewState);
   const submittedRateeIds = getSubmittedRateeIds(reviewState);
   const pendingRateeIds = getPendingRateeIds(reviewState);
@@ -37,6 +44,9 @@ export function useGroupRatings(groupId: string) {
   );
   const deferReviewMutation = useMutation(
     getDeferReviewMutationOptions(groupId),
+  );
+  const participationMutation = useMutation(
+    getRecordParticipationMutationOptions(groupId),
   );
 
   const submittedRatings = useMemo(() => {
@@ -59,14 +69,20 @@ export function useGroupRatings(groupId: string) {
     [pendingRateeIds],
   );
   const queryState = getGroupRatingsQueryState({
+    participationStatus,
     ratingsQuery,
     reviewStateQuery,
   });
 
   return {
+    canRecordParticipation: getCanRecordParticipation(reviewState),
     currentUserId,
     deferReview: deferReviewMutation.mutateAsync,
     isDeferring: deferReviewMutation.isPending,
+    isSubmittingParticipation: participationMutation.isPending,
+    pendingParticipationStatus: participationMutation.variables?.status ?? null,
+    participationStatus,
+    recordParticipation: participationMutation.mutateAsync,
     submittedRatings,
     ratedUserIds,
     pendingUserIds,
@@ -76,6 +92,7 @@ export function useGroupRatings(groupId: string) {
     isError: queryState.isError,
     refetch: () =>
       refetchGroupRatingData({
+        participationStatus,
         ratingsQuery,
         reviewStateQuery,
       }),

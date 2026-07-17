@@ -45,8 +45,10 @@ export {
 export type {
   CreateRatingPayload,
   DeferGroupReviewPayload,
+  RecordGroupParticipationPayload,
 } from "./activity-api-contracts/review-payloads";
 export {
   createRatingPayloadSchema,
   deferGroupReviewPayloadSchema,
+  recordGroupParticipationPayloadSchema,
 } from "./activity-api-contracts/review-payloads";

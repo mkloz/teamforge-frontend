@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeInvitationActions } from "@/features/home/hooks/use-home-invitation-actions";
+import {
+  type HomeParticipationAnswer,
+  useHomeParticipationActions,
+} from "@/features/home/hooks/use-home-participation-actions";
 import { useHomeViewer } from "@/features/home/hooks/use-home-viewer";
+import { hasHomeParticipationDeadlinePassed } from "@/features/home/lib/home-participation-deadline";
 import { useProfileFriendRequests } from "@/features/profile/public/profile-friend-requests";
+
+import type { AttentionQueueParticipation } from "./attention-queue.types";
+import { useParticipationDeadlineClock } from "./use-participation-deadline-clock";
 
 interface UseAttentionQueueStateInput {
   focusedInviteId: string | null;
@@ -24,13 +32,20 @@ export function useAttentionQueueState({
   onClearInvitationFocus,
 }: UseAttentionQueueStateInput) {
   const viewer = useHomeViewer();
-  const { invitations, plans, isInvitationsLoading, isPlansLoading } =
-    useHomeData({
-      include: {
-        invitations: true,
-        plans: true,
-      },
-    });
+  const {
+    groups,
+    invitations,
+    plans,
+    isGroupsLoading,
+    isInvitationsLoading,
+    isPlansLoading,
+  } = useHomeData({
+    include: {
+      groups: true,
+      invitations: true,
+      plans: true,
+    },
+  });
   const {
     requests,
     isLoading: friendRequestsLoading,
@@ -53,8 +68,17 @@ export function useAttentionQueueState({
     clearActionError,
     isOnline: isInviteActionOnline,
   } = useHomeInvitationActions();
+  const {
+    actionError: participationActionError,
+    answerParticipation,
+    clearActionError: clearParticipationActionError,
+    isOnline: isParticipationActionOnline,
+    isPending: isAnsweringParticipation,
+    pendingAnswer,
+  } = useHomeParticipationActions();
   const [hiddenInviteIds, setHiddenInviteIds] = useState<string[]>([]);
   const [hiddenRequestIds, setHiddenRequestIds] = useState<string[]>([]);
+  const participationDeadlineClock = useParticipationDeadlineClock(groups);
 
   const visibleInvitations = invitations.filter(
     (invite) => !hiddenInviteIds.includes(invite.id),
@@ -63,14 +87,22 @@ export function useAttentionQueueState({
     (request) => !hiddenRequestIds.includes(request.requesterId),
   );
   const proposedPlans = plans.filter(isProposedPlanCandidate);
+  const pendingParticipations = getPendingParticipations(
+    groups,
+    participationDeadlineClock,
+  );
   const queueSize =
     visibleInvitations.length +
     visibleRequests.length +
+    pendingParticipations.length +
     proposedPlans.length +
     (viewer.nextStep ? 1 : 0);
   const shouldShowSkeleton =
     queueSize === 0 &&
-    (isInvitationsLoading || isPlansLoading || friendRequestsLoading);
+    (isGroupsLoading ||
+      isInvitationsLoading ||
+      isPlansLoading ||
+      friendRequestsLoading);
 
   const hideInvite = (inviteId: string) => {
     setHiddenInviteIds((current) =>
@@ -95,6 +127,7 @@ export function useAttentionQueueState({
   };
 
   async function acceptVisibleInvite(inviteId: string) {
+    clearParticipationActionError();
     clearActionError();
     if (!isInviteActionOnline) {
       await acceptInvitation(inviteId);
@@ -114,6 +147,7 @@ export function useAttentionQueueState({
   }
 
   async function declineVisibleInvite(inviteId: string) {
+    clearParticipationActionError();
     clearActionError();
     if (!isInviteActionOnline) {
       await declineInvitation(inviteId);
@@ -133,6 +167,7 @@ export function useAttentionQueueState({
   }
 
   async function acceptVisibleRequest(requesterId: string) {
+    clearParticipationActionError();
     if (!isFriendRequestOnline) {
       await acceptRequest(requesterId);
       return;
@@ -151,6 +186,7 @@ export function useAttentionQueueState({
   }
 
   async function declineVisibleRequest(requesterId: string) {
+    clearParticipationActionError();
     if (!isFriendRequestOnline) {
       await declineRequest(requesterId);
       return;
@@ -168,10 +204,17 @@ export function useAttentionQueueState({
     }
   }
 
+  async function answerVisibleParticipation(answer: HomeParticipationAnswer) {
+    clearActionError();
+    clearParticipationActionError();
+    await answerParticipation(answer);
+  }
+
   return {
     acceptingInviteId,
     acceptingRequestId,
-    actionError,
+    actionError: actionError ?? participationActionError,
+    answerVisibleParticipation,
     acceptVisibleInvite,
     acceptVisibleRequest,
     declineVisibleInvite,
@@ -184,6 +227,10 @@ export function useAttentionQueueState({
     isDecliningInvite,
     isFriendRequestOnline,
     isInviteActionOnline,
+    isParticipationActionOnline,
+    isAnsweringParticipation,
+    pendingAnswer,
+    pendingParticipations,
     proposedPlans,
     queueSize,
     shouldShowSkeleton,
@@ -191,6 +238,53 @@ export function useAttentionQueueState({
     visibleInvitations,
     visibleRequests,
   };
+}
+
+function getPendingParticipations(
+  groups: ReturnType<typeof useHomeData>["groups"],
+  currentTime: number,
+) {
+  return groups
+    .filter(hasPendingParticipation)
+    .filter(
+      (group) =>
+        !hasHomeParticipationDeadlinePassed(
+          group.pendingParticipationPlan.responseDeadline,
+          currentTime,
+        ),
+    )
+    .sort(comparePendingParticipations);
+}
+
+function hasPendingParticipation(
+  group: ReturnType<typeof useHomeData>["groups"][number],
+): group is AttentionQueueParticipation {
+  return group.pendingParticipationPlan !== null;
+}
+
+function comparePendingParticipations(
+  left: AttentionQueueParticipation,
+  right: AttentionQueueParticipation,
+) {
+  const leftDeadline = left.pendingParticipationPlan.responseDeadline;
+  const rightDeadline = right.pendingParticipationPlan.responseDeadline;
+
+  if (leftDeadline && rightDeadline) {
+    return Date.parse(leftDeadline) - Date.parse(rightDeadline);
+  }
+
+  if (leftDeadline) {
+    return -1;
+  }
+
+  if (rightDeadline) {
+    return 1;
+  }
+
+  return (
+    Date.parse(left.pendingParticipationPlan.completedAt) -
+    Date.parse(right.pendingParticipationPlan.completedAt)
+  );
 }
 
 function isProposedPlanCandidate(

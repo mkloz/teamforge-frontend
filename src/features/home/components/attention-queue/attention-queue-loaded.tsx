@@ -15,6 +15,7 @@ import {
 import { EmptyQueueItem } from "./empty-queue-item";
 import { FriendRequestQueueItem } from "./friend-request-queue-item";
 import { InvitationQueueItem } from "./invitation-queue-item";
+import { ParticipationQueueItem } from "./participation-queue-item";
 import { ProfileStepQueueItem } from "./profile-step-queue-item";
 import { ProposedPlanQueueItem } from "./proposed-plan-queue-item";
 import { SeeRestButton } from "./see-rest-button";
@@ -85,6 +86,7 @@ function AttentionQueueView({
     acceptingInviteId,
     acceptingRequestId,
     actionError,
+    answerVisibleParticipation,
     acceptVisibleInvite,
     acceptVisibleRequest,
     declineVisibleInvite,
@@ -97,6 +99,10 @@ function AttentionQueueView({
     isDecliningInvite,
     isFriendRequestOnline,
     isInviteActionOnline,
+    isParticipationActionOnline,
+    isAnsweringParticipation,
+    pendingAnswer,
+    pendingParticipations,
     proposedPlans,
     queueSize,
     shouldShowSkeleton,
@@ -106,6 +112,7 @@ function AttentionQueueView({
   } = state;
   const { queueItems, queueSummary, shouldShowEmptyQueue } =
     getAttentionQueueRenderState({
+      pendingParticipations,
       proposedPlans,
       queueSize,
       shouldShowSkeleton,
@@ -138,7 +145,7 @@ function AttentionQueueView({
         id="attention-queue-heading"
         eyebrow="Right now"
         title="Action queue"
-        description="Invites, requests, and plan details waiting on a clear decision."
+        description="Invites, requests, and group plans waiting for a decision."
         action={queueSummaryAction}
       />
 
@@ -153,6 +160,7 @@ function AttentionQueueView({
           renderAttentionQueueItem(item, {
             acceptingInviteId,
             acceptingRequestId,
+            answerVisibleParticipation,
             acceptVisibleInvite,
             acceptVisibleRequest,
             declineVisibleInvite,
@@ -167,6 +175,9 @@ function AttentionQueueView({
             isDecliningInvite,
             isFriendRequestOnline,
             isInviteActionOnline,
+            isParticipationActionOnline,
+            isAnsweringParticipation,
+            pendingAnswer,
           }),
         )}
       </ul>
@@ -199,6 +210,7 @@ function renderQueueSummaryAction(queueSummary: string[]) {
 interface AttentionQueueItemRenderContext {
   acceptingInviteId: string | null;
   acceptingRequestId: string | null;
+  answerVisibleParticipation: AttentionQueueViewState["answerVisibleParticipation"];
   acceptVisibleInvite: (inviteId: string) => Promise<void>;
   acceptVisibleRequest: (requesterId: string) => Promise<void>;
   declineVisibleInvite: (inviteId: string) => Promise<void>;
@@ -213,6 +225,9 @@ interface AttentionQueueItemRenderContext {
   isDecliningInvite: boolean;
   isFriendRequestOnline: boolean;
   isInviteActionOnline: boolean;
+  isParticipationActionOnline: boolean;
+  isAnsweringParticipation: boolean;
+  pendingAnswer: AttentionQueueViewState["pendingAnswer"];
 }
 
 function renderAttentionQueueItem(
@@ -260,6 +275,21 @@ function renderAttentionQueueItem(
   if (item.kind === "plan") {
     return (
       <ProposedPlanQueueItem key={item.group.plan.id} group={item.group} />
+    );
+  }
+
+  if (item.kind === "participation") {
+    return (
+      <ParticipationQueueItem
+        key={item.group.pendingParticipationPlan.id}
+        group={item.group}
+        state={{
+          isOnline: context.isParticipationActionOnline,
+          isPending: context.isAnsweringParticipation,
+          pendingAnswer: context.pendingAnswer,
+        }}
+        onAnswer={context.answerVisibleParticipation}
+      />
     );
   }
 

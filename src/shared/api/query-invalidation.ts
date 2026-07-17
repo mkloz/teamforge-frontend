@@ -29,6 +29,13 @@ export function invalidateHomeGroupSurfaces() {
   ]);
 }
 
+export function invalidateGroupParticipationSurfaces(groupId: string) {
+  return invalidateQueries([
+    APP_QUERY_KEYS.activity.groupReviewState(groupId),
+    APP_QUERY_KEYS.home.all,
+  ]);
+}
+
 export function invalidatePlanDecisionSurfaces({
   groupId,
   planId,
