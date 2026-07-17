@@ -4,10 +4,12 @@ import {
   Home,
   MessageSquare,
   Settings,
+  ShieldCheck,
   User,
 } from "lucide-react";
 import {
   buildActivityNavigation,
+  buildAdminNavigation,
   buildExploreNavigation,
   buildForgeNavigation,
   buildHomeNavigation,
@@ -20,6 +22,13 @@ export const APP_NAVIGATION: Record<
   AppNavigationItem["id"],
   AppNavigationItem
 > = {
+  admin: {
+    id: "admin",
+    label: "Admin",
+    icon: ShieldCheck,
+    matchMode: "prefix",
+    navigation: buildAdminNavigation(),
+  },
   home: {
     id: "home",
     label: "Home",

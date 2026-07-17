@@ -5,6 +5,7 @@ import {
   LockKeyhole,
   Settings,
   Shield,
+  ShieldCheck,
   SlidersHorizontal,
   UserRound,
 } from "lucide-react";
@@ -23,6 +24,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import { buildAdminNavigation } from "@/shared/navigation/admin-navigation";
 import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import { buildSafetyNavigation } from "@/shared/navigation/safety-navigation";
 import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
@@ -103,6 +105,14 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
               description="All preferences"
               navigation={buildSettingsNavigation()}
             />
+            {currentUser?.role === "ADMIN" ? (
+              <MenuLinkItem
+                icon={ShieldCheck}
+                label="Admin"
+                description="Moderation and operations"
+                navigation={buildAdminNavigation()}
+              />
+            ) : null}
           </nav>
 
           {/* Divider */}

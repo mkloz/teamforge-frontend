@@ -10,8 +10,13 @@ export const adultEligibilitySchema = z.object({
 
 export type AdultEligibility = z.infer<typeof adultEligibilitySchema>;
 
+export const userRoleSchema = z.enum(["USER", "ADMIN"]);
+
+export type UserRole = z.infer<typeof userRoleSchema>;
+
 const fullUserResponseInputSchema = z.object({
   ...userCoreFields,
+  role: userRoleSchema,
   trustScore: userCoreFields.trustScore.default(0),
   profileComplete: userCoreFields.profileComplete.default(false),
   adultEligibility: adultEligibilitySchema.optional(),
@@ -22,5 +27,8 @@ export const fullUserResponseSchema = fullUserResponseInputSchema.transform(
   (user) => ({
     ...userSchema.parse(user),
     adultEligibility: user.adultEligibility,
+    role: user.role,
   }),
 );
+
+export type CurrentUser = z.infer<typeof fullUserResponseSchema>;

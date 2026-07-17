@@ -8,6 +8,7 @@ import {
   getAppNavigationItem,
   isAppNavigationItemActive,
 } from "@/features/app-shell/public/app-navigation";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
@@ -30,11 +31,13 @@ export function AppSidebar({
   notificationTrigger,
 }: AppSidebarProps) {
   const pathname = useActivePathname();
+  const { data: currentUser } = useCurrentUserQuery();
   const sidebarItems = applyAppNavigationBadges(appSidebarNavigation, {
     activity: activityUnreadCount,
   });
   const forgeItem = getAppNavigationItem("forge");
   const settingsItem = getAppNavigationItem("settings");
+  const adminItem = getAppNavigationItem("admin");
   const ForgeIcon = forgeItem.icon;
   const isForgeActive = isAppNavigationItemActive(forgeItem, pathname);
 
@@ -79,6 +82,10 @@ export function AppSidebar({
       {/* Bottom section: notifications, settings + forge */}
       <div className="flex flex-col items-center gap-3 px-1.5 py-4">
         {notificationTrigger}
+
+        {currentUser?.role === "ADMIN" ? (
+          <NavItem item={adminItem} pathname={pathname} />
+        ) : null}
 
         <NavItem item={settingsItem} pathname={pathname} />
 

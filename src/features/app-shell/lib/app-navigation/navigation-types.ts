@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type {
   buildActivityNavigation,
+  buildAdminNavigation,
   buildExploreNavigation,
   buildForgeNavigation,
   buildHomeNavigation,
@@ -9,6 +10,7 @@ import type {
 } from "@/shared/navigation";
 
 export type AppNavigationId =
+  | "admin"
   | "home"
   | "explore"
   | "activity"
@@ -26,6 +28,7 @@ export interface AppNavigationItem {
   activePathPrefixes?: readonly string[];
   matchMode?: AppNavigationMatchMode;
   navigation:
+    | ReturnType<typeof buildAdminNavigation>
     | ReturnType<typeof buildHomeNavigation>
     | ReturnType<typeof buildExploreNavigation>
     | ReturnType<typeof buildActivityNavigation>

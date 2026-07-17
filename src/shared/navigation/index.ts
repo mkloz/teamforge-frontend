@@ -1,4 +1,5 @@
 export * from "./activity-navigation";
+export * from "./admin-navigation";
 export * from "./explore-navigation";
 export * from "./forge-navigation";
 export * from "./group-navigation";

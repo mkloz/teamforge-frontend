@@ -960,6 +960,27 @@ paths:
       tags:
         - AuthGoogle
       security: []
+  /api/v1/admin/moderation/session:
+    get:
+      operationId: AdminController_getSession
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSessionEntity'
+        '401':
+          description: Authentication is required
+        '403':
+          description: Admin access is required
+        '429':
+          description: Too many requests
+      security:
+        - bearer: []
+      tags:
+        - Admin moderation
   /api/v1/interests:
     get:
       operationId: InterestsController_getTree
@@ -5863,6 +5884,11 @@ components:
           format: date-time
           type: string
           example: 2024-01-01T00:00:00Z
+        role:
+          type: string
+          enum:
+            - USER
+            - ADMIN
         age:
           type: number
           example: 25
@@ -5932,6 +5958,7 @@ components:
         - emailVerified
         - createdAt
         - updatedAt
+        - role
         - searchStatus
         - trustScore
         - profileComplete
@@ -6247,6 +6274,62 @@ components:
       required:
         - accessToken
         - isNewUser
+    AdminCapabilitiesEntity:
+      type: object
+      properties:
+        viewCases:
+          type: boolean
+        revealEvidence:
+          type: boolean
+        decideCases:
+          type: boolean
+        reverseActions:
+          type: boolean
+        manageWorkers:
+          type: boolean
+        manageConfiguration:
+          type: boolean
+      required:
+        - viewCases
+        - revealEvidence
+        - decideCases
+        - reverseActions
+        - manageWorkers
+        - manageConfiguration
+    AdminSessionEntity:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: user-id
+        operatorAccountId:
+          type: string
+          example: operator-account-id
+        displayName:
+          type: string
+          example: TeamForge administrator
+        role:
+          type: string
+          enum:
+            - ADMIN
+          example: ADMIN
+        capabilities:
+          $ref: '#/components/schemas/AdminCapabilitiesEntity'
+        breakGlass:
+          type: boolean
+          example: false
+        stepUpExpiresAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - userId
+        - operatorAccountId
+        - displayName
+        - role
+        - capabilities
+        - breakGlass
+        - stepUpExpiresAt
     PaginationMeta:
       type: object
       properties:
@@ -11341,6 +11424,9 @@ components:
           type: string
           enum:
             - SHADOW
+            - APPROVAL
+            - AUTONOMOUS_LIMITED
+            - AUTONOMOUS
         release:
           $ref: '#/components/schemas/OperatorAssessmentReleaseEntity'
         policyLabels:
@@ -11873,6 +11959,7 @@ components:
           type: string
           enum:
             - SYSTEM_RULE
+            - AI_OPERATOR
             - HUMAN_OPERATOR
             - APPEAL_REVIEWER
         kind:

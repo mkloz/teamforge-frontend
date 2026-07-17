@@ -717,7 +717,7 @@ export default defineConfig(({ command, mode }) => {
           ],
           importScripts: ["sw-push.js"],
           navigateFallback: "/index.html",
-          navigateFallbackDenylist: [/^\/api\//],
+          navigateFallbackDenylist: [/^\/api\//, /^\/admin(?:\/|$)/],
           runtimeCaching: [
             {
               urlPattern: ({ request, url }) =>

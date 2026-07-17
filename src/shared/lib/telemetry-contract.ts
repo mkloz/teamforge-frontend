@@ -78,6 +78,7 @@ export const routeErrorScopes = {
   safetyReport: "safety.report",
   safetyAccountAction: "safety.account-action",
   safetyRestriction: "safety.restriction",
+  admin: "admin",
   forge: "forge",
 } as const;
 
