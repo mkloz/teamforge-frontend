@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 interface HomePageContentProps {
   attentionQueue: ReactNode;
+  candidateAvailability?: ReactNode;
   friendsInvitation: ReactNode;
   groupsGrid: ReactNode;
   hero: ReactNode;
@@ -13,6 +14,7 @@ interface HomePageContentProps {
 
 export function HomePageContent({
   attentionQueue,
+  candidateAvailability,
   friendsInvitation,
   groupsGrid,
   hero,
@@ -27,6 +29,7 @@ export function HomePageContent({
         <div className="flex min-w-0 flex-col gap-10 lg:gap-12">
           {hero}
           {forgeRequest}
+          {candidateAvailability}
           {sentInvitationsReview}
           {attentionQueue}
           {upcomingPlans}

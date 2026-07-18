@@ -4,32 +4,10 @@ import type {
   UpdateSettingsProfileDto,
 } from "@/features/settings/api/settings.api";
 import { SettingsApi } from "@/features/settings/api/settings.api";
-import type { UpdateCandidateAvailability } from "@/features/settings/schemas/candidate-availability.schema";
 import { authApi } from "@/shared/api/api";
 import { clearCurrentUserCache } from "@/shared/api/current-user-query";
 
 export const SettingsCommands = {
-  updateCandidateAvailability(
-    payload: UpdateCandidateAvailability,
-    idempotencyKey: string,
-  ) {
-    return SettingsApi.updateCandidateAvailability(payload, idempotencyKey);
-  },
-
-  pauseCandidateAvailability(
-    payload: { expectedRevision: number; policyVersion: string },
-    idempotencyKey: string,
-  ) {
-    return SettingsApi.pauseCandidateAvailability(payload, idempotencyKey);
-  },
-
-  reconfirmCandidateAvailability(
-    payload: { expectedRevision: number; policyVersion: string },
-    idempotencyKey: string,
-  ) {
-    return SettingsApi.reconfirmCandidateAvailability(payload, idempotencyKey);
-  },
-
   updateProfile(payload: UpdateSettingsProfileDto) {
     return SettingsApi.updateProfile(payload);
   },

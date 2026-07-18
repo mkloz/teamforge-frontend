@@ -1,6 +1,7 @@
 import { lazy, type ReactNode, Suspense, useEffect, useRef } from "react";
 import { AttentionQueue } from "@/features/home/components/attention-queue";
 import { AutoForgeRequestStatus } from "@/features/home/components/auto-forge-request-status";
+import { CandidateAvailabilitySection } from "@/features/home/components/candidate-availability-section";
 import { GroupsGrid } from "@/features/home/components/groups-grid";
 import { HomeHero } from "@/features/home/components/home-hero";
 import { HomeOfflineLaunchState } from "@/features/home/components/home-offline-launch-state";
@@ -177,6 +178,7 @@ export function HomePage() {
     <HomePageContent
       hero={<HomeHero />}
       forgeRequest={<AutoForgeRequestStatus />}
+      candidateAvailability={<CandidateAvailabilitySection />}
       sentInvitationsReview={getSentInvitationsReviewSlot({
         focusedInviteId,
         invitations: sentInvitations,

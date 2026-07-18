@@ -1,5 +1,5 @@
 import type { UseFormReturn } from "react-hook-form";
-import type { CandidateAvailabilityState } from "@/features/settings/hooks/use-candidate-availability";
+import type { CandidateAvailabilityState } from "@/features/forge/public/candidate-availability";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import type {

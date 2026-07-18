@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Brain, RefreshCcw, Tags } from "lucide-react";
+import type { CandidateAvailabilityState } from "@/features/forge/public/candidate-availability";
 import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
 import { CandidateAvailabilityControl } from "@/features/settings/components/settings-profile-form/candidate-availability-control";
 import {
@@ -13,7 +14,6 @@ import {
   StatPill,
 } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { normalizeTrustScore } from "@/features/settings/components/settings-profile-form/settings-formatters";
-import type { CandidateAvailabilityState } from "@/features/settings/hooks/use-candidate-availability";
 import { personalityAssessmentQueryOptions } from "@/shared/api/personality-assessment-query";
 import { Button } from "@/shared/components/ui/button";
 import { Notice } from "@/shared/components/ui/notice";

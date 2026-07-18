@@ -1,12 +1,15 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { type RefObject, useRef, useState } from "react";
-import { SettingsCache } from "@/features/settings/api/settings-cache";
-import { SettingsCommands } from "@/features/settings/api/settings-commands";
-import { settingsQueries } from "@/features/settings/api/settings-queries";
+import {
+  invalidateCandidateAvailability,
+  setCandidateAvailability,
+} from "@/features/forge/api/candidate-availability-cache";
+import { CandidateAvailabilityCommands } from "@/features/forge/api/candidate-availability-commands";
+import { candidateAvailabilityQueryOptions } from "@/features/forge/api/candidate-availability-query";
 import type {
   CandidateAvailability,
   UpdateCandidateAvailability,
-} from "@/features/settings/schemas/candidate-availability.schema";
+} from "@/features/forge/schemas/candidate-availability.schema";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 
@@ -51,14 +54,14 @@ export function useCandidateAvailability({
   const operationRef = useRef<PendingOperation | null>(null);
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const query = useQuery({
-    ...settingsQueries.candidateAvailability(),
+    ...candidateAvailabilityQueryOptions(),
     enabled,
   });
   const mutation = useMutation({
     mutationFn: runCandidateAvailabilityCommand,
     onSuccess: (result) => {
       operationRef.current = null;
-      SettingsCache.setCandidateAvailability(result.data);
+      setCandidateAvailability(result.data);
       setError(null);
     },
     onError: (mutationError) => {
@@ -68,7 +71,7 @@ export function useCandidateAvailability({
           "We couldn't update your proposal availability. Refresh and try again.",
         ),
       );
-      void SettingsCache.invalidateCandidateAvailability();
+      void invalidateCandidateAvailability();
     },
   });
 
@@ -143,7 +146,7 @@ async function runCandidateAvailabilityCommand({
   idempotencyKey: string;
 }) {
   if (command.action === "pause") {
-    return SettingsCommands.pauseCandidateAvailability(
+    return CandidateAvailabilityCommands.pause(
       {
         expectedRevision: command.expectedRevision,
         policyVersion: command.policyVersion,
@@ -153,7 +156,7 @@ async function runCandidateAvailabilityCommand({
   }
 
   if (command.action === "reconfirm") {
-    return SettingsCommands.reconfirmCandidateAvailability(
+    return CandidateAvailabilityCommands.reconfirm(
       {
         expectedRevision: command.expectedRevision,
         policyVersion: command.policyVersion,
@@ -162,7 +165,7 @@ async function runCandidateAvailabilityCommand({
     );
   }
 
-  return SettingsCommands.updateCandidateAvailability(
+  return CandidateAvailabilityCommands.update(
     {
       expectedRevision: command.expectedRevision,
       localEnabled: command.localEnabled,

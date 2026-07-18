@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Clock3, Pause, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { CandidateAvailabilityState } from "@/features/settings/hooks/use-candidate-availability";
-import type { CandidateAvailability } from "@/features/settings/schemas/candidate-availability.schema";
+import type {
+  CandidateAvailability,
+  CandidateAvailabilityState,
+} from "@/features/forge/public/candidate-availability";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { Notice } from "@/shared/components/ui/notice";
@@ -70,7 +72,7 @@ export function CandidateAvailabilityControl({
   return (
     <section className="grid gap-5 border-border border-t pt-6">
       <AvailabilityHeader
-        lifecycle={availability.lifecycle}
+        availability={availability}
         isRefreshing={state.isRefreshing}
       />
 
@@ -80,10 +82,18 @@ export function CandidateAvailabilityControl({
         reviewing the proposal.
       </p>
 
-      {availability.legacyAvailabilityPrompt && !availability.lifecycle ? (
+      {availability.legacyAvailabilityPrompt ? (
         <Notice tone="neutral" size="md">
-          You previously allowed automatic group forming. Review the new choices
-          below; nothing has been enabled for you.
+          TeamForge now handles group-proposal availability separately from your
+          old automatic-group setting. Review the choices below.
+        </Notice>
+      ) : null}
+
+      {availability.lifecycle === "OPEN" &&
+      !canReceiveAnyProposal(availability) ? (
+        <Notice tone="neutral" size="md">
+          Your choices are saved, but you cannot receive a new proposal right
+          now. Check again later for an updated status.
         </Notice>
       ) : null}
 
@@ -95,14 +105,23 @@ export function CandidateAvailabilityControl({
           checked={localEnabled}
           disabled={!canEditScopes || actionDisabled}
           title="Local activities"
-          description="Proposals for activities near your saved area."
+          description={
+            availability.localEnabled && !availability.canReceiveLocalProposals
+              ? "Saved, but local proposals are unavailable right now."
+              : "Proposals for activities near your saved area."
+          }
           onToggle={() => setLocalEnabled((current) => !current)}
         />
         <NotificationPreferenceRow
           checked={onlineEnabled}
           disabled={!canEditScopes || actionDisabled}
           title="Online activities"
-          description="Proposals for activities that happen online."
+          description={
+            availability.onlineEnabled &&
+            !availability.canReceiveOnlineProposals
+              ? "Saved, but online proposals are unavailable right now."
+              : "Proposals for activities that happen online."
+          }
           onToggle={() => setOnlineEnabled((current) => !current)}
         />
       </fieldset>
@@ -147,9 +166,11 @@ export function CandidateAvailabilityControl({
         hasScope={hasScope}
         localEnabled={localEnabled}
         onlineEnabled={onlineEnabled}
+        isRefreshing={state.isRefreshing}
         scopesChanged={scopesChanged}
         onPause={state.onPause}
         onReconfirm={state.onReconfirm}
+        onRetry={state.onRetry}
         onUpdate={state.onUpdate}
       />
     </section>
@@ -157,14 +178,17 @@ export function CandidateAvailabilityControl({
 }
 
 function AvailabilityHeader({
-  lifecycle,
+  availability,
   isRefreshing,
 }: {
-  lifecycle: "OPEN" | "PAUSED" | "EXPIRED" | "RESTRICTED" | null;
+  availability: CandidateAvailability;
   isRefreshing: boolean;
 }) {
+  const { lifecycle } = availability;
   const labels = {
-    OPEN: "Open to proposals",
+    OPEN: canReceiveAnyProposal(availability)
+      ? "Open to proposals"
+      : "Not receiving proposals",
     PAUSED: "Paused",
     EXPIRED: "Confirmation needed",
     RESTRICTED: "Unavailable",
@@ -180,7 +204,11 @@ function AvailabilityHeader({
       </div>
       <StatusPill
         size="sm"
-        tone={lifecycle === "OPEN" ? "teal" : "muted"}
+        tone={
+          lifecycle === "OPEN" && canReceiveAnyProposal(availability)
+            ? "teal"
+            : "muted"
+        }
         surface="soft"
       >
         {lifecycle ? labels[lifecycle] : "Not enabled"}
@@ -202,14 +230,16 @@ function AvailabilityFacts({
   const hasActiveCooldown =
     availability.proposalCooldownUntil !== null &&
     new Date(availability.proposalCooldownUntil).getTime() > Date.now();
+  const showAvailableUntil =
+    availability.lifecycle === "OPEN" && availability.availableUntil !== null;
 
-  if (!availability.availableUntil && !hasActiveCooldown) {
+  if (!showAvailableUntil && !hasActiveCooldown) {
     return null;
   }
 
   return (
     <dl className="grid border-border/70 border-y text-sm sm:grid-cols-2">
-      {availability.availableUntil ? (
+      {showAvailableUntil && availability.availableUntil ? (
         <AvailabilityFact
           icon={Clock3}
           label="Open until"
@@ -218,9 +248,9 @@ function AvailabilityFacts({
       ) : null}
       {hasActiveCooldown && availability.proposalCooldownUntil ? (
         <AvailabilityFact
-          separated={Boolean(availability.availableUntil)}
+          separated={showAvailableUntil}
           icon={Clock3}
-          label="New proposals paused until"
+          label="Proposal cooldown ends"
           value={formatDate(availability.proposalCooldownUntil)}
         />
       ) : null}
@@ -264,9 +294,11 @@ function AvailabilityActions({
   hasScope,
   localEnabled,
   onlineEnabled,
+  isRefreshing,
   scopesChanged,
   onPause,
   onReconfirm,
+  onRetry,
   onUpdate,
 }: {
   actionDisabled: boolean;
@@ -276,12 +308,14 @@ function AvailabilityActions({
   hasScope: boolean;
   localEnabled: boolean;
   onlineEnabled: boolean;
+  isRefreshing: boolean;
   scopesChanged: boolean;
   onPause: (policyVersion: string, expectedRevision: number) => Promise<void>;
   onReconfirm: (
     policyVersion: string,
     expectedRevision: number,
   ) => Promise<void>;
+  onRetry: () => void;
   onUpdate: (payload: {
     expectedRevision: number | null;
     localEnabled: boolean;
@@ -291,9 +325,21 @@ function AvailabilityActions({
 }) {
   if (availability.lifecycle === "RESTRICTED") {
     return (
-      <p className="text-muted-foreground text-sm">
-        Proposal availability cannot be enabled for this account right now.
-      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <p className="text-muted-foreground text-sm">
+          New group proposals are unavailable right now. This status can change,
+          so check again later.
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={actionDisabled || isRefreshing}
+          onClick={onRetry}
+        >
+          <RefreshCcw className="size-4" aria-hidden="true" />
+          Check again
+        </Button>
+      </div>
     );
   }
 
@@ -308,7 +354,7 @@ function AvailabilityActions({
       <ActionDialog
         cancelLabel="Not now"
         confirmLabel="Confirm I'm open"
-        description="This keeps your local and online choices open for another 30 days. You still review every proposal before joining."
+        description="This renews your local and online choices for another 30 days. You still review every proposal before joining."
         disabled={reconfirmDisabled}
         loading={activeAction === "reconfirm"}
         onConfirm={() =>
@@ -375,6 +421,13 @@ function AvailabilityActions({
         />
       ) : null}
     </div>
+  );
+}
+
+function canReceiveAnyProposal(availability: CandidateAvailability) {
+  return (
+    availability.canReceiveLocalProposals ||
+    availability.canReceiveOnlineProposals
   );
 }
 

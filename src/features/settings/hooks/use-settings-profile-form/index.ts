@@ -1,4 +1,4 @@
-import { useCandidateAvailability } from "@/features/settings/hooks/use-candidate-availability";
+import { useCandidateAvailability } from "@/features/forge/public/candidate-availability";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import { useDeleteAccountAction } from "./use-delete-account-action";
 import { useSettingsAvatarActions } from "./use-settings-avatar-actions";

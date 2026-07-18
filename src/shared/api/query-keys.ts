@@ -55,12 +55,12 @@ export const APP_QUERY_KEYS = {
     subscriptions: ["web-push", "subscriptions"] as const,
   },
   settings: {
-    candidateAvailability: ["settings", "candidate-availability"] as const,
     notificationPreferences: ["settings", "notification-preferences"] as const,
     sessions: ["settings", "sessions"] as const,
     blockedUsers: ["settings", "blocked-users"] as const,
   },
   forge: {
+    candidateAvailability: ["forge", "candidate-availability"] as const,
     currentAutoRequest: ["forge", "auto-request", "current"] as const,
     friends: ["forge", "friends"] as const,
     recentActivities: ["forge", "recent-activities"] as const,
