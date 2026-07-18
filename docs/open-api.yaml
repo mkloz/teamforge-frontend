@@ -12374,9 +12374,17 @@ components:
           type: string
         policyVersion:
           type: string
+        pricingVersion:
+          type: string
         schemaVersion:
           type: string
         thresholdVersion:
+          type: string
+        releaseEvidenceHash:
+          type: string
+        releaseMetricsVersion:
+          type: string
+        releaseThresholdVersion:
           type: string
         approvedAt:
           format: date-time
@@ -12399,8 +12407,12 @@ components:
         - moderationModel
         - promptVersion
         - policyVersion
+        - pricingVersion
         - schemaVersion
         - thresholdVersion
+        - releaseEvidenceHash
+        - releaseMetricsVersion
+        - releaseThresholdVersion
         - approvedAt
         - status
     OperatorModerationAuthorityRuleDto:
@@ -12411,34 +12423,21 @@ components:
           items:
             type: string
             enum:
-              - RESOLVE_NO_BREACH
-              - RESOLVE_NOT_ENOUGH_INFORMATION
-              - REQUEST_MORE_INFORMATION
               - WARNING
               - OUTBOUND_RATE_LIMIT
               - NEW_STRANGER_CONTACT_RESTRICTION
-              - ACCEPTED_CHAT_RESTRICTION
               - TEMPORARY_ACCOUNT_SUSPENSION
-              - PERMANENT_ACCOUNT_BAN
-              - ITEM_REMOVAL
               - GROUP_RESTRICTION
               - ITEM_QUARANTINE
               - FORGE_PROPOSAL_HOLD
               - NEW_STRANGER_CONTACT_PAUSE
-              - REVERSE_ENFORCEMENT
-              - RELEASE_CONTAINMENT
         allowedDecisionKinds:
           type: array
           items:
             type: string
             enum:
-              - FIND_NO_POLICY_VIOLATION
-              - RESOLVE_CASE
-              - REQUEST_INFORMATION
               - AUTHORIZE_ENFORCEMENT
               - AUTHORIZE_CONTAINMENT
-              - REVERSE_ENFORCEMENT
-              - RELEASE_CONTAINMENT
         allowedScopes:
           type: array
           items:
@@ -12730,43 +12729,51 @@ components:
         - expectedActiveConfigurationRowVersion
         - expectedSourceConfigurationRowVersion
         - expectedStateRowVersion
-    OperatorModerationEvaluationProvenanceDto:
+    OperatorModerationEvaluationEvidenceReferenceDto:
       type: object
       properties:
-        assessmentModel:
+        evidenceId:
           type: string
-        configurationVersion:
-          type: string
-        moderationModel:
-          type: string
-        policyVersion:
-          type: string
-        promptVersion:
-          type: string
-        requestedAssessmentModel:
-          type: string
-        requestedModerationModel:
-          type: string
-        runKind:
-          type: string
-          enum:
-            - FULL_PIPELINE
-        schemaVersion:
-          type: string
-        thresholdVersion:
+        sourceVersion:
           type: string
       required:
-        - assessmentModel
-        - configurationVersion
-        - moderationModel
-        - policyVersion
-        - promptVersion
-        - requestedAssessmentModel
-        - requestedModerationModel
-        - runKind
-        - schemaVersion
-        - thresholdVersion
-    OperatorModerationEvaluationResultDto:
+        - evidenceId
+        - sourceVersion
+    OperatorModerationEvaluationTelemetryDto:
+      type: object
+      properties:
+        assessmentLatencyMs:
+          type: number
+          maximum: 300000
+          minimum: 0
+        estimatedCostMicros:
+          type: number
+          maximum: 100000000
+          minimum: 0
+        inputTokens:
+          type: number
+          maximum: 1000000
+          minimum: 0
+        moderationLatencyMs:
+          type: number
+          maximum: 300000
+          minimum: 0
+        outputTokens:
+          type: number
+          maximum: 1000000
+          minimum: 0
+        totalTokens:
+          type: number
+          maximum: 2000000
+          minimum: 0
+      required:
+        - assessmentLatencyMs
+        - estimatedCostMicros
+        - inputTokens
+        - moderationLatencyMs
+        - outputTokens
+        - totalTokens
+    OperatorModerationEvaluationValidResultDto:
       type: object
       properties:
         id:
@@ -12775,7 +12782,7 @@ components:
           type: array
           items:
             type: string
-            enum:
+            enum: &a69
               - harassment
               - harassment/threatening
               - hate
@@ -12791,6 +12798,12 @@ components:
               - violence/graphic
         critical:
           type: boolean
+        escalatedToHuman:
+          type: boolean
+        evidenceReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorModerationEvaluationEvidenceReferenceDto'
         finalDisposition:
           type: string
           enum:
@@ -12800,11 +12813,104 @@ components:
             - REQUEST_MORE_INFORMATION
             - PROTECTIVE_CONTAINMENT
             - REVERSE_ACTION
+        insufficientEvidence:
+          type: boolean
+        outputStatus:
+          type: string
+          enum:
+            - VALID
+        policyGateRejected:
+          type: boolean
+        telemetry:
+          $ref: '#/components/schemas/OperatorModerationEvaluationTelemetryDto'
       required:
         - id
         - signalCategories
         - critical
+        - escalatedToHuman
+        - evidenceReferences
         - finalDisposition
+        - insufficientEvidence
+        - outputStatus
+        - policyGateRejected
+        - telemetry
+    OperatorModerationEvaluationInvalidResultDto:
+      type: object
+      properties:
+        id:
+          type: string
+        invalidOutputCode:
+          type: string
+          enum:
+            - INCOMPLETE_OUTPUT
+            - PARSE_FAILED
+            - SCHEMA_VALIDATION_FAILED
+        outputStatus:
+          type: string
+          enum:
+            - INVALID_OUTPUT
+        signalCategories:
+          type: array
+          items:
+            type: string
+            enum: *a69
+        telemetry:
+          $ref: '#/components/schemas/OperatorModerationEvaluationTelemetryDto'
+      required:
+        - id
+        - invalidOutputCode
+        - outputStatus
+        - signalCategories
+        - telemetry
+    OperatorModerationEvaluationProvenanceDto:
+      type: object
+      properties:
+        assessmentModel:
+          type: string
+        configurationVersion:
+          type: string
+        moderationModel:
+          type: string
+        policyVersion:
+          type: string
+        pricingVersion:
+          type: string
+        promptVersion:
+          type: string
+        requestedAssessmentModel:
+          type: string
+        requestedModerationModel:
+          type: string
+        releaseMetricsVersion:
+          type: string
+          enum:
+            - moderation-release-metrics.v1
+        releaseThresholdVersion:
+          type: string
+          enum:
+            - moderation-release-thresholds.v1
+        runKind:
+          type: string
+          enum:
+            - FULL_PIPELINE
+        schemaVersion:
+          type: string
+        thresholdVersion:
+          type: string
+      required:
+        - assessmentModel
+        - configurationVersion
+        - moderationModel
+        - policyVersion
+        - pricingVersion
+        - promptVersion
+        - requestedAssessmentModel
+        - requestedModerationModel
+        - releaseMetricsVersion
+        - releaseThresholdVersion
+        - runKind
+        - schemaVersion
+        - thresholdVersion
     OperatorModerationEvaluationRunDto:
       type: object
       properties:
@@ -12815,9 +12921,11 @@ components:
         provenance:
           $ref: '#/components/schemas/OperatorModerationEvaluationProvenanceDto'
         results:
-          type: array
           items:
-            $ref: '#/components/schemas/OperatorModerationEvaluationResultDto'
+            oneOf:
+              - $ref: '#/components/schemas/OperatorModerationEvaluationValidResultDto'
+              - $ref: '#/components/schemas/OperatorModerationEvaluationInvalidResultDto'
+          type: array
       required:
         - corpusVersion
         - provenance
@@ -12979,7 +13087,7 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: &a69
+          enum: &a70
             - OPEN
             - TRIAGING
             - NEEDS_INFORMATION
@@ -12990,7 +13098,7 @@ components:
             - CLOSED
         severity:
           type: string
-          enum: &a70
+          enum: &a71
             - P0
             - P1
             - P2
@@ -13003,7 +13111,7 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: &a71
+          enum: &a72
             - UNKNOWN
             - COMPLETE
             - PARTIAL
@@ -13011,7 +13119,7 @@ components:
             - CONFLICTING
         uncertainty:
           type: string
-          enum: &a72
+          enum: &a73
             - UNKNOWN
             - LOW
             - MEDIUM
@@ -13421,10 +13529,10 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: *a69
+          enum: *a70
         severity:
           type: string
-          enum: *a70
+          enum: *a71
           nullable: true
         policyLabels:
           type: array
@@ -13432,10 +13540,10 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: *a71
+          enum: *a72
         uncertainty:
           type: string
-          enum: *a72
+          enum: *a73
         mandatoryHumanReasons:
           type: array
           items:
@@ -13682,7 +13790,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: &a73
+          enum: &a74
             - FOLLOWED
             - CHANGED
             - NOT_USED
@@ -13693,7 +13801,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: &a74
+          example: &a75
             - SAFETY_ABUSE
           type: array
           items:
@@ -13765,7 +13873,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a73
+          enum: *a74
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13773,7 +13881,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a74
+          example: *a75
           type: array
           items:
             type: array
@@ -13795,7 +13903,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a73
+          enum: *a74
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13803,7 +13911,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a74
+          example: *a75
           type: array
           items:
             type: array
@@ -13833,7 +13941,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a73
+          enum: *a74
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13841,7 +13949,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a74
+          example: *a75
           type: array
           items:
             type: array
@@ -13878,7 +13986,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a73
+          enum: *a74
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13886,7 +13994,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a74
+          example: *a75
           type: array
           items:
             type: array
@@ -13898,7 +14006,7 @@ components:
           maxLength: 1000
         actionType:
           type: string
-          enum: &a75
+          enum: &a76
             - WARNING
             - OUTBOUND_RATE_LIMIT
             - NEW_STRANGER_CONTACT_RESTRICTION
@@ -13909,7 +14017,7 @@ components:
             - GROUP_RESTRICTION
         scope:
           type: string
-          enum: &a76
+          enum: &a77
             - ACCOUNT
             - NEW_STRANGER_CONTACT
             - ACCEPTED_CHAT
@@ -13919,7 +14027,7 @@ components:
           type: string
         targetType:
           type: string
-          enum: &a77
+          enum: &a78
             - PROFILE
             - MESSAGE
             - ATTACHMENT
@@ -13945,7 +14053,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a73
+          enum: *a74
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13953,7 +14061,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a74
+          example: *a75
           type: array
           items:
             type: array
@@ -13991,7 +14099,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a73
+          enum: *a74
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13999,7 +14107,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a74
+          example: *a75
           type: array
           items:
             type: array
@@ -14017,15 +14125,15 @@ components:
             - OVERTURNED
         replacementActionType:
           type: string
-          enum: *a75
+          enum: *a76
         replacementScope:
           type: string
-          enum: *a76
+          enum: *a77
         replacementEvidenceId:
           type: string
         replacementTargetType:
           type: string
-          enum: *a77
+          enum: *a78
         replacementTargetId:
           type: string
         replacementExpiresAt:
@@ -14043,7 +14151,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a73
+          enum: *a74
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14051,7 +14159,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a74
+          example: *a75
           type: array
           items:
             type: array
@@ -14079,7 +14187,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a73
+          enum: *a74
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14087,7 +14195,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a74
+          example: *a75
           type: array
           items:
             type: array
@@ -14169,14 +14277,14 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: &a78
+          enum: &a79
             - system
             - light
             - dark
           example: system
         themeStyle:
           type: string
-          enum: &a79
+          enum: &a80
             - classic
             - glass
             - ink
@@ -14184,7 +14292,7 @@ components:
           example: classic
         themeColor:
           type: string
-          enum: &a80
+          enum: &a81
             - graphite
             - forge
             - harbor
@@ -14276,15 +14384,15 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: *a78
+          enum: *a79
           example: system
         themeStyle:
           type: string
-          enum: *a79
+          enum: *a80
           example: classic
         themeColor:
           type: string
-          enum: *a80
+          enum: *a81
           example: graphite
         showAgeOnProfile:
           type: boolean
