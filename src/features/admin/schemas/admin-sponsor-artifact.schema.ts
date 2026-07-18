@@ -93,6 +93,19 @@ const sourceIncompleteMeasureSchema = z
   })
   .strict();
 
+const rateValueMeasureSchema = z
+  .object({
+    state: z.literal("VALUE"),
+    value: rateValueSchema,
+  })
+  .strict();
+
+const publishedRateMeasureSchema = z.discriminatedUnion("state", [
+  rateValueMeasureSchema,
+  suppressedMeasureSchema,
+  sourceIncompleteMeasureSchema,
+]);
+
 export const adminSponsorArtifactMeasureSchema = z.discriminatedUnion("state", [
   valueMeasureSchema,
   suppressedMeasureSchema,
@@ -107,8 +120,8 @@ const measuresSchema = z
     referralRecruitment: adminSponsorArtifactMeasureSchema,
     requestCreation: adminSponsorArtifactMeasureSchema,
     activityActivation: adminSponsorArtifactMeasureSchema,
-    proposalCoverage: adminSponsorArtifactMeasureSchema,
-    formedGroups: adminSponsorArtifactMeasureSchema,
+    proposalCoverage: publishedRateMeasureSchema,
+    formedGroups: publishedRateMeasureSchema,
     scheduledPlans: adminSponsorArtifactMeasureSchema,
     completedActivities: adminSponsorArtifactMeasureSchema,
     continuingGroups: adminSponsorArtifactMeasureSchema,
@@ -160,8 +173,6 @@ const measuresSchema = z
     }
 
     for (const key of [
-      "proposalCoverage",
-      "formedGroups",
       "scheduledPlans",
       "completedActivities",
       "continuingGroups",
@@ -182,8 +193,8 @@ const adminSponsorArtifactSchema = z
     id: z.string(),
     referenceCode: z.string().min(1),
     generatedAt: z.string().datetime(),
-    definitionVersion: z.literal("pilot-fixed-window-summary.v1"),
-    privacyRuleVersion: z.literal("minimum-cell-privacy.v1"),
+    definitionVersion: z.literal("pilot-fixed-window-summary.v2"),
+    privacyRuleVersion: z.literal("minimum-cell-privacy.v2"),
     roundingRuleVersion: z.literal("one-decimal-percent.v1"),
     payloadHash: z.string().regex(/^[0-9a-f]{64}$/),
     measures: measuresSchema,

@@ -33,6 +33,85 @@ const activityActivationSchema = z
 type ActivityActivation = z.infer<typeof activityActivationSchema>;
 type ScopedActivityActivation = z.infer<typeof scopedActivityActivationSchema>;
 
+const scopedRequestConversionSchema = z
+  .object({
+    eligibleRequestCount: z.number().int().nonnegative().nullable(),
+    convertedRequestCount: z.number().int().nonnegative().nullable(),
+    conversionRatePercent: z.number().min(0).max(100).nullable(),
+  })
+  .strict();
+
+function createRequestConversionSchema<DefinitionVersion extends string>(
+  definitionVersion: DefinitionVersion,
+) {
+  return z
+    .object({
+      definitionVersion: z.literal(definitionVersion),
+      measurementState: z.enum(["PROVISIONAL", "FINAL"]),
+      dataCompleteness: z.enum(["COMPLETE", "RETENTION_PURGED"]),
+      eligibleRequestCount: z.number().int().nonnegative().nullable(),
+      convertedRequestCount: z.number().int().nonnegative().nullable(),
+      conversionRatePercent: z.number().min(0).max(100).nullable(),
+      local: scopedRequestConversionSchema,
+      online: scopedRequestConversionSchema,
+    })
+    .strict()
+    .superRefine((conversion, context) => {
+      validateRequestRateMetric(
+        {
+          dataCompleteness: conversion.dataCompleteness,
+          local: {
+            denominator: conversion.local.eligibleRequestCount,
+            numerator: conversion.local.convertedRequestCount,
+            ratePercent: conversion.local.conversionRatePercent,
+          },
+          online: {
+            denominator: conversion.online.eligibleRequestCount,
+            numerator: conversion.online.convertedRequestCount,
+            ratePercent: conversion.online.conversionRatePercent,
+          },
+          overall: {
+            denominator: conversion.eligibleRequestCount,
+            numerator: conversion.convertedRequestCount,
+            ratePercent: conversion.conversionRatePercent,
+          },
+        },
+        {
+          denominator: "eligibleRequestCount",
+          numerator: "convertedRequestCount",
+          rate: "conversionRatePercent",
+        },
+        context,
+      );
+    });
+}
+
+const proposalCoverageSchema = createRequestConversionSchema(
+  "proposal-coverage-request-rate.v1",
+);
+const formationConversionSchema = createRequestConversionSchema(
+  "formation-conversion-request-rate.v1",
+);
+
+type RateMetricValues = {
+  denominator: number | null;
+  numerator: number | null;
+  ratePercent: number | null;
+};
+
+type RequestRateMetric = {
+  dataCompleteness: "COMPLETE" | "RETENTION_PURGED";
+  local: RateMetricValues;
+  online: RateMetricValues;
+  overall: RateMetricValues;
+};
+
+type RequestRateMetricFields = {
+  denominator: string;
+  numerator: string;
+  rate: string;
+};
+
 function validatePurgedMetrics(
   activation: ActivityActivation,
   context: z.RefinementCtx,
@@ -247,10 +326,140 @@ function requireCompleteCount(
   }
 }
 
+function validateRequestRateMetric(
+  metric: RequestRateMetric,
+  fields: RequestRateMetricFields,
+  context: z.RefinementCtx,
+) {
+  const scopes = [
+    [[], metric.overall],
+    [["local"], metric.local],
+    [["online"], metric.online],
+  ] as const;
+
+  if (metric.dataCompleteness === "RETENTION_PURGED") {
+    for (const [prefix, values] of scopes) {
+      requirePurgedValue(
+        values.denominator,
+        [...prefix, fields.denominator],
+        context,
+      );
+      requirePurgedValue(
+        values.numerator,
+        [...prefix, fields.numerator],
+        context,
+      );
+      requirePurgedValue(values.ratePercent, [...prefix, fields.rate], context);
+    }
+    return;
+  }
+
+  for (const [prefix, values] of scopes) {
+    requireCompleteCount(
+      values.denominator,
+      [...prefix, fields.denominator],
+      context,
+    );
+    requireCompleteCount(
+      values.numerator,
+      [...prefix, fields.numerator],
+      context,
+    );
+    validateRequestRateValues(values, prefix, fields, context);
+  }
+
+  validateScopeTotals(metric, fields, context);
+}
+
+function validateRequestRateValues(
+  values: RateMetricValues,
+  prefix: readonly string[],
+  fields: RequestRateMetricFields,
+  context: z.RefinementCtx,
+) {
+  if (values.denominator === null || values.numerator === null) {
+    return;
+  }
+
+  if (values.numerator > values.denominator) {
+    context.addIssue({
+      code: "custom",
+      message: "The outcome count cannot exceed the measured request count",
+      path: [...prefix, fields.numerator],
+    });
+  }
+
+  if (values.denominator === 0) {
+    if (values.ratePercent !== null) {
+      context.addIssue({
+        code: "custom",
+        message: "The rate must be null when no requests are measured",
+        path: [...prefix, fields.rate],
+      });
+    }
+    return;
+  }
+
+  if (values.ratePercent === null) {
+    context.addIssue({
+      code: "custom",
+      message: "The rate is required when requests are measured",
+      path: [...prefix, fields.rate],
+    });
+    return;
+  }
+
+  const expectedRate =
+    Math.round((values.numerator / values.denominator) * 1_000) / 10;
+  if (values.ratePercent !== expectedRate) {
+    context.addIssue({
+      code: "custom",
+      message: "The rate must match the counts to one decimal",
+      path: [...prefix, fields.rate],
+    });
+  }
+}
+
+function validateScopeTotals(
+  metric: RequestRateMetric,
+  fields: RequestRateMetricFields,
+  context: z.RefinementCtx,
+) {
+  if (
+    metric.overall.denominator !== null &&
+    metric.local.denominator !== null &&
+    metric.online.denominator !== null &&
+    metric.overall.denominator !==
+      metric.local.denominator + metric.online.denominator
+  ) {
+    context.addIssue({
+      code: "custom",
+      message: "Local and online request counts must equal the overall count",
+      path: [fields.denominator],
+    });
+  }
+
+  if (
+    metric.overall.numerator !== null &&
+    metric.local.numerator !== null &&
+    metric.online.numerator !== null &&
+    metric.overall.numerator !==
+      metric.local.numerator + metric.online.numerator
+  ) {
+    context.addIssue({
+      code: "custom",
+      message: "Local and online outcome counts must equal the overall count",
+      path: [fields.numerator],
+    });
+  }
+}
+
 const adminPilotMetricsCohortSchema = z
   .object({
     code: z.string().trim().min(1),
     memberCount: z.number().int().nonnegative(),
+    proposalCoverage: proposalCoverageSchema,
+    formationConversion: formationConversionSchema,
     activityActivation: activityActivationSchema,
   })
   .strict();
