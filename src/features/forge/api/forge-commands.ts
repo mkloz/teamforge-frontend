@@ -11,7 +11,6 @@ import {
 import type {
   AutoForgeExecutionInput,
   ForgeExecutionResult,
-  KeepSearchingInput,
   SaveForgedIdentityInput,
   SendManualInvitesInput,
 } from "@/features/forge/api/forge-types";
@@ -292,21 +291,6 @@ export class ForgeCommands {
     }
 
     await Promise.all(requests);
-  }
-
-  static async keepSearching(input: KeepSearchingInput) {
-    await ForgeApi.keepSearching(
-      input.activityId,
-      buildForgeActivityInput(input.forgeInput),
-    );
-
-    await invalidateForgeSearchState();
-  }
-
-  static async stopSearching(activityId: string) {
-    await ForgeApi.stopSearching(activityId);
-
-    await invalidateForgeSearchState();
   }
 
   static async sendManualInvites(input: SendManualInvitesInput) {

@@ -89,6 +89,13 @@ export function ForgeProposalPage() {
   }
 
   if (
+    proposalQuery.data?.state === "FORMED" &&
+    proposalQuery.data.formedResources
+  ) {
+    return <ForgeProposalCompleteState action={terminalAction} />;
+  }
+
+  if (
     currentTerminalState === "expired" ||
     currentSavedDecision?.proposalState === "EXPIRED"
   ) {

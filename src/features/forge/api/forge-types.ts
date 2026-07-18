@@ -2,7 +2,6 @@ import type {
   ForgeParticipant,
   ForgeResult,
 } from "@/features/forge/lib/forge-contract";
-import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 
 export type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 
@@ -13,7 +12,6 @@ export interface ForgeExecutionResult {
   groupId: string | null;
   chatId: string | null;
   planId: string | null;
-  searchKept?: boolean;
   requestIds: {
     autoForgeRequest: string | null;
     createActivity: string | null;
@@ -28,11 +26,6 @@ export interface SaveForgedIdentityInput {
   groupDescription: string;
   avatarImage: string | null;
   coverImage: string | null;
-}
-
-export interface KeepSearchingInput {
-  activityId: string;
-  forgeInput: AutoForgeExecutionInput;
 }
 
 export interface SendManualInvitesInput {

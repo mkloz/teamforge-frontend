@@ -317,7 +317,7 @@ function getGroupSelectionChatSummary(
 
   return {
     governance:
-      current.group?.governance === undefined
+      current.group?.governance == null
         ? current.group?.chat?.governance
         : current.group.governance,
     id: current.chatId,

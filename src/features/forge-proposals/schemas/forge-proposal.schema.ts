@@ -160,6 +160,7 @@ export const forgeProposalSchema = z
     validateGroupSize(proposal, context);
     validateSchedule(proposal, context);
     validateViewerSeat(proposal, context);
+    validateFormedResources(proposal, context);
   });
 
 export const currentForgeProposalResponseSchema = z
@@ -178,7 +179,33 @@ export const forgeProposalDecisionReceiptSchema = z
     viewerDecisionRevision: z.number().int().nonnegative(),
     formedResources: formedResourcesSchema.nullable(),
   })
-  .strict();
+  .strict()
+  .superRefine((receipt, context) => {
+    validateFormedResources(receipt, context);
+  });
+
+function validateFormedResources(
+  value: {
+    state?: z.infer<typeof forgeProposalStateSchema>;
+    proposalState?: z.infer<typeof forgeProposalStateSchema>;
+    formedResources: z.infer<typeof formedResourcesSchema> | null;
+  },
+  context: z.RefinementCtx,
+) {
+  const state = value.state ?? value.proposalState;
+  const shouldHaveResources = state === "FORMED";
+
+  if (shouldHaveResources !== (value.formedResources !== null)) {
+    context.addIssue({
+      code: "custom",
+      message:
+        state === "FORMED"
+          ? "A formed proposal must include its group resources."
+          : "Group resources are only available after the proposal forms.",
+      path: ["formedResources"],
+    });
+  }
+}
 
 function validateGroupSize(
   proposal: z.infer<typeof forgeProposalSchema>,

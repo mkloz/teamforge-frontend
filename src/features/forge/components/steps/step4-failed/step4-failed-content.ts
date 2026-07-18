@@ -3,18 +3,17 @@ import type { ForgeMode } from "@/features/forge/lib/forge-contract";
 import type { Step4FailedContent } from "./types";
 
 const AUTO_FAILED_CONTENT = {
-  description:
-    "We couldn't form a group with the people available and these settings.",
-  context: "Group size and balance settings affect who can be included.",
+  description: "We couldn't start or confirm this group request.",
+  context: "Review the activity details, then try the request again.",
   reasons: [
-    "Not enough people are available for this request.",
-    "The group balance settings may be too narrow.",
-    "The group size range does not fit the people available right now.",
+    "The request may not have reached TeamForge.",
+    "Your account or activity may need another review.",
+    "The request may have changed while this page was open.",
   ],
   suggestions: [
-    "Use broader group balance settings",
-    "Expand the group size range",
-    "Try again when more people are available",
+    "Review the activity details",
+    "Try sending the request again",
+    "Switch to manual invites",
   ],
 } as const satisfies Step4FailedContent;
 

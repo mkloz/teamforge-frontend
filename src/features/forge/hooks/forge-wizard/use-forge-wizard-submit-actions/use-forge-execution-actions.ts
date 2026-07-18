@@ -56,7 +56,6 @@ interface UseForgeExecutionActionsOptions
     "dispatch" | "runForgeAnimation" | "state" | "syncStep" | "syncTargets"
   > {
   setField: UseForgeWizardSubmitActionsOptions["setField"];
-  markSearchKept: (activityId: string) => void;
 }
 
 type ForgeExecutionValidation = ReturnType<typeof getForgeExecutionValidation>;
@@ -71,9 +70,7 @@ interface ForgeExecutionErrorContext
   mutationName: ForgeMutationName;
 }
 
-interface ForgeAnimationExecutionContext
-  extends ForgeExecutionErrorContext,
-    Pick<UseForgeExecutionActionsOptions, "markSearchKept"> {
+interface ForgeAnimationExecutionContext extends ForgeExecutionErrorContext {
   mode: ForgeExecutionMode;
   autoRequestKeys: AutoRequestKeys | null;
   validation: ForgeExecutionValidation | null;
@@ -87,7 +84,6 @@ function getZodIssueMessage(error: ZodError) {
 
 export function useForgeExecutionActions({
   dispatch,
-  markSearchKept,
   runForgeAnimation,
   setField,
   state,
@@ -132,7 +128,6 @@ export function useForgeExecutionActions({
     runForgeAnimation(async () => {
       await runForgeExecution({
         dispatch,
-        markSearchKept,
         mode,
         autoRequestKeys,
         mutationName,
@@ -252,10 +247,6 @@ function handleForgeExecutionSuccess(
     syncStep: context.syncStep,
     syncTargets: context.syncTargets,
   });
-
-  if (result.activityId && result.searchKept) {
-    context.markSearchKept(result.activityId);
-  }
 }
 
 interface AutoRequestKeys {

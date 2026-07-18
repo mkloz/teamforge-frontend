@@ -173,39 +173,6 @@ export class ForgeApi {
     );
   }
 
-  static async keepSearching(activityId: string, payload: unknown) {
-    const response = await apiClient.post(
-      `activities/${activityId}/keep-searching`,
-      {
-        json: forgeActivityInputSchema.parse(payload),
-      },
-    );
-
-    return parseJsonWithRequestId(response, (value) =>
-      activitySchema.parse(value),
-    );
-  }
-
-  static async stopSearching(activityId: string) {
-    const response = await apiClient.post(
-      `activities/${activityId}/stop-searching`,
-    );
-
-    return parseJsonWithRequestId(response, (value) =>
-      activitySchema.parse(value),
-    );
-  }
-
-  static async forgePendingActivity(activityId: string) {
-    const response = await apiClient.post(
-      `activities/${activityId}/forge-pending`,
-    );
-
-    return parseJsonWithRequestId(response, (value) =>
-      forgeActivityResultSchema.parse(value),
-    );
-  }
-
   static async getGroup(groupId: string) {
     return sharedGetGroupById(groupId);
   }

@@ -2,9 +2,6 @@ import type { ForgeMode } from "@/features/forge/lib/forge-contract";
 
 export interface Step4FailedProps {
   forgeMode: ForgeMode;
-  isKeepSearchingEnabled?: boolean;
-  isKeepingSearch?: boolean;
-  onKeepSearchingChange?: (enabled: boolean) => void;
   onSwitchToManual?: () => void;
 }
 

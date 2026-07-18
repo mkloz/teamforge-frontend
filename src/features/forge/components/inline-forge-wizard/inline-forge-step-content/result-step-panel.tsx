@@ -21,11 +21,6 @@ export function ResultStepPanel({ actions, fw }: ResultStepPanelProps) {
     return (
       <Step4Failed
         forgeMode={fw.forgeMode}
-        isKeepSearchingEnabled={fw.isSearchKept}
-        isKeepingSearch={fw.isKeepingSearch}
-        onKeepSearchingChange={
-          fw.activityId ? fw.handleKeepSearchingChange : undefined
-        }
         onSwitchToManual={actions.switchFailedForgeToManual}
       />
     );

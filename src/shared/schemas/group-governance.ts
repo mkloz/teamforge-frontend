@@ -89,5 +89,5 @@ export function hasMissingAutoGovernance({
   forgeMode: "AUTO" | "MANUAL" | null | undefined;
   governance: GroupGovernance | null | undefined;
 }) {
-  return forgeMode === "AUTO" && governance === undefined;
+  return forgeMode === "AUTO" && governance == null;
 }

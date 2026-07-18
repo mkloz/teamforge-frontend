@@ -10,7 +10,6 @@ interface FailedForgeResultOverrides {
   chatId?: string | null;
   planId?: string | null;
   requestIds?: ForgeRequestIds;
-  searchKept?: boolean;
 }
 
 interface SuccessfulForgeResultInput {
@@ -28,7 +27,6 @@ export function buildFailedForgeResult({
   groupId = null,
   planId = null,
   requestIds,
-  searchKept,
 }: FailedForgeResultOverrides = {}): ForgeExecutionResult {
   return {
     forgeResult: "FAILED",
@@ -37,7 +35,6 @@ export function buildFailedForgeResult({
     groupId,
     chatId,
     planId,
-    searchKept,
     requestIds: getFailedForgeRequestIds(requestIds),
   };
 }

@@ -155,11 +155,11 @@ function resolveGovernance(
   primary: GroupApi["governance"],
   ...fallbacks: GroupApi["governance"][]
 ) {
-  if (primary !== undefined) {
+  if (primary != null) {
     return primary;
   }
 
-  return fallbacks.find((governance) => governance !== undefined);
+  return fallbacks.find((governance) => governance != null);
 }
 
 function getGroupChat(

@@ -5,17 +5,10 @@ import { FailureSuggestions } from "./failure-suggestions";
 import { getStep4FailedContent } from "./step4-failed-content";
 import type { Step4FailedProps } from "./types";
 
-export function Step4Failed({
-  forgeMode,
-  isKeepSearchingEnabled = false,
-  isKeepingSearch = false,
-  onKeepSearchingChange,
-  onSwitchToManual,
-}: Step4FailedProps) {
+export function Step4Failed({ forgeMode, onSwitchToManual }: Step4FailedProps) {
   const isAuto = forgeMode === "AUTO";
   const content = getStep4FailedContent(forgeMode);
-  const hasRecoveryActions =
-    isAuto && (onKeepSearchingChange || onSwitchToManual);
+  const hasRecoveryActions = isAuto && onSwitchToManual;
 
   return (
     <div className="flex flex-col gap-5 pb-10">
@@ -24,12 +17,7 @@ export function Step4Failed({
       <FailureSuggestions suggestions={content.suggestions} />
 
       {hasRecoveryActions && (
-        <FailureRecoveryActions
-          isKeepSearchingEnabled={isKeepSearchingEnabled}
-          isKeepingSearch={isKeepingSearch}
-          onKeepSearchingChange={onKeepSearchingChange}
-          onSwitchToManual={onSwitchToManual}
-        />
+        <FailureRecoveryActions onSwitchToManual={onSwitchToManual} />
       )}
 
       <p className="border-border/30 border-t pt-4 text-center text-muted-foreground text-xs leading-relaxed">

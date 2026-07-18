@@ -1,4 +1,3 @@
-import { useKeptForgeSearch } from "../use-kept-forge-search";
 import type { UseForgeWizardSubmitActionsOptions } from "./types";
 import { useEnterForgeGroupHubAction } from "./use-enter-forge-group-hub-action";
 import { useForgeExecutionActions } from "./use-forge-execution-actions";
@@ -16,16 +15,8 @@ export function useForgeWizardSubmitActions({
   syncStep,
   syncTargets,
 }: UseForgeWizardSubmitActionsOptions) {
-  const {
-    handleKeepSearchingChange,
-    isKeepingSearch,
-    isSearchKept,
-    markSearchKept,
-  } = useKeptForgeSearch(state);
-
   const forgeExecutionActions = useForgeExecutionActions({
     dispatch,
-    markSearchKept,
     runForgeAnimation,
     setField,
     state,
@@ -43,10 +34,7 @@ export function useForgeWizardSubmitActions({
   return {
     ...forgeExecutionActions,
     handleEnterGroupHub,
-    handleKeepSearchingChange,
     ...identityAction,
     ...inviteAction,
-    isKeepingSearch,
-    isSearchKept,
   };
 }
