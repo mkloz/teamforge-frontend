@@ -19,12 +19,14 @@ const PsychometricsSidebar = lazy(() =>
 
 interface ProfileDeferredInsightsProps {
   dimensionScores: DimensionScore[] | null;
+  mode: "self" | "public";
   oceanScores: OceanScores | null;
   profileInsights: ProfileInsightModel;
 }
 
 export function ProfileDeferredInsights({
   dimensionScores,
+  mode,
   oceanScores,
   profileInsights,
 }: ProfileDeferredInsightsProps) {
@@ -34,7 +36,7 @@ export function ProfileDeferredInsights({
 
       <div className="grid gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] lg:gap-16">
         <div className="flex min-w-0 flex-col gap-8 lg:gap-10">
-          <GroupFitSection insight={profileInsights.groupFit} />
+          <GroupFitSection insight={profileInsights.groupFit} mode={mode} />
           <ActivityLanesSection lanes={profileInsights.activityLanes} />
           <MatchingSnapshot signals={profileInsights.matchingSignals} />
         </div>

@@ -13,11 +13,11 @@ const LazyChatEmojiPickerPanel = lazy(() =>
 const QUICK_REACTION_EMOJIS = [
   "👍",
   "🔥",
-  "❤️",
+  "👏",
   "😂",
   "🎉",
   "🤝",
-  "👏",
+  "👀",
   "✨",
 ] as const;
 

@@ -10,7 +10,7 @@ export function AdminOverviewPage() {
   return (
     <AdminPageShell
       title="Admin overview"
-      description="A private starting point for the few moderation cases that need you. No case data is loaded in this read-only foundation."
+      description="A private starting point for the few moderation cases that need you. Open the review queue for live cases and Operations for system status."
     >
       <div className="grid gap-6">
         <section className="grid gap-3 border-border border-t py-6 sm:grid-cols-2">
@@ -34,17 +34,17 @@ export function AdminOverviewPage() {
           <AdminReadOnlySection
             icon={ShieldCheck}
             title="Priority review"
-            description="Critical escalations and cases that require human authority will appear here once the case reader is connected."
+            description="Critical escalations and cases that require human authority will appear here when the case feed is connected."
           />
           <AdminReadOnlySection
             icon={Bot}
-            title="Autonomous decisions"
-            description="Recent AI decisions, conflicts, and processing failures will be shown from server-owned audit records."
+            title="Automated decisions"
+            description="Recent automated decisions, conflicts, and processing failures will be shown from server-owned audit records."
           />
           <AdminReadOnlySection
             icon={UserRoundCheck}
             title="Appeals and reversals"
-            description="Appeals, human overrides, and reversal history will stay together without inventing activity while the feed is empty."
+            description="Appeals, human overrides, and reversal history will appear here when the feed is connected."
           />
         </div>
       </div>

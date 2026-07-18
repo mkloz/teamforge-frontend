@@ -7,23 +7,23 @@ export function AdminSettingsPage() {
     <AdminPageShell
       eyebrow="Moderation settings"
       title="Policy and rollout settings"
-      description="Configuration will stay versioned, audited, and server-owned. No editable defaults or unverified policy values are embedded in this page."
+      description="Configuration is versioned, audited, and stored on the server. This page stays read-only until the controls are connected."
     >
       <div>
         <AdminReadOnlySection
           icon={Bot}
           title="Rollout and models"
-          description="The active rollout mode and selected moderation models will appear after the configuration API is connected."
+          description="The current rollout mode and moderation models will appear here when the configuration controls are connected."
         />
         <AdminReadOnlySection
           icon={SlidersHorizontal}
           title="Thresholds and authority"
-          description="Versioned thresholds and the actions AI may take will be read from the current audited configuration."
+          description="The current thresholds and actions allowed for automated moderation will come from the audited configuration."
         />
         <AdminReadOnlySection
           icon={LockKeyhole}
           title="Protected changes"
-          description="Any future change will require fresh configuration, recent step-up, an expected version, and explicit confirmation."
+          description="Changes will require a recent sign-in check, the latest configuration version, and a final confirmation."
         />
       </div>
     </AdminPageShell>

@@ -68,7 +68,10 @@ export function ProfilePageContent({
         />
 
         {profileInsights ? (
-          <ProfilePortraitSection portrait={profileInsights.portrait} />
+          <ProfilePortraitSection
+            mode={mode}
+            portrait={profileInsights.portrait}
+          />
         ) : (
           <ProfilePortraitSectionFallback />
         )}
@@ -76,6 +79,7 @@ export function ProfilePageContent({
         {profileInsights ? (
           <DeferredProfileInsights
             dimensionScores={profileCore.dimensionScores}
+            mode={mode}
             oceanScores={profileCore.oceanScores}
             profileInsights={profileInsights}
           />

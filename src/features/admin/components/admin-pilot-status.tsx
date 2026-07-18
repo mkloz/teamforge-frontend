@@ -292,9 +292,9 @@ function buildGateRows(status: AdminPilotStatusData): StatusRow[] {
       reversedTone: true,
     }),
     gateRow({
-      description: "Assess reports with the configured assistance workflow.",
+      description: "Assess reports with the configured workflow.",
       enabled: gates.aiTriage,
-      label: "Assisted report assessment",
+      label: "Automated report assessment",
     }),
     gateRow({
       description:

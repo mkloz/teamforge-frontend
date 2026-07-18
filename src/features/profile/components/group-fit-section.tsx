@@ -15,9 +15,10 @@ import { ProfileSectionHeading } from "./profile-section-heading";
 
 interface GroupFitSectionProps {
   insight: GroupFitInsight;
+  mode: "self" | "public";
 }
 
-export function GroupFitSection({ insight }: GroupFitSectionProps) {
+export function GroupFitSection({ insight, mode }: GroupFitSectionProps) {
   const showEmptyVisual =
     insight.title === "Add details to see group fit" ||
     insight.title === "Add interests to improve group fit";
@@ -25,7 +26,7 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
   if (showEmptyVisual) {
     return (
       <section className="flex flex-col gap-6">
-        <ProfileSectionHeading>How they fit</ProfileSectionHeading>
+        <ProfileSectionHeading>{getFitHeading(mode)}</ProfileSectionHeading>
         <div className="flex min-h-48 max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row">
           <EmptyGroupFitVisual className="h-20 w-auto shrink-0 text-foreground" />
           <div className="flex min-w-0 flex-col gap-3 text-center sm:text-left">
@@ -45,7 +46,7 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
     <section className="flex flex-col gap-6">
       <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
         <div className="flex min-w-0 flex-col gap-4">
-          <ProfileSectionHeading>How they fit</ProfileSectionHeading>
+          <ProfileSectionHeading>{getFitHeading(mode)}</ProfileSectionHeading>
           <div className="flex max-w-3xl flex-col gap-3">
             <h3 className="font-black text-2xl text-ink tracking-tight md:text-3xl">
               {insight.title}
@@ -56,7 +57,7 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
           </div>
         </div>
 
-        <UserGroupSignalCard signal={insight.userSignal} />
+        <UserGroupSignalCard signal={insight.userSignal} mode={mode} />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -76,23 +77,32 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
   );
 }
 
-function UserGroupSignalCard({ signal }: { signal: UserGroupSignal }) {
+function UserGroupSignalCard({
+  mode,
+  signal,
+}: {
+  mode: GroupFitSectionProps["mode"];
+  signal: UserGroupSignal;
+}) {
   return (
     <div className="flex h-full min-h-52 flex-col rounded-2xl border border-forge-teal/20 bg-forge-teal/8 p-4">
       <div className="flex flex-1 flex-col justify-end gap-3">
         <SignalRead
           icon={Activity}
           label="Group energy"
+          mode={mode}
           signal={signal.groupEnergy}
         />
         <SignalRead
           icon={MessageCircle}
           label="Connection style"
+          mode={mode}
           signal={signal.connectionStyle}
         />
         <SignalRead
           icon={UsersRound}
           label="Social rhythm"
+          mode={mode}
           signal={signal.socialRhythm}
         />
       </div>
@@ -125,10 +135,12 @@ function FitGuidance({
 function SignalRead({
   icon: Icon,
   label,
+  mode,
   signal,
 }: {
   icon: LucideIcon;
   label: string;
+  mode: GroupFitSectionProps["mode"];
   signal: UserGroupSignal[keyof UserGroupSignal];
 }) {
   return (
@@ -148,7 +160,7 @@ function SignalRead({
         </div>
       </div>
       <p className="mt-2 text-pretty font-semibold text-ink/78 text-xs leading-relaxed">
-        {signal.description}
+        {getPerspectiveCopy(signal.description, mode)}
       </p>
     </div>
   );
@@ -157,4 +169,12 @@ function SignalRead({
 function getCompactSummary(value: string) {
   const sentences = value.match(/[^.!?]+[.!?]+/g) ?? [value];
   return sentences.slice(0, 1).join(" ").trim();
+}
+
+function getPerspectiveCopy(value: string, mode: GroupFitSectionProps["mode"]) {
+  return mode === "self" ? value : value.replace(/^You\b/, "They");
+}
+
+function getFitHeading(mode: GroupFitSectionProps["mode"]) {
+  return mode === "self" ? "How you fit" : "How they fit";
 }

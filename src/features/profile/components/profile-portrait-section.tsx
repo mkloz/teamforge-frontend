@@ -6,6 +6,7 @@ import type { ProfilePortraitInsight } from "../lib/profile-insights";
 import { ProfileSectionHeading } from "./profile-section-heading";
 
 interface ProfilePortraitSectionProps {
+  mode: "self" | "public";
   portrait: ProfilePortraitInsight;
 }
 
@@ -58,6 +59,7 @@ const COMPACT_SHOW_UP_TITLES = {
 } satisfies Record<ProfilePortraitInsight["candidates"][number]["key"], string>;
 
 export function ProfilePortraitSection({
+  mode,
   portrait,
 }: ProfilePortraitSectionProps) {
   const readLabel = getPortraitReadLabel(portrait);
@@ -92,7 +94,7 @@ export function ProfilePortraitSection({
           </div>
         </div>
 
-        <HowYouShowUpCard candidates={portrait.candidates} />
+        <HowYouShowUpCard candidates={portrait.candidates} mode={mode} />
       </div>
     </section>
   );
@@ -100,8 +102,10 @@ export function ProfilePortraitSection({
 
 function HowYouShowUpCard({
   candidates,
+  mode,
 }: {
   candidates: ProfilePortraitInsight["candidates"];
+  mode: ProfilePortraitSectionProps["mode"];
 }) {
   const visibleCandidates = getVisibleShowUpCandidates(candidates);
   const leaderScore = visibleCandidates[0]?.score ?? 0;
@@ -113,7 +117,9 @@ function HowYouShowUpCard({
   return (
     <div className="flex h-full min-h-64 flex-col rounded-2xl border border-forge-teal/20 bg-forge-teal/8 p-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-black text-slate-muted text-sm">How you show up</p>
+        <p className="font-black text-slate-muted text-sm">
+          {mode === "self" ? "How you show up" : "How they show up"}
+        </p>
         <Radar className="size-4 text-forge-teal" aria-hidden="true" />
       </div>
       <div className="mt-5 flex flex-1 flex-col justify-between gap-4">
@@ -123,6 +129,7 @@ function HowYouShowUpCard({
             rank={visibleCandidates.indexOf(candidate)}
             candidateKey={candidate.key}
             leaderScore={leaderScore}
+            mode={mode}
             score={candidate.score}
             title={candidate.title}
           />
@@ -135,12 +142,14 @@ function HowYouShowUpCard({
 function ShowUpMeter({
   candidateKey,
   leaderScore,
+  mode,
   rank,
   score,
   title,
 }: {
   candidateKey: ProfilePortraitInsight["candidates"][number]["key"];
   leaderScore: number;
+  mode: ProfilePortraitSectionProps["mode"];
   rank: number;
   score: number;
   title: string;
@@ -148,7 +157,7 @@ function ShowUpMeter({
   const percent = formatSignalStrengthPercent(score, leaderScore);
   const filledSegments = getFilledSignalSegments(percent);
   const rankLabel = getShowUpRankLabel(rank);
-  const compactTitle = getCompactShowUpTitle(candidateKey, title);
+  const compactTitle = getCompactShowUpTitle(candidateKey, title, mode);
 
   return (
     <div className="min-w-0">
@@ -262,8 +271,10 @@ function getShowUpRankLabel(rank: number) {
 function getCompactShowUpTitle(
   key: ProfilePortraitInsight["candidates"][number]["key"],
   fallback: string,
+  mode: ProfilePortraitSectionProps["mode"],
 ) {
-  return COMPACT_SHOW_UP_TITLES[key] ?? fallback;
+  const title = COMPACT_SHOW_UP_TITLES[key] ?? fallback;
+  return mode === "self" ? title : title.replace(/^You\b/, "They");
 }
 
 function getPortraitReadLabel(portrait: ProfilePortraitInsight) {
