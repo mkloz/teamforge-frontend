@@ -8381,6 +8381,221 @@ components:
         - recordedActivityCount
         - local
         - online
+    PilotCandidateWillingnessScopeMetricsEntity:
+      type: object
+      properties:
+        eligibleExposureCount:
+          type: integer
+          description: 'Candidate invitations counted in the denominator: accepted first,
+            declined first, or unanswered at the deadline.'
+          minimum: 0
+          nullable: true
+        acceptedExposureCount:
+          type: integer
+          description:
+            Invitations whose first response was acceptance. Later withdrawal
+            does not rewrite this outcome.
+          minimum: 0
+          nullable: true
+        declinedExposureCount:
+          type: integer
+          description: Invitations whose first response was a decline.
+          minimum: 0
+          nullable: true
+        unansweredExposureCount:
+          type: integer
+          description: Invitations with no response by their fixed deadline.
+          minimum: 0
+          nullable: true
+        cancelledBeforeResponseCount:
+          type: integer
+          description:
+            Invitations cancelled before a first response. Excluded from the
+            acceptance denominator.
+          minimum: 0
+          nullable: true
+        acceptanceRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+      required:
+        - eligibleExposureCount
+        - acceptedExposureCount
+        - declinedExposureCount
+        - unansweredExposureCount
+        - cancelledBeforeResponseCount
+        - acceptanceRatePercent
+    PilotCandidateWillingnessDeclineReasonEntity:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - ACTIVITY_NOT_FOR_ME
+            - FIXED_TIME_DOES_NOT_WORK
+            - AREA_DOES_NOT_WORK
+            - NOT_THIS_GROUP
+            - TAKING_A_BREAK
+            - PREFER_NOT_TO_SAY
+        count:
+          type: integer
+          minimum: 0
+      required:
+        - reason
+        - count
+    PilotCandidateWillingnessActivityScopeEntity:
+      type: object
+      properties:
+        activityCategory:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        scope:
+          type: string
+          enum:
+            - LOCAL
+            - ONLINE
+        eligibleExposureCount:
+          type: integer
+          description: 'Candidate invitations counted in the denominator: accepted first,
+            declined first, or unanswered at the deadline.'
+          minimum: 0
+        acceptedExposureCount:
+          type: integer
+          description:
+            Invitations whose first response was acceptance. Later withdrawal
+            does not rewrite this outcome.
+          minimum: 0
+        declinedExposureCount:
+          type: integer
+          description: Invitations whose first response was a decline.
+          minimum: 0
+        unansweredExposureCount:
+          type: integer
+          description: Invitations with no response by their fixed deadline.
+          minimum: 0
+        cancelledBeforeResponseCount:
+          type: integer
+          description:
+            Invitations cancelled before a first response. Excluded from the
+            acceptance denominator.
+          minimum: 0
+        acceptanceRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        declineReasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotCandidateWillingnessDeclineReasonEntity'
+      required:
+        - activityCategory
+        - scope
+        - eligibleExposureCount
+        - acceptedExposureCount
+        - declinedExposureCount
+        - unansweredExposureCount
+        - cancelledBeforeResponseCount
+        - acceptanceRatePercent
+        - declineReasons
+    PilotCandidateWillingnessMetricsEntity:
+      type: object
+      properties:
+        eligibleExposureCount:
+          type: integer
+          description: 'Candidate invitations counted in the denominator: accepted first,
+            declined first, or unanswered at the deadline.'
+          minimum: 0
+          nullable: true
+        acceptedExposureCount:
+          type: integer
+          description:
+            Invitations whose first response was acceptance. Later withdrawal
+            does not rewrite this outcome.
+          minimum: 0
+          nullable: true
+        declinedExposureCount:
+          type: integer
+          description: Invitations whose first response was a decline.
+          minimum: 0
+          nullable: true
+        unansweredExposureCount:
+          type: integer
+          description: Invitations with no response by their fixed deadline.
+          minimum: 0
+          nullable: true
+        cancelledBeforeResponseCount:
+          type: integer
+          description:
+            Invitations cancelled before a first response. Excluded from the
+            acceptance denominator.
+          minimum: 0
+          nullable: true
+        acceptanceRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        definitionVersion:
+          type: string
+          enum:
+            - candidate-willingness-first-response-rate.v1
+        measurementState:
+          type: string
+          enum: *a61
+        dataCompleteness:
+          type: string
+          description:
+            Null counts and breakdowns mean the source was retention-purged or
+            has a matured invitation without its immutable response record.
+          enum:
+            - COMPLETE
+            - RETENTION_PURGED
+            - SOURCE_INCOMPLETE
+        local:
+          $ref: '#/components/schemas/PilotCandidateWillingnessScopeMetricsEntity'
+        online:
+          $ref: '#/components/schemas/PilotCandidateWillingnessScopeMetricsEntity'
+        declineReasons:
+          description:
+            Internal reason distribution among invitations whose first response
+            was a decline.
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotCandidateWillingnessDeclineReasonEntity'
+        byActivityScope:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotCandidateWillingnessActivityScopeEntity'
+      required:
+        - eligibleExposureCount
+        - acceptedExposureCount
+        - declinedExposureCount
+        - unansweredExposureCount
+        - cancelledBeforeResponseCount
+        - acceptanceRatePercent
+        - definitionVersion
+        - measurementState
+        - dataCompleteness
+        - local
+        - online
+        - declineReasons
+        - byActivityScope
     PilotRequestConversionScopeMetricsEntity:
       type: object
       properties:
@@ -8490,6 +8705,8 @@ components:
           minimum: 0
         activityActivation:
           $ref: '#/components/schemas/PilotActivityActivationMetricsEntity'
+        candidateWillingness:
+          $ref: '#/components/schemas/PilotCandidateWillingnessMetricsEntity'
         proposalCoverage:
           $ref: '#/components/schemas/PilotProposalCoverageMetricsEntity'
         formationConversion:
@@ -8498,6 +8715,7 @@ components:
         - code
         - memberCount
         - activityActivation
+        - candidateWillingness
         - proposalCoverage
         - formationConversion
     PilotMetricsEntity:

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { planCategorySchema } from "@/shared/schemas";
+
 const scopedActivityActivationSchema = z
   .object({
     requestingMemberCount: z.number().int().nonnegative().nullable(),
@@ -92,6 +94,92 @@ const proposalCoverageSchema = createRequestConversionSchema(
 const formationConversionSchema = createRequestConversionSchema(
   "formation-conversion-request-rate.v1",
 );
+
+const candidateDeclineReasonSchema = z.enum([
+  "ACTIVITY_NOT_FOR_ME",
+  "FIXED_TIME_DOES_NOT_WORK",
+  "AREA_DOES_NOT_WORK",
+  "NOT_THIS_GROUP",
+  "TAKING_A_BREAK",
+  "PREFER_NOT_TO_SAY",
+]);
+
+const candidateDeclineReasonCountSchema = z
+  .object({
+    reason: candidateDeclineReasonSchema,
+    count: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const scopedCandidateWillingnessSchema = z
+  .object({
+    eligibleExposureCount: z.number().int().nonnegative().nullable(),
+    acceptedExposureCount: z.number().int().nonnegative().nullable(),
+    declinedExposureCount: z.number().int().nonnegative().nullable(),
+    unansweredExposureCount: z.number().int().nonnegative().nullable(),
+    cancelledBeforeResponseCount: z.number().int().nonnegative().nullable(),
+    acceptanceRatePercent: z.number().min(0).max(100).nullable(),
+  })
+  .strict();
+
+const candidateWillingnessActivityScopeSchema = z
+  .object({
+    activityCategory: planCategorySchema,
+    scope: z.enum(["LOCAL", "ONLINE"]),
+    eligibleExposureCount: z.number().int().nonnegative(),
+    acceptedExposureCount: z.number().int().nonnegative(),
+    declinedExposureCount: z.number().int().nonnegative(),
+    unansweredExposureCount: z.number().int().nonnegative(),
+    cancelledBeforeResponseCount: z.number().int().nonnegative(),
+    acceptanceRatePercent: z.number().min(0).max(100).nullable(),
+    declineReasons: z.array(candidateDeclineReasonCountSchema),
+  })
+  .strict();
+
+const candidateWillingnessSchema = z
+  .object({
+    definitionVersion: z.literal(
+      "candidate-willingness-first-response-rate.v1",
+    ),
+    measurementState: z.enum(["PROVISIONAL", "FINAL"]),
+    dataCompleteness: z.enum([
+      "COMPLETE",
+      "RETENTION_PURGED",
+      "SOURCE_INCOMPLETE",
+    ]),
+    eligibleExposureCount: z.number().int().nonnegative().nullable(),
+    acceptedExposureCount: z.number().int().nonnegative().nullable(),
+    declinedExposureCount: z.number().int().nonnegative().nullable(),
+    unansweredExposureCount: z.number().int().nonnegative().nullable(),
+    cancelledBeforeResponseCount: z.number().int().nonnegative().nullable(),
+    acceptanceRatePercent: z.number().min(0).max(100).nullable(),
+    local: scopedCandidateWillingnessSchema,
+    online: scopedCandidateWillingnessSchema,
+    declineReasons: z.array(candidateDeclineReasonCountSchema).nullable(),
+    byActivityScope: z
+      .array(candidateWillingnessActivityScopeSchema)
+      .nullable(),
+  })
+  .strict()
+  .superRefine((metric, context) => {
+    validateCandidateWillingness(metric, context);
+  });
+
+type CandidateWillingness = z.infer<typeof candidateWillingnessSchema>;
+type CandidateWillingnessValues = z.infer<
+  typeof scopedCandidateWillingnessSchema
+>;
+type CandidateDeclineReasonCount = z.infer<
+  typeof candidateDeclineReasonCountSchema
+>;
+
+const CANDIDATE_COUNT_FIELDS = [
+  "eligibleExposureCount",
+  "acceptedExposureCount",
+  "declinedExposureCount",
+  "unansweredExposureCount",
+  "cancelledBeforeResponseCount",
+] as const;
 
 type RateMetricValues = {
   denominator: number | null;
@@ -454,12 +542,330 @@ function validateScopeTotals(
   }
 }
 
+function validateCandidateWillingness(
+  metric: CandidateWillingness,
+  context: z.RefinementCtx,
+) {
+  const overall = candidateWillingnessOverall(metric);
+
+  if (metric.dataCompleteness !== "COMPLETE") {
+    validateUnavailableCandidateValues(overall, [], context);
+    validateUnavailableCandidateValues(metric.local, ["local"], context);
+    validateUnavailableCandidateValues(metric.online, ["online"], context);
+
+    if (metric.declineReasons !== null) {
+      context.addIssue({
+        code: "custom",
+        message: "Decline reasons must be unavailable when data is incomplete",
+        path: ["declineReasons"],
+      });
+    }
+    if (metric.byActivityScope !== null) {
+      context.addIssue({
+        code: "custom",
+        message:
+          "Activity and scope totals must be unavailable when data is incomplete",
+        path: ["byActivityScope"],
+      });
+    }
+    return;
+  }
+
+  validateCompleteCandidateValues(overall, [], context);
+  validateCompleteCandidateValues(metric.local, ["local"], context);
+  validateCompleteCandidateValues(metric.online, ["online"], context);
+  validateCandidateScopeSums(metric, overall, context);
+
+  if (metric.declineReasons === null) {
+    context.addIssue({
+      code: "custom",
+      message: "Decline reasons are required when metric data is complete",
+      path: ["declineReasons"],
+    });
+  } else {
+    validateDeclineReasonCounts(
+      metric.declineReasons,
+      overall.declinedExposureCount,
+      ["declineReasons"],
+      context,
+    );
+  }
+
+  if (metric.byActivityScope === null) {
+    context.addIssue({
+      code: "custom",
+      message:
+        "Activity and scope totals are required when metric data is complete",
+      path: ["byActivityScope"],
+    });
+    return;
+  }
+
+  validateCandidateActivityScopeRows(metric, overall, context);
+}
+
+function candidateWillingnessOverall(
+  metric: CandidateWillingness,
+): CandidateWillingnessValues {
+  return {
+    eligibleExposureCount: metric.eligibleExposureCount,
+    acceptedExposureCount: metric.acceptedExposureCount,
+    declinedExposureCount: metric.declinedExposureCount,
+    unansweredExposureCount: metric.unansweredExposureCount,
+    cancelledBeforeResponseCount: metric.cancelledBeforeResponseCount,
+    acceptanceRatePercent: metric.acceptanceRatePercent,
+  };
+}
+
+function validateUnavailableCandidateValues(
+  values: CandidateWillingnessValues,
+  prefix: Array<string | number>,
+  context: z.RefinementCtx,
+) {
+  for (const field of CANDIDATE_COUNT_FIELDS) {
+    requireIncompleteCandidateValue(values[field], [...prefix, field], context);
+  }
+  requireIncompleteCandidateValue(
+    values.acceptanceRatePercent,
+    [...prefix, "acceptanceRatePercent"],
+    context,
+  );
+}
+
+function requireIncompleteCandidateValue(
+  value: number | null,
+  path: Array<string | number>,
+  context: z.RefinementCtx,
+) {
+  if (value !== null) {
+    context.addIssue({
+      code: "custom",
+      message: "Candidate response values must be null when data is incomplete",
+      path,
+    });
+  }
+}
+
+function validateCompleteCandidateValues(
+  values: CandidateWillingnessValues,
+  prefix: Array<string | number>,
+  context: z.RefinementCtx,
+) {
+  for (const field of CANDIDATE_COUNT_FIELDS) {
+    requireCompleteCount(values[field], [...prefix, field], context);
+  }
+
+  const {
+    acceptedExposureCount,
+    declinedExposureCount,
+    eligibleExposureCount,
+    unansweredExposureCount,
+  } = values;
+  if (
+    eligibleExposureCount === null ||
+    acceptedExposureCount === null ||
+    declinedExposureCount === null ||
+    unansweredExposureCount === null
+  ) {
+    return;
+  }
+
+  if (
+    eligibleExposureCount !==
+    acceptedExposureCount + declinedExposureCount + unansweredExposureCount
+  ) {
+    context.addIssue({
+      code: "custom",
+      message:
+        "Measured candidate invitations must equal accepted, declined, and unanswered candidate invitations",
+      path: [...prefix, "eligibleExposureCount"],
+    });
+  }
+
+  validateCandidateAcceptanceRate(values, prefix, context);
+}
+
+function validateCandidateAcceptanceRate(
+  values: CandidateWillingnessValues,
+  prefix: Array<string | number>,
+  context: z.RefinementCtx,
+) {
+  const denominator = values.eligibleExposureCount;
+  const numerator = values.acceptedExposureCount;
+  if (denominator === null || numerator === null) {
+    return;
+  }
+
+  if (denominator === 0) {
+    if (values.acceptanceRatePercent !== null) {
+      context.addIssue({
+        code: "custom",
+        message: "Acceptance rate must be null when no responses are measured",
+        path: [...prefix, "acceptanceRatePercent"],
+      });
+    }
+    return;
+  }
+
+  if (values.acceptanceRatePercent === null) {
+    context.addIssue({
+      code: "custom",
+      message: "Acceptance rate is required when responses are measured",
+      path: [...prefix, "acceptanceRatePercent"],
+    });
+    return;
+  }
+
+  const expectedRate = Math.round((numerator / denominator) * 1_000) / 10;
+  if (values.acceptanceRatePercent !== expectedRate) {
+    context.addIssue({
+      code: "custom",
+      message: "Acceptance rate must equal the rate calculated from the counts",
+      path: [...prefix, "acceptanceRatePercent"],
+    });
+  }
+}
+
+function validateCandidateScopeSums(
+  metric: CandidateWillingness,
+  overall: CandidateWillingnessValues,
+  context: z.RefinementCtx,
+) {
+  for (const field of CANDIDATE_COUNT_FIELDS) {
+    const overallValue = overall[field];
+    const localValue = metric.local[field];
+    const onlineValue = metric.online[field];
+    if (
+      overallValue !== null &&
+      localValue !== null &&
+      onlineValue !== null &&
+      overallValue !== localValue + onlineValue
+    ) {
+      context.addIssue({
+        code: "custom",
+        message:
+          "Local and online candidate invitation counts must equal the overall count",
+        path: [field],
+      });
+    }
+  }
+}
+
+function validateCandidateActivityScopeRows(
+  metric: CandidateWillingness,
+  overall: CandidateWillingnessValues,
+  context: z.RefinementCtx,
+) {
+  const rows = metric.byActivityScope;
+  if (rows === null) {
+    return;
+  }
+
+  const seenRows = new Set<string>();
+  rows.forEach((row, index) => {
+    const rowKey = `${row.activityCategory}:${row.scope}`;
+    if (seenRows.has(rowKey)) {
+      context.addIssue({
+        code: "custom",
+        message: "Activity and scope rows must be unique",
+        path: ["byActivityScope", index],
+      });
+    }
+    seenRows.add(rowKey);
+
+    validateCompleteCandidateValues(row, ["byActivityScope", index], context);
+    validateDeclineReasonCounts(
+      row.declineReasons,
+      row.declinedExposureCount,
+      ["byActivityScope", index, "declineReasons"],
+      context,
+    );
+  });
+
+  for (const field of CANDIDATE_COUNT_FIELDS) {
+    const rowTotal = rows.reduce((sum, row) => sum + row[field], 0);
+    if (overall[field] !== null && overall[field] !== rowTotal) {
+      context.addIssue({
+        code: "custom",
+        message:
+          "Activity and scope rows must equal the overall candidate invitation count",
+        path: ["byActivityScope"],
+      });
+    }
+
+    for (const scope of ["LOCAL", "ONLINE"] as const) {
+      const scopeTotal = rows
+        .filter((row) => row.scope === scope)
+        .reduce((sum, row) => sum + row[field], 0);
+      const expected =
+        scope === "LOCAL" ? metric.local[field] : metric.online[field];
+      if (expected !== null && expected !== scopeTotal) {
+        context.addIssue({
+          code: "custom",
+          message: "Activity rows must equal their scope total",
+          path: ["byActivityScope"],
+        });
+      }
+    }
+  }
+
+  if (metric.declineReasons !== null) {
+    for (const { reason, count } of metric.declineReasons) {
+      const rowCount = rows.reduce(
+        (sum, row) =>
+          sum +
+          (row.declineReasons.find((item) => item.reason === reason)?.count ??
+            0),
+        0,
+      );
+      if (rowCount !== count) {
+        context.addIssue({
+          code: "custom",
+          message:
+            "Activity decline reasons must equal the overall reason count",
+          path: ["byActivityScope"],
+        });
+      }
+    }
+  }
+}
+
+function validateDeclineReasonCounts(
+  reasons: CandidateDeclineReasonCount[],
+  declinedCount: number | null,
+  path: Array<string | number>,
+  context: z.RefinementCtx,
+) {
+  const seenReasons = new Set<string>();
+  reasons.forEach((item, index) => {
+    if (seenReasons.has(item.reason)) {
+      context.addIssue({
+        code: "custom",
+        message: "Decline reasons must be unique",
+        path: [...path, index, "reason"],
+      });
+    }
+    seenReasons.add(item.reason);
+  });
+
+  const reasonTotal = reasons.reduce((sum, item) => sum + item.count, 0);
+  if (declinedCount !== null && reasonTotal !== declinedCount) {
+    context.addIssue({
+      code: "custom",
+      message:
+        "Decline reason counts must equal the declined candidate invitation count",
+      path,
+    });
+  }
+}
+
 const adminPilotMetricsCohortSchema = z
   .object({
     code: z.string().trim().min(1),
     memberCount: z.number().int().nonnegative(),
     proposalCoverage: proposalCoverageSchema,
     formationConversion: formationConversionSchema,
+    candidateWillingness: candidateWillingnessSchema,
     activityActivation: activityActivationSchema,
   })
   .strict();

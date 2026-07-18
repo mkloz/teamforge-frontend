@@ -3,6 +3,7 @@ import { Activity, AlertTriangle, RefreshCw } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { adminPilotMetricsQueryOptions } from "@/features/admin/api/admin.api";
+import { AdminCandidateResponseMetrics } from "@/features/admin/components/admin-candidate-response-metrics";
 import type { AdminPilotMetrics as AdminPilotMetricsData } from "@/features/admin/schemas/admin-pilot-metrics.schema";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -135,6 +136,8 @@ function PilotOutcomeDetails({ cohort }: { cohort: PilotMetricsCohort }) {
           rateLabel="Formation rate"
           title="Requests that formed a group"
         />
+
+        <AdminCandidateResponseMetrics metric={cohort.candidateWillingness} />
 
         <ActivityActivationMetricSection
           activation={cohort.activityActivation}
@@ -422,8 +425,8 @@ function MetricsSectionHeading() {
           Request outcomes
         </h2>
         <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          Internal counts and rates for requests that received a proposal,
-          formed a group, or led to an activity.
+          Internal counts and rates for proposals, candidate responses, formed
+          groups, and activities that took place.
         </p>
       </div>
     </div>
