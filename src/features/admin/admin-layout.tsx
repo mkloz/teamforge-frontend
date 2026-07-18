@@ -58,7 +58,7 @@ const ADMIN_NAVIGATION = [
   {
     id: "operations",
     label: "Operations",
-    description: "Workers and failures",
+    description: "Pilot readiness",
     icon: Gauge,
   },
   {
