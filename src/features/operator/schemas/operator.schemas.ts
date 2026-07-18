@@ -52,6 +52,7 @@ export const mandatoryHumanReasonSchema = z.enum([
   "ACCOUNT_SUSPENSION_OR_BAN",
   "APPEAL_OR_RESTORATION",
   "CONFLICTING_OR_INCOMPLETE_EVIDENCE",
+  "PROVIDER_OR_PROCESSING_FAILURE",
   "LEGAL_OR_STATUTORY",
   "POLICY_EXCEPTION",
 ]);
@@ -103,10 +104,12 @@ export const operatorSessionSchema = z.object({
   roles: z.array(operatorRoleSchema),
   breakGlass: z.boolean(),
   stepUpAt: nullableDateTimeSchema,
+  stepUpExpiresAt: nullableDateTimeSchema,
 });
 
 const moderationActorTypeSchema = z.enum([
   "SYSTEM_RULE",
+  "AI_OPERATOR",
   "HUMAN_OPERATOR",
   "APPEAL_REVIEWER",
 ]);
@@ -306,6 +309,12 @@ const operatorAssessmentOutcomeSchema = z.enum([
   "CHANGED",
   "NOT_USED",
 ]);
+const moderationAssessmentModeSchema = z.enum([
+  "SHADOW",
+  "APPROVAL",
+  "AUTONOMOUS_LIMITED",
+  "AUTONOMOUS",
+]);
 const operatorAssessmentReleaseSchema = z.object({
   provider: z.string(),
   modelVersion: z.string(),
@@ -330,7 +339,7 @@ export const operatorAssessmentSchema = z.object({
   id: z.string(),
   jobId: z.string(),
   createdAt: dateTimeSchema,
-  runMode: z.literal("SHADOW"),
+  runMode: moderationAssessmentModeSchema,
   release: operatorAssessmentReleaseSchema,
   policyLabels: z.array(operatorAssessmentPolicyLabelSchema),
   uncertainty: moderationUncertaintySchema,
@@ -582,55 +591,13 @@ export type OperatorSession = z.infer<typeof operatorSessionSchema>;
 export type ModerationCaseStatus = z.infer<typeof moderationCaseStatusSchema>;
 export type OperatorCaseSummary = z.infer<typeof operatorCaseSummarySchema>;
 export type OperatorCaseDetail = z.infer<typeof operatorCaseDetailSchema>;
-export type OperatorAssessment = {
-  id: string;
-  jobId: string;
-  createdAt: string;
-  runMode: "SHADOW";
-  release: {
-    provider: string;
-    modelVersion: string;
-    promptVersion: string;
-    policyVersion: string;
-    schemaVersion: string;
-  };
-  policyLabels: Array<{
-    code: string;
-    displayLabel: string;
-    evidenceIds: string[];
-  }>;
-  uncertainty: "UNKNOWN" | "LOW" | "MEDIUM" | "HIGH";
-  suggestedSeverity: "P0" | "P1" | "P2" | "P3" | "P4" | null;
-  suggestedAction: { code: string; displayLabel: string } | null;
-  rationale: Array<{ text: string; evidenceIds: string[] }>;
-  operatorOutcome: "NOT_REVIEWED" | "FOLLOWED" | "CHANGED" | "NOT_USED";
-  decisionId: string | null;
-};
-export type OperatorAssessmentHistory = {
-  state:
-    | "NOT_REQUESTED"
-    | "QUEUED"
-    | "RUNNING"
-    | "AVAILABLE"
-    | "RETRYING"
-    | "UNAVAILABLE"
-    | "SKIPPED_SPECIALIST_ROUTE";
-  stateReasonCode: string | null;
-  assessments: OperatorAssessment[];
-};
-export type OperatorAssessmentComparison = {
-  earlierAssessmentId: string;
-  laterAssessmentId: string;
-  compatible: boolean;
-  reasonCode: string;
-  changes: Array<{
-    field: string;
-    displayLabel: string;
-    earlierValue: boolean | number | string | string[] | null;
-    laterValue: boolean | number | string | string[] | null;
-    state: "UNCHANGED" | "CHANGED" | "ADDED" | "REMOVED";
-  }>;
-};
+export type OperatorAssessment = z.infer<typeof operatorAssessmentSchema>;
+export type OperatorAssessmentHistory = z.infer<
+  typeof operatorAssessmentHistorySchema
+>;
+export type OperatorAssessmentComparison = z.infer<
+  typeof operatorAssessmentComparisonSchema
+>;
 export type OperatorWorkerStatus = z.infer<typeof operatorWorkerStatusSchema>;
 export type OperatorWorkerKind = (typeof OPERATOR_WORKER_KINDS)[number];
 export type OperatorWorkerJob = z.infer<typeof operatorWorkerJobSchema>;

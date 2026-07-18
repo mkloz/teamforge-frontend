@@ -1,5 +1,4 @@
 import { createRoute } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
 import { requireAdminRoute } from "@/app/router/admin-route-guard";
 import { rootRoute } from "@/app/router/root-route";
 import { AdminLayout } from "@/features/admin/admin-layout";
@@ -10,37 +9,16 @@ import {
   AdminAccessUnavailable,
   AdminRouteLoading,
 } from "@/features/admin/components/admin-route-states";
-import { OperatorLoading } from "@/features/operator/components/operator-states";
+import { OperatorCaseDetailPage } from "@/features/operator/operator-case-detail-page";
+import { OperatorIntakePage } from "@/features/operator/operator-intake-page";
+import { OperatorWorkerOperationsPage } from "@/features/operator/operator-worker-operations-page";
+import { OperatorWorkspacePage } from "@/features/operator/operator-workspace-page";
 import { operatorQueueSchema } from "@/features/operator/schemas/operator.schemas";
-
-const OperatorWorkspacePage = lazy(() =>
-  import("@/features/operator/operator-workspace-page").then((module) => ({
-    default: module.OperatorWorkspacePage,
-  })),
-);
-
-const OperatorCaseDetailPage = lazy(() =>
-  import("@/features/operator/operator-case-detail-page").then((module) => ({
-    default: module.OperatorCaseDetailPage,
-  })),
-);
-
-const OperatorIntakePage = lazy(() =>
-  import("@/features/operator/operator-intake-page").then((module) => ({
-    default: module.OperatorIntakePage,
-  })),
-);
-
-const OperatorWorkerOperationsPage = lazy(() =>
-  import("@/features/operator/operator-worker-operations-page").then(
-    (module) => ({ default: module.OperatorWorkerOperationsPage }),
-  ),
-);
 
 const adminBaseRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin",
-  beforeLoad: requireAdminRoute,
+  beforeLoad: ({ location }) => requireAdminRoute(location),
   component: AdminLayout,
   pendingComponent: AdminRouteLoading,
   errorComponent: ({ reset }) => <AdminAccessUnavailable onRetry={reset} />,
@@ -58,41 +36,25 @@ const adminModerationRoute = createRoute({
   validateSearch: (search: Record<string, unknown>) => ({
     queue: operatorQueueSchema.safeParse(search.queue).data ?? "CRITICAL_NOW",
   }),
-  component: () => (
-    <Suspense fallback={<OperatorLoading />}>
-      <OperatorWorkspacePage />
-    </Suspense>
-  ),
+  component: OperatorWorkspacePage,
 });
 
 const adminCaseRoute = createRoute({
   getParentRoute: () => adminBaseRoute,
   path: "/moderation/cases/$caseId",
-  component: () => (
-    <Suspense fallback={<OperatorLoading />}>
-      <OperatorCaseDetailPage />
-    </Suspense>
-  ),
+  component: OperatorCaseDetailPage,
 });
 
 const adminIntakeRoute = createRoute({
   getParentRoute: () => adminBaseRoute,
   path: "/moderation/intake",
-  component: () => (
-    <Suspense fallback={<OperatorLoading />}>
-      <OperatorIntakePage />
-    </Suspense>
-  ),
+  component: OperatorIntakePage,
 });
 
 const adminWorkersRoute = createRoute({
   getParentRoute: () => adminBaseRoute,
   path: "/moderation/workers",
-  component: () => (
-    <Suspense fallback={<OperatorLoading />}>
-      <OperatorWorkerOperationsPage />
-    </Suspense>
-  ),
+  component: OperatorWorkerOperationsPage,
 });
 
 const adminOperationsRoute = createRoute({

@@ -13,13 +13,22 @@ const authReturnTargets = [
   "/profile",
   "/settings",
   "/forge",
+  "/admin",
+  "/admin/moderation",
+  "/admin/moderation/intake",
+  "/admin/moderation/workers",
+  "/admin/moderation/operations",
+  "/admin/moderation/settings",
   "/onboarding/profile",
   "/onboarding/personality",
   "/onboarding/interests",
 ] as const;
 
 type StaticAuthReturnTarget = (typeof authReturnTargets)[number];
-type DynamicAuthReturnTarget = `/groups/${string}` | `/users/${string}`;
+type DynamicAuthReturnTarget =
+  | `/groups/${string}`
+  | `/users/${string}`
+  | `/admin/moderation/cases/${string}`;
 type AuthEntryRoute =
   | "/auth/login"
   | "/auth/register"
@@ -57,7 +66,10 @@ function isStaticAuthReturnTarget(
 function isDynamicAuthReturnTarget(
   pathname: string,
 ): pathname is DynamicAuthReturnTarget {
-  return /^\/(?:groups|users)\/[^/]+$/.test(pathname);
+  return (
+    /^\/(?:groups|users)\/[^/]+$/.test(pathname) ||
+    /^\/admin\/moderation\/cases\/[^/]+$/.test(pathname)
+  );
 }
 
 function isAuthReturnTarget(pathname: string): pathname is AuthReturnTarget {
@@ -154,7 +166,7 @@ function buildReturnSearchObject(search: string | null | undefined) {
 
 function getDynamicReturnParam(
   pathname: string,
-  prefix: "/groups/" | "/users/",
+  prefix: "/groups/" | "/users/" | "/admin/moderation/cases/",
 ) {
   if (!pathname.startsWith(prefix)) {
     return null;
@@ -189,6 +201,19 @@ function buildAuthenticatedReturnNavigation(
     return {
       to: "/users/$userId",
       params: { userId },
+      search,
+    } as const;
+  }
+
+  const caseId = getDynamicReturnParam(
+    returnLocation.pathname,
+    "/admin/moderation/cases/",
+  );
+
+  if (caseId) {
+    return {
+      to: "/admin/moderation/cases/$caseId",
+      params: { caseId },
       search,
     } as const;
   }

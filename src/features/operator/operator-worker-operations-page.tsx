@@ -31,6 +31,9 @@ export function OperatorWorkerOperationsPage() {
     enabled: canView,
   });
   const [selectedKind, setSelectedKind] = useState("");
+  const commandsEnabled = useCurrentStepUp(
+    sessionQuery.data?.stepUpExpiresAt ?? null,
+  );
 
   useEffect(
     () => () => {
@@ -75,8 +78,6 @@ export function OperatorWorkerOperationsPage() {
   const activeKind =
     workers.find((worker) => worker.kind === selectedKind)?.kind ??
     workers[0]?.kind;
-  const commandsEnabled = Boolean(sessionQuery.data.stepUpAt);
-
   return (
     <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-8 md:py-10">
       <Button asChild variant="ghost" className="w-fit px-2">
@@ -161,6 +162,24 @@ export function OperatorWorkerOperationsPage() {
       </Button>
     </div>
   );
+}
+
+function useCurrentStepUp(expiresAt: string | null) {
+  const [checkedAt, setCheckedAt] = useState(() => Date.now());
+  const expiresAtMs = expiresAt ? Date.parse(expiresAt) : Number.NaN;
+
+  useEffect(() => {
+    if (!Number.isFinite(expiresAtMs) || expiresAtMs <= checkedAt) {
+      return undefined;
+    }
+
+    const delay = Math.min(Math.max(expiresAtMs - Date.now() + 50, 0), 60_000);
+    const timeout = window.setTimeout(() => setCheckedAt(Date.now()), delay);
+
+    return () => window.clearTimeout(timeout);
+  }, [checkedAt, expiresAtMs]);
+
+  return Number.isFinite(expiresAtMs) && expiresAtMs > checkedAt;
 }
 
 function assistanceModeDetail(mode: "DISABLED" | "SHADOW" | "PAUSED") {

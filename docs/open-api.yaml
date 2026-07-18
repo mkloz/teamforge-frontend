@@ -1846,6 +1846,27 @@ paths:
       security: *a23
       summary: Renew your proposal availability
       tags: *a24
+  /api/v1/admin/pilot/status:
+    get:
+      operationId: PilotControlController_getStatus
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PilotStatusEntity'
+        '401':
+          description: Authentication is required
+        '403':
+          description: Admin access is required
+        '429':
+          description: Too many requests
+      security:
+        - bearer: []
+      tags:
+        - Admin pilot
   /api/v1/chats/link-preview:
     get:
       operationId: ChatController_getLinkPreview
@@ -4643,13 +4664,6 @@ paths:
     get:
       operationId: OperatorAssistanceController_getAssessments
       parameters:
-        - &a47
-          name: x-teamforge-operator-assertion
-          in: header
-          description: Short-lived signed assertion injected by the trusted operator proxy.
-          required: true
-          schema:
-            type: string
         - name: caseId
           required: true
           in: path
@@ -4664,15 +4678,15 @@ paths:
                 $ref: '#/components/schemas/OperatorAssessmentListEntity'
         '429':
           description: Too many requests
-      security: &a48
+      security: &a47
         - operatorAssertion: []
-      tags: &a49
+        - bearer: []
+      tags: &a48
         - Operator moderation assistance
   /api/v1/operator/moderation/cases/{caseId}/assessment-comparison:
     get:
       operationId: OperatorAssistanceController_compareAssessments
       parameters:
-        - *a47
         - name: caseId
           required: true
           in: path
@@ -4697,13 +4711,12 @@ paths:
                 $ref: '#/components/schemas/OperatorAssessmentComparisonEntity'
         '429':
           description: Too many requests
-      security: *a48
-      tags: *a49
+      security: *a47
+      tags: *a48
   /api/v1/operator/moderation/workers:
     get:
       operationId: OperatorAssistanceController_getWorkers
-      parameters:
-        - *a47
+      parameters: []
       responses:
         '200':
           description: ''
@@ -4713,13 +4726,12 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkersEntity'
         '429':
           description: Too many requests
-      security: *a48
-      tags: *a49
+      security: *a47
+      tags: *a48
   /api/v1/operator/moderation/workers/{workerKind}/jobs:
     get:
       operationId: OperatorAssistanceController_getWorkerJobs
       parameters:
-        - *a47
         - name: workerKind
           required: true
           in: path
@@ -4760,13 +4772,12 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkerJobsPageEntity'
         '429':
           description: Too many requests
-      security: *a48
-      tags: *a49
+      security: *a47
+      tags: *a48
   /api/v1/operator/moderation/workers/{workerKind}/pause:
     post:
       operationId: OperatorAssistanceController_pauseWorker
       parameters:
-        - *a47
         - name: workerKind
           required: true
           in: path
@@ -4791,13 +4802,12 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkerCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a48
-      tags: *a49
+      security: *a47
+      tags: *a48
   /api/v1/operator/moderation/workers/{workerKind}/resume:
     post:
       operationId: OperatorAssistanceController_resumeWorker
       parameters:
-        - *a47
         - name: workerKind
           required: true
           in: path
@@ -4822,13 +4832,12 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkerCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a48
-      tags: *a49
+      security: *a47
+      tags: *a48
   /api/v1/operator/moderation/workers/{workerKind}/jobs/{jobId}/replay:
     post:
       operationId: OperatorAssistanceController_replayJob
       parameters:
-        - *a47
         - name: workerKind
           required: true
           in: path
@@ -4858,19 +4867,12 @@ paths:
                 $ref: '#/components/schemas/OperatorWorkerReplayResultEntity'
         '429':
           description: Too many requests
-      security: *a48
-      tags: *a49
+      security: *a47
+      tags: *a48
   /api/v1/operator/moderation/control/configurations:
     get:
       operationId: OperatorModerationControlController_listConfigurations
-      parameters:
-        - &a50
-          name: x-teamforge-operator-assertion
-          in: header
-          description: Short-lived signed assertion injected by the trusted operator proxy.
-          required: true
-          schema:
-            type: string
+      parameters: []
       responses:
         '200':
           description: ''
@@ -4882,14 +4884,14 @@ paths:
                   $ref: '#/components/schemas/OperatorModerationConfigurationSummaryEntity'
         '429':
           description: Too many requests
-      security: &a51
+      security: &a49
         - operatorAssertion: []
-      tags: &a52
+        - bearer: []
+      tags: &a50
         - Operator moderation control
     post:
       operationId: OperatorModerationControlController_createConfiguration
-      parameters:
-        - *a50
+      parameters: []
       requestBody:
         required: true
         content:
@@ -4905,13 +4907,12 @@ paths:
                 $ref: '#/components/schemas/OperatorModerationConfigurationCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a51
-      tags: *a52
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/control/configurations/state:
     get:
       operationId: OperatorModerationControlController_getConfigurationState
-      parameters:
-        - *a50
+      parameters: []
       responses:
         '200':
           description: ''
@@ -4921,13 +4922,12 @@ paths:
                 $ref: '#/components/schemas/OperatorModerationConfigurationStateEntity'
         '429':
           description: Too many requests
-      security: *a51
-      tags: *a52
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/control/configurations/{configurationId}:
     get:
       operationId: OperatorModerationControlController_getConfiguration
       parameters:
-        - *a50
         - name: configurationId
           required: true
           in: path
@@ -4944,13 +4944,12 @@ paths:
           description: Configuration not found
         '429':
           description: Too many requests
-      security: *a51
-      tags: *a52
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/control/configurations/{configurationId}/evaluation-approval:
     get:
       operationId: OperatorModerationControlController_getEvaluationApproval
       parameters:
-        - *a50
         - name: configurationId
           required: true
           in: path
@@ -4967,13 +4966,12 @@ paths:
           description: Evaluation approval not found
         '429':
           description: Too many requests
-      security: *a51
-      tags: *a52
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/control/configurations/{configurationId}/activation:
     post:
       operationId: OperatorModerationControlController_activateConfiguration
       parameters:
-        - *a50
         - name: configurationId
           required: true
           in: path
@@ -4994,13 +4992,12 @@ paths:
                 $ref: '#/components/schemas/OperatorModerationConfigurationCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a51
-      tags: *a52
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/control/configurations/{sourceConfigurationId}/rollback:
     post:
       operationId: OperatorModerationControlController_rollbackConfiguration
       parameters:
-        - *a50
         - name: sourceConfigurationId
           required: true
           in: path
@@ -5021,13 +5018,12 @@ paths:
                 $ref: '#/components/schemas/OperatorModerationConfigurationCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a51
-      tags: *a52
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/control/configurations/{configurationId}/evaluation-runs:
     post:
       operationId: OperatorModerationControlController_recordEvaluationRun
       parameters:
-        - *a50
         - name: configurationId
           required: true
           in: path
@@ -5048,13 +5044,12 @@ paths:
                 $ref: '#/components/schemas/OperatorModerationEvaluationRunEntity'
         '429':
           description: Too many requests
-      security: *a51
-      tags: *a52
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/control/evaluation-runs/{runId}/approval:
     post:
       operationId: OperatorModerationControlController_approveEvaluationRun
       parameters:
-        - *a50
         - name: runId
           required: true
           in: path
@@ -5075,13 +5070,12 @@ paths:
                 $ref: '#/components/schemas/OperatorModerationEvaluationApprovalEventEntity'
         '429':
           description: Too many requests
-      security: *a51
-      tags: *a52
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/control/configurations/{configurationId}/evaluation-approval/revocation:
     post:
       operationId: OperatorModerationControlController_revokeEvaluationApproval
       parameters:
-        - *a50
         - name: configurationId
           required: true
           in: path
@@ -5102,19 +5096,12 @@ paths:
                 $ref: '#/components/schemas/OperatorModerationEvaluationApprovalEventEntity'
         '429':
           description: Too many requests
-      security: *a51
-      tags: *a52
+      security: *a49
+      tags: *a50
   /api/v1/operator/moderation/session:
     get:
       operationId: OperatorModerationController_getSession
-      parameters:
-        - &a53
-          name: x-teamforge-operator-assertion
-          in: header
-          description: Short-lived signed assertion injected by the trusted operator proxy.
-          required: true
-          schema:
-            type: string
+      parameters: []
       responses:
         '200':
           description: ''
@@ -5124,15 +5111,15 @@ paths:
                 $ref: '#/components/schemas/OperatorSessionEntity'
         '429':
           description: Too many requests
-      security: &a54
+      security: &a51
         - operatorAssertion: []
-      tags: &a55
+        - bearer: []
+      tags: &a52
         - Operator moderation
   /api/v1/operator/moderation/cases:
     get:
       operationId: OperatorModerationController_getCases
       parameters:
-        - *a53
         - name: page
           required: false
           in: query
@@ -5182,14 +5169,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCasePageEntity'
         '429':
           description: Too many requests
-      security: *a54
+      security: *a51
       summary: List assigned cases in an operator queue
-      tags: *a55
+      tags: *a52
   /api/v1/operator/moderation/intake:
     get:
       operationId: OperatorModerationController_getIntake
       parameters:
-        - *a53
         - name: page
           required: false
           in: query
@@ -5213,13 +5199,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCasePageEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}:
     get:
       operationId: OperatorModerationController_getCase
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5234,14 +5219,13 @@ paths:
                 $ref: '#/components/schemas/OperatorCaseDetailEntity'
         '429':
           description: Too many requests
-      security: *a54
+      security: *a51
       summary: Open an assigned moderation case
-      tags: *a55
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/evidence:
     get:
       operationId: OperatorModerationController_getEvidence
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5258,14 +5242,13 @@ paths:
                   $ref: '#/components/schemas/OperatorEvidenceMetadataEntity'
         '429':
           description: Too many requests
-      security: *a54
+      security: *a51
       summary: List evidence metadata for an assigned case
-      tags: *a55
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/evidence/{evidenceId}/reveal:
     post:
       operationId: OperatorModerationController_revealEvidence
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5291,13 +5274,12 @@ paths:
                 $ref: '#/components/schemas/OperatorEvidenceRevealEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/child-safety-evidence/{evidenceId}/reveal:
     post:
       operationId: OperatorModerationController_revealChildSafetyEvidence
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5323,13 +5305,12 @@ paths:
                 $ref: '#/components/schemas/OperatorEvidenceRevealEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/assignments:
     post:
       operationId: OperatorModerationController_assignCase
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5350,13 +5331,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/assignments/self:
     post:
       operationId: OperatorModerationController_assignCaseToSelf
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5377,13 +5357,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/triage:
     post:
       operationId: OperatorModerationController_triageCase
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5404,13 +5383,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/escalation:
     post:
       operationId: OperatorModerationController_escalateCase
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5431,13 +5409,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/resolution:
     post:
       operationId: OperatorModerationController_resolveCase
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5458,13 +5435,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/information-requests:
     post:
       operationId: OperatorModerationController_requestInformation
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5485,13 +5461,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/enforcement-actions:
     post:
       operationId: OperatorModerationController_authorizeEnforcement
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5512,13 +5487,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/protective-containments:
     post:
       operationId: OperatorModerationController_authorizeContainment
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5539,13 +5513,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/enforcement-actions/{actionId}/reversal:
     post:
       operationId: OperatorModerationController_reverseEnforcement
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5571,13 +5544,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/appeals/{appealId}/decision:
     post:
       operationId: OperatorModerationController_decideAppeal
       parameters:
-        - *a53
         - name: appealId
           required: true
           in: path
@@ -5598,13 +5570,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/outcome-reviews/{reviewId}/decision:
     post:
       operationId: OperatorModerationController_decideOutcomeReview
       parameters:
-        - *a53
         - name: reviewId
           required: true
           in: path
@@ -5625,13 +5596,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/cases/{caseId}/protective-containments/{containmentId}/release:
     post:
       operationId: OperatorModerationController_releaseContainment
       parameters:
-        - *a53
         - name: caseId
           required: true
           in: path
@@ -5657,13 +5627,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/containment-contests/{contestId}/decision:
     post:
       operationId: OperatorModerationController_decideContainmentContest
       parameters:
-        - *a53
         - name: contestId
           required: true
           in: path
@@ -5684,13 +5653,12 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/operator/moderation/break-glass-uses/{useId}/review:
     post:
       operationId: OperatorModerationController_reviewBreakGlassUse
       parameters:
-        - *a53
         - name: useId
           required: true
           in: path
@@ -5711,8 +5679,8 @@ paths:
                 $ref: '#/components/schemas/OperatorCommandResultEntity'
         '429':
           description: Too many requests
-      security: *a54
-      tags: *a55
+      security: *a51
+      tags: *a52
   /api/v1/settings/me:
     get:
       operationId: SettingsController_getMySettings
@@ -5726,10 +5694,10 @@ paths:
                 $ref: '#/components/schemas/UserSettingsEntity'
         '429':
           description: Too many requests
-      security: &a56
+      security: &a53
         - bearer: []
       summary: Get settings for the authenticated user
-      tags: &a57
+      tags: &a54
         - Settings
     patch:
       operationId: SettingsController_updateMySettings
@@ -5749,9 +5717,9 @@ paths:
                 $ref: '#/components/schemas/UserSettingsEntity'
         '429':
           description: Too many requests
-      security: *a56
+      security: *a53
       summary: Update settings for the authenticated user
-      tags: *a57
+      tags: *a54
 info:
   title: TeamForge API
   description:
@@ -7386,7 +7354,7 @@ components:
           maximum: 8
         scope:
           type: string
-          enum: &a58
+          enum: &a55
             - LOCAL
             - ONLINE
         maxDistanceKm:
@@ -7659,7 +7627,7 @@ components:
           maximum: 8
         scope:
           type: string
-          enum: *a58
+          enum: *a55
         maxDistanceKm:
           type: number
           description: Maximum travel distance for a local request
@@ -8001,7 +7969,7 @@ components:
           minimum: 0
         policyVersion:
           type: string
-          enum: &a59
+          enum: &a56
             - forge-proposal-decision-v1
           example: forge-proposal-decision-v1
       required:
@@ -8070,7 +8038,7 @@ components:
           minimum: 0
         policyVersion:
           type: string
-          enum: *a59
+          enum: *a56
           example: forge-proposal-decision-v1
         reason:
           type: string
@@ -8185,6 +8153,113 @@ components:
       required:
         - policyVersion
         - expectedRevision
+    PilotCohortStatusEntity:
+      type: object
+      properties:
+        code:
+          type: string
+          example: london-alpha
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+        outcomeWindowEndsAt:
+          type: string
+          format: date-time
+        memberCap:
+          type: integer
+          example: 50
+          maximum: 100
+          minimum: 1
+        memberCount:
+          type: integer
+          example: 12
+          minimum: 0
+      required:
+        - code
+        - startsAt
+        - endsAt
+        - outcomeWindowEndsAt
+        - memberCap
+        - memberCount
+    PilotGateStatusEntity:
+      type: object
+      properties:
+        globalSafetyPause:
+          type: boolean
+        aiTriage:
+          type: boolean
+        deterministicModerationAutomation:
+          type: boolean
+        autoRequestIntake:
+          type: boolean
+        candidateAvailability:
+          type: boolean
+        proposalAllocation:
+          type: boolean
+        proposalMaterialization:
+          type: boolean
+        firstGroupChat:
+          type: boolean
+        onlineGroups:
+          type: boolean
+        strangerMedia:
+          type: boolean
+      required:
+        - globalSafetyPause
+        - aiTriage
+        - deterministicModerationAutomation
+        - autoRequestIntake
+        - candidateAvailability
+        - proposalAllocation
+        - proposalMaterialization
+        - firstGroupChat
+        - onlineGroups
+        - strangerMedia
+    PilotReadinessEntity:
+      type: object
+      properties:
+        cohortConfigured:
+          type: boolean
+        cohortWithinWindow:
+          type: boolean
+        cohortWithinCap:
+          type: boolean
+        minimumCohortSizeMet:
+          type: boolean
+        newProposalExposureAllowed:
+          type: boolean
+        materializationAllowed:
+          type: boolean
+      required:
+        - cohortConfigured
+        - cohortWithinWindow
+        - cohortWithinCap
+        - minimumCohortSizeMet
+        - newProposalExposureAllowed
+        - materializationAllowed
+    PilotStatusEntity:
+      type: object
+      properties:
+        evaluatedAt:
+          type: string
+          format: date-time
+        activeCohort:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PilotCohortStatusEntity'
+        gates:
+          $ref: '#/components/schemas/PilotGateStatusEntity'
+        readiness:
+          $ref: '#/components/schemas/PilotReadinessEntity'
+      required:
+        - evaluatedAt
+        - activeCohort
+        - gates
+        - readiness
     LinkPreviewEntity:
       type: object
       properties:
@@ -8527,7 +8602,7 @@ components:
           nullable: true
         onlineStatus:
           type: string
-          enum: &a65
+          enum: &a62
             - ONLINE
             - AWAY
             - OFFLINE
@@ -8779,7 +8854,7 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: &a60
+          enum: &a57
             - TECH
             - SPORTS
             - ARTS
@@ -8794,7 +8869,7 @@ components:
             - OTHER
         status:
           type: string
-          enum: &a61
+          enum: &a58
             - DRAFT
             - PROPOSED
             - CONFIRMED
@@ -8803,7 +8878,7 @@ components:
             - CANCELLED
         scheduleMode:
           type: string
-          enum: &a62
+          enum: &a59
             - TO_BE_DECIDED
             - FIXED
           nullable: true
@@ -8813,7 +8888,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: &a63
+          enum: &a60
             - IN_PERSON
             - ONLINE
             - TBD
@@ -8828,7 +8903,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: &a64
+          enum: &a61
             - FREE
             - PAID
         revision:
@@ -8870,13 +8945,13 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: *a60
+          enum: *a57
         status:
           type: string
-          enum: *a61
+          enum: *a58
         scheduleMode:
           type: string
-          enum: *a62
+          enum: *a59
           nullable: true
         dateTime:
           format: date-time
@@ -8884,7 +8959,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: *a63
+          enum: *a60
         location:
           type: string
           example: Regents Park Courts
@@ -8896,7 +8971,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: *a64
+          enum: *a61
       required:
         - id
         - title
@@ -8924,7 +8999,7 @@ components:
             - $ref: '#/components/schemas/ImageMediaEntity'
         onlineStatus:
           type: string
-          enum: *a65
+          enum: *a62
       required:
         - id
         - name
@@ -11021,7 +11096,7 @@ components:
       properties:
         issue:
           type: string
-          enum: &a66
+          enum: &a63
             - certificate-error
             - network-error
             - no-subscriptions
@@ -11045,7 +11120,7 @@ components:
           example: true
         issue:
           type: string
-          enum: *a66
+          enum: *a63
           example: certificate-error
           nullable: true
         diagnostics:
@@ -12248,13 +12323,13 @@ components:
           type: number
         status:
           type: string
-          enum: &a67
+          enum: &a64
             - DRAFT
             - ACTIVE
             - RETIRED
         rolloutMode:
           type: string
-          enum: &a68
+          enum: &a65
             - SHADOW
             - APPROVAL
             - AUTONOMOUS_LIMITED
@@ -12304,10 +12379,10 @@ components:
           type: number
         status:
           type: string
-          enum: *a67
+          enum: *a64
         rolloutMode:
           type: string
-          enum: *a68
+          enum: *a65
         policyVersion:
           type: string
         configurationHash:
@@ -12782,7 +12857,7 @@ components:
           type: array
           items:
             type: string
-            enum: &a69
+            enum: &a66
               - harassment
               - harassment/threatening
               - hate
@@ -12853,7 +12928,7 @@ components:
           type: array
           items:
             type: string
-            enum: *a69
+            enum: *a66
         telemetry:
           $ref: '#/components/schemas/OperatorModerationEvaluationTelemetryDto'
       required:
@@ -13070,6 +13145,10 @@ components:
           format: date-time
           type: string
           nullable: true
+        stepUpExpiresAt:
+          format: date-time
+          type: string
+          nullable: true
         breakGlass:
           type: boolean
       required:
@@ -13087,7 +13166,7 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: &a70
+          enum: &a67
             - OPEN
             - TRIAGING
             - NEEDS_INFORMATION
@@ -13098,7 +13177,7 @@ components:
             - CLOSED
         severity:
           type: string
-          enum: &a71
+          enum: &a68
             - P0
             - P1
             - P2
@@ -13111,7 +13190,7 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: &a72
+          enum: &a69
             - UNKNOWN
             - COMPLETE
             - PARTIAL
@@ -13119,7 +13198,7 @@ components:
             - CONFLICTING
         uncertainty:
           type: string
-          enum: &a73
+          enum: &a70
             - UNKNOWN
             - LOW
             - MEDIUM
@@ -13529,10 +13608,10 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: *a70
+          enum: *a67
         severity:
           type: string
-          enum: *a71
+          enum: *a68
           nullable: true
         policyLabels:
           type: array
@@ -13540,10 +13619,10 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: *a72
+          enum: *a69
         uncertainty:
           type: string
-          enum: *a73
+          enum: *a70
         mandatoryHumanReasons:
           type: array
           items:
@@ -13790,7 +13869,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: &a74
+          enum: &a71
             - FOLLOWED
             - CHANGED
             - NOT_USED
@@ -13801,7 +13880,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: &a75
+          example: &a72
             - SAFETY_ABUSE
           type: array
           items:
@@ -13873,7 +13952,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a74
+          enum: *a71
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13881,7 +13960,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a75
+          example: *a72
           type: array
           items:
             type: array
@@ -13903,7 +13982,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a74
+          enum: *a71
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13911,7 +13990,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a75
+          example: *a72
           type: array
           items:
             type: array
@@ -13941,7 +14020,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a74
+          enum: *a71
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13949,7 +14028,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a75
+          example: *a72
           type: array
           items:
             type: array
@@ -13986,7 +14065,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a74
+          enum: *a71
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -13994,7 +14073,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a75
+          example: *a72
           type: array
           items:
             type: array
@@ -14006,7 +14085,7 @@ components:
           maxLength: 1000
         actionType:
           type: string
-          enum: &a76
+          enum: &a73
             - WARNING
             - OUTBOUND_RATE_LIMIT
             - NEW_STRANGER_CONTACT_RESTRICTION
@@ -14017,7 +14096,7 @@ components:
             - GROUP_RESTRICTION
         scope:
           type: string
-          enum: &a77
+          enum: &a74
             - ACCOUNT
             - NEW_STRANGER_CONTACT
             - ACCEPTED_CHAT
@@ -14027,7 +14106,7 @@ components:
           type: string
         targetType:
           type: string
-          enum: &a78
+          enum: &a75
             - PROFILE
             - MESSAGE
             - ATTACHMENT
@@ -14053,7 +14132,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a74
+          enum: *a71
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14061,7 +14140,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a75
+          example: *a72
           type: array
           items:
             type: array
@@ -14099,7 +14178,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a74
+          enum: *a71
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14107,7 +14186,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a75
+          example: *a72
           type: array
           items:
             type: array
@@ -14125,15 +14204,15 @@ components:
             - OVERTURNED
         replacementActionType:
           type: string
-          enum: *a76
+          enum: *a73
         replacementScope:
           type: string
-          enum: *a77
+          enum: *a74
         replacementEvidenceId:
           type: string
         replacementTargetType:
           type: string
-          enum: *a78
+          enum: *a75
         replacementTargetId:
           type: string
         replacementExpiresAt:
@@ -14151,7 +14230,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a74
+          enum: *a71
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14159,7 +14238,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a75
+          example: *a72
           type: array
           items:
             type: array
@@ -14187,7 +14266,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a74
+          enum: *a71
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14195,7 +14274,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a75
+          example: *a72
           type: array
           items:
             type: array
@@ -14277,14 +14356,14 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: &a79
+          enum: &a76
             - system
             - light
             - dark
           example: system
         themeStyle:
           type: string
-          enum: &a80
+          enum: &a77
             - classic
             - glass
             - ink
@@ -14292,7 +14371,7 @@ components:
           example: classic
         themeColor:
           type: string
-          enum: &a81
+          enum: &a78
             - graphite
             - forge
             - harbor
@@ -14384,15 +14463,15 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: *a79
+          enum: *a76
           example: system
         themeStyle:
           type: string
-          enum: *a80
+          enum: *a77
           example: classic
         themeColor:
           type: string
-          enum: *a81
+          enum: *a78
           example: graphite
         showAgeOnProfile:
           type: boolean

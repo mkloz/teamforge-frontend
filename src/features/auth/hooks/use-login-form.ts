@@ -8,6 +8,7 @@ import {
   type LoginValues,
   loginSchema,
 } from "@/features/auth/schemas/auth-schemas";
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -84,10 +85,12 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
         emailDomain,
       });
       setRootError(
-        AuthCommands.getAuthErrorMessage(
-          error,
-          "Invalid email or password. Please try again.",
-        ),
+        isApiNetworkError(error)
+          ? "TeamForge couldn't connect. Check your connection and try again."
+          : AuthCommands.getAuthErrorMessage(
+              error,
+              "Invalid email or password. Please try again.",
+            ),
       );
       setLoading(false);
     }

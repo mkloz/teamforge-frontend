@@ -1,7 +1,8 @@
-import { HTTPError } from "ky";
-import { RefreshCw, ShieldOff, Wrench } from "lucide-react";
+import { RefreshCw, ShieldOff, TriangleAlert, Wrench } from "lucide-react";
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { getHttpErrorStatus } from "@/shared/lib/api-error-message";
 
 export function OperatorLoading() {
   return (
@@ -23,21 +24,29 @@ export function OperatorAccessState({
   onRetry: () => void;
   resource?: "case" | "workspace";
 }) {
-  const status = error instanceof HTTPError ? error.response.status : null;
+  const status = getHttpErrorStatus(error);
+  const accessEnded = status === 401 || status === 403;
   const caseUnavailable = resource === "case" && status === 404;
   const unconfigured =
     status === 501 || (resource === "workspace" && status === 404);
-  const Icon = unconfigured ? Wrench : ShieldOff;
+  const loadFailed = !accessEnded && !caseUnavailable && !unconfigured;
+  const Icon = unconfigured ? Wrench : accessEnded ? ShieldOff : TriangleAlert;
   const title = caseUnavailable
     ? "Case unavailable"
     : unconfigured
       ? "Moderation tools unavailable"
-      : "Moderation access ended";
+      : accessEnded
+        ? "Moderation access ended"
+        : "Moderation data could not be loaded";
   const description = caseUnavailable
     ? "This case is not available with your current admin access."
     : unconfigured
       ? "The moderation API is not available in this environment."
-      : "Sign in again with an approved admin account.";
+      : accessEnded
+        ? "Sign in again with an approved admin account."
+        : isApiNetworkError(error)
+          ? "Check your connection, then try again."
+          : "TeamForge could not load this moderation data. Try again in a moment.";
 
   return (
     <div className="mx-auto grid min-h-[60dvh] w-full max-w-xl place-items-center px-4 py-10 text-center">
@@ -49,10 +58,10 @@ export function OperatorAccessState({
             {description}
           </p>
         </div>
-        {!unconfigured && !caseUnavailable ? (
+        {accessEnded || loadFailed ? (
           <Button variant="outline" onClick={onRetry} className="mx-auto">
             <RefreshCw className="size-4" aria-hidden="true" />
-            Check access again
+            {accessEnded ? "Check access again" : "Try again"}
           </Button>
         ) : null}
       </div>

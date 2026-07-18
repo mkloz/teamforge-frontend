@@ -5,22 +5,27 @@ import { apiClient } from "@/shared/api/api";
 import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-cache";
 import { appQueryClient } from "@/shared/api/query-client";
 import { getHttpErrorStatus } from "@/shared/lib/api-error-message";
-import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
+import {
+  buildAuthRouteNavigation,
+  buildRouteLocationHref,
+  type RouteLocationLike,
+} from "@/shared/lib/auth-route";
 import { fullUserResponseSchema } from "@/shared/schemas/user-response";
 import { restoreAuthSessionIfNeeded } from "./route-guards/session-resolution";
 
-export async function requireAdminRoute() {
+export async function requireAdminRoute(location: RouteLocationLike) {
+  const returnTo = buildRouteLocationHref(location);
   const sessionState = await restoreAuthSessionIfNeeded();
 
   if (sessionState === "missing") {
-    redirectToLogin();
+    redirectToLogin(returnTo);
   }
 
   if (sessionState === "offline") {
     throw new Error("Admin access could not be verified while offline.");
   }
 
-  const currentUser = await getFreshCurrentUser();
+  const currentUser = await getFreshCurrentUser(returnTo);
   appQueryClient.setQueryData(CURRENT_USER_QUERY_KEY, currentUser);
 
   if (currentUser.role !== "ADMIN") {
@@ -40,12 +45,12 @@ export async function requireAdminRoute() {
 
     return { adminSession };
   } catch (error) {
-    handleAdminAccessError(error);
+    handleAdminAccessError(error, returnTo);
     throw error;
   }
 }
 
-async function getFreshCurrentUser() {
+async function getFreshCurrentUser(returnTo: string | null) {
   try {
     const response = await apiClient.get("users/me", { cache: "no-store" });
     return fullUserResponseSchema.parse(await response.json<unknown>());
@@ -57,7 +62,7 @@ async function getFreshCurrentUser() {
     }
 
     if (status === 401) {
-      redirectToLogin();
+      redirectToLogin(returnTo);
     }
 
     if (status === 403) {
@@ -68,11 +73,11 @@ async function getFreshCurrentUser() {
   }
 }
 
-function handleAdminAccessError(error: unknown) {
+function handleAdminAccessError(error: unknown, returnTo: string | null) {
   const status = getHttpErrorStatus(error);
 
   if (status === 401) {
-    redirectToLogin();
+    redirectToLogin(returnTo);
   }
 
   if (status === 403) {
@@ -80,6 +85,6 @@ function handleAdminAccessError(error: unknown) {
   }
 }
 
-function redirectToLogin(): never {
-  throw redirect(buildAuthRouteNavigation("/auth/login", null));
+function redirectToLogin(returnTo: string | null): never {
+  throw redirect(buildAuthRouteNavigation("/auth/login", returnTo));
 }
