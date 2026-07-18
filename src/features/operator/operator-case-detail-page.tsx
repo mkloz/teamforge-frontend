@@ -22,7 +22,9 @@ import { humanizeCode } from "@/features/operator/lib/operator-language";
 import { Button } from "@/shared/components/ui/button";
 
 export function OperatorCaseDetailPage() {
-  const { caseId } = useParams({ from: "/operator/cases/$caseId" });
+  const { caseId } = useParams({
+    from: "/admin/moderation/cases/$caseId",
+  });
   const query = useQuery(operatorQueries.case(caseId));
   const sessionQuery = useQuery(operatorQueries.session());
 
@@ -41,7 +43,7 @@ export function OperatorCaseDetailPage() {
   return (
     <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-8 md:py-10">
       <Button asChild variant="ghost" className="w-fit px-2">
-        <Link to="/operator" search={{ queue: "CRITICAL_NOW" }}>
+        <Link to="/admin/moderation" search={{ queue: "CRITICAL_NOW" }}>
           <ArrowLeft className="size-4" aria-hidden="true" />
           Back to queues
         </Link>

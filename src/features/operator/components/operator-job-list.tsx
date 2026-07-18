@@ -49,11 +49,12 @@ export function OperatorJobList({
     () => () => {
       queryClient.removeQueries({
         predicate: ({ queryKey }) =>
-          queryKey[0] === "operator" &&
-          queryKey[1] === "moderation" &&
-          queryKey[2] === "workers" &&
-          queryKey[3] === workerKind &&
-          queryKey[4] === "jobs",
+          queryKey[0] === "admin" &&
+          queryKey[1] === "operator" &&
+          queryKey[2] === "moderation" &&
+          queryKey[3] === "workers" &&
+          queryKey[4] === workerKind &&
+          queryKey[5] === "jobs",
       });
     },
     [queryClient, workerKind],
@@ -63,11 +64,12 @@ export function OperatorJobList({
     if (!isAccessError(query.error)) return;
     queryClient.removeQueries({
       predicate: ({ queryKey }) =>
-        queryKey[0] === "operator" &&
-        queryKey[1] === "moderation" &&
-        queryKey[2] === "workers" &&
-        queryKey[3] === workerKind &&
-        queryKey[4] === "jobs",
+        queryKey[0] === "admin" &&
+        queryKey[1] === "operator" &&
+        queryKey[2] === "moderation" &&
+        queryKey[3] === "workers" &&
+        queryKey[4] === workerKind &&
+        queryKey[5] === "jobs",
     });
   }, [query.error, queryClient, workerKind]);
 
@@ -239,7 +241,13 @@ function ReplayJobCommand({
   const [open, setOpen] = useState(false);
   const commandRef = useRef<{ key: string; version: number } | null>(null);
   const mutation = useMutation({
-    mutationKey: ["operator", "moderation", "worker-job-replay", job.id],
+    mutationKey: [
+      "admin",
+      "operator",
+      "moderation",
+      "worker-job-replay",
+      job.id,
+    ],
     mutationFn: () => {
       if (commandRef.current?.version !== job.version) {
         commandRef.current = {
@@ -262,11 +270,12 @@ function ReplayJobCommand({
         }),
         queryClient.invalidateQueries({
           predicate: ({ queryKey }) =>
-            queryKey[0] === "operator" &&
-            queryKey[1] === "moderation" &&
-            queryKey[2] === "workers" &&
-            queryKey[3] === workerKind &&
-            queryKey[4] === "jobs",
+            queryKey[0] === "admin" &&
+            queryKey[1] === "operator" &&
+            queryKey[2] === "moderation" &&
+            queryKey[3] === "workers" &&
+            queryKey[4] === workerKind &&
+            queryKey[5] === "jobs",
         }),
       ]);
     },

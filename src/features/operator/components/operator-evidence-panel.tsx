@@ -84,7 +84,13 @@ function EvidenceItem({
 }) {
   const [reasonCode, setReasonCode] = useState("CASE_REVIEW");
   const mutation = useMutation({
-    mutationKey: ["operator", "moderation", "evidence-reveal", evidence.id],
+    mutationKey: [
+      "admin",
+      "operator",
+      "moderation",
+      "evidence-reveal",
+      evidence.id,
+    ],
     gcTime: 0,
     mutationFn: () =>
       OperatorApi.revealEvidence({

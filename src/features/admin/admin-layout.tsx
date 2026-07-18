@@ -8,9 +8,11 @@ import {
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeft,
+  ClipboardList,
   Gauge,
   LayoutDashboard,
   Menu,
+  ServerCog,
   Settings,
   ShieldCheck,
 } from "lucide-react";
@@ -54,6 +56,18 @@ const ADMIN_NAVIGATION = [
     label: "Moderation",
     description: "Human review queue",
     icon: ShieldCheck,
+  },
+  {
+    id: "intake",
+    label: "Intake",
+    description: "Unassigned reports",
+    icon: ClipboardList,
+  },
+  {
+    id: "workers",
+    label: "Workers",
+    description: "Queue health and controls",
+    icon: ServerCog,
   },
   {
     id: "operations",

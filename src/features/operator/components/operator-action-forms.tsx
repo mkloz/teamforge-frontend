@@ -19,7 +19,11 @@ import type {
   RequestInformationPayload,
   TriageCasePayload,
 } from "@/features/operator/schemas/operator.schemas";
-import { operatorAssistanceDispositionSchema } from "@/features/operator/schemas/operator.schemas";
+import {
+  operatorAssistanceDispositionSchema,
+  requestInformationSchema,
+  triageCaseSchema,
+} from "@/features/operator/schemas/operator.schemas";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -185,6 +189,7 @@ function CommandForm({
   const queryClient = useQueryClient();
   const getIdempotencyKey = usePayloadIdempotencyKey();
   const mutation = useMutation({
+    mutationKey: ["admin", "operator", "moderation", "command", caseId],
     mutationFn: execute,
     onSuccess: () => invalidateCase(queryClient, caseId),
   });
@@ -223,6 +228,7 @@ function TriageForm({
   const queryClient = useQueryClient();
   const getIdempotencyKey = usePayloadIdempotencyKey();
   const mutation = useMutation({
+    mutationKey: ["admin", "operator", "moderation", "triage", caseId],
     mutationFn: (payload: TriageCasePayload) =>
       OperatorApi.triage(caseId, payload),
     onSuccess: () => invalidateCase(queryClient, caseId),
@@ -238,8 +244,13 @@ function TriageForm({
       uncertainty: readString(data, "uncertainty"),
       mandatoryHumanReasons: readList(data, "mandatoryHumanReasons"),
       ...(readDate(data, "dueAt") ? { dueAt: readDate(data, "dueAt") } : {}),
-    } as Omit<TriageCasePayload, "idempotencyKey">;
-    mutation.mutate({ ...body, idempotencyKey: getIdempotencyKey(body) });
+    };
+    mutation.mutate(
+      triageCaseSchema.parse({
+        ...body,
+        idempotencyKey: getIdempotencyKey(body),
+      }),
+    );
   }
 
   return (
@@ -300,6 +311,13 @@ function InformationRequestForm({
   const queryClient = useQueryClient();
   const getIdempotencyKey = usePayloadIdempotencyKey();
   const mutation = useMutation({
+    mutationKey: [
+      "admin",
+      "operator",
+      "moderation",
+      "information-request",
+      caseId,
+    ],
     mutationFn: (payload: RequestInformationPayload) =>
       OperatorApi.requestInformation(caseId, payload),
     onSuccess: () => invalidateCase(queryClient, caseId),
@@ -314,8 +332,13 @@ function InformationRequestForm({
       reportId: readString(data, "reportId"),
       templateCode: readString(data, "templateCode"),
       expiresAt: readDate(data, "expiresAt"),
-    } as Omit<RequestInformationPayload, "idempotencyKey">;
-    mutation.mutate({ ...body, idempotencyKey: getIdempotencyKey(body) });
+    };
+    mutation.mutate(
+      requestInformationSchema.parse({
+        ...body,
+        idempotencyKey: getIdempotencyKey(body),
+      }),
+    );
   }
 
   return (

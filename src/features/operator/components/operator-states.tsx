@@ -14,24 +14,6 @@ export function OperatorLoading() {
   );
 }
 
-export function OperatorUnavailableState() {
-  return (
-    <div className="grid min-h-48 place-items-center rounded-2xl border border-border bg-card p-6 text-center">
-      <div className="grid max-w-md gap-2">
-        <Wrench className="mx-auto size-8 text-primary" aria-hidden="true" />
-        <h2 className="font-bold text-ink text-lg">
-          Review data is not available
-        </h2>
-        <p className="text-pretty text-slate-muted text-sm leading-relaxed">
-          This workspace will show server-owned queues and case assessments when
-          the operator API is configured. No case state is inferred in the
-          browser.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 export function OperatorAccessState({
   error,
   onRetry,
@@ -49,13 +31,13 @@ export function OperatorAccessState({
   const title = caseUnavailable
     ? "Case unavailable"
     : unconfigured
-      ? "Operator workspace is not configured"
-      : "Operator session closed";
+      ? "Moderation tools unavailable"
+      : "Moderation access ended";
   const description = caseUnavailable
-    ? "This case is not available to this operator session."
+    ? "This case is not available with your current admin access."
     : unconfigured
-      ? "The operator API is not available in this environment."
-      : "Open this workspace through approved operator access.";
+      ? "The moderation API is not available in this environment."
+      : "Sign in again with an approved admin account.";
 
   return (
     <div className="mx-auto grid min-h-[60dvh] w-full max-w-xl place-items-center px-4 py-10 text-center">

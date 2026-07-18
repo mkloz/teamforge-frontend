@@ -20,7 +20,7 @@ import {
 import { cn } from "@/shared/lib/utils";
 
 export function OperatorWorkspacePage() {
-  const search = useSearch({ from: "/operator/" });
+  const search = useSearch({ from: "/admin/moderation" });
   const queue =
     operatorQueueSchema.safeParse(search.queue).data ?? "CRITICAL_NOW";
   const query = useQuery(operatorQueries.cases({ queue, page: 1, limit: 50 }));
@@ -44,7 +44,7 @@ export function OperatorWorkspacePage() {
           return (
             <Link
               key={queueId}
-              to="/operator"
+              to="/admin/moderation"
               search={{ queue: queueId }}
               className={cn(
                 "grid gap-0.5 rounded-xl border px-4 py-3 transition-colors",
@@ -142,7 +142,7 @@ function OperatorCaseCard({ item }: { item: OperatorCaseSummary }) {
         </p>
       </div>
       <Link
-        to="/operator/cases/$caseId"
+        to="/admin/moderation/cases/$caseId"
         params={{ caseId: item.id }}
         className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm"
       >

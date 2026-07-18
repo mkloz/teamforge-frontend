@@ -5,11 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:operator": "vite --config vite.operator.config.ts",
     "build": "tsc -b && vite build",
-    "build:operator": "tsc -p tsconfig.operator.json --noEmit && vite build --config vite.operator.config.ts",
     "preview": "vite preview",
-    "preview:operator": "vite preview --config vite.operator.config.ts",
     "test": "vitest run test/unit",
     "lint": "node scripts/lint/full.mjs",
     "lint:feature-seams": "node scripts/lint/feature-import-seams.mjs --strict",

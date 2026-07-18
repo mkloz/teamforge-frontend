@@ -1,6 +1,8 @@
 export const adminNavigationTargets = {
   overview: { to: "/admin" },
   moderation: { to: "/admin/moderation" },
+  intake: { to: "/admin/moderation/intake" },
+  workers: { to: "/admin/moderation/workers" },
   operations: { to: "/admin/moderation/operations" },
   settings: { to: "/admin/moderation/settings" },
 } as const;

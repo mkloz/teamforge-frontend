@@ -41,7 +41,7 @@ export function OperatorWorkerHealthList({
         <div className="grid gap-1">
           <h2 className="font-bold text-ink text-lg">No workers configured</h2>
           <p className="text-slate-muted text-sm">
-            No moderation workers were returned by the operator API.
+            No moderation workers were returned by the moderation API.
           </p>
         </div>
       </div>
@@ -154,7 +154,13 @@ function WorkerStateCommand({ worker }: { worker: OperatorWorkerStatus }) {
     version: number;
   } | null>(null);
   const mutation = useMutation({
-    mutationKey: ["operator", "moderation", "worker-command", worker.kind],
+    mutationKey: [
+      "admin",
+      "operator",
+      "moderation",
+      "worker-command",
+      worker.kind,
+    ],
     mutationFn: () => {
       if (
         commandRef.current?.action !== action ||

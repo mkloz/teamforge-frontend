@@ -35,7 +35,7 @@ export function OperatorIntakePage() {
   return (
     <div className="mx-auto grid w-full max-w-5xl gap-6 px-4 py-6 md:px-8 md:py-10">
       <Button asChild variant="ghost" className="w-fit px-2">
-        <Link to="/operator" search={{ queue: "CRITICAL_NOW" }}>
+        <Link to="/admin/moderation" search={{ queue: "CRITICAL_NOW" }}>
           <ArrowLeft className="size-4" aria-hidden="true" />
           Back to queues
         </Link>
@@ -81,7 +81,7 @@ function IntakeCaseCard({ item }: { item: OperatorCaseSummary }) {
   });
   const [assigned, setAssigned] = useState(false);
   const mutation = useMutation({
-    mutationKey: ["operator", "moderation", "self-assign", item.id],
+    mutationKey: ["admin", "operator", "moderation", "self-assign", item.id],
     mutationFn: () =>
       OperatorApi.selfAssign(item.id, assignmentPayload.current),
     onSuccess: () => {
@@ -113,7 +113,7 @@ function IntakeCaseCard({ item }: { item: OperatorCaseSummary }) {
       </div>
       {assigned ? (
         <Link
-          to="/operator/cases/$caseId"
+          to="/admin/moderation/cases/$caseId"
           params={{ caseId: item.id }}
           className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm"
         >

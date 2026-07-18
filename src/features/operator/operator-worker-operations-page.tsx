@@ -80,7 +80,7 @@ export function OperatorWorkerOperationsPage() {
   return (
     <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-8 md:py-10">
       <Button asChild variant="ghost" className="w-fit px-2">
-        <Link to="/operator" search={{ queue: "CRITICAL_NOW" }}>
+        <Link to="/admin/moderation" search={{ queue: "CRITICAL_NOW" }}>
           <ArrowLeft className="size-4" aria-hidden="true" />
           Back to queues
         </Link>
@@ -115,7 +115,7 @@ export function OperatorWorkerOperationsPage() {
           value={
             workersQuery.data.automaticActionsEnabled ? "Enabled" : "Disabled"
           }
-          detail="This setting is read-only in the operator workspace."
+          detail="This setting is read-only in the admin workspace."
         />
       </section>
 
@@ -129,7 +129,7 @@ export function OperatorWorkerOperationsPage() {
             <h2 className="font-semibold text-sm">Recent step-up required</h2>
             <p className="text-sm leading-relaxed">
               Worker status is visible, but pause, resume, and requeue commands
-              require a recently verified operator session.
+              require a recently verified admin session.
             </p>
           </div>
         </div>
@@ -195,11 +195,11 @@ function OwnerAccessRequired() {
         <div className="grid gap-2">
           <h1 className="font-bold text-2xl text-ink">Owner access required</h1>
           <p className="text-pretty text-slate-muted text-sm leading-relaxed">
-            Worker operations are not available to this operator session.
+            Worker operations are not available with your current admin access.
           </p>
         </div>
         <Button asChild variant="outline" className="mx-auto">
-          <Link to="/operator" search={{ queue: "CRITICAL_NOW" }}>
+          <Link to="/admin/moderation" search={{ queue: "CRITICAL_NOW" }}>
             Return to queues
           </Link>
         </Button>

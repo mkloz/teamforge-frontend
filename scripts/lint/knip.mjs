@@ -25,8 +25,6 @@ const KNIP_ENV = {
   VITE_MEDIA_BASE_URL:
     process.env.VITE_MEDIA_BASE_URL ??
     "https://mkloz-teamforge.s3.us-east-1.amazonaws.com",
-  VITE_OPERATOR_API_URL:
-    process.env.VITE_OPERATOR_API_URL ?? "http://localhost:6969/api/v1",
 };
 
 /**

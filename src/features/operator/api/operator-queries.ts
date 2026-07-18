@@ -8,28 +8,36 @@ import type {
 } from "@/features/operator/schemas/operator.schemas";
 
 export const OPERATOR_QUERY_KEYS = {
-  all: ["operator", "moderation"] as const,
-  session: ["operator", "moderation", "session"] as const,
+  all: ["admin", "operator", "moderation"] as const,
+  session: ["admin", "operator", "moderation", "session"] as const,
   intake: (input: { page: number; limit: number }) =>
-    ["operator", "moderation", "intake", input] as const,
+    ["admin", "operator", "moderation", "intake", input] as const,
   cases: (input: {
     queue: OperatorQueue;
     status?: ModerationCaseStatus;
     page: number;
     limit: number;
-  }) => ["operator", "moderation", "cases", input] as const,
+  }) => ["admin", "operator", "moderation", "cases", input] as const,
   case: (caseId: string) =>
-    ["operator", "moderation", "cases", caseId] as const,
+    ["admin", "operator", "moderation", "cases", caseId] as const,
   evidence: (caseId: string) =>
-    ["operator", "moderation", "cases", caseId, "evidence"] as const,
+    ["admin", "operator", "moderation", "cases", caseId, "evidence"] as const,
   assessments: (caseId: string) =>
-    ["operator", "moderation", "cases", caseId, "assessments"] as const,
+    [
+      "admin",
+      "operator",
+      "moderation",
+      "cases",
+      caseId,
+      "assessments",
+    ] as const,
   assessmentComparison: (input: {
     caseId: string;
     earlierAssessmentId: string;
     laterAssessmentId: string;
   }) =>
     [
+      "admin",
       "operator",
       "moderation",
       "cases",
@@ -38,14 +46,22 @@ export const OPERATOR_QUERY_KEYS = {
       input.earlierAssessmentId,
       input.laterAssessmentId,
     ] as const,
-  workers: ["operator", "moderation", "workers"] as const,
+  workers: ["admin", "operator", "moderation", "workers"] as const,
   workerJobs: (input: {
     kind: OperatorWorkerKind;
     status?: OperatorWorkerJobStatus;
     page: number;
     limit: number;
   }) =>
-    ["operator", "moderation", "workers", input.kind, "jobs", input] as const,
+    [
+      "admin",
+      "operator",
+      "moderation",
+      "workers",
+      input.kind,
+      "jobs",
+      input,
+    ] as const,
 };
 
 export const operatorQueries = {

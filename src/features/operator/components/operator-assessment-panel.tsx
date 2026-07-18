@@ -39,11 +39,12 @@ export function OperatorAssessmentPanel({ caseId }: { caseId: string }) {
       });
       queryClient.removeQueries({
         predicate: ({ queryKey }) =>
-          queryKey[0] === "operator" &&
-          queryKey[1] === "moderation" &&
-          queryKey[2] === "cases" &&
-          queryKey[3] === caseId &&
-          queryKey[4] === "assessment-comparison",
+          queryKey[0] === "admin" &&
+          queryKey[1] === "operator" &&
+          queryKey[2] === "moderation" &&
+          queryKey[3] === "cases" &&
+          queryKey[4] === caseId &&
+          queryKey[5] === "assessment-comparison",
       });
     },
     [caseId, queryClient],
@@ -345,9 +346,10 @@ type AssessmentDisplayContext = {
 };
 
 function severityLabel(value: string) {
-  return value in SEVERITY_LABELS
-    ? SEVERITY_LABELS[value as keyof typeof SEVERITY_LABELS]
-    : humanizeCode(value);
+  const label = Object.entries(SEVERITY_LABELS).find(
+    ([severity]) => severity === value,
+  )?.[1];
+  return label ?? humanizeCode(value);
 }
 
 function AssessmentCard({
