@@ -1884,6 +1884,39 @@ paths:
           description: Too many requests
       security: *a27
       tags: *a28
+  /api/v1/admin/pilot/sponsor-artifact:
+    get:
+      operationId: PilotControlController_getSponsorArtifact
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PilotSponsorArtifactStatusEntity'
+        '401': *a25
+        '403': *a26
+        '429':
+          description: Too many requests
+      security: *a27
+      tags: *a28
+    post:
+      operationId: PilotControlController_generateSponsorArtifact
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PilotSponsorArtifactStatusEntity'
+        '401': *a25
+        '403': *a26
+        '429':
+          description: Too many requests
+      security: *a27
+      tags: *a28
   /api/v1/chats/link-preview:
     get:
       operationId: ChatController_getLinkPreview
@@ -6564,6 +6597,8 @@ components:
           type: boolean
         manageConfiguration:
           type: boolean
+        manageSponsorArtifacts:
+          type: boolean
       required:
         - viewCases
         - revealEvidence
@@ -6571,6 +6606,7 @@ components:
         - reverseActions
         - manageWorkers
         - manageConfiguration
+        - manageSponsorArtifacts
     AdminSessionEntity:
       type: object
       properties:
@@ -8374,6 +8410,256 @@ components:
       required:
         - evaluatedAt
         - activeCohort
+    PilotSponsorCountValueEntity:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - COUNT
+        count:
+          type: integer
+          minimum: 0
+      required:
+        - kind
+        - count
+    PilotSponsorRateValueEntity:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - RATE
+        numerator:
+          type: integer
+          minimum: 0
+        denominator:
+          type: integer
+          minimum: 0
+        ratePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+      required:
+        - kind
+        - numerator
+        - denominator
+        - ratePercent
+    PilotSponsorValueMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - VALUE
+        value:
+          oneOf:
+            - $ref: '#/components/schemas/PilotSponsorCountValueEntity'
+            - $ref: '#/components/schemas/PilotSponsorRateValueEntity'
+      required:
+        - state
+        - value
+    PilotSponsorSuppressedMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - SUPPRESSED
+        reason:
+          type: string
+          enum:
+            - DENOMINATOR_TOO_SMALL
+            - SMALL_CELL
+            - COMPLEMENTARY_CELL
+      required:
+        - state
+        - reason
+    PilotSponsorNotCollectedMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - NOT_COLLECTED
+        reason:
+          type: string
+          enum:
+            - NOT_IN_FROZEN_DEFINITION
+      required:
+        - state
+        - reason
+    PilotSponsorSourceIncompleteMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - SOURCE_INCOMPLETE
+        reason:
+          type: string
+          enum:
+            - RETENTION_PURGED
+      required:
+        - state
+        - reason
+    PilotSponsorTargetCohortEntity:
+      type: object
+      properties:
+        code:
+          type: string
+          example: london-alpha
+        memberCount:
+          type: integer
+          minimum: 0
+        scope:
+          type: string
+          enum:
+            - LOCAL
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+        outcomeWindowEndsAt:
+          type: string
+          format: date-time
+      required:
+        - code
+        - memberCount
+        - scope
+        - startsAt
+        - endsAt
+        - outcomeWindowEndsAt
+    PilotSponsorEligibilityEntity:
+      type: object
+      properties:
+        eligible:
+          type: boolean
+        blockers:
+          type: array
+          items:
+            type: string
+            enum:
+              - NO_CONFIGURED_COHORT
+              - OUTCOME_WINDOW_OPEN
+              - DENOMINATOR_BELOW_MINIMUM
+              - ARTIFACT_ALREADY_EXISTS
+      required:
+        - eligible
+        - blockers
+    PilotSponsorViewerEntity:
+      type: object
+      properties:
+        canGenerate:
+          type: boolean
+      required:
+        - canGenerate
+    PilotSponsorMeasuresEntity:
+      type: object
+      properties:
+        cohortSize:
+          oneOf: &a61
+            - $ref: '#/components/schemas/PilotSponsorValueMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorSuppressedMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorNotCollectedMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorSourceIncompleteMeasureEntity'
+        sponsorDirectRecruitment:
+          oneOf: *a61
+        referralRecruitment:
+          oneOf: *a61
+        requestCreation:
+          oneOf: *a61
+        activityActivation:
+          oneOf: *a61
+        proposalCoverage:
+          oneOf: *a61
+        formedGroups:
+          oneOf: *a61
+        scheduledPlans:
+          oneOf: *a61
+        completedActivities:
+          oneOf: *a61
+        continuingGroups:
+          oneOf: *a61
+        coarseSafetyWorkload:
+          oneOf: *a61
+      required:
+        - cohortSize
+        - sponsorDirectRecruitment
+        - referralRecruitment
+        - requestCreation
+        - activityActivation
+        - proposalCoverage
+        - formedGroups
+        - scheduledPlans
+        - completedActivities
+        - continuingGroups
+        - coarseSafetyWorkload
+    PilotSponsorArtifactEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceCode:
+          type: string
+          example: TFP-5F5A9D4ACF10
+        generatedAt:
+          type: string
+          format: date-time
+        definitionVersion:
+          type: string
+          enum:
+            - pilot-fixed-window-summary.v1
+        privacyRuleVersion:
+          type: string
+          enum:
+            - minimum-cell-privacy.v1
+        roundingRuleVersion:
+          type: string
+          enum:
+            - one-decimal-percent.v1
+        payloadHash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        measures:
+          $ref: '#/components/schemas/PilotSponsorMeasuresEntity'
+      required:
+        - id
+        - referenceCode
+        - generatedAt
+        - definitionVersion
+        - privacyRuleVersion
+        - roundingRuleVersion
+        - payloadHash
+        - measures
+    PilotSponsorArtifactStatusEntity:
+      type: object
+      properties:
+        evaluatedAt:
+          type: string
+          format: date-time
+        targetCohort:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PilotSponsorTargetCohortEntity'
+        eligibility:
+          $ref: '#/components/schemas/PilotSponsorEligibilityEntity'
+        viewer:
+          $ref: '#/components/schemas/PilotSponsorViewerEntity'
+        artifact:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PilotSponsorArtifactEntity'
+      required:
+        - evaluatedAt
+        - targetCohort
+        - eligibility
+        - viewer
+        - artifact
     LinkPreviewEntity:
       type: object
       properties:
@@ -8716,7 +9002,7 @@ components:
           nullable: true
         onlineStatus:
           type: string
-          enum: &a66
+          enum: &a67
             - ONLINE
             - AWAY
             - OFFLINE
@@ -8968,7 +9254,7 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: &a61
+          enum: &a62
             - TECH
             - SPORTS
             - ARTS
@@ -8983,7 +9269,7 @@ components:
             - OTHER
         status:
           type: string
-          enum: &a62
+          enum: &a63
             - DRAFT
             - PROPOSED
             - CONFIRMED
@@ -8992,7 +9278,7 @@ components:
             - CANCELLED
         scheduleMode:
           type: string
-          enum: &a63
+          enum: &a64
             - TO_BE_DECIDED
             - FIXED
           nullable: true
@@ -9002,7 +9288,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: &a64
+          enum: &a65
             - IN_PERSON
             - ONLINE
             - TBD
@@ -9017,7 +9303,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: &a65
+          enum: &a66
             - FREE
             - PAID
         revision:
@@ -9059,13 +9345,13 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: *a61
+          enum: *a62
         status:
           type: string
-          enum: *a62
+          enum: *a63
         scheduleMode:
           type: string
-          enum: *a63
+          enum: *a64
           nullable: true
         dateTime:
           format: date-time
@@ -9073,7 +9359,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: *a64
+          enum: *a65
         location:
           type: string
           example: Regents Park Courts
@@ -9085,7 +9371,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: *a65
+          enum: *a66
       required:
         - id
         - title
@@ -9113,7 +9399,7 @@ components:
             - $ref: '#/components/schemas/ImageMediaEntity'
         onlineStatus:
           type: string
-          enum: *a66
+          enum: *a67
       required:
         - id
         - name
@@ -11210,7 +11496,7 @@ components:
       properties:
         issue:
           type: string
-          enum: &a67
+          enum: &a68
             - certificate-error
             - network-error
             - no-subscriptions
@@ -11234,7 +11520,7 @@ components:
           example: true
         issue:
           type: string
-          enum: *a67
+          enum: *a68
           example: certificate-error
           nullable: true
         diagnostics:
@@ -12437,13 +12723,13 @@ components:
           type: number
         status:
           type: string
-          enum: &a68
+          enum: &a69
             - DRAFT
             - ACTIVE
             - RETIRED
         rolloutMode:
           type: string
-          enum: &a69
+          enum: &a70
             - SHADOW
             - APPROVAL
             - AUTONOMOUS_LIMITED
@@ -12493,10 +12779,10 @@ components:
           type: number
         status:
           type: string
-          enum: *a68
+          enum: *a69
         rolloutMode:
           type: string
-          enum: *a69
+          enum: *a70
         policyVersion:
           type: string
         configurationHash:
@@ -12971,7 +13257,7 @@ components:
           type: array
           items:
             type: string
-            enum: &a70
+            enum: &a71
               - harassment
               - harassment/threatening
               - hate
@@ -13042,7 +13328,7 @@ components:
           type: array
           items:
             type: string
-            enum: *a70
+            enum: *a71
         telemetry:
           $ref: '#/components/schemas/OperatorModerationEvaluationTelemetryDto'
       required:
@@ -13280,7 +13566,7 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: &a71
+          enum: &a72
             - OPEN
             - TRIAGING
             - NEEDS_INFORMATION
@@ -13291,7 +13577,7 @@ components:
             - CLOSED
         severity:
           type: string
-          enum: &a72
+          enum: &a73
             - P0
             - P1
             - P2
@@ -13304,7 +13590,7 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: &a73
+          enum: &a74
             - UNKNOWN
             - COMPLETE
             - PARTIAL
@@ -13312,7 +13598,7 @@ components:
             - CONFLICTING
         uncertainty:
           type: string
-          enum: &a74
+          enum: &a75
             - UNKNOWN
             - LOW
             - MEDIUM
@@ -13722,10 +14008,10 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: *a71
+          enum: *a72
         severity:
           type: string
-          enum: *a72
+          enum: *a73
           nullable: true
         policyLabels:
           type: array
@@ -13733,10 +14019,10 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: *a73
+          enum: *a74
         uncertainty:
           type: string
-          enum: *a74
+          enum: *a75
         mandatoryHumanReasons:
           type: array
           items:
@@ -13983,7 +14269,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: &a75
+          enum: &a76
             - FOLLOWED
             - CHANGED
             - NOT_USED
@@ -13994,7 +14280,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: &a76
+          example: &a77
             - SAFETY_ABUSE
           type: array
           items:
@@ -14066,7 +14352,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a75
+          enum: *a76
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14074,7 +14360,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a76
+          example: *a77
           type: array
           items:
             type: array
@@ -14096,7 +14382,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a75
+          enum: *a76
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14104,7 +14390,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a76
+          example: *a77
           type: array
           items:
             type: array
@@ -14134,7 +14420,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a75
+          enum: *a76
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14142,7 +14428,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a76
+          example: *a77
           type: array
           items:
             type: array
@@ -14179,7 +14465,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a75
+          enum: *a76
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14187,7 +14473,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a76
+          example: *a77
           type: array
           items:
             type: array
@@ -14199,7 +14485,7 @@ components:
           maxLength: 1000
         actionType:
           type: string
-          enum: &a77
+          enum: &a78
             - WARNING
             - OUTBOUND_RATE_LIMIT
             - NEW_STRANGER_CONTACT_RESTRICTION
@@ -14210,7 +14496,7 @@ components:
             - GROUP_RESTRICTION
         scope:
           type: string
-          enum: &a78
+          enum: &a79
             - ACCOUNT
             - NEW_STRANGER_CONTACT
             - ACCEPTED_CHAT
@@ -14220,7 +14506,7 @@ components:
           type: string
         targetType:
           type: string
-          enum: &a79
+          enum: &a80
             - PROFILE
             - MESSAGE
             - ATTACHMENT
@@ -14246,7 +14532,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a75
+          enum: *a76
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14254,7 +14540,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a76
+          example: *a77
           type: array
           items:
             type: array
@@ -14292,7 +14578,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a75
+          enum: *a76
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14300,7 +14586,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a76
+          example: *a77
           type: array
           items:
             type: array
@@ -14318,15 +14604,15 @@ components:
             - OVERTURNED
         replacementActionType:
           type: string
-          enum: *a77
+          enum: *a78
         replacementScope:
           type: string
-          enum: *a78
+          enum: *a79
         replacementEvidenceId:
           type: string
         replacementTargetType:
           type: string
-          enum: *a79
+          enum: *a80
         replacementTargetId:
           type: string
         replacementExpiresAt:
@@ -14344,7 +14630,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a75
+          enum: *a76
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14352,7 +14638,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a76
+          example: *a77
           type: array
           items:
             type: array
@@ -14380,7 +14666,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a75
+          enum: *a76
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -14388,7 +14674,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a76
+          example: *a77
           type: array
           items:
             type: array
@@ -14470,14 +14756,14 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: &a80
+          enum: &a81
             - system
             - light
             - dark
           example: system
         themeStyle:
           type: string
-          enum: &a81
+          enum: &a82
             - classic
             - glass
             - ink
@@ -14485,7 +14771,7 @@ components:
           example: classic
         themeColor:
           type: string
-          enum: &a82
+          enum: &a83
             - graphite
             - forge
             - harbor
@@ -14577,15 +14863,15 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: *a80
+          enum: *a81
           example: system
         themeStyle:
           type: string
-          enum: *a81
+          enum: *a82
           example: classic
         themeColor:
           type: string
-          enum: *a82
+          enum: *a83
           example: graphite
         showAgeOnProfile:
           type: boolean

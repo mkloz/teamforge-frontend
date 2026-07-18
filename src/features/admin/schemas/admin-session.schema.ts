@@ -7,6 +7,7 @@ export const adminCapabilitiesSchema = z.object({
   reverseActions: z.boolean(),
   manageWorkers: z.boolean(),
   manageConfiguration: z.boolean(),
+  manageSponsorArtifacts: z.boolean(),
 });
 
 export const adminSessionSchema = z.object({
