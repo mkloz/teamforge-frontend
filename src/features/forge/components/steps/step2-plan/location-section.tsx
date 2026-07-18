@@ -70,8 +70,9 @@ export function LocationSection({
 
       <SegmentedTabs
         ariaLabel="Location type"
-        fill
+        className="self-start"
         options={locationOptions}
+        size="lg"
         value={locationType}
         onChange={onLocationTypeChange}
       />

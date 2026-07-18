@@ -1,14 +1,28 @@
 import { CalendarClock, Clock, UsersRound } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
 import { DateInput } from "@/shared/components/ui/date-input";
+import { SegmentedTabs } from "@/shared/components/ui/segmented-tabs";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { TimeInput } from "@/shared/components/ui/time-input";
-import { cn } from "@/shared/lib/utils";
 import { FieldLabel } from "./field-label";
 import { SectionCard } from "./section-card";
 import { SectionHeader } from "./section-header";
 import { formatPlanDateSummary } from "./step2-plan.utils";
 import type { PlanScheduleMode } from "./types";
+
+const SCHEDULE_MODE_OPTIONS = [
+  {
+    id: "TO_BE_DECIDED",
+    label: "Decide together",
+    shortLabel: "Together",
+    icon: UsersRound,
+  },
+  {
+    id: "FIXED",
+    label: "Set date and time",
+    shortLabel: "Set time",
+    icon: CalendarClock,
+  },
+] as const;
 
 interface DateTimeSectionProps {
   canDecideTogether: boolean;
@@ -66,21 +80,14 @@ export function DateTimeSection({
       />
 
       {canDecideTogether ? (
-        <fieldset className="grid gap-2 sm:grid-cols-2">
-          <legend className="sr-only">Date and time choice</legend>
-          <ScheduleModeButton
-            active={scheduleMode === "TO_BE_DECIDED"}
-            icon={UsersRound}
-            label="Decide together"
-            onClick={() => onScheduleModeChange("TO_BE_DECIDED")}
-          />
-          <ScheduleModeButton
-            active={scheduleMode === "FIXED"}
-            icon={CalendarClock}
-            label="Set a date and time now"
-            onClick={() => onScheduleModeChange("FIXED")}
-          />
-        </fieldset>
+        <SegmentedTabs
+          ariaLabel="Date and time choice"
+          className="self-start"
+          options={SCHEDULE_MODE_OPTIONS}
+          size="lg"
+          value={scheduleMode}
+          onChange={onScheduleModeChange}
+        />
       ) : null}
 
       {scheduleMode === "FIXED" ? (
@@ -110,33 +117,5 @@ export function DateTimeSection({
         </p>
       )}
     </SectionCard>
-  );
-}
-
-function ScheduleModeButton({
-  active,
-  icon: Icon,
-  label,
-  onClick,
-}: {
-  active: boolean;
-  icon: typeof Clock;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      aria-pressed={active}
-      onClick={onClick}
-      className={cn(
-        "h-auto min-h-11 justify-start whitespace-normal px-3 py-2 text-left",
-        active && "border-forge-teal/50 bg-forge-teal/8 text-forge-teal",
-      )}
-    >
-      <Icon className="size-4 shrink-0" aria-hidden="true" />
-      {label}
-    </Button>
   );
 }

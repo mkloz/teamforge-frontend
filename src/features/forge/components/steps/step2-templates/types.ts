@@ -7,11 +7,11 @@ export interface Step2TemplatesProps {
   appliedTemplateId: string | null;
   selectedActivity: string | null;
   onStartBlank: () => void;
-  onTemplateToggle: (templateId: string, template: ForgePlanTemplate) => void;
+  onTemplateSelect: (templateId: string, template: ForgePlanTemplate) => void;
 }
 
 export interface TemplateSuggestionCardProps {
   active: boolean;
-  onTemplateToggle: (templateId: string, template: ForgePlanTemplate) => void;
+  onTemplateSelect: (templateId: string, template: ForgePlanTemplate) => void;
   suggestion: SuggestedTemplate;
 }

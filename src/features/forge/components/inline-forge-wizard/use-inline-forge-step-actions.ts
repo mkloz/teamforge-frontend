@@ -33,12 +33,7 @@ export function useInlineForgeStepActions({
     applyActivityTemplate(templateId, template);
   }
 
-  function toggleStepTemplate(templateId: string, template: ActivityTemplate) {
-    if (appliedTemplateId === templateId) {
-      clearActivityTemplate();
-      return;
-    }
-
+  function selectStepTemplate(templateId: string, template: ActivityTemplate) {
     applyActivityTemplate(templateId, template);
     goToStep(3);
   }
@@ -57,6 +52,6 @@ export function useInlineForgeStepActions({
     startBlankPlan,
     switchFailedForgeToManual,
     toggleRecentActivityTemplate,
-    toggleStepTemplate,
+    selectStepTemplate,
   };
 }

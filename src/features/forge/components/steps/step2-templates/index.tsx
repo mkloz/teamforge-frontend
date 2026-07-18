@@ -17,7 +17,7 @@ export function Step2Templates({
   appliedTemplateId,
   selectedActivity,
   onStartBlank,
-  onTemplateToggle,
+  onTemplateSelect,
 }: Step2TemplatesProps) {
   const { data: currentUser, isPending: isCurrentUserPending } = useQuery(
     currentUserQueryOptions(),
@@ -77,7 +77,7 @@ export function Step2Templates({
             <TemplateSuggestionCard
               key={suggestion.id}
               active={appliedTemplateId === suggestion.id}
-              onTemplateToggle={onTemplateToggle}
+              onTemplateSelect={onTemplateSelect}
               suggestion={suggestion}
             />
           ))}

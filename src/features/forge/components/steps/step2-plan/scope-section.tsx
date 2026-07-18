@@ -21,8 +21,9 @@ export function ScopeSection({
       <SectionHeader title="Where will it happen?" />
       <SegmentedTabs
         ariaLabel="Where the activity will happen"
-        fill
+        className="self-start"
         options={SCOPE_OPTIONS}
+        size="lg"
         value={value}
         onChange={onChange}
       />

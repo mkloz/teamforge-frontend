@@ -17,7 +17,7 @@ function getTemplateCoverImage(suggestion: TemplateSuggestion) {
   return suggestion.coverImage ?? suggestion.template.coverImage;
 }
 
-function getTemplateTogglePayload(
+function getTemplateSelectionPayload(
   suggestion: TemplateSuggestion,
   coverImage: string | null,
 ) {
@@ -55,15 +55,15 @@ function getTemplateTitleClassName(active: boolean) {
 
 export function TemplateSuggestionCard({
   active,
-  onTemplateToggle,
+  onTemplateSelect,
   suggestion,
 }: TemplateSuggestionCardProps) {
   const Icon = ICON_MAP[suggestion.categoryId] ?? ICON_MAP.fallback;
   const coverImage = getTemplateCoverImage(suggestion);
-  const handleTemplateToggle = () => {
-    onTemplateToggle(
+  const handleTemplateSelect = () => {
+    onTemplateSelect(
       suggestion.id,
-      getTemplateTogglePayload(suggestion, coverImage),
+      getTemplateSelectionPayload(suggestion, coverImage),
     );
   };
 
@@ -71,7 +71,7 @@ export function TemplateSuggestionCard({
     <button
       type="button"
       aria-pressed={active}
-      onClick={handleTemplateToggle}
+      onClick={handleTemplateSelect}
       className={getTemplateCardClassName(active)}
     >
       <div className="relative w-20 shrink-0 overflow-hidden bg-muted sm:w-24">

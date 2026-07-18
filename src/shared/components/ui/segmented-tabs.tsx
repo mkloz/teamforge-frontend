@@ -5,7 +5,7 @@ import { useId } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
-type SegmentedTabsSize = "md" | "sm";
+type SegmentedTabsSize = "lg" | "md" | "sm";
 
 const ACTIVE_TAB_TRANSITION: Transition = {
   type: "spring",
@@ -18,6 +18,11 @@ const SEGMENTED_TAB_SIZE_CLASS_NAMES: Record<
   SegmentedTabsSize,
   { button: string; gap: string; icon: string }
 > = {
+  lg: {
+    button: "h-11 gap-2 px-3.5 text-sm",
+    gap: "gap-1",
+    icon: "size-4",
+  },
   md: {
     button: "h-9 gap-1.5 px-3 text-xs",
     gap: "gap-1",
@@ -130,15 +135,14 @@ export function SegmentedTabs<TValue extends string>({
 
   return (
     <LazyMotion features={domAnimation}>
-      <div
-        role="tablist"
-        aria-label={ariaLabel}
+      <fieldset
         className={getSegmentedTabsClassName({
           className,
           fill,
           size,
         })}
       >
+        <legend className="sr-only">{ariaLabel}</legend>
         {options.map((option) => {
           const active = value === option.id;
           const Icon = option.icon;
@@ -147,8 +151,7 @@ export function SegmentedTabs<TValue extends string>({
             <button
               key={option.id}
               type="button"
-              role="tab"
-              aria-selected={active}
+              aria-pressed={active}
               disabled={disabled}
               onClick={() => {
                 onChange(option.id);
@@ -192,7 +195,7 @@ export function SegmentedTabs<TValue extends string>({
             </button>
           );
         })}
-      </div>
+      </fieldset>
     </LazyMotion>
   );
 }
