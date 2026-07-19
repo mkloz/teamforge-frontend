@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const candidateAvailabilityLifecycleSchema = z.enum([
+const candidateAvailabilityLifecycleSchema = z.enum([
   "OPEN",
   "PAUSED",
   "EXPIRED",

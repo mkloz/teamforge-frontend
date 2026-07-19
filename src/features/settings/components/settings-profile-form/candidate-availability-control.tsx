@@ -354,7 +354,7 @@ function AvailabilityActions({
       <ActionDialog
         cancelLabel="Not now"
         confirmLabel="Confirm I'm open"
-        description="This renews your local and online choices for another 30 days. You still review every proposal before joining."
+        description="This reopens your saved proposal types for 30 days. You still review every proposal before deciding whether to join."
         disabled={reconfirmDisabled}
         loading={activeAction === "reconfirm"}
         onConfirm={() =>
@@ -405,7 +405,7 @@ function AvailabilityActions({
         <ActionDialog
           cancelLabel="Stay open"
           confirmLabel="Pause proposals"
-          description="Pausing stops TeamForge from showing you new proposals."
+          description="Pausing stops TeamForge from showing you new proposals. It does not remove you from a proposal you are already reviewing."
           disabled={actionDisabled}
           loading={activeAction === "pause"}
           onConfirm={() =>
