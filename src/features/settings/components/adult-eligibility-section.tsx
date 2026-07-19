@@ -8,6 +8,8 @@ import {
 import type { FormEvent } from "react";
 
 import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { AdultEligibilityCorrectionControls } from "@/features/settings/components/adult-eligibility-correction-controls";
+import type { useAdultEligibilityCorrection } from "@/features/settings/hooks/use-adult-eligibility-correction";
 import { useAdultEligibilityForm } from "@/features/settings/hooks/use-adult-eligibility-form";
 import { DateOfBirthField } from "@/shared/components/profile/date-of-birth-field";
 import { Button } from "@/shared/components/ui/button";
@@ -18,6 +20,7 @@ import type { AdultEligibility } from "@/shared/schemas";
 
 interface AdultEligibilitySectionProps {
   adultEligibility?: AdultEligibility;
+  correctionState: ReturnType<typeof useAdultEligibilityCorrection>;
 }
 
 type EligibilityStatus = AdultEligibility["status"];
@@ -43,9 +46,9 @@ const ELIGIBILITY_STATUS_CONTENT: Record<
     tone: "success",
   },
   NOT_ELIGIBLE: {
-    actionLabel: "Check again",
+    actionLabel: "Check eligibility",
     description:
-      "This check does not meet TeamForge's current age requirements. If the date was wrong, you can submit it again.",
+      "This check does not meet TeamForge's current age requirements. If the date was wrong, request a review below.",
     icon: CircleAlert,
     label: "Not eligible",
     tone: "warning",
@@ -53,7 +56,7 @@ const ELIGIBILITY_STATUS_CONTENT: Record<
   REVIEW_REQUIRED: {
     actionLabel: "Check eligibility",
     description:
-      "Your age eligibility needs review. You can't submit another date while the review is open.",
+      "Your age eligibility needs review. Check the request status below.",
     icon: CircleAlert,
     label: "Review needed",
     tone: "warning",
@@ -70,13 +73,14 @@ const ELIGIBILITY_STATUS_CONTENT: Record<
 
 export function AdultEligibilitySection({
   adultEligibility,
+  correctionState,
 }: AdultEligibilitySectionProps) {
   const { eligibility, form, isOnline, isSubmitting, onSubmit, submitError } =
     useAdultEligibilityForm({ adultEligibility });
   const status = eligibility?.status ?? "UNKNOWN";
   const statusContent = ELIGIBILITY_STATUS_CONTENT[status];
   const StatusIcon = statusContent.icon;
-  const canSubmit = status === "UNKNOWN" || status === "NOT_ELIGIBLE";
+  const canSubmit = status === "UNKNOWN";
   const compatibilityInputLock = useCompatibilityInputLock({
     enabled: canSubmit,
   });
@@ -176,6 +180,10 @@ export function AdultEligibilitySection({
               </div>
             </form>
           </Form>
+        ) : null}
+
+        {!canSubmit ? (
+          <AdultEligibilityCorrectionControls state={correctionState} />
         ) : null}
       </div>
     </section>

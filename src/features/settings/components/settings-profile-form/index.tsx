@@ -105,6 +105,7 @@ function AccountSettingsPanel({
       />
       <AdultEligibilitySection
         adultEligibility={account.currentUser?.adultEligibility}
+        correctionState={account.adultEligibilityCorrection}
       />
     </div>
   );
@@ -167,6 +168,7 @@ function PrivacySettingsPanel({
   return (
     <Suspense fallback={<SettingsPreferencesSkeleton />}>
       <PrivacySettingsSection
+        accountExport={privacy.accountExport}
         notificationPreferences={privacy.notificationPreferences}
         isLoadingNotificationPreferences={
           privacy.isLoadingNotificationPreferences
@@ -191,6 +193,7 @@ function SecuritySettingsPanel({
   return (
     <Suspense fallback={<SettingsActiveSessionsSkeleton />}>
       <SecuritySettingsSection
+        accountLifecycle={security.accountLifecycle}
         currentUser={security.currentUser}
         sessions={security.sessions}
         revokingSessionId={security.revokingSessionId}
@@ -199,17 +202,14 @@ function SecuritySettingsPanel({
           isLoadingSessions: security.isLoadingSessions,
           isSendingPasswordResetLink: security.isSendingPasswordResetLink,
           isRevokingOtherSessions: security.isRevokingOtherSessions,
-          isDeletingAccount: security.isDeletingAccount,
         }}
         errors={{
           securityError: security.securityError,
           sessionsError: security.sessionsError,
-          deleteAccountError: security.deleteAccountError,
         }}
         onSendPasswordResetLink={security.onSendPasswordResetLink}
         onRevokeSession={security.onRevokeSession}
         onRevokeOtherSessions={security.onRevokeOtherSessions}
-        onDeleteAccount={security.onDeleteAccount}
       />
     </Suspense>
   );

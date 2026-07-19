@@ -60,6 +60,18 @@ export const APP_QUERY_KEYS = {
     subscriptions: ["web-push", "subscriptions"] as const,
   },
   settings: {
+    accountData: ["settings", "account-data"] as const,
+    accountLifecycle: (userId: string) =>
+      ["settings", "account-data", userId, "lifecycle"] as const,
+    adultEligibilityCorrection: (userId: string) =>
+      [
+        "settings",
+        "account-data",
+        userId,
+        "adult-eligibility-correction",
+      ] as const,
+    accountExport: (userId: string) =>
+      ["settings", "account-data", userId, "export"] as const,
     activityInviteAvailability: [
       "settings",
       "activity-invite-availability",

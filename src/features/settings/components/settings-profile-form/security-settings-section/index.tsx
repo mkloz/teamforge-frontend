@@ -1,5 +1,5 @@
 import { OfflineSettingsNotice } from "@/features/settings/components/settings-profile-form/preference-section-parts";
-import { DeleteAccountSection } from "@/features/settings/components/settings-profile-form/settings-form-controls";
+import { AccountLifecycleSection } from "./account-lifecycle-section";
 import { ActiveSessionsSection } from "./active-sessions-section";
 import { PasswordRecoverySection } from "./password-recovery-section";
 import { SecuritySummary } from "./security-summary";
@@ -14,7 +14,7 @@ export function SecuritySettingsSection({
   onSendPasswordResetLink,
   onRevokeSession,
   onRevokeOtherSessions,
-  onDeleteAccount,
+  accountLifecycle,
 }: SecuritySettingsSectionProps) {
   return (
     <div className="flex flex-col gap-10">
@@ -57,12 +57,9 @@ export function SecuritySettingsSection({
         onRevokeOtherSessions={onRevokeOtherSessions}
       />
 
-      <DeleteAccountSection
+      <AccountLifecycleSection
         currentUser={currentUser}
-        isOnline={status.isOnline}
-        isDeleting={status.isDeletingAccount}
-        error={errors.deleteAccountError}
-        onDelete={onDeleteAccount}
+        state={accountLifecycle}
       />
     </div>
   );

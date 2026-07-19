@@ -44,10 +44,6 @@ export const SettingsCommands = {
     return SettingsApi.revokeOtherSessions();
   },
 
-  deleteAccount() {
-    return SettingsApi.deleteAccount();
-  },
-
   clearAuthState() {
     clearCurrentUserCache();
     authApi.clearSession();

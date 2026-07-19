@@ -36,6 +36,7 @@ const PWA_RESUME_QUERY_KEYS = [
   APP_QUERY_KEYS.settings.notificationPreferences,
   APP_QUERY_KEYS.settings.sessions,
   APP_QUERY_KEYS.settings.blockedUsers,
+  APP_QUERY_KEYS.settings.accountData,
   APP_QUERY_KEYS.forge.friends,
   APP_QUERY_KEYS.forge.recentActivities,
   APP_QUERY_KEYS.webPush.subscriptions,

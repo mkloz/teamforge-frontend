@@ -1,4 +1,3 @@
-export { DeleteAccountSection } from "./delete-account-section";
 export { MatchingThresholdControl } from "./matching-threshold-control";
 export { NotificationPreferenceRow } from "./notification-preference-row";
 export { SessionRow } from "./session-row";

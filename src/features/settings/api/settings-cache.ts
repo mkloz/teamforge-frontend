@@ -1,8 +1,15 @@
 import {
+  getSettingsAccountExportQueryKey,
+  getSettingsAdultEligibilityCorrectionQueryKey,
+  SETTINGS_ACCOUNT_DATA_QUERY_KEY,
   SETTINGS_BLOCKED_USERS_QUERY_KEY,
   SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
   SETTINGS_SESSIONS_QUERY_KEY,
 } from "@/features/settings/api/settings-query-keys";
+import type {
+  AccountExportResponse,
+  AdultEligibilityCorrectionResponse,
+} from "@/features/settings/schemas/account-data.schema";
 import { appQueryClient } from "@/shared/api/query-client";
 import { invalidateUserBlockSurfaces } from "@/shared/api/query-invalidation";
 import type {
@@ -26,6 +33,49 @@ function removeBlockedUser(
 }
 
 export const SettingsCache = {
+  setAdultEligibilityCorrection(
+    userId: string,
+    correction: AdultEligibilityCorrectionResponse,
+  ) {
+    appQueryClient.setQueryData(
+      getSettingsAdultEligibilityCorrectionQueryKey(userId),
+      correction,
+    );
+  },
+
+  setAccountExport(userId: string, accountExport: AccountExportResponse) {
+    appQueryClient.setQueryData(
+      getSettingsAccountExportQueryKey(userId),
+      accountExport,
+    );
+  },
+
+  markAccountExportConsumed(userId: string) {
+    appQueryClient.setQueryData<AccountExportResponse>(
+      getSettingsAccountExportQueryKey(userId),
+      (current) =>
+        current?.export
+          ? {
+              export: {
+                ...current.export,
+                state: "CONSUMED",
+                canDownload: false,
+              },
+            }
+          : current,
+    );
+  },
+
+  invalidateAccountExport(userId: string) {
+    return appQueryClient.invalidateQueries({
+      queryKey: getSettingsAccountExportQueryKey(userId),
+    });
+  },
+
+  removeAccountData() {
+    appQueryClient.removeQueries({ queryKey: SETTINGS_ACCOUNT_DATA_QUERY_KEY });
+  },
+
   setNotificationPreferences(preferences: NotificationPreferences) {
     appQueryClient.setQueryData(
       SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,

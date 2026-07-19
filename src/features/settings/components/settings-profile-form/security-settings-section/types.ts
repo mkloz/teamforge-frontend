@@ -6,12 +6,11 @@ export type SecuritySettingsStatus = Pick<
   | "isLoadingSessions"
   | "isSendingPasswordResetLink"
   | "isRevokingOtherSessions"
-  | "isDeletingAccount"
 >;
 
 export type SecuritySettingsErrors = Pick<
   SecuritySettingsState,
-  "securityError" | "sessionsError" | "deleteAccountError"
+  "securityError" | "sessionsError"
 >;
 
 export type SecuritySettingsSectionProps = Pick<
@@ -22,7 +21,7 @@ export type SecuritySettingsSectionProps = Pick<
   | "onSendPasswordResetLink"
   | "onRevokeSession"
   | "onRevokeOtherSessions"
-  | "onDeleteAccount"
+  | "accountLifecycle"
 > & {
   status: SecuritySettingsStatus;
   errors: SecuritySettingsErrors;

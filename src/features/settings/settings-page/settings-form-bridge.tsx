@@ -46,6 +46,7 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
     <SettingsProfileForm
       activeSection={activeSection}
       account={{
+        adultEligibilityCorrection: profileFormState.adultEligibilityCorrection,
         currentUser: profileFormState.currentUser,
         form: profileFormState.form,
         onSubmit: profileFormState.onSubmit,
@@ -72,24 +73,23 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
       }}
       privacy={{
         ...notificationPreferenceState,
+        accountExport: profileFormState.accountExport,
         onChange: profileFormState.updatePrivacyPreference,
       }}
       security={{
+        accountLifecycle: profileFormState.accountLifecycle,
         currentUser: profileFormState.currentUser,
         sessions: profileFormState.sessions,
         isOnline: profileFormState.isOnline,
         isLoadingSessions: profileFormState.isLoadingSessions,
         isSendingPasswordResetLink: profileFormState.isSendingPasswordResetLink,
         isRevokingOtherSessions: profileFormState.isRevokingOtherSessions,
-        isDeletingAccount: profileFormState.isDeletingAccount,
         revokingSessionId: profileFormState.revokingSessionId,
         securityError: profileFormState.securityError,
         sessionsError: profileFormState.sessionsError,
-        deleteAccountError: profileFormState.deleteAccountError,
         onSendPasswordResetLink: profileFormState.sendPasswordResetLink,
         onRevokeSession: profileFormState.revokeSession,
         onRevokeOtherSessions: profileFormState.revokeOtherSessions,
-        onDeleteAccount: profileFormState.deleteAccount,
       }}
       safety={{
         blockedUsers: blockedUsersState.blockedUsers,

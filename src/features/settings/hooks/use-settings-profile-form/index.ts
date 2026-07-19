@@ -1,7 +1,9 @@
 import { useCandidateAvailability } from "@/features/forge/public/candidate-availability";
+import { useAccountExport } from "@/features/settings/hooks/use-account-export";
+import { useAccountLifecycle } from "@/features/settings/hooks/use-account-lifecycle";
 import { useActivityInviteAvailability } from "@/features/settings/hooks/use-activity-invite-availability";
+import { useAdultEligibilityCorrection } from "@/features/settings/hooks/use-adult-eligibility-correction";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
-import { useDeleteAccountAction } from "./use-delete-account-action";
 import { useSettingsAvatarActions } from "./use-settings-avatar-actions";
 import { useSettingsPreferencesActions } from "./use-settings-preferences-actions";
 import { useSettingsProfileBase } from "./use-settings-profile-base";
@@ -34,7 +36,19 @@ export function useSettingsProfileForm({
   const activityInviteAvailability = useActivityInviteAvailability({
     enabled: Boolean(profile.currentUser) && activeSection === "matching",
   });
-  const deleteAccount = useDeleteAccountAction();
+  const userId = profile.currentUser?.id;
+  const accountLifecycle = useAccountLifecycle({
+    enabled: Boolean(userId) && activeSection === "security",
+    userId,
+  });
+  const adultEligibilityCorrection = useAdultEligibilityCorrection({
+    enabled: Boolean(userId) && activeSection === "account",
+    userId,
+  });
+  const accountExport = useAccountExport({
+    enabled: Boolean(userId) && activeSection === "privacy",
+    userId,
+  });
 
   return {
     currentUser: profile.currentUser,
@@ -76,8 +90,8 @@ export function useSettingsProfileForm({
       preferences.savingNotificationPreferenceKeys,
     candidateAvailability,
     activityInviteAvailability,
-    deleteAccount: deleteAccount.deleteAccount,
-    isDeletingAccount: deleteAccount.isDeletingAccount,
-    deleteAccountError: deleteAccount.deleteAccountError,
+    accountExport,
+    accountLifecycle,
+    adultEligibilityCorrection,
   };
 }

@@ -24,7 +24,6 @@ export const trackedMutationNames = {
   settingsRevokeSession: "settings.revoke-session",
   settingsRevokeOtherSessions: "settings.revoke-other-sessions",
   settingsUnblockUser: "settings.user.unblock",
-  settingsDeleteAccount: "settings.account.delete",
   exploreJoinGroup: "explore.join-group",
   exploreRequestFormationOpening: "explore.request-formation-opening",
   exploreWithdrawFormationOpening: "explore.withdraw-formation-opening",

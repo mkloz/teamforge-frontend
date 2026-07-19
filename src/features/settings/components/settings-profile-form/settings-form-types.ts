@@ -1,6 +1,9 @@
 import type { UseFormReturn } from "react-hook-form";
 import type { CandidateAvailabilityState } from "@/features/forge/public/candidate-availability";
+import type { useAccountExport } from "@/features/settings/hooks/use-account-export";
+import type { useAccountLifecycle } from "@/features/settings/hooks/use-account-lifecycle";
 import type { ActivityInviteAvailabilityState } from "@/features/settings/hooks/use-activity-invite-availability";
+import type { useAdultEligibilityCorrection } from "@/features/settings/hooks/use-adult-eligibility-correction";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import type {
@@ -21,6 +24,7 @@ export type BooleanSettingsPreferenceKey = Exclude<
 >;
 
 export interface AccountSettingsState {
+  adultEligibilityCorrection: ReturnType<typeof useAdultEligibilityCorrection>;
   currentUser: SettingsCurrentUser | undefined;
   form: UseFormReturn<SettingsProfileValues>;
   onSubmit: () => void;
@@ -54,6 +58,7 @@ export interface MatchingSettingsState extends NotificationPreferenceState {
 }
 
 export interface PrivacySettingsState extends NotificationPreferenceState {
+  accountExport: ReturnType<typeof useAccountExport>;
   onChange: (
     values: Pick<
       NotificationPreferences,
@@ -82,21 +87,19 @@ export interface NotificationSettingsState extends NotificationPreferenceState {
 }
 
 export interface SecuritySettingsState {
+  accountLifecycle: ReturnType<typeof useAccountLifecycle>;
   currentUser: User | undefined;
   sessions: AuthSession[];
   isOnline: boolean;
   isLoadingSessions: boolean;
   isSendingPasswordResetLink: boolean;
   isRevokingOtherSessions: boolean;
-  isDeletingAccount: boolean;
   revokingSessionId: string | null;
   securityError: string | null;
   sessionsError: string | null;
-  deleteAccountError: string | null;
   onSendPasswordResetLink: () => Promise<unknown>;
   onRevokeSession: (session: AuthSession) => Promise<void>;
   onRevokeOtherSessions: () => Promise<void>;
-  onDeleteAccount: () => Promise<void>;
 }
 
 export interface SafetySettingsState {

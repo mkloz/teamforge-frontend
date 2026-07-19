@@ -135,12 +135,4 @@ export class SettingsApi {
       requestId: getResponseRequestId(response),
     };
   }
-
-  static async deleteAccount() {
-    const response = await apiClient.delete("users/me");
-
-    return {
-      requestId: getResponseRequestId(response),
-    };
-  }
 }
