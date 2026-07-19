@@ -11,6 +11,7 @@ import {
   forgeProposalRecoveryCommandSchema,
   forgeProposalSchema,
 } from "@/features/forge-proposals/schemas/forge-proposal.schema";
+import { forgeProposalReportTargetsSchema } from "@/features/forge-proposals/schemas/forge-proposal-report-targets.schema";
 import { apiClient } from "@/shared/api/api";
 import { formationOpeningOrganizerReceiptSchema } from "@/shared/api/formation-opening-api";
 
@@ -29,6 +30,21 @@ export class ForgeProposalsApi {
       .json<unknown>();
 
     return forgeProposalSchema.parse(response);
+  }
+
+  static async getReportTargets(proposalId: string) {
+    const response = await apiClient
+      .get(`forge-proposals/${proposalId}/report-targets`)
+      .json<unknown>();
+    const reportTargets = forgeProposalReportTargetsSchema.parse(response);
+
+    if (reportTargets.proposalId !== proposalId) {
+      throw new Error(
+        "Proposal report targets returned for the wrong proposal.",
+      );
+    }
+
+    return reportTargets;
   }
 
   static accept(

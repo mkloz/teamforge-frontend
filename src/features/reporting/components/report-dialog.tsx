@@ -22,6 +22,7 @@ import {
 import {
   type ReportReceipt as ReportReceiptData,
   type ReportSubmission,
+  type ReportTargetType,
   reportSubmissionSchema,
 } from "@/features/reporting/schemas/report.schemas";
 import {
@@ -287,6 +288,9 @@ function ReportFormContent({
   targets: readonly ReportTarget[];
 }) {
   const form = useFormContextForReport();
+  const selectedTarget = targets.find(
+    (target) => getTargetKey(target) === form.watch("targetKey"),
+  );
 
   return (
     <>
@@ -312,7 +316,7 @@ function ReportFormContent({
             {evidenceSummary}
           </p>
         ) : null}
-        <EvidenceNotice />
+        <EvidenceNotice targetType={selectedTarget?.type} />
         <RequestedActions
           canRequestBlock={canRequestBlock}
           canRequestLeave={canRequestLeave}
@@ -495,12 +499,21 @@ function DescriptionField() {
   );
 }
 
-function EvidenceNotice() {
+function EvidenceNotice({
+  targetType,
+}: {
+  targetType: ReportTargetType | undefined;
+}) {
+  const message =
+    targetType === "MESSAGE" || targetType === "ATTACHMENT"
+      ? "TeamForge preserves the item you report and a small amount of nearby context you could see: up to 5 messages before it and 2 after it."
+      : targetType === "PROPOSAL_SEAT"
+        ? "TeamForge preserves this proposal seat and the permitted proposal details shown to you."
+        : "TeamForge preserves the item you report and the permitted context you could see.";
+
   return (
     <div className="rounded-xl bg-muted/60 p-3 text-slate-muted text-sm leading-relaxed">
-      TeamForge preserves the item you report and a small amount of nearby
-      context you could see: up to 5 messages before it and 2 after it. A
-      receipt confirms delivery; it is not a decision.
+      {message} A receipt confirms delivery; it is not a decision.
     </div>
   );
 }

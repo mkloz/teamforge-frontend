@@ -1592,6 +1592,316 @@ paths:
       security: *a27
       summary: Create a manual group with its first plan and chat
       tags: *a28
+  /api/v1/notifications:
+    get:
+      operationId: NotificationsController_getMany
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: type
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - FRIEND_REQUEST
+              - FRIEND_ACCEPTED
+              - GROUP_FORMED
+              - GROUP_INVITE
+              - GROUP_JOIN_REQUEST
+              - GROUP_JOIN_APPROVED
+              - GROUP_MEMBER_LEFT
+              - GROUP_DISBANDED
+              - PLAN_CREATED
+              - PLAN_CONFIRMED
+              - PLAN_UPDATED
+              - PLAN_PROPOSAL
+              - PLAN_STARTING_SOON
+              - PLAN_COMPLETED
+              - PLAN_CANCELLED
+              - NEW_MESSAGE
+              - MESSAGE_MENTION
+              - RATING_REQUEST
+              - RATING_RECEIVED
+              - FORGE_PROPOSAL_READY
+              - FORGE_PROPOSAL_REMINDER
+              - SYSTEM_ANNOUNCEMENT
+              - ACCOUNT_SECURITY
+        - name: isRead
+          required: false
+          in: query
+          description: Filter notifications by read state
+          schema:
+            example: false
+            type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotifications'
+        '429':
+          description: Too many requests
+      security: &a29
+        - bearer: []
+      summary: List your notifications
+      tags: &a30
+        - Notifications
+  /api/v1/notifications/unread-count:
+    get:
+      operationId: NotificationsController_getUnreadCount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUnreadCountEntity'
+        '429':
+          description: Too many requests
+      security: *a29
+      summary: Get your unread notification count
+      tags: *a30
+  /api/v1/notifications/web-push/public-key:
+    get:
+      operationId: NotificationsController_getWebPushPublicKey
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebPushPublicKeyEntity'
+        '429':
+          description: Too many requests
+      security: []
+      summary: Get the web push public key and enabled state
+      tags: *a30
+  /api/v1/notifications/web-push/subscriptions:
+    get:
+      operationId: NotificationsController_getWebPushSubscriptions
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WebPushSubscriptionEntity'
+        '429':
+          description: Too many requests
+      security: *a29
+      summary: List your active web push subscriptions
+      tags: *a30
+    post:
+      operationId: NotificationsController_upsertWebPushSubscription
+      parameters:
+        - name: user-agent
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertWebPushSubscriptionDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebPushSubscriptionEntity'
+        '429':
+          description: Too many requests
+      security: *a29
+      summary: Create or refresh a web push subscription
+      tags: *a30
+    delete:
+      operationId: NotificationsController_deleteWebPushSubscription
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteWebPushSubscriptionDto'
+      responses:
+        '200':
+          description: Subscription disabled
+        '429':
+          description: Too many requests
+      security: *a29
+      summary: Disable one of your web push subscriptions
+      tags: *a30
+  /api/v1/notifications/web-push/test:
+    post:
+      operationId: NotificationsController_sendTestWebPushNotification
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebPushTestDispatchEntity'
+        '429':
+          description: Too many requests
+      security: *a29
+      summary: Send the current user a test web push notification
+      tags: *a30
+  /api/v1/notifications/{id}/read:
+    post:
+      operationId: NotificationsController_markRead
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Notification ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationEntity'
+        '429':
+          description: Too many requests
+      security: *a29
+      summary: Mark one notification as read
+      tags: *a30
+  /api/v1/notifications/{id}/unread:
+    post:
+      operationId: NotificationsController_markUnread
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Notification ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationEntity'
+        '429':
+          description: Too many requests
+      security: *a29
+      summary: Mark one notification as unread
+      tags: *a30
+  /api/v1/notifications/read-all:
+    post:
+      operationId: NotificationsController_markAllRead
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUnreadCountEntity'
+        '429':
+          description: Too many requests
+      security: *a29
+      summary: Mark all of your notifications as read
+      tags: *a30
+  /api/v1/admin/pilot/status:
+    get:
+      operationId: PilotControlController_getStatus
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PilotStatusEntity'
+        '401': &a31
+          description: Authentication is required
+        '403': &a32
+          description: Admin access is required
+        '429':
+          description: Too many requests
+      security: &a33
+        - bearer: []
+      tags: &a34
+        - Admin pilot
+  /api/v1/admin/pilot/metrics:
+    get:
+      operationId: PilotControlController_getMetrics
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PilotMetricsEntity'
+        '401': *a31
+        '403': *a32
+        '429':
+          description: Too many requests
+      security: *a33
+      tags: *a34
+  /api/v1/admin/pilot/sponsor-artifact:
+    get:
+      operationId: PilotControlController_getSponsorArtifact
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PilotSponsorArtifactStatusEntity'
+        '401': *a31
+        '403': *a32
+        '429':
+          description: Too many requests
+      security: *a33
+      tags: *a34
+    post:
+      operationId: PilotControlController_generateSponsorArtifact
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PilotSponsorArtifactStatusEntity'
+        '401': *a31
+        '403': *a32
+        '429':
+          description: Too many requests
+      security: *a33
+      tags: *a34
   /api/v1/activities/{activityId}/auto-forge-requests:
     post:
       operationId: AutoForgeRequestsController_create
@@ -1635,10 +1945,10 @@ paths:
           description: State, policy, or command conflict
         '429':
           description: Too many requests
-      security: &a29
+      security: &a35
         - bearer: []
       summary: Start an automatic group request
-      tags: &a30
+      tags: &a36
         - Automatic group requests
   /api/v1/auto-forge-requests/current:
     get:
@@ -1653,9 +1963,9 @@ paths:
                 $ref: '#/components/schemas/CurrentAutoForgeRequestEntity'
         '429':
           description: Too many requests
-      security: *a29
+      security: *a35
       summary: Get your current automatic group request
-      tags: *a30
+      tags: *a36
   /api/v1/auto-forge-requests/{id}:
     patch:
       operationId: AutoForgeRequestsController_update
@@ -1699,9 +2009,9 @@ paths:
           description: State, policy, or command conflict
         '429':
           description: Too many requests
-      security: *a29
+      security: *a35
       summary: Edit an automatic group request
-      tags: *a30
+      tags: *a36
     delete:
       operationId: AutoForgeRequestsController_cancel
       parameters:
@@ -1737,9 +2047,9 @@ paths:
           description: State, policy, or command conflict
         '429':
           description: Too many requests
-      security: *a29
+      security: *a35
       summary: Cancel an automatic group request
-      tags: *a30
+      tags: *a36
   /api/v1/auto-forge-requests/{id}/pause:
     post:
       operationId: AutoForgeRequestsController_pause
@@ -1776,9 +2086,9 @@ paths:
           description: State, policy, or command conflict
         '429':
           description: Too many requests
-      security: *a29
+      security: *a35
       summary: Pause an automatic group request
-      tags: *a30
+      tags: *a36
   /api/v1/auto-forge-requests/{id}/resume:
     post:
       operationId: AutoForgeRequestsController_resume
@@ -1815,9 +2125,9 @@ paths:
           description: State, policy, or command conflict
         '429':
           description: Too many requests
-      security: *a29
+      security: *a35
       summary: Resume an automatic group request
-      tags: *a30
+      tags: *a36
   /api/v1/auto-forge-requests/{id}/retry:
     post:
       operationId: AutoForgeRequestsController_retry
@@ -1854,9 +2164,9 @@ paths:
           description: State, policy, or command conflict
         '429':
           description: Too many requests
-      security: *a29
+      security: *a35
       summary: Try an automatic group request again
-      tags: *a30
+      tags: *a36
   /api/v1/forge-proposal-openings/{id}:
     get:
       operationId: ForgeProposalOpeningsController_detail
@@ -1879,10 +2189,10 @@ paths:
           description: Formation opening not found
         '429':
           description: Too many requests
-      security: &a31
+      security: &a37
         - bearer: []
       summary: Get an authorized formation opening
-      tags: &a32
+      tags: &a38
         - Formation openings
   /api/v1/forge-proposal-openings/{id}/applications:
     post:
@@ -1922,9 +2232,9 @@ paths:
           description: Formation opening expired
         '429':
           description: Too many requests
-      security: *a31
+      security: *a37
       summary: Request a place in a formation opening
-      tags: *a32
+      tags: *a38
   /api/v1/forge-proposal-openings/{id}/applications/current:
     delete:
       operationId: ForgeProposalOpeningsController_withdrawCurrent
@@ -1963,9 +2273,9 @@ paths:
           description: Formation opening expired
         '429':
           description: Too many requests
-      security: *a31
+      security: *a37
       summary: Withdraw your formation-opening request
-      tags: *a32
+      tags: *a38
   /api/v1/forge-proposal-openings/{id}/applications/{applicationId}/select:
     post:
       operationId: ForgeProposalOpeningsController_select
@@ -2009,9 +2319,9 @@ paths:
           description: Formation opening expired
         '429':
           description: Too many requests
-      security: *a31
+      security: *a37
       summary: Select a formation-opening applicant
-      tags: *a32
+      tags: *a38
   /api/v1/forge-proposal-openings/{id}/close:
     post:
       operationId: ForgeProposalOpeningsController_close
@@ -2050,9 +2360,9 @@ paths:
           description: Formation opening expired
         '429':
           description: Too many requests
-      security: *a31
+      security: *a37
       summary: Close a formation opening
-      tags: *a32
+      tags: *a38
   /api/v1/forge-proposals/current:
     get:
       operationId: ForgeProposalsController_current
@@ -2066,10 +2376,10 @@ paths:
                 $ref: '#/components/schemas/CurrentForgeProposalEntity'
         '429':
           description: Too many requests
-      security: &a33
+      security: &a39
         - bearer: []
       summary: Get your current group proposal
-      tags: &a34
+      tags: &a40
         - Group proposals
   /api/v1/forge-proposals/{id}:
     get:
@@ -2091,9 +2401,32 @@ paths:
           description: Group proposal not found
         '429':
           description: Too many requests
-      security: *a33
+      security: *a39
       summary: Get an authorized group proposal
-      tags: *a34
+      tags: *a40
+  /api/v1/forge-proposals/{id}/report-targets:
+    get:
+      operationId: ForgeProposalsController_reportTargets
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgeProposalReportTargetsEntity'
+        '404':
+          description: Proposal reporting is unavailable
+        '429':
+          description: Too many requests
+      security: *a39
+      summary: List peers available for a proposal report
+      tags: *a40
   /api/v1/forge-proposals/{id}/open-recovery-seat:
     post:
       operationId: ForgeProposalsController_openRecovery
@@ -2132,9 +2465,9 @@ paths:
           description: Group proposal deadline passed
         '429':
           description: Too many requests
-      security: *a33
+      security: *a39
       summary: Open one place for an eligible proposal
-      tags: *a34
+      tags: *a40
   /api/v1/forge-proposals/{id}/accept:
     post:
       operationId: ForgeProposalsController_accept
@@ -2173,9 +2506,9 @@ paths:
           description: Group proposal deadline passed
         '429':
           description: Too many requests
-      security: *a33
+      security: *a39
       summary: Accept a group proposal
-      tags: *a34
+      tags: *a40
   /api/v1/forge-proposals/{id}/decline:
     post:
       operationId: ForgeProposalsController_decline
@@ -2214,9 +2547,9 @@ paths:
           description: Group proposal deadline passed
         '429':
           description: Too many requests
-      security: *a33
+      security: *a39
       summary: Decline a group proposal
-      tags: *a34
+      tags: *a40
   /api/v1/forge-proposals/{id}/withdraw:
     post:
       operationId: ForgeProposalsController_withdraw
@@ -2255,9 +2588,9 @@ paths:
           description: Group proposal deadline passed
         '429':
           description: Too many requests
-      security: *a33
+      security: *a39
       summary: Withdraw acceptance of a group proposal
-      tags: *a34
+      tags: *a40
   /api/v1/forge/availability:
     get:
       operationId: ForgeCandidateAvailabilityController_get
@@ -2271,10 +2604,10 @@ paths:
                 $ref: '#/components/schemas/ForgeCandidateAvailabilityEntity'
         '429':
           description: Too many requests
-      security: &a35
+      security: &a41
         - bearer: []
       summary: Get your proposal availability
-      tags: &a36
+      tags: &a42
         - Forge candidate availability
     put:
       operationId: ForgeCandidateAvailabilityController_update
@@ -2304,9 +2637,9 @@ paths:
           description: Policy, eligibility, revision, or idempotency conflict
         '429':
           description: Too many requests
-      security: *a35
+      security: *a41
       summary: Set your proposal availability and scopes
-      tags: *a36
+      tags: *a42
   /api/v1/forge/availability/pause:
     post:
       operationId: ForgeCandidateAvailabilityController_pause
@@ -2338,9 +2671,9 @@ paths:
           description: Policy, revision, or idempotency conflict
         '429':
           description: Too many requests
-      security: *a35
+      security: *a41
       summary: Pause new group proposals
-      tags: *a36
+      tags: *a42
   /api/v1/forge/availability/reconfirm:
     post:
       operationId: ForgeCandidateAvailabilityController_reconfirm
@@ -2372,80 +2705,9 @@ paths:
           description: Policy, eligibility, revision, or idempotency conflict
         '429':
           description: Too many requests
-      security: *a35
+      security: *a41
       summary: Renew your proposal availability
-      tags: *a36
-  /api/v1/admin/pilot/status:
-    get:
-      operationId: PilotControlController_getStatus
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PilotStatusEntity'
-        '401': &a37
-          description: Authentication is required
-        '403': &a38
-          description: Admin access is required
-        '429':
-          description: Too many requests
-      security: &a39
-        - bearer: []
-      tags: &a40
-        - Admin pilot
-  /api/v1/admin/pilot/metrics:
-    get:
-      operationId: PilotControlController_getMetrics
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PilotMetricsEntity'
-        '401': *a37
-        '403': *a38
-        '429':
-          description: Too many requests
-      security: *a39
-      tags: *a40
-  /api/v1/admin/pilot/sponsor-artifact:
-    get:
-      operationId: PilotControlController_getSponsorArtifact
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PilotSponsorArtifactStatusEntity'
-        '401': *a37
-        '403': *a38
-        '429':
-          description: Too many requests
-      security: *a39
-      tags: *a40
-    post:
-      operationId: PilotControlController_generateSponsorArtifact
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PilotSponsorArtifactStatusEntity'
-        '401': *a37
-        '403': *a38
-        '429':
-          description: Too many requests
-      security: *a39
-      tags: *a40
+      tags: *a42
   /api/v1/chats/link-preview:
     get:
       operationId: ChatController_getLinkPreview
@@ -2465,10 +2727,10 @@ paths:
                 $ref: '#/components/schemas/LinkPreviewEntity'
         '429':
           description: Too many requests
-      security: &a41
+      security: &a43
         - bearer: []
       summary: Get link preview details for a URL
-      tags: &a42
+      tags: &a44
         - Chat
   /api/v1/chats:
     get:
@@ -2506,9 +2768,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedChats'
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: List chats for the current user
-      tags: *a42
+      tags: *a44
   /api/v1/chats/activity-feed:
     get:
       operationId: ChatController_getActivityFeed
@@ -2545,9 +2807,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedChats'
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: List chat summaries for the activity feed
-      tags: *a42
+      tags: *a44
   /api/v1/chats/saved-messages:
     get:
       operationId: ChatController_getSavedMessages
@@ -2575,9 +2837,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedSavedMessages'
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: List saved messages for the current user
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}:
     get:
       operationId: ChatController_getById
@@ -2602,9 +2864,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Get a single chat
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/messages:
     get:
       operationId: ChatController_getMessages
@@ -2643,9 +2905,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: List messages in a chat
-      tags: *a42
+      tags: *a44
     post:
       operationId: ChatController_sendMessage
       parameters:
@@ -2677,9 +2939,9 @@ paths:
           description: Chat or reply target not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Send a message to a chat
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/messages/search:
     get:
       operationId: ChatController_searchMessages
@@ -2729,9 +2991,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Search messages in a chat
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/messages/{messageId}:
     patch:
       operationId: ChatController_updateMessage
@@ -2769,9 +3031,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Edit one of your messages
-      tags: *a42
+      tags: *a44
     delete:
       operationId: ChatController_deleteMessage
       parameters:
@@ -2802,9 +3064,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Mark one of your messages as deleted
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/messages/{messageId}/pin:
     post:
       operationId: ChatController_pinMessage
@@ -2836,9 +3098,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Pin a message in a chat
-      tags: *a42
+      tags: *a44
     delete:
       operationId: ChatController_unpinMessage
       parameters:
@@ -2869,9 +3131,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Unpin a message in a chat
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/pin:
     post:
       operationId: ChatController_pinChat
@@ -2896,9 +3158,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Pin a chat for the current user
-      tags: *a42
+      tags: *a44
     delete:
       operationId: ChatController_unpinChat
       parameters:
@@ -2922,9 +3184,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Unpin a chat for the current user
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/mute:
     post:
       operationId: ChatController_muteChat
@@ -2949,9 +3211,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Mute a chat for the current user
-      tags: *a42
+      tags: *a44
     delete:
       operationId: ChatController_unmuteChat
       parameters:
@@ -2975,9 +3237,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Unmute a chat for the current user
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/messages/{messageId}/save:
     post:
       operationId: ChatController_saveMessage
@@ -3009,9 +3271,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Save a message for the current user
-      tags: *a42
+      tags: *a44
     delete:
       operationId: ChatController_unsaveMessage
       parameters:
@@ -3042,9 +3304,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Remove a saved message for the current user
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/messages/{messageId}/forward:
     post:
       operationId: ChatController_forwardMessage
@@ -3082,9 +3344,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Forward a message to another chat
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/messages/{messageId}/reactions:
     post:
       operationId: ChatController_reactToMessage
@@ -3122,9 +3384,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Add a reaction to a message
-      tags: *a42
+      tags: *a44
     delete:
       operationId: ChatController_removeReaction
       parameters:
@@ -3162,9 +3424,9 @@ paths:
           description: Chat or message not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Remove one of your reactions from a message
-      tags: *a42
+      tags: *a44
   /api/v1/chats/{id}/read:
     post:
       operationId: ChatController_markRead
@@ -3195,9 +3457,9 @@ paths:
           description: Chat not found
         '429':
           description: Too many requests
-      security: *a41
+      security: *a43
       summary: Mark a chat as read
-      tags: *a42
+      tags: *a44
   /api/v1/friends:
     get:
       operationId: FriendshipsController_getManyFriends
@@ -3225,10 +3487,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: &a43
+      security: &a45
         - bearer: []
       summary: List accepted friends for the current user
-      tags: &a44
+      tags: &a46
         - Friendships
   /api/v1/friends/public/{id}:
     get:
@@ -3264,9 +3526,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedPublicFriends'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: List public friends of a target user
-      tags: *a44
+      tags: *a46
   /api/v1/friends/common/{id}:
     get:
       operationId: FriendshipsController_getCommonFriends
@@ -3301,9 +3563,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: List common friends with the target user
-      tags: *a44
+      tags: *a46
   /api/v1/friends/requests/incoming:
     get:
       operationId: FriendshipsController_getIncomingRequests
@@ -3331,9 +3593,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: List incoming friend requests
-      tags: *a44
+      tags: *a46
   /api/v1/friends/requests/outgoing:
     get:
       operationId: FriendshipsController_getOutgoingRequests
@@ -3361,9 +3623,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedFriendships'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: List outgoing friend requests
-      tags: *a44
+      tags: *a46
   /api/v1/friends/blocked:
     get:
       operationId: FriendshipsController_getBlockedUsers
@@ -3391,9 +3653,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedBlockedUsers'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: List users blocked by the current user
-      tags: *a44
+      tags: *a46
   /api/v1/friends/requests:
     post:
       operationId: FriendshipsController_createRequest
@@ -3417,9 +3679,9 @@ paths:
             between these users
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: Send a friend request
-      tags: *a44
+      tags: *a46
   /api/v1/friends/requests/{id}/accept:
     post:
       operationId: FriendshipsController_acceptRequest
@@ -3440,9 +3702,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: Accept an incoming friend request
-      tags: *a44
+      tags: *a46
   /api/v1/friends/requests/{id}/decline:
     post:
       operationId: FriendshipsController_declineRequest
@@ -3463,9 +3725,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: Decline an incoming friend request
-      tags: *a44
+      tags: *a46
   /api/v1/friends/requests/{id}:
     delete:
       operationId: FriendshipsController_withdrawRequest
@@ -3486,9 +3748,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: Withdraw an outgoing friend request
-      tags: *a44
+      tags: *a46
   /api/v1/friends/{id}:
     delete:
       operationId: FriendshipsController_removeFriend
@@ -3509,9 +3771,9 @@ paths:
                 $ref: '#/components/schemas/FriendshipEntity'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: Remove an existing friend
-      tags: *a44
+      tags: *a46
   /api/v1/friends/{id}/block:
     post:
       operationId: FriendshipsController_blockUser
@@ -3532,9 +3794,9 @@ paths:
                 $ref: '#/components/schemas/BlockedUserEntity'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: Block a user
-      tags: *a44
+      tags: *a46
     delete:
       operationId: FriendshipsController_unblockUser
       parameters:
@@ -3554,9 +3816,9 @@ paths:
                 $ref: '#/components/schemas/BlockedUserEntity'
         '429':
           description: Too many requests
-      security: *a43
+      security: *a45
       summary: Unblock a user you previously blocked
-      tags: *a44
+      tags: *a46
   /api/v1/groups:
     get:
       operationId: GroupsController_getMany
@@ -3596,10 +3858,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedGroups'
         '429':
           description: Too many requests
-      security: &a45
+      security: &a47
         - bearer: []
       summary: List groups for the current user
-      tags: &a46
+      tags: &a48
         - Groups
   /api/v1/groups/home-summary:
     get:
@@ -3640,9 +3902,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedHomeGroupSummaries'
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: List group summaries for the home page
-      tags: *a46
+      tags: *a48
   /api/v1/groups/activity-feed:
     get:
       operationId: GroupsController_getActivityFeed
@@ -3682,9 +3944,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedGroups'
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: List group summaries for Activity
-      tags: *a46
+      tags: *a48
   /api/v1/groups/{id}/invite-suggestions:
     get:
       operationId: GroupsController_getInviteSuggestions
@@ -3705,9 +3967,9 @@ paths:
                 $ref: '#/components/schemas/GroupInviteSuggestionsEntity'
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: List activity-specific invitation suggestions for this group
-      tags: *a46
+      tags: *a48
   /api/v1/groups/{id}:
     get:
       operationId: GroupsController_getById
@@ -3728,9 +3990,9 @@ paths:
                 $ref: '#/components/schemas/GroupEntity'
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: Get a single group
-      tags: *a46
+      tags: *a48
     patch:
       operationId: GroupsController_update
       parameters:
@@ -3758,9 +4020,9 @@ paths:
           description: The group cannot be updated in its current state
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: Update a group as an admin
-      tags: *a46
+      tags: *a48
   /api/v1/groups/{id}/detail:
     get:
       operationId: GroupsController_getDetail
@@ -3781,9 +4043,9 @@ paths:
                 $ref: '#/components/schemas/GroupPlanDetailEntity'
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: Get group and plan details
-      tags: *a46
+      tags: *a48
   /api/v1/groups/{id}/leave:
     post:
       operationId: GroupsController_leave
@@ -3806,9 +4068,9 @@ paths:
           description: The group cannot be left in its current state
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: Leave a group
-      tags: *a46
+      tags: *a48
   /api/v1/groups/{id}/remove-member:
     post:
       operationId: GroupsController_removeMember
@@ -3837,9 +4099,9 @@ paths:
           description: A member cannot be removed while the group is in its current state
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: Remove a member from a group as an admin
-      tags: *a46
+      tags: *a48
   /api/v1/groups/{id}/disband:
     post:
       operationId: GroupsController_disband
@@ -3862,9 +4124,9 @@ paths:
           description: Group is already disbanded
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: Disband a group as an admin
-      tags: *a46
+      tags: *a48
   /api/v1/groups/{id}/plans:
     post:
       operationId: GroupsController_createNextPlan
@@ -3893,9 +4155,9 @@ paths:
           description: Current plan must be finished or cancelled first
         '429':
           description: Too many requests
-      security: *a45
+      security: *a47
       summary: Create a new draft plan for an existing group
-      tags: *a46
+      tags: *a48
   /api/v1/plans/{id}:
     get:
       operationId: PlansController_getById
@@ -3916,10 +4178,10 @@ paths:
                 $ref: '#/components/schemas/PlanEntity'
         '429':
           description: Too many requests
-      security: &a47
+      security: &a49
         - bearer: []
       summary: Get a plan for a group you belong to
-      tags: &a48
+      tags: &a50
         - Plans
     patch:
       operationId: PlansController_update
@@ -3948,9 +4210,9 @@ paths:
           description: The plan's current status does not allow updates
         '429':
           description: Too many requests
-      security: *a47
+      security: *a49
       summary: Update a group plan as a group admin
-      tags: *a48
+      tags: *a50
   /api/v1/plans/{id}/confirm:
     post:
       operationId: PlansController_confirm
@@ -3973,9 +4235,9 @@ paths:
           description: The plan's current status does not allow confirmation
         '429':
           description: Too many requests
-      security: *a47
+      security: *a49
       summary: Confirm a draft or planning-stage group plan
-      tags: *a48
+      tags: *a50
   /api/v1/plans/{id}/complete:
     post:
       operationId: PlansController_complete
@@ -3998,9 +4260,9 @@ paths:
           description: The plan's current status does not allow completion
         '429':
           description: Too many requests
-      security: *a47
+      security: *a49
       summary: Mark a group plan as completed
-      tags: *a48
+      tags: *a50
   /api/v1/plans/{id}/cancel:
     post:
       operationId: PlansController_cancel
@@ -4023,9 +4285,9 @@ paths:
           description: The plan's current status does not allow cancellation
         '429':
           description: Too many requests
-      security: *a47
+      security: *a49
       summary: Cancel a group plan and reopen planning for the group
-      tags: *a48
+      tags: *a50
   /api/v1/plans/{id}/proposals:
     get:
       operationId: PlanProposalsController_getMany
@@ -4048,10 +4310,10 @@ paths:
                   $ref: '#/components/schemas/PlanProposalEntity'
         '429':
           description: Too many requests
-      security: &a49
+      security: &a51
         - bearer: []
       summary: List proposals for a plan in your group
-      tags: &a50
+      tags: &a52
         - Plan Proposals
     post:
       operationId: PlanProposalsController_create
@@ -4082,9 +4344,9 @@ paths:
             pending proposal with the same value
         '429':
           description: Too many requests
-      security: *a49
+      security: *a51
       summary: Create a new proposal for a group plan
-      tags: *a50
+      tags: *a52
   /api/v1/proposals/{id}/vote:
     post:
       operationId: PlanProposalsController_vote
@@ -4113,9 +4375,9 @@ paths:
           description: The proposal or plan status does not allow voting
         '429':
           description: Too many requests
-      security: *a49
+      security: *a51
       summary: Vote on a pending plan proposal
-      tags: *a50
+      tags: *a52
   /api/v1/proposals/{id}:
     delete:
       operationId: PlanProposalsController_withdraw
@@ -4138,9 +4400,9 @@ paths:
           description: The proposal or plan status does not allow withdrawal
         '429':
           description: Too many requests
-      security: *a49
+      security: *a51
       summary: Withdraw one of your pending plan proposals
-      tags: *a50
+      tags: *a52
   /api/v1/explore/feed:
     get:
       operationId: ExploreController_getFeed
@@ -4287,10 +4549,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedExploreFeed'
         '429':
           description: Too many requests
-      security: &a51
+      security: &a53
         - bearer: []
       summary: Browse groups and protected formation openings
-      tags: &a52
+      tags: &a54
         - Explore
   /api/v1/explore/groups:
     get:
@@ -4438,9 +4700,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedExploreGroups'
         '429':
           description: Too many requests
-      security: *a51
+      security: *a53
       summary: Browse groups available in Explore
-      tags: *a52
+      tags: *a54
   /api/v1/explore/groups/{id}/join:
     post:
       operationId: ExploreController_joinGroup
@@ -4472,9 +4734,9 @@ paths:
             changed
         '429':
           description: Too many requests
-      security: *a51
+      security: *a53
       summary: Join or request to join an explore group
-      tags: *a52
+      tags: *a54
   /api/v1/explore/groups/{id}/cancel-request:
     post:
       operationId: ExploreController_cancelJoinRequest
@@ -4499,9 +4761,9 @@ paths:
           description: Pending join request was already changed or cancelled
         '429':
           description: Too many requests
-      security: *a51
+      security: *a53
       summary: Cancel a pending join request for an explore group
-      tags: *a52
+      tags: *a54
   /api/v1/invites/received:
     get:
       operationId: InvitesController_getReceived
@@ -4540,10 +4802,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedInvites'
         '429':
           description: Too many requests
-      security: &a53
+      security: &a55
         - bearer: []
       summary: List invites received by the current user
-      tags: &a54
+      tags: &a56
         - Invites
   /api/v1/invites/sent:
     get:
@@ -4583,9 +4845,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedInvites'
         '429':
           description: Too many requests
-      security: *a53
+      security: *a55
       summary: List invites sent by the current user
-      tags: *a54
+      tags: *a56
   /api/v1/invites:
     post:
       operationId: InvitesController_create
@@ -4618,9 +4880,9 @@ paths:
             exists
         '429':
           description: Too many requests
-      security: *a53
+      security: *a55
       summary: Send or resend a group invite
-      tags: *a54
+      tags: *a56
   /api/v1/invites/{id}/accept:
     post:
       operationId: InvitesController_accept
@@ -4652,9 +4914,9 @@ paths:
             member
         '429':
           description: Too many requests
-      security: *a53
+      security: *a55
       summary: Accept a group invite
-      tags: *a54
+      tags: *a56
   /api/v1/invites/{id}/decline:
     post:
       operationId: InvitesController_decline
@@ -4681,245 +4943,8 @@ paths:
           description: The invite is not pending or has expired
         '429':
           description: Too many requests
-      security: *a53
+      security: *a55
       summary: Decline a group invite
-      tags: *a54
-  /api/v1/notifications:
-    get:
-      operationId: NotificationsController_getMany
-      parameters:
-        - name: page
-          required: false
-          in: query
-          schema:
-            maximum: 500
-            default: 1
-            type: number
-        - name: limit
-          required: false
-          in: query
-          schema:
-            maximum: 100
-            default: 10
-            type: number
-        - name: type
-          required: false
-          in: query
-          schema:
-            type: string
-            enum:
-              - FRIEND_REQUEST
-              - FRIEND_ACCEPTED
-              - GROUP_FORMED
-              - GROUP_INVITE
-              - GROUP_JOIN_REQUEST
-              - GROUP_JOIN_APPROVED
-              - GROUP_MEMBER_LEFT
-              - GROUP_DISBANDED
-              - PLAN_CREATED
-              - PLAN_CONFIRMED
-              - PLAN_UPDATED
-              - PLAN_PROPOSAL
-              - PLAN_STARTING_SOON
-              - PLAN_COMPLETED
-              - PLAN_CANCELLED
-              - NEW_MESSAGE
-              - MESSAGE_MENTION
-              - RATING_REQUEST
-              - RATING_RECEIVED
-              - SYSTEM_ANNOUNCEMENT
-              - ACCOUNT_SECURITY
-        - name: isRead
-          required: false
-          in: query
-          description: Filter notifications by read state
-          schema:
-            example: false
-            type: boolean
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedNotifications'
-        '429':
-          description: Too many requests
-      security: &a55
-        - bearer: []
-      summary: List your notifications
-      tags: &a56
-        - Notifications
-  /api/v1/notifications/unread-count:
-    get:
-      operationId: NotificationsController_getUnreadCount
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotificationUnreadCountEntity'
-        '429':
-          description: Too many requests
-      security: *a55
-      summary: Get your unread notification count
-      tags: *a56
-  /api/v1/notifications/web-push/public-key:
-    get:
-      operationId: NotificationsController_getWebPushPublicKey
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WebPushPublicKeyEntity'
-        '429':
-          description: Too many requests
-      security: []
-      summary: Get the web push public key and enabled state
-      tags: *a56
-  /api/v1/notifications/web-push/subscriptions:
-    get:
-      operationId: NotificationsController_getWebPushSubscriptions
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/WebPushSubscriptionEntity'
-        '429':
-          description: Too many requests
-      security: *a55
-      summary: List your active web push subscriptions
-      tags: *a56
-    post:
-      operationId: NotificationsController_upsertWebPushSubscription
-      parameters:
-        - name: user-agent
-          required: true
-          in: header
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpsertWebPushSubscriptionDto'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WebPushSubscriptionEntity'
-        '429':
-          description: Too many requests
-      security: *a55
-      summary: Create or refresh a web push subscription
-      tags: *a56
-    delete:
-      operationId: NotificationsController_deleteWebPushSubscription
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DeleteWebPushSubscriptionDto'
-      responses:
-        '200':
-          description: Subscription disabled
-        '429':
-          description: Too many requests
-      security: *a55
-      summary: Disable one of your web push subscriptions
-      tags: *a56
-  /api/v1/notifications/web-push/test:
-    post:
-      operationId: NotificationsController_sendTestWebPushNotification
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WebPushTestDispatchEntity'
-        '429':
-          description: Too many requests
-      security: *a55
-      summary: Send the current user a test web push notification
-      tags: *a56
-  /api/v1/notifications/{id}/read:
-    post:
-      operationId: NotificationsController_markRead
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Notification ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotificationEntity'
-        '429':
-          description: Too many requests
-      security: *a55
-      summary: Mark one notification as read
-      tags: *a56
-  /api/v1/notifications/{id}/unread:
-    post:
-      operationId: NotificationsController_markUnread
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Notification ID
-          schema:
-            example: ckaqbclqnwqwfewgwsef
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotificationEntity'
-        '429':
-          description: Too many requests
-      security: *a55
-      summary: Mark one notification as unread
-      tags: *a56
-  /api/v1/notifications/read-all:
-    post:
-      operationId: NotificationsController_markAllRead
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotificationUnreadCountEntity'
-        '429':
-          description: Too many requests
-      security: *a55
-      summary: Mark all of your notifications as read
       tags: *a56
   /api/v1/ratings/groups/{id}:
     get:
@@ -5490,6 +5515,7 @@ paths:
             enum:
               - MODERATION_ASSISTANCE
               - EVIDENCE_PRESERVATION
+              - EVIDENCE_SCAN
               - DOMAIN_EVENT_OUTBOX
             type: string
         - name: page
@@ -5536,6 +5562,7 @@ paths:
             enum:
               - MODERATION_ASSISTANCE
               - EVIDENCE_PRESERVATION
+              - EVIDENCE_SCAN
               - DOMAIN_EVENT_OUTBOX
             type: string
       requestBody:
@@ -5566,6 +5593,7 @@ paths:
             enum:
               - MODERATION_ASSISTANCE
               - EVIDENCE_PRESERVATION
+              - EVIDENCE_SCAN
               - DOMAIN_EVENT_OUTBOX
             type: string
       requestBody:
@@ -5596,6 +5624,7 @@ paths:
             enum:
               - MODERATION_ASSISTANCE
               - EVIDENCE_PRESERVATION
+              - EVIDENCE_SCAN
               - DOMAIN_EVENT_OUTBOX
             type: string
         - name: jobId
@@ -6023,6 +6052,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OperatorEvidenceRevealEntity'
+        '429':
+          description: Too many requests
+      security: *a67
+      tags: *a68
+  /api/v1/operator/moderation/cases/{caseId}/evidence/{evidenceId}/media/reveal:
+    post:
+      operationId: OperatorModerationController_revealMediaEvidence
+      parameters:
+        - name: caseId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: evidenceId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevealEvidenceDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorMediaEvidenceRevealEntity'
         '429':
           description: Too many requests
       security: *a67
@@ -8384,6 +8444,1065 @@ components:
         - chat
         - group
         - plan
+    NotificationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1notification123
+        type:
+          type: string
+          enum:
+            - FRIEND_REQUEST
+            - FRIEND_ACCEPTED
+            - GROUP_FORMED
+            - GROUP_INVITE
+            - GROUP_JOIN_REQUEST
+            - GROUP_JOIN_APPROVED
+            - GROUP_MEMBER_LEFT
+            - GROUP_DISBANDED
+            - PLAN_CREATED
+            - PLAN_CONFIRMED
+            - PLAN_UPDATED
+            - PLAN_PROPOSAL
+            - PLAN_STARTING_SOON
+            - PLAN_COMPLETED
+            - PLAN_CANCELLED
+            - NEW_MESSAGE
+            - MESSAGE_MENTION
+            - RATING_REQUEST
+            - RATING_RECEIVED
+            - FORGE_PROPOSAL_READY
+            - FORGE_PROPOSAL_REMINDER
+            - SYSTEM_ANNOUNCEMENT
+            - ACCOUNT_SECURITY
+        title:
+          type: string
+          example: Your group is ready
+        message:
+          type: string
+          example: Your group is ready. Open the plan and say hello in chat.
+        link:
+          type: string
+          example: /groups/clx1group123
+          nullable: true
+        avatarUrl:
+          type: string
+          example: https://example.com/group-avatar.png
+          nullable: true
+        isRead:
+          type: boolean
+          example: false
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        entityType:
+          type: string
+          enum:
+            - USER
+            - GROUP
+            - PLAN
+            - ACTIVITY
+            - MESSAGE
+            - INVITE
+            - FORGE_PROPOSAL
+          nullable: true
+        entityId:
+          type: string
+          example: clx1group123
+          nullable: true
+        receiverId:
+          type: string
+          example: clx1user123
+        version:
+          type: number
+          example: 1777560000000
+      required:
+        - id
+        - type
+        - title
+        - message
+        - isRead
+        - createdAt
+        - updatedAt
+        - receiverId
+        - version
+    PaginatedNotifications:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationEntity'
+      required:
+        - meta
+        - items
+    NotificationUnreadCountEntity:
+      type: object
+      properties:
+        unreadCount:
+          type: number
+          example: 5
+      required:
+        - unreadCount
+    WebPushPublicKeyEntity:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+        publicKey:
+          type: string
+          description:
+            Public VAPID key for browser PushManager.subscribe. Empty when
+            disabled.
+          example: BEl6...
+      required:
+        - enabled
+        - publicKey
+    WebPushSubscriptionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1pushsubscription123
+        endpoint:
+          type: string
+          example: https://fcm.googleapis.com/fcm/send/example
+        expirationTime:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+          nullable: true
+        userAgent:
+          type: string
+          example:
+            Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X)
+            AppleWebKit/605.1.15
+          nullable: true
+        disabledAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+          nullable: true
+        lastSeenAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        userId:
+          type: string
+          example: clx1user123
+      required:
+        - id
+        - endpoint
+        - lastSeenAt
+        - createdAt
+        - updatedAt
+        - userId
+    WebPushSubscriptionKeysDto:
+      type: object
+      properties:
+        p256dh:
+          type: string
+          description: Browser PushSubscription p256dh key.
+          example: BDh9...
+        auth:
+          type: string
+          description: Browser PushSubscription auth secret.
+          example: k8Q...
+      required:
+        - p256dh
+        - auth
+    UpsertWebPushSubscriptionDto:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          description: Browser PushSubscription endpoint URL.
+          example: https://fcm.googleapis.com/fcm/send/example
+        expirationTime:
+          type: number
+          description:
+            Browser PushSubscription expirationTime value in milliseconds since
+            epoch.
+          example: 1777560000000
+          nullable: true
+        keys:
+          $ref: '#/components/schemas/WebPushSubscriptionKeysDto'
+      required:
+        - endpoint
+        - keys
+    DeleteWebPushSubscriptionDto:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          description: Browser PushSubscription endpoint URL to disable.
+          example: https://fcm.googleapis.com/fcm/send/example
+      required:
+        - endpoint
+    WebPushTestDiagnosticEntity:
+      type: object
+      properties:
+        issue:
+          type: string
+          enum: &a71
+            - certificate-error
+            - network-error
+            - no-subscriptions
+            - push-disabled
+            - push-service-error
+            - subscription-expired
+            - unknown-error
+            - vapid-auth-error
+          example: certificate-error
+        count:
+          type: number
+          example: 1
+      required:
+        - issue
+        - count
+    WebPushTestDispatchEntity:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+        issue:
+          type: string
+          enum: *a71
+          example: certificate-error
+          nullable: true
+        diagnostics:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebPushTestDiagnosticEntity'
+        subscriptionCount:
+          type: number
+          example: 1
+        sentCount:
+          type: number
+          example: 1
+        failedCount:
+          type: number
+          example: 0
+        disabledCount:
+          type: number
+          example: 0
+      required:
+        - enabled
+        - issue
+        - diagnostics
+        - subscriptionCount
+        - sentCount
+        - failedCount
+        - disabledCount
+    PilotCohortStatusEntity:
+      type: object
+      properties:
+        code:
+          type: string
+          example: london-alpha
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+        outcomeWindowEndsAt:
+          type: string
+          format: date-time
+        memberCap:
+          type: integer
+          example: 50
+          maximum: 100
+          minimum: 1
+        memberCount:
+          type: integer
+          example: 12
+          minimum: 0
+      required:
+        - code
+        - startsAt
+        - endsAt
+        - outcomeWindowEndsAt
+        - memberCap
+        - memberCount
+    PilotGateStatusEntity:
+      type: object
+      properties:
+        globalSafetyPause:
+          type: boolean
+        aiTriage:
+          type: boolean
+        deterministicModerationAutomation:
+          type: boolean
+        autoRequestIntake:
+          type: boolean
+        candidateAvailability:
+          type: boolean
+        proposalAllocation:
+          type: boolean
+        proposalMaterialization:
+          type: boolean
+        firstGroupChat:
+          type: boolean
+        onlineGroups:
+          type: boolean
+        strangerMedia:
+          type: boolean
+      required:
+        - globalSafetyPause
+        - aiTriage
+        - deterministicModerationAutomation
+        - autoRequestIntake
+        - candidateAvailability
+        - proposalAllocation
+        - proposalMaterialization
+        - firstGroupChat
+        - onlineGroups
+        - strangerMedia
+    PilotReadinessEntity:
+      type: object
+      properties:
+        cohortConfigured:
+          type: boolean
+        cohortWithinWindow:
+          type: boolean
+        cohortWithinCap:
+          type: boolean
+        minimumCohortSizeMet:
+          type: boolean
+        newProposalExposureAllowed:
+          type: boolean
+        materializationAllowed:
+          type: boolean
+      required:
+        - cohortConfigured
+        - cohortWithinWindow
+        - cohortWithinCap
+        - minimumCohortSizeMet
+        - newProposalExposureAllowed
+        - materializationAllowed
+    PilotStatusEntity:
+      type: object
+      properties:
+        evaluatedAt:
+          type: string
+          format: date-time
+        activeCohort:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PilotCohortStatusEntity'
+        gates:
+          $ref: '#/components/schemas/PilotGateStatusEntity'
+        readiness:
+          $ref: '#/components/schemas/PilotReadinessEntity'
+      required:
+        - evaluatedAt
+        - activeCohort
+        - gates
+        - readiness
+    PilotActivityActivationScopeMetricsEntity:
+      type: object
+      properties:
+        requestingMemberCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        activatedRequesterCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        activationRatePercent:
+          type: number
+          example: 60
+          maximum: 100
+          minimum: 0
+          nullable: true
+        recordedActivityCount:
+          type: integer
+          minimum: 0
+          nullable: true
+      required:
+        - requestingMemberCount
+        - activatedRequesterCount
+        - activationRatePercent
+        - recordedActivityCount
+    PilotActivityActivationMetricsEntity:
+      type: object
+      properties:
+        definitionVersion:
+          type: string
+          enum:
+            - activity-activation-requester-rate.v1
+        measurementState:
+          type: string
+          enum: &a72
+            - PROVISIONAL
+            - FINAL
+        dataCompleteness:
+          type: string
+          enum: &a73
+            - COMPLETE
+            - RETENTION_PURGED
+        requestingMemberCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        activatedRequesterCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        recordedActivityCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        local:
+          $ref: '#/components/schemas/PilotActivityActivationScopeMetricsEntity'
+        online:
+          $ref: '#/components/schemas/PilotActivityActivationScopeMetricsEntity'
+      required:
+        - definitionVersion
+        - measurementState
+        - dataCompleteness
+        - requestingMemberCount
+        - activatedRequesterCount
+        - recordedActivityCount
+        - local
+        - online
+    PilotCandidateWillingnessScopeMetricsEntity:
+      type: object
+      properties:
+        eligibleExposureCount:
+          type: integer
+          description: 'Candidate invitations counted in the denominator: accepted first,
+            declined first, or unanswered at the deadline.'
+          minimum: 0
+          nullable: true
+        acceptedExposureCount:
+          type: integer
+          description:
+            Invitations whose first response was acceptance. Later withdrawal
+            does not rewrite this outcome.
+          minimum: 0
+          nullable: true
+        declinedExposureCount:
+          type: integer
+          description: Invitations whose first response was a decline.
+          minimum: 0
+          nullable: true
+        unansweredExposureCount:
+          type: integer
+          description: Invitations with no response by their fixed deadline.
+          minimum: 0
+          nullable: true
+        cancelledBeforeResponseCount:
+          type: integer
+          description:
+            Invitations cancelled before a first response. Excluded from the
+            acceptance denominator.
+          minimum: 0
+          nullable: true
+        acceptanceRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+      required:
+        - eligibleExposureCount
+        - acceptedExposureCount
+        - declinedExposureCount
+        - unansweredExposureCount
+        - cancelledBeforeResponseCount
+        - acceptanceRatePercent
+    PilotCandidateWillingnessDeclineReasonEntity:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - ACTIVITY_NOT_FOR_ME
+            - FIXED_TIME_DOES_NOT_WORK
+            - AREA_DOES_NOT_WORK
+            - NOT_THIS_GROUP
+            - TAKING_A_BREAK
+            - PREFER_NOT_TO_SAY
+        count:
+          type: integer
+          minimum: 0
+      required:
+        - reason
+        - count
+    PilotCandidateWillingnessActivityScopeEntity:
+      type: object
+      properties:
+        activityCategory:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        scope:
+          type: string
+          enum:
+            - LOCAL
+            - ONLINE
+        eligibleExposureCount:
+          type: integer
+          description: 'Candidate invitations counted in the denominator: accepted first,
+            declined first, or unanswered at the deadline.'
+          minimum: 0
+        acceptedExposureCount:
+          type: integer
+          description:
+            Invitations whose first response was acceptance. Later withdrawal
+            does not rewrite this outcome.
+          minimum: 0
+        declinedExposureCount:
+          type: integer
+          description: Invitations whose first response was a decline.
+          minimum: 0
+        unansweredExposureCount:
+          type: integer
+          description: Invitations with no response by their fixed deadline.
+          minimum: 0
+        cancelledBeforeResponseCount:
+          type: integer
+          description:
+            Invitations cancelled before a first response. Excluded from the
+            acceptance denominator.
+          minimum: 0
+        acceptanceRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        declineReasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotCandidateWillingnessDeclineReasonEntity'
+      required:
+        - activityCategory
+        - scope
+        - eligibleExposureCount
+        - acceptedExposureCount
+        - declinedExposureCount
+        - unansweredExposureCount
+        - cancelledBeforeResponseCount
+        - acceptanceRatePercent
+        - declineReasons
+    PilotCandidateWillingnessMetricsEntity:
+      type: object
+      properties:
+        eligibleExposureCount:
+          type: integer
+          description: 'Candidate invitations counted in the denominator: accepted first,
+            declined first, or unanswered at the deadline.'
+          minimum: 0
+          nullable: true
+        acceptedExposureCount:
+          type: integer
+          description:
+            Invitations whose first response was acceptance. Later withdrawal
+            does not rewrite this outcome.
+          minimum: 0
+          nullable: true
+        declinedExposureCount:
+          type: integer
+          description: Invitations whose first response was a decline.
+          minimum: 0
+          nullable: true
+        unansweredExposureCount:
+          type: integer
+          description: Invitations with no response by their fixed deadline.
+          minimum: 0
+          nullable: true
+        cancelledBeforeResponseCount:
+          type: integer
+          description:
+            Invitations cancelled before a first response. Excluded from the
+            acceptance denominator.
+          minimum: 0
+          nullable: true
+        acceptanceRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        definitionVersion:
+          type: string
+          enum:
+            - candidate-willingness-first-response-rate.v1
+        measurementState:
+          type: string
+          enum: *a72
+        dataCompleteness:
+          type: string
+          description:
+            Null counts and breakdowns mean the source was retention-purged or
+            has a matured invitation without its immutable response record.
+          enum:
+            - COMPLETE
+            - RETENTION_PURGED
+            - SOURCE_INCOMPLETE
+        local:
+          $ref: '#/components/schemas/PilotCandidateWillingnessScopeMetricsEntity'
+        online:
+          $ref: '#/components/schemas/PilotCandidateWillingnessScopeMetricsEntity'
+        declineReasons:
+          description:
+            Internal reason distribution among invitations whose first response
+            was a decline.
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotCandidateWillingnessDeclineReasonEntity'
+        byActivityScope:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotCandidateWillingnessActivityScopeEntity'
+      required:
+        - eligibleExposureCount
+        - acceptedExposureCount
+        - declinedExposureCount
+        - unansweredExposureCount
+        - cancelledBeforeResponseCount
+        - acceptanceRatePercent
+        - definitionVersion
+        - measurementState
+        - dataCompleteness
+        - local
+        - online
+        - declineReasons
+        - byActivityScope
+    PilotRequestConversionScopeMetricsEntity:
+      type: object
+      properties:
+        eligibleRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        convertedRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        conversionRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+      required:
+        - eligibleRequestCount
+        - convertedRequestCount
+        - conversionRatePercent
+    PilotProposalCoverageMetricsEntity:
+      type: object
+      properties:
+        eligibleRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        convertedRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        conversionRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        measurementState:
+          type: string
+          enum: *a72
+        dataCompleteness:
+          type: string
+          enum: *a73
+        local:
+          $ref: '#/components/schemas/PilotRequestConversionScopeMetricsEntity'
+        online:
+          $ref: '#/components/schemas/PilotRequestConversionScopeMetricsEntity'
+        definitionVersion:
+          type: string
+          enum:
+            - proposal-coverage-request-rate.v1
+      required:
+        - eligibleRequestCount
+        - convertedRequestCount
+        - conversionRatePercent
+        - measurementState
+        - dataCompleteness
+        - local
+        - online
+        - definitionVersion
+    PilotFormationConversionMetricsEntity:
+      type: object
+      properties:
+        eligibleRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        convertedRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        conversionRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        measurementState:
+          type: string
+          enum: *a72
+        dataCompleteness:
+          type: string
+          enum: *a73
+        local:
+          $ref: '#/components/schemas/PilotRequestConversionScopeMetricsEntity'
+        online:
+          $ref: '#/components/schemas/PilotRequestConversionScopeMetricsEntity'
+        definitionVersion:
+          type: string
+          enum:
+            - formation-conversion-request-rate.v1
+      required:
+        - eligibleRequestCount
+        - convertedRequestCount
+        - conversionRatePercent
+        - measurementState
+        - dataCompleteness
+        - local
+        - online
+        - definitionVersion
+    PilotMetricsCohortEntity:
+      type: object
+      properties:
+        code:
+          type: string
+          example: london-alpha
+        memberCount:
+          type: integer
+          minimum: 0
+        activityActivation:
+          $ref: '#/components/schemas/PilotActivityActivationMetricsEntity'
+        candidateWillingness:
+          $ref: '#/components/schemas/PilotCandidateWillingnessMetricsEntity'
+        proposalCoverage:
+          $ref: '#/components/schemas/PilotProposalCoverageMetricsEntity'
+        formationConversion:
+          $ref: '#/components/schemas/PilotFormationConversionMetricsEntity'
+      required:
+        - code
+        - memberCount
+        - activityActivation
+        - candidateWillingness
+        - proposalCoverage
+        - formationConversion
+    PilotMetricsEntity:
+      type: object
+      properties:
+        evaluatedAt:
+          type: string
+          format: date-time
+        activeCohort:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PilotMetricsCohortEntity'
+      required:
+        - evaluatedAt
+        - activeCohort
+    PilotSponsorCountValueEntity:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - COUNT
+        count:
+          type: integer
+          minimum: 0
+      required:
+        - kind
+        - count
+    PilotSponsorRateValueEntity:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - RATE
+        numerator:
+          type: integer
+          minimum: 0
+        denominator:
+          type: integer
+          minimum: 0
+        ratePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+      required:
+        - kind
+        - numerator
+        - denominator
+        - ratePercent
+    PilotSponsorValueMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - VALUE
+        value:
+          oneOf:
+            - $ref: '#/components/schemas/PilotSponsorCountValueEntity'
+            - $ref: '#/components/schemas/PilotSponsorRateValueEntity'
+      required:
+        - state
+        - value
+    PilotSponsorRateValueMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - VALUE
+        value:
+          $ref: '#/components/schemas/PilotSponsorRateValueEntity'
+      required:
+        - state
+        - value
+    PilotSponsorSuppressedMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - SUPPRESSED
+        reason:
+          type: string
+          enum:
+            - DENOMINATOR_TOO_SMALL
+            - SMALL_CELL
+            - COMPLEMENTARY_CELL
+      required:
+        - state
+        - reason
+    PilotSponsorNotCollectedMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - NOT_COLLECTED
+        reason:
+          type: string
+          enum:
+            - NOT_IN_FROZEN_DEFINITION
+      required:
+        - state
+        - reason
+    PilotSponsorSourceIncompleteMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - SOURCE_INCOMPLETE
+        reason:
+          type: string
+          enum:
+            - RETENTION_PURGED
+      required:
+        - state
+        - reason
+    PilotSponsorTargetCohortEntity:
+      type: object
+      properties:
+        code:
+          type: string
+          example: london-alpha
+        memberCount:
+          type: integer
+          minimum: 0
+        scope:
+          type: string
+          enum:
+            - LOCAL
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+        outcomeWindowEndsAt:
+          type: string
+          format: date-time
+      required:
+        - code
+        - memberCount
+        - scope
+        - startsAt
+        - endsAt
+        - outcomeWindowEndsAt
+    PilotSponsorEligibilityEntity:
+      type: object
+      properties:
+        eligible:
+          type: boolean
+        blockers:
+          type: array
+          items:
+            type: string
+            enum:
+              - NO_CONFIGURED_COHORT
+              - OUTCOME_WINDOW_OPEN
+              - DENOMINATOR_BELOW_MINIMUM
+              - ARTIFACT_ALREADY_EXISTS
+      required:
+        - eligible
+        - blockers
+    PilotSponsorViewerEntity:
+      type: object
+      properties:
+        canGenerate:
+          type: boolean
+      required:
+        - canGenerate
+    PilotSponsorMeasuresEntity:
+      type: object
+      properties:
+        cohortSize:
+          oneOf: &a74
+            - $ref: '#/components/schemas/PilotSponsorValueMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorSuppressedMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorNotCollectedMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorSourceIncompleteMeasureEntity'
+        sponsorDirectRecruitment:
+          oneOf: *a74
+        referralRecruitment:
+          oneOf: *a74
+        requestCreation:
+          oneOf: *a74
+        activityActivation:
+          oneOf: *a74
+        proposalCoverage:
+          oneOf: &a75
+            - $ref: '#/components/schemas/PilotSponsorRateValueMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorSuppressedMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorSourceIncompleteMeasureEntity'
+        formedGroups:
+          oneOf: *a75
+        scheduledPlans:
+          oneOf: *a74
+        completedActivities:
+          oneOf: *a74
+        continuingGroups:
+          oneOf: *a74
+        coarseSafetyWorkload:
+          oneOf: *a74
+      required:
+        - cohortSize
+        - sponsorDirectRecruitment
+        - referralRecruitment
+        - requestCreation
+        - activityActivation
+        - proposalCoverage
+        - formedGroups
+        - scheduledPlans
+        - completedActivities
+        - continuingGroups
+        - coarseSafetyWorkload
+    PilotSponsorArtifactEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceCode:
+          type: string
+          example: TFP-5F5A9D4ACF10
+        generatedAt:
+          type: string
+          format: date-time
+        definitionVersion:
+          type: string
+          enum:
+            - pilot-fixed-window-summary.v2
+        privacyRuleVersion:
+          type: string
+          enum:
+            - minimum-cell-privacy.v2
+        roundingRuleVersion:
+          type: string
+          enum:
+            - one-decimal-percent.v1
+        payloadHash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        measures:
+          $ref: '#/components/schemas/PilotSponsorMeasuresEntity'
+      required:
+        - id
+        - referenceCode
+        - generatedAt
+        - definitionVersion
+        - privacyRuleVersion
+        - roundingRuleVersion
+        - payloadHash
+        - measures
+    PilotSponsorArtifactStatusEntity:
+      type: object
+      properties:
+        evaluatedAt:
+          type: string
+          format: date-time
+        targetCohort:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PilotSponsorTargetCohortEntity'
+        eligibility:
+          $ref: '#/components/schemas/PilotSponsorEligibilityEntity'
+        viewer:
+          $ref: '#/components/schemas/PilotSponsorViewerEntity'
+        artifact:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PilotSponsorArtifactEntity'
+      required:
+        - evaluatedAt
+        - targetCohort
+        - eligibility
+        - viewer
+        - artifact
     AutoForgePlanDto:
       type: object
       properties:
@@ -8465,7 +9584,7 @@ components:
       properties:
         recoveryDisclosureVersion:
           type: string
-          enum: &a71
+          enum: &a76
             - forge-proposal-recovery-disclosure-v1
           description: Frozen proof that the organizer reviewed the one-place recovery rule.
         minimumGroupSize:
@@ -8489,7 +9608,7 @@ components:
           maximum: 8
         scope:
           type: string
-          enum: &a72
+          enum: &a77
             - LOCAL
             - ONLINE
         maxDistanceKm:
@@ -8513,7 +9632,7 @@ components:
       properties:
         recoveryDisclosureVersion:
           type: string
-          enum: *a71
+          enum: *a76
           description: Frozen proof that the organizer reviewed the one-place recovery rule.
         minimumGroupSize:
           type: number
@@ -8536,7 +9655,7 @@ components:
           maximum: 8
         scope:
           type: string
-          enum: *a72
+          enum: *a77
         maxDistanceKm:
           type: number
           description: Maximum travel distance for a local request
@@ -8839,7 +9958,7 @@ components:
           type: string
         state:
           type: string
-          enum: &a73
+          enum: &a78
             - PENDING
             - SELECTED
             - DECLINED
@@ -8869,7 +9988,7 @@ components:
           type: string
         state:
           type: string
-          enum: &a74
+          enum: &a79
             - OPEN
             - APPLICATION_PENDING
             - FINAL_PROPOSAL_CREATED
@@ -8945,7 +10064,7 @@ components:
           type: string
         state:
           type: string
-          enum: *a73
+          enum: *a78
         version:
           type: integer
           minimum: 1
@@ -8973,7 +10092,7 @@ components:
           type: string
         state:
           type: string
-          enum: *a74
+          enum: *a79
         version:
           type: integer
           minimum: 1
@@ -9028,7 +10147,7 @@ components:
       properties:
         policyVersion:
           type: string
-          enum: &a75
+          enum: &a80
             - forge-proposal-recovery-v1
           example: forge-proposal-recovery-v1
       required:
@@ -9040,7 +10159,7 @@ components:
           type: string
         state:
           type: string
-          enum: *a74
+          enum: *a79
         version:
           type: integer
           minimum: 1
@@ -9085,7 +10204,7 @@ components:
       properties:
         policyVersion:
           type: string
-          enum: *a75
+          enum: *a80
           example: forge-proposal-recovery-v1
         expectedApplicationVersion:
           type: integer
@@ -9098,7 +10217,7 @@ components:
       properties:
         policyVersion:
           type: string
-          enum: *a75
+          enum: *a80
           example: forge-proposal-recovery-v1
         expectedVersion:
           type: integer
@@ -9117,7 +10236,7 @@ components:
           type: string
         state:
           type: string
-          enum: *a74
+          enum: *a79
         version:
           type: integer
           minimum: 1
@@ -9173,7 +10292,7 @@ components:
       properties:
         policyVersion:
           type: string
-          enum: *a75
+          enum: *a80
           example: forge-proposal-recovery-v1
         expectedVersion:
           type: integer
@@ -9548,6 +10667,40 @@ components:
             - $ref: '#/components/schemas/ForgeProposalEntity'
       required:
         - proposal
+    ForgeProposalReportTargetEntity:
+      type: object
+      properties:
+        seatId:
+          type: string
+        displayName:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+      required:
+        - seatId
+        - displayName
+        - avatar
+    ForgeProposalReportTargetsEntity:
+      type: object
+      properties:
+        proposalId:
+          type: string
+        proposalVersion:
+          type: integer
+          minimum: 1
+        reportableUntil:
+          format: date-time
+          type: string
+        targets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForgeProposalReportTargetEntity'
+      required:
+        - proposalId
+        - proposalVersion
+        - reportableUntil
+        - targets
     ForgeProposalDecisionCommandDto:
       type: object
       properties:
@@ -9561,7 +10714,7 @@ components:
           minimum: 0
         policyVersion:
           type: string
-          enum: &a76
+          enum: &a81
             - forge-proposal-decision-v1
           example: forge-proposal-decision-v1
       required:
@@ -9630,7 +10783,7 @@ components:
           minimum: 0
         policyVersion:
           type: string
-          enum: *a76
+          enum: *a81
           example: forge-proposal-decision-v1
         reason:
           type: string
@@ -9745,797 +10898,6 @@ components:
       required:
         - policyVersion
         - expectedRevision
-    PilotCohortStatusEntity:
-      type: object
-      properties:
-        code:
-          type: string
-          example: london-alpha
-        startsAt:
-          type: string
-          format: date-time
-        endsAt:
-          type: string
-          format: date-time
-        outcomeWindowEndsAt:
-          type: string
-          format: date-time
-        memberCap:
-          type: integer
-          example: 50
-          maximum: 100
-          minimum: 1
-        memberCount:
-          type: integer
-          example: 12
-          minimum: 0
-      required:
-        - code
-        - startsAt
-        - endsAt
-        - outcomeWindowEndsAt
-        - memberCap
-        - memberCount
-    PilotGateStatusEntity:
-      type: object
-      properties:
-        globalSafetyPause:
-          type: boolean
-        aiTriage:
-          type: boolean
-        deterministicModerationAutomation:
-          type: boolean
-        autoRequestIntake:
-          type: boolean
-        candidateAvailability:
-          type: boolean
-        proposalAllocation:
-          type: boolean
-        proposalMaterialization:
-          type: boolean
-        firstGroupChat:
-          type: boolean
-        onlineGroups:
-          type: boolean
-        strangerMedia:
-          type: boolean
-      required:
-        - globalSafetyPause
-        - aiTriage
-        - deterministicModerationAutomation
-        - autoRequestIntake
-        - candidateAvailability
-        - proposalAllocation
-        - proposalMaterialization
-        - firstGroupChat
-        - onlineGroups
-        - strangerMedia
-    PilotReadinessEntity:
-      type: object
-      properties:
-        cohortConfigured:
-          type: boolean
-        cohortWithinWindow:
-          type: boolean
-        cohortWithinCap:
-          type: boolean
-        minimumCohortSizeMet:
-          type: boolean
-        newProposalExposureAllowed:
-          type: boolean
-        materializationAllowed:
-          type: boolean
-      required:
-        - cohortConfigured
-        - cohortWithinWindow
-        - cohortWithinCap
-        - minimumCohortSizeMet
-        - newProposalExposureAllowed
-        - materializationAllowed
-    PilotStatusEntity:
-      type: object
-      properties:
-        evaluatedAt:
-          type: string
-          format: date-time
-        activeCohort:
-          nullable: true
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/PilotCohortStatusEntity'
-        gates:
-          $ref: '#/components/schemas/PilotGateStatusEntity'
-        readiness:
-          $ref: '#/components/schemas/PilotReadinessEntity'
-      required:
-        - evaluatedAt
-        - activeCohort
-        - gates
-        - readiness
-    PilotActivityActivationScopeMetricsEntity:
-      type: object
-      properties:
-        requestingMemberCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        activatedRequesterCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        activationRatePercent:
-          type: number
-          example: 60
-          maximum: 100
-          minimum: 0
-          nullable: true
-        recordedActivityCount:
-          type: integer
-          minimum: 0
-          nullable: true
-      required:
-        - requestingMemberCount
-        - activatedRequesterCount
-        - activationRatePercent
-        - recordedActivityCount
-    PilotActivityActivationMetricsEntity:
-      type: object
-      properties:
-        definitionVersion:
-          type: string
-          enum:
-            - activity-activation-requester-rate.v1
-        measurementState:
-          type: string
-          enum: &a77
-            - PROVISIONAL
-            - FINAL
-        dataCompleteness:
-          type: string
-          enum: &a78
-            - COMPLETE
-            - RETENTION_PURGED
-        requestingMemberCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        activatedRequesterCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        recordedActivityCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        local:
-          $ref: '#/components/schemas/PilotActivityActivationScopeMetricsEntity'
-        online:
-          $ref: '#/components/schemas/PilotActivityActivationScopeMetricsEntity'
-      required:
-        - definitionVersion
-        - measurementState
-        - dataCompleteness
-        - requestingMemberCount
-        - activatedRequesterCount
-        - recordedActivityCount
-        - local
-        - online
-    PilotCandidateWillingnessScopeMetricsEntity:
-      type: object
-      properties:
-        eligibleExposureCount:
-          type: integer
-          description: 'Candidate invitations counted in the denominator: accepted first,
-            declined first, or unanswered at the deadline.'
-          minimum: 0
-          nullable: true
-        acceptedExposureCount:
-          type: integer
-          description:
-            Invitations whose first response was acceptance. Later withdrawal
-            does not rewrite this outcome.
-          minimum: 0
-          nullable: true
-        declinedExposureCount:
-          type: integer
-          description: Invitations whose first response was a decline.
-          minimum: 0
-          nullable: true
-        unansweredExposureCount:
-          type: integer
-          description: Invitations with no response by their fixed deadline.
-          minimum: 0
-          nullable: true
-        cancelledBeforeResponseCount:
-          type: integer
-          description:
-            Invitations cancelled before a first response. Excluded from the
-            acceptance denominator.
-          minimum: 0
-          nullable: true
-        acceptanceRatePercent:
-          type: number
-          maximum: 100
-          minimum: 0
-          nullable: true
-      required:
-        - eligibleExposureCount
-        - acceptedExposureCount
-        - declinedExposureCount
-        - unansweredExposureCount
-        - cancelledBeforeResponseCount
-        - acceptanceRatePercent
-    PilotCandidateWillingnessDeclineReasonEntity:
-      type: object
-      properties:
-        reason:
-          type: string
-          enum:
-            - ACTIVITY_NOT_FOR_ME
-            - FIXED_TIME_DOES_NOT_WORK
-            - AREA_DOES_NOT_WORK
-            - NOT_THIS_GROUP
-            - TAKING_A_BREAK
-            - PREFER_NOT_TO_SAY
-        count:
-          type: integer
-          minimum: 0
-      required:
-        - reason
-        - count
-    PilotCandidateWillingnessActivityScopeEntity:
-      type: object
-      properties:
-        activityCategory:
-          type: string
-          enum:
-            - TECH
-            - SPORTS
-            - ARTS
-            - SOCIAL
-            - OUTDOORS
-            - LEARNING
-            - MUSIC
-            - FOOD
-            - GAMING
-            - WELLNESS
-            - TRAVEL
-            - OTHER
-        scope:
-          type: string
-          enum:
-            - LOCAL
-            - ONLINE
-        eligibleExposureCount:
-          type: integer
-          description: 'Candidate invitations counted in the denominator: accepted first,
-            declined first, or unanswered at the deadline.'
-          minimum: 0
-        acceptedExposureCount:
-          type: integer
-          description:
-            Invitations whose first response was acceptance. Later withdrawal
-            does not rewrite this outcome.
-          minimum: 0
-        declinedExposureCount:
-          type: integer
-          description: Invitations whose first response was a decline.
-          minimum: 0
-        unansweredExposureCount:
-          type: integer
-          description: Invitations with no response by their fixed deadline.
-          minimum: 0
-        cancelledBeforeResponseCount:
-          type: integer
-          description:
-            Invitations cancelled before a first response. Excluded from the
-            acceptance denominator.
-          minimum: 0
-        acceptanceRatePercent:
-          type: number
-          maximum: 100
-          minimum: 0
-          nullable: true
-        declineReasons:
-          type: array
-          items:
-            $ref: '#/components/schemas/PilotCandidateWillingnessDeclineReasonEntity'
-      required:
-        - activityCategory
-        - scope
-        - eligibleExposureCount
-        - acceptedExposureCount
-        - declinedExposureCount
-        - unansweredExposureCount
-        - cancelledBeforeResponseCount
-        - acceptanceRatePercent
-        - declineReasons
-    PilotCandidateWillingnessMetricsEntity:
-      type: object
-      properties:
-        eligibleExposureCount:
-          type: integer
-          description: 'Candidate invitations counted in the denominator: accepted first,
-            declined first, or unanswered at the deadline.'
-          minimum: 0
-          nullable: true
-        acceptedExposureCount:
-          type: integer
-          description:
-            Invitations whose first response was acceptance. Later withdrawal
-            does not rewrite this outcome.
-          minimum: 0
-          nullable: true
-        declinedExposureCount:
-          type: integer
-          description: Invitations whose first response was a decline.
-          minimum: 0
-          nullable: true
-        unansweredExposureCount:
-          type: integer
-          description: Invitations with no response by their fixed deadline.
-          minimum: 0
-          nullable: true
-        cancelledBeforeResponseCount:
-          type: integer
-          description:
-            Invitations cancelled before a first response. Excluded from the
-            acceptance denominator.
-          minimum: 0
-          nullable: true
-        acceptanceRatePercent:
-          type: number
-          maximum: 100
-          minimum: 0
-          nullable: true
-        definitionVersion:
-          type: string
-          enum:
-            - candidate-willingness-first-response-rate.v1
-        measurementState:
-          type: string
-          enum: *a77
-        dataCompleteness:
-          type: string
-          description:
-            Null counts and breakdowns mean the source was retention-purged or
-            has a matured invitation without its immutable response record.
-          enum:
-            - COMPLETE
-            - RETENTION_PURGED
-            - SOURCE_INCOMPLETE
-        local:
-          $ref: '#/components/schemas/PilotCandidateWillingnessScopeMetricsEntity'
-        online:
-          $ref: '#/components/schemas/PilotCandidateWillingnessScopeMetricsEntity'
-        declineReasons:
-          description:
-            Internal reason distribution among invitations whose first response
-            was a decline.
-          nullable: true
-          type: array
-          items:
-            $ref: '#/components/schemas/PilotCandidateWillingnessDeclineReasonEntity'
-        byActivityScope:
-          nullable: true
-          type: array
-          items:
-            $ref: '#/components/schemas/PilotCandidateWillingnessActivityScopeEntity'
-      required:
-        - eligibleExposureCount
-        - acceptedExposureCount
-        - declinedExposureCount
-        - unansweredExposureCount
-        - cancelledBeforeResponseCount
-        - acceptanceRatePercent
-        - definitionVersion
-        - measurementState
-        - dataCompleteness
-        - local
-        - online
-        - declineReasons
-        - byActivityScope
-    PilotRequestConversionScopeMetricsEntity:
-      type: object
-      properties:
-        eligibleRequestCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        convertedRequestCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        conversionRatePercent:
-          type: number
-          maximum: 100
-          minimum: 0
-          nullable: true
-      required:
-        - eligibleRequestCount
-        - convertedRequestCount
-        - conversionRatePercent
-    PilotProposalCoverageMetricsEntity:
-      type: object
-      properties:
-        eligibleRequestCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        convertedRequestCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        conversionRatePercent:
-          type: number
-          maximum: 100
-          minimum: 0
-          nullable: true
-        measurementState:
-          type: string
-          enum: *a77
-        dataCompleteness:
-          type: string
-          enum: *a78
-        local:
-          $ref: '#/components/schemas/PilotRequestConversionScopeMetricsEntity'
-        online:
-          $ref: '#/components/schemas/PilotRequestConversionScopeMetricsEntity'
-        definitionVersion:
-          type: string
-          enum:
-            - proposal-coverage-request-rate.v1
-      required:
-        - eligibleRequestCount
-        - convertedRequestCount
-        - conversionRatePercent
-        - measurementState
-        - dataCompleteness
-        - local
-        - online
-        - definitionVersion
-    PilotFormationConversionMetricsEntity:
-      type: object
-      properties:
-        eligibleRequestCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        convertedRequestCount:
-          type: integer
-          minimum: 0
-          nullable: true
-        conversionRatePercent:
-          type: number
-          maximum: 100
-          minimum: 0
-          nullable: true
-        measurementState:
-          type: string
-          enum: *a77
-        dataCompleteness:
-          type: string
-          enum: *a78
-        local:
-          $ref: '#/components/schemas/PilotRequestConversionScopeMetricsEntity'
-        online:
-          $ref: '#/components/schemas/PilotRequestConversionScopeMetricsEntity'
-        definitionVersion:
-          type: string
-          enum:
-            - formation-conversion-request-rate.v1
-      required:
-        - eligibleRequestCount
-        - convertedRequestCount
-        - conversionRatePercent
-        - measurementState
-        - dataCompleteness
-        - local
-        - online
-        - definitionVersion
-    PilotMetricsCohortEntity:
-      type: object
-      properties:
-        code:
-          type: string
-          example: london-alpha
-        memberCount:
-          type: integer
-          minimum: 0
-        activityActivation:
-          $ref: '#/components/schemas/PilotActivityActivationMetricsEntity'
-        candidateWillingness:
-          $ref: '#/components/schemas/PilotCandidateWillingnessMetricsEntity'
-        proposalCoverage:
-          $ref: '#/components/schemas/PilotProposalCoverageMetricsEntity'
-        formationConversion:
-          $ref: '#/components/schemas/PilotFormationConversionMetricsEntity'
-      required:
-        - code
-        - memberCount
-        - activityActivation
-        - candidateWillingness
-        - proposalCoverage
-        - formationConversion
-    PilotMetricsEntity:
-      type: object
-      properties:
-        evaluatedAt:
-          type: string
-          format: date-time
-        activeCohort:
-          nullable: true
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/PilotMetricsCohortEntity'
-      required:
-        - evaluatedAt
-        - activeCohort
-    PilotSponsorCountValueEntity:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-            - COUNT
-        count:
-          type: integer
-          minimum: 0
-      required:
-        - kind
-        - count
-    PilotSponsorRateValueEntity:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-            - RATE
-        numerator:
-          type: integer
-          minimum: 0
-        denominator:
-          type: integer
-          minimum: 0
-        ratePercent:
-          type: number
-          maximum: 100
-          minimum: 0
-      required:
-        - kind
-        - numerator
-        - denominator
-        - ratePercent
-    PilotSponsorValueMeasureEntity:
-      type: object
-      properties:
-        state:
-          type: string
-          enum:
-            - VALUE
-        value:
-          oneOf:
-            - $ref: '#/components/schemas/PilotSponsorCountValueEntity'
-            - $ref: '#/components/schemas/PilotSponsorRateValueEntity'
-      required:
-        - state
-        - value
-    PilotSponsorRateValueMeasureEntity:
-      type: object
-      properties:
-        state:
-          type: string
-          enum:
-            - VALUE
-        value:
-          $ref: '#/components/schemas/PilotSponsorRateValueEntity'
-      required:
-        - state
-        - value
-    PilotSponsorSuppressedMeasureEntity:
-      type: object
-      properties:
-        state:
-          type: string
-          enum:
-            - SUPPRESSED
-        reason:
-          type: string
-          enum:
-            - DENOMINATOR_TOO_SMALL
-            - SMALL_CELL
-            - COMPLEMENTARY_CELL
-      required:
-        - state
-        - reason
-    PilotSponsorNotCollectedMeasureEntity:
-      type: object
-      properties:
-        state:
-          type: string
-          enum:
-            - NOT_COLLECTED
-        reason:
-          type: string
-          enum:
-            - NOT_IN_FROZEN_DEFINITION
-      required:
-        - state
-        - reason
-    PilotSponsorSourceIncompleteMeasureEntity:
-      type: object
-      properties:
-        state:
-          type: string
-          enum:
-            - SOURCE_INCOMPLETE
-        reason:
-          type: string
-          enum:
-            - RETENTION_PURGED
-      required:
-        - state
-        - reason
-    PilotSponsorTargetCohortEntity:
-      type: object
-      properties:
-        code:
-          type: string
-          example: london-alpha
-        memberCount:
-          type: integer
-          minimum: 0
-        scope:
-          type: string
-          enum:
-            - LOCAL
-        startsAt:
-          type: string
-          format: date-time
-        endsAt:
-          type: string
-          format: date-time
-        outcomeWindowEndsAt:
-          type: string
-          format: date-time
-      required:
-        - code
-        - memberCount
-        - scope
-        - startsAt
-        - endsAt
-        - outcomeWindowEndsAt
-    PilotSponsorEligibilityEntity:
-      type: object
-      properties:
-        eligible:
-          type: boolean
-        blockers:
-          type: array
-          items:
-            type: string
-            enum:
-              - NO_CONFIGURED_COHORT
-              - OUTCOME_WINDOW_OPEN
-              - DENOMINATOR_BELOW_MINIMUM
-              - ARTIFACT_ALREADY_EXISTS
-      required:
-        - eligible
-        - blockers
-    PilotSponsorViewerEntity:
-      type: object
-      properties:
-        canGenerate:
-          type: boolean
-      required:
-        - canGenerate
-    PilotSponsorMeasuresEntity:
-      type: object
-      properties:
-        cohortSize:
-          oneOf: &a79
-            - $ref: '#/components/schemas/PilotSponsorValueMeasureEntity'
-            - $ref: '#/components/schemas/PilotSponsorSuppressedMeasureEntity'
-            - $ref: '#/components/schemas/PilotSponsorNotCollectedMeasureEntity'
-            - $ref: '#/components/schemas/PilotSponsorSourceIncompleteMeasureEntity'
-        sponsorDirectRecruitment:
-          oneOf: *a79
-        referralRecruitment:
-          oneOf: *a79
-        requestCreation:
-          oneOf: *a79
-        activityActivation:
-          oneOf: *a79
-        proposalCoverage:
-          oneOf: &a80
-            - $ref: '#/components/schemas/PilotSponsorRateValueMeasureEntity'
-            - $ref: '#/components/schemas/PilotSponsorSuppressedMeasureEntity'
-            - $ref: '#/components/schemas/PilotSponsorSourceIncompleteMeasureEntity'
-        formedGroups:
-          oneOf: *a80
-        scheduledPlans:
-          oneOf: *a79
-        completedActivities:
-          oneOf: *a79
-        continuingGroups:
-          oneOf: *a79
-        coarseSafetyWorkload:
-          oneOf: *a79
-      required:
-        - cohortSize
-        - sponsorDirectRecruitment
-        - referralRecruitment
-        - requestCreation
-        - activityActivation
-        - proposalCoverage
-        - formedGroups
-        - scheduledPlans
-        - completedActivities
-        - continuingGroups
-        - coarseSafetyWorkload
-    PilotSponsorArtifactEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceCode:
-          type: string
-          example: TFP-5F5A9D4ACF10
-        generatedAt:
-          type: string
-          format: date-time
-        definitionVersion:
-          type: string
-          enum:
-            - pilot-fixed-window-summary.v2
-        privacyRuleVersion:
-          type: string
-          enum:
-            - minimum-cell-privacy.v2
-        roundingRuleVersion:
-          type: string
-          enum:
-            - one-decimal-percent.v1
-        payloadHash:
-          type: string
-          pattern: ^[0-9a-f]{64}$
-        measures:
-          $ref: '#/components/schemas/PilotSponsorMeasuresEntity'
-      required:
-        - id
-        - referenceCode
-        - generatedAt
-        - definitionVersion
-        - privacyRuleVersion
-        - roundingRuleVersion
-        - payloadHash
-        - measures
-    PilotSponsorArtifactStatusEntity:
-      type: object
-      properties:
-        evaluatedAt:
-          type: string
-          format: date-time
-        targetCohort:
-          nullable: true
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/PilotSponsorTargetCohortEntity'
-        eligibility:
-          $ref: '#/components/schemas/PilotSponsorEligibilityEntity'
-        viewer:
-          $ref: '#/components/schemas/PilotSponsorViewerEntity'
-        artifact:
-          nullable: true
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/PilotSponsorArtifactEntity'
-      required:
-        - evaluatedAt
-        - targetCohort
-        - eligibility
-        - viewer
-        - artifact
     LinkPreviewEntity:
       type: object
       properties:
@@ -10878,7 +11240,7 @@ components:
           nullable: true
         onlineStatus:
           type: string
-          enum: &a86
+          enum: &a87
             - ONLINE
             - AWAY
             - OFFLINE
@@ -11130,7 +11492,7 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: &a81
+          enum: &a82
             - TECH
             - SPORTS
             - ARTS
@@ -11145,7 +11507,7 @@ components:
             - OTHER
         status:
           type: string
-          enum: &a82
+          enum: &a83
             - DRAFT
             - PROPOSED
             - CONFIRMED
@@ -11154,7 +11516,7 @@ components:
             - CANCELLED
         scheduleMode:
           type: string
-          enum: &a83
+          enum: &a84
             - TO_BE_DECIDED
             - FIXED
           nullable: true
@@ -11164,7 +11526,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: &a84
+          enum: &a85
             - IN_PERSON
             - ONLINE
             - TBD
@@ -11179,7 +11541,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: &a85
+          enum: &a86
             - FREE
             - PAID
         revision:
@@ -11221,13 +11583,13 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: *a81
+          enum: *a82
         status:
           type: string
-          enum: *a82
+          enum: *a83
         scheduleMode:
           type: string
-          enum: *a83
+          enum: *a84
           nullable: true
         dateTime:
           format: date-time
@@ -11235,7 +11597,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: *a84
+          enum: *a85
         location:
           type: string
           example: Regents Park Courts
@@ -11247,7 +11609,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: *a85
+          enum: *a86
       required:
         - id
         - title
@@ -11275,7 +11637,7 @@ components:
             - $ref: '#/components/schemas/ImageMediaEntity'
         onlineStatus:
           type: string
-          enum: *a86
+          enum: *a87
       required:
         - id
         - name
@@ -13385,271 +13747,6 @@ components:
           example: 2026-05-02T18:00:00.000Z
       required:
         - groupId
-    NotificationEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1notification123
-        type:
-          type: string
-          enum:
-            - FRIEND_REQUEST
-            - FRIEND_ACCEPTED
-            - GROUP_FORMED
-            - GROUP_INVITE
-            - GROUP_JOIN_REQUEST
-            - GROUP_JOIN_APPROVED
-            - GROUP_MEMBER_LEFT
-            - GROUP_DISBANDED
-            - PLAN_CREATED
-            - PLAN_CONFIRMED
-            - PLAN_UPDATED
-            - PLAN_PROPOSAL
-            - PLAN_STARTING_SOON
-            - PLAN_COMPLETED
-            - PLAN_CANCELLED
-            - NEW_MESSAGE
-            - MESSAGE_MENTION
-            - RATING_REQUEST
-            - RATING_RECEIVED
-            - SYSTEM_ANNOUNCEMENT
-            - ACCOUNT_SECURITY
-        title:
-          type: string
-          example: Your group is ready
-        message:
-          type: string
-          example: Your group is ready. Open the plan and say hello in chat.
-        link:
-          type: string
-          example: /groups/clx1group123
-          nullable: true
-        avatarUrl:
-          type: string
-          example: https://example.com/group-avatar.png
-          nullable: true
-        isRead:
-          type: boolean
-          example: false
-        createdAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-        updatedAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-        entityType:
-          type: string
-          enum:
-            - USER
-            - GROUP
-            - PLAN
-            - ACTIVITY
-            - MESSAGE
-            - INVITE
-          nullable: true
-        entityId:
-          type: string
-          example: clx1group123
-          nullable: true
-        receiverId:
-          type: string
-          example: clx1user123
-        version:
-          type: number
-          example: 1777560000000
-      required:
-        - id
-        - type
-        - title
-        - message
-        - isRead
-        - createdAt
-        - updatedAt
-        - receiverId
-        - version
-    PaginatedNotifications:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/PaginationMeta'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/NotificationEntity'
-      required:
-        - meta
-        - items
-    NotificationUnreadCountEntity:
-      type: object
-      properties:
-        unreadCount:
-          type: number
-          example: 5
-      required:
-        - unreadCount
-    WebPushPublicKeyEntity:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-        publicKey:
-          type: string
-          description:
-            Public VAPID key for browser PushManager.subscribe. Empty when
-            disabled.
-          example: BEl6...
-      required:
-        - enabled
-        - publicKey
-    WebPushSubscriptionEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          example: clx1pushsubscription123
-        endpoint:
-          type: string
-          example: https://fcm.googleapis.com/fcm/send/example
-        expirationTime:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-          nullable: true
-        userAgent:
-          type: string
-          example:
-            Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X)
-            AppleWebKit/605.1.15
-          nullable: true
-        disabledAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-          nullable: true
-        lastSeenAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-        createdAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-        updatedAt:
-          format: date-time
-          type: string
-          example: 2026-04-27T16:00:00.000Z
-        userId:
-          type: string
-          example: clx1user123
-      required:
-        - id
-        - endpoint
-        - lastSeenAt
-        - createdAt
-        - updatedAt
-        - userId
-    WebPushSubscriptionKeysDto:
-      type: object
-      properties:
-        p256dh:
-          type: string
-          description: Browser PushSubscription p256dh key.
-          example: BDh9...
-        auth:
-          type: string
-          description: Browser PushSubscription auth secret.
-          example: k8Q...
-      required:
-        - p256dh
-        - auth
-    UpsertWebPushSubscriptionDto:
-      type: object
-      properties:
-        endpoint:
-          type: string
-          description: Browser PushSubscription endpoint URL.
-          example: https://fcm.googleapis.com/fcm/send/example
-        expirationTime:
-          type: number
-          description:
-            Browser PushSubscription expirationTime value in milliseconds since
-            epoch.
-          example: 1777560000000
-          nullable: true
-        keys:
-          $ref: '#/components/schemas/WebPushSubscriptionKeysDto'
-      required:
-        - endpoint
-        - keys
-    DeleteWebPushSubscriptionDto:
-      type: object
-      properties:
-        endpoint:
-          type: string
-          description: Browser PushSubscription endpoint URL to disable.
-          example: https://fcm.googleapis.com/fcm/send/example
-      required:
-        - endpoint
-    WebPushTestDiagnosticEntity:
-      type: object
-      properties:
-        issue:
-          type: string
-          enum: &a87
-            - certificate-error
-            - network-error
-            - no-subscriptions
-            - push-disabled
-            - push-service-error
-            - subscription-expired
-            - unknown-error
-            - vapid-auth-error
-          example: certificate-error
-        count:
-          type: number
-          example: 1
-      required:
-        - issue
-        - count
-    WebPushTestDispatchEntity:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-        issue:
-          type: string
-          enum: *a87
-          example: certificate-error
-          nullable: true
-        diagnostics:
-          type: array
-          items:
-            $ref: '#/components/schemas/WebPushTestDiagnosticEntity'
-        subscriptionCount:
-          type: number
-          example: 1
-        sentCount:
-          type: number
-          example: 1
-        failedCount:
-          type: number
-          example: 0
-        disabledCount:
-          type: number
-          example: 0
-      required:
-        - enabled
-        - issue
-        - diagnostics
-        - subscriptionCount
-        - sentCount
-        - failedCount
-        - disabledCount
     RatingUserEntity:
       type: object
       properties:
@@ -13954,6 +14051,7 @@ components:
           type: string
           enum:
             - PROFILE
+            - PROPOSAL_SEAT
             - MESSAGE
             - ATTACHMENT
             - GROUP
@@ -14616,6 +14714,7 @@ components:
           enum:
             - MODERATION_ASSISTANCE
             - EVIDENCE_PRESERVATION
+            - EVIDENCE_SCAN
             - DOMAIN_EVENT_OUTBOX
         displayName:
           type: string
@@ -14758,6 +14857,7 @@ components:
           enum:
             - MODERATION_ASSISTANCE
             - EVIDENCE_PRESERVATION
+            - EVIDENCE_SCAN
             - DOMAIN_EVENT_OUTBOX
       required:
         - data
@@ -14790,6 +14890,7 @@ components:
           enum:
             - MODERATION_ASSISTANCE
             - EVIDENCE_PRESERVATION
+            - EVIDENCE_SCAN
             - DOMAIN_EVENT_OUTBOX
         state:
           type: string
@@ -15035,6 +15136,7 @@ components:
             type: string
             enum:
               - PROFILE
+              - PROPOSAL_SEAT
               - MESSAGE
               - ATTACHMENT
               - GROUP
@@ -15785,6 +15887,7 @@ components:
           type: string
           enum:
             - PROFILE
+            - PROPOSAL_SEAT
             - MESSAGE
             - ATTACHMENT
             - GROUP
@@ -16212,6 +16315,7 @@ components:
           type: string
           enum:
             - PROFILE
+            - PROPOSAL_SEAT
             - MESSAGE
             - ATTACHMENT
             - GROUP
@@ -16225,6 +16329,16 @@ components:
           type: string
         preservationState:
           type: string
+        scanState:
+          type: string
+          enum:
+            - NOT_REQUIRED
+            - QUARANTINED
+            - SCANNING
+            - CLEAN
+            - REJECTED
+            - CHILD_SAFETY_RESTRICTED
+            - FAILED
         preservedAt:
           format: date-time
           type: string
@@ -16246,6 +16360,7 @@ components:
         - sourceVersion
         - sensitivity
         - preservationState
+        - scanState
         - retentionUntil
         - createdAt
     RevealEvidenceDto:
@@ -16286,6 +16401,39 @@ components:
         - targetType
         - target
         - context
+    OperatorMediaEvidenceRevealEntity:
+      type: object
+      properties:
+        byteLength:
+          type: number
+        dataUrl:
+          type: string
+        evidenceId:
+          type: string
+        height:
+          type: number
+        mediaType:
+          type: string
+          enum:
+            - image/webp
+        sourceId:
+          type: string
+        sourceType:
+          type: string
+        sourceVersion:
+          type: string
+        width:
+          type: number
+      required:
+        - byteLength
+        - dataUrl
+        - evidenceId
+        - height
+        - mediaType
+        - sourceId
+        - sourceType
+        - sourceVersion
+        - width
     AssignOperatorCaseDto:
       type: object
       properties:
@@ -16611,6 +16759,7 @@ components:
           type: string
           enum: &a99
             - PROFILE
+            - PROPOSAL_SEAT
             - MESSAGE
             - ATTACHMENT
             - GROUP

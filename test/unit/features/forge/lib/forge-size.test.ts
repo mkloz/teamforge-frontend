@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   DEFAULT_GROUP_SIZE,
-  getPreferredGroupSizeFromRange,
   normalizeFixedGroupSize,
   normalizeGroupSizeRange,
 } from "@/features/forge/lib/forge-size";
@@ -27,7 +26,7 @@ describe("normalizeFixedGroupSize", () => {
 
   it("normalizes range bounds into a stable ordered pair", () => {
     expect(normalizeGroupSizeRange(7, 4)).toEqual({ min: 4, max: 7 });
-    expect(normalizeGroupSizeRange(-20, 20)).toEqual({ min: 2, max: 8 });
+    expect(normalizeGroupSizeRange(-20, 20)).toEqual({ min: 3, max: 8 });
     expect(normalizeGroupSizeRange(Number.NaN, 5)).toEqual({ min: 5, max: 5 });
     expect(
       normalizeGroupSizeRange(Number.NaN, Number.POSITIVE_INFINITY),
@@ -35,11 +34,5 @@ describe("normalizeFixedGroupSize", () => {
       min: DEFAULT_GROUP_SIZE,
       max: DEFAULT_GROUP_SIZE,
     });
-  });
-
-  it("derives the preferred backend group size from a normalized range", () => {
-    expect(getPreferredGroupSizeFromRange(4, 7)).toBe(6);
-    expect(getPreferredGroupSizeFromRange(7, 4)).toBe(6);
-    expect(getPreferredGroupSizeFromRange(Number.NaN, 5)).toBe(5);
   });
 });

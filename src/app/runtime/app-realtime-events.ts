@@ -3,7 +3,7 @@ import {
   invalidateActivityGroupSurfaces,
 } from "@/features/activity/public/activity-app-realtime";
 import {
-  type CurrentForgeProposalResponse,
+  clearForgeProposalSensitiveCaches,
   FORGE_PROPOSAL_QUERY_KEYS,
 } from "@/features/forge-proposals/public/proposal-review";
 import { addIncomingNotification } from "@/features/notifications/public/notification-realtime";
@@ -11,6 +11,7 @@ import { authSession } from "@/shared/api/auth-session";
 import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
 import {
+  invalidateFormationOpeningApplicationSurfaces,
   invalidatePlanDecisionSurfaces,
   refreshAccessSensitiveSurfaces,
 } from "@/shared/api/query-invalidation";
@@ -90,12 +91,14 @@ function handleAccessChangedPayload(payload: unknown) {
     return;
   }
 
-  const rosterReset = clearForgeProposalRosterCaches();
-  void Promise.all([
-    rosterReset,
-    refreshAccessSensitiveSurfaces(),
-    refreshForgeProposalState(),
-  ]);
+  const rosterReset = clearForgeProposalSensitiveCaches(appQueryClient);
+  void rosterReset.then(() =>
+    Promise.all([
+      invalidateFormationOpeningApplicationSurfaces(),
+      refreshAccessSensitiveSurfaces(),
+      refreshForgeProposalState(),
+    ]),
+  );
 }
 
 function handleForgeProposalUpdatedPayload(payload: unknown) {
@@ -105,25 +108,16 @@ function handleForgeProposalUpdatedPayload(payload: unknown) {
     return;
   }
 
-  const rosterReset = clearForgeProposalRosterCaches(parsed.proposalId);
-  void Promise.all([rosterReset, refreshForgeProposalSurfaces()]);
-}
-
-function clearForgeProposalRosterCaches(proposalId?: string) {
-  const detailReset = appQueryClient.resetQueries({
-    ...(proposalId ? { exact: true } : {}),
-    queryKey: proposalId
-      ? FORGE_PROPOSAL_QUERY_KEYS.detail(proposalId)
-      : ([...FORGE_PROPOSAL_QUERY_KEYS.all, "detail"] as const),
-  });
-  appQueryClient.setQueryData<CurrentForgeProposalResponse>(
-    FORGE_PROPOSAL_QUERY_KEYS.current,
-    (current) =>
-      !proposalId || current?.proposal?.id === proposalId
-        ? { proposal: null }
-        : current,
+  const rosterReset = clearForgeProposalSensitiveCaches(
+    appQueryClient,
+    parsed.proposalId,
   );
-  return detailReset;
+  void rosterReset.then(() =>
+    Promise.all([
+      invalidateFormationOpeningApplicationSurfaces(),
+      refreshForgeProposalSurfaces(),
+    ]),
+  );
 }
 
 function refreshForgeProposalState() {

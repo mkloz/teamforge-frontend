@@ -1,5 +1,6 @@
 import { Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { FormationOpeningReportAction } from "@/features/reporting/public/reporting";
 import { FormationOpeningCard } from "@/shared/components/formation-opening-card";
 import { Button } from "@/shared/components/ui/button";
 import type { ExploreFeedItem } from "@/shared/schemas";
@@ -155,7 +156,15 @@ function ExploreFeedItemCard({
           imagePriority={imagePriority}
         />
       ) : (
-        <FormationOpeningCard opening={item.opening} />
+        <FormationOpeningCard
+          opening={item.opening}
+          safetyAction={
+            <FormationOpeningReportAction
+              activityId={item.opening.activity.id}
+              activityTitle={item.opening.activity.title}
+            />
+          }
+        />
       )}
     </div>
   );

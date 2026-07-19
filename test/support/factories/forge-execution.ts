@@ -4,7 +4,9 @@ export function createAutoForgeExecutionInput(
   overrides: Partial<AutoForgeExecutionInput> = {},
 ): AutoForgeExecutionInput {
   return {
+    forgeScope: "LOCAL",
     selectedActivity: "Tech & Build",
+    planCategory: "TECH",
     planName: "AI tool test",
     planDescription: "Compare small tools over coffee.",
     planScheduleMode: "FIXED",

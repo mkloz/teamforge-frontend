@@ -1,6 +1,7 @@
-import type { Interest, User } from "@/shared/schemas";
+import type { Interest } from "@/shared/schemas";
+import type { CurrentUser } from "@/shared/schemas/user-response";
 
-export function createUser(overrides: Partial<User> = {}): User {
+export function createUser(overrides: Partial<CurrentUser> = {}): CurrentUser {
   return {
     id: "user-1",
     email: "test@example.com",
@@ -23,6 +24,7 @@ export function createUser(overrides: Partial<User> = {}): User {
     searchStatus: "IDLE",
     trustScore: 80,
     profileComplete: true,
+    role: "USER",
     interests: [],
     ...overrides,
   };

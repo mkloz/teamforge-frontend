@@ -14,40 +14,17 @@ describe("resolveGroupSize", () => {
     ).toBe(8);
   });
 
-  it("uses the rounded midpoint for automatic range sizing", () => {
+  it("keeps the compatibility size separate from the automatic range", () => {
     expect(
       resolveGroupSize(
         createAutoForgeExecutionInput({
           autoMaxSize: 7,
           autoMinSize: 4,
+          fixedSize: 7,
           groupSizeMode: "RANGE",
         }),
       ),
-    ).toBe(6);
-  });
-
-  it("normalizes range endpoints before averaging corrupted bounds", () => {
-    expect(
-      resolveGroupSize(
-        createAutoForgeExecutionInput({
-          autoMaxSize: 20,
-          autoMinSize: -20,
-          groupSizeMode: "RANGE",
-        }),
-      ),
-    ).toBe(5);
-  });
-
-  it("orders inverted range bounds before deriving the preferred group size", () => {
-    expect(
-      resolveGroupSize(
-        createAutoForgeExecutionInput({
-          autoMaxSize: 4,
-          autoMinSize: 7,
-          groupSizeMode: "RANGE",
-        }),
-      ),
-    ).toBe(6);
+    ).toBe(7);
   });
 
   it("falls back to a safe bounded size for non-finite values", () => {
@@ -59,25 +36,5 @@ describe("resolveGroupSize", () => {
         }),
       ),
     ).toBe(6);
-
-    expect(
-      resolveGroupSize(
-        createAutoForgeExecutionInput({
-          autoMaxSize: Number.POSITIVE_INFINITY,
-          autoMinSize: Number.NaN,
-          groupSizeMode: "RANGE",
-        }),
-      ),
-    ).toBe(6);
-
-    expect(
-      resolveGroupSize(
-        createAutoForgeExecutionInput({
-          autoMaxSize: 5,
-          autoMinSize: Number.NaN,
-          groupSizeMode: "RANGE",
-        }),
-      ),
-    ).toBe(5);
   });
 });

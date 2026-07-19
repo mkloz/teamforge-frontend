@@ -2,6 +2,7 @@ export {
   blockReportedUser,
   leaveReportedGroup,
 } from "@/features/reporting/api/report-actions";
+export { FormationOpeningReportAction } from "@/features/reporting/components/formation-opening-report-action";
 export {
   ReportDialog,
   type ReportDialogProps,

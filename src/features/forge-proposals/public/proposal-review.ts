@@ -1,3 +1,4 @@
+export { clearForgeProposalSensitiveCaches } from "@/features/forge-proposals/api/forge-proposal-cache";
 export {
   FORGE_PROPOSAL_QUERY_KEYS,
   forgeProposalQueries,

@@ -5,6 +5,7 @@ import { HomeSectionHeading } from "@/features/home/components/home-section-head
 import { HomeRecommendedGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { getRecommendationPreview } from "@/features/home/lib/home-insights";
+import { FormationOpeningReportAction } from "@/features/reporting/public/reporting";
 import { FormationOpeningCard } from "@/shared/components/formation-opening-card";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -137,7 +138,16 @@ function RecommendationCard({
   return recommendation.type === "GROUP" ? (
     <RecommendedGroupCard group={recommendation.group} />
   ) : (
-    <FormationOpeningCard opening={recommendation.opening} variant="compact" />
+    <FormationOpeningCard
+      opening={recommendation.opening}
+      safetyAction={
+        <FormationOpeningReportAction
+          activityId={recommendation.opening.activity.id}
+          activityTitle={recommendation.opening.activity.title}
+        />
+      }
+      variant="compact"
+    />
   );
 }
 

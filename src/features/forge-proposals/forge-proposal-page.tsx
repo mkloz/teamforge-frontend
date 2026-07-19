@@ -9,6 +9,7 @@ import {
   ForgeProposalSurface,
   type ForgeProposalSurfaceState,
 } from "@/features/forge-proposals/components/forge-proposal-surface";
+import { ProposalHistoricalReportAction } from "@/features/forge-proposals/components/proposal-historical-report-action";
 import {
   ForgeProposalCompleteState,
   ForgeProposalExpiredState,
@@ -55,7 +56,7 @@ export function ForgeProposalPage() {
   const formedResources =
     currentSavedDecision?.formedResources ??
     proposalQuery.data?.formedResources;
-  const terminalAction = formedResources ? (
+  const terminalNavigationAction = formedResources ? (
     <Button asChild>
       <Link
         {...buildGroupPlanDetailNavigation(formedResources.groupId, {
@@ -70,6 +71,12 @@ export function ForgeProposalPage() {
       <Link to="/home">Back to home</Link>
     </Button>
   );
+  const terminalActions = (
+    <>
+      {terminalNavigationAction}
+      <ProposalHistoricalReportAction proposalId={proposalId} />
+    </>
+  );
 
   if (
     currentSavedDecision?.viewerDecision === "DECLINED" ||
@@ -78,7 +85,7 @@ export function ForgeProposalPage() {
     return (
       <ForgeProposalResponseSavedState
         decision={currentSavedDecision.viewerDecision}
-        action={terminalAction}
+        action={terminalActions}
       />
     );
   }
@@ -87,28 +94,28 @@ export function ForgeProposalPage() {
     currentSavedDecision?.proposalState === "FORMED" &&
     currentSavedDecision.formedResources
   ) {
-    return <ForgeProposalCompleteState action={terminalAction} />;
+    return <ForgeProposalCompleteState action={terminalActions} />;
   }
 
   if (
     proposalQuery.data?.state === "FORMED" &&
     proposalQuery.data.formedResources
   ) {
-    return <ForgeProposalCompleteState action={terminalAction} />;
+    return <ForgeProposalCompleteState action={terminalActions} />;
   }
 
   if (
     currentTerminalState === "expired" ||
     currentSavedDecision?.proposalState === "EXPIRED"
   ) {
-    return <ForgeProposalExpiredState action={terminalAction} />;
+    return <ForgeProposalExpiredState action={terminalActions} />;
   }
 
   if (proposalQuery.data?.recovery?.viewerStatus === "WAITING_FOR_RECOVERY") {
     return (
       <ForgeProposalRecoveryWaitingState
         holdUntil={proposalQuery.data.recovery.holdUntil}
-        action={terminalAction}
+        action={terminalActions}
         refreshFailed={proposalQuery.isError}
       />
     );
@@ -122,7 +129,7 @@ export function ForgeProposalPage() {
     (proposalQuery.data?.state === "FAILED_QUORUM" &&
       !proposalQuery.data.recovery)
   ) {
-    return <ForgeProposalUnavailableState action={terminalAction} />;
+    return <ForgeProposalUnavailableState action={terminalActions} />;
   }
 
   return (
@@ -154,7 +161,7 @@ export function ForgeProposalPage() {
         )
       }
       state={getProposalSurfaceState(proposalQuery)}
-      terminalAction={terminalAction}
+      terminalAction={terminalActions}
     />
   );
 }

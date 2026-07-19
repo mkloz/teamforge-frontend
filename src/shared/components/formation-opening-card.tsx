@@ -7,6 +7,7 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -16,11 +17,13 @@ import type { ExploreFormationOpening } from "@/shared/schemas";
 
 interface FormationOpeningCardProps {
   opening: ExploreFormationOpening;
+  safetyAction?: ReactNode;
   variant?: "default" | "compact";
 }
 
 export function FormationOpeningCard({
   opening,
+  safetyAction,
   variant = "default",
 }: FormationOpeningCardProps) {
   const application = useRequestFormationOpening(opening);
@@ -81,35 +84,41 @@ export function FormationOpeningCard({
         <span className="font-semibold text-muted-foreground text-xs capitalize">
           {opening.category.toLowerCase()}
         </span>
-        {isRequested ? (
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <StatusPill icon={Check} tone="teal" size="sm">
-              Request sent
-            </StatusPill>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {safetyAction}
+          {isRequested ? (
+            <>
+              <StatusPill icon={Check} tone="teal" size="sm">
+                Request sent
+              </StatusPill>
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                loading={application.isWithdrawPending}
+                disabled={!application.isOnline}
+                onClick={application.withdrawRequest}
+              >
+                <X className="size-3.5" aria-hidden="true" />
+                Withdraw
+              </Button>
+            </>
+          ) : (
             <Button
               type="button"
-              variant="ghost"
-              size="xs"
-              loading={application.isWithdrawPending}
-              disabled={!application.isOnline}
-              onClick={application.withdrawRequest}
+              variant={isClosed ? "subtle" : "primary"}
+              size={isCompact ? "xs" : "sm"}
+              loading={application.isApplyPending}
+              disabled={!application.isOnline || isClosed}
+              onClick={application.requestPlace}
             >
-              <X className="size-3.5" aria-hidden="true" />
-              Withdraw
+              {getRequestLabel(
+                application.requestState,
+                application.didWithdraw,
+              )}
             </Button>
-          </div>
-        ) : (
-          <Button
-            type="button"
-            variant={isClosed ? "subtle" : "primary"}
-            size={isCompact ? "xs" : "sm"}
-            loading={application.isApplyPending}
-            disabled={!application.isOnline || isClosed}
-            onClick={application.requestPlace}
-          >
-            {getRequestLabel(application.requestState, application.didWithdraw)}
-          </Button>
-        )}
+          )}
+        </div>
       </div>
 
       {statusMessage ? (

@@ -1,5 +1,6 @@
 import { Info } from "lucide-react";
 import { ProposalPersonalityDetails } from "@/features/forge-proposals/components/proposal-personality-details";
+import { ProposalSeatSafetyActions } from "@/features/forge-proposals/components/proposal-seat-safety-actions";
 import type {
   ForgeProposal,
   ForgeProposalSeat,
@@ -40,6 +41,7 @@ export function ProposalRoster({ proposal }: ProposalRosterProps) {
           <ProposalRosterSeat
             key={seat.seatId}
             seat={seat}
+            proposalId={proposal.id}
             isViewer={seat.seatId === proposal.viewer.seatId}
           />
         ))}
@@ -50,9 +52,11 @@ export function ProposalRoster({ proposal }: ProposalRosterProps) {
 
 function ProposalRosterSeat({
   isViewer,
+  proposalId,
   seat,
 }: {
   isViewer: boolean;
+  proposalId: string;
   seat: ForgeProposalSeat;
 }) {
   const meta = getSeatMeta(seat);
@@ -110,6 +114,10 @@ function ProposalRosterSeat({
           </div>
 
           <ProposalPersonalityDetails seat={seat} />
+
+          {!isViewer ? (
+            <ProposalSeatSafetyActions proposalId={proposalId} seat={seat} />
+          ) : null}
         </div>
       </div>
     </li>

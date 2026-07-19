@@ -7,6 +7,7 @@ export const reportTargetTypeSchema = z.enum([
   "GROUP",
   "PLAN",
   "ACTIVITY",
+  "PROPOSAL_SEAT",
 ]);
 
 export const reportCategorySchema = z.enum([

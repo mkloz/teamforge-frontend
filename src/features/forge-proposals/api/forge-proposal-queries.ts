@@ -8,6 +8,10 @@ export const FORGE_PROPOSAL_QUERY_KEYS = {
   detail(proposalId: string) {
     return ["forge-proposals", "detail", proposalId] as const;
   },
+  reportTargets: ["forge-proposals", "report-targets"] as const,
+  reportTargetsByProposal(proposalId: string) {
+    return ["forge-proposals", "report-targets", proposalId] as const;
+  },
 };
 
 export const forgeProposalQueries = {
@@ -26,6 +30,17 @@ export const forgeProposalQueries = {
       enabled: proposalId.length > 0,
       refetchInterval: (query) => (query.state.data?.recovery ? 15_000 : false),
       staleTime: 15_000,
+    });
+  },
+
+  reportTargets(proposalId: string) {
+    return queryOptions({
+      queryKey: FORGE_PROPOSAL_QUERY_KEYS.reportTargetsByProposal(proposalId),
+      queryFn: () => ForgeProposalsApi.getReportTargets(proposalId),
+      enabled: proposalId.length > 0,
+      meta: { errorToast: false },
+      retry: false,
+      staleTime: 60_000,
     });
   },
 };
