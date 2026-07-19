@@ -1,3 +1,4 @@
+import { groupInviteSuggestionsSchema } from "@/features/group-plan-detail/schemas/group-invite-suggestion.schema";
 import { apiClient } from "@/shared/api/api";
 import {
   postExploreGroupJoin,
@@ -6,6 +7,7 @@ import {
 } from "@/shared/api/group-membership-api";
 import {
   acceptInvite as sharedAcceptInvite,
+  createInvite as sharedCreateInvite,
   declineInvite as sharedDeclineInvite,
 } from "@/shared/api/invite-membership-api";
 import {
@@ -28,6 +30,22 @@ export class GroupPlanDetailApi {
       .json<unknown>();
 
     return groupPlanDetailSchema.parse(response);
+  }
+
+  static async getInviteSuggestions(groupId: string) {
+    const response = await apiClient
+      .get(`groups/${groupId}/invite-suggestions`)
+      .json<unknown>();
+
+    return groupInviteSuggestionsSchema.parse(response);
+  }
+
+  static async inviteSuggestion(groupId: string, suggestionId: string) {
+    return sharedCreateInvite({
+      groupId,
+      suggestionId,
+      type: "DIRECT_INVITE",
+    });
   }
 
   static async joinGroup(groupId: string) {

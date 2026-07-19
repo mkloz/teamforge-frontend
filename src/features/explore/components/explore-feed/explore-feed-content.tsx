@@ -1,51 +1,51 @@
 import { Loader2, RefreshCw } from "lucide-react";
-import { type ReactNode, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import { FormationOpeningCard } from "@/shared/components/formation-opening-card";
 import { Button } from "@/shared/components/ui/button";
-import type { ExploreGroup } from "@/shared/schemas";
+import type { ExploreFeedItem } from "@/shared/schemas";
 import { ExploreGroupPlanCard } from "./explore-group-plan-card";
 
 interface ExploreFeedContentProps {
-  groups: ExploreGroup[];
+  items: ExploreFeedItem[];
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
-  totalGroups: number;
+  totalItems: number;
 }
 
 export function ExploreFeedContent({
-  groups,
+  items,
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
-  totalGroups,
+  totalItems,
 }: ExploreFeedContentProps) {
-  const featuredGroup = groups[0] ?? null;
-  const remainingGroups = groups.slice(1);
+  const featuredItem = items[0] ?? null;
+  const remainingItems = items.slice(1);
 
   return (
     <div className="flex flex-col gap-4 md:gap-5">
-      {featuredGroup ? (
+      {featuredItem ? (
         <section className="flex flex-col gap-2.5">
           <FeedSectionLabel
             title="Best opening right now"
-            detail={`${totalGroups} ${totalGroups === 1 ? "group" : "groups"} available`}
+            detail={`${totalItems} ${totalItems === 1 ? "opening" : "openings"} available`}
           />
-          <ExploreGroupItem>
-            <ExploreGroupPlanCard group={featuredGroup} imagePriority="high" />
-          </ExploreGroupItem>
+          <ExploreFeedItemCard item={featuredItem} imagePriority="high" />
         </section>
       ) : null}
 
-      {remainingGroups.length > 0 ? (
+      {remainingItems.length > 0 ? (
         <section className="flex flex-col gap-2.5">
           <FeedSectionLabel
             title="More openings"
-            detail={`${remainingGroups.length} shown`}
+            detail={`${remainingItems.length} shown`}
           />
-          {remainingGroups.map((group) => (
-            <ExploreGroupItem key={group.id}>
-              <ExploreGroupPlanCard group={group} />
-            </ExploreGroupItem>
+          {remainingItems.map((item) => (
+            <ExploreFeedItemCard
+              key={getExploreFeedItemKey(item)}
+              item={item}
+            />
           ))}
         </section>
       ) : null}
@@ -140,6 +140,29 @@ function FeedSectionLabel({
   );
 }
 
-function ExploreGroupItem({ children }: { children: ReactNode }) {
-  return <div>{children}</div>;
+function ExploreFeedItemCard({
+  imagePriority,
+  item,
+}: {
+  imagePriority?: "auto" | "high";
+  item: ExploreFeedItem;
+}) {
+  return (
+    <div>
+      {item.type === "GROUP" ? (
+        <ExploreGroupPlanCard
+          group={item.group}
+          imagePriority={imagePriority}
+        />
+      ) : (
+        <FormationOpeningCard opening={item.opening} />
+      )}
+    </div>
+  );
+}
+
+function getExploreFeedItemKey(item: ExploreFeedItem) {
+  return item.type === "GROUP"
+    ? `group-${item.group.id}`
+    : `opening-${item.opening.id}`;
 }

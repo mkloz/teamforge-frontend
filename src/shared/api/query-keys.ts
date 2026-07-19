@@ -28,6 +28,9 @@ export const APP_QUERY_KEYS = {
       ["activity-messages", chatId] as const,
   },
   explore: {
+    feed: ["explore-feed"] as const,
+    feedWithFilters: (searchQuery: string, filters: unknown) =>
+      ["explore-feed", searchQuery, filters] as const,
     groups: ["explore-groups"] as const,
     groupsWithFilters: (searchQuery: string, filters: unknown) =>
       ["explore-groups", searchQuery, filters] as const,
@@ -35,6 +38,8 @@ export const APP_QUERY_KEYS = {
   groupPlanDetail: {
     all: ["group-plan-detail"] as const,
     byId: (groupId: string) => ["group-plan-detail", groupId] as const,
+    inviteSuggestions: (groupId: string, planId: string) =>
+      ["group-plan-detail", groupId, "invite-suggestions", planId] as const,
   },
   home: {
     all: ["home"] as const,
@@ -55,6 +60,10 @@ export const APP_QUERY_KEYS = {
     subscriptions: ["web-push", "subscriptions"] as const,
   },
   settings: {
+    activityInviteAvailability: [
+      "settings",
+      "activity-invite-availability",
+    ] as const,
     notificationPreferences: ["settings", "notification-preferences"] as const,
     sessions: ["settings", "sessions"] as const,
     blockedUsers: ["settings", "blocked-users"] as const,
@@ -62,7 +71,11 @@ export const APP_QUERY_KEYS = {
   forge: {
     candidateAvailability: ["forge", "candidate-availability"] as const,
     currentAutoRequest: ["forge", "auto-request", "current"] as const,
+    currentProposal: ["forge-proposals", "current"] as const,
     friends: ["forge", "friends"] as const,
+    proposalOpenings: ["forge-proposal-openings"] as const,
+    proposalOpeningById: (openingId: string) =>
+      ["forge-proposal-openings", openingId] as const,
     recentActivities: ["forge", "recent-activities"] as const,
   },
   onboarding: {

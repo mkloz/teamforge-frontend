@@ -1,7 +1,9 @@
+import { getExploreFeedResponse } from "@/shared/api/explore-feed-api";
 import { getExploreGroupsResponse } from "@/shared/api/explore-groups-api";
 import { postExploreGroupJoin } from "@/shared/api/group-membership-api";
 import {
   createPaginatedSchema,
+  exploreFeedItemSchema,
   exploreGroupSchema,
   exploreViewInsightSchema,
 } from "@/shared/schemas";
@@ -12,7 +14,19 @@ const paginatedExploreGroupsSchema = createPaginatedSchema(
   insight: exploreViewInsightSchema,
 });
 
+const paginatedExploreFeedSchema = createPaginatedSchema(
+  exploreFeedItemSchema,
+).extend({
+  insight: exploreViewInsightSchema,
+});
+
 export class ExploreApi {
+  static async getFeed(searchParams: URLSearchParams) {
+    const response = await getExploreFeedResponse(searchParams);
+
+    return paginatedExploreFeedSchema.parse(response);
+  }
+
   static async getGroups(searchParams: URLSearchParams) {
     const response = await getExploreGroupsResponse(searchParams);
 

@@ -83,6 +83,7 @@ function InlineForgeWizardContent({
   const fw = useForgeWizard({
     initialDraft,
     onClose: onCancel,
+    consumeLaunch: routeState.consumeLaunch,
     routeStep: routeState.step,
     routeMode: routeState.forgeMode,
     routeActivityId: routeState.activityId,

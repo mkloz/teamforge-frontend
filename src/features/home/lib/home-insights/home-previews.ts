@@ -1,8 +1,6 @@
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
-import type { ExploreGroup } from "@/shared/schemas";
-
-import { normalizeScore } from "./recommendation-insights";
+import type { ExploreFeedItem } from "@/shared/schemas";
 
 interface ActiveGroupPreviewOptions {
   lastActivityByGroupId?: ReadonlyMap<string, string>;
@@ -39,25 +37,10 @@ export function getActiveGroupPreview(
 }
 
 export function getRecommendationPreview(
-  recommendations: ExploreGroup[],
+  recommendations: ExploreFeedItem[],
   limit = 2,
 ) {
-  return [...recommendations]
-    .sort((a, b) => {
-      const interestDiff =
-        normalizeScore(b.compatibility.interestOverlap) -
-        normalizeScore(a.compatibility.interestOverlap);
-
-      if (interestDiff !== 0) {
-        return interestDiff;
-      }
-
-      return (
-        normalizeScore(b.compatibility.total) -
-        normalizeScore(a.compatibility.total)
-      );
-    })
-    .slice(0, limit);
+  return recommendations.slice(0, limit);
 }
 
 function getUnreadPriority(

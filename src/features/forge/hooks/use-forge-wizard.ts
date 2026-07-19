@@ -1,4 +1,10 @@
-import { useEffect, useLayoutEffect, useReducer, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+} from "react";
 import { useForgeWizardFieldActions } from "@/features/forge/hooks/forge-wizard/field-actions";
 import { useForgeWizardDerivedState } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-derived-state";
 import { useForgeWizardRouteSync } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-route-sync";
@@ -27,6 +33,7 @@ interface UseForgeWizardOptions {
   routeActivityId: string | null;
   routeGroupId: string | null;
   routeIdea: ForgeIdeaLaunch | null;
+  consumeLaunch: (options?: { resetStep?: boolean }) => void;
   syncStep: (step: Step, options?: { history?: "push" | "replace" }) => void;
   syncMode: (
     mode: ForgeMode,
@@ -47,6 +54,7 @@ export function useForgeWizard({
   routeActivityId,
   routeGroupId,
   routeIdea,
+  consumeLaunch,
   syncStep,
   syncMode,
   syncTargets,
@@ -57,6 +65,7 @@ export function useForgeWizard({
   );
   const saveDraft = useForgeWizardDraftStore((store) => store.saveDraft);
   const clearDraft = useForgeWizardDraftStore((store) => store.clearDraft);
+  const shouldPersistInitialLaunchRef = useRef<boolean | null>(null);
   const hasPersistedStateRef = useRef(false);
   const skipNextDraftPersistRef = useRef(false);
   const [state, dispatch] = useReducer(
@@ -75,13 +84,25 @@ export function useForgeWizard({
     null,
   );
 
+  if (shouldPersistInitialLaunchRef.current === null) {
+    shouldPersistInitialLaunchRef.current = Boolean(
+      routeIdea && selectForgeIdeaTemplate(routeIdea),
+    );
+  }
+
+  const resetInvalidLaunch = useCallback(() => {
+    dispatch({ type: "set-step", step: 1, navDirection: "back" });
+  }, []);
+
   const { stepRef } = useForgeWizardRouteSync({
     dispatch,
+    consumeLaunch,
     routeActivityId,
     routeGroupId,
     routeIdea,
     routeMode,
     routeStep,
+    resetInvalidLaunch,
     state,
     syncStep,
     syncTargets,
@@ -104,6 +125,11 @@ export function useForgeWizard({
   useLayoutEffect(() => {
     if (!hasPersistedStateRef.current) {
       hasPersistedStateRef.current = true;
+
+      if (shouldPersistInitialLaunchRef.current) {
+        saveDraft(state);
+      }
+
       return;
     }
 
@@ -231,7 +257,7 @@ function createInitialForgeWizardStateForRoute(input: {
   routeIdea: ForgeIdeaLaunch | null;
   routeMode: ForgeMode;
   routeStep: Step;
-}) {
+}): ForgeWizardData {
   const initialState = getInitialForgeWizardState(input.draft);
   const hasLiveState = hasLiveForgeState(initialState);
   const routeChangedMode = initialState.forgeMode !== input.routeMode;
@@ -257,6 +283,10 @@ function createInitialForgeWizardStateForRoute(input: {
   }
 
   const selection = selectForgeIdeaTemplate(input.routeIdea);
+
+  if (!selection) {
+    return { ...baseState, step: 1 };
+  }
 
   return forgeWizardReducer(baseState, {
     type: "apply-activity-template",

@@ -1,15 +1,18 @@
 import type {
   ForgeProposalDecisionCommand,
   ForgeProposalDeclineCommand,
+  ForgeProposalRecoveryCommand,
 } from "@/features/forge-proposals/schemas/forge-proposal.schema";
 import {
   currentForgeProposalResponseSchema,
   forgeProposalDecisionCommandSchema,
   forgeProposalDecisionReceiptSchema,
   forgeProposalDeclineCommandSchema,
+  forgeProposalRecoveryCommandSchema,
   forgeProposalSchema,
 } from "@/features/forge-proposals/schemas/forge-proposal.schema";
 import { apiClient } from "@/shared/api/api";
+import { formationOpeningOrganizerReceiptSchema } from "@/shared/api/formation-opening-api";
 
 export class ForgeProposalsApi {
   static async getCurrent() {
@@ -65,6 +68,21 @@ export class ForgeProposalsApi {
       forgeProposalDecisionCommandSchema.parse(payload),
       idempotencyKey,
     );
+  }
+
+  static async openRecoverySeat(
+    proposalId: string,
+    payload: ForgeProposalRecoveryCommand,
+    idempotencyKey: string,
+  ) {
+    const response = await apiClient
+      .post(`forge-proposals/${proposalId}/open-recovery-seat`, {
+        headers: { "Idempotency-Key": idempotencyKey },
+        json: forgeProposalRecoveryCommandSchema.parse(payload),
+      })
+      .json<unknown>();
+
+    return formationOpeningOrganizerReceiptSchema.parse(response);
   }
 
   private static async runDecision(

@@ -6,7 +6,7 @@ import {
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import { applyHomeInvitationUpdate } from "@/shared/api/query-cache-updaters";
 import { appQueryClient } from "@/shared/api/query-client";
-import type { ExploreGroup, Invite } from "@/shared/schemas";
+import type { ExploreFeedItem, Invite } from "@/shared/schemas";
 
 export const HomeCache = {
   applyInvitationUpdate(invite: Invite) {
@@ -36,9 +36,12 @@ export const HomeCache = {
   },
 
   removeRecommendedGroup(groupId: string) {
-    appQueryClient.setQueryData<ExploreGroup[] | undefined>(
+    appQueryClient.setQueryData<ExploreFeedItem[] | undefined>(
       HOME_RECOMMENDATIONS_QUERY_KEY,
-      (groups) => groups?.filter((group) => group.id !== groupId),
+      (items) =>
+        items?.filter(
+          (item) => item.type !== "GROUP" || item.group.id !== groupId,
+        ),
     );
   },
 
@@ -49,12 +52,12 @@ export const HomeCache = {
   },
 
   getRecommendationsSnapshot() {
-    return appQueryClient.getQueryData<ExploreGroup[]>(
+    return appQueryClient.getQueryData<ExploreFeedItem[]>(
       HOME_RECOMMENDATIONS_QUERY_KEY,
     );
   },
 
-  restoreRecommendations(recommendations: ExploreGroup[] | undefined) {
+  restoreRecommendations(recommendations: ExploreFeedItem[] | undefined) {
     appQueryClient.setQueryData(
       HOME_RECOMMENDATIONS_QUERY_KEY,
       recommendations,

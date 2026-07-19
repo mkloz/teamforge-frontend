@@ -5,14 +5,16 @@ import { HomeSectionHeading } from "@/features/home/components/home-section-head
 import { HomeRecommendedGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { getRecommendationPreview } from "@/features/home/lib/home-insights";
+import { FormationOpeningCard } from "@/shared/components/formation-opening-card";
 import { Button } from "@/shared/components/ui/button";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/shared/components/ui/carousel";
+import { useUnexpiredExploreFeedItems } from "@/shared/hooks/use-unexpired-explore-feed-items";
 import { buildExploreNavigation } from "@/shared/navigation";
-import type { ExploreGroup } from "@/shared/schemas";
+import type { ExploreFeedItem } from "@/shared/schemas";
 
 import { RecommendedGroupCard } from "./recommended-group-card";
 
@@ -33,14 +35,18 @@ export function RecommendedGroups() {
 
 interface RecommendedGroupsViewProps {
   isRecommendationsLoading?: boolean;
-  recommendations: ExploreGroup[];
+  recommendations: ExploreFeedItem[];
 }
 
 function RecommendedGroupsView({
   isRecommendationsLoading = false,
   recommendations,
 }: RecommendedGroupsViewProps) {
-  const visibleRecommendations = getRecommendationPreview(recommendations, 3);
+  const currentRecommendations = useUnexpiredExploreFeedItems(recommendations);
+  const visibleRecommendations = getRecommendationPreview(
+    currentRecommendations,
+    3,
+  );
 
   if (isRecommendationsLoading && recommendations.length === 0) {
     return <HomeRecommendedGroupsSkeleton />;
@@ -54,8 +60,8 @@ function RecommendedGroupsView({
       <HomeSectionHeading
         id="recommended-groups-heading"
         eyebrow="Discovery"
-        title="Groups worth a look"
-        description="Open groups you may want to review."
+        title="Plans worth a look"
+        description="Public groups and plans with a place open."
         action={
           <Button asChild variant="ghost" size="sm">
             <Link {...buildExploreNavigation()}>
@@ -71,10 +77,10 @@ function RecommendedGroupsView({
           <EmptyRecommendationsVisual className="h-11 w-auto shrink-0 text-foreground sm:h-12" />
           <div className="min-w-0">
             <p className="font-bold text-foreground text-sm">
-              No strong openings yet.
+              Nothing open right now.
             </p>
             <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
-              Open groups will appear here when they are available.
+              Public groups and open places will appear here.
             </p>
           </div>
         </div>
@@ -91,7 +97,7 @@ function RecommendedGroupsView({
               <CarouselContent className="-ml-3 pt-1 pb-2 pl-4 sm:pl-5">
                 {visibleRecommendations.map((recommendation) => (
                   <CarouselItem
-                    key={recommendation.id}
+                    key={getRecommendationKey(recommendation)}
                     className={
                       visibleRecommendations.length > 1
                         ? "min-w-0 basis-[calc(100vw-2.5rem)] pl-3"
@@ -99,7 +105,7 @@ function RecommendedGroupsView({
                     }
                   >
                     <div className="w-full min-w-0">
-                      <RecommendedGroupCard group={recommendation} />
+                      <RecommendationCard recommendation={recommendation} />
                     </div>
                   </CarouselItem>
                 ))}
@@ -109,8 +115,11 @@ function RecommendedGroupsView({
 
           <ul className="responsive-card-grid hidden list-none gap-5 p-0 md:grid">
             {visibleRecommendations.map((recommendation) => (
-              <li key={recommendation.id} className="min-w-0">
-                <RecommendedGroupCard group={recommendation} />
+              <li
+                key={getRecommendationKey(recommendation)}
+                className="min-w-0"
+              >
+                <RecommendationCard recommendation={recommendation} />
               </li>
             ))}
           </ul>
@@ -118,4 +127,22 @@ function RecommendedGroupsView({
       )}
     </section>
   );
+}
+
+function RecommendationCard({
+  recommendation,
+}: {
+  recommendation: ExploreFeedItem;
+}) {
+  return recommendation.type === "GROUP" ? (
+    <RecommendedGroupCard group={recommendation.group} />
+  ) : (
+    <FormationOpeningCard opening={recommendation.opening} variant="compact" />
+  );
+}
+
+function getRecommendationKey(recommendation: ExploreFeedItem) {
+  return recommendation.type === "GROUP"
+    ? `group-${recommendation.group.id}`
+    : `opening-${recommendation.opening.id}`;
 }

@@ -16,6 +16,7 @@ interface ProposalStatusStateProps {
   action?: ReactNode;
   description: string;
   icon: typeof Inbox;
+  statusMessage?: string;
   title: string;
 }
 
@@ -26,6 +27,7 @@ function ProposalStatusState({
   action,
   description,
   icon,
+  statusMessage,
   title,
 }: ProposalStatusStateProps) {
   return (
@@ -43,6 +45,14 @@ function ProposalStatusState({
       <p className="mt-2 max-w-sm text-pretty text-muted-foreground text-sm leading-relaxed">
         {description}
       </p>
+      {statusMessage ? (
+        <p
+          className="mt-3 max-w-sm text-pretty text-muted-foreground text-sm leading-relaxed"
+          role="status"
+        >
+          {statusMessage}
+        </p>
+      ) : null}
       {action ? (
         <div className="mt-6 flex flex-wrap justify-center gap-3">{action}</div>
       ) : null}
@@ -93,6 +103,30 @@ export function ForgeProposalCompleteState({ action }: { action?: ReactNode }) {
       icon={UsersRound}
       title="Your group has formed"
       description="This proposal is complete. Open the group to decide the remaining plan details together."
+      action={action}
+    />
+  );
+}
+
+export function ForgeProposalRecoveryWaitingState({
+  action,
+  holdUntil,
+  refreshFailed = false,
+}: {
+  action?: ReactNode;
+  holdUntil: string;
+  refreshFailed?: boolean;
+}) {
+  return (
+    <ProposalStatusState
+      icon={Clock3}
+      title="Your place is being held"
+      description={`TeamForge is holding your accepted place until ${formatHoldUntil(holdUntil)} while this proposal is resolved. A smaller group will not be created. If the roster changes, you will review it again before the group forms.`}
+      statusMessage={
+        refreshFailed
+          ? "We couldn't refresh this status. The last loaded details are still shown."
+          : undefined
+      }
       action={action}
     />
   );
@@ -175,4 +209,11 @@ export function ForgeProposalLoadingState() {
       <span className="sr-only">Loading group proposal...</span>
     </div>
   );
+}
+
+function formatHoldUntil(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }

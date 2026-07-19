@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { LazyActivityTemplateStartingPoints } from "@/features/activity/components/activity-page/activity-template-starting-points.lazy";
 import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
   FilterChip,
@@ -36,6 +37,7 @@ interface ConversationListProps {
   dmUnreadMessageCount: number;
   pinnedUnreadMessageCount: number;
   savedCount: number;
+  showTemplateStartingPoints: boolean;
   isFeedError: boolean;
   isFeedRetrying: boolean;
   isOnline: boolean;
@@ -81,6 +83,7 @@ export function ConversationList({
   dmUnreadMessageCount,
   pinnedUnreadMessageCount,
   savedCount,
+  showTemplateStartingPoints,
   isFeedError,
   isFeedRetrying,
   isOnline,
@@ -249,6 +252,9 @@ export function ConversationList({
             onToggleMutedItem={onToggleMutedItem}
             onTogglePinnedItem={onTogglePinnedItem}
           />
+          {showTemplateStartingPoints ? (
+            <LazyActivityTemplateStartingPoints variant="sidebar" />
+          ) : null}
         </div>
       </div>
     </div>

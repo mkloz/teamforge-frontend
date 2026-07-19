@@ -118,6 +118,26 @@ function getProposalView(proposal: ForgeProposal) {
     return null;
   }
 
+  if (proposal.recovery?.viewerStatus === "ORGANIZER_ACTION") {
+    return {
+      actionLabel: "Review next step",
+      description: proposal.recovery.openingId
+        ? "One public place is open. Review requests or close the opening from the proposal."
+        : "The proposal ended one person short. Decide whether to open one public place.",
+      label: proposal.recovery.openingId ? "One place open" : "Action needed",
+      navigation: buildForgeProposalNavigation(proposal.id),
+    };
+  }
+
+  if (proposal.recovery?.viewerStatus === "WAITING_FOR_RECOVERY") {
+    return {
+      actionLabel: "View status",
+      description: `Your accepted place is held until ${formatRecoveryHold(proposal.recovery.holdUntil)}. If the roster changes, you will review it again.`,
+      label: "Place held",
+      navigation: buildForgeProposalNavigation(proposal.id),
+    };
+  }
+
   if (proposal.state === "FORMING") {
     return {
       actionLabel: "View status",
@@ -145,6 +165,13 @@ function getProposalView(proposal: ForgeProposal) {
     label: "Ready to review",
     navigation: buildForgeProposalNavigation(proposal.id),
   };
+}
+
+function formatRecoveryHold(value: string) {
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
 function getScheduleLabel(proposal: ForgeProposal) {

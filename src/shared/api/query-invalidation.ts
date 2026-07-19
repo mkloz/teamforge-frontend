@@ -64,8 +64,20 @@ export function invalidateGroupMembershipSurfaces() {
     resetViewerProfileQueries(),
     invalidateActivityGroupSurfaces(),
     invalidateHomeGroupSurfaces(),
-    invalidateQuery(APP_QUERY_KEYS.explore.groups),
+    invalidateQueries([
+      APP_QUERY_KEYS.explore.feed,
+      APP_QUERY_KEYS.explore.groups,
+    ]),
     invalidateGroupPlanDetailSurfaces(),
+  ]);
+}
+
+export function invalidateFormationOpeningApplicationSurfaces() {
+  return invalidateQueries([
+    APP_QUERY_KEYS.explore.feed,
+    APP_QUERY_KEYS.home.recommendations,
+    APP_QUERY_KEYS.forge.currentProposal,
+    APP_QUERY_KEYS.forge.proposalOpenings,
   ]);
 }
 

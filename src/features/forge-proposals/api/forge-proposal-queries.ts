@@ -24,6 +24,7 @@ export const forgeProposalQueries = {
       queryKey: FORGE_PROPOSAL_QUERY_KEYS.detail(proposalId),
       queryFn: () => ForgeProposalsApi.getById(proposalId),
       enabled: proposalId.length > 0,
+      refetchInterval: (query) => (query.state.data?.recovery ? 15_000 : false),
       staleTime: 15_000,
     });
   },

@@ -1,9 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { Info } from "lucide-react";
 
 import { forgeFriendCandidatesQueryOptions } from "@/features/forge/api/forge-query-options";
 import { GroupIdentityFields } from "@/features/forge/components/group-identity-fields/index";
+import { Notice } from "@/shared/components/ui/notice";
 
 import { AutoGroupSizeRange } from "./auto-group-size-range";
 import { ManualGroupDetails } from "./manual-group-details";
@@ -69,11 +71,25 @@ export function Step3Group({
             isLoadingFriends={isLoadingFriends}
           />
         ) : (
-          <AutoGroupSizeRange
-            minimumGroupSize={autoMinSize}
-            maximumGroupSize={autoMaxSize}
-            onRangeChange={onAutoSizeRangeChange}
-          />
+          <div className="grid gap-4">
+            <AutoGroupSizeRange
+              minimumGroupSize={autoMinSize}
+              maximumGroupSize={autoMaxSize}
+              onRangeChange={onAutoSizeRangeChange}
+            />
+            <Notice
+              icon={<Info className="size-4" aria-hidden="true" />}
+              size="sm"
+              tone="neutral"
+            >
+              <p>
+                If the proposal ends exactly one person short, you can choose to
+                open one public place. TeamForge will not create a smaller
+                group, and everyone in the final roster must confirm the new
+                proposal.
+              </p>
+            </Notice>
+          </div>
         )}
       </section>
     </div>

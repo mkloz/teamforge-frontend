@@ -19,6 +19,31 @@ async function invalidateGroupPlanDetail(groupId: string) {
 }
 
 export const GroupPlanDetailCommands = {
+  async inviteSuggestion(
+    groupId: string,
+    planId: string,
+    suggestionId: string,
+  ) {
+    const result = await GroupPlanDetailApi.inviteSuggestion(
+      groupId,
+      suggestionId,
+    );
+
+    await Promise.all([
+      appQueryClient.invalidateQueries({
+        queryKey: APP_QUERY_KEYS.groupPlanDetail.inviteSuggestions(
+          groupId,
+          planId,
+        ),
+      }),
+      invalidateGroupPlanDetail(groupId),
+      invalidateInvitationSurfaces(),
+      invalidateNotificationSurfaces(),
+    ]);
+
+    return result;
+  },
+
   async joinGroup(groupId: string) {
     const result = await GroupPlanDetailApi.joinGroup(groupId);
 

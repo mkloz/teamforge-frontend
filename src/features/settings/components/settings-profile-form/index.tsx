@@ -140,6 +140,7 @@ function MatchingSettingsPanel({
   return (
     <Suspense fallback={<SettingsPreferencesSkeleton />}>
       <MatchingSettingsSection
+        activityInviteAvailability={matching.activityInviteAvailability}
         candidateAvailability={matching.candidateAvailability}
         currentUser={matching.currentUser}
         notificationPreferences={matching.notificationPreferences}

@@ -6,6 +6,7 @@ import {
 } from "@/features/forge/lib/forge-activity-builders/plan-value-parsers";
 import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 import {
+  AUTO_FORGE_RECOVERY_DISCLOSURE_VERSION,
   AUTO_FORGE_REQUEST_POLICY_VERSION,
   type CreateAutoForgeRequestInput,
 } from "@/features/forge/schemas/auto-forge-request.schema";
@@ -22,6 +23,7 @@ export function buildAutoForgeRequestInput(
   return {
     minimumGroupSize: input.autoMinSize,
     maximumGroupSize: input.autoMaxSize,
+    recoveryDisclosureVersion: AUTO_FORGE_RECOVERY_DISCLOSURE_VERSION,
     scope: input.forgeScope,
     maxDistanceKm: input.forgeScope === "LOCAL" ? input.maxDistanceKm : null,
     plan: {

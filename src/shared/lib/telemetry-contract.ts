@@ -26,6 +26,8 @@ export const trackedMutationNames = {
   settingsUnblockUser: "settings.user.unblock",
   settingsDeleteAccount: "settings.account.delete",
   exploreJoinGroup: "explore.join-group",
+  exploreRequestFormationOpening: "explore.request-formation-opening",
+  exploreWithdrawFormationOpening: "explore.withdraw-formation-opening",
   groupPlanAcceptInvite: "group-plan.accept-invite",
   groupPlanCancelJoinRequest: "group-plan.cancel-join-request",
   groupPlanCreateProposal: "group-plan.create-proposal",

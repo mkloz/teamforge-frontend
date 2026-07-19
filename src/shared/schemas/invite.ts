@@ -17,12 +17,24 @@ const inviteStatusSchema = z.enum([
   "CANCELLED",
 ]);
 
-export const createInvitePayloadSchema = z.object({
+const ordinaryInvitePayloadSchema = z.object({
   groupId: z.string().min(1),
   inviteeId: z.string().min(1),
   type: z.enum(["FRIEND_INVITE", "DIRECT_INVITE"]).optional(),
   message: z.string().trim().max(500).optional(),
 });
+
+const suggestedInvitePayloadSchema = z.object({
+  groupId: z.string().min(1),
+  suggestionId: z.string().min(1),
+  type: z.literal("DIRECT_INVITE"),
+  message: z.string().trim().max(500).optional(),
+});
+
+export const createInvitePayloadSchema = z.union([
+  ordinaryInvitePayloadSchema,
+  suggestedInvitePayloadSchema,
+]);
 
 const inviteGroupSchema = z.object({
   id: z.string(),

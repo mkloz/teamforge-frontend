@@ -12,10 +12,17 @@ import {
 } from "@/shared/api/api-constraints";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type {
+  ExploreFeedItem,
   ExploreGroup,
   ExploreViewInsight,
   PaginationMeta,
 } from "@/shared/schemas";
+
+export type ExploreFeedQueryData = {
+  items: ExploreFeedItem[];
+  insight: ExploreViewInsight;
+  meta: PaginationMeta;
+};
 
 export type ExploreGroupsQueryData = {
   groups: ExploreGroup[];
@@ -26,12 +33,42 @@ export type ExploreGroupsQueryData = {
 const EXPLORE_GROUPS_PAGE_SIZE = "24";
 
 export const exploreQueries = {
+  feed(filters: ExploreFilters, searchQuery: string) {
+    return infiniteQueryOptions({
+      queryKey: APP_QUERY_KEYS.explore.feedWithFilters(searchQuery, filters),
+      initialPageParam: 1,
+      queryFn: async ({ pageParam }): Promise<ExploreFeedQueryData> => {
+        const searchParams = buildExploreSearchParams(
+          filters,
+          searchQuery,
+          pageParam,
+        );
+        const response = await ExploreApi.getFeed(searchParams);
+
+        return {
+          items: response.items,
+          insight: response.insight,
+          meta: response.meta,
+        };
+      },
+      getNextPageParam: getNextExplorePage,
+      placeholderData: keepPreviousData,
+      refetchInterval: (query) =>
+        query.state.data?.pages.some((page) =>
+          page.items.some((item) => item.type === "FORMATION_OPENING"),
+        )
+          ? 15_000
+          : false,
+      staleTime: 60_000,
+    });
+  },
+
   groups(filters: ExploreFilters, searchQuery: string) {
     return infiniteQueryOptions({
       queryKey: APP_QUERY_KEYS.explore.groupsWithFilters(searchQuery, filters),
       initialPageParam: 1,
       queryFn: async ({ pageParam }): Promise<ExploreGroupsQueryData> => {
-        const searchParams = buildExploreGroupsSearchParams(
+        const searchParams = buildExploreSearchParams(
           filters,
           searchQuery,
           pageParam,
@@ -44,18 +81,14 @@ export const exploreQueries = {
           meta: response.meta,
         };
       },
-      getNextPageParam: (lastPage) =>
-        lastPage.meta.currentPage < lastPage.meta.totalPages &&
-        lastPage.meta.currentPage < API_MAX_PAGE
-          ? lastPage.meta.currentPage + 1
-          : undefined,
+      getNextPageParam: getNextExplorePage,
       placeholderData: keepPreviousData,
       staleTime: 60_000,
     });
   },
 };
 
-function buildExploreGroupsSearchParams(
+function buildExploreSearchParams(
   filters: ExploreFilters,
   searchQuery: string,
   pageParam: number,
@@ -71,6 +104,15 @@ function buildExploreGroupsSearchParams(
   setSearchParam(searchParams, searchQuery);
 
   return searchParams;
+}
+
+function getNextExplorePage(
+  lastPage: ExploreFeedQueryData | ExploreGroupsQueryData,
+) {
+  return lastPage.meta.currentPage < lastPage.meta.totalPages &&
+    lastPage.meta.currentPage < API_MAX_PAGE
+    ? lastPage.meta.currentPage + 1
+    : undefined;
 }
 
 function setPaginationParams(searchParams: URLSearchParams, pageParam: number) {

@@ -6,6 +6,7 @@ import {
   parseAsStringLiteral,
   useQueryStates,
 } from "nuqs";
+import { useCallback } from "react";
 import { useForgeWizardDraftStore } from "@/features/forge/store/use-forge-wizard-draft-store";
 import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
 import {
@@ -47,6 +48,7 @@ interface ForgeRouteQueryState {
   activityId: string | null;
   requestId: string | null;
   groupId: string | null;
+  templateId: string | null;
   ideaDetail: string | null;
   ideaEventDescription: string | null;
   ideaLane: string | null;
@@ -76,6 +78,7 @@ export function useForgeRouteState() {
       activityId: parseAsString,
       requestId: parseAsString,
       groupId: parseAsString,
+      templateId: parseAsString,
       ideaTitle: parseAsString,
       ideaDetail: parseAsString,
       ideaEventDescription: parseAsString,
@@ -99,6 +102,15 @@ export function useForgeRouteState() {
       history: options?.history ?? "push",
     });
   }
+
+  const consumeLaunch = useCallback(
+    (options?: { resetStep?: boolean }) => {
+      void setRouteState(getConsumedLaunchRouteState(options?.resetStep), {
+        history: "replace",
+      });
+    },
+    [setRouteState],
+  );
 
   function setStep(
     stepValue: Step,
@@ -146,6 +158,7 @@ export function useForgeRouteState() {
     ...wizardRouteState,
     openWizard,
     closeWizard,
+    consumeLaunch,
     setStep,
     setForgeMode,
     setForgeTargets,
@@ -199,6 +212,7 @@ function getWizardRouteState(
       eventDescription: routeState.ideaEventDescription,
       laneKey: routeState.ideaLane,
       secondaryLaneKey: routeState.ideaSecondaryLane,
+      templateId: routeState.templateId,
       title: routeState.ideaTitle,
     }),
   };
@@ -235,6 +249,7 @@ function getOpenWizardRouteState(options: OpenWizardOptions | undefined) {
     requestId: null,
     step: getOpenWizardStep(routeOptions.step, routeOptions.idea),
     mode: getOpenWizardMode(routeOptions.mode),
+    templateId: null,
     ideaTitle: ideaRouteState.title,
     ideaDetail: ideaRouteState.detail,
     ideaEventDescription: null,
@@ -286,12 +301,26 @@ function getClosedWizardRouteState() {
     activityId: null,
     requestId: null,
     groupId: null,
+    templateId: null,
     ideaTitle: null,
     ideaDetail: null,
     ideaEventDescription: null,
     ideaLane: null,
     ideaSecondaryLane: null,
   };
+}
+
+function getConsumedLaunchRouteState(resetStep = false) {
+  const launchState = {
+    templateId: null,
+    ideaTitle: null,
+    ideaDetail: null,
+    ideaEventDescription: null,
+    ideaLane: null,
+    ideaSecondaryLane: null,
+  };
+
+  return resetStep ? { ...launchState, step: null } : launchState;
 }
 
 function getForgeTargetsRouteState(targets: {
@@ -310,20 +339,32 @@ function buildLaunchIdea(input: {
   eventDescription: string | null;
   laneKey: string | null;
   secondaryLaneKey: string | null;
+  templateId: string | null;
   title: string | null;
 }): ForgeIdeaLaunch | null {
   const title = getRequiredRouteText(input.title);
+  const detail = getRouteText(input.detail);
+  const eventDescription = getNullableRouteText(input.eventDescription);
+  const laneKey = getNullableRouteText(input.laneKey);
+  const secondaryLaneKey = getNullableRouteText(input.secondaryLaneKey);
+  const templateId = getNullableRouteText(input.templateId);
 
-  if (!title) {
+  const hasIdeaDetails = Boolean(
+    title || detail || eventDescription || laneKey || secondaryLaneKey,
+  );
+
+  if (!(hasIdeaDetails || templateId)) {
     return null;
   }
 
   return {
-    title,
-    detail: getRouteText(input.detail),
-    eventDescription: getNullableRouteText(input.eventDescription),
-    laneKey: getNullableRouteText(input.laneKey),
-    secondaryLaneKey: getNullableRouteText(input.secondaryLaneKey),
+    title: title ?? "Activity plan",
+    detail,
+    eventDescription,
+    isTemplateOnly: Boolean(templateId && !hasIdeaDetails),
+    laneKey,
+    secondaryLaneKey,
+    templateId,
   };
 }
 

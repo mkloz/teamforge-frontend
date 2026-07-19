@@ -4,7 +4,7 @@ import { ExploreLeftSection } from "@/features/explore/components/explore-left-s
 import { ExploreSearchHeader } from "@/features/explore/components/explore-search-header";
 import { ExplorePageLoading } from "@/features/explore/explore-page.loading";
 import { ExplorePageContent } from "@/features/explore/explore-page-content";
-import { useExploreGroups } from "@/features/explore/hooks/use-explore-groups";
+import { useExploreFeedQuery } from "@/features/explore/hooks/use-explore-feed-query";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
@@ -24,9 +24,9 @@ const EXPLORE_PAGE_METADATA = createTeamForgePageMetadata({
 export function ExplorePage() {
   usePageMetadata(EXPLORE_PAGE_METADATA);
 
-  const groupsQuery = useExploreGroups();
+  const feedQuery = useExploreFeedQuery();
   const shouldRenderDesktopFilters = useMediaQuery("(min-width: 1024px)");
-  const isInitialLoading = groupsQuery.isLoading && !groupsQuery.data;
+  const isInitialLoading = feedQuery.isLoading && !feedQuery.data;
 
   if (isInitialLoading) {
     return <ExplorePageLoading mode="query" />;

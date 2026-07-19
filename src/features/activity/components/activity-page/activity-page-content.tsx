@@ -100,13 +100,21 @@ export function ActivityPageContent({
   isOnline,
 }: ActivityPageContentProps) {
   const realtimeSelectionIds = getRealtimeSelectionIds(activity);
+  const showTemplateStartingPoints =
+    activity.isSharedConversationFeedEmpty &&
+    activity.activeFilter === "all" &&
+    activity.searchQuery.trim().length === 0;
 
   return (
     <div className={getFrameClassName(contained, activity.hasSelection)}>
       <h1 id="activity-heading" className="sr-only">
         Activity
       </h1>
-      <ActivitySidebar activity={activity} isOnline={isOnline} />
+      <ActivitySidebar
+        activity={activity}
+        isOnline={isOnline}
+        showTemplateStartingPoints={showTemplateStartingPoints}
+      />
 
       <section
         aria-labelledby="activity-heading"
@@ -130,7 +138,9 @@ export function ActivityPageContent({
             />
           </Suspense>
         ) : (
-          <ActivityEmptyState />
+          <ActivityEmptyState
+            showTemplateStartingPoints={showTemplateStartingPoints}
+          />
         )}
       </section>
 

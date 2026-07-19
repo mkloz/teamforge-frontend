@@ -134,6 +134,15 @@ function getActionContext(proposal: ForgeProposal): ForgeProposalActionContext {
 }
 
 function ProposalDecisionNotice({ proposal }: { proposal: ForgeProposal }) {
+  if (proposal.recovery?.viewerStatus === "ORGANIZER_ACTION") {
+    return (
+      <DecisionText
+        title="The original proposal ended one person short"
+        description="No smaller group was created. You can decide whether to open one public place, then the final roster will return here for everyone to review."
+      />
+    );
+  }
+
   if (proposal.state === "FORMING") {
     return (
       <DecisionText

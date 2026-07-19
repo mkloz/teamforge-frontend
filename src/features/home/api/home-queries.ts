@@ -15,7 +15,6 @@ import { buildHomeStats } from "@/features/home/lib/home-stats";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import { getExploreGroupFitScore } from "@/shared/lib/explore-group-presenters";
 
 export const homeQueries = {
   groups() {
@@ -37,14 +36,11 @@ export const homeQueries = {
   recommendations() {
     return queryOptions({
       queryKey: HOME_RECOMMENDATIONS_QUERY_KEY,
-      queryFn: async () => {
-        const groups = await HomeApi.getRecommendations();
-
-        return [...groups].sort(
-          (left, right) =>
-            getExploreGroupFitScore(right) - getExploreGroupFitScore(left),
-        );
-      },
+      queryFn: () => HomeApi.getRecommendations(),
+      refetchInterval: (query) =>
+        query.state.data?.some((item) => item.type === "FORMATION_OPENING")
+          ? 15_000
+          : false,
       staleTime: 60_000,
     });
   },

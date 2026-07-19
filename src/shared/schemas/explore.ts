@@ -9,6 +9,7 @@ import {
   activityAccessSchema,
   activityVisibilitySchema,
   costTypeSchema,
+  forgeScopeSchema,
   locationModeSchema,
   planCategorySchema,
   planScheduleModeSchema,
@@ -65,6 +66,62 @@ export const exploreGroupSchema = z.object({
 });
 
 export type ExploreGroup = z.infer<typeof exploreGroupSchema>;
+
+export const exploreFormationOpeningSchema = z
+  .object({
+    id: z.string(),
+    expiresAt: z.string().datetime(),
+    activity: z
+      .object({
+        id: z.string(),
+        title: z.string(),
+      })
+      .strict(),
+    scope: forgeScopeSchema,
+    category: planCategorySchema,
+    broadArea: z.string().nullable(),
+    schedule: z
+      .object({
+        mode: planScheduleModeSchema,
+        dateTime: z.string().datetime().nullable(),
+      })
+      .strict(),
+    cost: z
+      .object({
+        type: costTypeSchema,
+        amount: z.number().nullable(),
+      })
+      .strict(),
+    readyCount: z.number().int().nonnegative(),
+    neededCount: z.literal(1),
+    viewerApplication: z
+      .object({
+        state: z.literal("PENDING"),
+        version: z.number().int().min(1),
+      })
+      .strict()
+      .nullable(),
+  })
+  .strict();
+
+export type ExploreFormationOpening = z.infer<
+  typeof exploreFormationOpeningSchema
+>;
+
+export const exploreFeedItemSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("GROUP"),
+    group: exploreGroupSchema,
+  }),
+  z
+    .object({
+      type: z.literal("FORMATION_OPENING"),
+      opening: exploreFormationOpeningSchema,
+    })
+    .strict(),
+]);
+
+export type ExploreFeedItem = z.infer<typeof exploreFeedItemSchema>;
 
 export const exploreViewInsightSchema = z.object({
   summary: z.string(),

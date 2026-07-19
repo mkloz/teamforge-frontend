@@ -7,6 +7,8 @@ import {
 } from "@/shared/schemas";
 
 export const AUTO_FORGE_REQUEST_POLICY_VERSION = "auto-forge-request-v1";
+export const AUTO_FORGE_RECOVERY_DISCLOSURE_VERSION =
+  "forge-proposal-recovery-disclosure-v1";
 
 export const forgeScopeSchema = z.enum(["LOCAL", "ONLINE"]);
 export const autoForgeRequestLifecycleSchema = z.enum([
@@ -54,6 +56,9 @@ const autoForgeRequestBaseInputSchema = z
     maximumGroupSize: z.number().int().min(3).max(8),
     scope: forgeScopeSchema,
     maxDistanceKm: z.number().int().min(15).max(80).nullable().optional(),
+    recoveryDisclosureVersion: z.literal(
+      AUTO_FORGE_RECOVERY_DISCLOSURE_VERSION,
+    ),
     plan: autoForgeRequestPlanInputSchema,
     policyVersion: z.literal(AUTO_FORGE_REQUEST_POLICY_VERSION),
   })
@@ -145,6 +150,7 @@ const autoForgeRequestWireSchema = z.object({
   revision: z.number().int().positive(),
   minimumGroupSize: z.number().int().min(3).max(8),
   maximumGroupSize: z.number().int().min(3).max(8),
+  recoveryDisclosureVersion: z.string().min(1).nullable().optional(),
   scope: forgeScopeSchema,
   maxDistanceKm: z.number().int().min(15).max(80).nullable(),
   plan: autoForgeRequestPlanSchema,

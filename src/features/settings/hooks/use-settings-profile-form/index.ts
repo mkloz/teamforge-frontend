@@ -1,4 +1,5 @@
 import { useCandidateAvailability } from "@/features/forge/public/candidate-availability";
+import { useActivityInviteAvailability } from "@/features/settings/hooks/use-activity-invite-availability";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import { useDeleteAccountAction } from "./use-delete-account-action";
 import { useSettingsAvatarActions } from "./use-settings-avatar-actions";
@@ -28,6 +29,9 @@ export function useSettingsProfileForm({
     enabled: Boolean(profile.currentUser) && shouldLoadPreferences,
   });
   const candidateAvailability = useCandidateAvailability({
+    enabled: Boolean(profile.currentUser) && activeSection === "matching",
+  });
+  const activityInviteAvailability = useActivityInviteAvailability({
     enabled: Boolean(profile.currentUser) && activeSection === "matching",
   });
   const deleteAccount = useDeleteAccountAction();
@@ -71,6 +75,7 @@ export function useSettingsProfileForm({
     savingNotificationPreferenceKeys:
       preferences.savingNotificationPreferenceKeys,
     candidateAvailability,
+    activityInviteAvailability,
     deleteAccount: deleteAccount.deleteAccount,
     isDeletingAccount: deleteAccount.isDeletingAccount,
     deleteAccountError: deleteAccount.deleteAccountError,

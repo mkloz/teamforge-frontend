@@ -2,6 +2,7 @@ import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
 import type { TemplateSeed } from "@/features/forge/data/forge-template-seed-types";
 import { CATEGORY_TEMPLATES } from "@/features/forge/data/forge-template-seeds";
 import { buildTemplateFromSeed } from "@/features/forge/lib/forge-template-suggestions";
+import { resolveCanonicalActivityTemplate } from "@/features/forge/public/canonical-activity-templates";
 import type { ForgeIdeaLaunch } from "@/shared/navigation/forge-navigation";
 
 import { getCandidateCategories } from "./category-candidates";
@@ -77,7 +78,19 @@ const PREFERRED_TEMPLATE_RULES: readonly PreferredTemplateRule[] = [
 
 export function selectForgeIdeaTemplate(
   idea: ForgeIdeaLaunch,
-): ForgeIdeaTemplateSelection {
+): ForgeIdeaTemplateSelection | null {
+  const canonicalSelection = idea.templateId
+    ? resolveCanonicalActivityTemplate(idea.templateId)
+    : null;
+
+  if (canonicalSelection) {
+    return canonicalSelection;
+  }
+
+  if (idea.isTemplateOnly) {
+    return null;
+  }
+
   const selection = selectTemplateSeed(idea);
 
   return {

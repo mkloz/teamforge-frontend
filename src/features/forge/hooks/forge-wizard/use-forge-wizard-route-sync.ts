@@ -39,7 +39,9 @@ function getRouteStepSyncState(
 }
 
 export function useForgeWizardRouteSync({
+  consumeLaunch,
   dispatch,
+  resetInvalidLaunch,
   routeActivityId,
   routeGroupId,
   routeIdea,
@@ -53,7 +55,8 @@ export function useForgeWizardRouteSync({
   const modeRef = useRef(state.forgeMode);
   const activityIdRef = useRef(state.activityId);
   const groupIdRef = useRef(state.groupId);
-  const consumedProfileTemplateIdRef = useRef(state.appliedTemplateId);
+  const consumedLaunchTemplateIdRef = useRef(state.appliedTemplateId);
+  const ignoredLaunchRouteStepRef = useRef(false);
   const forgeReadyRef = useRef(
     getForgeReadySnapshot(state.forgeResult, state.participants.length),
   );
@@ -102,25 +105,43 @@ export function useForgeWizardRouteSync({
 
   useEffect(() => {
     if (!routeIdea) {
-      consumedProfileTemplateIdRef.current = null;
+      consumedLaunchTemplateIdRef.current = null;
+      ignoredLaunchRouteStepRef.current = false;
       return;
     }
 
     const selection = selectForgeIdeaTemplate(routeIdea);
 
-    if (consumedProfileTemplateIdRef.current === selection.id) {
+    if (!selection) {
+      consumedLaunchTemplateIdRef.current = null;
+      ignoredLaunchRouteStepRef.current = true;
+
+      stepRef.current = 1;
+      resetInvalidLaunch();
+
+      consumeLaunch({ resetStep: true });
       return;
     }
 
-    consumedProfileTemplateIdRef.current = selection.id;
-    dispatch({
-      type: "apply-activity-template",
-      template: selection.template,
-      templateId: selection.id,
-    });
-  }, [dispatch, routeIdea]);
+    ignoredLaunchRouteStepRef.current = false;
+
+    if (consumedLaunchTemplateIdRef.current !== selection.id) {
+      consumedLaunchTemplateIdRef.current = selection.id;
+      dispatch({
+        type: "apply-activity-template",
+        template: selection.template,
+        templateId: selection.id,
+      });
+    }
+
+    consumeLaunch();
+  }, [consumeLaunch, dispatch, resetInvalidLaunch, routeIdea]);
 
   useEffect(() => {
+    if (ignoredLaunchRouteStepRef.current) {
+      return;
+    }
+
     const { nextStep, shouldResetTargets } = getRouteStepSyncState(
       routeStep,
       forgeReadyRef.current,

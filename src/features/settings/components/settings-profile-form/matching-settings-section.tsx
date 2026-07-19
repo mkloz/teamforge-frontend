@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Brain, RefreshCcw, Tags } from "lucide-react";
 import type { CandidateAvailabilityState } from "@/features/forge/public/candidate-availability";
 import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { ActivityInviteAvailabilityControl } from "@/features/settings/components/settings-profile-form/activity-invite-availability-control";
 import { CandidateAvailabilityControl } from "@/features/settings/components/settings-profile-form/candidate-availability-control";
 import {
   OfflineSettingsNotice,
@@ -14,6 +15,7 @@ import {
   StatPill,
 } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { normalizeTrustScore } from "@/features/settings/components/settings-profile-form/settings-formatters";
+import type { ActivityInviteAvailabilityState } from "@/features/settings/hooks/use-activity-invite-availability";
 import { personalityAssessmentQueryOptions } from "@/shared/api/personality-assessment-query";
 import { Button } from "@/shared/components/ui/button";
 import { Notice } from "@/shared/components/ui/notice";
@@ -26,6 +28,7 @@ import type { NotificationPreferences, User } from "@/shared/schemas";
 import type { PersonalityAssessmentState } from "@/shared/schemas/personality-assessment";
 
 interface MatchingSettingsSectionProps {
+  activityInviteAvailability: ActivityInviteAvailabilityState;
   candidateAvailability: CandidateAvailabilityState;
   currentUser: User | undefined;
   notificationPreferences: NotificationPreferences | null;
@@ -55,6 +58,7 @@ interface MatchingPreferenceControlsProps {
 const MAX_INTERESTS_PREVIEW = 12;
 
 export function MatchingSettingsSection({
+  activityInviteAvailability,
   candidateAvailability,
   currentUser,
   notificationPreferences,
@@ -97,6 +101,13 @@ export function MatchingSettingsSection({
           currentUser?.locationLat != null && currentUser.locationLng != null
         }
         state={candidateAvailability}
+      />
+
+      <ActivityInviteAvailabilityControl
+        hasSavedLocation={
+          currentUser?.locationLat != null && currentUser.locationLng != null
+        }
+        state={activityInviteAvailability}
       />
 
       <MatchingPreferenceControls

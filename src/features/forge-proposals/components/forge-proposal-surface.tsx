@@ -80,9 +80,10 @@ function ResolvedForgeProposal({
 }
 
 function isExpired(proposal: ForgeProposal) {
+  const closesAt = proposal.recovery?.holdUntil ?? proposal.deadlineAt;
+
   return (
-    proposal.state === "EXPIRED" ||
-    new Date(proposal.deadlineAt).getTime() <= Date.now()
+    proposal.state === "EXPIRED" || new Date(closesAt).getTime() <= Date.now()
   );
 }
 
@@ -91,9 +92,15 @@ function canViewOpenProposal(proposal: ForgeProposal) {
   const hasCurrentDecision =
     proposal.viewer.decision === "PENDING" ||
     proposal.viewer.decision === "ACCEPTED";
+  const hasRecoveryAccess =
+    proposal.recovery?.viewerStatus === "ORGANIZER_ACTION" &&
+    (proposal.state === "RECOVERY_ELIGIBLE" ||
+      proposal.state === "FAILED_QUORUM");
 
   return (
-    (proposal.state === "OPEN" || proposal.state === "FORMING") &&
+    (proposal.state === "OPEN" ||
+      proposal.state === "FORMING" ||
+      hasRecoveryAccess) &&
     hasActiveViewerSeat &&
     hasCurrentDecision
   );

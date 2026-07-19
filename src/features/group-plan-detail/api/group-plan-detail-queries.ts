@@ -12,4 +12,16 @@ export const groupPlanDetailQueries = {
       staleTime: 30_000,
     });
   },
+
+  inviteSuggestions(groupId: string, planId: string, enabled: boolean) {
+    return queryOptions({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.inviteSuggestions(
+        groupId,
+        planId,
+      ),
+      queryFn: () => GroupPlanDetailApi.getInviteSuggestions(groupId),
+      enabled: enabled && groupId.length > 0 && planId.length > 0,
+      staleTime: 30_000,
+    });
+  },
 };

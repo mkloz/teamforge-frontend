@@ -5,9 +5,14 @@ import { cn } from "@/shared/lib/utils";
 interface ActivitySidebarProps {
   activity: ActivityWorkspace;
   isOnline: boolean;
+  showTemplateStartingPoints: boolean;
 }
 
-export function ActivitySidebar({ activity, isOnline }: ActivitySidebarProps) {
+export function ActivitySidebar({
+  activity,
+  isOnline,
+  showTemplateStartingPoints,
+}: ActivitySidebarProps) {
   const isOfflineInitialLoad = !isOnline && activity.isInitialLoading;
 
   return (
@@ -32,6 +37,7 @@ export function ActivitySidebar({ activity, isOnline }: ActivitySidebarProps) {
         dmUnreadMessageCount={activity.dmUnreadMessageCount}
         pinnedUnreadMessageCount={activity.pinnedUnreadMessageCount}
         savedCount={activity.savedCount}
+        showTemplateStartingPoints={showTemplateStartingPoints}
         isFeedError={activity.isFeedError || isOfflineInitialLoad}
         isFeedRetrying={activity.isFeedRetrying && !isOfflineInitialLoad}
         isOnline={isOnline}

@@ -5,8 +5,10 @@ export type ForgeSearchMode = (typeof forgeSearchModeValues)[number];
 export interface ForgeIdeaLaunch {
   detail: string;
   eventDescription?: string | null;
+  isTemplateOnly?: boolean;
   laneKey?: string | null;
   secondaryLaneKey?: string | null;
+  templateId?: string | null;
   title: string;
 }
 
@@ -17,6 +19,7 @@ export interface ForgeRouteSearch {
   activityId?: string;
   requestId?: string;
   groupId?: string;
+  templateId?: string;
   ideaTitle?: string;
   ideaDetail?: string;
   ideaEventDescription?: string;
@@ -81,6 +84,7 @@ export function validateForgeRouteSearch(
     activityId: parseOptionalSearchString(search.activityId),
     requestId: parseOptionalSearchString(search.requestId),
     groupId: parseOptionalSearchString(search.groupId),
+    templateId: parseOptionalSearchString(search.templateId),
     ideaTitle: parseOptionalSearchText(
       search.ideaTitle,
       MAX_IDEA_TITLE_SEARCH_LENGTH,
@@ -116,6 +120,14 @@ export function buildForgeProposalNavigation(proposalId: string) {
   } as const;
 }
 
+export function buildForgeTemplateLaunchNavigation(templateId: string) {
+  return buildForgeNavigation({
+    open: true,
+    step: 3,
+    templateId,
+  });
+}
+
 export function buildForgeIdeaLaunchNavigation(idea: ForgeIdeaLaunch) {
   const title = normalizeSearchText(idea.title, MAX_IDEA_TITLE_SEARCH_LENGTH);
   const detail = normalizeSearchText(
@@ -130,6 +142,7 @@ export function buildForgeIdeaLaunchNavigation(idea: ForgeIdeaLaunch) {
   return buildForgeNavigation({
     open: true,
     step: 3,
+    templateId: idea.templateId ?? undefined,
     ideaTitle: title || "Interest-led small group",
     ideaDetail: detail || undefined,
     ideaEventDescription: eventDescription || undefined,

@@ -1,7 +1,7 @@
 import { homeGroupSchema } from "@/features/home/schemas/home-group.schema";
 import { apiClient } from "@/shared/api/api";
 import { EXPLORE_DEFAULT_DISTANCE_KM } from "@/shared/api/api-constraints";
-import { getExploreGroupsResponse } from "@/shared/api/explore-groups-api";
+import { getExploreFeedResponse } from "@/shared/api/explore-feed-api";
 import { postExploreGroupJoin } from "@/shared/api/group-membership-api";
 import { postGroupParticipationResponse } from "@/shared/api/group-participation-api";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@/shared/api/invite-membership-api";
 import {
   createPaginatedSchema,
-  exploreGroupSchema,
+  exploreFeedItemSchema,
   inviteSchema,
   type RecordGroupParticipationPayload,
 } from "@/shared/schemas";
@@ -54,13 +54,13 @@ export class HomeApi {
   }
 
   static async getRecommendations() {
-    const response = await getExploreGroupsResponse({
+    const response = await getExploreFeedResponse({
       limit: 6,
       maxDistanceKm: EXPLORE_DEFAULT_DISTANCE_KM,
       sortBy: "MATCH",
     });
 
-    return createPaginatedSchema(exploreGroupSchema).parse(response).items;
+    return createPaginatedSchema(exploreFeedItemSchema).parse(response).items;
   }
 
   static async acceptInvitation(inviteId: string) {

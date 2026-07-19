@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { forgeProposalQueries } from "@/features/forge-proposals/api/forge-proposal-queries";
 import { ForgeProposalDecisionActions } from "@/features/forge-proposals/components/forge-proposal-decision-actions";
+import { ForgeProposalRecoveryActions } from "@/features/forge-proposals/components/forge-proposal-recovery-actions";
 import {
   ForgeProposalSurface,
   type ForgeProposalSurfaceState,
@@ -11,6 +12,7 @@ import {
 import {
   ForgeProposalCompleteState,
   ForgeProposalExpiredState,
+  ForgeProposalRecoveryWaitingState,
   ForgeProposalResponseSavedState,
   ForgeProposalUnavailableState,
 } from "@/features/forge-proposals/components/proposal-status-state";
@@ -102,35 +104,55 @@ export function ForgeProposalPage() {
     return <ForgeProposalExpiredState action={terminalAction} />;
   }
 
+  if (proposalQuery.data?.recovery?.viewerStatus === "WAITING_FOR_RECOVERY") {
+    return (
+      <ForgeProposalRecoveryWaitingState
+        holdUntil={proposalQuery.data.recovery.holdUntil}
+        action={terminalAction}
+        refreshFailed={proposalQuery.isError}
+      />
+    );
+  }
+
   if (
     currentTerminalState === "unavailable" ||
     currentSavedDecision?.proposalState === "CANCELLED" ||
-    currentSavedDecision?.proposalState === "FAILED_QUORUM"
+    (currentSavedDecision?.proposalState === "FAILED_QUORUM" &&
+      !proposalQuery.data?.recovery) ||
+    (proposalQuery.data?.state === "FAILED_QUORUM" &&
+      !proposalQuery.data.recovery)
   ) {
     return <ForgeProposalUnavailableState action={terminalAction} />;
   }
 
   return (
     <ForgeProposalSurface
-      actionSlot={(context) => (
-        <ForgeProposalDecisionActions
-          context={context}
-          onDecisionSaved={(receipt) => {
-            setDecisionTerminalState(null);
-            setSavedDecision(receipt);
+      actionSlot={(context) =>
+        proposalQuery.data?.recovery?.viewerStatus === "ORGANIZER_ACTION" ? (
+          <ForgeProposalRecoveryActions
+            proposal={proposalQuery.data}
+            proposalRefreshFailed={proposalQuery.isError}
+          />
+        ) : (
+          <ForgeProposalDecisionActions
+            context={context}
+            onDecisionSaved={(receipt) => {
+              setDecisionTerminalState(null);
+              setSavedDecision(receipt);
 
-            const groupId = receipt.formedResources?.groupId;
-            if (groupId) {
-              void navigate(
-                buildGroupPlanDetailNavigation(groupId, { source: "home" }),
-              );
-            }
-          }}
-          onTerminalState={(status) => {
-            setDecisionTerminalState({ proposalId, status });
-          }}
-        />
-      )}
+              const groupId = receipt.formedResources?.groupId;
+              if (groupId) {
+                void navigate(
+                  buildGroupPlanDetailNavigation(groupId, { source: "home" }),
+                );
+              }
+            }}
+            onTerminalState={(status) => {
+              setDecisionTerminalState({ proposalId, status });
+            }}
+          />
+        )
+      }
       state={getProposalSurfaceState(proposalQuery)}
       terminalAction={terminalAction}
     />
@@ -140,23 +162,28 @@ export function ForgeProposalPage() {
 function getProposalSurfaceState(
   query: UseQueryResult<ForgeProposal>,
 ): ForgeProposalSurfaceState {
+  const errorStatus = getHttpErrorStatus(query.error);
+
+  if (
+    query.isError &&
+    (errorStatus === 403 || errorStatus === 404 || errorStatus === 410)
+  ) {
+    return errorStatus === 410
+      ? { status: "expired" }
+      : { status: "unavailable" };
+  }
+
+  if (query.data !== undefined) {
+    return { status: "ready", proposal: query.data };
+  }
+
   if (query.isPending) {
     return { status: "loading" };
   }
 
   if (query.isError) {
-    const status = getHttpErrorStatus(query.error);
-
-    if (status === 410) {
-      return { status: "expired" };
-    }
-
-    if (status === 403 || status === 404) {
-      return { status: "unavailable" };
-    }
-
     return { status: "error", onRetry: () => void query.refetch() };
   }
 
-  return { status: "ready", proposal: query.data };
+  return { status: "ready", proposal: null };
 }

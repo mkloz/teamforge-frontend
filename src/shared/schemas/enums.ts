@@ -23,6 +23,9 @@ export type ActivityAccess = z.infer<typeof activityAccessSchema>;
 export const forgeModeSchema = z.enum(["AUTO", "MANUAL"]);
 export type ForgeMode = z.infer<typeof forgeModeSchema>;
 
+export const forgeScopeSchema = z.enum(["LOCAL", "ONLINE"]);
+export type ForgeScope = z.infer<typeof forgeScopeSchema>;
+
 export const activityStatusSchema = z.enum([
   "OPEN",
   "MATCHING",

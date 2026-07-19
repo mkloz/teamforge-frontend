@@ -5,6 +5,7 @@ import {
   useActivityListControlActions,
   useActivityListDisplayState,
 } from "@/features/activity/hooks/use-activity-list-store-controls";
+import { getConversationIsNotes } from "@/features/activity/lib/unify-conversations";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 
 export function useActivityFeed() {
@@ -56,6 +57,10 @@ export function useActivityFeed() {
     refetchSavedMessages,
     savedMessagesById,
   });
+  const isSharedConversationFeedEmpty =
+    !isInitialLoading &&
+    !isFeedError &&
+    !allItems.some((item) => !getConversationIsNotes(item));
 
   return {
     searchQuery,
@@ -64,6 +69,7 @@ export function useActivityFeed() {
     isInitialLoading,
     isFeedError,
     isFeedRetrying,
+    isSharedConversationFeedEmpty,
     isSavedMessagesError,
     isSavedMessagesLoading,
     isSavedMessagesRetrying,

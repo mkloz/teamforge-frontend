@@ -16,7 +16,9 @@ export type SetForgeWizardField = <Field extends ForgeWizardField>(
 ) => void;
 
 export interface ForgeWizardRouteSyncOptions {
+  consumeLaunch: (options?: { resetStep?: boolean }) => void;
   dispatch: ForgeWizardDispatch;
+  resetInvalidLaunch: () => void;
   routeActivityId: string | null;
   routeGroupId: string | null;
   routeIdea: ForgeIdeaLaunch | null;

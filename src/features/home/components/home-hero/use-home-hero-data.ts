@@ -7,9 +7,9 @@ import type {
 } from "@/features/home/components/home-hero/home-hero.types";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
-import type { ExploreGroup } from "@/shared/schemas";
+import type { ExploreFeedItem } from "@/shared/schemas";
 
-const EMPTY_RECOMMENDATIONS: ExploreGroup[] = [];
+const EMPTY_FEED_ITEMS: ExploreFeedItem[] = [];
 
 export function useHomeHeroData(): HomeHeroLoadState {
   const autoForgeRequestQuery = useQuery(currentAutoForgeRequestQueryOptions());
@@ -36,7 +36,7 @@ export function useHomeHeroData(): HomeHeroLoadState {
     viewerLoading,
   });
   const {
-    data: recommendations = EMPTY_RECOMMENDATIONS,
+    data: recommendationItems = EMPTY_FEED_ITEMS,
     isLoading: isRecommendationsLoading,
   } = useQuery({
     ...homeQueries.recommendations(),
@@ -47,6 +47,9 @@ export function useHomeHeroData(): HomeHeroLoadState {
     isRecommendationsLoading,
     shouldLoadRecommendations,
   });
+  const recommendations = recommendationItems.flatMap((item) =>
+    item.type === "GROUP" ? [item.group] : [],
+  );
 
   return {
     heroData: {

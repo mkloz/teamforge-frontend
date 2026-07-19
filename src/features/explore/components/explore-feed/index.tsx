@@ -14,8 +14,8 @@ import { ExploreFeedSkeleton } from "./explore-feed-skeleton";
 
 export function ExploreFeed() {
   const {
-    groups,
-    hasGroups,
+    items,
+    hasItems,
     hasNextPage,
     isAnythingFiltered,
     isError,
@@ -25,7 +25,7 @@ export function ExploreFeed() {
     refetch,
     resetFilters,
     searchQuery,
-    totalGroups,
+    totalItems,
   } = useExploreFeed();
   if (isLoading) {
     return <ExploreFeedSkeleton />;
@@ -34,9 +34,9 @@ export function ExploreFeed() {
   if (isError) {
     return (
       <PageErrorState
-        title="Groups could not load"
-        description="TeamForge could not refresh the available groups for these filters."
-        retryLabel="Refresh groups"
+        title="Openings could not load"
+        description="TeamForge could not refresh the available openings for these filters."
+        retryLabel="Refresh openings"
         onRetry={() => {
           void refetch();
         }}
@@ -44,7 +44,7 @@ export function ExploreFeed() {
     );
   }
 
-  if (!hasGroups) {
+  if (!hasItems) {
     return (
       <ExploreFeedEmpty
         isFiltered={isAnythingFiltered || Boolean(searchQuery)}
@@ -55,13 +55,13 @@ export function ExploreFeed() {
 
   return (
     <ExploreFeedContent
-      groups={groups}
+      items={items}
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
       onLoadMore={() => {
         void fetchNextPage();
       }}
-      totalGroups={totalGroups}
+      totalItems={totalItems}
     />
   );
 }
@@ -85,12 +85,12 @@ function ExploreFeedEmpty({
         <div className="flex flex-col gap-2">
           <h3 className="font-black text-2xl text-foreground leading-tight tracking-tight">
             {isFiltered
-              ? "No groups meet these filters."
-              : "No open groups yet"}
+              ? "No openings meet these filters."
+              : "No open plans yet"}
           </h3>
           <p className="mx-auto max-w-md font-medium text-muted-foreground text-sm leading-relaxed">
             {isFiltered
-              ? "Try clearing a filter or increasing the distance to see more groups."
+              ? "Try clearing a filter or increasing the distance to see more openings."
               : "Explore is quiet right now. Forge a group and give others a clear place to join in."}
           </p>
         </div>
