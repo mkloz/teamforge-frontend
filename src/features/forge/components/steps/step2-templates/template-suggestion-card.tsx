@@ -119,8 +119,8 @@ export function TemplateSuggestionCard({
         <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
             <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold text-micro text-muted-foreground">
-              <Users size={11} />
-              {suggestion.template.fixedSize}
+              <Users aria-hidden="true" size={11} />
+              {getTemplateGroupSizeText(suggestion.template)}
             </span>
             <OnlineTemplatePill
               locationType={suggestion.template.locationType}
@@ -138,6 +138,20 @@ export function TemplateSuggestionCard({
       </div>
     </button>
   );
+}
+
+function getTemplateGroupSizeText(template: TemplateSuggestion["template"]) {
+  if (
+    template.forgeMode === "AUTO" &&
+    template.recommendedMinimumGroupSize !== null &&
+    template.recommendedMaximumGroupSize !== null
+  ) {
+    return `${template.recommendedMinimumGroupSize}–${template.recommendedMaximumGroupSize} people`;
+  }
+
+  return template.fixedSize === null
+    ? "Group size not set"
+    : `${template.fixedSize} people`;
 }
 
 function OnlineTemplatePill({

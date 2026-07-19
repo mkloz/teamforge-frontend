@@ -39,8 +39,8 @@ export function ProposalFacts({ proposal }: ProposalFactsProps) {
       <ProposalFact
         icon={UsersRound}
         label="Group size"
-        value={`Aiming for ${proposal.targetGroupSize}`}
-        detail={`The group can form with ${proposal.minimumGroupSize}.`}
+        value={`${proposal.selectedGroupSize} people proposed`}
+        detail={`You asked for ${proposal.requestedMinimumGroupSize}–${proposal.requestedMaximumGroupSize} people, including you.`}
       />
       <ProposalFact
         icon={CircleDollarSign}

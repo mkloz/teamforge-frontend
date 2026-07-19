@@ -11,7 +11,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Gallery Visitors",
     groupDescription: "A group for visiting galleries and discussing the art.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["art", "museum", "gallery", "culture"],
   },
   {
@@ -23,7 +24,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Art Workshop",
     groupDescription: "A group for making art and sharing practical advice.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["art", "painting", "drawing", "craft"],
   },
   {
@@ -35,7 +37,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Cinema Club",
     groupDescription: "A group for cinema trips and post-film discussion.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["cinema", "film", "art"],
   },
   {
@@ -47,7 +50,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Photo Walkers",
     groupDescription: "A group for taking photos on local walks.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["photo", "creative", "design"],
   },
   {
@@ -59,7 +63,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Life Drawing Club",
     groupDescription: "A group for attending life drawing classes together.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["life drawing", "drawing", "sketching", "art"],
   },
   {
@@ -71,7 +76,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Street Art Tour",
     groupDescription: "A group for exploring murals and public art on foot.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["street art", "public art", "walking", "photography"],
   },
   {
@@ -83,7 +89,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Pottery Club",
     groupDescription: "A group for taking pottery classes together.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["pottery", "ceramics", "clay", "art"],
   },
   {
@@ -95,7 +102,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Theatre Club",
     groupDescription: "A group for attending plays and musicals together.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["theatre", "performance", "culture", "art"],
   },
   {
@@ -107,7 +115,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Collage Makers",
     groupDescription: "A group for making and sharing paper collages.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["collage", "paper craft", "design", "art"],
   },
   {
@@ -119,7 +128,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Mini Magazine Makers",
     groupDescription: "A group for creating small handmade magazines.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["writing", "illustration", "design", "paper craft"],
   },
   {
@@ -131,7 +141,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Architecture Tour",
     groupDescription: "A group for exploring local buildings and design.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["architecture", "design", "walking", "history"],
   },
   {
@@ -144,7 +155,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Cafe Crafters",
     groupDescription: "A group for working on portable crafts at a cafe.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["craft", "knitting", "crochet", "coffee"],
   },
   {
@@ -156,7 +168,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Film Club",
     groupDescription: "A group for regular film screenings and discussion.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["film", "cinema", "art", "culture"],
   },
   {
@@ -168,7 +181,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Poetry Open Mic Crew",
     groupDescription: "A group for attending and performing at poetry nights.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["poetry", "performance", "writing", "art"],
   },
   {
@@ -182,7 +196,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     groupName: "Creative Critique",
     groupDescription:
       "A group for discussing work in progress and giving useful feedback.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["design", "art", "portfolio", "feedback"],
   },
   {
@@ -194,7 +209,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Printmaking Club",
     groupDescription: "A group for learning and practising printmaking.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["printmaking", "lino", "printing", "art"],
   },
   {
@@ -206,7 +222,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Museum Evening Crew",
     groupDescription: "A group for after-hours museum visits.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["museum", "gallery", "culture", "art"],
   },
   {
@@ -218,7 +235,8 @@ export const ARTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Sculpture Park Visit",
     groupDescription: "A group for exploring outdoor sculpture parks.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["sculpture", "public art", "walking", "outdoors"],
   },
 ];

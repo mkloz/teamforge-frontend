@@ -12,7 +12,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Study Partners",
     groupDescription: "A group for focused study and shared accountability.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["study", "learning", "focus"],
   },
   {
@@ -25,7 +26,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Skill Sharers",
     groupDescription: "A group for teaching and learning practical skills.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["skills", "teaching", "learning"],
   },
   {
@@ -38,7 +40,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Language Exchange",
     groupDescription: "A group for relaxed conversation in another language.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["languages", "conversation", "learning"],
   },
   {
@@ -50,7 +53,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Book Club",
     groupDescription: "A group for shared reading and discussion.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["books", "reading", "discussion"],
   },
   {
@@ -64,7 +68,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     groupName: "Career Portfolio Review",
     groupDescription:
       "A group for improving portfolios used in job applications.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["portfolio", "feedback", "career"],
   },
   {
@@ -76,7 +81,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Short Talks Night",
     groupDescription: "A group for short presentations and curious questions.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["presentations", "learning", "public speaking"],
   },
   {
@@ -88,7 +94,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Exam Study Partners",
     groupDescription: "A group for focused exam revision.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["exam revision", "study", "learning"],
   },
   {
@@ -103,7 +110,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     groupDescription:
       "A group for following tutorials and practising together.",
     locationType: "ONLINE",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["tutorials", "online learning", "practice"],
   },
   {
@@ -115,7 +123,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Coding Practice",
     groupDescription: "A group for regular programming exercises.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["coding", "programming", "practice"],
   },
   {
@@ -127,7 +136,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Quiet Readers",
     groupDescription: "A group for making time to read.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["reading", "books", "quiet time"],
   },
   {
@@ -139,7 +149,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Photography Beginners",
     groupDescription: "A group for learning photography by taking pictures.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["photography", "photo walk", "beginners"],
   },
   {
@@ -151,7 +162,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Public Speaking Practice",
     groupDescription: "A group for practising talks and building confidence.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["public speaking", "presentations", "practice"],
   },
   {
@@ -164,7 +176,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Budgeting Basics",
     groupDescription: "A group for learning practical personal finance.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["budgeting", "personal finance", "learning"],
   },
   {
@@ -177,7 +190,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Walking Language Exchange",
     groupDescription: "A group for language practice on a casual walk.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["languages", "conversation", "walking"],
   },
   {
@@ -191,7 +205,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     groupName: "Study Planners",
     groupDescription:
       "A group for organising notes, deadlines, and study time.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["study planning", "note-taking", "organisation"],
   },
   {
@@ -205,7 +220,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     groupName: "Debate Practice",
     groupDescription:
       "A group for structured debates and thoughtful discussion.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["debate", "discussion", "public speaking"],
   },
   {
@@ -218,7 +234,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Interview Practice",
     groupDescription: "A group for interview practice and CV feedback.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["job interviews", "career", "cv"],
   },
   {
@@ -231,7 +248,8 @@ export const LEARNING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Local History Walk",
     groupDescription: "A group for exploring local history on foot.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["local history", "walking", "culture"],
   },
 ];

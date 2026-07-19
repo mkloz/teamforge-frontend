@@ -8,6 +8,9 @@ export function GroupStepPanel({ fw }: ForgeWizardChildProps) {
       forgeMode={fw.forgeMode}
       fixedSize={fw.fixedSize}
       onFixedSizeChange={fw.setFixedSize}
+      autoMinSize={fw.autoMinSize}
+      autoMaxSize={fw.autoMaxSize}
+      onAutoSizeRangeChange={fw.setAutoSizeRange}
       visibility={fw.visibility}
       onVisibilityChange={fw.setVisibility}
       groupName={fw.groupName}

@@ -13,7 +13,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     groupName: "Guided Relaxation",
     groupDescription:
       "A group for guided breathing, stretching, and quiet time.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["breathing", "meditation", "wellness", "stretch"],
   },
   {
@@ -25,7 +26,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Wellbeing Walkers",
     groupDescription: "A group for gentle walks and relaxed conversation.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["walk", "wellbeing", "health", "outdoor"],
   },
   {
@@ -38,7 +40,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Beginner Yoga",
     groupDescription: "A group for beginner-friendly yoga practice.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["yoga", "wellness", "flexibility", "health"],
   },
   {
@@ -51,7 +54,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     groupName: "Mindfulness Cafe",
     groupDescription:
       "A group for simple mindfulness practice and conversation.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["mindful", "meditation", "wellness", "coffee"],
   },
   {
@@ -63,7 +67,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Weekly Meal Prep",
     groupDescription: "A group for shared cooking and weekly meal preparation.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["meal prep", "cooking", "food", "health"],
   },
   {
@@ -75,7 +80,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Guided Meditation",
     groupDescription: "A group for guided meditation and quiet reflection.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["meditation", "mindful", "wellness"],
   },
   {
@@ -88,7 +94,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Sleep Routine Planners",
     groupDescription: "A group for planning practical evening routines.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["sleep", "wellness", "health", "routine"],
   },
   {
@@ -100,7 +107,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Stretching Club",
     groupDescription: "A group for regular stretching and mobility work.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["stretching", "yoga", "mobility", "wellness"],
   },
   {
@@ -112,7 +120,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Breathwork Class",
     groupDescription: "A group for guided breathing exercises.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["breathwork", "breathing", "meditation", "wellness"],
   },
   {
@@ -125,7 +134,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Walking Meditation",
     groupDescription: "A group for quiet, mindful walks outdoors.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["meditation", "walking", "mindful", "outdoor"],
   },
   {
@@ -138,7 +148,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Cafe Journal Club",
     groupDescription: "A group for reflective writing in quiet company.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["journaling", "writing", "coffee", "wellness"],
   },
   {
@@ -151,7 +162,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     groupName: "Beginner Pilates",
     groupDescription:
       "A group for beginner Pilates classes and regular practice.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["pilates", "wellness", "fitness", "flexibility"],
   },
   {
@@ -164,7 +176,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Brunch Cooks",
     groupDescription: "A group for preparing and sharing balanced brunches.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["brunch", "cooking", "food", "health"],
   },
   {
@@ -177,7 +190,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Phone-Free Afternoons",
     groupDescription: "A group for spending a few hours away from screens.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["digital detox", "mindful", "wellness", "walk"],
   },
   {
@@ -190,7 +204,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Weekly Habit Planners",
     groupDescription: "A group for making simple weekly routines.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["habits", "routine", "wellness", "health"],
   },
   {
@@ -202,7 +217,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Sauna Club",
     groupDescription: "A group for sauna visits and quiet conversation.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["sauna", "recovery", "wellness", "health"],
   },
   {
@@ -215,7 +231,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Mindful Photographers",
     groupDescription: "A group for slow photography walks.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["mindful", "photography", "walk", "wellness"],
   },
   {
@@ -228,7 +245,8 @@ export const WELLNESS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Tai Chi Outdoors",
     groupDescription: "A group for tai chi practice in local parks.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["tai chi", "wellness", "outdoor", "movement"],
   },
 ];

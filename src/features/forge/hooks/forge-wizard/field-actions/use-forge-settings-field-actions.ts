@@ -4,6 +4,7 @@ import type {
   Visibility,
 } from "@/features/forge/lib/forge-contract";
 import {
+  normalizeAutoGroupSize,
   normalizeFixedGroupSize,
   normalizeGroupSizeRange,
 } from "@/features/forge/lib/forge-size";
@@ -44,11 +45,11 @@ export function useForgeSettingsFieldActions({
   }
 
   function setAutoMinSize(value: number) {
-    setField("autoMinSize", normalizeFixedGroupSize(value));
+    setField("autoMinSize", normalizeAutoGroupSize(value));
   }
 
   function setAutoMaxSize(value: number) {
-    setField("autoMaxSize", normalizeFixedGroupSize(value));
+    setField("autoMaxSize", normalizeAutoGroupSize(value));
   }
 
   function setAutoSizeRange(minSize: number, maxSize: number) {

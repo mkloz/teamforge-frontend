@@ -11,7 +11,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Side Project Builders",
     groupDescription: "A group for making progress on personal tech projects.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["side projects", "coding", "technology"],
   },
   {
@@ -24,7 +25,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Product Idea Testers",
     groupDescription: "A group for discussing early product ideas.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["product design", "startups", "technology"],
   },
   {
@@ -36,7 +38,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Tech Demo Night",
     groupDescription: "A group for sharing tech projects and useful feedback.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["technology", "coding", "product demos"],
   },
   {
@@ -48,7 +51,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Practical AI Workshop",
     groupDescription: "A group for trying AI tools on practical tasks.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["artificial intelligence", "technology", "tools"],
   },
   {
@@ -60,7 +64,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Tech Career Meetup",
     groupDescription: "A group for tech job searches and interview practice.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["tech careers", "portfolio", "interviews"],
   },
   {
@@ -72,7 +77,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Peer Code Review",
     groupDescription: "A group for constructive code reviews.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["code review", "programming", "software development"],
   },
   {
@@ -84,7 +90,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Startup Problem-Solvers",
     groupDescription: "A group for people building early-stage companies.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["startups", "founders", "business"],
   },
   {
@@ -97,7 +104,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Software Tool Demos",
     groupDescription: "A group for sharing useful software and workflows.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["software tools", "technology", "productivity"],
   },
   {
@@ -109,7 +117,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Small App Builders",
     groupDescription: "A group for building small software projects together.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["coding", "software projects", "hackathon"],
   },
   {
@@ -121,7 +130,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "App Design Review",
     groupDescription: "A group for reviewing app design and user experience.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["app design", "user experience", "product"],
   },
   {
@@ -135,7 +145,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     groupName: "AI Fact Checkers",
     groupDescription:
       "A group for checking AI answers against reliable sources.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["artificial intelligence", "fact-checking", "research"],
   },
   {
@@ -148,7 +159,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     groupName: "Portfolio Builders",
     groupDescription:
       "A group for building tech portfolios and sharing feedback.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["portfolio", "career", "web development"],
   },
   {
@@ -162,7 +174,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     groupName: "Startup Case Study",
     groupDescription:
       "A group for discussing real startup stories and decisions.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["startups", "business", "case studies"],
   },
   {
@@ -175,7 +188,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "No-Code Makers",
     groupDescription: "A group for making useful projects with visual tools.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["no-code", "software tools", "product"],
   },
   {
@@ -187,7 +201,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Robotics Builders",
     groupDescription: "A group for hands-on robotics and hardware projects.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["robotics", "hardware", "engineering"],
   },
   {
@@ -201,7 +216,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     groupName: "Interface Design Workshop",
     groupDescription:
       "A group for people working on reusable interface design.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["ui design", "design systems", "product"],
   },
   {
@@ -214,7 +230,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Data Projects",
     groupDescription: "A group for practical data analysis projects.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["data analysis", "coding", "visualisation"],
   },
   {
@@ -226,7 +243,8 @@ export const TECH_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Account Security Check",
     groupDescription: "A group for learning safer everyday online habits.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["cybersecurity", "online safety", "technology"],
   },
 ];

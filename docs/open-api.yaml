@@ -1250,7 +1250,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAutoForgeRequestDto'
+              allOf:
+                - $ref: '#/components/schemas/CreateAutoForgeRequestDto'
+              anyOf:
+                - required:
+                    - minimumGroupSize
+                    - maximumGroupSize
+                - required:
+                    - groupSize
       responses:
         '200':
           description: ''
@@ -1307,7 +1314,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateAutoForgeRequestDto'
+              allOf:
+                - $ref: '#/components/schemas/UpdateAutoForgeRequestDto'
+              anyOf:
+                - required:
+                    - minimumGroupSize
+                    - maximumGroupSize
+                - required:
+                    - groupSize
       responses:
         '200':
           description: ''
@@ -7316,10 +7330,24 @@ components:
     CreateAutoForgeRequestDto:
       type: object
       properties:
-        groupSize:
+        minimumGroupSize:
+          type: number
+          example: 3
+          minimum: 3
+          maximum: 8
+        maximumGroupSize:
           type: number
           example: 4
-          minimum: 2
+          minimum: 3
+          maximum: 8
+        groupSize:
+          type: number
+          deprecated: true
+          description:
+            Legacy maximum size. Send minimumGroupSize and maximumGroupSize
+            instead.
+          example: 4
+          minimum: 3
           maximum: 8
         scope:
           type: string
@@ -7339,10 +7367,55 @@ components:
           type: string
           example: auto-forge-request-v1
       required:
-        - groupSize
         - scope
         - plan
         - policyVersion
+    UpdateAutoForgeRequestDto:
+      type: object
+      properties:
+        minimumGroupSize:
+          type: number
+          example: 3
+          minimum: 3
+          maximum: 8
+        maximumGroupSize:
+          type: number
+          example: 4
+          minimum: 3
+          maximum: 8
+        groupSize:
+          type: number
+          deprecated: true
+          description:
+            Legacy maximum size. Send minimumGroupSize and maximumGroupSize
+            instead.
+          example: 4
+          minimum: 3
+          maximum: 8
+        scope:
+          type: string
+          enum: *a59
+        maxDistanceKm:
+          type: number
+          description: Maximum travel distance for a local request
+          example: 40
+          minimum: 15
+          maximum: 80
+          nullable: true
+        plan:
+          $ref: '#/components/schemas/AutoForgePlanDto'
+        policyVersion:
+          type: string
+          example: auto-forge-request-v1
+        expectedRevision:
+          type: number
+          example: 1
+          minimum: 1
+      required:
+        - scope
+        - plan
+        - policyVersion
+        - expectedRevision
     AutoForgeRequestInterestEntity:
       type: object
       properties:
@@ -7481,9 +7554,19 @@ components:
           nullable: true
         revision:
           type: number
+        minimumGroupSize:
+          type: number
+          minimum: 3
+          maximum: 8
+        maximumGroupSize:
+          type: number
+          minimum: 3
+          maximum: 8
         groupSize:
           type: number
-          minimum: 2
+          deprecated: true
+          description: Legacy shadow of maximumGroupSize.
+          minimum: 3
           maximum: 8
         scope:
           type: string
@@ -7557,6 +7640,8 @@ components:
         - lifecycle
         - pauseReason
         - revision
+        - minimumGroupSize
+        - maximumGroupSize
         - groupSize
         - scope
         - maxDistanceKm
@@ -7586,39 +7671,6 @@ components:
             - $ref: '#/components/schemas/AutoForgeRequestEntity'
       required:
         - request
-    UpdateAutoForgeRequestDto:
-      type: object
-      properties:
-        groupSize:
-          type: number
-          example: 4
-          minimum: 2
-          maximum: 8
-        scope:
-          type: string
-          enum: *a59
-        maxDistanceKm:
-          type: number
-          description: Maximum travel distance for a local request
-          example: 40
-          minimum: 15
-          maximum: 80
-          nullable: true
-        plan:
-          $ref: '#/components/schemas/AutoForgePlanDto'
-        policyVersion:
-          type: string
-          example: auto-forge-request-v1
-        expectedRevision:
-          type: number
-          example: 1
-          minimum: 1
-      required:
-        - groupSize
-        - scope
-        - plan
-        - policyVersion
-        - expectedRevision
     AutoForgeRequestCommandDto:
       type: object
       properties:
@@ -7841,11 +7893,30 @@ components:
         deadlineAt:
           format: date-time
           type: string
+        requestedMinimumGroupSize:
+          type: number
+          example: 3
+          minimum: 3
+          maximum: 8
+        requestedMaximumGroupSize:
+          type: number
+          example: 4
+          minimum: 3
+          maximum: 8
+        selectedGroupSize:
+          type: number
+          example: 4
+          minimum: 3
+          maximum: 8
         targetGroupSize:
           type: number
+          deprecated: true
+          description: Legacy shadow of selectedGroupSize.
           example: 4
         minimumGroupSize:
           type: number
+          deprecated: true
+          description: Legacy shadow of requestedMinimumGroupSize.
           example: 3
         activity:
           $ref: '#/components/schemas/ForgeProposalActivityEntity'
@@ -7901,6 +7972,9 @@ components:
         - version
         - policyVersion
         - deadlineAt
+        - requestedMinimumGroupSize
+        - requestedMaximumGroupSize
+        - selectedGroupSize
         - targetGroupSize
         - minimumGroupSize
         - activity

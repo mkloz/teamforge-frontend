@@ -1,5 +1,4 @@
 import { resolvePlanCategory } from "@/features/forge/lib/forge-activity-builders/activity-option-resolution";
-import { resolveGroupSize } from "@/features/forge/lib/forge-activity-builders/group-size";
 import {
   buildDateTime,
   getCoordinatePair,
@@ -21,7 +20,8 @@ export function buildAutoForgeRequestInput(
       : null;
 
   return {
-    groupSize: resolveGroupSize(input),
+    minimumGroupSize: input.autoMinSize,
+    maximumGroupSize: input.autoMaxSize,
     scope: input.forgeScope,
     maxDistanceKm: input.forgeScope === "LOCAL" ? input.maxDistanceKm : null,
     plan: {

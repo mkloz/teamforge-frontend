@@ -11,7 +11,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Concert Goers",
     groupDescription: "A group for attending local concerts together.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["music", "concert", "gig", "performance"],
   },
   {
@@ -23,7 +24,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Open Jam",
     groupDescription: "A group for informal music jams and shared songs.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["music", "instruments", "guitar", "singing"],
   },
   {
@@ -35,7 +37,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Playlist Swap",
     groupDescription: "A group for sharing playlists and discussing music.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["music", "playlists", "songs", "music discovery"],
   },
   {
@@ -47,7 +50,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Karaoke Crew",
     groupDescription: "A group for going to karaoke nights together.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["karaoke", "singing", "music", "performance"],
   },
   {
@@ -59,7 +63,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Record Browsers",
     groupDescription: "A group for browsing record shops and sharing finds.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["music", "records", "vinyl", "record shops"],
   },
   {
@@ -71,7 +76,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Album Club",
     groupDescription: "A group for listening to complete albums together.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["music", "albums", "listening party", "music discussion"],
   },
   {
@@ -83,7 +89,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Songwriters Workshop",
     groupDescription: "A group for writing songs and exchanging feedback.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["music", "songwriting", "lyrics", "melody"],
   },
   {
@@ -95,7 +102,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "DJ Practice",
     groupDescription: "A group for practising mixes and sharing techniques.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["djing", "music", "mixing", "electronic music"],
   },
   {
@@ -108,7 +116,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Acoustic Singalong",
     groupDescription: "A group for informal acoustic music and shared songs.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["acoustic music", "guitar", "music", "singing"],
   },
   {
@@ -120,7 +129,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Vinyl Swap",
     groupDescription: "A group for trading records and sharing music.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["vinyl", "records", "music", "collecting"],
   },
   {
@@ -132,7 +142,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Local Concert Crew",
     groupDescription: "A group for choosing local concerts to attend.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["concerts", "live music", "music", "events"],
   },
   {
@@ -144,7 +155,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Open Mic Crew",
     groupDescription: "A group for attending and performing at open mics.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["open mic", "music", "performance", "singing"],
   },
   {
@@ -158,7 +170,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     groupName: "Bring a Record",
     groupDescription:
       "A group for sharing favourite records and hearing new music.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["vinyl", "records", "albums", "music"],
   },
   {
@@ -170,7 +183,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Beat Makers",
     groupDescription: "A group for making beats and learning music production.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["beat-making", "music production", "music", "djing"],
   },
   {
@@ -182,7 +196,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Community Choir",
     groupDescription: "A group for attending local choir rehearsals.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["choir", "singing", "harmony", "music"],
   },
   {
@@ -194,7 +209,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Pre-Concert Meetup",
     groupDescription: "A group for meeting before live music events.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["concerts", "live music", "food", "drinks"],
   },
   {
@@ -206,7 +222,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Lyric Writers",
     groupDescription: "A group for writing lyrics and exchanging feedback.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["lyrics", "songwriting", "writing", "music"],
   },
   {
@@ -218,7 +235,8 @@ export const MUSIC_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Music Quiz Team",
     groupDescription: "A group for taking part in music quiz nights.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["music", "quiz", "music history", "songs"],
   },
 ];

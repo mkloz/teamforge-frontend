@@ -1,4 +1,7 @@
-import { normalizeFixedGroupSize } from "@/features/forge/lib/forge-size";
+import {
+  normalizeFixedGroupSize,
+  normalizeGroupSizeRange,
+} from "@/features/forge/lib/forge-size";
 import { createInitialForgeWizardState } from "./initial-state";
 import { getNextStep, getPreviousStep, normalizeStep } from "./navigation";
 import type { ForgeWizardAction, ForgeWizardData } from "./types";
@@ -69,6 +72,10 @@ export function forgeWizardReducer(
       return clearAppliedTemplateFields(state, action.activity);
     case "apply-activity-template": {
       const { template, templateId } = action;
+      const recommendedRange = normalizeGroupSizeRange(
+        template.recommendedMinimumGroupSize ?? state.autoMinSize,
+        template.recommendedMaximumGroupSize ?? state.autoMaxSize,
+      );
 
       return {
         ...state,
@@ -94,6 +101,14 @@ export function forgeWizardReducer(
           template.fixedSize === null
             ? state.fixedSize
             : normalizeFixedGroupSize(template.fixedSize),
+        autoMinSize:
+          template.forgeMode === "AUTO"
+            ? recommendedRange.min
+            : state.autoMinSize,
+        autoMaxSize:
+          template.forgeMode === "AUTO"
+            ? recommendedRange.max
+            : state.autoMaxSize,
         visibility: template.visibility,
         groupName: template.groupName,
         groupDescription: template.groupDescription,

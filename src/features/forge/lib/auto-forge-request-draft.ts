@@ -1,4 +1,3 @@
-import { normalizeFixedGroupSize } from "@/features/forge/lib/forge-size";
 import {
   createInitialForgeWizardState,
   type ForgeWizardData,
@@ -44,10 +43,9 @@ export function buildAutoForgeRequestWizardDraft(
     planCost: request.plan.cost,
     planCostAmount: request.plan.costAmount?.toString() ?? "",
     planCostDetails: request.plan.costDetails ?? "",
-    fixedSize: normalizeFixedGroupSize(request.groupSize),
-    groupSizeMode: "FIXED",
-    autoMinSize: request.groupSize,
-    autoMaxSize: request.groupSize,
+    groupSizeMode: "RANGE",
+    autoMinSize: request.minimumGroupSize,
+    autoMaxSize: request.maximumGroupSize,
     maxDistanceKm: request.maxDistanceKm ?? initial.maxDistanceKm,
     coverImage: request.plan.coverImage,
     activityId: request.activity.id,

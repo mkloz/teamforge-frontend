@@ -132,7 +132,7 @@ const proposalViewerSchema = z
   })
   .strict();
 
-export const forgeProposalSchema = z
+const canonicalForgeProposalSchema = z
   .object({
     id: z.string().min(1),
     requestId: z.string().min(1),
@@ -140,8 +140,9 @@ export const forgeProposalSchema = z
     version: z.number().int().positive(),
     state: forgeProposalStateSchema,
     deadlineAt: z.string().datetime(),
-    targetGroupSize: z.number().int(),
-    minimumGroupSize: z.number().int(),
+    requestedMinimumGroupSize: z.number().int().min(3).max(8),
+    requestedMaximumGroupSize: z.number().int().min(3).max(8),
+    selectedGroupSize: z.number().int().min(3).max(8),
     activity: proposalActivitySchema,
     scope: forgeProposalScopeSchema,
     scheduleMode: planScheduleModeSchema,
@@ -153,7 +154,7 @@ export const forgeProposalSchema = z
     costDetails: z.string().max(250).nullable(),
     formedResources: formedResourcesSchema.nullable(),
     viewer: proposalViewerSchema,
-    seats: z.array(proposalSeatSchema).length(4),
+    seats: z.array(proposalSeatSchema).min(3).max(8),
   })
   .strict()
   .superRefine((proposal, context) => {
@@ -162,6 +163,11 @@ export const forgeProposalSchema = z
     validateViewerSeat(proposal, context);
     validateFormedResources(proposal, context);
   });
+
+export const forgeProposalSchema = z.preprocess(
+  normalizeLegacyProposalGroupSizes,
+  canonicalForgeProposalSchema,
+);
 
 export const currentForgeProposalResponseSchema = z
   .object({
@@ -208,29 +214,57 @@ function validateFormedResources(
 }
 
 function validateGroupSize(
-  proposal: z.infer<typeof forgeProposalSchema>,
+  proposal: z.infer<typeof canonicalForgeProposalSchema>,
   context: z.RefinementCtx,
 ) {
-  if (proposal.targetGroupSize !== 4 || proposal.minimumGroupSize !== 3) {
+  if (proposal.requestedMinimumGroupSize > proposal.requestedMaximumGroupSize) {
     context.addIssue({
       code: "custom",
-      message:
-        "Automatic group proposals must target four people and allow three.",
-      path: ["targetGroupSize"],
+      message: "The requested minimum cannot exceed the preferred maximum.",
+      path: ["requestedMinimumGroupSize"],
     });
   }
 
-  if (proposal.seats.length > proposal.targetGroupSize) {
+  if (
+    proposal.selectedGroupSize < proposal.requestedMinimumGroupSize ||
+    proposal.selectedGroupSize > proposal.requestedMaximumGroupSize
+  ) {
     context.addIssue({
       code: "custom",
-      message: "The roster cannot exceed the proposal target size.",
+      message: "The selected size must stay within the requested range.",
+      path: ["selectedGroupSize"],
+    });
+  }
+
+  if (proposal.seats.length !== proposal.selectedGroupSize) {
+    context.addIssue({
+      code: "custom",
+      message: "The roster must contain the selected number of people.",
       path: ["seats"],
     });
   }
 }
 
+function normalizeLegacyProposalGroupSizes(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+
+  const proposal: Record<string, unknown> = { ...value };
+  const legacyMinimum = proposal.minimumGroupSize;
+  const legacyTarget = proposal.targetGroupSize;
+
+  proposal.requestedMinimumGroupSize ??= legacyMinimum;
+  proposal.requestedMaximumGroupSize ??= legacyTarget;
+  proposal.selectedGroupSize ??= legacyTarget;
+  delete proposal.minimumGroupSize;
+  delete proposal.targetGroupSize;
+
+  return proposal;
+}
+
 function validateSchedule(
-  proposal: z.infer<typeof forgeProposalSchema>,
+  proposal: z.infer<typeof canonicalForgeProposalSchema>,
   context: z.RefinementCtx,
 ) {
   const hasFixedDate = proposal.dateTime !== null;
@@ -254,7 +288,7 @@ function validateSchedule(
 }
 
 function validateViewerSeat(
-  proposal: z.infer<typeof forgeProposalSchema>,
+  proposal: z.infer<typeof canonicalForgeProposalSchema>,
   context: z.RefinementCtx,
 ) {
   const viewerSeat = proposal.seats.find(

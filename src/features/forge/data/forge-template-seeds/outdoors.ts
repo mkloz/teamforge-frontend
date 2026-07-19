@@ -11,7 +11,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Nature Walkers",
     groupDescription: "A group for relaxed walks in parks and the countryside.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["nature", "walking", "outdoor", "hiking"],
   },
   {
@@ -23,7 +24,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Nature Reserve Explorers",
     groupDescription: "A group for day trips to local nature reserves.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["nature", "wildlife", "outdoor", "day trip"],
   },
   {
@@ -35,7 +37,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Picnic and Games",
     groupDescription: "A group for shared food and casual games outdoors.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["picnic", "games", "park", "food"],
   },
   {
@@ -48,7 +51,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Sunset Watchers",
     groupDescription: "A group for relaxed evenings at scenic viewpoints.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["sunset", "views", "nature", "outdoor"],
   },
   {
@@ -61,7 +65,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Coastal Day Trippers",
     groupDescription: "A group for relaxed days by the coast.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["beach", "coast", "outdoor", "nature"],
   },
   {
@@ -73,7 +78,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Trail Hikers",
     groupDescription: "A group for day hikes on marked routes.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["hiking", "outdoor", "nature"],
   },
   {
@@ -86,7 +92,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     groupName: "Garden Visitors",
     groupDescription:
       "A group for botanical gardens, plants, and outdoor walks.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["plants", "garden", "nature", "outdoor"],
   },
   {
@@ -98,7 +105,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Park Rounders",
     groupDescription: "A group for friendly rounders games outdoors.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["rounders", "games", "park", "outdoor"],
   },
   {
@@ -110,7 +118,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Canal Walkers",
     groupDescription: "A group for relaxed walks along local waterways.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["walk", "outdoor", "nature"],
   },
   {
@@ -123,7 +132,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Outdoor Sketchers",
     groupDescription: "A group for drawing outdoors at a relaxed pace.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["sketch", "drawing", "nature", "creative"],
   },
   {
@@ -136,7 +146,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "City Park Walkers",
     groupDescription: "A group for brisk walks through local parks.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["park", "walking", "fitness", "outdoor"],
   },
   {
@@ -149,7 +160,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Outdoor Swimmers",
     groupDescription: "A group for carefully planned swims outdoors.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["swim", "outdoor", "nature", "wellness"],
   },
   {
@@ -161,7 +173,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Sunrise Walkers",
     groupDescription: "A group for early-morning walks outdoors.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["sunrise", "walk", "outdoor", "wellness"],
   },
   {
@@ -173,7 +186,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Campfire Cookout",
     groupDescription: "A group for outdoor cooking and camping meals.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["camping", "cooking", "food", "outdoor"],
   },
   {
@@ -186,7 +200,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Birdwatchers",
     groupDescription: "A group for birdwatching walks in local green spaces.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["birds", "nature", "walk", "outdoor"],
   },
   {
@@ -200,7 +215,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     groupName: "Park Readers",
     groupDescription:
       "A group for quiet reading and short conversations outdoors.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["reading", "park", "outdoor", "book"],
   },
   {
@@ -212,7 +228,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Bike and Brunch",
     groupDescription: "A group for social bike rides with a food stop.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["bike", "cycling", "brunch", "outdoor"],
   },
   {
@@ -225,7 +242,8 @@ export const OUTDOORS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Sunset Photographers",
     groupDescription: "A group for outdoor photography around sunset.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["photography", "sunset", "outdoor", "nature"],
   },
 ];

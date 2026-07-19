@@ -195,6 +195,8 @@ export function buildRecentActivityTemplate(
     planCostDetails: planFields.planCostDetails,
     forgeMode: activity.forgeMode,
     fixedSize: groupFields.fixedSize,
+    recommendedMinimumGroupSize: null,
+    recommendedMaximumGroupSize: null,
     visibility: activity.visibility,
     groupName: groupFields.groupName,
     groupDescription: groupFields.groupDescription,

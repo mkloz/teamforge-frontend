@@ -12,7 +12,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Party Game Night",
     groupDescription: "A group for casual multiplayer and board games.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["party games", "board games", "multiplayer"],
   },
   {
@@ -26,7 +27,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     groupName: "Online Co-op Night",
     groupDescription: "A group for online co-op games and regular team play.",
     locationType: "ONLINE",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["co-op", "online gaming", "multiplayer"],
   },
   {
@@ -38,7 +40,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Board Game Cafe",
     groupDescription: "A group for board games at a local cafe.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["board games", "cafe", "tabletop"],
   },
   {
@@ -51,7 +54,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     groupName: "Arcade Night",
     groupDescription:
       "A group for casual arcade games and friendly competition.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["arcade", "video games", "retro gaming"],
   },
   {
@@ -65,7 +69,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     groupName: "Esports Watch Party",
     groupDescription: "A group for live esports and shared viewing.",
     locationType: "ONLINE",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["esports", "gaming", "watch party"],
   },
   {
@@ -77,7 +82,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Escape Room Team",
     groupDescription: "A group for escape rooms and team puzzles.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["escape room", "puzzles", "teamwork"],
   },
   {
@@ -90,7 +96,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "LAN Party",
     groupDescription: "A group for in-person multiplayer PC gaming.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["lan party", "pc gaming", "multiplayer"],
   },
   {
@@ -102,7 +109,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Tabletop RPG Players",
     groupDescription: "A group for role-playing games and shared storytelling.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["tabletop rpg", "role-playing games", "storytelling"],
   },
   {
@@ -114,7 +122,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Chess Meetup",
     groupDescription: "A group for casual chess games and practice.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["chess", "board games", "strategy"],
   },
   {
@@ -126,7 +135,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "VR Players",
     groupDescription: "A group for multiplayer virtual reality games.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["virtual reality", "gaming", "multiplayer"],
   },
   {
@@ -138,7 +148,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Strategy Game Night",
     groupDescription: "A group for longer board games and careful play.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["strategy games", "board games", "tabletop"],
   },
   {
@@ -151,7 +162,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Console Game Night",
     groupDescription: "A group for casual console games and local multiplayer.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["console gaming", "multiplayer", "party games"],
   },
   {
@@ -164,7 +176,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Game Design Meetup",
     groupDescription: "A group for making and testing simple game ideas.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["game design", "game development", "creative projects"],
   },
   {
@@ -177,7 +190,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     groupName: "Online Raiders",
     groupDescription: "A group for organised online raids and team play.",
     locationType: "ONLINE",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["online gaming", "raids", "multiplayer"],
   },
   {
@@ -190,7 +204,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Murder Mystery Players",
     groupDescription: "A group for mystery games and social deduction.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["murder mystery", "social deduction", "party games"],
   },
   {
@@ -203,7 +218,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     groupName: "Speedrun Watch Party",
     groupDescription: "A group for watching and discussing speedruns.",
     locationType: "ONLINE",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["speedrunning", "gaming", "watch party"],
   },
   {
@@ -216,7 +232,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Trading Card Night",
     groupDescription: "A group for trading card games and casual play.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["trading cards", "card games", "tabletop"],
   },
   {
@@ -231,7 +248,8 @@ export const GAMING_TEMPLATES: TemplateSeed[] = [
     groupDescription:
       "A group for building and exploring shared online worlds.",
     locationType: "ONLINE",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["building games", "online gaming", "co-op"],
   },
 ];

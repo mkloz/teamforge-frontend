@@ -1,6 +1,7 @@
 import type { FixedGroupSize } from "@/features/forge/lib/forge-contract";
 
 const MIN_GROUP_SIZE = 2;
+const MIN_AUTO_GROUP_SIZE = 3;
 const MAX_GROUP_SIZE = 8;
 const FIXED_GROUP_SIZES = [2, 3, 4, 5, 6, 7, 8] as const;
 
@@ -35,22 +36,17 @@ export function normalizeGroupSizeRange(
   }
 
   const normalizedMin = Number.isFinite(minSize)
-    ? normalizeFixedGroupSize(minSize)
-    : normalizeFixedGroupSize(maxSize);
+    ? normalizeAutoGroupSize(minSize)
+    : normalizeAutoGroupSize(maxSize);
   const normalizedMax = Number.isFinite(maxSize)
-    ? normalizeFixedGroupSize(maxSize)
-    : normalizeFixedGroupSize(minSize);
+    ? normalizeAutoGroupSize(maxSize)
+    : normalizeAutoGroupSize(minSize);
 
   return normalizedMin <= normalizedMax
     ? { max: normalizedMax, min: normalizedMin }
     : { max: normalizedMin, min: normalizedMax };
 }
 
-export function getPreferredGroupSizeFromRange(
-  minSize: number,
-  maxSize: number,
-) {
-  const range = normalizeGroupSizeRange(minSize, maxSize);
-
-  return normalizeFixedGroupSize((range.min + range.max) / 2);
+export function normalizeAutoGroupSize(value: number): FixedGroupSize {
+  return normalizeFixedGroupSize(Math.max(MIN_AUTO_GROUP_SIZE, value));
 }

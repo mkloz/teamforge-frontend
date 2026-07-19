@@ -11,7 +11,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Local Day Trippers",
     groupDescription: "A group for short trips to nearby towns.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["towns", "local", "travel", "day trip"],
   },
   {
@@ -24,7 +25,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Historic Site Visitors",
     groupDescription: "A group for day trips to nearby historic places.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["history", "travel", "culture", "landmarks"],
   },
   {
@@ -36,7 +38,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Neighbourhood Explorers",
     groupDescription: "A group for walks through different parts of town.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["travel", "walk", "culture"],
   },
   {
@@ -49,7 +52,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Road Trip Planners",
     groupDescription: "A group for planning practical day trips by car.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["road trip", "route", "travel", "planning"],
   },
   {
@@ -62,7 +66,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Independent Shop Explorers",
     groupDescription: "A group for visiting independent places around town.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["shops", "local", "travel", "cafes"],
   },
   {
@@ -76,7 +81,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     groupName: "City Photographers",
     groupDescription:
       "A group for photography walks in nearby towns and cities.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["travel", "photo", "walk"],
   },
   {
@@ -88,7 +94,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Train Travellers",
     groupDescription: "A group for day trips by train.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["train", "travel", "day trip", "culture"],
   },
   {
@@ -100,7 +107,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Cafe Crawlers",
     groupDescription: "A group for exploring a city through its cafes.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["cafe", "coffee", "city", "travel"],
   },
   {
@@ -113,7 +121,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Weekend Trip Planners",
     groupDescription: "A group for planning practical weekend trips.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["travel", "planning", "weekend", "budget"],
   },
   {
@@ -125,7 +134,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Local Landmark Walkers",
     groupDescription: "A group for walking tours of nearby landmarks.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["landmarks", "walking", "travel", "culture"],
   },
   {
@@ -137,7 +147,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Market Food Explorers",
     groupDescription: "A group for food markets and city day trips.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["food", "market", "travel", "culture"],
   },
   {
@@ -150,7 +161,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Budget Travellers",
     groupDescription: "A group for lower-cost day trips.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["budget", "travel", "day trip", "local"],
   },
   {
@@ -162,7 +174,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Museum Visitors",
     groupDescription: "A group for museum visits and nearby cultural stops.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["museum", "travel", "culture", "art"],
   },
   {
@@ -175,7 +188,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Seaside Travellers",
     groupDescription: "A group for day trips to nearby coastal towns.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["coast", "beach", "travel", "day trip"],
   },
   {
@@ -187,7 +201,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "City Break Travellers",
     groupDescription: "A group for short overnight trips to nearby cities.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["city", "travel", "weekend", "overnight"],
   },
   {
@@ -201,7 +216,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     groupName: "Travel Photo Club",
     groupDescription:
       "A group for sharing travel photos and the stories behind them.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["photo", "travel", "stories", "culture"],
   },
   {
@@ -214,7 +230,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     groupName: "Backpackers",
     groupDescription:
       "A group for backpacking stories, advice, and future plans.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["backpacking", "travel", "stories", "tips"],
   },
   {
@@ -227,7 +244,8 @@ export const TRAVEL_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "City Navigators",
     groupDescription: "A group for mapped walks and navigation practice.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["map", "navigation", "walking", "travel"],
   },
 ];

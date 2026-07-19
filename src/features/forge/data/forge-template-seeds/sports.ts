@@ -12,7 +12,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Volleyball Players",
     groupDescription: "A group for casual volleyball games and team planning.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["volleyball", "sport", "fitness", "outdoor"],
   },
   {
@@ -25,7 +26,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Strength Training",
     groupDescription: "A group for regular strength workouts at the gym.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["strength", "fitness", "gym", "health"],
   },
   {
@@ -37,7 +39,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Padel Players",
     groupDescription: "A group for casual padel games and court bookings.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["padel", "tennis", "racquet sports", "sport"],
   },
   {
@@ -50,7 +53,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Local Run Club",
     groupDescription: "A group for social runs on local routes.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["running", "run club", "fitness", "outdoor"],
   },
   {
@@ -63,7 +67,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Bouldering Club",
     groupDescription: "A group for bouldering trips and shared climbing tips.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["climbing", "bouldering", "gym", "fitness"],
   },
   {
@@ -76,7 +81,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Weekend Football Practice",
     groupDescription: "A group for football drills and short games.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["football", "sport", "fitness"],
   },
   {
@@ -89,7 +95,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Local Cyclists",
     groupDescription: "A group for social rides on local routes.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["cycling", "bike", "fitness", "outdoor"],
   },
   {
@@ -101,19 +108,21 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Recovery Swimmers",
     groupDescription: "A group for easy pool swims after exercise.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["swim", "recovery", "fitness", "health"],
   },
   {
     id: "five-a-side",
     title: "Small-sided football",
-    description: "Book a pitch for a casual six-person football game.",
+    description: "Book a pitch for a casual small-sided football game.",
     coverImageSource: buildMediaUrl(
       "/uploads/seed-media/template-covers/sports/five-a-side/original.webp",
     ),
     groupName: "Small-Sided Football",
     groupDescription: "A group for regular small-sided games.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["football", "sport", "fitness"],
   },
   {
@@ -125,7 +134,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Basketball Players",
     groupDescription: "A group for shootarounds and casual basketball games.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["basketball", "sport", "fitness"],
   },
   {
@@ -138,7 +148,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Badminton Players",
     groupDescription: "A group for casual doubles games and court bookings.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["badminton", "sport", "court"],
   },
   {
@@ -150,7 +161,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Park Workout",
     groupDescription: "A group for outdoor circuit workouts.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["fitness", "exercise", "outdoor", "gym"],
   },
   {
@@ -163,7 +175,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Sports Mobility",
     groupDescription: "A group for mobility work before or after training.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["mobility", "fitness", "running", "cycling"],
   },
   {
@@ -175,7 +188,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Table Tennis Players",
     groupDescription: "A group for casual table tennis games.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["table tennis", "sport", "game"],
   },
   {
@@ -187,7 +201,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Swim Practice",
     groupDescription: "A group for lane practice and swimming technique.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["swim", "technique", "fitness", "health"],
   },
   {
@@ -200,7 +215,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     groupName: "New Climbers",
     groupDescription:
       "A group for first climbing lessons and beginner practice.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["climbing", "fitness", "gym"],
   },
   {
@@ -213,7 +229,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Cycling Practice",
     groupDescription: "A group for practising everyday cycling skills.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["cycling", "bike", "skills", "fitness"],
   },
   {
@@ -225,7 +242,8 @@ export const SPORTS_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Ultimate Frisbee",
     groupDescription: "A group for friendly frisbee games outdoors.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["frisbee", "park", "sport", "outdoor"],
   },
 ];

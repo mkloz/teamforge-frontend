@@ -11,7 +11,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Local Dog Walkers",
     groupDescription: "A group for dog owners who want regular walks.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["dog walking", "pets", "outdoors"],
   },
   {
@@ -24,7 +25,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "DIY Helpers",
     groupDescription: "A group for practical home projects and shared tools.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["diy", "home improvement", "repair"],
   },
   {
@@ -37,7 +39,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Community Gardeners",
     groupDescription: "A group for helping at local community gardens.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["gardening", "volunteering", "community"],
   },
   {
@@ -51,7 +54,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     groupName: "Clothes Swap",
     groupDescription:
       "A group for exchanging good-quality second-hand clothes.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["clothes swap", "second-hand", "sustainability"],
   },
   {
@@ -63,7 +67,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Craft Market Crew",
     groupDescription: "A group for visiting local makers' markets.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["craft markets", "handmade", "shopping", "local"],
   },
   {
@@ -76,7 +81,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Current Affairs",
     groupDescription: "A group for calm, informed discussion of recent events.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["current affairs", "news", "discussion"],
   },
   {
@@ -88,7 +94,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Street Clean-Up Crew",
     groupDescription: "A group for practical clean-up days close to home.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["community", "clean-up", "volunteering"],
   },
   {
@@ -101,7 +108,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     groupName: "Show-and-Tell",
     groupDescription:
       "A group for sharing meaningful objects and their stories.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["stories", "collecting", "conversation"],
   },
   {
@@ -113,7 +121,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Plant Swap",
     groupDescription: "A group for sharing plants and growing advice.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["plants", "gardening", "swap"],
   },
   {
@@ -125,7 +134,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Food Bank Volunteers",
     groupDescription: "A group for volunteering at local food banks.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["food bank", "volunteering", "community"],
   },
   {
@@ -138,7 +148,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Podcast Club",
     groupDescription: "A group for sharing and discussing podcast episodes.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["podcasts", "discussion", "media"],
   },
   {
@@ -151,7 +162,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Comedy Crowd",
     groupDescription: "A group for going to local stand-up shows.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["comedy", "stand-up", "live shows"],
   },
   {
@@ -164,7 +176,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Charity Shop Finds",
     groupDescription: "A group for exploring local second-hand shops.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["charity shops", "second-hand", "local"],
   },
   {
@@ -177,7 +190,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Repair Cafe",
     groupDescription: "A group for repairing everyday household items.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["repair", "diy", "practical skills"],
   },
   {
@@ -189,7 +203,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Moving Helpers",
     groupDescription: "A group for neighbours helping with house moves.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["moving house", "community", "helping"],
   },
   {
@@ -202,7 +217,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Local Access Check",
     groupDescription: "A group for noticing and reporting local issues.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["community", "walking", "accessibility"],
   },
   {
@@ -214,7 +230,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Scavenger Hunters",
     groupDescription: "A group for local scavenger hunts.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["scavenger hunt", "outdoors", "teamwork"],
   },
   {
@@ -227,7 +244,8 @@ export const OTHER_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Local Event Planners",
     groupDescription: "A group for organising small community events.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["events", "planning", "community"],
   },
 ];

@@ -86,8 +86,8 @@ const forgeExecutionBaseSchema = z.object({
   planCostDetails: z.string().max(160, "Shorten the cost note."),
   groupSizeMode: z.enum(["RANGE", "FIXED"]),
   fixedSize: z.number().int().min(2).max(8),
-  autoMinSize: z.number().int().min(2).max(8),
-  autoMaxSize: z.number().int().min(2).max(8),
+  autoMinSize: z.number().int().min(3).max(8),
+  autoMaxSize: z.number().int().min(3).max(8),
   compatibilityWeight: matchingPreferenceSchema,
   diversityWeight: matchingPreferenceSchema,
   networkReachWeight: matchingPreferenceSchema,
@@ -271,16 +271,13 @@ function addGroupSizeIssue(
   input: ForgeExecutionBaseInput,
   ctx: ForgeExecutionRefinementContext,
 ) {
-  if (
-    input.groupSizeMode !== "RANGE" ||
-    input.autoMinSize <= input.autoMaxSize
-  ) {
+  if (input.autoMinSize <= input.autoMaxSize) {
     return;
   }
 
   ctx.addIssue({
     code: "custom",
-    message: "Keep the minimum group size below the maximum.",
+    message: "Keep the minimum group size at or below the maximum.",
     path: ["autoMinSize"],
   });
 }

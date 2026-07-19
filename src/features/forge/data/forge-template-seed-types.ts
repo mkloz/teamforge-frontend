@@ -8,7 +8,8 @@ export interface TemplateSeed {
   groupName: string;
   groupDescription: string;
   locationType?: ForgePlanTemplate["locationType"];
-  fixedSize?: number;
+  recommendedMinimumGroupSize: number;
+  recommendedMaximumGroupSize: number;
   visibility?: ForgePlanTemplate["visibility"];
   interestHints?: string[];
 }

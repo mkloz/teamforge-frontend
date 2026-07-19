@@ -11,7 +11,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Weekend Brunch",
     groupDescription: "A group for meeting over weekend brunch.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["brunch", "cafes", "breakfast", "food"],
   },
   {
@@ -23,7 +24,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "New Restaurant Club",
     groupDescription: "A group for trying new local restaurants together.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["restaurants", "food", "dinner", "local food"],
   },
   {
@@ -35,7 +37,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Home Cooks",
     groupDescription: "A group for cooking recipes and eating together.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["cooking", "recipes", "dinner", "food"],
   },
   {
@@ -48,7 +51,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Market Morning",
     groupDescription: "A group for browsing local produce and food stalls.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["food markets", "street food", "local food", "walking"],
   },
   {
@@ -60,7 +64,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Dessert Crawl",
     groupDescription: "A group for visiting local dessert shops together.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["desserts", "baking", "cafes", "food"],
   },
   {
@@ -72,7 +77,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Supper Club",
     groupDescription: "A group for regular shared dinners.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["dinner", "restaurants", "home cooking", "food"],
   },
   {
@@ -84,7 +90,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Street Food Crew",
     groupDescription: "A group for trying food from local stalls and markets.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["street food", "food markets", "local food", "walking"],
   },
   {
@@ -96,7 +103,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Coffee Tasters",
     groupDescription: "A group for coffee tastings and cafe visits.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["coffee", "cafes", "coffee tasting", "food"],
   },
   {
@@ -108,7 +116,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Ramen Club",
     groupDescription: "A group for trying ramen restaurants together.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["ramen", "japanese food", "restaurants", "dinner"],
   },
   {
@@ -120,7 +129,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Pizza Tasters",
     groupDescription: "A group for trying pizza places and sharing slices.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["pizza", "restaurants", "italian food", "dinner"],
   },
   {
@@ -132,7 +142,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Baking Club",
     groupDescription: "A group for sharing home baking and recipes.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["baking", "desserts", "recipes", "cooking"],
   },
   {
@@ -144,7 +155,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Vegetarian Diners",
     groupDescription: "A group for meat-free meals and restaurant visits.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["vegetarian food", "cooking", "restaurants", "dinner"],
   },
   {
@@ -156,7 +168,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Taco Night",
     groupDescription: "A group for making tacos and trying taco restaurants.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["tacos", "mexican food", "cooking", "dinner"],
   },
   {
@@ -168,7 +181,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Breakfast Club",
     groupDescription: "A group for breakfast plans and morning cafe visits.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["breakfast", "coffee", "cafes", "food"],
   },
   {
@@ -180,7 +194,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Soup Cooks",
     groupDescription: "A group for cooking and sharing homemade soup.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["soup", "cooking", "recipes", "food"],
   },
   {
@@ -193,7 +208,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Food Truck Picnic",
     groupDescription: "A group for sharing food truck dishes outdoors.",
-    fixedSize: 5,
+    recommendedMinimumGroupSize: 4,
+    recommendedMaximumGroupSize: 6,
     interestHints: ["food trucks", "street food", "food markets", "local food"],
   },
   {
@@ -205,7 +221,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Picnic Potluck",
     groupDescription: "A group for sharing homemade food at park picnics.",
-    fixedSize: 6,
+    recommendedMinimumGroupSize: 5,
+    recommendedMaximumGroupSize: 8,
     interestHints: ["picnic", "potluck", "cooking", "parks"],
   },
   {
@@ -217,7 +234,8 @@ export const FOOD_TEMPLATES: TemplateSeed[] = [
     ),
     groupName: "Afternoon Tea Club",
     groupDescription: "A group for afternoon tea and cafe visits.",
-    fixedSize: 4,
+    recommendedMinimumGroupSize: 3,
+    recommendedMaximumGroupSize: 5,
     interestHints: ["afternoon tea", "tea", "cake", "cafes"],
   },
 ];

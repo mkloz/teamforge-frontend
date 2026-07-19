@@ -50,13 +50,22 @@ export const autoForgeRequestPlanInputSchema =
 
 const autoForgeRequestBaseInputSchema = z
   .object({
-    groupSize: z.number().int().min(2).max(8),
+    minimumGroupSize: z.number().int().min(3).max(8),
+    maximumGroupSize: z.number().int().min(3).max(8),
     scope: forgeScopeSchema,
     maxDistanceKm: z.number().int().min(15).max(80).nullable().optional(),
     plan: autoForgeRequestPlanInputSchema,
     policyVersion: z.literal(AUTO_FORGE_REQUEST_POLICY_VERSION),
   })
   .superRefine((input, context) => {
+    if (input.minimumGroupSize > input.maximumGroupSize) {
+      context.addIssue({
+        code: "custom",
+        message: "Keep the minimum group size at or below the maximum.",
+        path: ["minimumGroupSize"],
+      });
+    }
+
     if (input.scope === "ONLINE" && input.maxDistanceKm != null) {
       context.addIssue({
         code: "custom",
@@ -127,14 +136,15 @@ const autoForgeRequestPlanSchema = autoForgeRequestPlanBaseSchema.extend({
   costDetails: z.string().nullable(),
 });
 
-export const autoForgeRequestSchema = z.object({
+const autoForgeRequestWireSchema = z.object({
   id: z.string().min(1),
   requesterId: z.string().min(1),
   activity: autoForgeActivitySchema,
   lifecycle: autoForgeRequestLifecycleSchema,
   pauseReason: autoForgeRequestPauseReasonSchema,
   revision: z.number().int().positive(),
-  groupSize: z.number().int().min(2).max(8),
+  minimumGroupSize: z.number().int().min(3).max(8),
+  maximumGroupSize: z.number().int().min(3).max(8),
   scope: forgeScopeSchema,
   maxDistanceKm: z.number().int().min(15).max(80).nullable(),
   plan: autoForgeRequestPlanSchema,
@@ -148,7 +158,12 @@ export const autoForgeRequestSchema = z.object({
   manualRetryAvailableAt: z.string().datetime().nullable(),
   canRetryNow: z.boolean(),
   lastAttemptOutcome: z
-    .enum(["SEARCH_RETRY_SCHEDULED", "WORKER_ERROR"])
+    .enum([
+      "PROPOSAL_CREATED",
+      "NOT_ENOUGH_CANDIDATES",
+      "SEARCH_RETRY_SCHEDULED",
+      "WORKER_ERROR",
+    ])
     .nullable(),
   attemptCount: z.number().int().nonnegative(),
   consecutiveFailureCount: z.number().int().nonnegative(),
@@ -156,6 +171,19 @@ export const autoForgeRequestSchema = z.object({
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
+
+export const autoForgeRequestSchema = z.preprocess(
+  normalizeLegacyRequestGroupSize,
+  autoForgeRequestWireSchema.superRefine((request, context) => {
+    if (request.minimumGroupSize > request.maximumGroupSize) {
+      context.addIssue({
+        code: "custom",
+        message: "The request minimum cannot exceed its maximum.",
+        path: ["minimumGroupSize"],
+      });
+    }
+  }),
+);
 
 export const currentAutoForgeRequestSchema = z.object({
   request: autoForgeRequestSchema.nullable(),
@@ -168,6 +196,21 @@ export type CreateAutoForgeRequestInput = z.input<
 export type UpdateAutoForgeRequestInput = z.input<
   typeof updateAutoForgeRequestInputSchema
 >;
+
+function normalizeLegacyRequestGroupSize(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+
+  const request: Record<string, unknown> = { ...value };
+  const legacyGroupSize = request.groupSize;
+
+  request.minimumGroupSize ??= legacyGroupSize === undefined ? undefined : 3;
+  request.maximumGroupSize ??= legacyGroupSize;
+  delete request.groupSize;
+
+  return request;
+}
 
 function validateAutoForgePlan(
   plan: z.infer<typeof autoForgeRequestPlanBaseSchema>,

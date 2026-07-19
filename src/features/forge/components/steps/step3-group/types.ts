@@ -9,6 +9,9 @@ export interface Step3GroupProps {
   forgeMode: ForgeMode;
   fixedSize: FixedGroupSize;
   onFixedSizeChange: (v: number) => void;
+  autoMinSize: number;
+  autoMaxSize: number;
+  onAutoSizeRangeChange: (minimum: number, maximum: number) => void;
   visibility: Visibility;
   onVisibilityChange: (v: Visibility) => void;
   groupName?: string;

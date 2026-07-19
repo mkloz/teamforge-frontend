@@ -18,6 +18,8 @@ export interface ForgePlanTemplate {
   planCostDetails: string;
   forgeMode: ForgeMode;
   fixedSize: number | null;
+  recommendedMinimumGroupSize: number | null;
+  recommendedMaximumGroupSize: number | null;
   visibility: ActivityVisibility;
   groupName: string;
   groupDescription: string;

@@ -17,7 +17,7 @@ const ISSUE_MESSAGE_FIELDS = new Set<unknown>([
 ]);
 const ISSUE_FIELD_MESSAGES = new Map<unknown, string>([
   ["selectedActivity", "Choose an activity before continuing."],
-  ["autoMinSize", "Keep the minimum group size below the maximum."],
+  ["autoMinSize", "Keep the minimum group size at or below the maximum."],
 ]);
 
 function buildRawForgeExecutionInput(state: ForgeWizardData) {

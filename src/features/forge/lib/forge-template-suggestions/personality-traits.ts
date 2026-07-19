@@ -86,7 +86,7 @@ function getTemplateTraits(seed: TemplateSeed, category: ActivityOption) {
     addWeightedTrait(traits, trait, 0.35);
   }
 
-  if ((seed.fixedSize ?? 5) <= 4) {
+  if (seed.recommendedMaximumGroupSize <= 5) {
     addWeightedTrait(traits, "small-group", 1.1);
   }
 

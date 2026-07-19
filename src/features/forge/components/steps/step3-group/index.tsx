@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { forgeFriendCandidatesQueryOptions } from "@/features/forge/api/forge-query-options";
 import { GroupIdentityFields } from "@/features/forge/components/group-identity-fields/index";
 
+import { AutoGroupSizeRange } from "./auto-group-size-range";
 import { ManualGroupDetails } from "./manual-group-details";
 import { PrivacySection } from "./privacy-section";
 import type { Step3GroupProps } from "./types";
@@ -15,6 +16,9 @@ export function Step3Group({
   forgeMode,
   fixedSize,
   onFixedSizeChange,
+  autoMinSize,
+  autoMaxSize,
+  onAutoSizeRangeChange,
   visibility,
   onVisibilityChange,
   groupName = "",
@@ -65,15 +69,11 @@ export function Step3Group({
             isLoadingFriends={isLoadingFriends}
           />
         ) : (
-          <div className="grid gap-1 rounded-2xl border border-border bg-card p-4">
-            <p className="font-semibold text-foreground text-sm">
-              Four people, with a minimum of three
-            </p>
-            <p className="text-muted-foreground text-xs leading-relaxed">
-              This request targets four people and uses three as the minimum
-              group size.
-            </p>
-          </div>
+          <AutoGroupSizeRange
+            minimumGroupSize={autoMinSize}
+            maximumGroupSize={autoMaxSize}
+            onRangeChange={onAutoSizeRangeChange}
+          />
         )}
       </section>
     </div>
