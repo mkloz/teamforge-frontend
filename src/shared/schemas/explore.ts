@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-import {
-  groupBaseFields,
-  userAvatarMediaField,
-  userIdentitySummaryFields,
-} from "./entity-fragments";
+import { groupBaseFields, userIdentitySummaryFields } from "./entity-fragments";
 import {
   activityAccessSchema,
   activityVisibilitySchema,
@@ -14,6 +10,7 @@ import {
   planCategorySchema,
   planScheduleModeSchema,
 } from "./enums";
+import { imageMediaSchema } from "./media";
 
 export const exploreInterestSchema = z.object({
   id: z.string(),
@@ -50,11 +47,12 @@ const explorePlanSchema = z.object({
 
 const exploreMemberSchema = z.object({
   ...userIdentitySummaryFields,
-  ...userAvatarMediaField,
+  avatarMedia: imageMediaSchema.nullable(),
 });
 
 export const exploreGroupSchema = z.object({
   ...groupBaseFields,
+  avatarMedia: imageMediaSchema.nullable(),
   updatedAt: z.string().datetime(),
   version: z.number(),
   activeMembersCount: z.number(),

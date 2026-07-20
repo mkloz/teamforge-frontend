@@ -7,11 +7,9 @@ export type {
   ForgeProposalDeclineCommand,
   ForgeProposalDeclineReason,
   ForgeProposalRecoveryCommand,
-  ForgeProposalRecoverySummary,
   ForgeProposalSeat,
   ForgeProposalSeatDecision,
   ForgeProposalSeatDisposition,
-  ForgeProposalSeatRole,
   ForgeProposalState,
 } from "@/features/forge-proposals/schemas/forge-proposal.schema";
 

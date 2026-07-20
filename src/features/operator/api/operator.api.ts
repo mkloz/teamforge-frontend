@@ -14,7 +14,6 @@ import {
   operatorCommandSchema,
   operatorEvidenceListSchema,
   operatorIntakeResponseSchema,
-  operatorJobReplayCommandSchema,
   operatorJobReplayResultSchema,
   operatorSessionSchema,
   operatorWorkerCommandResultSchema,
@@ -359,7 +358,7 @@ export const OperatorApi = {
   ) {
     const response = await operatorModerationApi.post(
       `workers/${encodeURIComponent(kind)}/jobs/${encodeURIComponent(jobId)}/replay`,
-      { json: operatorJobReplayCommandSchema.parse(input) },
+      { json: operatorWorkerCommandSchema.parse(input) },
     );
     return operatorJobReplayResultSchema.parse(await response.json());
   },

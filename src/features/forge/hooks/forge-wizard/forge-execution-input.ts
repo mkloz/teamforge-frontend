@@ -59,12 +59,6 @@ export interface ForgeExecutionValidation {
   message: string | null;
 }
 
-export function buildForgeExecutionInput(
-  state: ForgeWizardData,
-): AutoForgeExecutionInput {
-  return forgeExecutionInputSchema.parse(buildRawForgeExecutionInput(state));
-}
-
 export function getForgeExecutionValidation(
   state: ForgeWizardData,
 ): ForgeExecutionValidation {

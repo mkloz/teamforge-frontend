@@ -60,7 +60,7 @@ export function createExploreRouteLoader(
 ) {
   return async () => {
     startRouteLoadingPreload(loading);
-    startRouteDataPreload(preloadDefaultExploreGroups);
+    startRouteDataPreload(preloadDefaultExploreFeed);
 
     await module.preload();
   };
@@ -195,15 +195,17 @@ function startRouteDataPreload(preloadData: () => Promise<void>) {
   void preloadData().catch(() => null);
 }
 
-async function preloadDefaultExploreGroups() {
+async function preloadDefaultExploreFeed() {
   const { exploreQueries } = await import(
     "@/features/explore/api/explore-queries"
   );
 
   const data = await appQueryClient.fetchInfiniteQuery(
-    exploreQueries.groups(DEFAULT_FILTERS, ""),
+    exploreQueries.feed(DEFAULT_FILTERS, ""),
   );
-  const firstGroupAvatar = data.pages[0]?.groups[0]?.avatar;
+  const firstGroupAvatar = data.pages[0]?.items.find(
+    (item) => item.type === "GROUP",
+  )?.group.avatar;
 
   preloadRouteImage(
     getSizedImageUrl(firstGroupAvatar, 384) ?? firstGroupAvatar,
@@ -352,7 +354,7 @@ function warmRouteImage(src: string) {
 function createExploreSessionRestoredPreload(pathname: string) {
   if (pathname === "/explore") {
     return async () => {
-      await preloadDefaultExploreGroups();
+      await preloadDefaultExploreFeed();
     };
   }
 
@@ -469,7 +471,7 @@ const APP_ROUTE_MODULE_PRELOADERS = [
     matches: (pathname: string) => pathname === "/explore",
     module: explorePageModule,
     loading: ExploreRouteLoading,
-    preloadData: preloadDefaultExploreGroups,
+    preloadData: preloadDefaultExploreFeed,
   },
   {
     matches: (pathname: string) =>

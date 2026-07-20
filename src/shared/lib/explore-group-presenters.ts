@@ -57,16 +57,6 @@ const DISTANCE_LABEL_BY_LOCATION_MODE = {
   (group: ExploreGroup) => string
 >;
 
-export function getExploreGroupFitScore(group: ExploreGroup) {
-  const score = group.compatibility.total;
-
-  if (score > 0 && score <= 1) {
-    return Math.round(score * 100);
-  }
-
-  return Math.round(score);
-}
-
 export function getExploreGroupDisplayName(group: ExploreGroup) {
   if (!DEMO_GROUP_NAME_PATTERN.test(group.name)) {
     return group.name;

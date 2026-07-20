@@ -71,7 +71,6 @@ export const accountExportResponseSchema = z.object({
   export: accountExportSchema.nullable(),
 });
 
-export type AccountLifecycle = z.infer<typeof accountLifecycleSchema>;
 export type AdultEligibilityCorrection = z.infer<
   typeof adultEligibilityCorrectionSchema
 >;

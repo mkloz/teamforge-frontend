@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-export const adminCapabilitiesSchema = z.object({
+const adminCapabilitiesSchema = z.object({
+  manageAccountRights: z.boolean(),
   viewCases: z.boolean(),
   revealEvidence: z.boolean(),
   decideCases: z.boolean(),
@@ -20,5 +21,3 @@ export const adminSessionSchema = z.object({
   breakGlass: z.literal(false),
   stepUpExpiresAt: z.string().datetime().nullable(),
 });
-
-export type AdminSession = z.infer<typeof adminSessionSchema>;

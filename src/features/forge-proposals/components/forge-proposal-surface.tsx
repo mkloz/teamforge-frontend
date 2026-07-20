@@ -94,8 +94,7 @@ function canViewOpenProposal(proposal: ForgeProposal) {
     proposal.viewer.decision === "ACCEPTED";
   const hasRecoveryAccess =
     proposal.recovery?.viewerStatus === "ORGANIZER_ACTION" &&
-    (proposal.state === "RECOVERY_ELIGIBLE" ||
-      proposal.state === "FAILED_QUORUM");
+    proposal.state === "FAILED_QUORUM";
 
   return (
     (proposal.state === "OPEN" ||

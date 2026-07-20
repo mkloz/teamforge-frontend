@@ -14,10 +14,3 @@ export function buildAdminNavigation(
 ) {
   return adminNavigationTargets[target];
 }
-
-export function buildAdminCaseNavigation(caseId: string) {
-  return {
-    to: "/admin/moderation/cases/$caseId",
-    params: { caseId },
-  } as const;
-}

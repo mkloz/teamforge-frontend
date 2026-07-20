@@ -28,8 +28,8 @@ const formationOpeningApplicationSchema = z
     openingId: z.string().min(1),
     state: formationOpeningApplicationStateSchema,
     version: z.number().int().positive(),
-    appliedAt: z.string().datetime().optional(),
-    resolvedAt: z.string().datetime().nullable().optional(),
+    appliedAt: z.string().datetime(),
+    resolvedAt: z.string().datetime().nullable(),
   })
   .strict();
 
@@ -67,12 +67,6 @@ const formationOpeningApplicationReceiptSchema = z
   .object({
     application: formationOpeningApplicationSchema.nullable(),
     opening: formationOpeningSchema,
-    successorProposalId: z
-      .string()
-      .min(1)
-      .nullable()
-      .optional()
-      .transform((successorProposalId) => successorProposalId ?? null),
   })
   .strict();
 
@@ -87,7 +81,6 @@ export const formationOpeningOrganizerReceiptSchema = z
 const formationOpeningDetailSchema = z.discriminatedUnion("viewerRole", [
   formationOpeningSchema.extend({
     viewerRole: z.literal("APPLICANT"),
-    applications: z.array(formationOpeningOrganizerApplicationSchema).max(0),
     viewerApplication: formationOpeningApplicationSchema.nullable(),
   }),
   formationOpeningOrganizerSchema.extend({
@@ -97,14 +90,8 @@ const formationOpeningDetailSchema = z.discriminatedUnion("viewerRole", [
   }),
 ]);
 
-export type FormationOpeningDetail = z.infer<
-  typeof formationOpeningDetailSchema
->;
 export type FormationOpeningOrganizerApplication = z.infer<
   typeof formationOpeningOrganizerApplicationSchema
->;
-export type FormationOpeningOrganizerReceipt = z.infer<
-  typeof formationOpeningOrganizerReceiptSchema
 >;
 
 export async function getFormationOpening(openingId: string) {

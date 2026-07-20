@@ -11,7 +11,6 @@ import { personalityTraitScoresSchema } from "@/shared/schemas/public-personalit
 export const forgeProposalStateSchema = z.enum([
   "OPEN",
   "FORMING",
-  "RECOVERY_ELIGIBLE",
   "FORMED",
   "FAILED_QUORUM",
   "CANCELLED",
@@ -385,16 +384,12 @@ export type ForgeProposalSeatDecision = z.infer<
 export type ForgeProposalSeatDisposition = z.infer<
   typeof forgeProposalSeatDispositionSchema
 >;
-export type ForgeProposalSeatRole = z.infer<typeof forgeProposalSeatRoleSchema>;
 export type ForgeProposalSeat = ForgeProposal["seats"][number];
 export type ForgeProposalDecisionPolicy = z.infer<
   typeof forgeProposalDecisionPolicySchema
 >;
 export type ForgeProposalRecoveryCommand = z.infer<
   typeof forgeProposalRecoveryCommandSchema
->;
-export type ForgeProposalRecoverySummary = z.infer<
-  typeof forgeProposalRecoverySummarySchema
 >;
 export type ForgeProposalDeclineReason = z.infer<
   typeof forgeProposalDeclineReasonSchema

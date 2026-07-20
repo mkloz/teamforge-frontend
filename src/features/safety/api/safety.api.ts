@@ -11,7 +11,7 @@ import {
   paginatedContainmentsSchema,
   paginatedEnforcementNoticesSchema,
   paginatedReportsSchema,
-  reportDetailSchema,
+  reportSummarySchema,
   type SafetyRequestPayload,
   safetyRequestPayloadSchema,
 } from "@/shared/schemas/safety";
@@ -37,7 +37,7 @@ export const SafetyApi = {
 
   async getReport(reportId: string) {
     const response = await apiClient.get(`reports/${reportId}`);
-    return parseResponse(response, (value) => reportDetailSchema.parse(value));
+    return parseResponse(response, (value) => reportSummarySchema.parse(value));
   },
 
   async getOutcomeReviewRequests(reportId: string) {

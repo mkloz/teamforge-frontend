@@ -32,7 +32,6 @@ export class ExploreApi {
 
     return paginatedExploreGroupsSchema.parse(response);
   }
-
   static async joinGroup(groupId: string) {
     return postExploreGroupJoin(groupId);
   }

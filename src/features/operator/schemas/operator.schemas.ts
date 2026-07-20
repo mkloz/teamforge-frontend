@@ -450,7 +450,6 @@ export const operatorWorkerCommandResultSchema = z.object({
   state: z.enum(["PAUSED", "RUNNING"]),
   version: z.number().int().positive(),
 });
-export const operatorJobReplayCommandSchema = operatorWorkerCommandSchema;
 export const operatorJobReplayResultSchema = z.object({
   id: z.string(),
   status: z.literal("PENDING"),
@@ -609,9 +608,6 @@ export type OperatorEvidenceMetadata = z.infer<
 >;
 export type RevealedEvidence = z.infer<typeof revealedEvidenceSchema>;
 export type OperatorCommand = z.infer<typeof operatorCommandSchema>;
-export type OperatorAssistanceDisposition = z.infer<
-  typeof operatorAssistanceDispositionSchema
->;
 export type TriageCasePayload = z.infer<typeof triageCaseSchema>;
 export type RequestInformationPayload = z.infer<
   typeof requestInformationSchema

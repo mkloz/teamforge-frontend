@@ -60,18 +60,10 @@ export const OPERATOR_MODERATION_AUTONOMOUS_ACTION_CODES = [
   "FORGE_PROPOSAL_HOLD",
   "NEW_STRANGER_CONTACT_PAUSE",
 ] as const;
-export const operatorModerationAutonomousActionCodeSchema = z.enum(
-  OPERATOR_MODERATION_AUTONOMOUS_ACTION_CODES,
-);
-
 export const OPERATOR_MODERATION_AUTONOMOUS_DECISION_KINDS = [
   "AUTHORIZE_ENFORCEMENT",
   "AUTHORIZE_CONTAINMENT",
 ] as const;
-export const operatorModerationAutonomousDecisionKindSchema = z.enum(
-  OPERATOR_MODERATION_AUTONOMOUS_DECISION_KINDS,
-);
-
 export const OPERATOR_MODERATION_AUTHORITY_SCOPES = [
   "ACCOUNT",
   "NEW_STRANGER_CONTACT",
@@ -82,10 +74,6 @@ export const OPERATOR_MODERATION_AUTHORITY_SCOPES = [
   "FORGE_PROPOSAL_HOLD",
   "NEW_STRANGER_CONTACT_PAUSE",
 ] as const;
-export const operatorModerationAuthorityScopeSchema = z.enum(
-  OPERATOR_MODERATION_AUTHORITY_SCOPES,
-);
-
 export const OPERATOR_MODERATION_AUTHORITY_TARGET_TYPES = [
   "PROFILE",
   "PROPOSAL_SEAT",
@@ -95,10 +83,6 @@ export const OPERATOR_MODERATION_AUTHORITY_TARGET_TYPES = [
   "PLAN",
   "ACTIVITY",
 ] as const;
-export const operatorModerationAuthorityTargetTypeSchema = z.enum(
-  OPERATOR_MODERATION_AUTHORITY_TARGET_TYPES,
-);
-
 function uniqueEnumArray<T extends readonly [string, ...string[]]>(
   values: T,
   minimum: number,

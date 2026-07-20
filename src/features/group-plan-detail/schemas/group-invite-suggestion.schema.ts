@@ -11,7 +11,7 @@ export const groupInviteSuggestionSchema = z.object({
   suggestionId: z.string().min(1),
   name: z.string().min(1),
   avatar: z.string().nullable(),
-  avatarMedia: imageMediaSchema.nullable().optional(),
+  avatarMedia: imageMediaSchema.nullable(),
   reason: z.object({
     code: z.literal("SHARED_INTEREST"),
     label: z.string().min(1),

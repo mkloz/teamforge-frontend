@@ -128,8 +128,6 @@ export const reportSummarySchema = z.object({
   outcomeReviewEligibility: outcomeReviewEligibilitySchema,
 });
 
-export const reportDetailSchema = reportSummarySchema;
-
 export const paginatedReportsSchema =
   createPaginatedSchema(reportSummarySchema);
 
@@ -188,7 +186,7 @@ export const informationResponseReceiptSchema = z.object({
 
 export type ReportPublicStatus = z.infer<typeof reportPublicStatusSchema>;
 export type ReportSummary = z.infer<typeof reportSummarySchema>;
-export type ReportDetail = z.infer<typeof reportDetailSchema>;
+export type ReportDetail = ReportSummary;
 export type ReportCategory = z.infer<typeof reportCategorySchema>;
 export type PublicReportOutcome = z.infer<typeof publicReportOutcomeSchema>;
 export type ReportOutcomeReviewStatus = z.infer<
