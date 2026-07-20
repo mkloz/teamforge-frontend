@@ -89,7 +89,7 @@ const notCollectedMeasureSchema = z
 const sourceIncompleteMeasureSchema = z
   .object({
     state: z.literal("SOURCE_INCOMPLETE"),
-    reason: z.literal("RETENTION_PURGED"),
+    reason: z.enum(["RETENTION_PURGED", "MISSING_AUTHORITY"]),
   })
   .strict();
 
@@ -100,8 +100,21 @@ const rateValueMeasureSchema = z
   })
   .strict();
 
+const countValueMeasureSchema = z
+  .object({
+    state: z.literal("VALUE"),
+    value: countValueSchema,
+  })
+  .strict();
+
 const publishedRateMeasureSchema = z.discriminatedUnion("state", [
   rateValueMeasureSchema,
+  suppressedMeasureSchema,
+  sourceIncompleteMeasureSchema,
+]);
+
+const publishedCountMeasureSchema = z.discriminatedUnion("state", [
+  countValueMeasureSchema,
   suppressedMeasureSchema,
   sourceIncompleteMeasureSchema,
 ]);
@@ -113,93 +126,199 @@ export const adminSponsorArtifactMeasureSchema = z.discriminatedUnion("state", [
   sourceIncompleteMeasureSchema,
 ]);
 
-const measuresSchema = z
+const baseMeasuresSchema = z
   .object({
     cohortSize: adminSponsorArtifactMeasureSchema,
     sponsorDirectRecruitment: adminSponsorArtifactMeasureSchema,
     referralRecruitment: adminSponsorArtifactMeasureSchema,
     requestCreation: adminSponsorArtifactMeasureSchema,
     activityActivation: adminSponsorArtifactMeasureSchema,
-    proposalCoverage: publishedRateMeasureSchema,
-    formedGroups: publishedRateMeasureSchema,
+    proposalCoverage: adminSponsorArtifactMeasureSchema,
+    formedGroups: adminSponsorArtifactMeasureSchema,
     scheduledPlans: adminSponsorArtifactMeasureSchema,
     completedActivities: adminSponsorArtifactMeasureSchema,
     continuingGroups: adminSponsorArtifactMeasureSchema,
     coarseSafetyWorkload: adminSponsorArtifactMeasureSchema,
   })
-  .strict()
-  .superRefine((measures, context) => {
-    for (const key of [
-      "sponsorDirectRecruitment",
-      "referralRecruitment",
-    ] as const) {
-      const measure = measures[key];
-      if (
-        measure.state === "VALUE" &&
-        (measure.value.kind !== "COUNT" ||
-          (measure.value.count > 0 && measure.value.count < 20))
-      ) {
-        context.addIssue({
-          code: "custom",
-          message:
-            "Recruitment source values must be counts of zero or at least 20.",
-          path: [key, "value"],
-        });
-      }
-    }
+  .strict();
 
-    const cohortSize = measures.cohortSize;
+type SponsorMeasures = z.infer<typeof baseMeasuresSchema>;
+
+function validateCommonMeasures(
+  measures: SponsorMeasures,
+  context: z.RefinementCtx,
+) {
+  for (const key of [
+    "sponsorDirectRecruitment",
+    "referralRecruitment",
+  ] as const) {
+    const measure = measures[key];
     if (
-      cohortSize.state !== "VALUE" ||
-      cohortSize.value.kind !== "COUNT" ||
-      cohortSize.value.count < 20
+      measure.state === "VALUE" &&
+      (measure.value.kind !== "COUNT" ||
+        (measure.value.count > 0 && measure.value.count < 20))
     ) {
       context.addIssue({
         code: "custom",
-        message: "The published cohort size must meet the privacy minimum.",
-        path: ["cohortSize"],
+        message:
+          "Recruitment source values must be counts of zero or at least 20.",
+        path: [key, "value"],
       });
     }
+  }
 
-    for (const key of ["requestCreation", "activityActivation"] as const) {
-      const measure = measures[key];
-      if (measure.state === "VALUE" && measure.value.kind !== "RATE") {
-        context.addIssue({
-          code: "custom",
-          message: "Published outcome measures must use a rate value.",
-          path: [key],
-        });
-      }
+  const cohortSize = measures.cohortSize;
+  if (
+    cohortSize.state !== "VALUE" ||
+    cohortSize.value.kind !== "COUNT" ||
+    cohortSize.value.count < 20
+  ) {
+    context.addIssue({
+      code: "custom",
+      message: "The published cohort size must meet the privacy minimum.",
+      path: ["cohortSize"],
+    });
+  }
+
+  for (const key of ["requestCreation", "activityActivation"] as const) {
+    const measure = measures[key];
+    if (measure.state === "VALUE" && measure.value.kind !== "RATE") {
+      context.addIssue({
+        code: "custom",
+        message: "Published outcome measures must use a rate value.",
+        path: [key],
+      });
     }
+  }
+}
 
-    for (const key of [
+function requireNotCollectedMeasures(
+  measures: SponsorMeasures,
+  keys: ReadonlyArray<keyof SponsorMeasures>,
+  context: z.RefinementCtx,
+) {
+  for (const key of keys) {
+    if (measures[key].state !== "NOT_COLLECTED") {
+      context.addIssue({
+        code: "custom",
+        message: "This measure is not part of the frozen definition.",
+        path: [key],
+      });
+    }
+  }
+}
+
+const v1MeasuresSchema = baseMeasuresSchema.superRefine((measures, context) => {
+  validateCommonMeasures(measures, context);
+  requireNotCollectedMeasures(
+    measures,
+    [
+      "proposalCoverage",
+      "formedGroups",
       "scheduledPlans",
       "completedActivities",
       "continuingGroups",
       "coarseSafetyWorkload",
-    ] as const) {
-      if (measures[key].state !== "NOT_COLLECTED") {
+    ],
+    context,
+  );
+});
+
+const v2MeasuresSchema = baseMeasuresSchema
+  .extend({
+    proposalCoverage: publishedRateMeasureSchema,
+    formedGroups: publishedRateMeasureSchema,
+  })
+  .superRefine((measures, context) => {
+    validateCommonMeasures(measures, context);
+    requireNotCollectedMeasures(
+      measures,
+      [
+        "scheduledPlans",
+        "completedActivities",
+        "continuingGroups",
+        "coarseSafetyWorkload",
+      ],
+      context,
+    );
+  });
+
+const v3MeasuresSchema = baseMeasuresSchema
+  .extend({
+    proposalCoverage: publishedRateMeasureSchema,
+    formedGroups: publishedRateMeasureSchema,
+    scheduledPlans: publishedRateMeasureSchema,
+    completedActivities: publishedRateMeasureSchema,
+    continuingGroups: publishedRateMeasureSchema,
+    coarseSafetyWorkload: publishedCountMeasureSchema,
+  })
+  .superRefine(validateCommonMeasures);
+
+const artifactBaseShape = {
+  id: z.string(),
+  referenceCode: z.string().min(1),
+  generatedAt: z.string().datetime(),
+  payloadHash: z.string().regex(/^[0-9a-f]{64}$/),
+  roundingRuleVersion: z.literal("one-decimal-percent.v1"),
+};
+
+const adminSponsorArtifactV1Schema = z
+  .object({
+    ...artifactBaseShape,
+    definitionVersion: z.literal("pilot-fixed-window-summary.v1"),
+    privacyRuleVersion: z.literal("minimum-cell-privacy.v1"),
+    measures: v1MeasuresSchema,
+  })
+  .strict();
+
+const adminSponsorArtifactV2Schema = z
+  .object({
+    ...artifactBaseShape,
+    definitionVersion: z.literal("pilot-fixed-window-summary.v2"),
+    privacyRuleVersion: z.literal("minimum-cell-privacy.v2"),
+    measures: v2MeasuresSchema,
+  })
+  .strict();
+
+const adminSponsorArtifactV3Schema = z
+  .object({
+    ...artifactBaseShape,
+    definitionVersion: z.literal("pilot-fixed-window-summary.v3"),
+    privacyRuleVersion: z.literal("minimum-cell-privacy.v2"),
+    measures: v3MeasuresSchema,
+  })
+  .strict();
+
+const previousAdminSponsorArtifactSchema = z.discriminatedUnion(
+  "definitionVersion",
+  [adminSponsorArtifactV1Schema, adminSponsorArtifactV2Schema],
+);
+
+export const adminSponsorArtifactSchema = z.discriminatedUnion(
+  "definitionVersion",
+  [
+    adminSponsorArtifactV1Schema,
+    adminSponsorArtifactV2Schema,
+    adminSponsorArtifactV3Schema,
+  ],
+);
+
+const sponsorArtifactHistorySchema = z
+  .array(previousAdminSponsorArtifactSchema)
+  .superRefine((history, context) => {
+    for (let index = 1; index < history.length; index += 1) {
+      if (
+        Date.parse(history[index - 1].generatedAt) <
+        Date.parse(history[index].generatedAt)
+      ) {
         context.addIssue({
           code: "custom",
-          message: "This measure is not part of the frozen definition.",
-          path: [key],
+          message: "Earlier sponsor summaries must be ordered newest first.",
+          path: [index, "generatedAt"],
         });
       }
     }
   });
-
-const adminSponsorArtifactSchema = z
-  .object({
-    id: z.string(),
-    referenceCode: z.string().min(1),
-    generatedAt: z.string().datetime(),
-    definitionVersion: z.literal("pilot-fixed-window-summary.v2"),
-    privacyRuleVersion: z.literal("minimum-cell-privacy.v2"),
-    roundingRuleVersion: z.literal("one-decimal-percent.v1"),
-    payloadHash: z.string().regex(/^[0-9a-f]{64}$/),
-    measures: measuresSchema,
-  })
-  .strict();
 
 export const adminSponsorArtifactStatusSchema = z
   .object({
@@ -233,10 +352,12 @@ export const adminSponsorArtifactStatusSchema = z
         canGenerate: z.boolean(),
       })
       .strict(),
-    artifact: adminSponsorArtifactSchema.nullable(),
+    artifact: adminSponsorArtifactV3Schema.nullable(),
+    history: sponsorArtifactHistorySchema,
   })
   .strict();
 
+export type AdminSponsorArtifact = z.infer<typeof adminSponsorArtifactSchema>;
 export type AdminSponsorArtifactMeasure = z.infer<
   typeof adminSponsorArtifactMeasureSchema
 >;

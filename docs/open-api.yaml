@@ -1869,6 +1869,23 @@ paths:
           description: Too many requests
       security: *a33
       tags: *a34
+  /api/v1/admin/pilot/retention:
+    get:
+      operationId: PilotControlController_getRetention
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PilotRetentionStatusEntity'
+        '401': *a31
+        '403': *a32
+        '429':
+          description: Too many requests
+      security: *a33
+      tags: *a34
   /api/v1/admin/pilot/sponsor-artifact:
     get:
       operationId: PilotControlController_getSponsorArtifact
@@ -7889,6 +7906,8 @@ components:
           type: boolean
         manageConfiguration:
           type: boolean
+        managePilotRetention:
+          type: boolean
         manageSponsorArtifacts:
           type: boolean
       required:
@@ -7899,6 +7918,7 @@ components:
         - reverseActions
         - manageWorkers
         - manageConfiguration
+        - managePilotRetention
         - manageSponsorArtifacts
     AdminSessionEntity:
       type: object
@@ -9063,6 +9083,30 @@ components:
         - activeCohort
         - gates
         - readiness
+    PilotMetricDefinitionEntity:
+      type: object
+      properties:
+        version:
+          type: string
+        authoritativeSource:
+          type: string
+        numerator:
+          type: string
+        denominator:
+          type: string
+        timeWindow:
+          type: string
+        exclusions:
+          type: array
+          items:
+            type: string
+      required:
+        - version
+        - authoritativeSource
+        - numerator
+        - denominator
+        - timeWindow
+        - exclusions
     PilotActivityActivationScopeMetricsEntity:
       type: object
       properties:
@@ -9092,6 +9136,8 @@ components:
     PilotActivityActivationMetricsEntity:
       type: object
       properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
         definitionVersion:
           type: string
           enum:
@@ -9123,6 +9169,7 @@ components:
         online:
           $ref: '#/components/schemas/PilotActivityActivationScopeMetricsEntity'
       required:
+        - definition
         - definitionVersion
         - measurementState
         - dataCompleteness
@@ -9299,6 +9346,8 @@ components:
           maximum: 100
           minimum: 0
           nullable: true
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
         definitionVersion:
           type: string
           enum:
@@ -9339,6 +9388,7 @@ components:
         - unansweredExposureCount
         - cancelledBeforeResponseCount
         - acceptanceRatePercent
+        - definition
         - definitionVersion
         - measurementState
         - dataCompleteness
@@ -9382,6 +9432,8 @@ components:
           maximum: 100
           minimum: 0
           nullable: true
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
         measurementState:
           type: string
           enum: *a80
@@ -9400,6 +9452,7 @@ components:
         - eligibleRequestCount
         - convertedRequestCount
         - conversionRatePercent
+        - definition
         - measurementState
         - dataCompleteness
         - local
@@ -9421,6 +9474,8 @@ components:
           maximum: 100
           minimum: 0
           nullable: true
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
         measurementState:
           type: string
           enum: *a80
@@ -9439,11 +9494,689 @@ components:
         - eligibleRequestCount
         - convertedRequestCount
         - conversionRatePercent
+        - definition
         - measurementState
         - dataCompleteness
         - local
         - online
         - definitionVersion
+    PilotCandidatePoolActivationMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: &a82
+            - COMPLETE
+            - RETENTION_PURGED
+            - SOURCE_INCOMPLETE
+        sourceCoverageStartsAt:
+          type: string
+          format: date-time
+          nullable: true
+        sourceDefinitionVersion:
+          type: string
+          nullable: true
+        definitionVersion:
+          type: string
+          enum:
+            - candidate-pool-activation-member-rate.v1
+        eligibleMemberCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        activatedMemberCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        activationRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        sourceIncompleteMemberCount:
+          type: integer
+          minimum: 0
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - sourceCoverageStartsAt
+        - sourceDefinitionVersion
+        - definitionVersion
+        - eligibleMemberCount
+        - activatedMemberCount
+        - activationRatePercent
+        - sourceIncompleteMemberCount
+    PilotIntegerDistributionBucketEntity:
+      type: object
+      properties:
+        value:
+          type: integer
+          minimum: 0
+        count:
+          type: integer
+          minimum: 0
+      required:
+        - value
+        - count
+    PilotFormationProvenanceBucketEntity:
+      type: object
+      properties:
+        provenance:
+          type: string
+          enum:
+            - DIRECT
+            - RECOVERED
+        count:
+          type: integer
+          minimum: 0
+      required:
+        - provenance
+        - count
+    PilotFormationDistributionMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        definitionVersion:
+          type: string
+          enum:
+            - formation-size-distribution.v1
+        formedRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        requestedMinimumGroupSize:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotIntegerDistributionBucketEntity'
+        requestedMaximumGroupSize:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotIntegerDistributionBucketEntity'
+        selectedRosterSize:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotIntegerDistributionBucketEntity'
+        finalFormedSize:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotIntegerDistributionBucketEntity'
+        provenance:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotFormationProvenanceBucketEntity'
+        sourceIncompleteFormedRequestCount:
+          type: integer
+          minimum: 0
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - definitionVersion
+        - formedRequestCount
+        - requestedMinimumGroupSize
+        - requestedMaximumGroupSize
+        - selectedRosterSize
+        - finalFormedSize
+        - provenance
+        - sourceIncompleteFormedRequestCount
+    PilotRecoveryLifecycleMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        definitionVersion:
+          type: string
+          enum:
+            - recovery-opening-lifecycle.v1
+        completedOpeningCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        applicationCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        appliedOpeningCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        convertedOpeningCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        filledOpeningCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        closedOpeningCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        expiredOpeningCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        withdrawnApplicationCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        recoveredFormationCount:
+          type: integer
+          minimum: 0
+          nullable: true
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - definitionVersion
+        - completedOpeningCount
+        - applicationCount
+        - appliedOpeningCount
+        - convertedOpeningCount
+        - filledOpeningCount
+        - closedOpeningCount
+        - expiredOpeningCount
+        - withdrawnApplicationCount
+        - recoveredFormationCount
+    PilotGroupOutcomeRateMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        definitionVersion:
+          type: string
+        eligibleGroupCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        achievedGroupCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        ratePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        sourceIncompleteGroupCount:
+          type: integer
+          minimum: 0
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - definitionVersion
+        - eligibleGroupCount
+        - achievedGroupCount
+        - ratePercent
+        - sourceIncompleteGroupCount
+    PilotPlanYieldMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        definitionVersion:
+          type: string
+        formedGroupCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        planCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        yieldPerFormedGroup:
+          type: number
+          minimum: 0
+          nullable: true
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - definitionVersion
+        - formedGroupCount
+        - planCount
+        - yieldPerFormedGroup
+    PilotContinuationMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        definitionVersion:
+          type: string
+          enum:
+            - group-continuation-window-rate.v1
+        eligibleWindowCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        continuedWindowCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        continuationRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        sourceIncompleteWindowCount:
+          type: integer
+          minimum: 0
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - definitionVersion
+        - eligibleWindowCount
+        - continuedWindowCount
+        - continuationRatePercent
+        - sourceIncompleteWindowCount
+    PilotTimeToFirstProposalMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        definitionVersion:
+          type: string
+          enum:
+            - mean-time-to-first-proposal.v1
+        eligibleRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        coveredRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        uncoveredRequestCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        totalLatencyMilliseconds:
+          type: number
+          minimum: 0
+          nullable: true
+        meanLatencyMilliseconds:
+          type: number
+          minimum: 0
+          nullable: true
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - definitionVersion
+        - eligibleRequestCount
+        - coveredRequestCount
+        - uncoveredRequestCount
+        - totalLatencyMilliseconds
+        - meanLatencyMilliseconds
+    PilotNonresponseOrdinalBucketEntity:
+      type: object
+      properties:
+        bucket:
+          type: string
+          enum:
+            - '1'
+            - '2'
+            - '3'
+            - 4+
+        eligibleExposureCount:
+          type: integer
+          minimum: 0
+        unansweredExposureCount:
+          type: integer
+          minimum: 0
+        nonresponseRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+      required:
+        - bucket
+        - eligibleExposureCount
+        - unansweredExposureCount
+        - nonresponseRatePercent
+    PilotNonresponseFatigueMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        definitionVersion:
+          type: string
+          enum:
+            - candidate-nonresponse-by-exposure-ordinal.v1
+        byExposureOrdinal:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotNonresponseOrdinalBucketEntity'
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - definitionVersion
+        - byExposureOrdinal
+    PilotRequestPoolStateBucketEntity:
+      type: object
+      properties:
+        poolState:
+          type: string
+          enum:
+            - OPEN
+            - CLOSED
+        requestingMemberCount:
+          type: integer
+          minimum: 0
+        requestCount:
+          type: integer
+          minimum: 0
+        requestCreationRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+      required:
+        - poolState
+        - requestingMemberCount
+        - requestCount
+        - requestCreationRatePercent
+    PilotRequestCreationByPoolStateMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        sourceCoverageStartsAt:
+          type: string
+          format: date-time
+          nullable: true
+        sourceDefinitionVersion:
+          type: string
+          nullable: true
+        definitionVersion:
+          type: string
+          enum:
+            - request-creation-by-pool-state-member-rate.v1
+        eligibleMemberCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        requestingMemberCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        requestCreationRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        byPoolState:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotRequestPoolStateBucketEntity'
+        sourceIncompleteMemberCount:
+          type: integer
+          minimum: 0
+        sourceIncompleteRequestCount:
+          type: integer
+          minimum: 0
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - sourceCoverageStartsAt
+        - sourceDefinitionVersion
+        - definitionVersion
+        - eligibleMemberCount
+        - requestingMemberCount
+        - requestCreationRatePercent
+        - byPoolState
+        - sourceIncompleteMemberCount
+        - sourceIncompleteRequestCount
+    PilotActiveSupplyCellMetricsEntity:
+      type: object
+      properties:
+        scope:
+          type: string
+          enum:
+            - LOCAL
+            - ONLINE
+        allocationCell:
+          type: string
+        observationCount:
+          type: integer
+          minimum: 0
+        minimumEligibleCandidateSupply:
+          type: number
+          minimum: 0
+        medianEligibleCandidateSupply:
+          type: number
+          minimum: 0
+        maximumEligibleCandidateSupply:
+          type: number
+          minimum: 0
+        meanEligibleCandidateSupply:
+          type: number
+          minimum: 0
+      required:
+        - scope
+        - allocationCell
+        - observationCount
+        - minimumEligibleCandidateSupply
+        - medianEligibleCandidateSupply
+        - maximumEligibleCandidateSupply
+        - meanEligibleCandidateSupply
+    PilotActiveCandidateSupplyMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        sourceCoverageStartsAt:
+          type: string
+          format: date-time
+          nullable: true
+        sourceDefinitionVersion:
+          type: string
+          nullable: true
+        definitionVersion:
+          type: string
+          enum:
+            - active-candidate-supply-observation.v1
+        observationCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        byScopeAndCell:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotActiveSupplyCellMetricsEntity'
+        sourceIncompleteObservationCount:
+          type: integer
+          minimum: 0
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - sourceCoverageStartsAt
+        - sourceDefinitionVersion
+        - definitionVersion
+        - observationCount
+        - byScopeAndCell
+        - sourceIncompleteObservationCount
+    PilotCapacityPressureMetricsEntity:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/PilotMetricDefinitionEntity'
+        measurementState:
+          type: string
+          enum: *a80
+        dataCompleteness:
+          type: string
+          enum: *a82
+        sourceCoverageStartsAt:
+          type: string
+          format: date-time
+          nullable: true
+        sourceDefinitionVersion:
+          type: string
+          nullable: true
+        definitionVersion:
+          type: string
+          enum:
+            - allocation-capacity-pressure.v1
+        observationCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        belowRequestedMinimumObservationCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        belowRequestedMinimumRatePercent:
+          type: number
+          maximum: 100
+          minimum: 0
+          nullable: true
+        commitAttemptCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        capacityConflictCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        reservationConflictCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        sourceIncompleteObservationCount:
+          type: integer
+          minimum: 0
+      required:
+        - definition
+        - measurementState
+        - dataCompleteness
+        - sourceCoverageStartsAt
+        - sourceDefinitionVersion
+        - definitionVersion
+        - observationCount
+        - belowRequestedMinimumObservationCount
+        - belowRequestedMinimumRatePercent
+        - commitAttemptCount
+        - capacityConflictCount
+        - reservationConflictCount
+        - sourceIncompleteObservationCount
+    PilotInternalMetricsEntity:
+      type: object
+      properties:
+        candidatePoolActivation:
+          $ref: '#/components/schemas/PilotCandidatePoolActivationMetricsEntity'
+        formationDistribution:
+          $ref: '#/components/schemas/PilotFormationDistributionMetricsEntity'
+        recoveryLifecycle:
+          $ref: '#/components/schemas/PilotRecoveryLifecycleMetricsEntity'
+        scheduleResolution:
+          $ref: '#/components/schemas/PilotGroupOutcomeRateMetricsEntity'
+        firstPlanReadiness:
+          $ref: '#/components/schemas/PilotGroupOutcomeRateMetricsEntity'
+        scheduledPlans:
+          $ref: '#/components/schemas/PilotPlanYieldMetricsEntity'
+        completedActivities:
+          $ref: '#/components/schemas/PilotPlanYieldMetricsEntity'
+        continuation:
+          $ref: '#/components/schemas/PilotContinuationMetricsEntity'
+        timeToFirstProposal:
+          $ref: '#/components/schemas/PilotTimeToFirstProposalMetricsEntity'
+        nonresponseFatigue:
+          $ref: '#/components/schemas/PilotNonresponseFatigueMetricsEntity'
+        requestCreationByPoolState:
+          $ref: '#/components/schemas/PilotRequestCreationByPoolStateMetricsEntity'
+        activeCandidateSupply:
+          $ref: '#/components/schemas/PilotActiveCandidateSupplyMetricsEntity'
+        capacityPressure:
+          $ref: '#/components/schemas/PilotCapacityPressureMetricsEntity'
+      required:
+        - candidatePoolActivation
+        - formationDistribution
+        - recoveryLifecycle
+        - scheduleResolution
+        - firstPlanReadiness
+        - scheduledPlans
+        - completedActivities
+        - continuation
+        - timeToFirstProposal
+        - nonresponseFatigue
+        - requestCreationByPoolState
+        - activeCandidateSupply
+        - capacityPressure
     PilotMetricsCohortEntity:
       type: object
       properties:
@@ -9461,6 +10194,8 @@ components:
           $ref: '#/components/schemas/PilotProposalCoverageMetricsEntity'
         formationConversion:
           $ref: '#/components/schemas/PilotFormationConversionMetricsEntity'
+        internal:
+          $ref: '#/components/schemas/PilotInternalMetricsEntity'
       required:
         - code
         - memberCount
@@ -9468,6 +10203,7 @@ components:
         - candidateWillingness
         - proposalCoverage
         - formationConversion
+        - internal
     PilotMetricsEntity:
       type: object
       properties:
@@ -9482,6 +10218,129 @@ components:
       required:
         - evaluatedAt
         - activeCohort
+    PilotRetentionRunEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        cutoffAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - PENDING
+            - RUNNING
+            - SUCCEEDED
+            - FAILED
+        startedAt:
+          type: string
+          format: date-time
+          nullable: true
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastFailureStage:
+          type: string
+          enum:
+            - REGISTRY
+            - COHORT_WINDOW
+            - CANDIDATE_WILLINGNESS
+            - OUTCOME_EVENTS
+            - REQUEST_INTAKE
+            - FINALIZATION
+          nullable: true
+        lastErrorCode:
+          type: string
+          nullable: true
+        lastErrorMessage:
+          type: string
+          nullable: true
+      required:
+        - id
+        - cutoffAt
+        - status
+        - startedAt
+        - completedAt
+        - lastFailureStage
+        - lastErrorCode
+        - lastErrorMessage
+    PilotRetentionSourceCompletenessEntity:
+      type: object
+      properties:
+        source:
+          type: string
+          enum:
+            - CANDIDATE_WILLINGNESS
+            - OUTCOME_EVENTS
+            - REQUEST_INTAKE
+        functionVersion:
+          type: string
+        completeness:
+          type: string
+          enum:
+            - COMPLETE
+            - RETENTION_PURGED
+        lastSuccessfulCutoffAt:
+          type: string
+          format: date-time
+          nullable: true
+        primaryDeletedCount:
+          type: number
+          nullable: true
+        secondaryDeletedCount:
+          type: number
+          nullable: true
+      required:
+        - source
+        - functionVersion
+        - completeness
+        - lastSuccessfulCutoffAt
+        - primaryDeletedCount
+        - secondaryDeletedCount
+    PilotRetentionStatusEntity:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        retentionDays:
+          type: number
+          nullable: true
+        policyVersion:
+          type: string
+          enum:
+            - pilot-retention-policy-v1
+        registryVersion:
+          type: string
+          enum:
+            - pilot-retention-function-registry-v1
+        evaluatedAt:
+          type: string
+          format: date-time
+        lastRun:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PilotRetentionRunEntity'
+        lastSuccess:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PilotRetentionRunEntity'
+        sourceCompleteness:
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotRetentionSourceCompletenessEntity'
+      required:
+        - enabled
+        - retentionDays
+        - policyVersion
+        - registryVersion
+        - evaluatedAt
+        - lastRun
+        - lastSuccess
+        - sourceCompleteness
     PilotSponsorCountValueEntity:
       type: object
       properties:
@@ -9543,6 +10402,18 @@ components:
       required:
         - state
         - value
+    PilotSponsorCountValueMeasureEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - VALUE
+        value:
+          $ref: '#/components/schemas/PilotSponsorCountValueEntity'
+      required:
+        - state
+        - value
     PilotSponsorSuppressedMeasureEntity:
       type: object
       properties:
@@ -9584,6 +10455,7 @@ components:
           type: string
           enum:
             - RETENTION_PURGED
+            - MISSING_AUTHORITY
       required:
         - state
         - reason
@@ -9644,34 +10516,37 @@ components:
       type: object
       properties:
         cohortSize:
-          oneOf: &a82
+          oneOf: &a83
             - $ref: '#/components/schemas/PilotSponsorValueMeasureEntity'
             - $ref: '#/components/schemas/PilotSponsorSuppressedMeasureEntity'
             - $ref: '#/components/schemas/PilotSponsorNotCollectedMeasureEntity'
             - $ref: '#/components/schemas/PilotSponsorSourceIncompleteMeasureEntity'
         sponsorDirectRecruitment:
-          oneOf: *a82
+          oneOf: *a83
         referralRecruitment:
-          oneOf: *a82
+          oneOf: *a83
         requestCreation:
-          oneOf: *a82
+          oneOf: *a83
         activityActivation:
-          oneOf: *a82
+          oneOf: *a83
         proposalCoverage:
-          oneOf: &a83
+          oneOf: &a84
             - $ref: '#/components/schemas/PilotSponsorRateValueMeasureEntity'
             - $ref: '#/components/schemas/PilotSponsorSuppressedMeasureEntity'
             - $ref: '#/components/schemas/PilotSponsorSourceIncompleteMeasureEntity'
         formedGroups:
-          oneOf: *a83
+          oneOf: *a84
         scheduledPlans:
-          oneOf: *a82
+          oneOf: *a84
         completedActivities:
-          oneOf: *a82
+          oneOf: *a84
         continuingGroups:
-          oneOf: *a82
+          oneOf: *a84
         coarseSafetyWorkload:
-          oneOf: *a82
+          oneOf:
+            - $ref: '#/components/schemas/PilotSponsorCountValueMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorSuppressedMeasureEntity'
+            - $ref: '#/components/schemas/PilotSponsorSourceIncompleteMeasureEntity'
       required:
         - cohortSize
         - sponsorDirectRecruitment
@@ -9698,10 +10573,13 @@ components:
         definitionVersion:
           type: string
           enum:
+            - pilot-fixed-window-summary.v1
             - pilot-fixed-window-summary.v2
+            - pilot-fixed-window-summary.v3
         privacyRuleVersion:
           type: string
           enum:
+            - minimum-cell-privacy.v1
             - minimum-cell-privacy.v2
         roundingRuleVersion:
           type: string
@@ -9741,12 +10619,17 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/PilotSponsorArtifactEntity'
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/PilotSponsorArtifactEntity'
       required:
         - evaluatedAt
         - targetCohort
         - eligibility
         - viewer
         - artifact
+        - history
     PilotOperationsActionReadinessEntity:
       type: object
       properties:
@@ -9756,7 +10639,7 @@ components:
           type: array
           items:
             type: string
-            enum: &a84
+            enum: &a85
               - COHORT_NOT_CONFIGURED
               - COHORT_OUTSIDE_ACTIVE_WINDOW
               - COHORT_CAP_EXCEEDED
@@ -9856,7 +10739,7 @@ components:
           type: array
           items:
             type: string
-            enum: &a85
+            enum: &a86
               - SAFETY_CASEWORK
               - APPEALS_AND_REVIEWS
               - OPERATIONS_INCIDENT_RESPONSE
@@ -10059,7 +10942,7 @@ components:
           type: array
           items:
             type: string
-            enum: *a84
+            enum: *a85
         safetyQueues:
           $ref: '#/components/schemas/PilotOperationsSafetyQueuesEntity'
         schemaVersion:
@@ -10117,7 +11000,7 @@ components:
           type: array
           items:
             type: string
-            enum: *a85
+            enum: *a86
         startsAt:
           type: string
           format: date-time
@@ -10267,7 +11150,7 @@ components:
       properties:
         recoveryDisclosureVersion:
           type: string
-          enum: &a86
+          enum: &a87
             - forge-proposal-recovery-disclosure-v1
           description: Frozen proof that the organizer reviewed the one-place recovery rule.
         minimumGroupSize:
@@ -10291,7 +11174,7 @@ components:
           maximum: 8
         scope:
           type: string
-          enum: &a87
+          enum: &a88
             - LOCAL
             - ONLINE
         maxDistanceKm:
@@ -10315,7 +11198,7 @@ components:
       properties:
         recoveryDisclosureVersion:
           type: string
-          enum: *a86
+          enum: *a87
           description: Frozen proof that the organizer reviewed the one-place recovery rule.
         minimumGroupSize:
           type: number
@@ -10338,7 +11221,7 @@ components:
           maximum: 8
         scope:
           type: string
-          enum: *a87
+          enum: *a88
         maxDistanceKm:
           type: number
           description: Maximum travel distance for a local request
@@ -10641,7 +11524,7 @@ components:
           type: string
         state:
           type: string
-          enum: &a88
+          enum: &a89
             - PENDING
             - SELECTED
             - DECLINED
@@ -10671,7 +11554,7 @@ components:
           type: string
         state:
           type: string
-          enum: &a89
+          enum: &a90
             - OPEN
             - APPLICATION_PENDING
             - FINAL_PROPOSAL_CREATED
@@ -10747,7 +11630,7 @@ components:
           type: string
         state:
           type: string
-          enum: *a88
+          enum: *a89
         version:
           type: integer
           minimum: 1
@@ -10775,7 +11658,7 @@ components:
           type: string
         state:
           type: string
-          enum: *a89
+          enum: *a90
         version:
           type: integer
           minimum: 1
@@ -10830,7 +11713,7 @@ components:
       properties:
         policyVersion:
           type: string
-          enum: &a90
+          enum: &a91
             - forge-proposal-recovery-v1
           example: forge-proposal-recovery-v1
       required:
@@ -10842,7 +11725,7 @@ components:
           type: string
         state:
           type: string
-          enum: *a89
+          enum: *a90
         version:
           type: integer
           minimum: 1
@@ -10887,7 +11770,7 @@ components:
       properties:
         policyVersion:
           type: string
-          enum: *a90
+          enum: *a91
           example: forge-proposal-recovery-v1
         expectedApplicationVersion:
           type: integer
@@ -10900,7 +11783,7 @@ components:
       properties:
         policyVersion:
           type: string
-          enum: *a90
+          enum: *a91
           example: forge-proposal-recovery-v1
         expectedVersion:
           type: integer
@@ -10919,7 +11802,7 @@ components:
           type: string
         state:
           type: string
-          enum: *a89
+          enum: *a90
         version:
           type: integer
           minimum: 1
@@ -10975,7 +11858,7 @@ components:
       properties:
         policyVersion:
           type: string
-          enum: *a90
+          enum: *a91
           example: forge-proposal-recovery-v1
         expectedVersion:
           type: integer
@@ -11397,7 +12280,7 @@ components:
           minimum: 0
         policyVersion:
           type: string
-          enum: &a91
+          enum: &a92
             - forge-proposal-decision-v1
           example: forge-proposal-decision-v1
       required:
@@ -11466,7 +12349,7 @@ components:
           minimum: 0
         policyVersion:
           type: string
-          enum: *a91
+          enum: *a92
           example: forge-proposal-decision-v1
         reason:
           type: string
@@ -12014,7 +12897,7 @@ components:
           nullable: true
         onlineStatus:
           type: string
-          enum: &a97
+          enum: &a98
             - ONLINE
             - AWAY
             - OFFLINE
@@ -12266,7 +13149,7 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: &a92
+          enum: &a93
             - TECH
             - SPORTS
             - ARTS
@@ -12281,7 +13164,7 @@ components:
             - OTHER
         status:
           type: string
-          enum: &a93
+          enum: &a94
             - DRAFT
             - PROPOSED
             - CONFIRMED
@@ -12290,7 +13173,7 @@ components:
             - CANCELLED
         scheduleMode:
           type: string
-          enum: &a94
+          enum: &a95
             - TO_BE_DECIDED
             - FIXED
           nullable: true
@@ -12300,7 +13183,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: &a95
+          enum: &a96
             - IN_PERSON
             - ONLINE
             - TBD
@@ -12315,7 +13198,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: &a96
+          enum: &a97
             - FREE
             - PAID
         revision:
@@ -12357,13 +13240,13 @@ components:
           example: Friday evening basketball
         category:
           type: string
-          enum: *a92
+          enum: *a93
         status:
           type: string
-          enum: *a93
+          enum: *a94
         scheduleMode:
           type: string
-          enum: *a94
+          enum: *a95
           nullable: true
         dateTime:
           format: date-time
@@ -12371,7 +13254,7 @@ components:
           example: 2026-04-30T18:30:00.000Z
         locationMode:
           type: string
-          enum: *a95
+          enum: *a96
         location:
           type: string
           example: Regents Park Courts
@@ -12383,7 +13266,7 @@ components:
           example: -0.1569
         cost:
           type: string
-          enum: *a96
+          enum: *a97
       required:
         - id
         - title
@@ -12411,7 +13294,7 @@ components:
             - $ref: '#/components/schemas/ImageMediaEntity'
         onlineStatus:
           type: string
-          enum: *a97
+          enum: *a98
       required:
         - id
         - name
@@ -15737,13 +16620,13 @@ components:
           type: number
         status:
           type: string
-          enum: &a98
+          enum: &a99
             - DRAFT
             - ACTIVE
             - RETIRED
         rolloutMode:
           type: string
-          enum: &a99
+          enum: &a100
             - SHADOW
             - APPROVAL
             - AUTONOMOUS_LIMITED
@@ -16003,10 +16886,10 @@ components:
           type: number
         status:
           type: string
-          enum: *a98
+          enum: *a99
         rolloutMode:
           type: string
-          enum: *a99
+          enum: *a100
         policyVersion:
           type: string
         configurationHash:
@@ -16272,7 +17155,7 @@ components:
           type: array
           items:
             type: string
-            enum: &a100
+            enum: &a101
               - harassment
               - harassment/threatening
               - hate
@@ -16343,7 +17226,7 @@ components:
           type: array
           items:
             type: string
-            enum: *a100
+            enum: *a101
         telemetry:
           $ref: '#/components/schemas/OperatorModerationEvaluationTelemetryDto'
       required:
@@ -16581,7 +17464,7 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: &a101
+          enum: &a102
             - OPEN
             - TRIAGING
             - NEEDS_INFORMATION
@@ -16592,7 +17475,7 @@ components:
             - CLOSED
         severity:
           type: string
-          enum: &a102
+          enum: &a103
             - P0
             - P1
             - P2
@@ -16605,7 +17488,7 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: &a103
+          enum: &a104
             - UNKNOWN
             - COMPLETE
             - PARTIAL
@@ -16613,7 +17496,7 @@ components:
             - CONFLICTING
         uncertainty:
           type: string
-          enum: &a104
+          enum: &a105
             - UNKNOWN
             - LOW
             - MEDIUM
@@ -17024,10 +17907,10 @@ components:
           example: CASE-A1B2C3D4
         status:
           type: string
-          enum: *a101
+          enum: *a102
         severity:
           type: string
-          enum: *a102
+          enum: *a103
           nullable: true
         policyLabels:
           type: array
@@ -17035,10 +17918,10 @@ components:
             type: string
         evidenceCompleteness:
           type: string
-          enum: *a103
+          enum: *a104
         uncertainty:
           type: string
-          enum: *a104
+          enum: *a105
         mandatoryHumanReasons:
           type: array
           items:
@@ -17330,7 +18213,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: &a105
+          enum: &a106
             - FOLLOWED
             - CHANGED
             - NOT_USED
@@ -17341,7 +18224,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: &a106
+          example: &a107
             - SAFETY_ABUSE
           type: array
           items:
@@ -17413,7 +18296,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a105
+          enum: *a106
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -17421,7 +18304,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a106
+          example: *a107
           type: array
           items:
             type: array
@@ -17443,7 +18326,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a105
+          enum: *a106
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -17451,7 +18334,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a106
+          example: *a107
           type: array
           items:
             type: array
@@ -17481,7 +18364,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a105
+          enum: *a106
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -17489,7 +18372,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a106
+          example: *a107
           type: array
           items:
             type: array
@@ -17526,7 +18409,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a105
+          enum: *a106
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -17534,7 +18417,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a106
+          example: *a107
           type: array
           items:
             type: array
@@ -17546,7 +18429,7 @@ components:
           maxLength: 1000
         actionType:
           type: string
-          enum: &a107
+          enum: &a108
             - WARNING
             - OUTBOUND_RATE_LIMIT
             - NEW_STRANGER_CONTACT_RESTRICTION
@@ -17557,7 +18440,7 @@ components:
             - GROUP_RESTRICTION
         scope:
           type: string
-          enum: &a108
+          enum: &a109
             - ACCOUNT
             - NEW_STRANGER_CONTACT
             - ACCEPTED_CHAT
@@ -17567,7 +18450,7 @@ components:
           type: string
         targetType:
           type: string
-          enum: &a109
+          enum: &a110
             - PROFILE
             - PROPOSAL_SEAT
             - MESSAGE
@@ -17594,7 +18477,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a105
+          enum: *a106
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -17602,7 +18485,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a106
+          example: *a107
           type: array
           items:
             type: array
@@ -17640,7 +18523,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a105
+          enum: *a106
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -17648,7 +18531,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a106
+          example: *a107
           type: array
           items:
             type: array
@@ -17666,15 +18549,15 @@ components:
             - OVERTURNED
         replacementActionType:
           type: string
-          enum: *a107
+          enum: *a108
         replacementScope:
           type: string
-          enum: *a108
+          enum: *a109
         replacementEvidenceId:
           type: string
         replacementTargetType:
           type: string
-          enum: *a109
+          enum: *a110
         replacementTargetId:
           type: string
         replacementExpiresAt:
@@ -17692,7 +18575,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a105
+          enum: *a106
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -17700,7 +18583,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a106
+          example: *a107
           type: array
           items:
             type: array
@@ -17728,7 +18611,7 @@ components:
           type: string
         assistanceDisposition:
           type: string
-          enum: *a105
+          enum: *a106
         idempotencyKey:
           type: string
           example: operator-command-018f3f2f
@@ -17736,7 +18619,7 @@ components:
           type: string
           example: POLICY_REVIEW_COMPLETED
         policyCodes:
-          example: *a106
+          example: *a107
           type: array
           items:
             type: array
@@ -17818,14 +18701,14 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: &a110
+          enum: &a111
             - system
             - light
             - dark
           example: system
         themeStyle:
           type: string
-          enum: &a111
+          enum: &a112
             - classic
             - glass
             - ink
@@ -17833,7 +18716,7 @@ components:
           example: classic
         themeColor:
           type: string
-          enum: &a112
+          enum: &a113
             - graphite
             - forge
             - harbor
@@ -17925,15 +18808,15 @@ components:
           maximum: 100
         themeAppearance:
           type: string
-          enum: *a110
+          enum: *a111
           example: system
         themeStyle:
           type: string
-          enum: *a111
+          enum: *a112
           example: classic
         themeColor:
           type: string
-          enum: *a112
+          enum: *a113
           example: graphite
         showAgeOnProfile:
           type: boolean

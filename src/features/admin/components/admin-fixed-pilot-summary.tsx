@@ -8,6 +8,7 @@ import {
   adminSponsorArtifactQueryOptions,
 } from "@/features/admin/api/admin.api";
 import type {
+  AdminSponsorArtifact,
   AdminSponsorArtifactMeasure,
   AdminSponsorArtifactStatus,
 } from "@/features/admin/schemas/admin-sponsor-artifact.schema";
@@ -39,22 +40,19 @@ const PERCENT_FORMATTER = new Intl.NumberFormat(undefined, {
 });
 
 const MEASURE_ROWS = [
-  ["cohortSize", "Cohort size"],
-  ["sponsorDirectRecruitment", "Sponsor-direct recruitment"],
-  ["referralRecruitment", "Referral recruitment"],
+  ["cohortSize", "Members in the cohort"],
+  ["sponsorDirectRecruitment", "Joined through sponsor outreach"],
+  ["referralRecruitment", "Joined through referrals"],
   ["requestCreation", "Requests created"],
   ["activityActivation", "Requests that led to an activity"],
   ["proposalCoverage", "Requests that received a proposal"],
   ["formedGroups", "Requests that formed a group"],
-  ["scheduledPlans", "Scheduled plans"],
-  ["completedActivities", "Completed activities"],
-  ["continuingGroups", "Continuing groups"],
+  ["scheduledPlans", "Plans scheduled"],
+  ["completedActivities", "Activities completed"],
+  ["continuingGroups", "Groups continuing at day 90"],
   ["coarseSafetyWorkload", "Safety workload"],
 ] as const satisfies ReadonlyArray<
-  readonly [
-    keyof NonNullable<AdminSponsorArtifactStatus["artifact"]>["measures"],
-    string,
-  ]
+  readonly [keyof AdminSponsorArtifact["measures"], string]
 >;
 
 type SponsorArtifactBlocker =
@@ -130,6 +128,8 @@ export function AdminFixedPilotSummary({ canManage }: { canManage: boolean }) {
         <SummaryAvailability status={status} />
       )}
 
+      <SummaryHistory artifacts={status.history} />
+
       {canCreate ? (
         <div className="mt-5 border-border border-t pt-5">
           <CreateSummaryDialog
@@ -178,9 +178,9 @@ function FixedSummaryHeading({
             Fixed pilot summary
           </h2>
           <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-            A fixed internal summary that hides small counts. It covers one
-            cohort and one outcome window. Creating it does not approve or send
-            it.
+            A fixed internal summary for one cohort and one outcome window.
+            Small results are withheld before they reach this view. Creating it
+            does not approve or send it.
           </p>
         </div>
       </div>
@@ -223,9 +223,10 @@ function GeneratedSummary({
     <div className="mt-6">
       <div className="flex flex-wrap items-start justify-between gap-3 border-border border-y py-4">
         <div>
-          <p className="font-semibold text-ink text-sm">Created summary</p>
+          <p className="font-semibold text-ink text-sm">Current summary</p>
           <p className="mt-1 text-slate-muted text-xs leading-relaxed">
-            Reference {artifact.referenceCode} · Created{" "}
+            {getArtifactVersionLabel(artifact.definitionVersion)} · Reference{" "}
+            {artifact.referenceCode} · Created{" "}
             <AdminDateTime value={artifact.generatedAt} />
           </p>
         </div>
@@ -240,22 +241,62 @@ function GeneratedSummary({
         )}
       </div>
 
-      <div className="mt-5">
-        <h3 className="font-semibold text-ink text-sm">Fixed measures</h3>
-        <p className="mt-1 max-w-2xl text-slate-muted text-xs leading-relaxed">
-          The server supplies every value and decides which small counts stay
-          hidden. Hidden values are not available in this view.
-        </p>
-        <dl className="mt-3 border-border border-t">
-          {MEASURE_ROWS.map(([key, label]) => (
-            <MeasureRow
-              key={key}
-              label={label}
-              measure={artifact.measures[key]}
-            />
-          ))}
-        </dl>
+      <ArtifactMeasureList artifact={artifact} className="mt-5" />
+    </div>
+  );
+}
+
+function SummaryHistory({
+  artifacts,
+}: {
+  artifacts: AdminSponsorArtifactStatus["history"];
+}) {
+  if (artifacts.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-6">
+      <h3 className="font-semibold text-ink text-sm">
+        Earlier summaries ({NUMBER_FORMATTER.format(artifacts.length)})
+      </h3>
+      <div className="mt-3 border-border border-t">
+        {artifacts.map((artifact) => (
+          <details key={artifact.id} className="border-border border-b">
+            <summary className="cursor-pointer py-4 font-semibold text-ink text-sm marker:text-slate-muted">
+              {getArtifactVersionLabel(artifact.definitionVersion)}
+              <span className="ml-2 font-normal text-slate-muted text-xs leading-relaxed">
+                Reference {artifact.referenceCode} · Created{" "}
+                <AdminDateTime value={artifact.generatedAt} />
+              </span>
+            </summary>
+            <ArtifactMeasureList artifact={artifact} className="pb-5" />
+          </details>
+        ))}
       </div>
+    </div>
+  );
+}
+
+function ArtifactMeasureList({
+  artifact,
+  className,
+}: {
+  artifact: AdminSponsorArtifact;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <h4 className="font-semibold text-ink text-sm">Fixed measures</h4>
+      <dl className="mt-3 border-border border-t">
+        {MEASURE_ROWS.map(([key, label]) => (
+          <MeasureRow
+            key={key}
+            label={label}
+            measure={artifact.measures[key]}
+          />
+        ))}
+      </dl>
     </div>
   );
 }
@@ -311,8 +352,8 @@ function CreateSummaryDialog({
           <AlertDialogTitle>Create this fixed summary?</AlertDialogTitle>
           <AlertDialogDescription>
             This creates one fixed internal record for the cohort and outcome
-            window. Small counts stay hidden. The record cannot be changed after
-            it is created, and this step does not approve or send it.
+            window. The record cannot be changed after it is created, and this
+            step does not approve or send it.
           </AlertDialogDescription>
         </AlertDialogHeader>
         {error ? (
@@ -436,8 +477,9 @@ function FixedSummaryStaticHeading() {
           Fixed pilot summary
         </h2>
         <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          A fixed internal summary that hides small counts. It covers one cohort
-          and one outcome window. Creating it does not approve or send it.
+          A fixed internal summary for one cohort and one outcome window. Small
+          results are withheld before they reach this view. Creating it does not
+          approve or send it.
         </p>
       </div>
     </div>
@@ -554,5 +596,18 @@ function getMeasureDisplay(measure: AdminSponsorArtifactMeasure): {
     return { label: "Source incomplete", tone: "amber" };
   }
 
-  return { label: "Not collected", tone: "neutral" };
+  return {
+    label: "Not collected under this summary version",
+    tone: "neutral",
+  };
+}
+
+function getArtifactVersionLabel(
+  definitionVersion: AdminSponsorArtifact["definitionVersion"],
+) {
+  return {
+    "pilot-fixed-window-summary.v1": "Version 1",
+    "pilot-fixed-window-summary.v2": "Version 2",
+    "pilot-fixed-window-summary.v3": "Version 3",
+  }[definitionVersion];
 }

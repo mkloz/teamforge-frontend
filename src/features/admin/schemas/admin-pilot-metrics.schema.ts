@@ -2,6 +2,32 @@ import { z } from "zod";
 
 import { planCategorySchema } from "@/shared/schemas";
 
+const metricDefinitionSchema = z
+  .object({
+    version: z.string().trim().min(1),
+    authoritativeSource: z.string().trim().min(1),
+    numerator: z.string().trim().min(1),
+    denominator: z.string().trim().min(1),
+    timeWindow: z.string().trim().min(1),
+    exclusions: z.array(z.string().trim().min(1)),
+  })
+  .strict();
+
+function createMetricDefinitionSchema<DefinitionVersion extends string>(
+  definitionVersion: DefinitionVersion,
+) {
+  return metricDefinitionSchema.extend({
+    version: z.literal(definitionVersion),
+  });
+}
+
+const activityActivationDefinitionSchema = createMetricDefinitionSchema(
+  "activity-activation-requester-rate.v1",
+);
+const candidateWillingnessDefinitionSchema = createMetricDefinitionSchema(
+  "candidate-willingness-first-response-rate.v1",
+);
+
 const scopedActivityActivationSchema = z
   .object({
     requestingMemberCount: z.number().int().nonnegative().nullable(),
@@ -13,6 +39,7 @@ const scopedActivityActivationSchema = z
 
 const activityActivationSchema = z
   .object({
+    definition: activityActivationDefinitionSchema,
     definitionVersion: z.literal("activity-activation-requester-rate.v1"),
     measurementState: z.enum(["PROVISIONAL", "FINAL"]),
     dataCompleteness: z.enum(["COMPLETE", "RETENTION_PURGED"]),
@@ -48,6 +75,7 @@ function createRequestConversionSchema<DefinitionVersion extends string>(
 ) {
   return z
     .object({
+      definition: createMetricDefinitionSchema(definitionVersion),
       definitionVersion: z.literal(definitionVersion),
       measurementState: z.enum(["PROVISIONAL", "FINAL"]),
       dataCompleteness: z.enum(["COMPLETE", "RETENTION_PURGED"]),
@@ -138,6 +166,7 @@ const candidateWillingnessActivityScopeSchema = z
 
 const candidateWillingnessSchema = z
   .object({
+    definition: candidateWillingnessDefinitionSchema,
     definitionVersion: z.literal(
       "candidate-willingness-first-response-rate.v1",
     ),
@@ -859,6 +888,275 @@ function validateDeclineReasonCounts(
   }
 }
 
+const internalMeasurementStateSchema = z.enum(["PROVISIONAL", "FINAL"]);
+const internalDataCompletenessSchema = z.enum([
+  "COMPLETE",
+  "RETENTION_PURGED",
+  "SOURCE_INCOMPLETE",
+]);
+const nullableCountSchema = z.number().int().nonnegative().nullable();
+const nullableMetricNumberSchema = z.number().nonnegative().nullable();
+const nullablePercentSchema = z.number().min(0).max(100).nullable();
+
+function internalMetricShape<DefinitionVersion extends string>(
+  definitionVersion: DefinitionVersion,
+) {
+  return {
+    definition: createMetricDefinitionSchema(definitionVersion),
+    definitionVersion: z.literal(definitionVersion),
+    measurementState: internalMeasurementStateSchema,
+    dataCompleteness: internalDataCompletenessSchema,
+  };
+}
+
+function createUnavailableMetricSchema<DefinitionVersion extends string>(
+  definitionVersion: DefinitionVersion,
+) {
+  return z
+    .object({
+      definition: createMetricDefinitionSchema(definitionVersion),
+      definitionVersion: z.literal(definitionVersion),
+      dataCompleteness: z.literal("SOURCE_INCOMPLETE"),
+      unavailableReason: z.literal("NOT_INSTRUMENTED"),
+      numerator: z.null(),
+      denominator: z.null(),
+    })
+    .strict();
+}
+
+const candidatePoolActivationSchema = z
+  .object({
+    ...coveredInternalMetricShape("candidate-pool-activation-member-rate.v1"),
+    eligibleMemberCount: nullableCountSchema,
+    activatedMemberCount: nullableCountSchema,
+    activationRatePercent: nullablePercentSchema,
+    sourceIncompleteMemberCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const integerDistributionBucketSchema = z
+  .object({
+    value: z.number().int().nonnegative(),
+    count: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const formationProvenanceBucketSchema = z
+  .object({
+    provenance: z.enum(["DIRECT", "RECOVERED"]),
+    count: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const formationDistributionSchema = z
+  .object({
+    ...internalMetricShape("formation-size-distribution.v1"),
+    formedRequestCount: nullableCountSchema,
+    requestedMinimumGroupSize: z
+      .array(integerDistributionBucketSchema)
+      .nullable(),
+    requestedMaximumGroupSize: z
+      .array(integerDistributionBucketSchema)
+      .nullable(),
+    selectedRosterSize: z.array(integerDistributionBucketSchema).nullable(),
+    finalFormedSize: z.array(integerDistributionBucketSchema).nullable(),
+    provenance: z.array(formationProvenanceBucketSchema).nullable(),
+    sourceIncompleteFormedRequestCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const recoveryLifecycleSchema = z
+  .object({
+    ...internalMetricShape("recovery-opening-lifecycle.v1"),
+    completedOpeningCount: nullableCountSchema,
+    applicationCount: nullableCountSchema,
+    appliedOpeningCount: nullableCountSchema,
+    convertedOpeningCount: nullableCountSchema,
+    filledOpeningCount: nullableCountSchema,
+    closedOpeningCount: nullableCountSchema,
+    expiredOpeningCount: nullableCountSchema,
+    withdrawnApplicationCount: nullableCountSchema,
+    recoveredFormationCount: nullableCountSchema,
+  })
+  .strict();
+
+function createGroupOutcomeRateSchema<DefinitionVersion extends string>(
+  definitionVersion: DefinitionVersion,
+) {
+  return z
+    .object({
+      ...internalMetricShape(definitionVersion),
+      eligibleGroupCount: nullableCountSchema,
+      achievedGroupCount: nullableCountSchema,
+      ratePercent: nullablePercentSchema,
+      sourceIncompleteGroupCount: z.number().int().nonnegative(),
+    })
+    .strict();
+}
+
+function createPlanYieldSchema<DefinitionVersion extends string>(
+  definitionVersion: DefinitionVersion,
+) {
+  return z
+    .object({
+      ...internalMetricShape(definitionVersion),
+      formedGroupCount: nullableCountSchema,
+      planCount: nullableCountSchema,
+      yieldPerFormedGroup: nullableMetricNumberSchema,
+    })
+    .strict();
+}
+
+const continuationSchema = z
+  .object({
+    ...internalMetricShape("group-continuation-window-rate.v1"),
+    eligibleWindowCount: nullableCountSchema,
+    continuedWindowCount: nullableCountSchema,
+    continuationRatePercent: nullablePercentSchema,
+    sourceIncompleteWindowCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const timeToFirstProposalSchema = z
+  .object({
+    ...internalMetricShape("mean-time-to-first-proposal.v1"),
+    eligibleRequestCount: nullableCountSchema,
+    coveredRequestCount: nullableCountSchema,
+    uncoveredRequestCount: nullableCountSchema,
+    totalLatencyMilliseconds: nullableMetricNumberSchema,
+    meanLatencyMilliseconds: nullableMetricNumberSchema,
+  })
+  .strict();
+
+const nonresponseOrdinalBucketSchema = z
+  .object({
+    bucket: z.enum(["1", "2", "3", "4+"]),
+    eligibleExposureCount: z.number().int().nonnegative(),
+    unansweredExposureCount: z.number().int().nonnegative(),
+    nonresponseRatePercent: nullablePercentSchema,
+  })
+  .strict();
+
+const nonresponseFatigueSchema = z
+  .object({
+    ...internalMetricShape("candidate-nonresponse-by-exposure-ordinal.v1"),
+    byExposureOrdinal: z
+      .array(nonresponseOrdinalBucketSchema)
+      .length(4)
+      .nullable(),
+  })
+  .strict();
+
+function coveredInternalMetricShape<DefinitionVersion extends string>(
+  definitionVersion: DefinitionVersion,
+) {
+  return {
+    ...internalMetricShape(definitionVersion),
+    sourceCoverageStartsAt: z.string().datetime().nullable(),
+    sourceDefinitionVersion: z.string().trim().min(1).nullable(),
+  };
+}
+
+const requestPoolStateBucketSchema = z
+  .object({
+    poolState: z.enum(["OPEN", "CLOSED"]),
+    requestingMemberCount: z.number().int().nonnegative(),
+    requestCount: z.number().int().nonnegative(),
+    requestCreationRatePercent: nullablePercentSchema,
+  })
+  .strict();
+
+const requestCreationByPoolStateAvailableSchema = z
+  .object({
+    ...coveredInternalMetricShape(
+      "request-creation-by-pool-state-member-rate.v1",
+    ),
+    eligibleMemberCount: nullableCountSchema,
+    requestingMemberCount: nullableCountSchema,
+    requestCreationRatePercent: nullablePercentSchema,
+    byPoolState: z.array(requestPoolStateBucketSchema).length(2).nullable(),
+    sourceIncompleteMemberCount: z.number().int().nonnegative(),
+    sourceIncompleteRequestCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const requestCreationByPoolStateSchema = z.union([
+  requestCreationByPoolStateAvailableSchema,
+  createUnavailableMetricSchema(
+    "request-creation-by-pool-state-member-rate.v1",
+  ),
+]);
+
+const activeSupplyCellSchema = z
+  .object({
+    scope: z.enum(["LOCAL", "ONLINE"]),
+    allocationCell: z.string().trim().min(1),
+    observationCount: z.number().int().nonnegative(),
+    minimumEligibleCandidateSupply: z.number().nonnegative(),
+    medianEligibleCandidateSupply: z.number().nonnegative(),
+    maximumEligibleCandidateSupply: z.number().nonnegative(),
+    meanEligibleCandidateSupply: z.number().nonnegative(),
+  })
+  .strict();
+
+const activeCandidateSupplyAvailableSchema = z
+  .object({
+    ...coveredInternalMetricShape("active-candidate-supply-observation.v1"),
+    observationCount: nullableCountSchema,
+    byScopeAndCell: z.array(activeSupplyCellSchema).nullable(),
+    sourceIncompleteObservationCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const activeCandidateSupplySchema = z.union([
+  activeCandidateSupplyAvailableSchema,
+  createUnavailableMetricSchema("active-candidate-supply-observation.v1"),
+]);
+
+const capacityPressureAvailableSchema = z
+  .object({
+    ...coveredInternalMetricShape("allocation-capacity-pressure.v1"),
+    observationCount: nullableCountSchema,
+    belowRequestedMinimumObservationCount: nullableCountSchema,
+    belowRequestedMinimumRatePercent: nullablePercentSchema,
+    commitAttemptCount: nullableCountSchema,
+    capacityConflictCount: nullableCountSchema,
+    reservationConflictCount: nullableCountSchema,
+    sourceIncompleteObservationCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const capacityPressureSchema = z.union([
+  capacityPressureAvailableSchema,
+  createUnavailableMetricSchema("allocation-capacity-pressure.v1"),
+]);
+
+const internalMetricsSchema = z
+  .object({
+    candidatePoolActivation: candidatePoolActivationSchema,
+    formationDistribution: formationDistributionSchema,
+    recoveryLifecycle: recoveryLifecycleSchema,
+    scheduleResolution: createGroupOutcomeRateSchema(
+      "schedule-resolution-formed-group-rate.v1",
+    ),
+    firstPlanReadiness: createGroupOutcomeRateSchema(
+      "first-plan-readiness-formed-group-rate.v1",
+    ),
+    scheduledPlans: createPlanYieldSchema(
+      "scheduled-plan-yield-per-formed-group.v1",
+    ),
+    completedActivities: createPlanYieldSchema(
+      "completed-activity-yield-per-formed-group.v1",
+    ),
+    continuation: continuationSchema,
+    timeToFirstProposal: timeToFirstProposalSchema,
+    nonresponseFatigue: nonresponseFatigueSchema,
+    requestCreationByPoolState: requestCreationByPoolStateSchema,
+    activeCandidateSupply: activeCandidateSupplySchema,
+    capacityPressure: capacityPressureSchema,
+  })
+  .strict();
+
 const adminPilotMetricsCohortSchema = z
   .object({
     code: z.string().trim().min(1),
@@ -867,6 +1165,7 @@ const adminPilotMetricsCohortSchema = z
     formationConversion: formationConversionSchema,
     candidateWillingness: candidateWillingnessSchema,
     activityActivation: activityActivationSchema,
+    internal: internalMetricsSchema,
   })
   .strict();
 
@@ -878,3 +1177,4 @@ export const adminPilotMetricsSchema = z
   .strict();
 
 export type AdminPilotMetrics = z.infer<typeof adminPilotMetricsSchema>;
+export type AdminPilotMetricDefinition = z.infer<typeof metricDefinitionSchema>;

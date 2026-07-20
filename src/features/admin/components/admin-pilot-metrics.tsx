@@ -4,7 +4,14 @@ import type { ReactNode } from "react";
 
 import { adminPilotMetricsQueryOptions } from "@/features/admin/api/admin.api";
 import { AdminCandidateResponseMetrics } from "@/features/admin/components/admin-candidate-response-metrics";
-import type { AdminPilotMetrics as AdminPilotMetricsData } from "@/features/admin/schemas/admin-pilot-metrics.schema";
+import {
+  AdminPilotInternalMetricSections,
+  MetricDefinitionDetails,
+} from "@/features/admin/components/admin-pilot-internal-metrics";
+import type {
+  AdminPilotMetricDefinition,
+  AdminPilotMetrics as AdminPilotMetricsData,
+} from "@/features/admin/schemas/admin-pilot-metrics.schema";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -51,7 +58,7 @@ function AdminPilotMetricsContent({
 
   return (
     <section
-      aria-labelledby="pilot-request-outcomes-heading"
+      aria-labelledby="pilot-measures-heading"
       className="border-border border-t pt-6"
     >
       <MetricsSectionHeading />
@@ -86,69 +93,78 @@ function PilotOutcomeDetails({ cohort }: { cohort: PilotMetricsCohort }) {
         />
       </dl>
 
-      <div className="mt-6 grid gap-8">
-        <RequestRateMetricSection
-          description="Requests that received a complete proposal within their fixed 7-day window."
-          id="pilot-proposal-coverage-heading"
-          measurementState={proposalCoverage.measurementState}
-          dataCompleteness={proposalCoverage.dataCompleteness}
-          local={{
-            denominator: proposalCoverage.local.eligibleRequestCount,
-            numerator: proposalCoverage.local.convertedRequestCount,
-            ratePercent: proposalCoverage.local.conversionRatePercent,
-          }}
-          numeratorLabel="Received a proposal"
-          online={{
-            denominator: proposalCoverage.online.eligibleRequestCount,
-            numerator: proposalCoverage.online.convertedRequestCount,
-            ratePercent: proposalCoverage.online.conversionRatePercent,
-          }}
-          overall={{
-            denominator: proposalCoverage.eligibleRequestCount,
-            numerator: proposalCoverage.convertedRequestCount,
-            ratePercent: proposalCoverage.conversionRatePercent,
-          }}
-          rateLabel="Coverage rate"
-          title="Requests that received a proposal"
-        />
-
-        <RequestRateMetricSection
-          description="Requests where the requester and at least two proposed members accepted within their fixed 14-day window."
-          id="pilot-formed-groups-heading"
-          measurementState={formationConversion.measurementState}
-          dataCompleteness={formationConversion.dataCompleteness}
-          local={{
-            denominator: formationConversion.local.eligibleRequestCount,
-            numerator: formationConversion.local.convertedRequestCount,
-            ratePercent: formationConversion.local.conversionRatePercent,
-          }}
-          numeratorLabel="Formed a group"
-          online={{
-            denominator: formationConversion.online.eligibleRequestCount,
-            numerator: formationConversion.online.convertedRequestCount,
-            ratePercent: formationConversion.online.conversionRatePercent,
-          }}
-          overall={{
-            denominator: formationConversion.eligibleRequestCount,
-            numerator: formationConversion.convertedRequestCount,
-            ratePercent: formationConversion.conversionRatePercent,
-          }}
-          rateLabel="Formation rate"
-          title="Requests that formed a group"
-        />
-
-        <AdminCandidateResponseMetrics metric={cohort.candidateWillingness} />
-
-        <ActivityActivationMetricSection
-          activation={cohort.activityActivation}
-        />
-      </div>
+      <AdminPilotInternalMetricSections
+        activityActivation={
+          <ActivityActivationMetricSection
+            activation={cohort.activityActivation}
+          />
+        }
+        candidateWillingness={
+          <AdminCandidateResponseMetrics metric={cohort.candidateWillingness} />
+        }
+        cohort={cohort}
+        formationConversion={
+          <RequestRateMetricSection
+            dataCompleteness={formationConversion.dataCompleteness}
+            definition={formationConversion.definition}
+            description="Requests where the requester and at least two proposed members accepted within their fixed 14-day window."
+            id="pilot-formed-groups-heading"
+            local={{
+              denominator: formationConversion.local.eligibleRequestCount,
+              numerator: formationConversion.local.convertedRequestCount,
+              ratePercent: formationConversion.local.conversionRatePercent,
+            }}
+            measurementState={formationConversion.measurementState}
+            numeratorLabel="Formed a group"
+            online={{
+              denominator: formationConversion.online.eligibleRequestCount,
+              numerator: formationConversion.online.convertedRequestCount,
+              ratePercent: formationConversion.online.conversionRatePercent,
+            }}
+            overall={{
+              denominator: formationConversion.eligibleRequestCount,
+              numerator: formationConversion.convertedRequestCount,
+              ratePercent: formationConversion.conversionRatePercent,
+            }}
+            rateLabel="Formation rate"
+            title="Requests that formed a group"
+          />
+        }
+        proposalCoverage={
+          <RequestRateMetricSection
+            dataCompleteness={proposalCoverage.dataCompleteness}
+            definition={proposalCoverage.definition}
+            description="Requests that received a complete proposal within their fixed 7-day window."
+            id="pilot-proposal-coverage-heading"
+            local={{
+              denominator: proposalCoverage.local.eligibleRequestCount,
+              numerator: proposalCoverage.local.convertedRequestCount,
+              ratePercent: proposalCoverage.local.conversionRatePercent,
+            }}
+            measurementState={proposalCoverage.measurementState}
+            numeratorLabel="Received a proposal"
+            online={{
+              denominator: proposalCoverage.online.eligibleRequestCount,
+              numerator: proposalCoverage.online.convertedRequestCount,
+              ratePercent: proposalCoverage.online.conversionRatePercent,
+            }}
+            overall={{
+              denominator: proposalCoverage.eligibleRequestCount,
+              numerator: proposalCoverage.convertedRequestCount,
+              ratePercent: proposalCoverage.conversionRatePercent,
+            }}
+            rateLabel="Coverage rate"
+            title="Requests that received a proposal"
+          />
+        }
+      />
     </>
   );
 }
 
 function RequestRateMetricSection({
   dataCompleteness,
+  definition,
   description,
   id,
   local,
@@ -160,6 +176,7 @@ function RequestRateMetricSection({
   title,
 }: {
   dataCompleteness: "COMPLETE" | "RETENTION_PURGED";
+  definition: AdminPilotMetricDefinition;
   description: string;
   id: string;
   local: RequestRateScope;
@@ -180,6 +197,7 @@ function RequestRateMetricSection({
         measurementState={measurementState}
         title={title}
       />
+      <MetricDefinitionDetails definition={definition} />
 
       {isRetentionPurged ? (
         <RetentionPurgedNotice />
@@ -290,6 +308,7 @@ function ActivityActivationMetricSection({
         measurementState={activation.measurementState}
         title="Requests that led to an activity"
       />
+      <MetricDefinitionDetails definition={activation.definition} />
 
       {isRetentionPurged ? (
         <RetentionPurgedNotice />
@@ -419,14 +438,14 @@ function MetricsSectionHeading() {
       </span>
       <div className="min-w-0">
         <h2
-          id="pilot-request-outcomes-heading"
+          id="pilot-measures-heading"
           className="font-semibold text-base text-ink"
         >
-          Request outcomes
+          Pilot measures
         </h2>
         <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          Internal counts and rates for proposals, candidate responses, formed
-          groups, and activities that took place.
+          Counts, rates, and distributions for the controlled pilot, with clear
+          notes when source records are missing.
         </p>
       </div>
     </div>
@@ -459,7 +478,7 @@ function OutcomeHeading({
         surface="soft"
         tone={measurementState === "FINAL" ? "teal" : "amber"}
       >
-        {measurementState === "FINAL" ? "Final" : "Provisional"}
+        {measurementState === "FINAL" ? "Final" : "Still measuring"}
       </StatusPill>
     </div>
   );
@@ -468,9 +487,7 @@ function OutcomeHeading({
 function RetentionPurgedNotice() {
   return (
     <div className="mt-4 border-border border-y py-4">
-      <p className="font-semibold text-ink text-sm">
-        Outcome counts are unavailable
-      </p>
+      <p className="font-semibold text-ink text-sm">Source records removed</p>
       <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
         Records needed for this measure were removed under the retention
         schedule. Counts and rates are unavailable.

@@ -5,6 +5,7 @@ import {
   clearAdminCache,
 } from "@/features/admin/api/admin-cache";
 import { adminPilotMetricsSchema } from "@/features/admin/schemas/admin-pilot-metrics.schema";
+import { adminPilotRetentionStatusSchema } from "@/features/admin/schemas/admin-pilot-retention.schema";
 import { adminPilotStatusSchema } from "@/features/admin/schemas/admin-pilot-status.schema";
 import { adminSessionSchema } from "@/features/admin/schemas/admin-session.schema";
 import { adminSponsorArtifactStatusSchema } from "@/features/admin/schemas/admin-sponsor-artifact.schema";
@@ -14,6 +15,12 @@ export const ADMIN_SPONSOR_ARTIFACT_QUERY_KEY = [
   ...ADMIN_QUERY_KEY,
   "pilot",
   "sponsor-artifact",
+] as const;
+
+export const ADMIN_PILOT_RETENTION_QUERY_KEY = [
+  ...ADMIN_QUERY_KEY,
+  "pilot",
+  "retention",
 ] as const;
 
 export const AdminApi = {
@@ -60,6 +67,26 @@ export const AdminApi = {
       });
 
       return adminPilotMetricsSchema.parse(await response.json<unknown>());
+    } catch (error) {
+      if (
+        error instanceof HTTPError &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        clearAdminCache();
+      }
+
+      throw error;
+    }
+  },
+  async getPilotRetention() {
+    try {
+      const response = await apiClient.get("admin/pilot/retention", {
+        cache: "no-store",
+      });
+
+      return adminPilotRetentionStatusSchema.parse(
+        await response.json<unknown>(),
+      );
     } catch (error) {
       if (
         error instanceof HTTPError &&
@@ -137,6 +164,16 @@ export function adminPilotMetricsQueryOptions() {
   return queryOptions({
     queryKey: [...ADMIN_QUERY_KEY, "pilot", "metrics"],
     queryFn: () => AdminApi.getPilotMetrics(),
+    gcTime: 0,
+    retry: false,
+    staleTime: 0,
+  });
+}
+
+export function adminPilotRetentionQueryOptions() {
+  return queryOptions({
+    queryKey: ADMIN_PILOT_RETENTION_QUERY_KEY,
+    queryFn: () => AdminApi.getPilotRetention(),
     gcTime: 0,
     retry: false,
     staleTime: 0,
