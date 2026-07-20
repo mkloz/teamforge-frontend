@@ -4,6 +4,7 @@ import { refreshAuthSession } from "@/shared/api/api";
 import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { authSession } from "@/shared/api/auth-session";
 import { getCachedCurrentUser } from "@/shared/api/current-user-cache";
+import { getHttpErrorStatus } from "@/shared/lib/api-error-message";
 import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 
 type AuthSessionRestoreState = "authenticated" | "missing" | "offline";
@@ -29,7 +30,15 @@ export async function resolveCurrentUser() {
 
   const { ensureCurrentUser } = await import("@/shared/api/current-user-query");
 
-  return ensureCurrentUser();
+  try {
+    return await ensureCurrentUser();
+  } catch (error) {
+    if (getHttpErrorStatus(error) === 401) {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 export function notifySessionRestored(
@@ -73,7 +82,7 @@ export async function resolveAuthenticatedCurrentUser(
       return getOfflineCurrentUserFallback(returnHref);
     }
 
-    return redirectToLogin(returnHref);
+    throw error;
   }
 }
 

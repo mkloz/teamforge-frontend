@@ -19,6 +19,7 @@ import type {
   RequireAuthenticatedUserOptions,
   RouteGuardLocationLike,
 } from "@/app/router/route-guards/types";
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { authSession } from "@/shared/api/auth-session";
 import {
   buildPostAuthRedirectNavigation,
@@ -39,7 +40,13 @@ async function redirectAuthenticatedUser({
     return;
   }
 
-  const currentUser = await resolveCurrentUser().catch(() => null);
+  const currentUser = await resolveCurrentUser().catch((error: unknown) => {
+    if (isApiNetworkError(error)) {
+      return null;
+    }
+
+    throw error;
+  });
 
   if (!currentUser) {
     return;

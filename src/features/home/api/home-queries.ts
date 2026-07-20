@@ -64,6 +64,7 @@ export const homeQueries = {
 
         return buildHomeStats(currentUser, groups);
       },
+      retry: false,
       staleTime: 60_000,
     });
   },
@@ -78,6 +79,7 @@ export const homeQueries = {
 
         return getActivePlannedGroups(groups);
       },
+      retry: false,
       staleTime: 60_000,
     });
   },
