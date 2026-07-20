@@ -49,6 +49,27 @@ const pendingParticipationPlanSchema = z.object({
   responseDeadline: z.string().datetime().nullable(),
 });
 
+const continuationCheckInSchema = z.object({
+  id: z.string(),
+  groupId: z.string(),
+  responseDueAt: z.string().datetime(),
+  responseWindowEndsAt: z.string().datetime(),
+  state: z.enum(["DUE", "ANSWERED", "CLOSED", "NO_LONGER_ELIGIBLE"]),
+});
+
+export const continuationCheckInResponseSchema = z.object({
+  id: z.string(),
+  group: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
+  state: continuationCheckInSchema.shape.state,
+  response: z.enum(["CONTINUED", "NOT_CONTINUED"]).nullable(),
+  responseDueAt: z.string().datetime(),
+  responseWindowEndsAt: z.string().datetime(),
+  respondedAt: z.string().datetime().nullable(),
+});
+
 export const homeGroupSchema = z
   .object({
     id: z.string(),
@@ -62,11 +83,17 @@ export const homeGroupSchema = z
     activity: homeGroupActivitySchema,
     plan: homeGroupPlanSchema.nullable(),
     pendingParticipationPlan: pendingParticipationPlanSchema.nullable(),
+    continuationCheckIn: continuationCheckInSchema.nullish(),
     members: z.array(homeGroupMemberSchema),
   })
   .transform((group) => ({
     ...group,
+    continuationCheckIn: group.continuationCheckIn ?? null,
     version: group.version ?? Date.parse(group.updatedAt),
   }));
 
 export type HomeGroup = z.infer<typeof homeGroupSchema>;
+
+export type ContinuationCheckInResponse = z.infer<
+  typeof continuationCheckInResponseSchema
+>;

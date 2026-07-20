@@ -47,4 +47,20 @@ export const HomeCommands = {
 
     return result;
   },
+
+  recordContinuationResponse(
+    checkInId: string,
+    response: "CONTINUED" | "NOT_CONTINUED",
+    idempotencyKey: string,
+  ) {
+    return HomeApi.recordContinuationResponse(
+      checkInId,
+      response,
+      idempotencyKey,
+    );
+  },
+
+  getContinuationCheckIn(checkInId: string) {
+    return HomeApi.getContinuationCheckIn(checkInId);
+  },
 };

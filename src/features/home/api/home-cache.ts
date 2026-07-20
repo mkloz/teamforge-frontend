@@ -75,4 +75,11 @@ export const HomeCache = {
         ),
     );
   },
+
+  markGroupsStale() {
+    return appQueryClient.invalidateQueries({
+      queryKey: HOME_GROUPS_QUERY_KEY,
+      refetchType: "none",
+    });
+  },
 };

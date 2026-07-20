@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useHomeContinuationActions } from "@/features/home/hooks/use-home-continuation-actions";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeInvitationActions } from "@/features/home/hooks/use-home-invitation-actions";
 import {
@@ -9,7 +10,10 @@ import { useHomeViewer } from "@/features/home/hooks/use-home-viewer";
 import { hasHomeParticipationDeadlinePassed } from "@/features/home/lib/home-participation-deadline";
 import { useProfileFriendRequests } from "@/features/profile/public/profile-friend-requests";
 
-import type { AttentionQueueParticipation } from "./attention-queue.types";
+import type {
+  AttentionQueueContinuation,
+  AttentionQueueParticipation,
+} from "./attention-queue.types";
 import { useParticipationDeadlineClock } from "./use-participation-deadline-clock";
 
 interface UseAttentionQueueStateInput {
@@ -76,6 +80,12 @@ export function useAttentionQueueState({
     isPending: isAnsweringParticipation,
     pendingAnswer,
   } = useHomeParticipationActions();
+  const {
+    answerContinuation,
+    feedbackByCheckInId,
+    isOnline: isContinuationActionOnline,
+    pendingAnswers: pendingContinuationAnswers,
+  } = useHomeContinuationActions();
   const [hiddenInviteIds, setHiddenInviteIds] = useState<string[]>([]);
   const [hiddenRequestIds, setHiddenRequestIds] = useState<string[]>([]);
   const participationDeadlineClock = useParticipationDeadlineClock(groups);
@@ -91,10 +101,15 @@ export function useAttentionQueueState({
     groups,
     participationDeadlineClock,
   );
+  const continuationCheckIns = getContinuationCheckIns(
+    groups,
+    feedbackByCheckInId,
+  );
   const queueSize =
     visibleInvitations.length +
     visibleRequests.length +
     pendingParticipations.length +
+    continuationCheckIns.length +
     proposedPlans.length +
     (viewer.nextStep ? 1 : 0);
   const shouldShowSkeleton =
@@ -210,10 +225,19 @@ export function useAttentionQueueState({
     await answerParticipation(answer);
   }
 
+  async function answerVisibleContinuation(
+    answer: Parameters<typeof answerContinuation>[0],
+  ) {
+    clearActionError();
+    clearParticipationActionError();
+    await answerContinuation(answer);
+  }
+
   return {
     acceptingInviteId,
     acceptingRequestId,
     actionError: actionError ?? participationActionError,
+    answerVisibleContinuation,
     answerVisibleParticipation,
     acceptVisibleInvite,
     acceptVisibleRequest,
@@ -226,10 +250,14 @@ export function useAttentionQueueState({
     isDeclining,
     isDecliningInvite,
     isFriendRequestOnline,
+    isContinuationActionOnline,
     isInviteActionOnline,
     isParticipationActionOnline,
     isAnsweringParticipation,
     pendingAnswer,
+    pendingContinuationAnswers,
+    continuationFeedbackByCheckInId: feedbackByCheckInId,
+    continuationCheckIns,
     pendingParticipations,
     proposedPlans,
     queueSize,
@@ -238,6 +266,38 @@ export function useAttentionQueueState({
     visibleInvitations,
     visibleRequests,
   };
+}
+
+function getContinuationCheckIns(
+  groups: ReturnType<typeof useHomeData>["groups"],
+  feedbackByCheckInId: ReturnType<
+    typeof useHomeContinuationActions
+  >["feedbackByCheckInId"],
+) {
+  return groups
+    .filter(
+      (group): group is AttentionQueueContinuation =>
+        hasContinuationCheckIn(group) &&
+        (group.continuationCheckIn.state === "DUE" ||
+          group.continuationCheckIn.id in feedbackByCheckInId),
+    )
+    .sort(compareContinuationCheckIns);
+}
+
+function hasContinuationCheckIn(
+  group: ReturnType<typeof useHomeData>["groups"][number],
+): group is AttentionQueueContinuation {
+  return group.continuationCheckIn !== null;
+}
+
+function compareContinuationCheckIns(
+  left: AttentionQueueContinuation,
+  right: AttentionQueueContinuation,
+) {
+  return (
+    Date.parse(left.continuationCheckIn.responseWindowEndsAt) -
+    Date.parse(right.continuationCheckIn.responseWindowEndsAt)
+  );
 }
 
 function getPendingParticipations(

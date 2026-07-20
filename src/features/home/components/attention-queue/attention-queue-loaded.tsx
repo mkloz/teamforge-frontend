@@ -12,6 +12,7 @@ import {
   type AttentionQueueRenderItem,
   getAttentionQueueRenderState,
 } from "./attention-queue-render-state";
+import { ContinuationQueueItem } from "./continuation-queue-item";
 import { EmptyQueueItem } from "./empty-queue-item";
 import { FriendRequestQueueItem } from "./friend-request-queue-item";
 import { InvitationQueueItem } from "./invitation-queue-item";
@@ -86,6 +87,7 @@ function AttentionQueueView({
     acceptingInviteId,
     acceptingRequestId,
     actionError,
+    answerVisibleContinuation,
     answerVisibleParticipation,
     acceptVisibleInvite,
     acceptVisibleRequest,
@@ -93,15 +95,19 @@ function AttentionQueueView({
     declineVisibleRequest,
     decliningInviteId,
     decliningRequestId,
+    continuationCheckIns,
+    continuationFeedbackByCheckInId,
     isAccepting,
     isAcceptingInvite,
     isDeclining,
     isDecliningInvite,
     isFriendRequestOnline,
+    isContinuationActionOnline,
     isInviteActionOnline,
     isParticipationActionOnline,
     isAnsweringParticipation,
     pendingAnswer,
+    pendingContinuationAnswers,
     pendingParticipations,
     proposedPlans,
     queueSize,
@@ -112,6 +118,7 @@ function AttentionQueueView({
   } = state;
   const { queueItems, queueSummary, shouldShowEmptyQueue } =
     getAttentionQueueRenderState({
+      continuationCheckIns,
       pendingParticipations,
       proposedPlans,
       queueSize,
@@ -145,7 +152,7 @@ function AttentionQueueView({
         id="attention-queue-heading"
         eyebrow="Right now"
         title="Action queue"
-        description="Invites, requests, and group plans waiting for a decision."
+        description="Invites, requests, plans, and check-ins waiting for a decision."
         action={queueSummaryAction}
       />
 
@@ -160,6 +167,7 @@ function AttentionQueueView({
           renderAttentionQueueItem(item, {
             acceptingInviteId,
             acceptingRequestId,
+            answerVisibleContinuation,
             answerVisibleParticipation,
             acceptVisibleInvite,
             acceptVisibleRequest,
@@ -167,6 +175,7 @@ function AttentionQueueView({
             declineVisibleRequest,
             decliningInviteId,
             decliningRequestId,
+            continuationFeedbackByCheckInId,
             focusedInviteId,
             focusedRequestId,
             isAccepting,
@@ -174,10 +183,12 @@ function AttentionQueueView({
             isDeclining,
             isDecliningInvite,
             isFriendRequestOnline,
+            isContinuationActionOnline,
             isInviteActionOnline,
             isParticipationActionOnline,
             isAnsweringParticipation,
             pendingAnswer,
+            pendingContinuationAnswers,
           }),
         )}
       </ul>
@@ -210,6 +221,7 @@ function renderQueueSummaryAction(queueSummary: string[]) {
 interface AttentionQueueItemRenderContext {
   acceptingInviteId: string | null;
   acceptingRequestId: string | null;
+  answerVisibleContinuation: AttentionQueueViewState["answerVisibleContinuation"];
   answerVisibleParticipation: AttentionQueueViewState["answerVisibleParticipation"];
   acceptVisibleInvite: (inviteId: string) => Promise<void>;
   acceptVisibleRequest: (requesterId: string) => Promise<void>;
@@ -217,6 +229,7 @@ interface AttentionQueueItemRenderContext {
   declineVisibleRequest: (requesterId: string) => Promise<void>;
   decliningInviteId: string | null;
   decliningRequestId: string | null;
+  continuationFeedbackByCheckInId: AttentionQueueViewState["continuationFeedbackByCheckInId"];
   focusedInviteId: string | null;
   focusedRequestId: string | null;
   isAccepting: boolean;
@@ -224,10 +237,12 @@ interface AttentionQueueItemRenderContext {
   isDeclining: boolean;
   isDecliningInvite: boolean;
   isFriendRequestOnline: boolean;
+  isContinuationActionOnline: boolean;
   isInviteActionOnline: boolean;
   isParticipationActionOnline: boolean;
   isAnsweringParticipation: boolean;
   pendingAnswer: AttentionQueueViewState["pendingAnswer"];
+  pendingContinuationAnswers: AttentionQueueViewState["pendingContinuationAnswers"];
 }
 
 function renderAttentionQueueItem(
@@ -289,6 +304,30 @@ function renderAttentionQueueItem(
           pendingAnswer: context.pendingAnswer,
         }}
         onAnswer={context.answerVisibleParticipation}
+      />
+    );
+  }
+
+  if (item.kind === "continuation") {
+    return (
+      <ContinuationQueueItem
+        key={item.group.continuationCheckIn.id}
+        group={item.group}
+        state={{
+          feedback:
+            context.continuationFeedbackByCheckInId[
+              item.group.continuationCheckIn.id
+            ] ?? null,
+          isOnline: context.isContinuationActionOnline,
+          isPending:
+            item.group.continuationCheckIn.id in
+            context.pendingContinuationAnswers,
+          pendingAnswer:
+            context.pendingContinuationAnswers[
+              item.group.continuationCheckIn.id
+            ] ?? null,
+        }}
+        onAnswer={context.answerVisibleContinuation}
       />
     );
   }

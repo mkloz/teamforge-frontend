@@ -116,7 +116,7 @@ function AttentionQueueShell({
         id="attention-queue-heading"
         eyebrow="Right now"
         title="Action queue"
-        description="Invites, requests, and plan details waiting on a clear decision."
+        description="Invites, requests, plans, and check-ins waiting for a decision."
       />
 
       <ul

@@ -1,4 +1,7 @@
-import { homeGroupSchema } from "@/features/home/schemas/home-group.schema";
+import {
+  continuationCheckInResponseSchema,
+  homeGroupSchema,
+} from "@/features/home/schemas/home-group.schema";
 import { apiClient } from "@/shared/api/api";
 import { EXPLORE_DEFAULT_DISTANCE_KM } from "@/shared/api/api-constraints";
 import { getExploreFeedResponse } from "@/shared/api/explore-feed-api";
@@ -82,5 +85,32 @@ export class HomeApi {
     payload: RecordGroupParticipationPayload,
   ) {
     return postGroupParticipationResponse(groupId, payload);
+  }
+
+  static async getContinuationCheckIn(checkInId: string) {
+    const response = await apiClient
+      .get(`pilot-outcomes/continuation-check-ins/${checkInId}`)
+      .json<unknown>();
+
+    return continuationCheckInResponseSchema.parse(response);
+  }
+
+  static async recordContinuationResponse(
+    checkInId: string,
+    responseValue: "CONTINUED" | "NOT_CONTINUED",
+    idempotencyKey: string,
+  ) {
+    const response = await apiClient
+      .put(`pilot-outcomes/continuation-check-ins/${checkInId}`, {
+        headers: {
+          "Idempotency-Key": idempotencyKey,
+        },
+        json: {
+          response: responseValue,
+        },
+      })
+      .json<unknown>();
+
+    return continuationCheckInResponseSchema.parse(response);
   }
 }

@@ -17,3 +17,7 @@ export type AttentionQueueFriendRequest = NonNullable<
 export type AttentionQueueParticipation = HomeGroup & {
   pendingParticipationPlan: NonNullable<HomeGroup["pendingParticipationPlan"]>;
 };
+
+export type AttentionQueueContinuation = HomeGroup & {
+  continuationCheckIn: NonNullable<HomeGroup["continuationCheckIn"]>;
+};

@@ -1,5 +1,6 @@
 import type { HomeViewer } from "@/features/home/lib/home-contract";
 import type {
+  AttentionQueueContinuation,
   AttentionQueueFriendRequest,
   AttentionQueueInvitation,
   AttentionQueueParticipation,
@@ -10,6 +11,7 @@ import { formatQueueCount } from "./attention-queue-formatters";
 const COLLAPSED_QUEUE_ITEM_LIMIT = 2;
 
 interface AttentionQueueRenderStateInput {
+  continuationCheckIns: AttentionQueueContinuation[];
   pendingParticipations: AttentionQueueParticipation[];
   proposedPlans: AttentionQueuePlan[];
   queueSize: number;
@@ -37,6 +39,10 @@ export type AttentionQueueRenderItem =
       kind: "participation";
     }
   | {
+      group: AttentionQueueContinuation;
+      kind: "continuation";
+    }
+  | {
       kind: "profile";
       nextStep: NonNullable<HomeViewer["nextStep"]>;
     }
@@ -46,6 +52,7 @@ export type AttentionQueueRenderItem =
     };
 
 export function getAttentionQueueRenderState({
+  continuationCheckIns,
   pendingParticipations,
   proposedPlans,
   queueSize,
@@ -57,8 +64,11 @@ export function getAttentionQueueRenderState({
   const renderedInvitations = getCollapsedQueueItems(visibleInvitations);
   const renderedRequests = getCollapsedQueueItems(visibleRequests);
   const renderedParticipations = getCollapsedQueueItems(pendingParticipations);
+  const renderedContinuationCheckIns =
+    getCollapsedQueueItems(continuationCheckIns);
   const renderedPlans = getCollapsedQueueItems(proposedPlans);
   const collapsedQueueSize = getCollapsedQueueSize({
+    continuationCheckIns,
     pendingParticipations,
     proposedPlans,
     viewer,
@@ -72,6 +82,7 @@ export function getAttentionQueueRenderState({
       ? []
       : getQueueItems({
           hiddenItemCount,
+          renderedContinuationCheckIns,
           renderedInvitations,
           renderedParticipations,
           renderedPlans,
@@ -79,6 +90,7 @@ export function getAttentionQueueRenderState({
           viewer,
         }),
     queueSummary: getQueueSummary({
+      continuationCheckIns,
       pendingParticipations,
       proposedPlans,
       viewer,
@@ -94,6 +106,7 @@ function getCollapsedQueueItems<Item>(items: Item[]) {
 }
 
 function getCollapsedQueueSize({
+  continuationCheckIns,
   pendingParticipations,
   proposedPlans,
   viewer,
@@ -104,6 +117,7 @@ function getCollapsedQueueSize({
     getCollapsedItemCount(visibleInvitations) +
     getCollapsedItemCount(visibleRequests) +
     getCollapsedItemCount(pendingParticipations) +
+    getCollapsedItemCount(continuationCheckIns) +
     getCollapsedItemCount(proposedPlans) +
     (viewer.nextStep ? 1 : 0)
   );
@@ -119,6 +133,7 @@ function getHiddenItemCount(queueSize: number, collapsedQueueSize: number) {
 
 function getQueueItems({
   hiddenItemCount,
+  renderedContinuationCheckIns,
   renderedInvitations,
   renderedParticipations,
   renderedPlans,
@@ -126,6 +141,7 @@ function getQueueItems({
   viewer,
 }: {
   hiddenItemCount: number;
+  renderedContinuationCheckIns: AttentionQueueContinuation[];
   renderedInvitations: AttentionQueueInvitation[];
   renderedParticipations: AttentionQueueParticipation[];
   renderedPlans: AttentionQueuePlan[];
@@ -144,6 +160,10 @@ function getQueueItems({
     ...renderedParticipations.map((group) => ({
       group,
       kind: "participation" as const,
+    })),
+    ...renderedContinuationCheckIns.map((group) => ({
+      group,
+      kind: "continuation" as const,
     })),
     ...renderedPlans.map((group) => ({
       group,
@@ -169,6 +189,7 @@ function getQueueItems({
 }
 
 function getQueueSummary({
+  continuationCheckIns,
   pendingParticipations,
   proposedPlans,
   viewer,
@@ -178,7 +199,10 @@ function getQueueSummary({
   return [
     formatQueueCount(visibleInvitations.length, "invite"),
     formatQueueCount(visibleRequests.length, "request"),
-    formatQueueCount(pendingParticipations.length, "check-in"),
+    formatQueueCount(
+      pendingParticipations.length + continuationCheckIns.length,
+      "check-in",
+    ),
     formatQueueCount(proposedPlans.length, "plan"),
     viewer.nextStep ? "1 setup" : null,
   ].filter(isQueueSummaryItem);
