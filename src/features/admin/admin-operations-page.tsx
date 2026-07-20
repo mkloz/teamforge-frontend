@@ -2,6 +2,7 @@ import { useRouteContext } from "@tanstack/react-router";
 import { AdminFixedPilotSummary } from "@/features/admin/components/admin-fixed-pilot-summary";
 import { AdminPageShell } from "@/features/admin/components/admin-page-shell";
 import { AdminPilotMetrics } from "@/features/admin/components/admin-pilot-metrics";
+import { AdminPilotOperationsReadiness } from "@/features/admin/components/admin-pilot-operations-readiness/admin-pilot-operations-readiness";
 import { AdminPilotStatus } from "@/features/admin/components/admin-pilot-status";
 
 export function AdminOperationsPage() {
@@ -15,6 +16,7 @@ export function AdminOperationsPage() {
     >
       <div className="grid gap-8">
         <AdminPilotStatus />
+        <AdminPilotOperationsReadiness />
         <AdminPilotMetrics />
         <AdminFixedPilotSummary
           canManage={adminSession.capabilities.manageSponsorArtifacts}

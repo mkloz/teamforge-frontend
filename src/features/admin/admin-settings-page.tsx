@@ -14,7 +14,6 @@ export function AdminSettingsPage() {
     >
       <AdminModerationGovernance
         canManage={adminSession.capabilities.manageConfiguration}
-        stepUpExpiresAt={adminSession.stepUpExpiresAt}
       />
     </AdminPageShell>
   );

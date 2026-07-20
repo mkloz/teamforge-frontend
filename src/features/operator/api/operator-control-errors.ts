@@ -20,6 +20,7 @@ const MODEL_CONFLICT_MESSAGES = new Set([
 const STALE_VERSION_MESSAGES = new Set([
   "Configuration state changed; refresh and try again",
   "Active configuration changed; refresh and try again",
+  "Pilot operations coverage changed; refresh and try again",
 ]);
 const STALE_SESSION_MESSAGES = new Set([
   "Recent operator authentication is required",

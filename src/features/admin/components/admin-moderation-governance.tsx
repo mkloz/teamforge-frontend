@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, RefreshCw, ShieldOff } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { ModerationConfigurationActions } from "@/features/admin/components/moderation-configuration-actions";
 import { ModerationConfigurationEditor } from "@/features/admin/components/moderation-configuration-editor";
@@ -14,6 +14,7 @@ import {
   type OperatorModerationEvaluationApproval,
   operatorGovernanceQueries,
 } from "@/features/operator/public/operator-governance";
+import { useOperatorSessionStepUp } from "@/features/operator/public/use-operator-session-step-up";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -25,12 +26,10 @@ const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
 
 interface AdminModerationGovernanceProps {
   canManage: boolean;
-  stepUpExpiresAt: string | null;
 }
 
 export function AdminModerationGovernance({
   canManage,
-  stepUpExpiresAt,
 }: AdminModerationGovernanceProps) {
   const versionsQuery = useQuery(
     operatorGovernanceQueries.configurationVersions(),
@@ -40,12 +39,12 @@ export function AdminModerationGovernance({
     operatorGovernanceQueries.configurationDraftTemplate(),
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [serverRejectedStepUp, setServerRejectedStepUp] = useState(false);
-  const commandsEnabled =
-    useCurrentStepUp(stepUpExpiresAt) && canManage && !serverRejectedStepUp;
+  const { hasCurrentStepUp, rejectCurrentStepUp, sessionQuery } =
+    useOperatorSessionStepUp({ enabled: canManage });
+  const commandsEnabled = hasCurrentStepUp && canManage;
   const handleCommandError = (error: unknown) => {
     if (getOperatorControlErrorKind(error) === "STALE_SESSION") {
-      setServerRejectedStepUp(true);
+      rejectCurrentStepUp();
     }
   };
 
@@ -92,6 +91,10 @@ export function AdminModerationGovernance({
     <div className="grid gap-8">
       {!canManage ? (
         <GovernanceAccessNotice />
+      ) : sessionQuery.isPending ? (
+        <GovernanceSessionLoading />
+      ) : sessionQuery.isError ? (
+        <GovernanceSessionError onRetry={() => void sessionQuery.refetch()} />
       ) : !commandsEnabled ? (
         <GovernanceStepUpNotice />
       ) : null}
@@ -453,6 +456,32 @@ function GovernanceAccessNotice() {
   );
 }
 
+function GovernanceSessionLoading() {
+  return (
+    <div
+      className="flex items-center gap-3 border-border border-y py-5 text-slate-muted text-sm"
+      role="status"
+    >
+      <RefreshCw className="size-4 animate-spin" aria-hidden="true" />
+      Checking recent admin verification
+    </div>
+  );
+}
+
+function GovernanceSessionError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 border-border border-y py-5">
+      <p className="text-slate-muted text-sm">
+        Recent admin verification could not be checked. Changes remain disabled.
+      </p>
+      <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+        <RefreshCw className="size-4" aria-hidden="true" />
+        Try again
+      </Button>
+    </div>
+  );
+}
+
 function GovernanceStepUpNotice() {
   return (
     <div className="flex items-start gap-3 border-accent/30 border-y bg-accent/8 py-5 text-amber-900 dark:text-amber-200">
@@ -466,26 +495,6 @@ function GovernanceStepUpNotice() {
       </div>
     </div>
   );
-}
-
-function useCurrentStepUp(expiresAt: string | null) {
-  const [checkedAt, setCheckedAt] = useState(() => Date.now());
-  const expiresAtMs = expiresAt ? Date.parse(expiresAt) : Number.NaN;
-
-  useEffect(() => {
-    if (!Number.isFinite(expiresAtMs) || expiresAtMs <= checkedAt) {
-      return undefined;
-    }
-
-    const delay = Math.min(Math.max(expiresAtMs - Date.now() + 50, 0), 60_000);
-    const timeout = globalThis.setTimeout(
-      () => setCheckedAt(Date.now()),
-      delay,
-    );
-    return () => globalThis.clearTimeout(timeout);
-  }, [checkedAt, expiresAtMs]);
-
-  return Number.isFinite(expiresAtMs) && expiresAtMs > checkedAt;
 }
 
 function formatStatus(

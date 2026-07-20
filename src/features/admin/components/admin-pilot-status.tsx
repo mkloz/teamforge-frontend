@@ -2,17 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import {
   AlertTriangle,
   RefreshCw,
-  ShieldCheck,
+  type ShieldCheck,
   SlidersHorizontal,
   UsersRound,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { adminPilotStatusQueryOptions } from "@/features/admin/api/admin.api";
-import {
-  type AdminPilotStatus as AdminPilotStatusData,
-  PILOT_MINIMUM_COHORT_SIZE,
-} from "@/features/admin/schemas/admin-pilot-status.schema";
+import type { AdminPilotStatus as AdminPilotStatusData } from "@/features/admin/schemas/admin-pilot-status.schema";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import {
@@ -58,13 +55,6 @@ function AdminPilotStatusContent({ status }: { status: AdminPilotStatusData }) {
         id="pilot-gates"
         rows={buildGateRows(status)}
         title="Pilot gates"
-      />
-      <StatusSection
-        description="The server's current decision about whether this cohort can receive new proposals and form groups after accepted quorum."
-        icon={ShieldCheck}
-        id="pilot-readiness"
-        rows={buildReadinessRows(status)}
-        title="Readiness"
       />
       <p className="text-slate-muted text-xs leading-relaxed">
         Evaluated <AdminDateTime value={status.evaluatedAt} />
@@ -214,7 +204,7 @@ function AdminStatusSectionHeading({
 function AdminPilotStatusLoading() {
   return (
     <div className="grid gap-8" role="status" aria-label="Loading pilot status">
-      {["cohort", "gates", "readiness"].map((section) => (
+      {["cohort", "gates"].map((section) => (
         <section
           key={section}
           className="border-border border-t pt-6 first:border-t-0 first:pt-0"
@@ -257,8 +247,8 @@ function AdminPilotStatusError({ onRetry }: { onRetry: () => void }) {
         Pilot status is unavailable
       </h2>
       <p className="mt-1 max-w-xl text-pretty text-slate-muted text-sm leading-relaxed">
-        TeamForge could not load the current cohort, gates, or readiness. No
-        status is shown until the server can be checked again.
+        TeamForge could not load the current cohort or gates. No status is shown
+        until the server can be checked again.
       </p>
       <Button
         type="button"
@@ -367,69 +357,5 @@ function gateRow({
       : reversedTone
         ? "teal"
         : "neutral",
-  };
-}
-
-function buildReadinessRows(status: AdminPilotStatusData): StatusRow[] {
-  const { readiness } = status;
-
-  return [
-    readinessRow(
-      "Cohort configured",
-      "A controlled cohort exists on the server.",
-      readiness.cohortConfigured,
-      "Configured",
-      "Not configured",
-    ),
-    readinessRow(
-      "Cohort window",
-      "The current time falls inside the pilot window.",
-      readiness.cohortWithinWindow,
-      "Within window",
-      "Outside window",
-    ),
-    readinessRow(
-      "Member cap",
-      "The cohort remains inside its configured member limit.",
-      readiness.cohortWithinCap,
-      "Within cap",
-      "Outside cap",
-    ),
-    readinessRow(
-      "Pilot cohort size",
-      `The cohort has at least ${PILOT_MINIMUM_COHORT_SIZE} opted-in members.`,
-      readiness.minimumCohortSizeMet,
-      "Minimum met",
-      "Below minimum",
-    ),
-    readinessRow(
-      "New proposal exposure",
-      "Members may receive a newly allocated proposal.",
-      readiness.newProposalExposureAllowed,
-      "Allowed",
-      "Blocked",
-    ),
-    readinessRow(
-      "Group formation",
-      "An accepted proposal may create its group, plan, and first chat.",
-      readiness.materializationAllowed,
-      "Allowed",
-      "Blocked",
-    ),
-  ];
-}
-
-function readinessRow(
-  label: string,
-  description: string,
-  ready: boolean,
-  readyState: string,
-  blockedState: string,
-): StatusRow {
-  return {
-    description,
-    label,
-    state: ready ? readyState : blockedState,
-    tone: ready ? "teal" : "amber",
   };
 }

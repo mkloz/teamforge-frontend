@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-export const PILOT_MINIMUM_COHORT_SIZE = 72;
-
 const adminPilotCohortSchema = z
   .object({
     code: z.string().trim().min(1),
@@ -71,64 +69,6 @@ export const adminPilotStatusSchema = z
     gates: adminPilotGatesSchema,
     readiness: adminPilotReadinessSchema,
   })
-  .strict()
-  .superRefine((status, context) => {
-    const hasCohort = status.activeCohort !== null;
-    const cohortReady =
-      status.readiness.cohortConfigured &&
-      status.readiness.cohortWithinWindow &&
-      status.readiness.cohortWithinCap &&
-      status.readiness.minimumCohortSizeMet;
-
-    if (hasCohort !== status.readiness.cohortConfigured) {
-      context.addIssue({
-        code: "custom",
-        message: "Cohort configuration status does not match the cohort record",
-        path: ["readiness", "cohortConfigured"],
-      });
-    }
-
-    const expectedMinimumCohortSizeMet =
-      status.activeCohort !== null &&
-      status.activeCohort.memberCount >= PILOT_MINIMUM_COHORT_SIZE;
-    if (
-      expectedMinimumCohortSizeMet !== status.readiness.minimumCohortSizeMet
-    ) {
-      context.addIssue({
-        code: "custom",
-        message: "Cohort size readiness does not match the cohort member count",
-        path: ["readiness", "minimumCohortSizeMet"],
-      });
-    }
-
-    if (
-      status.readiness.newProposalExposureAllowed &&
-      (!cohortReady ||
-        status.gates.globalSafetyPause ||
-        !status.gates.candidateAvailability ||
-        !status.gates.proposalAllocation)
-    ) {
-      context.addIssue({
-        code: "custom",
-        message:
-          "Proposal exposure cannot be allowed while readiness or a required gate blocks it",
-        path: ["readiness", "newProposalExposureAllowed"],
-      });
-    }
-
-    if (
-      status.readiness.materializationAllowed &&
-      (!cohortReady ||
-        status.gates.globalSafetyPause ||
-        !status.gates.proposalMaterialization)
-    ) {
-      context.addIssue({
-        code: "custom",
-        message:
-          "Group formation cannot be allowed while readiness or a required gate blocks it",
-        path: ["readiness", "materializationAllowed"],
-      });
-    }
-  });
+  .strict();
 
 export type AdminPilotStatus = z.infer<typeof adminPilotStatusSchema>;
