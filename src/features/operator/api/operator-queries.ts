@@ -62,6 +62,48 @@ export const OPERATOR_QUERY_KEYS = {
       "jobs",
       input,
     ] as const,
+  control: ["admin", "operator", "moderation", "control"] as const,
+  configurationDraftTemplate: [
+    "admin",
+    "operator",
+    "moderation",
+    "control",
+    "configuration-draft-template",
+  ] as const,
+  configurationVersions: [
+    "admin",
+    "operator",
+    "moderation",
+    "control",
+    "configurations",
+  ] as const,
+  configurationState: [
+    "admin",
+    "operator",
+    "moderation",
+    "control",
+    "configurations",
+    "state",
+  ] as const,
+  configurationDetail: (configurationId: string) =>
+    [
+      "admin",
+      "operator",
+      "moderation",
+      "control",
+      "configurations",
+      configurationId,
+    ] as const,
+  evaluationApproval: (configurationId: string) =>
+    [
+      "admin",
+      "operator",
+      "moderation",
+      "control",
+      "configurations",
+      configurationId,
+      "evaluation-approval",
+    ] as const,
 };
 
 export const operatorQueries = {
@@ -144,6 +186,41 @@ export const operatorQueries = {
       queryFn: () => OperatorApi.getWorkerJobs(input),
       staleTime: 10_000,
       refetchInterval: 15_000,
+      retry: false,
+    }),
+  configurationDraftTemplate: () =>
+    queryOptions({
+      queryKey: OPERATOR_QUERY_KEYS.configurationDraftTemplate,
+      queryFn: () => OperatorApi.getConfigurationDraftTemplate(),
+      staleTime: 0,
+      retry: false,
+    }),
+  configurationVersions: () =>
+    queryOptions({
+      queryKey: OPERATOR_QUERY_KEYS.configurationVersions,
+      queryFn: () => OperatorApi.listConfigurations(),
+      staleTime: 0,
+      retry: false,
+    }),
+  configurationState: () =>
+    queryOptions({
+      queryKey: OPERATOR_QUERY_KEYS.configurationState,
+      queryFn: () => OperatorApi.getConfigurationState(),
+      staleTime: 0,
+      retry: false,
+    }),
+  configurationDetail: (configurationId: string) =>
+    queryOptions({
+      queryKey: OPERATOR_QUERY_KEYS.configurationDetail(configurationId),
+      queryFn: () => OperatorApi.getConfiguration(configurationId),
+      staleTime: 0,
+      retry: false,
+    }),
+  evaluationApproval: (configurationId: string) =>
+    queryOptions({
+      queryKey: OPERATOR_QUERY_KEYS.evaluationApproval(configurationId),
+      queryFn: () => OperatorApi.getEvaluationApproval(configurationId),
+      staleTime: 0,
       retry: false,
     }),
 };

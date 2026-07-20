@@ -1,7 +1,6 @@
 import { useRouteContext } from "@tanstack/react-router";
-import { Bot, ShieldCheck, UserRoundCheck } from "lucide-react";
+import { AdminOverviewQueues } from "@/features/admin/components/admin-overview-queues";
 import { AdminPageShell } from "@/features/admin/components/admin-page-shell";
-import { AdminReadOnlySection } from "@/features/admin/components/admin-read-only-section";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 
 export function AdminOverviewPage() {
@@ -10,43 +9,25 @@ export function AdminOverviewPage() {
   return (
     <AdminPageShell
       title="Admin overview"
-      description="A private starting point for the few moderation cases that need you. Open the review queue for live cases and Operations for system status."
+      description="A private starting point for moderation cases that need attention. Open a review queue for current cases or continue to the connected operations tools."
     >
-      <div className="grid gap-6">
+      <div className="grid gap-8">
         <section className="grid gap-3 border-border border-t py-6 sm:grid-cols-2">
-          <div>
+          <div className="grid content-start gap-1">
             <p className="font-semibold text-slate-muted text-xs">
               Signed in as
             </p>
-            <p className="mt-1 font-semibold text-ink">
-              {adminSession.displayName}
-            </p>
+            <p className="font-semibold text-ink">{adminSession.displayName}</p>
           </div>
-          <div>
+          <div className="grid content-start justify-items-start gap-2">
             <p className="font-semibold text-slate-muted text-xs">Access</p>
-            <StatusPill className="mt-2" size="xs" tone="teal">
+            <StatusPill size="xs" tone="teal">
               Admin confirmed
             </StatusPill>
           </div>
         </section>
 
-        <div>
-          <AdminReadOnlySection
-            icon={ShieldCheck}
-            title="Priority review"
-            description="Critical escalations and cases that require human authority will appear here when the case feed is connected."
-          />
-          <AdminReadOnlySection
-            icon={Bot}
-            title="Automated decisions"
-            description="Recent automated decisions, conflicts, and processing failures will be shown from server-owned audit records."
-          />
-          <AdminReadOnlySection
-            icon={UserRoundCheck}
-            title="Appeals and reversals"
-            description="Appeals, human overrides, and reversal history will appear here when the feed is connected."
-          />
-        </div>
+        <AdminOverviewQueues />
       </div>
     </AdminPageShell>
   );

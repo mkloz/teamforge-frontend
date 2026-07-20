@@ -31,6 +31,28 @@ import {
   type TriageCasePayload,
   triageCaseSchema,
 } from "@/features/operator/schemas/operator.schemas";
+import {
+  type ActivateOperatorModerationConfigurationInput,
+  type ApproveOperatorModerationEvaluationRunInput,
+  activateOperatorModerationConfigurationSchema,
+  approveOperatorModerationEvaluationRunSchema,
+  type CreateOperatorModerationConfigurationInput,
+  createOperatorModerationConfigurationSchema,
+  operatorModerationConfigurationCommandResultSchema,
+  operatorModerationConfigurationDetailSchema,
+  operatorModerationConfigurationListSchema,
+  operatorModerationConfigurationPayloadSchema,
+  operatorModerationConfigurationStateSchema,
+  operatorModerationEvaluationApprovalEventSchema,
+  operatorModerationEvaluationApprovalSchema,
+  operatorModerationEvaluationRunSchema,
+  type RecordOperatorModerationEvaluationRunInput,
+  type RevokeOperatorModerationEvaluationApprovalInput,
+  type RollbackOperatorModerationConfigurationInput,
+  recordOperatorModerationEvaluationRunSchema,
+  revokeOperatorModerationEvaluationApprovalSchema,
+  rollbackOperatorModerationConfigurationSchema,
+} from "@/features/operator/schemas/operator-control.schemas";
 import { apiClient } from "@/shared/api/api";
 import { appQueryClient } from "@/shared/api/query-client";
 
@@ -169,6 +191,131 @@ export const OperatorApi = {
       },
     );
     return operatorWorkerJobsResponseSchema.parse(await response.json());
+  },
+
+  async getConfigurationDraftTemplate() {
+    const response = await operatorModerationApi.get(
+      "control/configurations/draft-template",
+    );
+    return operatorModerationConfigurationPayloadSchema.parse(
+      await response.json(),
+    );
+  },
+
+  async listConfigurations() {
+    const response = await operatorModerationApi.get("control/configurations");
+    return operatorModerationConfigurationListSchema.parse(
+      await response.json(),
+    );
+  },
+
+  async getConfigurationState() {
+    const response = await operatorModerationApi.get(
+      "control/configurations/state",
+    );
+    return operatorModerationConfigurationStateSchema.parse(
+      await response.json(),
+    );
+  },
+
+  async getConfiguration(configurationId: string) {
+    const response = await operatorModerationApi.get(
+      `control/configurations/${encodeURIComponent(configurationId)}`,
+    );
+    return operatorModerationConfigurationDetailSchema.parse(
+      await response.json(),
+    );
+  },
+
+  async getEvaluationApproval(configurationId: string) {
+    try {
+      const response = await operatorModerationApi.get(
+        `control/configurations/${encodeURIComponent(configurationId)}/evaluation-approval`,
+      );
+      return operatorModerationEvaluationApprovalSchema.parse(
+        await response.json(),
+      );
+    } catch (error) {
+      if (error instanceof HTTPError && error.response.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  },
+
+  async createConfigurationDraft(
+    input: CreateOperatorModerationConfigurationInput,
+  ) {
+    const response = await operatorModerationApi.post(
+      "control/configurations",
+      { json: createOperatorModerationConfigurationSchema.parse(input) },
+    );
+    return operatorModerationConfigurationCommandResultSchema.parse(
+      await response.json(),
+    );
+  },
+
+  async activateConfiguration(
+    configurationId: string,
+    input: ActivateOperatorModerationConfigurationInput,
+  ) {
+    const response = await operatorModerationApi.post(
+      `control/configurations/${encodeURIComponent(configurationId)}/activation`,
+      { json: activateOperatorModerationConfigurationSchema.parse(input) },
+    );
+    return operatorModerationConfigurationCommandResultSchema.parse(
+      await response.json(),
+    );
+  },
+
+  async rollbackConfiguration(
+    sourceConfigurationId: string,
+    input: RollbackOperatorModerationConfigurationInput,
+  ) {
+    const response = await operatorModerationApi.post(
+      `control/configurations/${encodeURIComponent(sourceConfigurationId)}/rollback`,
+      { json: rollbackOperatorModerationConfigurationSchema.parse(input) },
+    );
+    return operatorModerationConfigurationCommandResultSchema.parse(
+      await response.json(),
+    );
+  },
+
+  async recordEvaluationRun(
+    configurationId: string,
+    input: RecordOperatorModerationEvaluationRunInput,
+  ) {
+    const response = await operatorModerationApi.post(
+      `control/configurations/${encodeURIComponent(configurationId)}/evaluation-runs`,
+      { json: recordOperatorModerationEvaluationRunSchema.parse(input) },
+    );
+    return operatorModerationEvaluationRunSchema.parse(await response.json());
+  },
+
+  async approveEvaluationRun(
+    runId: string,
+    input: ApproveOperatorModerationEvaluationRunInput,
+  ) {
+    const response = await operatorModerationApi.post(
+      `control/evaluation-runs/${encodeURIComponent(runId)}/approval`,
+      { json: approveOperatorModerationEvaluationRunSchema.parse(input) },
+    );
+    return operatorModerationEvaluationApprovalEventSchema.parse(
+      await response.json(),
+    );
+  },
+
+  async revokeEvaluationApproval(
+    configurationId: string,
+    input: RevokeOperatorModerationEvaluationApprovalInput,
+  ) {
+    const response = await operatorModerationApi.post(
+      `control/configurations/${encodeURIComponent(configurationId)}/evaluation-approval/revocation`,
+      { json: revokeOperatorModerationEvaluationApprovalSchema.parse(input) },
+    );
+    return operatorModerationEvaluationApprovalEventSchema.parse(
+      await response.json(),
+    );
   },
 
   async pauseWorker(
