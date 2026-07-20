@@ -114,6 +114,7 @@ export function ContinuationQueueItem({
             <Button
               variant="outline"
               size="xs"
+              className="h-11 sm:h-9"
               disabled={actionsDisabled}
               loading={isPendingResponse(checkIn.id, "NOT_CONTINUED", state)}
               onClick={() => answer("NOT_CONTINUED")}
@@ -129,6 +130,7 @@ export function ContinuationQueueItem({
             </Button>
             <Button
               size="xs"
+              className="h-11 sm:h-9"
               disabled={actionsDisabled}
               loading={isPendingResponse(checkIn.id, "CONTINUED", state)}
               onClick={() => answer("CONTINUED")}
@@ -146,7 +148,7 @@ export function ContinuationQueueItem({
         ) : feedback !== "NO_LONGER_ELIGIBLE" ? (
           <Link
             {...navigation}
-            className="inline-flex h-8 shrink-0 items-center justify-center gap-1 self-end rounded-full border border-border px-3 font-bold text-foreground text-xs transition-colors hover:border-primary/35 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:self-auto"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-1 self-end rounded-full border border-border px-3 font-bold text-foreground text-xs transition-colors hover:border-primary/35 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-8 sm:self-auto"
           >
             View group
             <ArrowRight className="size-3.5" aria-hidden="true" />

@@ -47,7 +47,7 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
           className="group flex flex-col gap-3"
           open={hasMoreOptionFilters}
         >
-          <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg border border-border/60 bg-card/35 px-3 py-2 font-bold text-muted-foreground text-xs transition-colors hover:border-border hover:bg-muted/25 hover:text-foreground [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-lg border border-border/60 bg-card/35 px-3 py-2 font-bold text-muted-foreground text-xs transition-colors hover:border-border hover:bg-muted/25 hover:text-foreground lg:min-h-0 [&::-webkit-details-marker]:hidden">
             <span>More options</span>
             <ChevronDown
               className="size-3.5 text-muted-foreground transition-transform group-open:rotate-180"

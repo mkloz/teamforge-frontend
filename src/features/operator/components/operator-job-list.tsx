@@ -81,13 +81,14 @@ export function OperatorJobList({
 
   return (
     <section
+      id="operator-worker-jobs"
       className="grid gap-4 rounded-2xl border border-border bg-card p-5"
       aria-labelledby="worker-jobs-heading"
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="grid gap-1">
           <h2 id="worker-jobs-heading" className="font-bold text-ink text-xl">
-            Jobs needing attention
+            {humanizeCode(workerKind)} jobs needing attention
           </h2>
           <p className="text-slate-muted text-sm">
             Requeue only after checking the safe error code and worker status.

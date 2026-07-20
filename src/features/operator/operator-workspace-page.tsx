@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useSearch } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { ArrowRight, Clock3 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { operatorQueries } from "@/features/operator/api/operator-queries";
 import {
   OperatorAccessState,
@@ -15,16 +16,56 @@ import {
 } from "@/features/operator/lib/operator-language";
 import {
   type OperatorCaseSummary,
+  type OperatorQueue,
   operatorQueueSchema,
 } from "@/features/operator/schemas/operator.schemas";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+
+const CASES_PER_PAGE = 50;
 
 export function OperatorWorkspacePage() {
   const search = useSearch({ from: "/admin/moderation" });
+  const navigate = useNavigate({ from: "/admin/moderation" });
   const queue =
     operatorQueueSchema.safeParse(search.queue).data ?? "CRITICAL_NOW";
-  const query = useQuery(operatorQueries.cases({ queue, page: 1, limit: 50 }));
+  const page = search.page ?? 1;
+  const query = useQuery(
+    operatorQueries.cases({ queue, page, limit: CASES_PER_PAGE }),
+  );
+  const pageHeadingRef = useRef<HTMLHeadingElement>(null);
+  const listLocation = `${queue}:${page}`;
+  const previousListLocationRef = useRef(listLocation);
   const activeQueue = OPERATOR_QUEUE_COPY[queue];
+  const totalPages = query.data
+    ? Math.max(1, Math.ceil(query.data.total / query.data.limit))
+    : 1;
+
+  useEffect(() => {
+    if (!query.data || page <= totalPages) return;
+
+    void navigate({
+      replace: true,
+      search: {
+        queue,
+        page: totalPages === 1 ? undefined : totalPages,
+      },
+    });
+  }, [navigate, page, query.data, queue, totalPages]);
+
+  useEffect(() => {
+    if (
+      !query.data ||
+      query.isFetching ||
+      page > totalPages ||
+      previousListLocationRef.current === listLocation
+    ) {
+      return;
+    }
+
+    previousListLocationRef.current = listLocation;
+    pageHeadingRef.current?.focus({ preventScroll: true });
+  }, [listLocation, page, query.data, query.isFetching, totalPages]);
 
   if (query.isLoading) return <OperatorLoading />;
   if (query.isError || !query.data) {
@@ -45,7 +86,7 @@ export function OperatorWorkspacePage() {
             <Link
               key={queueId}
               to="/admin/moderation"
-              search={{ queue: queueId }}
+              search={{ queue: queueId, page: undefined }}
               className={cn(
                 "grid gap-0.5 rounded-xl border px-4 py-3 transition-colors",
                 queueId === queue
@@ -65,8 +106,15 @@ export function OperatorWorkspacePage() {
       <section className="grid min-w-0 content-start gap-4">
         <header className="grid gap-1">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h1 className="font-extrabold text-2xl text-ink">
+            <h1
+              ref={pageHeadingRef}
+              tabIndex={-1}
+              className="rounded-sm font-extrabold text-2xl text-ink outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               {activeQueue.label}
+              <span className="sr-only">
+                , page {page} of {totalPages}
+              </span>
             </h1>
             <span className="font-semibold text-slate-muted text-sm">
               {query.data.total} {query.data.total === 1 ? "case" : "cases"}
@@ -93,8 +141,67 @@ export function OperatorWorkspacePage() {
             </div>
           </div>
         )}
+        <QueuePagination page={page} queue={queue} totalPages={totalPages} />
       </section>
     </div>
+  );
+}
+
+function QueuePagination({
+  page,
+  queue,
+  totalPages,
+}: {
+  page: number;
+  queue: OperatorQueue;
+  totalPages: number;
+}) {
+  if (totalPages <= 1) return null;
+
+  return (
+    <nav
+      aria-label="Case queue pagination"
+      className="flex flex-wrap items-center justify-between gap-3 border-border border-t pt-4"
+    >
+      <p className="font-medium text-slate-muted text-sm" aria-live="polite">
+        Page {page} of {totalPages}
+      </p>
+      <div className="flex items-center gap-2">
+        {page > 1 ? (
+          <Button asChild variant="outline" size="sm">
+            <Link
+              to="/admin/moderation"
+              search={{
+                queue,
+                page: page === 2 ? undefined : page - 1,
+              }}
+              rel="prev"
+            >
+              Previous
+            </Link>
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" disabled>
+            Previous
+          </Button>
+        )}
+        {page < totalPages ? (
+          <Button asChild variant="outline" size="sm">
+            <Link
+              to="/admin/moderation"
+              search={{ queue, page: page + 1 }}
+              rel="next"
+            >
+              Next
+            </Link>
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" disabled>
+            Next
+          </Button>
+        )}
+      </div>
+    </nav>
   );
 }
 

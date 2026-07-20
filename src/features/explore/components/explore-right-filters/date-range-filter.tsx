@@ -94,6 +94,7 @@ export function DateRangeFilter() {
             variant="ghost"
             size="xs"
             onClick={clearDateRange}
+            className="h-11 lg:h-9"
           >
             <X className="size-3" aria-hidden="true" />
             Clear
@@ -111,7 +112,7 @@ export function DateRangeFilter() {
             max={rangeState.startsAfterMax}
             placeholder="From"
             onValueChange={updateStartsAfter}
-            className="h-9 pr-2 pl-8 text-xs"
+            className="h-11 pr-2 pl-8 text-xs lg:h-9"
             aria-label="Start date from"
           />
         </label>
@@ -123,7 +124,7 @@ export function DateRangeFilter() {
             min={rangeState.startsBeforeMin}
             placeholder="To"
             onValueChange={updateStartsBefore}
-            className="h-9 pr-2 pl-8 text-xs"
+            className="h-11 pr-2 pl-8 text-xs lg:h-9"
             aria-label="Start date to"
           />
         </label>

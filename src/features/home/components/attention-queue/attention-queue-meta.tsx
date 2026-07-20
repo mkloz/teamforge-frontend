@@ -27,10 +27,7 @@ export function AttentionQueueTypeLabel({
       surface="soft"
       textCase="upper"
       tone={tone === "muted" ? "neutral" : tone}
-      className={cn(
-        "h-5 px-2 font-black text-micro tracking-normal",
-        className,
-      )}
+      className={cn("h-5 px-2 font-black text-xs tracking-normal", className)}
     >
       {children}
     </StatusPill>

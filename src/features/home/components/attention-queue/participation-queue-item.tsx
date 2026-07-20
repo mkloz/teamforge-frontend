@@ -59,6 +59,7 @@ export function ParticipationQueueItem({
           <Button
             variant="outline"
             size="xs"
+            className="h-11 sm:h-9"
             disabled={actionsDisabled}
             loading={isNoLoading}
             onClick={() => answer("DID_NOT_PARTICIPATE")}
@@ -70,6 +71,7 @@ export function ParticipationQueueItem({
           </Button>
           <Button
             size="xs"
+            className="h-11 sm:h-9"
             disabled={actionsDisabled}
             loading={isYesLoading}
             onClick={() => answer("PARTICIPATED")}

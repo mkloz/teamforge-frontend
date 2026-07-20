@@ -138,6 +138,9 @@ function WorkerCard({
           variant={selected ? "primary" : "outline"}
           size="sm"
           onClick={onSelect}
+          aria-controls="operator-worker-jobs"
+          aria-label={`Review jobs for ${worker.displayName}`}
+          aria-pressed={selected}
         >
           Review jobs
         </Button>

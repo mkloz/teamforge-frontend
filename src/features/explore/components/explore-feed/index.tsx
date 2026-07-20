@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@tanstack/react-router";
-import { SlidersHorizontal, UsersRound } from "lucide-react";
+import { LoaderCircle, SlidersHorizontal, UsersRound } from "lucide-react";
 import { EmptyExploreFilteredVisual } from "@/features/explore/assets/empty-explore-filtered";
 import { EmptyExploreOpenVisual } from "@/features/explore/assets/empty-explore-open";
 import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
@@ -21,6 +21,7 @@ export function ExploreFeed() {
     isError,
     isFetchingNextPage,
     isLoading,
+    isUpdating,
     fetchNextPage,
     refetch,
     resetFilters,
@@ -54,15 +55,29 @@ export function ExploreFeed() {
   }
 
   return (
-    <ExploreFeedContent
-      items={items}
-      hasNextPage={hasNextPage}
-      isFetchingNextPage={isFetchingNextPage}
-      onLoadMore={() => {
-        void fetchNextPage();
-      }}
-      totalItems={totalItems}
-    />
+    <section aria-busy={isUpdating} aria-label="Explore openings">
+      {isUpdating ? (
+        <div
+          className="mb-2 flex min-h-6 items-center justify-end gap-1.5 px-1 font-semibold text-muted-foreground text-xs"
+          role="status"
+        >
+          <LoaderCircle
+            className="size-3.5 animate-spin motion-reduce:animate-none"
+            aria-hidden="true"
+          />
+          Updating results
+        </div>
+      ) : null}
+      <ExploreFeedContent
+        items={items}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        onLoadMore={() => {
+          void fetchNextPage();
+        }}
+        totalItems={totalItems}
+      />
+    </section>
   );
 }
 

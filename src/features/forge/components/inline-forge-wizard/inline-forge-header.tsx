@@ -1,4 +1,5 @@
 import { ChevronLeft, Network, X } from "lucide-react";
+import type { RefObject } from "react";
 import { ForgeProgressBar } from "@/features/forge/components/forge-progress-bar";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
@@ -9,6 +10,8 @@ import type { ForgeWizardChildProps } from "./types";
 
 interface InlineForgeHeaderProps extends ForgeWizardChildProps {
   hasProgress: boolean;
+  headingId: string;
+  headingRef: RefObject<HTMLHeadingElement | null>;
   onCancelDialogChange: (open: boolean) => void;
   showCancelDialog: boolean;
 }
@@ -16,6 +19,8 @@ interface InlineForgeHeaderProps extends ForgeWizardChildProps {
 export function InlineForgeHeader({
   fw,
   hasProgress,
+  headingId,
+  headingRef,
   onCancelDialogChange,
   showCancelDialog,
 }: InlineForgeHeaderProps) {
@@ -46,7 +51,12 @@ export function InlineForgeHeader({
           )}
           <div className="flex items-baseline overflow-hidden">
             <div>
-              <h2 className="font-black text-base text-foreground tracking-tight md:text-lg">
+              <h2
+                id={headingId}
+                ref={headingRef}
+                tabIndex={-1}
+                className="rounded-sm font-black text-base text-foreground tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 md:text-lg"
+              >
                 {currentMetadata.title}
               </h2>
               {currentMetadata.hint && (

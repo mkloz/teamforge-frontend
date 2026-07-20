@@ -63,7 +63,7 @@ function UserMenuTriggerVisual({
       src={currentUser?.avatar}
       name={currentUser?.name}
       className="size-8 border border-primary/20 bg-primary/10 text-primary"
-      fallbackClassName="bg-primary/10 text-micro tracking-wide text-primary"
+      fallbackClassName="bg-primary/10 text-xs tracking-wide text-primary"
       loading="eager"
     />
   );

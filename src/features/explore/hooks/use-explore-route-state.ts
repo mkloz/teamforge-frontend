@@ -111,7 +111,7 @@ export function useExploreRouteState() {
 
     setSizeRange(normalized);
     void setExploreRouteState(getSizeRoutePatch(normalized), {
-      history: "push",
+      history: "replace",
     });
   }
 
@@ -120,7 +120,7 @@ export function useExploreRouteState() {
 
     setDistance(normalized);
     void setExploreRouteState(getDistanceRoutePatch(normalized), {
-      history: "push",
+      history: "replace",
     });
   }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { currentAutoForgeRequestQueryOptions } from "@/features/forge/api/auto-forge-request-query";
 import { ForgeFooter } from "@/features/forge/components/forge-footer/index";
@@ -96,9 +96,24 @@ function InlineForgeWizardContent({
   });
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [activityShakeRequestId, setActivityShakeRequestId] = useState(0);
+  const stepHeadingId = useId();
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
+  const previousStepRef = useRef(fw.step);
   const hasProgress = fw.step > 1 || fw.selectedActivity !== null;
 
   useScrollToTop([fw.step, fw.isForging], undefined, "auto");
+
+  useEffect(() => {
+    if (previousStepRef.current === fw.step || fw.invitesSent || fw.isForging) {
+      return;
+    }
+
+    const heading = stepHeadingRef.current;
+    if (!heading) return;
+
+    previousStepRef.current = fw.step;
+    heading.focus({ preventScroll: true });
+  }, [fw.invitesSent, fw.isForging, fw.step]);
 
   if (fw.invitesSent) {
     return <InvitesSentScreen fw={fw} />;
@@ -118,14 +133,18 @@ function InlineForgeWizardContent({
       <InlineForgeHeader
         fw={fw}
         hasProgress={hasProgress}
+        headingId={stepHeadingId}
+        headingRef={stepHeadingRef}
         onCancelDialogChange={setShowCancelDialog}
         showCancelDialog={showCancelDialog}
       />
 
-      <InlineForgeStepContent
-        activityShakeRequestId={activityShakeRequestId}
-        fw={fw}
-      />
+      <section aria-labelledby={stepHeadingId} className="flex flex-1 flex-col">
+        <InlineForgeStepContent
+          activityShakeRequestId={activityShakeRequestId}
+          fw={fw}
+        />
+      </section>
 
       <ForgeFooter
         fw={fw}

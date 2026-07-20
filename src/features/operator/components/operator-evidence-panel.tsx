@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Eye, EyeOff, FileLock2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OperatorApi } from "@/features/operator/api/operator.api";
 import { operatorQueries } from "@/features/operator/api/operator-queries";
 import { OperatorPanel } from "@/features/operator/components/operator-case-panels";
@@ -90,6 +90,9 @@ function EvidenceItem({
   evidence: OperatorEvidenceMetadata;
 }) {
   const [reasonCode, setReasonCode] = useState("CASE_REVIEW");
+  const revealedEvidenceRef = useRef<HTMLElement>(null);
+  const revealButtonRef = useRef<HTMLButtonElement>(null);
+  const restoreRevealFocusRef = useRef(false);
   const mutation = useMutation<RevealedEvidence | RevealedMediaEvidence>({
     mutationKey: [
       "admin",
@@ -113,6 +116,17 @@ function EvidenceItem({
             reasonCode,
           }),
   });
+  useEffect(() => {
+    if (mutation.data) {
+      revealedEvidenceRef.current?.focus();
+      return;
+    }
+    if (!restoreRevealFocusRef.current) return;
+
+    restoreRevealFocusRef.current = false;
+    revealButtonRef.current?.focus();
+  }, [mutation.data]);
+
   const canReveal =
     evidence.preservationState === "PRESERVED" &&
     (evidence.sourceType !== "ATTACHMENT" ||
@@ -143,7 +157,14 @@ function EvidenceItem({
           </p>
         </div>
         {mutation.data ? (
-          <Button variant="outline" size="sm" onClick={() => mutation.reset()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              restoreRevealFocusRef.current = true;
+              mutation.reset();
+            }}
+          >
             <EyeOff className="size-4" aria-hidden="true" />
             Hide revealed evidence
           </Button>
@@ -151,11 +172,18 @@ function EvidenceItem({
       </div>
 
       {mutation.data ? (
-        isRevealedMediaEvidence(mutation.data) ? (
-          <RevealedMedia value={mutation.data} />
-        ) : (
-          <RevealedText value={mutation.data} />
-        )
+        <section
+          ref={revealedEvidenceRef}
+          tabIndex={-1}
+          aria-label="Revealed evidence"
+          className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {isRevealedMediaEvidence(mutation.data) ? (
+            <RevealedMedia value={mutation.data} />
+          ) : (
+            <RevealedText value={mutation.data} />
+          )}
+        </section>
       ) : attachmentUnavailable ? (
         <p className="text-slate-muted text-sm">
           {getAttachmentUnavailableMessage(evidence, childSafety)}
@@ -178,6 +206,7 @@ function EvidenceItem({
             />
           </label>
           <Button
+            ref={revealButtonRef}
             variant="outline"
             disabled={!canReveal || mutation.isPending}
             loading={mutation.isPending}
@@ -237,6 +266,8 @@ function RevealedMedia({ value }: { value: RevealedMediaEvidence }) {
       <img
         src={value.dataUrl}
         alt="Revealed attachment evidence"
+        width={value.width}
+        height={value.height}
         className="max-h-96 w-full rounded-xl object-contain"
       />
     </div>

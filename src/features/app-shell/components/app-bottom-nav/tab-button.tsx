@@ -34,10 +34,20 @@ function getTabButtonState(
     active: isAppNavigationItemActive(item, pathname),
     activeBackgroundClassName: getActiveBackgroundClassName(isForge),
     activeTextClassName: getActiveTextClassName(isForge),
-    ariaLabel: hasBadge ? `${item.label}, ${badge} unread` : item.label,
+    ariaLabel: getTabAriaLabel(item, badge),
     badge,
     hasBadge,
   };
+}
+
+function getTabAriaLabel(item: AppNavigationItem, badge: number) {
+  if (badge <= 0) {
+    return item.label;
+  }
+
+  return item.id === "home"
+    ? `${item.label}, ${badge} unread notifications`
+    : `${item.label}, ${badge} unread`;
 }
 
 function getActiveTextClassName(isForge: boolean) {

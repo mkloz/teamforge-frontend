@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OperatorApi } from "@/features/operator/api/operator.api";
 import {
   OPERATOR_QUERY_KEYS,
@@ -19,8 +19,43 @@ import {
 import type { OperatorCaseSummary } from "@/features/operator/schemas/operator.schemas";
 import { Button } from "@/shared/components/ui/button";
 
+const CASES_PER_PAGE = 50;
+
 export function OperatorIntakePage() {
-  const query = useQuery(operatorQueries.intake({ page: 1, limit: 50 }));
+  const search = useSearch({ from: "/admin/moderation/intake" });
+  const navigate = useNavigate({ from: "/admin/moderation/intake" });
+  const page = search.page ?? 1;
+  const query = useQuery(
+    operatorQueries.intake({ page, limit: CASES_PER_PAGE }),
+  );
+  const pageHeadingRef = useRef<HTMLHeadingElement>(null);
+  const previousPageRef = useRef(page);
+  const totalPages = query.data
+    ? Math.max(1, Math.ceil(query.data.total / query.data.limit))
+    : 1;
+
+  useEffect(() => {
+    if (!query.data || page <= totalPages) return;
+
+    void navigate({
+      replace: true,
+      search: { page: totalPages === 1 ? undefined : totalPages },
+    });
+  }, [navigate, page, query.data, totalPages]);
+
+  useEffect(() => {
+    if (
+      !query.data ||
+      query.isFetching ||
+      page > totalPages ||
+      previousPageRef.current === page
+    ) {
+      return;
+    }
+
+    previousPageRef.current = page;
+    pageHeadingRef.current?.focus({ preventScroll: true });
+  }, [page, query.data, query.isFetching, totalPages]);
 
   if (query.isLoading) return <OperatorLoading />;
   if (query.isError || !query.data) {
@@ -42,8 +77,15 @@ export function OperatorIntakePage() {
       </Button>
       <header className="grid gap-1">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h1 className="font-extrabold text-2xl text-ink">
+          <h1
+            ref={pageHeadingRef}
+            tabIndex={-1}
+            className="rounded-sm font-extrabold text-2xl text-ink outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
             Unassigned intake
+            <span className="sr-only">
+              , page {page} of {totalPages}
+            </span>
           </h1>
           <span className="font-semibold text-slate-muted text-sm">
             {query.data.total} {query.data.total === 1 ? "case" : "cases"}
@@ -69,7 +111,61 @@ export function OperatorIntakePage() {
           </div>
         </div>
       )}
+      <IntakePagination page={page} totalPages={totalPages} />
     </div>
+  );
+}
+
+function IntakePagination({
+  page,
+  totalPages,
+}: {
+  page: number;
+  totalPages: number;
+}) {
+  if (totalPages <= 1) return null;
+
+  return (
+    <nav
+      aria-label="Intake pagination"
+      className="flex flex-wrap items-center justify-between gap-3 border-border border-t pt-4"
+    >
+      <p className="font-medium text-slate-muted text-sm" aria-live="polite">
+        Page {page} of {totalPages}
+      </p>
+      <div className="flex items-center gap-2">
+        {page > 1 ? (
+          <Button asChild variant="outline" size="sm">
+            <Link
+              to="/admin/moderation/intake"
+              search={{ page: page === 2 ? undefined : page - 1 }}
+              rel="prev"
+            >
+              Previous
+            </Link>
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" disabled>
+            Previous
+          </Button>
+        )}
+        {page < totalPages ? (
+          <Button asChild variant="outline" size="sm">
+            <Link
+              to="/admin/moderation/intake"
+              search={{ page: page + 1 }}
+              rel="next"
+            >
+              Next
+            </Link>
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" disabled>
+            Next
+          </Button>
+        )}
+      </div>
+    </nav>
   );
 }
 

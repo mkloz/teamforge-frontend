@@ -20,6 +20,7 @@ export function useExploreFeed() {
     isError: feedQuery.isError,
     isFetchingNextPage: feedQuery.isFetchingNextPage,
     isLoading: feedQuery.isLoading,
+    isUpdating: feedQuery.isFetching && feedQuery.isPlaceholderData,
     fetchNextPage: feedQuery.fetchNextPage,
     refetch: feedQuery.refetch,
     resetFilters,

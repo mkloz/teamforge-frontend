@@ -259,6 +259,11 @@ export function GroupRow({
         {...buildActivityGroupHubNavigation(group.id)}
         className={getGroupRowClassName(hasUnreadMessages)}
       >
+        {hasUnreadMessages ? (
+          <span className="sr-only">
+            {unreadCount} unread {unreadCount === 1 ? "message" : "messages"}.
+          </span>
+        ) : null}
         <GroupUnreadIndicator hasUnreadMessages={hasUnreadMessages} />
 
         <GroupAvatar group={group} hasUnreadMessages={hasUnreadMessages} />

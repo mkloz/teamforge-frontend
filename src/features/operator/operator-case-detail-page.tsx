@@ -69,8 +69,15 @@ export function OperatorCaseDetailPage() {
       </header>
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="grid gap-6">
+        <div className="grid gap-6 lg:col-start-1 lg:row-start-1">
           <CaseOverview item={item} />
+        </div>
+        <aside className="grid gap-6 lg:col-start-2 lg:row-start-1">
+          {sessionQuery.data ? (
+            <OperatorCaseActions item={item} session={sessionQuery.data} />
+          ) : null}
+        </aside>
+        <div className="grid gap-6 lg:col-start-1 lg:row-start-2">
           <OperatorAssessmentPanel caseId={item.id} />
           <DecisionChronology item={item} />
           <ReportsPanel item={item} />
@@ -81,10 +88,7 @@ export function OperatorCaseDetailPage() {
             reportCategories={item.reports.map(({ report }) => report.category)}
           />
         </div>
-        <aside className="grid gap-6 lg:sticky lg:top-6">
-          {sessionQuery.data ? (
-            <OperatorCaseActions item={item} session={sessionQuery.data} />
-          ) : null}
+        <aside className="grid gap-6 lg:col-start-2 lg:row-start-2">
           <EnforcementHistory item={item} />
           <ContainmentHistory item={item} />
           <ReviewsPanel item={item} />
