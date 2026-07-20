@@ -1,5 +1,6 @@
 import { DateTimeSection } from "./date-time-section";
 import { EventTitleSection } from "./event-title-section";
+import { FormationMethodSection } from "./formation-method-section";
 import { LocationSection } from "./location-section";
 import { PlanDetailsSection } from "./plan-details-section";
 import { ScopeSection } from "./scope-section";
@@ -7,6 +8,7 @@ import type { Step2PlanProps } from "./types";
 
 export function Step2Plan({
   forgeMode,
+  onForgeModeChange,
   forgeScope,
   onForgeScopeChange,
   planName,
@@ -34,6 +36,8 @@ export function Step2Plan({
 
   return (
     <div className="flex flex-col gap-4 pb-6">
+      <FormationMethodSection value={forgeMode} onChange={onForgeModeChange} />
+
       <EventTitleSection
         charCount={charCount}
         isNameError={isNameError}

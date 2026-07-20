@@ -6,6 +6,7 @@ export function PlanStepPanel({ fw }: ForgeWizardChildProps) {
   return (
     <Step2Plan
       forgeMode={fw.forgeMode}
+      onForgeModeChange={fw.setForgeMode}
       forgeScope={fw.forgeScope}
       onForgeScopeChange={fw.setForgeScope}
       planName={fw.planName}

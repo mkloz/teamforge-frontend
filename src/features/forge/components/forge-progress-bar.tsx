@@ -18,15 +18,15 @@ interface ForgeProgressStep {
 
 const PRE_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
   { s: 1, label: "Activity" },
-  { s: 2, label: "Formation method" },
+  { s: 2, label: "Template" },
   { s: 3, label: "Plan" },
   { s: 4, label: "Group" },
 ];
 
 const AUTO_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
   { s: 1, label: "Activity" },
-  { s: 2, label: "Formation method" },
-  { s: 3, label: "Scope and plan" },
+  { s: 2, label: "Template" },
+  { s: 3, label: "Plan" },
   { s: 4, label: "Review" },
   { s: 5, label: "Search state" },
 ];

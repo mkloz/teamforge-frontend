@@ -4,6 +4,7 @@ export type PlanScheduleMode = "TO_BE_DECIDED" | "FIXED";
 
 export interface Step2PlanProps {
   forgeMode: "AUTO" | "MANUAL";
+  onForgeModeChange: (value: "AUTO" | "MANUAL") => void;
   forgeScope: ForgeScope;
   onForgeScopeChange: (value: ForgeScope) => void;
   planName: string;

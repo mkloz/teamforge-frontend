@@ -8,13 +8,16 @@ export function getForgeStepMetadata(fw: ForgeWizardState) {
       title: "What are we doing?",
     },
     2: {
-      hint: "Let TeamForge search, or invite people yourself.",
-      sub: "Formation method",
-      title: "How should this group start?",
+      hint: "Use a template or start with a blank plan.",
+      sub: "Template",
+      title: "Pick a starting point",
     },
     3: {
-      hint: "Add what you know now. The group can decide the rest.",
-      sub: fw.forgeMode === "AUTO" ? "Scope and plan" : "Plan details",
+      hint:
+        fw.forgeMode === "AUTO"
+          ? "Choose how the group starts, then add what you know now."
+          : "Choose how the group starts, then set the details.",
+      sub: "Plan details",
       title: "Set the plan",
     },
     4: {
