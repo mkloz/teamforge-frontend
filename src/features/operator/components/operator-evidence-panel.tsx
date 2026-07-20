@@ -12,6 +12,7 @@ import {
 import type {
   OperatorEvidenceMetadata,
   RevealedEvidence,
+  RevealedMediaEvidence,
 } from "@/features/operator/schemas/operator.schemas";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -19,21 +20,27 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function OperatorEvidencePanel({
   caseId,
+  mandatoryHumanReasons,
   policyLabels,
   reportCategories,
 }: {
   caseId: string;
+  mandatoryHumanReasons: string[];
   policyLabels: string[];
   reportCategories: string[];
 }) {
   const query = useQuery(operatorQueries.evidence(caseId));
-  const childSafety = isChildSafetyCase(policyLabels, reportCategories);
+  const childSafety = isChildSafetyCase(
+    policyLabels,
+    reportCategories,
+    mandatoryHumanReasons,
+  );
 
   return (
     <OperatorPanel title="Evidence metadata">
       <p className="text-slate-muted text-sm leading-relaxed">
-        Evidence stays metadata-only until an audited text reveal succeeds.
-        Attachments cannot be previewed here.
+        Evidence stays metadata-only until an audited reveal succeeds. Clean,
+        preserved image attachments can be previewed outside child-safety cases.
       </p>
       {query.isLoading ? (
         <div className="grid gap-2">
@@ -83,7 +90,7 @@ function EvidenceItem({
   evidence: OperatorEvidenceMetadata;
 }) {
   const [reasonCode, setReasonCode] = useState("CASE_REVIEW");
-  const mutation = useMutation({
+  const mutation = useMutation<RevealedEvidence | RevealedMediaEvidence>({
     mutationKey: [
       "admin",
       "operator",
@@ -93,17 +100,31 @@ function EvidenceItem({
     ],
     gcTime: 0,
     mutationFn: () =>
-      OperatorApi.revealEvidence({
-        caseId,
-        evidenceId: evidence.id,
-        childSafety,
-        reasonCode,
-      }),
+      evidence.sourceType === "ATTACHMENT"
+        ? OperatorApi.revealMediaEvidence({
+            caseId,
+            evidenceId: evidence.id,
+            reasonCode,
+          })
+        : OperatorApi.revealEvidence({
+            caseId,
+            evidenceId: evidence.id,
+            childSafety,
+            reasonCode,
+          }),
   });
   const canReveal =
-    evidence.sourceType !== "ATTACHMENT" &&
     evidence.preservationState === "PRESERVED" &&
+    (evidence.sourceType !== "ATTACHMENT" ||
+      (!childSafety &&
+        evidence.attachmentType === "IMAGE" &&
+        evidence.scanState === "CLEAN")) &&
     /^[A-Z][A-Z0-9_]{2,63}$/u.test(reasonCode);
+  const attachmentUnavailable =
+    evidence.sourceType === "ATTACHMENT" &&
+    (childSafety ||
+      evidence.attachmentType !== "IMAGE" ||
+      evidence.scanState !== "CLEAN");
 
   return (
     <li className="grid gap-3 rounded-xl bg-muted/45 p-4">
@@ -124,16 +145,20 @@ function EvidenceItem({
         {mutation.data ? (
           <Button variant="outline" size="sm" onClick={() => mutation.reset()}>
             <EyeOff className="size-4" aria-hidden="true" />
-            Hide revealed text
+            Hide revealed evidence
           </Button>
         ) : null}
       </div>
 
       {mutation.data ? (
-        <RevealedText value={mutation.data} />
-      ) : evidence.sourceType === "ATTACHMENT" ? (
+        isRevealedMediaEvidence(mutation.data) ? (
+          <RevealedMedia value={mutation.data} />
+        ) : (
+          <RevealedText value={mutation.data} />
+        )
+      ) : attachmentUnavailable ? (
         <p className="text-slate-muted text-sm">
-          Attachment metadata only. Preview is disabled.
+          {getAttachmentUnavailableMessage(evidence, childSafety)}
         </p>
       ) : (
         <div className="sm:main-action-grid grid gap-2 sm:items-end">
@@ -159,7 +184,9 @@ function EvidenceItem({
             onClick={() => mutation.mutate()}
           >
             <Eye className="size-4" aria-hidden="true" />
-            Reveal text
+            {evidence.sourceType === "ATTACHMENT"
+              ? "Reveal attachment"
+              : "Reveal text"}
           </Button>
         </div>
       )}
@@ -170,6 +197,49 @@ function EvidenceItem({
         </p>
       ) : null}
     </li>
+  );
+}
+
+function getAttachmentUnavailableMessage(
+  evidence: OperatorEvidenceMetadata,
+  childSafety: boolean,
+) {
+  if (childSafety) {
+    return "Attachment previews stay unavailable in child-safety cases.";
+  }
+  if (evidence.attachmentType !== "IMAGE") {
+    return "Only image attachments can be previewed here.";
+  }
+  return `Attachment preview is unavailable while its scan state is ${humanizeCode(
+    evidence.scanState,
+  ).toLowerCase()}.`;
+}
+
+function isRevealedMediaEvidence(
+  value: RevealedEvidence | RevealedMediaEvidence,
+): value is RevealedMediaEvidence {
+  return "dataUrl" in value;
+}
+
+function RevealedMedia({ value }: { value: RevealedMediaEvidence }) {
+  return (
+    <div className="grid gap-3 rounded-xl border border-accent/30 bg-card p-4">
+      <div className="grid gap-1">
+        <p className="font-semibold text-ink text-sm">Revealed attachment</p>
+        <p className="text-slate-muted text-xs">
+          {value.width} × {value.height} ·{" "}
+          {new Intl.NumberFormat(undefined, {
+            maximumFractionDigits: 1,
+          }).format(value.byteLength / 1024)}{" "}
+          KB
+        </p>
+      </div>
+      <img
+        src={value.dataUrl}
+        alt="Revealed attachment evidence"
+        className="max-h-96 w-full rounded-xl object-contain"
+      />
+    </div>
   );
 }
 

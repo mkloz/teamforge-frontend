@@ -19,16 +19,25 @@ export function useCurrentSessionSignOut({
   });
   const navigate = useNavigate();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState(false);
 
   async function signOut() {
     setIsSigningOut(true);
+    setSignOutError(false);
     const returnHref = buildRouteLocationHref(
       currentLocation ?? routerLocation,
     );
 
     try {
       await logoutCurrentSession();
+    } catch {
+      setSignOutError(true);
+    }
+
+    try {
       await navigate(buildAuthRouteNavigation("/auth/login", returnHref));
+    } catch {
+      setSignOutError(true);
     } finally {
       setIsSigningOut(false);
     }
@@ -36,6 +45,7 @@ export function useCurrentSessionSignOut({
 
   return {
     isSigningOut,
+    signOutError,
     signOut,
   };
 }

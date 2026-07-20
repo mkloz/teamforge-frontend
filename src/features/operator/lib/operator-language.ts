@@ -60,9 +60,14 @@ export function formatOperatorDate(value: string | null) {
 export function isChildSafetyCase(
   policyLabels: string[],
   reportCategories: string[],
+  mandatoryHumanReasons: string[],
 ) {
   return (
     reportCategories.includes("UNDERAGE_SAFETY") ||
+    mandatoryHumanReasons.some(
+      (reason) =>
+        reason === "CHILD_SAFETY" || reason === "IDENTITY_OR_AGE_DISPUTE",
+    ) ||
     policyLabels.some((label) => {
       const normalized = label.toUpperCase();
       return (

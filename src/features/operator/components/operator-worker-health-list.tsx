@@ -26,11 +26,13 @@ import { cn } from "@/shared/lib/utils";
 
 export function OperatorWorkerHealthList({
   commandsEnabled,
+  onCommandError,
   onSelect,
   selectedKind,
   workers,
 }: {
   commandsEnabled: boolean;
+  onCommandError: (error: unknown) => void;
   onSelect: (kind: OperatorWorkerKind) => void;
   selectedKind: string;
   workers: OperatorWorkerStatus[];
@@ -60,6 +62,7 @@ export function OperatorWorkerHealthList({
             worker={worker}
             selected={worker.kind === selectedKind}
             commandsEnabled={commandsEnabled}
+            onCommandError={onCommandError}
             onSelect={() => onSelect(worker.kind)}
           />
         ))}
@@ -70,11 +73,13 @@ export function OperatorWorkerHealthList({
 
 function WorkerCard({
   commandsEnabled,
+  onCommandError,
   onSelect,
   selected,
   worker,
 }: {
   commandsEnabled: boolean;
+  onCommandError: (error: unknown) => void;
   onSelect: () => void;
   selected: boolean;
   worker: OperatorWorkerStatus;
@@ -137,14 +142,20 @@ function WorkerCard({
           Review jobs
         </Button>
         {commandsEnabled && worker.kind === "MODERATION_ASSISTANCE" ? (
-          <WorkerStateCommand worker={worker} />
+          <WorkerStateCommand worker={worker} onCommandError={onCommandError} />
         ) : null}
       </div>
     </article>
   );
 }
 
-function WorkerStateCommand({ worker }: { worker: OperatorWorkerStatus }) {
+function WorkerStateCommand({
+  onCommandError,
+  worker,
+}: {
+  onCommandError: (error: unknown) => void;
+  worker: OperatorWorkerStatus;
+}) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const action = worker.state === "PAUSED" ? "resume" : "pause";
@@ -182,6 +193,7 @@ function WorkerStateCommand({ worker }: { worker: OperatorWorkerStatus }) {
         ? OperatorApi.pauseWorker(worker.kind, input)
         : OperatorApi.resumeWorker(worker.kind, input);
     },
+    onError: onCommandError,
     onSuccess: () => {
       setOpen(false);
       commandRef.current = null;

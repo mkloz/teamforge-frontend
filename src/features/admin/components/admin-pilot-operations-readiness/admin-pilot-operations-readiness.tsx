@@ -36,8 +36,14 @@ const ACTION_KEYS = [
 
 export function AdminPilotOperationsReadiness() {
   const readinessQuery = useQuery(adminPilotOperationsReadinessQueryOptions());
-  const { hasCurrentStepUp, rejectCurrentStepUp, sessionQuery } =
-    useOperatorSessionStepUp();
+  const {
+    hasCurrentStepUp,
+    isSigningInAgain,
+    rejectCurrentStepUp,
+    sessionQuery,
+    signInAgain,
+    signInAgainError,
+  } = useOperatorSessionStepUp();
   const [announcement, setAnnouncement] = useState("");
   const [commandError, setCommandError] = useState<string | null>(null);
 
@@ -69,6 +75,9 @@ export function AdminPilotOperationsReadiness() {
         ownsControls={ownsControls}
         sessionQuery={sessionQuery}
         hasCurrentStepUp={hasCurrentStepUp}
+        isSigningInAgain={isSigningInAgain}
+        onSignInAgain={() => void signInAgain()}
+        signInAgainError={signInAgainError}
       />
       {commandError ? (
         <CoverageCommandError
@@ -218,10 +227,16 @@ function ActionReadiness({ readiness }: { readiness: Readiness }) {
 
 function CoverageCommandAccess({
   hasCurrentStepUp,
+  isSigningInAgain,
+  onSignInAgain,
+  signInAgainError,
   ownsControls,
   sessionQuery,
 }: {
   hasCurrentStepUp: boolean;
+  isSigningInAgain: boolean;
+  onSignInAgain: () => void;
+  signInAgainError: boolean;
   ownsControls: boolean;
   sessionQuery: ReturnType<typeof useOperatorSessionStepUp>["sessionQuery"];
 }) {
@@ -275,15 +290,34 @@ function CoverageCommandAccess({
 
   if (!hasCurrentStepUp) {
     return (
-      <div className="flex items-start gap-3 border-accent/30 border-y bg-accent/8 py-5 text-amber-900 dark:text-amber-200">
-        <AlertTriangle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
-        <div className="grid gap-1">
-          <h2 className="font-semibold text-sm">Recent sign-in required</h2>
-          <p className="text-sm">
-            Readiness remains visible, but coverage changes stay disabled until
-            admin access is verified again.
-          </p>
+      <div className="flex flex-wrap items-start justify-between gap-4 border-accent/30 border-y bg-accent/8 py-5 text-amber-900 dark:text-amber-200">
+        <div className="flex min-w-0 items-start gap-3">
+          <AlertTriangle
+            className="mt-0.5 size-5 shrink-0"
+            aria-hidden="true"
+          />
+          <div className="grid gap-1">
+            <h2 className="font-semibold text-sm">Recent sign-in required</h2>
+            <p className="max-w-2xl text-sm">
+              Sign out and sign in again to refresh admin verification. You will
+              return to this page afterward.
+            </p>
+          </div>
         </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          loading={isSigningInAgain}
+          onClick={onSignInAgain}
+        >
+          Sign in again
+        </Button>
+        {signInAgainError ? (
+          <p className="w-full text-destructive text-sm" role="alert">
+            Sign-out could not be completed. Try again.
+          </p>
+        ) : null}
       </div>
     );
   }

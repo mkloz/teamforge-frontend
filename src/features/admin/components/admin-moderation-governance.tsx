@@ -39,8 +39,14 @@ export function AdminModerationGovernance({
     operatorGovernanceQueries.configurationDraftTemplate(),
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const { hasCurrentStepUp, rejectCurrentStepUp, sessionQuery } =
-    useOperatorSessionStepUp({ enabled: canManage });
+  const {
+    hasCurrentStepUp,
+    isSigningInAgain,
+    rejectCurrentStepUp,
+    sessionQuery,
+    signInAgain,
+    signInAgainError,
+  } = useOperatorSessionStepUp({ enabled: canManage });
   const commandsEnabled = hasCurrentStepUp && canManage;
   const handleCommandError = (error: unknown) => {
     if (getOperatorControlErrorKind(error) === "STALE_SESSION") {
@@ -96,7 +102,11 @@ export function AdminModerationGovernance({
       ) : sessionQuery.isError ? (
         <GovernanceSessionError onRetry={() => void sessionQuery.refetch()} />
       ) : !commandsEnabled ? (
-        <GovernanceStepUpNotice />
+        <GovernanceStepUpNotice
+          isSigningInAgain={isSigningInAgain}
+          onSignInAgain={() => void signInAgain()}
+          signInAgainError={signInAgainError}
+        />
       ) : null}
 
       <ConfigurationStateSummary
@@ -482,17 +492,41 @@ function GovernanceSessionError({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-function GovernanceStepUpNotice() {
+function GovernanceStepUpNotice({
+  isSigningInAgain,
+  onSignInAgain,
+  signInAgainError,
+}: {
+  isSigningInAgain: boolean;
+  onSignInAgain: () => void;
+  signInAgainError: boolean;
+}) {
   return (
-    <div className="flex items-start gap-3 border-accent/30 border-y bg-accent/8 py-5 text-amber-900 dark:text-amber-200">
-      <AlertTriangle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
-      <div className="grid gap-1">
-        <h2 className="font-semibold text-sm">Recent sign-in required</h2>
-        <p className="text-sm">
-          The settings remain visible, but changes stay disabled until admin
-          access is verified again.
-        </p>
+    <div className="flex flex-wrap items-start justify-between gap-4 border-accent/30 border-y bg-accent/8 py-5 text-amber-900 dark:text-amber-200">
+      <div className="flex min-w-0 items-start gap-3">
+        <AlertTriangle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+        <div className="grid gap-1">
+          <h2 className="font-semibold text-sm">Recent sign-in required</h2>
+          <p className="max-w-2xl text-sm">
+            Sign out and sign in again to refresh admin verification. You will
+            return to this page afterward.
+          </p>
+        </div>
       </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        loading={isSigningInAgain}
+        onClick={onSignInAgain}
+      >
+        Sign in again
+      </Button>
+      {signInAgainError ? (
+        <p className="w-full text-destructive text-sm" role="alert">
+          Sign-out could not be completed. Try again.
+        </p>
+      ) : null}
     </div>
   );
 }

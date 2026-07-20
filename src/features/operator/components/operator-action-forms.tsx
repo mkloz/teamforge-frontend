@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { FormEvent, ReactNode } from "react";
-import { useId, useRef } from "react";
+import { useId, useRef, useState } from "react";
 import { OperatorApi } from "@/features/operator/api/operator.api";
 import {
   OPERATOR_QUERY_KEYS,
@@ -20,7 +20,7 @@ import type {
   TriageCasePayload,
 } from "@/features/operator/schemas/operator.schemas";
 import {
-  operatorAssistanceDispositionSchema,
+  operatorCommandSchema,
   requestInformationSchema,
   triageCaseSchema,
 } from "@/features/operator/schemas/operator.schemas";
@@ -28,7 +28,12 @@ import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
 
-type CommandBody = Omit<OperatorCommand, "idempotencyKey">;
+type CommandBodyInput = Omit<
+  OperatorCommand,
+  "assistanceDisposition" | "idempotencyKey"
+> & {
+  assistanceDisposition?: string;
+};
 
 function usePayloadIdempotencyKey() {
   const submissionRef = useRef<{ fingerprint: string; key: string } | null>(
@@ -188,6 +193,7 @@ function CommandForm({
 }) {
   const queryClient = useQueryClient();
   const getIdempotencyKey = usePayloadIdempotencyKey();
+  const [validationError, setValidationError] = useState(false);
   const mutation = useMutation({
     mutationKey: ["admin", "operator", "moderation", "command", caseId],
     mutationFn: execute,
@@ -196,11 +202,22 @@ function CommandForm({
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    mutation.reset();
     const body = readCommandBody(
       new FormData(event.currentTarget),
       assessmentId,
     );
-    mutation.mutate({ ...body, idempotencyKey: getIdempotencyKey(body) });
+    const result = operatorCommandSchema.safeParse({
+      ...body,
+      idempotencyKey: getIdempotencyKey(body),
+    });
+    if (!result.success) {
+      setValidationError(true);
+      return;
+    }
+
+    setValidationError(false);
+    mutation.mutate(result.data);
   }
 
   return (
@@ -210,6 +227,7 @@ function CommandForm({
       isPending={mutation.isPending}
       isSuccess={mutation.isSuccess}
       isError={mutation.isError}
+      validationError={validationError}
       onSubmit={submit}
     >
       {children}
@@ -227,6 +245,7 @@ function TriageForm({
 }) {
   const queryClient = useQueryClient();
   const getIdempotencyKey = usePayloadIdempotencyKey();
+  const [validationError, setValidationError] = useState(false);
   const mutation = useMutation({
     mutationKey: ["admin", "operator", "moderation", "triage", caseId],
     mutationFn: (payload: TriageCasePayload) =>
@@ -236,6 +255,7 @@ function TriageForm({
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    mutation.reset();
     const data = new FormData(event.currentTarget);
     const body = {
       ...readCommandBody(data, assessmentId),
@@ -245,12 +265,17 @@ function TriageForm({
       mandatoryHumanReasons: readList(data, "mandatoryHumanReasons"),
       ...(readDate(data, "dueAt") ? { dueAt: readDate(data, "dueAt") } : {}),
     };
-    mutation.mutate(
-      triageCaseSchema.parse({
-        ...body,
-        idempotencyKey: getIdempotencyKey(body),
-      }),
-    );
+    const result = triageCaseSchema.safeParse({
+      ...body,
+      idempotencyKey: getIdempotencyKey(body),
+    });
+    if (!result.success) {
+      setValidationError(true);
+      return;
+    }
+
+    setValidationError(false);
+    mutation.mutate(result.data);
   }
 
   return (
@@ -260,6 +285,7 @@ function TriageForm({
       isPending={mutation.isPending}
       isSuccess={mutation.isSuccess}
       isError={mutation.isError}
+      validationError={validationError}
       onSubmit={submit}
     >
       <SelectField
@@ -310,6 +336,7 @@ function InformationRequestForm({
 }) {
   const queryClient = useQueryClient();
   const getIdempotencyKey = usePayloadIdempotencyKey();
+  const [validationError, setValidationError] = useState(false);
   const mutation = useMutation({
     mutationKey: [
       "admin",
@@ -325,6 +352,7 @@ function InformationRequestForm({
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    mutation.reset();
     const data = new FormData(event.currentTarget);
     const command = readCommandBody(data, assessmentId);
     const body = {
@@ -333,12 +361,17 @@ function InformationRequestForm({
       templateCode: readString(data, "templateCode"),
       expiresAt: readDate(data, "expiresAt"),
     };
-    mutation.mutate(
-      requestInformationSchema.parse({
-        ...body,
-        idempotencyKey: getIdempotencyKey(body),
-      }),
-    );
+    const result = requestInformationSchema.safeParse({
+      ...body,
+      idempotencyKey: getIdempotencyKey(body),
+    });
+    if (!result.success) {
+      setValidationError(true);
+      return;
+    }
+
+    setValidationError(false);
+    mutation.mutate(result.data);
   }
 
   return (
@@ -348,6 +381,7 @@ function InformationRequestForm({
       isPending={mutation.isPending}
       isSuccess={mutation.isSuccess}
       isError={mutation.isError}
+      validationError={validationError}
       onSubmit={submit}
     >
       <ReportField reports={reports} />
@@ -380,6 +414,7 @@ function ActionForm({
   isSuccess,
   onSubmit,
   submitLabel,
+  validationError,
 }: {
   children: ReactNode;
   heading: string;
@@ -388,6 +423,7 @@ function ActionForm({
   isSuccess: boolean;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   submitLabel: string;
+  validationError: boolean;
 }) {
   return (
     <form
@@ -396,6 +432,11 @@ function ActionForm({
     >
       <h3 className="font-semibold text-ink text-sm">{heading}</h3>
       {children}
+      {validationError ? (
+        <p className="text-destructive text-xs" role="alert">
+          Check the command fields and use valid reason and policy codes.
+        </p>
+      ) : null}
       {isError ? (
         <p className="text-destructive text-xs" role="alert">
           The command was not accepted. Check your access, step-up, and command
@@ -511,12 +552,10 @@ function SelectField({
 function readCommandBody(
   data: FormData,
   assessmentId: string | null,
-): CommandBody {
+): CommandBodyInput {
   const rationale = readString(data, "rationale").trim();
   const assistanceDisposition = assessmentId
-    ? operatorAssistanceDispositionSchema.parse(
-        readString(data, "assistanceDisposition"),
-      )
+    ? readString(data, "assistanceDisposition")
     : undefined;
   return {
     ...(assessmentId && assistanceDisposition
@@ -600,7 +639,10 @@ function readList(data: FormData, name: string) {
 
 function readDate(data: FormData, name: string) {
   const value = readString(data, name);
-  return value ? new Date(value).toISOString() : "";
+  if (!value) return "";
+
+  const timestamp = Date.parse(value);
+  return Number.isNaN(timestamp) ? value : new Date(timestamp).toISOString();
 }
 
 function readString(data: FormData, name: string) {

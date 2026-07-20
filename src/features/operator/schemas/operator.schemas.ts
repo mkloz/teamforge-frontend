@@ -459,10 +459,20 @@ export const operatorJobReplayResultSchema = z.object({
 export const operatorEvidenceMetadataSchema = z.object({
   id: z.string(),
   sourceType: reportTargetTypeSchema,
+  attachmentType: z.enum(["IMAGE", "VIDEO", "AUDIO", "FILE"]).nullable(),
   sourceId: z.string(),
   sourceVersion: z.string(),
   sensitivity: z.string(),
   preservationState: z.enum(["PRESERVED", "PRESERVATION_INCOMPLETE", "PURGED"]),
+  scanState: z.enum([
+    "NOT_REQUIRED",
+    "QUARANTINED",
+    "SCANNING",
+    "CLEAN",
+    "REJECTED",
+    "CHILD_SAFETY_RESTRICTED",
+    "FAILED",
+  ]),
   preservedAt: nullableDateTimeSchema,
   retentionUntil: dateTimeSchema,
   purgedAt: nullableDateTimeSchema,
@@ -583,6 +593,17 @@ export const revealedEvidenceSchema = z.object({
   target: revealedEvidenceItemSchema,
   targetType: reportTargetTypeSchema,
 });
+export const revealedMediaEvidenceSchema = z.object({
+  byteLength: z.number().int().nonnegative(),
+  dataUrl: z.string().startsWith("data:image/webp"),
+  evidenceId: z.string(),
+  height: z.number().int().positive(),
+  mediaType: z.literal("image/webp"),
+  sourceId: z.string(),
+  sourceType: z.literal("ATTACHMENT"),
+  sourceVersion: z.string(),
+  width: z.number().int().positive(),
+});
 
 export type OperatorQueue = z.infer<typeof operatorQueueSchema>;
 export type OperatorRole = z.infer<typeof operatorRoleSchema>;
@@ -607,6 +628,7 @@ export type OperatorEvidenceMetadata = z.infer<
   typeof operatorEvidenceMetadataSchema
 >;
 export type RevealedEvidence = z.infer<typeof revealedEvidenceSchema>;
+export type RevealedMediaEvidence = z.infer<typeof revealedMediaEvidenceSchema>;
 export type OperatorCommand = z.infer<typeof operatorCommandSchema>;
 export type TriageCasePayload = z.infer<typeof triageCaseSchema>;
 export type RequestInformationPayload = z.infer<

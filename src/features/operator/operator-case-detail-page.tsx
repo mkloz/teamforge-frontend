@@ -76,6 +76,7 @@ export function OperatorCaseDetailPage() {
           <ReportsPanel item={item} />
           <OperatorEvidencePanel
             caseId={item.id}
+            mandatoryHumanReasons={item.mandatoryHumanReasons}
             policyLabels={item.policyLabels}
             reportCategories={item.reports.map(({ report }) => report.category)}
           />

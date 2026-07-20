@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { HTTPError } from "ky";
 import { ArrowLeft, RefreshCw, ShieldOff, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getOperatorControlErrorKind } from "@/features/operator/api/operator-control-errors";
 import {
   OPERATOR_QUERY_KEYS,
   operatorQueries,
@@ -17,11 +18,19 @@ import {
   formatOperatorDate,
   humanizeCode,
 } from "@/features/operator/lib/operator-language";
+import { useOperatorSessionStepUp } from "@/features/operator/public/use-operator-session-step-up";
 import { Button } from "@/shared/components/ui/button";
 
 export function OperatorWorkerOperationsPage() {
   const queryClient = useQueryClient();
-  const sessionQuery = useQuery(operatorQueries.session());
+  const {
+    hasCurrentStepUp: commandsEnabled,
+    isSigningInAgain,
+    rejectCurrentStepUp,
+    sessionQuery,
+    signInAgain,
+    signInAgainError,
+  } = useOperatorSessionStepUp();
   const canView = Boolean(
     sessionQuery.data?.roles.includes("OWNER_ADMIN") &&
       !sessionQuery.data.breakGlass,
@@ -31,9 +40,11 @@ export function OperatorWorkerOperationsPage() {
     enabled: canView,
   });
   const [selectedKind, setSelectedKind] = useState("");
-  const commandsEnabled = useCurrentStepUp(
-    sessionQuery.data?.stepUpExpiresAt ?? null,
-  );
+  const handleCommandError = (error: unknown) => {
+    if (getOperatorControlErrorKind(error) === "STALE_SESSION") {
+      rejectCurrentStepUp();
+    }
+  };
 
   useEffect(
     () => () => {
@@ -130,8 +141,25 @@ export function OperatorWorkerOperationsPage() {
             <h2 className="font-semibold text-sm">Recent step-up required</h2>
             <p className="text-sm leading-relaxed">
               Worker status is visible, but pause, resume, and requeue commands
-              require a recently verified admin session.
+              require a recently verified admin session. Sign out and sign in
+              again to continue; you will return to this page afterward.
             </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-2 w-fit"
+              disabled={isSigningInAgain}
+              loading={isSigningInAgain}
+              onClick={() => void signInAgain()}
+            >
+              Sign in again
+            </Button>
+            {signInAgainError ? (
+              <p className="mt-2 text-destructive text-sm" role="alert">
+                Sign-out could not be completed. Try again.
+              </p>
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -141,6 +169,7 @@ export function OperatorWorkerOperationsPage() {
         selectedKind={activeKind ?? ""}
         commandsEnabled={commandsEnabled}
         onSelect={setSelectedKind}
+        onCommandError={handleCommandError}
       />
 
       {activeKind ? (
@@ -148,6 +177,7 @@ export function OperatorWorkerOperationsPage() {
           key={activeKind}
           workerKind={activeKind}
           commandsEnabled={commandsEnabled}
+          onCommandError={handleCommandError}
         />
       ) : null}
 
@@ -162,24 +192,6 @@ export function OperatorWorkerOperationsPage() {
       </Button>
     </div>
   );
-}
-
-function useCurrentStepUp(expiresAt: string | null) {
-  const [checkedAt, setCheckedAt] = useState(() => Date.now());
-  const expiresAtMs = expiresAt ? Date.parse(expiresAt) : Number.NaN;
-
-  useEffect(() => {
-    if (!Number.isFinite(expiresAtMs) || expiresAtMs <= checkedAt) {
-      return undefined;
-    }
-
-    const delay = Math.min(Math.max(expiresAtMs - Date.now() + 50, 0), 60_000);
-    const timeout = window.setTimeout(() => setCheckedAt(Date.now()), delay);
-
-    return () => window.clearTimeout(timeout);
-  }, [checkedAt, expiresAtMs]);
-
-  return Number.isFinite(expiresAtMs) && expiresAtMs > checkedAt;
 }
 
 function assistanceModeDetail(mode: "DISABLED" | "SHADOW" | "PAUSED") {

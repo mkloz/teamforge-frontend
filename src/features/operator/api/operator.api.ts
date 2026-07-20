@@ -25,6 +25,7 @@ import {
   requestInformationSchema,
   revealEvidencePayloadSchema,
   revealedEvidenceSchema,
+  revealedMediaEvidenceSchema,
   reversalResultSchema,
   selfAssignCaseSchema,
   type TriageCasePayload,
@@ -65,6 +66,7 @@ const operatorModerationApi = {
         cache: "no-store",
         ...options,
       }),
+      { clearCacheOnForbidden: path === "session" },
     );
   },
   post(path: string, options?: Options) {
@@ -77,13 +79,17 @@ const operatorModerationApi = {
   },
 };
 
-async function operatorRequest(request: Promise<Response>) {
+async function operatorRequest(
+  request: Promise<Response>,
+  options: { clearCacheOnForbidden?: boolean } = {},
+) {
   try {
     return await request;
   } catch (error) {
     if (
       error instanceof HTTPError &&
-      (error.response.status === 401 || error.response.status === 403)
+      (error.response.status === 401 ||
+        (error.response.status === 403 && options.clearCacheOnForbidden))
     ) {
       clearOperatorCache();
     }
@@ -386,6 +392,22 @@ export const OperatorApi = {
       },
     );
     return revealedEvidenceSchema.parse(await response.json());
+  },
+
+  async revealMediaEvidence(input: {
+    caseId: string;
+    evidenceId: string;
+    reasonCode: string;
+  }) {
+    const response = await operatorModerationApi.post(
+      `cases/${input.caseId}/evidence/${input.evidenceId}/media/reveal`,
+      {
+        json: revealEvidencePayloadSchema.parse({
+          reasonCode: input.reasonCode,
+        }),
+      },
+    );
+    return revealedMediaEvidenceSchema.parse(await response.json());
   },
 
   async selfAssign(

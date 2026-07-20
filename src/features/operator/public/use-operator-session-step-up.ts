@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { operatorQueries } from "@/features/operator/api/operator-queries";
+import { useCurrentSessionSignOut } from "@/shared/hooks/use-current-session-sign-out";
 
 interface UseOperatorSessionStepUpOptions {
   enabled?: boolean;
@@ -10,6 +11,7 @@ interface UseOperatorSessionStepUpOptions {
 export function useOperatorSessionStepUp({
   enabled = true,
 }: UseOperatorSessionStepUpOptions = {}) {
+  const { isSigningOut, signOut, signOutError } = useCurrentSessionSignOut();
   const sessionQuery = useQuery({
     ...operatorQueries.session(),
     enabled,
@@ -27,11 +29,14 @@ export function useOperatorSessionStepUp({
       sessionQuery.isSuccess &&
       stepUpIsCurrent &&
       rejectedStepUpKey !== stepUpKey,
+    isSigningInAgain: isSigningOut,
+    signInAgainError: signOutError,
     rejectCurrentStepUp: () => {
       setRejectedStepUpKey(stepUpKey);
       void sessionQuery.refetch();
     },
     sessionQuery,
+    signInAgain: signOut,
   };
 }
 

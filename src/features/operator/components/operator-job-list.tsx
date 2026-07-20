@@ -34,9 +34,11 @@ const PAGE_SIZE = 25;
 
 export function OperatorJobList({
   commandsEnabled,
+  onCommandError,
   workerKind,
 }: {
   commandsEnabled: boolean;
+  onCommandError: (error: unknown) => void;
   workerKind: OperatorWorkerKind;
 }) {
   const queryClient = useQueryClient();
@@ -137,6 +139,7 @@ export function OperatorJobList({
                 job={job}
                 workerKind={workerKind}
                 commandsEnabled={commandsEnabled}
+                onCommandError={onCommandError}
               />
             ))}
           </ul>
@@ -187,10 +190,12 @@ export function OperatorJobList({
 function WorkerJobCard({
   commandsEnabled,
   job,
+  onCommandError,
   workerKind,
 }: {
   commandsEnabled: boolean;
   job: OperatorWorkerJob;
+  onCommandError: (error: unknown) => void;
   workerKind: OperatorWorkerKind;
 }) {
   return (
@@ -224,7 +229,11 @@ function WorkerJobCard({
         </dl>
       </div>
       {commandsEnabled ? (
-        <ReplayJobCommand job={job} workerKind={workerKind} />
+        <ReplayJobCommand
+          job={job}
+          onCommandError={onCommandError}
+          workerKind={workerKind}
+        />
       ) : null}
     </li>
   );
@@ -232,9 +241,11 @@ function WorkerJobCard({
 
 function ReplayJobCommand({
   job,
+  onCommandError,
   workerKind,
 }: {
   job: OperatorWorkerJob;
+  onCommandError: (error: unknown) => void;
   workerKind: OperatorWorkerKind;
 }) {
   const queryClient = useQueryClient();
@@ -261,6 +272,7 @@ function ReplayJobCommand({
         reasonCode: "OWNER_JOB_REPLAY",
       });
     },
+    onError: onCommandError,
     onSuccess: () => {
       setOpen(false);
       commandRef.current = null;

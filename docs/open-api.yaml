@@ -18073,6 +18073,14 @@ components:
             - GROUP
             - PLAN
             - ACTIVITY
+        attachmentType:
+          type: string
+          enum:
+            - IMAGE
+            - VIDEO
+            - AUDIO
+            - FILE
+          nullable: true
         sourceId:
           type: string
         sourceVersion:
@@ -18108,6 +18116,7 @@ components:
       required:
         - id
         - sourceType
+        - attachmentType
         - sourceId
         - sourceVersion
         - sensitivity
