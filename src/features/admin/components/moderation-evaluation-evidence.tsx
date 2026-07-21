@@ -74,6 +74,8 @@ export function ModerationEvaluationEvidence({
   );
 
   function submitRun() {
+    if (!commandsEnabled) return;
+
     try {
       const parsed = operatorModerationEvaluationRunPayloadSchema.safeParse(
         JSON.parse(runJson),
@@ -125,9 +127,9 @@ export function ModerationEvaluationEvidence({
           Evaluation evidence
         </h2>
         <p className="max-w-3xl text-slate-muted text-sm leading-relaxed">
-          Record a completed saved-result run, then approve that exact run for
-          this exact policy version. This page does not call a moderation
-          provider.
+          {commandsEnabled
+            ? "Record a completed saved-result run, then approve that exact run for this policy version. This page does not call a moderation provider."
+            : "Review saved evaluation evidence and the approval tied to this policy version. These controls are read-only."}
         </p>
       </div>
 
@@ -172,7 +174,9 @@ export function ModerationEvaluationEvidence({
 
       <details className="border-border border-b pb-5">
         <summary className="cursor-pointer font-semibold text-ink text-sm">
-          Record a saved evaluation result
+          {commandsEnabled
+            ? "Record a saved evaluation result"
+            : "View evaluation result fields"}
         </summary>
         <div className="mt-4 grid gap-4">
           <label
@@ -182,6 +186,7 @@ export function ModerationEvaluationEvidence({
             Completed at
             <Input
               id="moderation-evaluation-completed-at"
+              readOnly={!commandsEnabled || recordRun.isPending}
               type="datetime-local"
               value={completedAt}
               onChange={(event) => {
@@ -200,6 +205,7 @@ export function ModerationEvaluationEvidence({
             <Textarea
               id="moderation-evaluation-result"
               className="min-h-64 font-mono text-xs leading-relaxed"
+              readOnly={!commandsEnabled || recordRun.isPending}
               spellCheck={false}
               value={runJson}
               onChange={(event) => {
@@ -240,7 +246,9 @@ export function ModerationEvaluationEvidence({
         <div className="grid content-start gap-3 border-border border-b pb-5 lg:border-r lg:border-b-0 lg:pr-6">
           <div className="grid gap-1">
             <h3 className="font-semibold text-ink text-sm">
-              Approve an exact run
+              {commandsEnabled
+                ? "Approve an exact run"
+                : "Review approval inputs"}
             </h3>
             <p className="text-slate-muted text-xs leading-relaxed">
               Use the ID returned after recording, or an existing saved run ID.
@@ -253,6 +261,7 @@ export function ModerationEvaluationEvidence({
             Evaluation run ID
             <Input
               id="moderation-evaluation-run-id"
+              readOnly={!commandsEnabled || approveRun.isPending}
               value={runId}
               onChange={(event) => {
                 setRunId(event.target.value);
@@ -268,6 +277,7 @@ export function ModerationEvaluationEvidence({
             <span className="font-normal text-slate-muted">Optional</span>
             <Input
               id="moderation-approval-expiry"
+              readOnly={!commandsEnabled || approveRun.isPending}
               type="datetime-local"
               value={approvalExpiresAt}
               onChange={(event) => {
@@ -283,6 +293,8 @@ export function ModerationEvaluationEvidence({
             errorMessage={controlErrorMessage(approveRun.error)}
             loading={approveRun.isPending}
             onConfirm={() => {
+              if (!commandsEnabled) return;
+
               approvalKey.current ??= globalThis.crypto.randomUUID();
               approveRun.mutate(
                 {
@@ -337,6 +349,8 @@ export function ModerationEvaluationEvidence({
               errorMessage={controlErrorMessage(revokeApproval.error)}
               loading={revokeApproval.isPending}
               onConfirm={() => {
+                if (!commandsEnabled) return;
+
                 revocationKey.current ??= globalThis.crypto.randomUUID();
                 revokeApproval.mutate(
                   {

@@ -53,10 +53,14 @@ function hasRole(session: OperatorSession, roles: OperatorRole[]) {
 }
 
 export function OperatorCaseActions({
+  commandsEnabled,
   item,
+  onCommandError,
   session,
 }: {
+  commandsEnabled: boolean;
   item: OperatorCaseDetail;
+  onCommandError: (error: unknown) => void;
   session: OperatorSession;
 }) {
   const assessmentsQuery = useQuery(operatorQueries.assessments(item.id));
@@ -127,7 +131,12 @@ export function OperatorCaseActions({
     <OperatorPanel title="Case controls">
       <div className="grid gap-5">
         {canModerate && item.status === "OPEN" ? (
-          <TriageForm assessmentId={latestAssessmentId} caseId={item.id} />
+          <TriageForm
+            assessmentId={latestAssessmentId}
+            caseId={item.id}
+            commandsEnabled={commandsEnabled}
+            onCommandError={onCommandError}
+          />
         ) : null}
         {canEscalate && canMoveToEscalation ? (
           <CommandForm
@@ -135,7 +144,9 @@ export function OperatorCaseActions({
             assessmentId={latestAssessmentId}
             heading="Escalate case"
             submitLabel="Escalate"
+            commandsEnabled={commandsEnabled}
             execute={(payload) => OperatorApi.escalate(item.id, payload)}
+            onCommandError={onCommandError}
           />
         ) : null}
         {canModerate && item.status === "TRIAGING" ? (
@@ -143,6 +154,8 @@ export function OperatorCaseActions({
             <InformationRequestForm
               assessmentId={latestAssessmentId}
               caseId={item.id}
+              commandsEnabled={commandsEnabled}
+              onCommandError={onCommandError}
               reports={item.reports}
             />
           ) : (
@@ -165,9 +178,11 @@ export function OperatorCaseActions({
                   assessmentId={latestAssessmentId}
                   heading={`Reverse ${action.actionType.toLowerCase().replaceAll("_", " ")}`}
                   submitLabel="Reverse action"
+                  commandsEnabled={commandsEnabled}
                   execute={(payload) =>
                     OperatorApi.reverseEnforcement(item.id, action.id, payload)
                   }
+                  onCommandError={onCommandError}
                 />
               ))
           : null}
@@ -180,15 +195,19 @@ function CommandForm({
   assessmentId,
   caseId,
   children,
+  commandsEnabled,
   execute,
   heading,
+  onCommandError,
   submitLabel,
 }: {
   assessmentId: string | null;
   caseId: string;
   children?: ReactNode;
+  commandsEnabled: boolean;
   execute: (payload: OperatorCommand) => Promise<unknown>;
   heading: string;
+  onCommandError: (error: unknown) => void;
   submitLabel: string;
 }) {
   const queryClient = useQueryClient();
@@ -198,6 +217,7 @@ function CommandForm({
     mutationKey: ["admin", "operator", "moderation", "command", caseId],
     mutationFn: execute,
     onSuccess: () => invalidateCase(queryClient, caseId),
+    onError: onCommandError,
   });
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -224,6 +244,7 @@ function CommandForm({
     <ActionForm
       heading={heading}
       submitLabel={submitLabel}
+      commandsEnabled={commandsEnabled}
       isPending={mutation.isPending}
       isSuccess={mutation.isSuccess}
       isError={mutation.isError}
@@ -239,9 +260,13 @@ function CommandForm({
 function TriageForm({
   assessmentId,
   caseId,
+  commandsEnabled,
+  onCommandError,
 }: {
   assessmentId: string | null;
   caseId: string;
+  commandsEnabled: boolean;
+  onCommandError: (error: unknown) => void;
 }) {
   const queryClient = useQueryClient();
   const getIdempotencyKey = usePayloadIdempotencyKey();
@@ -251,6 +276,7 @@ function TriageForm({
     mutationFn: (payload: TriageCasePayload) =>
       OperatorApi.triage(caseId, payload),
     onSuccess: () => invalidateCase(queryClient, caseId),
+    onError: onCommandError,
   });
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -282,6 +308,7 @@ function TriageForm({
     <ActionForm
       heading="Triage case"
       submitLabel="Save triage"
+      commandsEnabled={commandsEnabled}
       isPending={mutation.isPending}
       isSuccess={mutation.isSuccess}
       isError={mutation.isError}
@@ -328,10 +355,14 @@ function TriageForm({
 function InformationRequestForm({
   assessmentId,
   caseId,
+  commandsEnabled,
+  onCommandError,
   reports,
 }: {
   assessmentId: string | null;
   caseId: string;
+  commandsEnabled: boolean;
+  onCommandError: (error: unknown) => void;
   reports: OperatorCaseDetail["reports"];
 }) {
   const queryClient = useQueryClient();
@@ -348,6 +379,7 @@ function InformationRequestForm({
     mutationFn: (payload: RequestInformationPayload) =>
       OperatorApi.requestInformation(caseId, payload),
     onSuccess: () => invalidateCase(queryClient, caseId),
+    onError: onCommandError,
   });
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -378,6 +410,7 @@ function InformationRequestForm({
     <ActionForm
       heading="Request more information"
       submitLabel="Send request"
+      commandsEnabled={commandsEnabled}
       isPending={mutation.isPending}
       isSuccess={mutation.isSuccess}
       isError={mutation.isError}
@@ -408,6 +441,7 @@ function InformationRequestForm({
 
 function ActionForm({
   children,
+  commandsEnabled,
   heading,
   isError,
   isPending,
@@ -417,6 +451,7 @@ function ActionForm({
   validationError,
 }: {
   children: ReactNode;
+  commandsEnabled: boolean;
   heading: string;
   isError: boolean;
   isPending: boolean;
@@ -428,10 +463,18 @@ function ActionForm({
   return (
     <form
       className="grid gap-3 border-border border-b pb-5 last:border-b-0 last:pb-0"
-      onSubmit={onSubmit}
+      onSubmit={(event) => {
+        if (!commandsEnabled) {
+          event.preventDefault();
+          return;
+        }
+        onSubmit(event);
+      }}
     >
       <h3 className="font-semibold text-ink text-sm">{heading}</h3>
-      {children}
+      <fieldset className="contents" disabled={!commandsEnabled || isPending}>
+        {children}
+      </fieldset>
       {validationError ? (
         <p className="text-destructive text-xs" role="alert">
           Check the command fields and use valid reason and policy codes.
@@ -439,8 +482,8 @@ function ActionForm({
       ) : null}
       {isError ? (
         <p className="text-destructive text-xs" role="alert">
-          The command was not accepted. Check your access, step-up, and command
-          fields.
+          The command was not accepted. Check your access, sign in again if
+          asked, and review the command fields.
         </p>
       ) : null}
       {isSuccess ? (
@@ -451,7 +494,7 @@ function ActionForm({
       <Button
         type="submit"
         size="sm"
-        disabled={isPending}
+        disabled={!commandsEnabled || isPending}
         loading={isPending}
         className="w-fit"
       >

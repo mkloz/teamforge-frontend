@@ -59,9 +59,11 @@ export function ModerationControlConfirmation({
           <Button
             type="button"
             variant={tone === "destructive" ? "destructive" : "primary"}
-            disabled={loading}
+            disabled={disabled || loading}
             loading={loading}
-            onClick={onConfirm}
+            onClick={() => {
+              if (!disabled) onConfirm();
+            }}
           >
             {actionLabel}
           </Button>

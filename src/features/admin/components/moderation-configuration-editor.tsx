@@ -47,6 +47,8 @@ export function ModerationConfigurationEditor({
   }
 
   function submitDraft() {
+    if (!commandsEnabled) return;
+
     const payloadResult = parsePayload(fields);
     if (!payloadResult.success) {
       setValidationError(payloadResult.message);
@@ -79,41 +81,50 @@ export function ModerationConfigurationEditor({
           id="configuration-draft-heading"
           className="font-semibold text-base text-ink"
         >
-          Create a draft from {sourceLabel}
+          {commandsEnabled
+            ? `Create a draft from ${sourceLabel}`
+            : `Review draft fields from ${sourceLabel}`}
         </h2>
         <p className="max-w-3xl text-slate-muted text-sm leading-relaxed">
-          Review these fields before saving. A new draft is kept separate from
-          the active policy.
+          {commandsEnabled
+            ? "Review these fields before saving. A new draft is kept separate from the active policy."
+            : "These fields are read-only. Saved configuration details and version history remain available for review."}
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <TextField
+          readOnly={!commandsEnabled || createDraft.isPending}
           label="Policy version"
           value={fields.policyVersion}
           onChange={(value) => updateField("policyVersion", value)}
         />
         <TextField
+          readOnly={!commandsEnabled || createDraft.isPending}
           label="Prompt version"
           value={fields.promptVersion}
           onChange={(value) => updateField("promptVersion", value)}
         />
         <TextField
+          readOnly={!commandsEnabled || createDraft.isPending}
           label="Schema version"
           value={fields.schemaVersion}
           onChange={(value) => updateField("schemaVersion", value)}
         />
         <TextField
+          readOnly={!commandsEnabled || createDraft.isPending}
           label="Threshold version"
           value={fields.thresholdVersion}
           onChange={(value) => updateField("thresholdVersion", value)}
         />
         <TextField
+          readOnly={!commandsEnabled || createDraft.isPending}
           label="Moderation model"
           value={fields.moderationModel}
           onChange={(value) => updateField("moderationModel", value)}
         />
         <TextField
+          readOnly={!commandsEnabled || createDraft.isPending}
           label="Assessment model"
           value={fields.assessmentModel}
           onChange={(value) => updateField("assessmentModel", value)}
@@ -122,6 +133,7 @@ export function ModerationConfigurationEditor({
           Rollout
           <select
             className="h-10 rounded-xl border border-input-border bg-input px-3 font-normal text-foreground outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+            disabled={!commandsEnabled || createDraft.isPending}
             value={fields.rolloutMode}
             onChange={(event) => updateField("rolloutMode", event.target.value)}
           >
@@ -136,7 +148,9 @@ export function ModerationConfigurationEditor({
 
       <details className="border-border border-y py-4">
         <summary className="cursor-pointer font-semibold text-ink text-sm">
-          Edit thresholds, authority, failures, and worker timing
+          {commandsEnabled
+            ? "Edit thresholds, authority, failures, and worker timing"
+            : "View thresholds, authority, failures, and worker timing"}
         </summary>
         <p className="mt-2 max-w-3xl text-slate-muted text-xs leading-relaxed">
           These fields use the exact saved JSON shape. The form validates them
@@ -144,21 +158,25 @@ export function ModerationConfigurationEditor({
         </p>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <JsonField
+            readOnly={!commandsEnabled || createDraft.isPending}
             label="Moderation thresholds"
             value={fields.moderationThresholds}
             onChange={(value) => updateField("moderationThresholds", value)}
           />
           <JsonField
+            readOnly={!commandsEnabled || createDraft.isPending}
             label="Authority rules"
             value={fields.authorityRules}
             onChange={(value) => updateField("authorityRules", value)}
           />
           <JsonField
+            readOnly={!commandsEnabled || createDraft.isPending}
             label="Failure policy"
             value={fields.failurePolicy}
             onChange={(value) => updateField("failurePolicy", value)}
           />
           <JsonField
+            readOnly={!commandsEnabled || createDraft.isPending}
             label="Worker timing"
             value={fields.workerSettings}
             onChange={(value) => updateField("workerSettings", value)}
@@ -264,10 +282,12 @@ function parsePayload(
 function TextField({
   label,
   onChange,
+  readOnly,
   value,
 }: {
   label: string;
   onChange: (value: string) => void;
+  readOnly: boolean;
   value: string;
 }) {
   const id = useId();
@@ -276,6 +296,7 @@ function TextField({
       {label}
       <Input
         id={id}
+        readOnly={readOnly}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
@@ -286,10 +307,12 @@ function TextField({
 function JsonField({
   label,
   onChange,
+  readOnly,
   value,
 }: {
   label: string;
   onChange: (value: string) => void;
+  readOnly: boolean;
   value: string;
 }) {
   const id = useId();
@@ -299,6 +322,7 @@ function JsonField({
       <Textarea
         id={id}
         className="min-h-48 font-mono text-xs leading-relaxed"
+        readOnly={readOnly}
         spellCheck={false}
         value={value}
         onChange={(event) => onChange(event.target.value)}

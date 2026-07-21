@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
+import { getOperatorControlErrorKind } from "@/features/operator/api/operator-control-errors";
 import { operatorQueries } from "@/features/operator/api/operator-queries";
 import { OperatorCaseActions } from "@/features/operator/components/operator-action-forms";
 import { OperatorAssessmentPanel } from "@/features/operator/components/operator-assessment-panel";
@@ -17,8 +18,10 @@ import { OperatorEvidencePanel } from "@/features/operator/components/operator-e
 import {
   OperatorAccessState,
   OperatorLoading,
+  OperatorStepUpNotice,
 } from "@/features/operator/components/operator-states";
 import { humanizeCode } from "@/features/operator/lib/operator-language";
+import { useOperatorSessionStepUp } from "@/features/operator/public/use-operator-session-step-up";
 import { Button } from "@/shared/components/ui/button";
 
 export function OperatorCaseDetailPage() {
@@ -26,9 +29,24 @@ export function OperatorCaseDetailPage() {
     from: "/admin/moderation/cases/$caseId",
   });
   const query = useQuery(operatorQueries.case(caseId));
-  const sessionQuery = useQuery(operatorQueries.session());
+  const {
+    hasCurrentStepUp: commandsEnabled,
+    isSigningInAgain,
+    rejectCurrentStepUp,
+    sessionQuery,
+    signInAgain,
+    signInAgainError,
+  } = useOperatorSessionStepUp();
 
-  if (query.isLoading) return <OperatorLoading />;
+  if (query.isLoading || sessionQuery.isLoading) return <OperatorLoading />;
+  if (sessionQuery.isError || !sessionQuery.data) {
+    return (
+      <OperatorAccessState
+        error={sessionQuery.error}
+        onRetry={() => void sessionQuery.refetch()}
+      />
+    );
+  }
   if (query.isError || !query.data) {
     return (
       <OperatorAccessState
@@ -40,6 +58,12 @@ export function OperatorCaseDetailPage() {
   }
 
   const item = query.data;
+  const handleCommandError = (error: unknown) => {
+    if (getOperatorControlErrorKind(error) === "STALE_SESSION") {
+      rejectCurrentStepUp();
+    }
+  };
+
   return (
     <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-8 md:py-10">
       <Button asChild variant="ghost" className="w-fit px-2">
@@ -73,9 +97,20 @@ export function OperatorCaseDetailPage() {
           <CaseOverview item={item} />
         </div>
         <aside className="grid gap-6 lg:col-start-2 lg:row-start-1">
-          {sessionQuery.data ? (
-            <OperatorCaseActions item={item} session={sessionQuery.data} />
+          {!commandsEnabled ? (
+            <OperatorStepUpNotice
+              description="Case decisions require a recently verified admin session. Sign out and sign in again to continue; you will return to this case afterward."
+              isSigningInAgain={isSigningInAgain}
+              onSignInAgain={() => void signInAgain()}
+              signInAgainError={signInAgainError}
+            />
           ) : null}
+          <OperatorCaseActions
+            item={item}
+            session={sessionQuery.data}
+            commandsEnabled={commandsEnabled}
+            onCommandError={handleCommandError}
+          />
         </aside>
         <div className="grid gap-6 lg:col-start-1 lg:row-start-2">
           <OperatorAssessmentPanel caseId={item.id} />
@@ -83,7 +118,9 @@ export function OperatorCaseDetailPage() {
           <ReportsPanel item={item} />
           <OperatorEvidencePanel
             caseId={item.id}
+            commandsEnabled={commandsEnabled}
             mandatoryHumanReasons={item.mandatoryHumanReasons}
+            onCommandError={handleCommandError}
             policyLabels={item.policyLabels}
             reportCategories={item.reports.map(({ report }) => report.category)}
           />

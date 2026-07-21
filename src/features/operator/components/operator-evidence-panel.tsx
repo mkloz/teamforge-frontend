@@ -20,12 +20,16 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function OperatorEvidencePanel({
   caseId,
+  commandsEnabled,
   mandatoryHumanReasons,
+  onCommandError,
   policyLabels,
   reportCategories,
 }: {
   caseId: string;
+  commandsEnabled: boolean;
   mandatoryHumanReasons: string[];
+  onCommandError: (error: unknown) => void;
   policyLabels: string[];
   reportCategories: string[];
 }) {
@@ -67,7 +71,9 @@ export function OperatorEvidencePanel({
               key={evidence.id}
               caseId={caseId}
               childSafety={childSafety}
+              commandsEnabled={commandsEnabled}
               evidence={evidence}
+              onCommandError={onCommandError}
             />
           ))}
         </ul>
@@ -83,11 +89,15 @@ export function OperatorEvidencePanel({
 function EvidenceItem({
   caseId,
   childSafety,
+  commandsEnabled,
   evidence,
+  onCommandError,
 }: {
   caseId: string;
   childSafety: boolean;
+  commandsEnabled: boolean;
   evidence: OperatorEvidenceMetadata;
+  onCommandError: (error: unknown) => void;
 }) {
   const [reasonCode, setReasonCode] = useState("CASE_REVIEW");
   const revealedEvidenceRef = useRef<HTMLElement>(null);
@@ -115,6 +125,7 @@ function EvidenceItem({
             childSafety,
             reasonCode,
           }),
+    onError: onCommandError,
   });
   useEffect(() => {
     if (mutation.data) {
@@ -197,6 +208,7 @@ function EvidenceItem({
             Audit reason code
             <Input
               id={`reveal-reason-${evidence.id}`}
+              disabled={!commandsEnabled || mutation.isPending}
               value={reasonCode}
               maxLength={64}
               spellCheck={false}
@@ -208,7 +220,7 @@ function EvidenceItem({
           <Button
             ref={revealButtonRef}
             variant="outline"
-            disabled={!canReveal || mutation.isPending}
+            disabled={!commandsEnabled || !canReveal || mutation.isPending}
             loading={mutation.isPending}
             onClick={() => mutation.mutate()}
           >
@@ -221,7 +233,7 @@ function EvidenceItem({
       )}
       {mutation.isError ? (
         <p className="text-destructive text-sm" role="alert">
-          The reveal did not complete. Confirm your role and recent step-up,
+          The reveal did not complete. Check your role, sign in again if asked,
           then try again.
         </p>
       ) : null}

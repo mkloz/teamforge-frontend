@@ -138,7 +138,7 @@ export function OperatorWorkerOperationsPage() {
             aria-hidden="true"
           />
           <div className="grid gap-1">
-            <h2 className="font-semibold text-sm">Recent step-up required</h2>
+            <h2 className="font-semibold text-sm">Recent sign-in required</h2>
             <p className="text-sm leading-relaxed">
               Worker status is visible, but pause, resume, and requeue commands
               require a recently verified admin session. Sign out and sign in

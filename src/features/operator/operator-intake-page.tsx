@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { OperatorApi } from "@/features/operator/api/operator.api";
+import { getOperatorControlErrorKind } from "@/features/operator/api/operator-control-errors";
 import {
   OPERATOR_QUERY_KEYS,
   operatorQueries,
@@ -10,16 +11,19 @@ import {
 import {
   OperatorAccessState,
   OperatorLoading,
+  OperatorStepUpNotice,
 } from "@/features/operator/components/operator-states";
 import {
   formatOperatorDate,
   humanizeCode,
   SEVERITY_LABELS,
 } from "@/features/operator/lib/operator-language";
+import { useOperatorSessionStepUp } from "@/features/operator/public/use-operator-session-step-up";
 import type { OperatorCaseSummary } from "@/features/operator/schemas/operator.schemas";
 import { Button } from "@/shared/components/ui/button";
 
 const CASES_PER_PAGE = 50;
+const SELF_ASSIGNMENT_DURATION_MS = 8 * 60 * 60_000;
 
 export function OperatorIntakePage() {
   const search = useSearch({ from: "/admin/moderation/intake" });
@@ -28,6 +32,14 @@ export function OperatorIntakePage() {
   const query = useQuery(
     operatorQueries.intake({ page, limit: CASES_PER_PAGE }),
   );
+  const {
+    hasCurrentStepUp: commandsEnabled,
+    isSigningInAgain,
+    rejectCurrentStepUp,
+    sessionQuery,
+    signInAgain,
+    signInAgainError,
+  } = useOperatorSessionStepUp();
   const pageHeadingRef = useRef<HTMLHeadingElement>(null);
   const previousPageRef = useRef(page);
   const totalPages = query.data
@@ -57,7 +69,15 @@ export function OperatorIntakePage() {
     pageHeadingRef.current?.focus({ preventScroll: true });
   }, [page, query.data, query.isFetching, totalPages]);
 
-  if (query.isLoading) return <OperatorLoading />;
+  if (query.isLoading || sessionQuery.isLoading) return <OperatorLoading />;
+  if (sessionQuery.isError || !sessionQuery.data) {
+    return (
+      <OperatorAccessState
+        error={sessionQuery.error}
+        onRetry={() => void sessionQuery.refetch()}
+      />
+    );
+  }
   if (query.isError || !query.data) {
     return (
       <OperatorAccessState
@@ -95,10 +115,27 @@ export function OperatorIntakePage() {
           Assign a case to yourself before opening its review workspace.
         </p>
       </header>
+      {!commandsEnabled ? (
+        <OperatorStepUpNotice
+          description="Case assignment requires a recently verified admin session. Sign out and sign in again to continue; you will return to this page afterward."
+          isSigningInAgain={isSigningInAgain}
+          onSignInAgain={() => void signInAgain()}
+          signInAgainError={signInAgainError}
+        />
+      ) : null}
       {query.data.data.length ? (
         <div className="grid gap-3">
           {query.data.data.map((item) => (
-            <IntakeCaseCard key={item.id} item={item} />
+            <IntakeCaseCard
+              key={item.id}
+              item={item}
+              commandsEnabled={commandsEnabled}
+              onCommandError={(error) => {
+                if (getOperatorControlErrorKind(error) === "STALE_SESSION") {
+                  rejectCurrentStepUp();
+                }
+              }}
+            />
           ))}
         </div>
       ) : (
@@ -169,23 +206,33 @@ function IntakePagination({
   );
 }
 
-function IntakeCaseCard({ item }: { item: OperatorCaseSummary }) {
+function IntakeCaseCard({
+  commandsEnabled,
+  item,
+  onCommandError,
+}: {
+  commandsEnabled: boolean;
+  item: OperatorCaseSummary;
+  onCommandError: (error: unknown) => void;
+}) {
   const queryClient = useQueryClient();
-  const assignmentPayload = useRef({
-    reasonCode: "INTAKE_SELF_ASSIGNMENT",
-    expiresAt: new Date(Date.now() + 8 * 60 * 60_000).toISOString(),
-  });
   const [assigned, setAssigned] = useState(false);
   const mutation = useMutation({
     mutationKey: ["admin", "operator", "moderation", "self-assign", item.id],
     mutationFn: () =>
-      OperatorApi.selfAssign(item.id, assignmentPayload.current),
+      OperatorApi.selfAssign(item.id, {
+        reasonCode: "INTAKE_SELF_ASSIGNMENT",
+        expiresAt: new Date(
+          Date.now() + SELF_ASSIGNMENT_DURATION_MS,
+        ).toISOString(),
+      }),
     onSuccess: () => {
       setAssigned(true);
       void queryClient.invalidateQueries({
         queryKey: OPERATOR_QUERY_KEYS.all,
       });
     },
+    onError: onCommandError,
   });
 
   return (
@@ -219,7 +266,7 @@ function IntakeCaseCard({ item }: { item: OperatorCaseSummary }) {
       ) : (
         <div className="grid gap-2">
           <Button
-            disabled={mutation.isPending}
+            disabled={!commandsEnabled || mutation.isPending}
             loading={mutation.isPending}
             onClick={() => mutation.mutate()}
           >
@@ -227,7 +274,8 @@ function IntakeCaseCard({ item }: { item: OperatorCaseSummary }) {
           </Button>
           {mutation.isError ? (
             <p className="max-w-64 text-destructive text-xs" role="alert">
-              Assignment failed. Confirm your owner access and recent step-up.
+              Assignment failed. Check your owner access, then sign in again
+              before retrying.
             </p>
           ) : null}
         </div>

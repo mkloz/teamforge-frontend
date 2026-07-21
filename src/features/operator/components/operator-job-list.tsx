@@ -78,6 +78,13 @@ export function OperatorJobList({
   const totalPages = query.data
     ? Math.max(1, Math.ceil(query.data.total / query.data.limit))
     : 1;
+  const isRecoveringLastValidPage = Boolean(query.data && page > totalPages);
+
+  useEffect(() => {
+    if (!query.data || page <= totalPages) return;
+
+    setPage(totalPages);
+  }, [page, query.data, totalPages]);
 
   return (
     <section
@@ -117,11 +124,15 @@ export function OperatorJobList({
         </label>
       </div>
 
-      {query.isLoading ? (
+      {query.isLoading || isRecoveringLastValidPage ? (
         <div
           className="grid gap-2"
           role="status"
-          aria-label="Loading worker jobs"
+          aria-label={
+            isRecoveringLastValidPage
+              ? "Loading the last available worker jobs page"
+              : "Loading worker jobs"
+          }
         >
           <Skeleton className="h-28 rounded-xl" />
           <Skeleton className="h-28 rounded-xl" />

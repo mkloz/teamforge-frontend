@@ -15,6 +15,44 @@ export function OperatorLoading() {
   );
 }
 
+export function OperatorStepUpNotice({
+  description,
+  isSigningInAgain,
+  onSignInAgain,
+  signInAgainError,
+}: {
+  description: string;
+  isSigningInAgain: boolean;
+  onSignInAgain: () => void;
+  signInAgainError: unknown;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-2xl border border-accent/25 bg-accent/10 p-4 text-amber-900 dark:text-amber-200">
+      <TriangleAlert className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+      <div className="grid gap-1">
+        <h2 className="font-semibold text-sm">Recent sign-in required</h2>
+        <p className="text-sm leading-relaxed">{description}</p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-2 w-fit"
+          disabled={isSigningInAgain}
+          loading={isSigningInAgain}
+          onClick={onSignInAgain}
+        >
+          Sign in again
+        </Button>
+        {signInAgainError ? (
+          <p className="mt-2 text-destructive text-sm" role="alert">
+            Sign-out could not be completed. Try again.
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function OperatorAccessState({
   error,
   onRetry,
