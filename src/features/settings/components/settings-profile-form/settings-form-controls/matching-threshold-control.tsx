@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Slider } from "@/shared/components/ui/slider";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -20,7 +21,20 @@ export function MatchingThresholdControl({
   disabled,
   onChange,
 }: MatchingThresholdControlProps) {
-  const valueLabel = value === 0 ? "Open" : `${value}%`;
+  const [draftValue, setDraftValue] = useState(value);
+  const valueLabel = draftValue === 0 ? "Open" : `${draftValue}%`;
+
+  useEffect(() => {
+    setDraftValue(value);
+  }, [value]);
+
+  function commitValue(nextValue: number) {
+    setDraftValue(nextValue);
+
+    if (nextValue !== value) {
+      onChange(nextValue);
+    }
+  }
 
   return (
     <div className="border-border border-b py-4">
@@ -46,10 +60,11 @@ export function MatchingThresholdControl({
         min={0}
         max={95}
         step={5}
-        value={[value]}
+        value={[draftValue]}
         disabled={disabled}
         aria-label="Minimum group-fit score"
-        onValueChange={(nextValue) => onChange(nextValue[0] ?? value)}
+        onValueChange={(nextValue) => setDraftValue(nextValue[0] ?? draftValue)}
+        onValueCommit={(nextValue) => commitValue(nextValue[0] ?? draftValue)}
         className="mt-5"
       />
 
@@ -58,10 +73,10 @@ export function MatchingThresholdControl({
           <Button
             key={preset.value}
             type="button"
-            variant={value === preset.value ? "primary" : "outline"}
+            variant={draftValue === preset.value ? "primary" : "outline"}
             size="sm"
             disabled={disabled}
-            onClick={() => onChange(preset.value)}
+            onClick={() => commitValue(preset.value)}
           >
             {preset.label}
             {preset.value > 0 ? ` ${preset.value}%` : ""}

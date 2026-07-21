@@ -40,10 +40,10 @@ export function DynamicAssessmentOptionCard({
           <div className="flex min-w-0 flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-extrabold font-sans text-base text-ink leading-tight">
-                Dynamic
+                Flexible length
               </span>
               <StatusPill tone="teal" size="xs" surface="soft">
-                Beta
+                Preview
               </StatusPill>
             </div>
             <span className="font-bold font-sans text-muted-foreground text-xs">
@@ -55,17 +55,20 @@ export function DynamicAssessmentOptionCard({
 
         <div className="hidden h-10 w-px bg-border/80 sm:block dark:bg-white/8" />
 
-        <div className="flex flex-col gap-1.5 text-muted-foreground text-xs">
+        <div className="flex min-w-0 flex-col gap-1.5 whitespace-normal text-muted-foreground text-xs">
           <span className="flex items-center gap-1.5 font-semibold text-ink">
             <Gauge className="size-4 text-forge-teal" aria-hidden="true" />
-            Adapts after each page
+            <span className="min-w-0">Checks progress after each page</span>
           </span>
           <span className="flex items-start gap-1.5 leading-snug">
             <FlaskConical
               className="mt-0.5 size-3.5 shrink-0"
               aria-hidden="true"
             />
-            Experimental self-insight; not yet used to form groups.
+            <span className="min-w-0">
+              May stop after {capability.minimumPages} pages or continue to{" "}
+              {capability.maximumPages}. Not yet used to form groups.
+            </span>
           </span>
         </div>
       </div>

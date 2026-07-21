@@ -95,13 +95,13 @@ export function PersonalityResults({
       {measurement?.mode === "DYNAMIC" && measurement.uncertainty ? (
         <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
           <SectionHeading
-            eyebrow="Estimated precision"
+            eyebrow="How certain the result is"
             title="Your likely score ranges"
           />
           <p className="text-pretty text-muted-foreground text-sm leading-relaxed">
-            These ranges show normal measurement uncertainty, not a limit on who
-            you are. A narrower range means this set of answers located that
-            trait more precisely.
+            These ranges show how much each score could reasonably vary, not a
+            limit on who you are. A narrower range means this set of answers
+            gave a clearer estimate.
           </p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {Object.entries(measurement.uncertainty).map(
@@ -121,10 +121,10 @@ export function PersonalityResults({
             )}
           </div>
           <p className="text-muted-foreground text-xs leading-relaxed">
-            Dynamic beta used {measurement.questionCount} questions and stopped
+            This version used {measurement.questionCount} questions and stopped
             {measurement.stopReason === "PRECISION_REACHED"
-              ? " when every trait met the current precision rule."
-              : " at the disclosed maximum length."}
+              ? " after it gathered enough answers for each trait."
+              : " at the maximum length shown before you started."}
           </p>
         </section>
       ) : null}
@@ -149,7 +149,7 @@ export function PersonalityResults({
         <p className="text-pretty text-ink/82 text-sm leading-relaxed">
           {isCompatibilityEligible
             ? "Save this result to add the portrait to your profile. Other signed-in TeamForge users can see it, and TeamForge can use it when forming groups."
-            : "Save this result to add the portrait to your profile. Other signed-in TeamForge users can see it, but this Dynamic beta score is not yet used to form groups."}
+            : "Save this result to add the portrait to your profile. Other signed-in TeamForge users can see it, but TeamForge does not use this result when forming groups yet."}
         </p>
         <p className="text-pretty text-muted-foreground text-xs leading-relaxed">
           Your answers were used for this assessment and are not saved.

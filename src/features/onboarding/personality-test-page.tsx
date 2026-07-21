@@ -43,7 +43,7 @@ export function PersonalityTestPage() {
       displayProgress={displayProgress}
       hasTopPadding={hasTopPadding}
       scrollContainerRef={scrollContainerRef}
-      showHomeLink={testState.screen.id !== "questions"}
+      showHomeLink
     >
       <div key={screenTransitionKey} className="flex flex-1 flex-col">
         <PersonalityScreenRenderer

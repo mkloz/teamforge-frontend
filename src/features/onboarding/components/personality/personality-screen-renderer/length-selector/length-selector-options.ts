@@ -42,10 +42,9 @@ export function getLengthSelectorContent(mode: LengthSelectorMode) {
 export function getLengthSelectorActionLabel(
   mode: LengthSelectorMode,
   isSelectedComplete: boolean,
-  isDynamic: boolean,
 ) {
   if (mode === "begin") {
-    return isDynamic ? "Begin Dynamic assessment" : "Begin assessment";
+    return "Begin assessment";
   }
 
   return isSelectedComplete ? "Finish and review result" : "Keep this length";

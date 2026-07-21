@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Clock3, Pause, RefreshCcw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ActivityInviteAvailabilityState } from "@/features/settings/hooks/use-activity-invite-availability";
 import type { ActivityInviteAvailability } from "@/features/settings/schemas/activity-invite-availability.schema";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
@@ -20,13 +20,6 @@ export function ActivityInviteAvailabilityControl({
   state,
 }: ActivityInviteAvailabilityControlProps) {
   const { availability } = state;
-  const [localEnabled, setLocalEnabled] = useState(false);
-  const [onlineEnabled, setOnlineEnabled] = useState(false);
-
-  useEffect(() => {
-    setLocalEnabled(availability?.localEnabled ?? false);
-    setOnlineEnabled(availability?.onlineEnabled ?? false);
-  }, [availability?.localEnabled, availability?.onlineEnabled]);
 
   if (state.isLoading) {
     return <ActivityInviteAvailabilityLoading />;
@@ -35,6 +28,39 @@ export function ActivityInviteAvailabilityControl({
   if (state.isLoadError || !availability) {
     return <ActivityInviteAvailabilityLoadError onRetry={state.onRetry} />;
   }
+
+  return (
+    <ActivityInviteAvailabilityEditor
+      availability={availability}
+      hasSavedLocation={hasSavedLocation}
+      state={state}
+    />
+  );
+}
+
+function ActivityInviteAvailabilityEditor({
+  availability,
+  hasSavedLocation,
+  state,
+}: {
+  availability: ActivityInviteAvailability;
+  hasSavedLocation: boolean;
+  state: ActivityInviteAvailabilityState;
+}) {
+  const sourceKey = `${availability.policyVersion}:${availability.revision}`;
+  const [draft, setDraft] = useState({
+    sourceKey,
+    localEnabled: availability.localEnabled,
+    onlineEnabled: availability.onlineEnabled,
+  });
+  const localEnabled =
+    draft.sourceKey === sourceKey
+      ? draft.localEnabled
+      : availability.localEnabled;
+  const onlineEnabled =
+    draft.sourceKey === sourceKey
+      ? draft.onlineEnabled
+      : availability.onlineEnabled;
 
   const isBusy = state.activeAction !== null;
   const isOpen = availability.lifecycle === "OPEN";
@@ -70,7 +96,13 @@ export function ActivityInviteAvailabilityControl({
             availability.localEnabled,
             availability.canAppearInLocalSuggestions,
           )}
-          onToggle={() => setLocalEnabled((current) => !current)}
+          onToggle={() =>
+            setDraft({
+              sourceKey,
+              localEnabled: !localEnabled,
+              onlineEnabled,
+            })
+          }
         />
         <NotificationPreferenceRow
           checked={onlineEnabled}
@@ -81,7 +113,13 @@ export function ActivityInviteAvailabilityControl({
             availability.onlineEnabled,
             availability.canAppearInOnlineSuggestions,
           )}
-          onToggle={() => setOnlineEnabled((current) => !current)}
+          onToggle={() =>
+            setDraft({
+              sourceKey,
+              localEnabled,
+              onlineEnabled: !onlineEnabled,
+            })
+          }
         />
       </fieldset>
 

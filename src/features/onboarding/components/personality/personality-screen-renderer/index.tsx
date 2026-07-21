@@ -232,7 +232,6 @@ function renderDynamicQuestionsScreen({
       answers={dynamic.state.pageAnswers}
       maximumPages={capability.maximumPages}
       maximumQuestions={capability.maximumQuestions}
-      minimumPages={capability.minimumPages}
       onAnswer={dynamic.state.setAnswer}
       onNext={dynamic.continue}
       pageItems={getDynamicPageItems(engineState.currentPage)}

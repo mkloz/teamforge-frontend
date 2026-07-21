@@ -1,7 +1,6 @@
-import { Link } from "@tanstack/react-router";
 import { m } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
-import { TeamForgeLogo } from "@/assets/logo";
+import { useEffect, useRef } from "react";
 import {
   fadeUpItem,
   staggerContainer,
@@ -19,7 +18,6 @@ interface DynamicQuestionPageProps {
   answers: Record<string, DynamicResponseValue>;
   maximumPages: number;
   maximumQuestions: number;
-  minimumPages: number;
   onAnswer: (itemVersionId: string, value: DynamicResponseValue) => void;
   onNext: () => void;
   pageItems: DynamicPersonalityItem[];
@@ -30,7 +28,6 @@ export function DynamicQuestionPage({
   answers,
   maximumPages,
   maximumQuestions,
-  minimumPages,
   onAnswer,
   onNext,
   pageItems,
@@ -40,24 +37,35 @@ export function DynamicQuestionPage({
     (item) => answers[item.itemVersionId] !== undefined,
   );
   const pageStart = (pageNumber - 1) * pageItems.length;
+  const pageHeadingRef = useRef<HTMLHeadingElement>(null);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pageNumber is the explicit focus trigger for each new question page.
+  useEffect(() => {
+    pageHeadingRef.current?.focus();
+  }, [pageNumber]);
 
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col px-0">
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-6 pr-12 sm:pr-14">
         <div className="min-w-0 flex-1">
           <div className="mb-2 flex items-center justify-between gap-3">
-            <span className="font-bold font-sans text-muted-foreground text-xs">
-              Page {pageNumber} · usually {minimumPages}–{maximumPages} pages
-            </span>
+            <h1
+              ref={pageHeadingRef}
+              tabIndex={-1}
+              aria-label={`Personality assessment, page ${pageNumber} of up to ${maximumPages}`}
+              className="rounded font-bold font-sans text-muted-foreground text-xs outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2"
+            >
+              Page {pageNumber} of up to {maximumPages}
+            </h1>
             <StatusPill tone="teal" size="xs" surface="soft">
-              Dynamic beta
+              Flexible length
             </StatusPill>
           </div>
           <div
             className="h-1.5 overflow-hidden rounded-full bg-muted"
-            aria-label={`At least ${Math.min(pageNumber, minimumPages)} of ${minimumPages} core pages reached`}
+            aria-label={`Page ${pageNumber} of up to ${maximumPages}`}
             role="progressbar"
-            aria-valuemin={0}
+            aria-valuemin={1}
             aria-valuemax={maximumPages}
             aria-valuenow={pageNumber}
           >
@@ -69,22 +77,10 @@ export function DynamicQuestionPage({
             />
           </div>
         </div>
-
-        <Button
-          asChild
-          variant="ghost"
-          size="icon"
-          className="size-11 shrink-0 rounded-lg p-0 text-white/80 hover:bg-white/5 hover:text-white focus-visible:ring-forge-teal focus-visible:ring-offset-hero-bg [@media(pointer:fine)]:size-10"
-        >
-          <Link to="/" aria-label="Back to TeamForge home">
-            <TeamForgeLogo className="size-10" showBackground={false} />
-          </Link>
-        </Button>
       </div>
 
-      <h1 className="sr-only">Dynamic personality assessment</h1>
       <p className="mb-4 text-muted-foreground text-sm">
-        Answer all five statements. Your next page is calculated in this tab;
+        Answer all five statements. Your answers shape the next page, and
         nothing is sent until the assessment finishes.
       </p>
 

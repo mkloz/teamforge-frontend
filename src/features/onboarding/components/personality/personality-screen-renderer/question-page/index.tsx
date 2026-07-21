@@ -1,8 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { TeamForgeLogo } from "@/assets/logo";
 import type { IpipQuestion } from "@/features/onboarding/data/ipip-questions";
 import type { RawAnswers } from "@/features/onboarding/lib/personality-answer";
-import { Button } from "@/shared/components/ui/button";
 
 import { QuestionList } from "./question-list";
 import { QuestionPageActions } from "./question-page-actions";
@@ -42,7 +39,7 @@ export function QuestionPage({
 
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col px-0">
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-6 pr-12 sm:pr-14">
         <div className="min-w-0 flex-1">
           <QuestionPageHeader
             pageNumber={pageNumber}
@@ -55,17 +52,6 @@ export function QuestionPage({
             pageQuestions={pageQuestions}
           />
         </div>
-
-        <Button
-          asChild
-          variant="ghost"
-          size="icon"
-          className="size-11 shrink-0 rounded-lg p-0 text-white/80 hover:bg-white/5 hover:text-white focus-visible:ring-forge-teal focus-visible:ring-offset-hero-bg [@media(pointer:fine)]:size-10"
-        >
-          <Link to="/" aria-label="Back to TeamForge home">
-            <TeamForgeLogo className="size-10" showBackground={false} />
-          </Link>
-        </Button>
       </div>
       <QuestionList
         answers={answers}

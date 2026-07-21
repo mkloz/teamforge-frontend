@@ -46,7 +46,6 @@ export function useLengthSelector({
     actionLabel: getLengthSelectorActionLabel(
       mode,
       selectedProgress.isComplete,
-      selection.kind === "dynamic",
     ),
     content: getLengthSelectorContent(mode),
     handleBegin: () => {

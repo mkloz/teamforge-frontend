@@ -81,8 +81,8 @@ export function MatchingSettingsSection({
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <SectionHeading
-          title="Group proposals"
-          description="TeamForge may show you an activity-led group proposal. You review every proposal before joining."
+          title="Availability and group fit"
+          description="Choose which group proposals and activity invitations you receive, and review the profile details TeamForge uses when forming groups."
         />
 
         <MatchingStats currentUser={currentUser} />

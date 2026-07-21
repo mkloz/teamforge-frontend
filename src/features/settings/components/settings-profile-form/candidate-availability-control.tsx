@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Clock3, Pause, RefreshCcw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type {
   CandidateAvailability,
   CandidateAvailabilityState,
@@ -23,13 +23,6 @@ export function CandidateAvailabilityControl({
   state,
 }: CandidateAvailabilityControlProps) {
   const { availability } = state;
-  const [localEnabled, setLocalEnabled] = useState(false);
-  const [onlineEnabled, setOnlineEnabled] = useState(false);
-
-  useEffect(() => {
-    setLocalEnabled(availability?.localEnabled ?? false);
-    setOnlineEnabled(availability?.onlineEnabled ?? false);
-  }, [availability?.localEnabled, availability?.onlineEnabled]);
 
   if (state.isLoading) {
     return (
@@ -59,6 +52,39 @@ export function CandidateAvailabilityControl({
       </section>
     );
   }
+
+  return (
+    <CandidateAvailabilityEditor
+      availability={availability}
+      hasSavedLocation={hasSavedLocation}
+      state={state}
+    />
+  );
+}
+
+function CandidateAvailabilityEditor({
+  availability,
+  hasSavedLocation,
+  state,
+}: {
+  availability: CandidateAvailability;
+  hasSavedLocation: boolean;
+  state: CandidateAvailabilityState;
+}) {
+  const sourceKey = `${availability.policyVersion}:${availability.revision}`;
+  const [draft, setDraft] = useState({
+    sourceKey,
+    localEnabled: availability.localEnabled,
+    onlineEnabled: availability.onlineEnabled,
+  });
+  const localEnabled =
+    draft.sourceKey === sourceKey
+      ? draft.localEnabled
+      : availability.localEnabled;
+  const onlineEnabled =
+    draft.sourceKey === sourceKey
+      ? draft.onlineEnabled
+      : availability.onlineEnabled;
 
   const isBusy = state.activeAction !== null;
   const canEditScopes =
@@ -110,7 +136,13 @@ export function CandidateAvailabilityControl({
               ? "Saved, but local proposals are unavailable right now."
               : "Proposals for activities near your saved area."
           }
-          onToggle={() => setLocalEnabled((current) => !current)}
+          onToggle={() =>
+            setDraft({
+              sourceKey,
+              localEnabled: !localEnabled,
+              onlineEnabled,
+            })
+          }
         />
         <NotificationPreferenceRow
           checked={onlineEnabled}
@@ -122,7 +154,13 @@ export function CandidateAvailabilityControl({
               ? "Saved, but online proposals are unavailable right now."
               : "Proposals for activities that happen online."
           }
-          onToggle={() => setOnlineEnabled((current) => !current)}
+          onToggle={() =>
+            setDraft({
+              sourceKey,
+              localEnabled,
+              onlineEnabled: !onlineEnabled,
+            })
+          }
         />
       </fieldset>
 
