@@ -82,6 +82,7 @@ function PasswordFieldControl({
           placeholder="••••••••"
           autoComplete="new-password"
           aria-invalid={!!formState.errors.password}
+          className="pr-12 [@media(pointer:fine)]:pr-10"
           rightIcon={
             <PasswordVisibilityButton
               onTogglePassword={onTogglePassword}
@@ -110,7 +111,7 @@ function PasswordVisibilityButton({
       type="button"
       aria-label={showPassword ? "Hide password" : "Show password"}
       onClick={onTogglePassword}
-      className="size-8 rounded-md"
+      className="size-11 rounded-md [@media(pointer:fine)]:size-8"
     >
       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
     </Button>

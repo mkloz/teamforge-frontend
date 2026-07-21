@@ -78,15 +78,27 @@ export function TrustControlSection() {
           </div>
 
           <div className="relative lg:col-span-7 lg:-mr-6 xl:-mr-12">
-            <img
-              src="/landing/trust-control-visual-ai-cutout.png"
-              alt="TeamForge group review screen with controls to review, decline, leave, and report"
-              width={1637}
-              height={961}
-              className="mx-auto w-full max-w-3xl select-none lg:max-w-4xl"
-              loading="lazy"
-              decoding="async"
-            />
+            <picture className="block w-full">
+              <source
+                type="image/avif"
+                srcSet="/landing/trust-control-visual-720.avif 720w, /landing/trust-control-visual-1440.avif 1440w"
+                sizes="(min-width: 1280px) 768px, (min-width: 1024px) 58vw, 100vw"
+              />
+              <source
+                type="image/webp"
+                srcSet="/landing/trust-control-visual-720.webp 720w, /landing/trust-control-visual-1440.webp 1440w"
+                sizes="(min-width: 1280px) 768px, (min-width: 1024px) 58vw, 100vw"
+              />
+              <img
+                src="/landing/trust-control-visual-ai-cutout.png"
+                alt="TeamForge group review screen with controls to review, decline, leave, and report"
+                width={1637}
+                height={961}
+                className="mx-auto w-full max-w-3xl select-none lg:max-w-4xl"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </div>
         </div>
 

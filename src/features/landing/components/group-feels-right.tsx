@@ -62,15 +62,27 @@ export function GroupFeelsRightSection() {
         </header>
 
         <div className="relative mt-8 mb-6 overflow-hidden border-white/10 border-t md:mt-10">
-          <img
-            src="/landing/group-feels-right-visual-ai-cutout.png"
-            alt="Shared interests, social style, practical fit, and follow-through signals flowing into one TeamForge group room"
-            width={2194}
-            height={717}
-            className="mx-auto h-auto max-h-136 w-full object-contain py-4"
-            loading="lazy"
-            decoding="async"
-          />
+          <picture className="block w-full">
+            <source
+              type="image/avif"
+              srcSet="/landing/group-feels-right-visual-720.avif 720w, /landing/group-feels-right-visual-1440.avif 1440w, /landing/group-feels-right-visual-2194.avif 2194w"
+              sizes="(min-width: 1280px) 1280px, 100vw"
+            />
+            <source
+              type="image/webp"
+              srcSet="/landing/group-feels-right-visual-720.webp 720w, /landing/group-feels-right-visual-1440.webp 1440w, /landing/group-feels-right-visual-2194.webp 2194w"
+              sizes="(min-width: 1280px) 1280px, 100vw"
+            />
+            <img
+              src="/landing/group-feels-right-visual-ai-cutout.png"
+              alt="Shared interests, social style, practical fit, and follow-through signals flowing into one TeamForge group room"
+              width={2194}
+              height={717}
+              className="mx-auto h-auto max-h-136 w-full object-contain py-4"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
         </div>
 
         <p className="mx-auto mt-6 text-pretty text-center font-black text-base text-white leading-relaxed">

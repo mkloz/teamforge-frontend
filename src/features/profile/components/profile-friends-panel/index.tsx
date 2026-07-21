@@ -35,9 +35,12 @@ export function ProfileFriendsPanel({
   const profileQrUrl = getProfileQrUrl(user.id);
 
   if (!isSelf) {
+    const publicActiveTab =
+      activeTab === "public_friends" ? "public_friends" : "friends";
+
     return (
       <PublicProfileFriendsPanel
-        activeTab={activeTab}
+        activeTab={publicActiveTab}
         hasMultipleTabs={publicPanelState.hasMultipleTabs}
         onTabChange={onTabChange}
         userId={user.id}
@@ -45,9 +48,11 @@ export function ProfileFriendsPanel({
     );
   }
 
+  const selfActiveTab = activeTab === "requests" ? "requests" : "friends";
+
   return (
     <SelfProfileFriendsPanel
-      activeTab={activeTab}
+      activeTab={selfActiveTab}
       onTabChange={onTabChange}
       profileQrUrl={profileQrUrl}
       user={user}

@@ -60,15 +60,27 @@ export function PeopleProblemSection() {
           </header>
 
           <div className="relative lg:col-span-7 lg:-mr-12 xl:-mr-20">
-            <img
-              src="/landing/people-problem-visual-ai-cutout.png"
-              alt="Activity cards connected to one TeamForge group room, with an open seat highlighted"
-              width={1672}
-              height={941}
-              className="mx-auto w-full max-w-4xl select-none drop-shadow-2xl lg:origin-center lg:scale-115 xl:scale-125"
-              loading="lazy"
-              decoding="async"
-            />
+            <picture className="block w-full">
+              <source
+                type="image/avif"
+                srcSet="/landing/people-problem-visual-720.avif 720w, /landing/people-problem-visual-1440.avif 1440w"
+                sizes="(min-width: 1280px) 768px, (min-width: 1024px) 58vw, 100vw"
+              />
+              <source
+                type="image/webp"
+                srcSet="/landing/people-problem-visual-720.webp 720w, /landing/people-problem-visual-1440.webp 1440w"
+                sizes="(min-width: 1280px) 768px, (min-width: 1024px) 58vw, 100vw"
+              />
+              <img
+                src="/landing/people-problem-visual-ai-cutout.png"
+                alt="Activity cards connected to one TeamForge group room, with an open seat highlighted"
+                width={1672}
+                height={941}
+                className="mx-auto w-full max-w-4xl select-none drop-shadow-2xl lg:origin-center lg:scale-115 xl:scale-125"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </div>
         </div>
 

@@ -50,7 +50,7 @@ export function PushNotificationActions({
         variant="outline"
         size="sm"
         asChild
-        className="min-h-11 lg:min-h-9"
+        className="min-h-11 [@media(pointer:fine)]:min-h-9"
       >
         <Link
           {...buildAuthRouteNavigation("/auth/login", DOWNLOAD_AUTH_RETURN_TO)}
@@ -66,7 +66,7 @@ export function PushNotificationActions({
       <Button
         variant="outline"
         size="sm"
-        className="min-h-11 lg:min-h-9"
+        className="min-h-11 [@media(pointer:fine)]:min-h-9"
         disabled={cta.isDisabled}
         loading={cta.isLoading}
         onClick={() => {
@@ -82,7 +82,7 @@ export function PushNotificationActions({
   return (
     <Button
       size="sm"
-      className="min-h-11 text-white lg:min-h-9"
+      className="min-h-11 text-white [@media(pointer:fine)]:min-h-9"
       disabled={cta.isDisabled}
       loading={cta.isLoading}
       onClick={() => {

@@ -57,19 +57,19 @@ const SOCIAL_STAT_VARIANTS: Record<
 > = {
   amber: {
     buttonClassName:
-      "group inline-flex items-center gap-2.5 rounded-full border border-spark-amber/15 bg-spark-amber/5 py-1.5 pr-4 pl-2 transition-all hover:border-spark-amber/30 hover:bg-spark-amber/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-spark-amber active:scale-[0.97]",
+      "group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-spark-amber/15 bg-spark-amber/5 py-1.5 pr-4 pl-2 transition-all hover:border-spark-amber/30 hover:bg-spark-amber/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-spark-amber active:scale-[0.97] [@media(pointer:fine)]:min-h-0",
     iconContainerClassName:
       "flex size-6 shrink-0 items-center justify-center rounded-full bg-spark-amber/15 text-spark-amber transition-transform group-hover:scale-105",
   },
   mutual: {
     buttonClassName:
-      "inline-flex items-center gap-2.5 rounded-full border border-slate-muted/20 bg-canvas py-1.5 pr-4 pl-2 transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      "inline-flex min-h-11 items-center gap-2.5 rounded-full border border-slate-muted/20 bg-canvas py-1.5 pr-4 pl-2 transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:fine)]:min-h-0",
     iconContainerClassName:
       "flex size-6 shrink-0 items-center justify-center rounded-full bg-slate-muted/10 text-slate-muted",
   },
   teal: {
     buttonClassName:
-      "group inline-flex items-center gap-2.5 rounded-full border border-forge-teal/15 bg-forge-teal/5 py-1.5 pr-4 pl-2 transition-all hover:border-forge-teal/30 hover:bg-forge-teal/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal active:scale-[0.97]",
+      "group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-forge-teal/15 bg-forge-teal/5 py-1.5 pr-4 pl-2 transition-all hover:border-forge-teal/30 hover:bg-forge-teal/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal active:scale-[0.97] [@media(pointer:fine)]:min-h-0",
     iconContainerClassName:
       "flex size-6 shrink-0 items-center justify-center rounded-full bg-forge-teal/15 text-forge-teal transition-transform group-hover:scale-105",
   },

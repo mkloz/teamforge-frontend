@@ -44,7 +44,7 @@ export function PwaDiagnosticsHeader({
       <Button
         variant="outline"
         size="sm"
-        className="hidden min-h-11 sm:inline-flex lg:min-h-9"
+        className="hidden min-h-11 sm:inline-flex [@media(pointer:fine)]:min-h-9"
         loading={isRefreshing}
         onClick={onRefresh}
       >

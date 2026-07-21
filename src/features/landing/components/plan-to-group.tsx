@@ -56,15 +56,27 @@ export function PlanToGroupSection() {
 
       <div className="relative mx-auto mt-12 max-w-7xl px-6 md:mt-14">
         <div className="overflow-hidden border-white/10 border-y">
-          <img
-            src="/landing/plan-to-group-visual-ai-cutout.png"
-            alt="Three-step TeamForge flow from activity idea to plan details to one small group room"
-            width={1775}
-            height={886}
-            className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
-            loading="lazy"
-            decoding="async"
-          />
+          <picture className="block w-full">
+            <source
+              type="image/avif"
+              srcSet="/landing/plan-to-group-visual-720.avif 720w, /landing/plan-to-group-visual-1440.avif 1440w, /landing/plan-to-group-visual-1775.avif 1775w"
+              sizes="(min-width: 1280px) 1280px, 100vw"
+            />
+            <source
+              type="image/webp"
+              srcSet="/landing/plan-to-group-visual-720.webp 720w, /landing/plan-to-group-visual-1440.webp 1440w, /landing/plan-to-group-visual-1775.webp 1775w"
+              sizes="(min-width: 1280px) 1280px, 100vw"
+            />
+            <img
+              src="/landing/plan-to-group-visual-ai-cutout.png"
+              alt="Three-step TeamForge flow from activity idea to plan details to one small group room"
+              width={1775}
+              height={886}
+              className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
         </div>
       </div>
 

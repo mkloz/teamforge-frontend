@@ -35,7 +35,7 @@ function SignalPill({ signal }: { signal: MatchingSignal }) {
         <button
           type="button"
           className={cn(
-            "inline-flex min-h-9 max-w-full cursor-help items-center gap-2 rounded-full border px-3 text-left font-bold text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35",
+            "inline-flex min-h-11 max-w-full cursor-help items-center gap-2 rounded-full border px-3 text-left font-bold text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 [@media(pointer:fine)]:min-h-9",
             signal.strength === "ready"
               ? "border-forge-teal/25 bg-forge-teal/10 text-forge-teal"
               : signal.strength === "good"

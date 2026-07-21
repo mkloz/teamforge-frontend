@@ -38,6 +38,7 @@ export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
               type={isVisible ? "text" : "password"}
               autoComplete="new-password"
               placeholder="••••••••"
+              className="pr-12 [@media(pointer:fine)]:pr-10"
               rightIcon={
                 <ResetPasswordVisibilityToggle
                   isVisible={isVisible}
@@ -70,7 +71,7 @@ function ResetPasswordVisibilityToggle({
       variant="accentGhost"
       size="icon-sm"
       onClick={onToggle}
-      className="size-8 rounded-md"
+      className="size-11 rounded-md [@media(pointer:fine)]:size-8"
       aria-label={getPasswordVisibilityAriaLabel({ isVisible, name })}
     >
       <PasswordVisibilityIcon isVisible={isVisible} />

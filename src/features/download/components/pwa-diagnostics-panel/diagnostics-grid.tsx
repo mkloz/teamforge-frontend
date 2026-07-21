@@ -126,7 +126,7 @@ function DiagnosticActionButton({ action }: { action: DiagnosticAction }) {
 
   return (
     <Button
-      className="mt-4 min-h-10"
+      className="mt-4 min-h-11 [@media(pointer:fine)]:min-h-10"
       disabled={action.disabled}
       loading={action.loading}
       onClick={action.onClick}

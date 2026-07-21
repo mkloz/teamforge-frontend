@@ -16,7 +16,7 @@ export function CancelOutgoingRequestButton({
       onClick={onClick}
       aria-label="Cancel request"
       title="Cancel request"
-      className="size-8 text-muted-foreground hover:text-destructive"
+      className="size-11 text-muted-foreground hover:text-destructive [@media(pointer:fine)]:size-8"
     >
       {loading ? (
         <Loader2 className="size-4 animate-spin" />

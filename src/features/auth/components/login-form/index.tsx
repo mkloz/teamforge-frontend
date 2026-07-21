@@ -137,6 +137,7 @@ function LoginPasswordField({
               placeholder="••••••••"
               autoComplete="current-password"
               aria-invalid={!!form.formState.errors.password}
+              className="pr-12 [@media(pointer:fine)]:pr-10"
               rightIcon={
                 <LoginPasswordVisibilityToggle
                   isVisible={showPassword}
@@ -163,7 +164,7 @@ function LoginPasswordLabel({
       <FormLabel className={authFormLabelClassName}>Password</FormLabel>
       <Link
         {...buildAuthRouteNavigation("/auth/forgot-password", authReturnTo)}
-        className="font-medium font-sans text-forge-teal text-xs outline-hidden transition-colors hover:underline focus:ring-2 focus:ring-forge-teal/20"
+        className="inline-flex min-h-11 items-center font-medium font-sans text-forge-teal text-xs outline-hidden transition-colors hover:underline focus:ring-2 focus:ring-forge-teal/20 [@media(pointer:fine)]:min-h-0"
       >
         Forgot password?
       </Link>
@@ -185,7 +186,7 @@ function LoginPasswordVisibilityToggle({
       type="button"
       aria-label={isVisible ? "Hide password" : "Show password"}
       onClick={onToggle}
-      className="size-8 rounded-md"
+      className="size-11 rounded-md [@media(pointer:fine)]:size-8"
     >
       {isVisible ? <EyeOff size={16} /> : <Eye size={16} />}
     </Button>

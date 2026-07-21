@@ -1,3 +1,4 @@
+import { useId } from "react";
 import {
   PublicFriendsPanelContent,
   SelfFriendsPanelContent,
@@ -24,16 +25,25 @@ export function PublicProfileFriendsPanel({
   userId: string;
 }) {
   const copy = getPublicFriendsCopy(activeTab);
+  const tabIdBase = useId();
 
   return (
     <div className="flex flex-col gap-6">
       <FriendsPanelHeader description={copy.description} title={copy.title} />
 
       {hasMultipleTabs && (
-        <PublicFriendsTabs activeTab={activeTab} onTabChange={onTabChange} />
+        <PublicFriendsTabs
+          activeTab={activeTab}
+          idBase={tabIdBase}
+          onTabChange={onTabChange}
+        />
       )}
 
-      <PublicFriendsPanelContent activeTab={activeTab} userId={userId} />
+      <PublicFriendsPanelContent
+        activeTab={activeTab}
+        idBase={hasMultipleTabs ? tabIdBase : null}
+        userId={userId}
+      />
     </div>
   );
 }
@@ -49,6 +59,8 @@ export function SelfProfileFriendsPanel({
   profileQrUrl: string;
   user: User;
 }) {
+  const tabIdBase = useId();
+
   return (
     <div className="flex flex-col gap-6">
       <FriendsPanelHeader
@@ -58,9 +70,13 @@ export function SelfProfileFriendsPanel({
 
       <MyCodeCard user={user} url={profileQrUrl} />
 
-      <SelfFriendsTabs activeTab={activeTab} onTabChange={onTabChange} />
+      <SelfFriendsTabs
+        activeTab={activeTab}
+        idBase={tabIdBase}
+        onTabChange={onTabChange}
+      />
 
-      <SelfFriendsPanelContent activeTab={activeTab} />
+      <SelfFriendsPanelContent activeTab={activeTab} idBase={tabIdBase} />
     </div>
   );
 }

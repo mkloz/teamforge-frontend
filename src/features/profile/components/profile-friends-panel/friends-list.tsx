@@ -131,7 +131,7 @@ function FriendListActions({
             disabled={!isOnline || isRemovingThisUser}
             aria-label="Remove friend"
             title="Remove friend"
-            className="size-8 text-muted-foreground hover:text-destructive"
+            className="size-11 text-muted-foreground hover:text-destructive [@media(pointer:fine)]:size-8"
           >
             {isRemovingThisUser ? (
               <Loader2 className="size-4 animate-spin" />

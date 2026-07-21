@@ -8,7 +8,8 @@ interface FriendMessageActionProps {
 }
 
 export function FriendMessageAction({ chatId }: FriendMessageActionProps) {
-  const className = "size-8 text-muted-foreground hover:text-forge-teal";
+  const className =
+    "size-11 text-muted-foreground hover:text-forge-teal [@media(pointer:fine)]:size-8";
 
   if (!chatId) {
     return (

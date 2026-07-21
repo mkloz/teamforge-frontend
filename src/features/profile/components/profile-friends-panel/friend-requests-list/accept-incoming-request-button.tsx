@@ -16,7 +16,7 @@ export function AcceptIncomingRequestButton({
       onClick={onClick}
       aria-label="Accept request"
       title="Accept"
-      className="size-8 text-muted-foreground hover:text-forge-teal"
+      className="size-11 text-muted-foreground hover:text-forge-teal [@media(pointer:fine)]:size-8"
     >
       {loading ? (
         <Loader2 className="size-4 animate-spin" />

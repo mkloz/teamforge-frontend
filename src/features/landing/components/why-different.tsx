@@ -46,15 +46,27 @@ export function WhyDifferentSection() {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
           <div className="order-2 overflow-hidden border-white/10 border-y lg:order-1 lg:col-span-7">
-            <img
-              src="/landing/why-different-visual-ai-text.png"
-              alt="One TeamForge group room in focus while browsing cards move into the background"
-              width={1536}
-              height={1024}
-              className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
-              loading="lazy"
-              decoding="async"
-            />
+            <picture className="block w-full">
+              <source
+                type="image/avif"
+                srcSet="/landing/why-different-visual-720.avif 720w, /landing/why-different-visual-1440.avif 1440w"
+                sizes="(min-width: 1280px) 768px, (min-width: 1024px) 58vw, 100vw"
+              />
+              <source
+                type="image/webp"
+                srcSet="/landing/why-different-visual-720.webp 720w, /landing/why-different-visual-1440.webp 1440w"
+                sizes="(min-width: 1280px) 768px, (min-width: 1024px) 58vw, 100vw"
+              />
+              <img
+                src="/landing/why-different-visual-ai-text.png"
+                alt="One TeamForge group room in focus while browsing cards move into the background"
+                width={1536}
+                height={1024}
+                className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </div>
 
           <div className="order-1 max-w-xl lg:order-2 lg:col-span-5 lg:pl-6">

@@ -57,6 +57,7 @@ export function InterestsBrowseHeader({
         onChange={(e) => onSetSearch(e.target.value)}
         placeholder="Search interests…"
         aria-label="Search interests"
+        className="h-11 pr-12 [@media(pointer:fine)]:h-9 [@media(pointer:fine)]:pr-9"
         leftIcon={<Search size={14} strokeWidth={2.5} />}
         rightIcon={
           searchQuery ? (
@@ -64,7 +65,7 @@ export function InterestsBrowseHeader({
               variant="accentGhost"
               size="icon-sm"
               onClick={() => onSetSearch("")}
-              className="size-8 rounded-full"
+              className="size-11 rounded-full [@media(pointer:fine)]:size-8"
               aria-label="Clear search"
             >
               <X size={16} strokeWidth={2.5} />
