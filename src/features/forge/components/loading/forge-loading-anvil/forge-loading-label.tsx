@@ -21,7 +21,7 @@ export function ForgeLoadingLabel({
           {displayLabel}
         </m.p>
       </AnimatePresence>
-      <p className="font-bold text-micro text-muted-foreground">Group forge</p>
+      <p className="font-bold text-muted-foreground text-xs">Group forge</p>
       <div className="flex items-center gap-1.5 pt-1" aria-hidden="true">
         {[0, 1, 2].map((index) => (
           <m.span

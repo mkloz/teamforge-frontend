@@ -14,7 +14,7 @@ export function HostMemberRow() {
       </Link>
 
       {/* Use a "You" badge instead of an avatar for the host row. */}
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal font-bold text-micro text-primary-foreground ring-2 ring-forge-teal/30">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal font-bold text-primary-foreground text-xs ring-2 ring-forge-teal/30">
         You
       </div>
 

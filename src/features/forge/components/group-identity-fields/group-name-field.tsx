@@ -72,7 +72,7 @@ export function GroupNameField({
                 inputRef.current?.blur();
               }}
               className={cn(
-                "h-auto rounded-lg border px-2 py-1 font-semibold text-micro transition-colors duration-150",
+                "h-auto rounded-lg border px-2 py-1 font-semibold text-xs transition-colors duration-150",
                 groupName === name
                   ? "border-forge-teal/40 bg-forge-teal/10 text-forge-teal"
                   : "border-border/50 bg-card text-muted-foreground hover:border-forge-teal/30 hover:bg-forge-teal/5 hover:text-foreground",

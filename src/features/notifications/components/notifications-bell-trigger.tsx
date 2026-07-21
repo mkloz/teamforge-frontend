@@ -41,7 +41,7 @@ export function NotificationsBellTrigger({
               max={9}
               size="xs"
               tone="amber"
-              className="absolute top-0.5 right-0.5 z-10 h-3.5 min-w-3.5 px-0.5 text-nano ring-2 ring-canvas"
+              className="absolute top-0.5 right-0.5 z-10 h-3.5 min-w-3.5 px-0.5 ring-2 ring-canvas"
             />
           )}
         </Button>

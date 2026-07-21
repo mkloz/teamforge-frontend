@@ -1,9 +1,9 @@
-import { config } from "@/config/config";
 import { BoxBordersSwitch } from "@/shared/components/dev/box-borders-switch";
 import { TailwindIndicator } from "@/shared/components/dev/tailwindIndicator";
+import { areDevelopmentToolsEnabled } from "@/shared/lib/development-tools";
 
 export function DevTools() {
-  if (!config.isDevelopment) {
+  if (!areDevelopmentToolsEnabled()) {
     return null;
   }
 

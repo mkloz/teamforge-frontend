@@ -89,7 +89,7 @@ function IdentityPreviewBody({
         name={preview.displayGroupName}
         shape="rounded"
         className="size-11 rounded-lg border border-border bg-muted text-sm"
-        fallbackClassName="text-micro"
+        fallbackClassName="text-xs"
       />
       <div className="min-w-0 flex-1">
         <h3 className="truncate font-bold text-foreground text-sm">

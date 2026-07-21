@@ -21,7 +21,7 @@ export function ParticipantsSection({
             <p className="font-semibold text-foreground text-sm leading-none">
               Selected people
             </p>
-            <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
+            <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
               Review the list before continuing.
             </p>
           </div>

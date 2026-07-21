@@ -80,7 +80,7 @@ function PlanNameStatusAside({
   return (
     <span
       className={cn(
-        "text-micro text-muted-foreground/50",
+        "text-muted-foreground/50 text-xs",
         isNameValid && "text-forge-teal",
       )}
     >

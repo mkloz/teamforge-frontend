@@ -191,29 +191,40 @@ export function Navbar({
             onClick={toggleMenu}
             aria-controls="landing-mobile-navigation"
             aria-expanded={menuOpen}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-label="Open menu"
           >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+            <Menu size={22} />
           </Button>
         </div>
       </header>
 
       <dialog
+        ref={menuRef}
         id="landing-mobile-navigation"
-        open={menuOpen}
         className={getMobileNavigationClassName({
           menuOpen,
           staticPublicTheme,
         })}
+        onCancel={(event) => {
+          event.preventDefault();
+          closeMenu();
+        }}
         aria-hidden={!menuOpen}
         inert={!menuOpen}
         aria-modal="true"
         aria-label="Mobile Navigation Menu"
       >
-        <div
-          ref={menuRef}
-          className="border-white/10 border-b bg-hero-bg/98 px-6 py-4 shadow-xl"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="fixed top-2 right-6 z-10 text-text-dark-secondary hover:text-white lg:hidden"
+          onClick={closeMenu}
+          aria-label="Close menu"
         >
+          <X size={22} />
+        </Button>
+
+        <div className="border-white/10 border-b bg-hero-bg/98 px-6 py-4 shadow-xl">
           <nav
             className="mx-auto grid w-full max-w-sm grid-cols-2 gap-2"
             aria-label="Mobile navigation links"

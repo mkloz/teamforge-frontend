@@ -20,7 +20,7 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
           <p className="font-semibold text-foreground text-sm leading-none">
             What happens next
           </p>
-          <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
+          <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
             A short handoff before the group opens.
           </p>
         </div>

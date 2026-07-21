@@ -231,7 +231,7 @@ function RecentActivityCopy({
   return (
     <div className="min-w-0 flex-1">
       <p className={getTitleClassName(displayTone)}>{activity.title}</p>
-      <p className="mt-1 truncate font-medium text-micro text-muted-foreground leading-none">
+      <p className="mt-1 truncate font-medium text-muted-foreground text-xs leading-none">
         {viewState.usageLabel} - {viewState.lastUsedLabel}
       </p>
     </div>

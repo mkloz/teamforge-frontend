@@ -94,9 +94,7 @@ export function ReducedMotionAnvil({
       </div>
       <div className="flex flex-col gap-1 text-center">
         <p className="font-black text-foreground text-sm">{displayLabel}</p>
-        <p className="font-bold text-micro text-muted-foreground">
-          Group forge
-        </p>
+        <p className="font-bold text-muted-foreground text-xs">Group forge</p>
       </div>
     </div>
   );

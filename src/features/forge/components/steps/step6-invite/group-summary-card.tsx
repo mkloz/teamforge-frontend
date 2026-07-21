@@ -55,7 +55,7 @@ export function GroupSummaryCard(props: GroupSummaryCardProps) {
             name={summary.displayGroupName}
             shape="rounded"
             className="size-11 rounded-lg border border-border bg-muted"
-            fallbackClassName="text-micro font-bold"
+            fallbackClassName="font-bold text-xs"
           />
           <div className="min-w-0 flex-1">
             <h4 className="truncate font-bold text-base text-foreground leading-tight">
@@ -125,7 +125,7 @@ function SummaryCover({
       />
       <div className="absolute right-4 bottom-3 left-4 flex items-end justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-bold text-micro text-white/70">{statusLabel}</p>
+          <p className="font-bold text-white/70 text-xs">{statusLabel}</p>
           <p className="truncate font-black text-lg text-white leading-tight">
             {displayPlanTitle}
           </p>
@@ -157,7 +157,7 @@ function SummaryItem({ icon, label, value }: SummaryItemProps) {
       iconTone="teal"
       iconTileClassName="bg-forge-teal/8"
       label={label}
-      labelClassName="font-bold text-micro text-muted-foreground/60"
+      labelClassName="font-bold text-muted-foreground/60 text-xs"
       value={value}
       valueClassName="truncate text-xs"
     />

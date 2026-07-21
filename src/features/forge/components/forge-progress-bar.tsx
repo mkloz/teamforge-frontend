@@ -62,7 +62,8 @@ function getProgressStepState(s: Step, step: Step) {
 
 function getProgressStepClassName(isActive: boolean, isComplete: boolean) {
   return cn(
-    "relative flex h-6 flex-1 items-center justify-center overflow-hidden rounded-full transition-all duration-300",
+    "relative flex h-6 items-center justify-center overflow-hidden rounded-full transition-all duration-300",
+    isActive ? "flex-2" : "flex-1",
     isComplete
       ? "bg-forge-teal/20"
       : isActive
@@ -75,10 +76,10 @@ function getProgressLabelClassName(isActive: boolean, isComplete: boolean) {
   return cn(
     "relative select-none truncate px-2 font-semibold leading-none transition-colors duration-200",
     isActive
-      ? "pl-5 text-forge-teal text-micro"
+      ? "pl-5 text-forge-teal text-xs"
       : isComplete
-        ? "text-forge-teal/60 text-micro"
-        : "text-micro text-muted-foreground/40",
+        ? "text-forge-teal/60 text-xs"
+        : "text-muted-foreground/40 text-xs",
   );
 }
 

@@ -118,7 +118,7 @@ export function TemplateSuggestionCard({
 
         <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold text-micro text-muted-foreground">
+            <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold text-muted-foreground text-xs">
               <Users aria-hidden="true" size={11} />
               {getTemplateGroupSizeText(suggestion.template)}
             </span>

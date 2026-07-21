@@ -20,6 +20,7 @@ import {
   scheduleDelay,
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
+import { areDevelopmentToolsEnabled } from "@/shared/lib/development-tools";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import { APP_TOAST_HOST_REQUEST_EVENT } from "@/shared/lib/toast-host-events";
 import { useInitializeTheme, useThemeStore } from "@/shared/store/theme.store";
@@ -90,7 +91,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={appQueryClient}>
       {children}
-      {import.meta.env.DEV ? <DeferredReactQueryDevtools /> : null}
+      {areDevelopmentToolsEnabled() ? <DeferredReactQueryDevtools /> : null}
       <DeferredToaster />
     </QueryClientProvider>
   );

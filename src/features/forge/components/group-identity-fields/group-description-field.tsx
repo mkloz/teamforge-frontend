@@ -36,7 +36,7 @@ export function GroupDescriptionField({
         )}
       />
       {groupDescription.length > 0 && (
-        <p className="text-right text-micro text-muted-foreground/40">
+        <p className="text-right text-muted-foreground/40 text-xs">
           {groupDescription.length}/200
         </p>
       )}

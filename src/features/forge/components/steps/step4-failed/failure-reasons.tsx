@@ -16,7 +16,7 @@ export function FailureReasons({ context, reasons }: FailureReasonsProps) {
           <p className="font-semibold text-muted-foreground text-xs leading-none">
             What to review
           </p>
-          <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
+          <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
             {context}
           </p>
         </div>
@@ -28,7 +28,7 @@ export function FailureReasons({ context, reasons }: FailureReasonsProps) {
             key={reason}
             className="rounded-lg border border-border/40 bg-card/75 p-3"
           >
-            <span className="font-black text-micro text-spark-amber tabular-nums">
+            <span className="font-black text-spark-amber text-xs tabular-nums">
               0{index + 1}
             </span>
             <p className="mt-2 font-medium text-muted-foreground text-xs leading-snug">

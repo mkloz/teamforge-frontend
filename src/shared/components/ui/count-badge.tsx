@@ -11,7 +11,7 @@ import { type HTMLAttributes, useState } from "react";
 import { cn } from "@/shared/lib/utils";
 
 const countBadgeVariants = cva(
-  "inline-grid shrink-0 place-items-center rounded-full font-black text-micro tabular-nums leading-none",
+  "inline-grid shrink-0 place-items-center rounded-full font-black text-xs tabular-nums leading-none",
   {
     variants: {
       tone: {

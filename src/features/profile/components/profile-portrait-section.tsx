@@ -72,7 +72,11 @@ export function ProfilePortraitSection({
           <div className="flex min-w-0 flex-col gap-4">
             <div className="flex flex-wrap items-center gap-3">
               <ProfileSectionHeading>Profile sketch</ProfileSectionHeading>
-              <StatusPill tone="neutral" size="xs" className="bg-transparent">
+              <StatusPill
+                tone="neutral"
+                size="xs"
+                className="bg-transparent text-xs"
+              >
                 {readLabel}
               </StatusPill>
             </div>

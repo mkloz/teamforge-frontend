@@ -31,9 +31,7 @@ export function FieldLabel({
           </>
         )}
       </Label>
-      {hint && (
-        <span className="text-micro text-muted-foreground/50">{hint}</span>
-      )}
+      {hint && <span className="text-muted-foreground/50 text-xs">{hint}</span>}
     </div>
   );
 }

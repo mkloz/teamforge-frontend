@@ -83,7 +83,7 @@ function SuccessHeroPeopleStack({
   return (
     <div className="flex min-w-0 items-center gap-2">
       <div className="flex">
-        <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-forge-teal font-bold text-micro text-primary-foreground">
+        <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-forge-teal font-bold text-primary-foreground text-xs">
           You
         </div>
         {visibleParticipants.map((participant) => (
@@ -129,7 +129,7 @@ function ReviewStatus() {
         <p className="font-bold text-foreground text-sm leading-tight">
           Ready to review
         </p>
-        <p className="font-semibold text-micro text-muted-foreground">
+        <p className="font-semibold text-muted-foreground text-xs">
           Group status
         </p>
       </div>

@@ -113,8 +113,8 @@ function ManualCapacityCard({
           />
         </div>
         <div className="flex justify-between px-0.5">
-          <span className="text-micro text-muted-foreground/40">2 min</span>
-          <span className="text-micro text-muted-foreground/40">8 max</span>
+          <span className="text-muted-foreground/40 text-xs">2 min</span>
+          <span className="text-muted-foreground/40 text-xs">8 max</span>
         </div>
       </div>
     </div>
@@ -239,7 +239,7 @@ function CapacityReachedNotice({ show }: { show: boolean }) {
   }
 
   return (
-    <p className="px-1 font-semibold text-micro text-spark-amber">
+    <p className="px-1 font-semibold text-spark-amber text-xs">
       Capacity reached. Increase max group size to invite more.
     </p>
   );
