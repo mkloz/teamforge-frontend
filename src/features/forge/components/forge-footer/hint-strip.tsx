@@ -14,7 +14,7 @@ const STEP_ONE_EMPTY_HINT: HintStripMessage = {
 };
 const STEP_ONE_SELECTED_HINT: HintStripMessage = {
   key: "h1-selected",
-  text: "Next: choose how the group should start",
+  text: "Next: choose a template or start blank",
 };
 const STEP_FIVE_SUCCESS_HINT: HintStripMessage = {
   key: "h5-success",
@@ -24,9 +24,16 @@ const STATIC_STEP_HINTS: Partial<
   Record<ForgeFooterChildProps["fw"]["step"], HintStripMessage>
 > = {
   2: { key: "h2", text: "Next: set the scope and plan details" },
-  3: { key: "h3", text: "Next: review this request" },
   7: { key: "h7", text: "Final step. Invite people to the group." },
 };
+
+function getStepThreeHint(
+  forgeMode: ForgeFooterChildProps["fw"]["forgeMode"],
+): HintStripMessage {
+  return forgeMode === "MANUAL"
+    ? { key: "h3-manual", text: "Next: choose people and visibility" }
+    : { key: "h3-auto", text: "Next: review your request" };
+}
 
 function HintText({ children }: { children: ReactNode }) {
   return (
@@ -54,6 +61,10 @@ function getHintStripMessage(
     return getStepOneHint(fw.selectedActivity);
   }
 
+  if (fw.step === 3) {
+    return getStepThreeHint(fw.forgeMode);
+  }
+
   return fw.step === 5 && fw.forgeResult === "SUCCESS"
     ? STEP_FIVE_SUCCESS_HINT
     : (STATIC_STEP_HINTS[fw.step] ?? null);
@@ -63,7 +74,7 @@ export function HintStrip({ fw }: ForgeFooterChildProps) {
   const hint = getHintStripMessage(fw);
 
   return (
-    <div className="sticky bottom-app-bottom-nav border-border/40 border-t bg-transparent px-4 py-2 backdrop-blur-sm md:bottom-14 md:px-12">
+    <div className="sticky bottom-0 border-border/40 border-t bg-transparent px-4 py-2 backdrop-blur-sm md:px-12">
       <div className="mx-auto flex min-h-5.5 max-w-2xl items-center justify-center">
         <AnimatePresence mode="wait">
           {hint ? <HintText key={hint.key}>{hint.text}</HintText> : null}
