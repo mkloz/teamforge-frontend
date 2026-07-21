@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { DEVICE_TABS } from "@/features/download/data/download-install-steps";
 import type { SelectedDevice } from "@/features/download/download-page-view-state";
 import { cn } from "@/shared/lib/utils";
@@ -13,32 +14,36 @@ export function DownloadDeviceTabs({
   onChange,
   value,
 }: DownloadDeviceTabsProps) {
+  const groupId = useId();
+
   return (
-    <div
-      role="tablist"
-      aria-label={ariaLabel}
-      className="inline-flex max-w-full items-center gap-1 rounded-full border border-white/15 bg-white/8 p-0.5 shadow-sm backdrop-blur-sm"
-    >
+    <fieldset className="inline-flex max-w-full items-center gap-1 rounded-full border border-white/15 bg-white/8 p-0.5 shadow-sm backdrop-blur-sm">
+      <legend className="sr-only">{ariaLabel}</legend>
       {DEVICE_TABS.map((option) => {
         const active = value === option.id;
         const Icon = option.icon;
+        const inputId = `${groupId}-${option.id}`;
 
         return (
-          <button
+          <label
             key={option.id}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            onClick={() => {
-              onChange(option.id);
-            }}
+            htmlFor={inputId}
             className={cn(
-              "relative inline-flex h-9 min-w-0 items-center justify-center gap-1.5 rounded-full px-3 font-bold text-xs leading-none outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/70 focus-visible:ring-offset-1 focus-visible:ring-offset-hero-bg",
+              "relative inline-flex h-11 min-w-0 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 font-bold text-xs leading-none outline-none transition-colors duration-200 has-focus-visible:ring-2 has-focus-visible:ring-forge-teal/70 has-focus-visible:ring-offset-1 has-focus-visible:ring-offset-hero-bg sm:h-9",
               active
                 ? "bg-forge-teal text-white shadow-[0_2px_0_#063b37]"
                 : "text-white/62 hover:bg-white/8 hover:text-white",
             )}
           >
+            <input
+              id={inputId}
+              type="radio"
+              name={`${groupId}-device`}
+              value={option.id}
+              checked={active}
+              onChange={() => onChange(option.id)}
+              className="sr-only"
+            />
             <Icon
               className={cn(
                 "size-3.5 shrink-0 transition-opacity duration-200",
@@ -60,9 +65,9 @@ export function DownloadDeviceTabs({
                 {option.shortLabel}
               </span>
             )}
-          </button>
+          </label>
         );
       })}
-    </div>
+    </fieldset>
   );
 }

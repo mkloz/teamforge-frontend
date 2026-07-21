@@ -44,10 +44,15 @@ function ReactionPlaceholders({
           key={emoji}
           type="button"
           aria-label={`React with ${emoji}`}
-          className="flex size-5 items-center justify-center rounded-full border border-border/55 bg-card/55 text-xs leading-none opacity-70 transition hover:border-accent/35 hover:bg-accent/12 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 active:scale-95"
+          className="group/reaction flex size-11 items-center justify-center rounded-full text-xs leading-none transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 active:scale-95 [@media(pointer:fine)]:size-5"
           onClick={() => onToggleReaction?.(emoji)}
         >
-          <span aria-hidden="true">{emoji}</span>
+          <span
+            aria-hidden="true"
+            className="flex size-5 items-center justify-center rounded-full border border-border/55 bg-card/55 opacity-70 transition group-hover/reaction:border-accent/35 group-hover/reaction:bg-accent/12 group-hover/reaction:opacity-100"
+          >
+            {emoji}
+          </span>
         </button>
       ))}
     </div>

@@ -43,6 +43,8 @@ const DEFAULT_PLAN_LOCATION_VALUE = {
 } satisfies PlanLocationValue;
 
 export function LocationProposalInput({
+  errorId,
+  invalid,
   labelId,
   locationValue,
   onLocationChange,
@@ -51,6 +53,8 @@ export function LocationProposalInput({
 
   return (
     <fieldset
+      aria-describedby={errorId}
+      aria-invalid={invalid}
       aria-labelledby={labelId}
       className="grid min-w-0 gap-2 border-0 p-0"
     >

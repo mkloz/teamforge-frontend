@@ -42,6 +42,16 @@ function getQrShareData(shareTitle: string, url: string): BrowserShareData {
   };
 }
 
+function getQrShareButtonLabel(shareTitle: string) {
+  return shareTitle === "Share" ? "Share link" : `Share ${shareTitle}`;
+}
+
+function getQrCodeLabel(shareTitle: string) {
+  return shareTitle === "Share"
+    ? "QR code for this link"
+    : `QR code for ${shareTitle}`;
+}
+
 function hasQrShareHeader({
   description,
   title,
@@ -80,18 +90,23 @@ function QrShareAvatar({ src }: { src: string | null }) {
 
 function QrShareHeader({
   description,
+  shareTitle,
   title,
-}: Pick<QrShareDialogProps, "description" | "title">) {
+}: Pick<QrShareDialogProps, "description" | "title"> & {
+  shareTitle: string;
+}) {
   if (!hasQrShareHeader({ description, title })) {
-    return null;
+    return <DialogTitle className="sr-only">{shareTitle}</DialogTitle>;
   }
 
   return (
     <DialogHeader className="mb-4 max-w-[calc(100%-3rem)] gap-1 text-left">
-      {title && (
+      {title ? (
         <DialogTitle className="font-bold text-white text-xl leading-tight tracking-tight">
           {title}
         </DialogTitle>
+      ) : (
+        <DialogTitle className="sr-only">{shareTitle}</DialogTitle>
       )}
       {description && (
         <DialogDescription className="font-medium text-sm text-text-dark-secondary leading-relaxed">
@@ -124,30 +139,43 @@ function QrShareOverlay({ canShare }: { canShare: boolean }) {
 function QrShareCodeButton({
   canShare,
   onShare,
+  shareTitle,
   url,
 }: {
   canShare: boolean;
   onShare: () => Promise<void>;
+  shareTitle: string;
   url: string;
 }) {
+  const content = (
+    <>
+      <StyledQrCode url={url} className="max-w-none rounded-2xl" />
+      <QrShareOverlay canShare={canShare} />
+    </>
+  );
+
+  if (!canShare) {
+    return (
+      <div
+        role="img"
+        aria-label={getQrCodeLabel(shareTitle)}
+        className="relative flex aspect-square w-full cursor-default items-center justify-center rounded-2xl bg-transparent p-0"
+      >
+        {content}
+      </div>
+    );
+  }
+
   return (
     <button
       type="button"
-      onClick={
-        canShare
-          ? () => {
-              void onShare();
-            }
-          : undefined
-      }
-      className={cn(
-        "group relative flex aspect-square w-full items-center justify-center rounded-2xl bg-transparent p-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal",
-        canShare ? "cursor-pointer" : "cursor-default",
-      )}
+      aria-label={getQrShareButtonLabel(shareTitle)}
+      onClick={() => {
+        void onShare();
+      }}
+      className="group relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-2xl bg-transparent p-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal"
     >
-      <StyledQrCode url={url} className="max-w-none rounded-2xl" />
-
-      <QrShareOverlay canShare={canShare} />
+      {content}
     </button>
   );
 }
@@ -207,7 +235,11 @@ export function QrShareDialog({
               <span className="sr-only">Close</span>
             </DialogClose>
 
-            <QrShareHeader description={description} title={title} />
+            <QrShareHeader
+              description={description}
+              shareTitle={shareTitle}
+              title={title}
+            />
 
             <div
               className={getQrCodeFrameClassName({
@@ -219,6 +251,7 @@ export function QrShareDialog({
               <QrShareCodeButton
                 canShare={canShare}
                 onShare={handleShare}
+                shareTitle={shareTitle}
                 url={url}
               />
             </div>

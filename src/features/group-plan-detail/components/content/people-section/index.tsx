@@ -72,7 +72,7 @@ function PeopleMembersGrid({
   viewerUserId: GroupPlanDetail["viewer"]["userId"];
 }) {
   return (
-    <div className="grid gap-1.5 sm:grid-cols-2">
+    <div id="people-members-grid" className="grid gap-1.5 sm:grid-cols-2">
       {people.visibleMembers.map((member) => (
         <MemberCard
           key={member.userId}
@@ -101,7 +101,13 @@ function PeopleSectionToggle({
 
   return (
     <div className="mt-4">
-      <Button variant="ghost" size="sm" onClick={onToggleExpanded}>
+      <Button
+        variant="ghost"
+        size="sm"
+        aria-controls="people-members-grid"
+        aria-expanded={expanded}
+        onClick={onToggleExpanded}
+      >
         <PeopleSectionToggleIcon expanded={expanded} />
         {getPeopleSectionToggleLabel(people, expanded)}
       </Button>

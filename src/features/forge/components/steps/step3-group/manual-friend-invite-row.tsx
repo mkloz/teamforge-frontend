@@ -141,7 +141,7 @@ function InviteToggleButton({
         disabled={disabled}
         onClick={() => onToggle(friend.id)}
         className={cn(
-          "size-7 rounded-full",
+          "size-11 rounded-full md:size-7",
           selected
             ? "bg-forge-teal text-white"
             : "text-muted-foreground hover:enabled:text-forge-teal",

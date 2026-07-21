@@ -11,15 +11,31 @@ interface TemplatePaginationControlsProps {
   canPage: boolean;
   onNext: () => void;
   onPrevious: () => void;
+  page: number;
+  pageCount: number;
 }
 
 export function TemplatePaginationControls({
   canPage,
   onNext,
   onPrevious,
+  page,
+  pageCount,
 }: TemplatePaginationControlsProps) {
   return (
-    <div className="flex shrink-0 items-center gap-1">
+    <nav
+      aria-label="Template pages"
+      className="flex shrink-0 items-center gap-1"
+    >
+      <span
+        aria-hidden="true"
+        className="mr-1 font-semibold text-muted-foreground/45 text-xs"
+      >
+        {page + 1}/{pageCount}
+      </span>
+      <span className="sr-only" aria-live="polite" aria-atomic="true">
+        Template page {page + 1} of {pageCount}
+      </span>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -29,7 +45,7 @@ export function TemplatePaginationControls({
             onClick={onPrevious}
             disabled={!canPage}
             aria-label="Previous templates"
-            className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35"
+            className="size-11 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35 md:size-8"
           >
             <ChevronLeft size={15} />
           </Button>
@@ -45,13 +61,13 @@ export function TemplatePaginationControls({
             onClick={onNext}
             disabled={!canPage}
             aria-label="Next templates"
-            className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35"
+            className="size-11 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35 md:size-8"
           >
             <ChevronRight size={15} />
           </Button>
         </TooltipTrigger>
         <TooltipContent>Next templates</TooltipContent>
       </Tooltip>
-    </div>
+    </nav>
   );
 }

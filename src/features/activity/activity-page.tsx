@@ -19,7 +19,7 @@ export function ActivityPage() {
   usePageMetadata(ACTIVITY_PAGE_METADATA);
 
   const activity = useActivity();
-  const isMobile = useMediaQuery("(max-width: 1024px)");
+  const isMobile = useMediaQuery("(max-width: 1023px)");
   const isOnline = useNetworkStatus();
 
   if (activity.isInitialLoading && isOnline) {

@@ -56,9 +56,17 @@ export function Step3Group({
         </>
       ) : null}
 
-      <section className="flex flex-col gap-3.5 border-border/25 border-t pt-4">
+      <section
+        aria-labelledby="forge-group-size-heading"
+        className="flex flex-col gap-3.5 border-border/25 border-t pt-4"
+      >
         <div className="flex items-baseline gap-3 px-0.5">
-          <p className="font-semibold text-foreground text-sm">Group size</p>
+          <h3
+            id="forge-group-size-heading"
+            className="font-semibold text-foreground text-sm"
+          >
+            Group size
+          </h3>
         </div>
 
         {forgeMode === "MANUAL" ? (

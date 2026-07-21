@@ -41,7 +41,7 @@ export function InviteLinkSection({
           <p className="font-semibold text-foreground text-sm leading-none">
             Group link
           </p>
-          <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
+          <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
             Keep this handy for members who have access.
           </p>
         </div>
@@ -100,7 +100,7 @@ function InviteQrButton({ groupLink }: Pick<InviteLinkState, "groupLink">) {
         size="icon"
         aria-label="Group QR code unavailable"
         disabled
-        className="size-8 shrink-0 rounded-lg border-border/40 text-muted-foreground"
+        className="size-11 shrink-0 rounded-lg border-border/40 text-muted-foreground md:size-8"
       >
         <QrCode size={15} strokeWidth={2} />
       </Button>
@@ -117,7 +117,7 @@ function InviteQrButton({ groupLink }: Pick<InviteLinkState, "groupLink">) {
           variant="outline"
           size="icon"
           aria-label="Show group QR code"
-          className="size-8 shrink-0 rounded-lg border-border/40 text-foreground transition-colors hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal active:scale-95"
+          className="size-11 shrink-0 rounded-lg border-border/40 text-foreground transition-colors hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal active:scale-95 md:size-8"
         >
           <QrCode size={15} strokeWidth={2} />
         </Button>
@@ -152,7 +152,7 @@ function CopyInviteLinkButton({
 
 function getCopyButtonClassName(inviteCopied: boolean) {
   return cn(
-    "h-8 shrink-0 rounded-lg px-3 font-semibold text-xs transition-colors active:scale-95",
+    "h-11 shrink-0 rounded-lg px-3 font-semibold text-xs transition-colors active:scale-95 md:h-8",
     inviteCopied
       ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal/90"
       : "border border-border/40 bg-transparent text-foreground hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal",

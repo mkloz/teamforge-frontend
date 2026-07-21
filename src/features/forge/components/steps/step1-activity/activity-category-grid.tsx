@@ -48,17 +48,23 @@ export function ActivityCategoryGrid({
   const fitRankByCategory = buildFitRankByCategory(fitHighlights);
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <section
+      aria-labelledby="activity-category-heading"
+      className="flex flex-col gap-2.5"
+    >
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="min-w-0">
-          <p className="font-semibold text-muted-foreground text-xs leading-none">
+          <h3
+            id="activity-category-heading"
+            className="font-semibold text-muted-foreground text-xs leading-none"
+          >
             Choose a category
-          </p>
-          <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
+          </h3>
+          <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
             Choose the kind of activity you want to plan.
           </p>
         </div>
-        <p className="shrink-0 font-semibold text-micro text-muted-foreground/50 leading-none">
+        <p className="shrink-0 font-semibold text-muted-foreground/50 text-xs leading-none">
           {ACTIVITIES.length} options
         </p>
       </div>
@@ -79,7 +85,7 @@ export function ActivityCategoryGrid({
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 

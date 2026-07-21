@@ -6,6 +6,8 @@ import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
 import { PlanFieldItem } from "./plan-change-field-row";
@@ -117,18 +119,18 @@ function PlanChangeDialogHeader({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex items-start justify-between px-5 pt-6 pb-4">
       <div>
-        <h2 className="font-semibold text-base text-ink">
+        <DialogTitle className="font-semibold text-base text-ink">
           What would you change?
-        </h2>
-        <p className="mt-0.5 max-w-[24ch] text-slate-muted text-xs leading-relaxed">
+        </DialogTitle>
+        <DialogDescription className="mt-0.5 max-w-[24ch] text-slate-muted text-xs leading-relaxed">
           Tap a detail. Your idea goes to a group vote.
-        </p>
+        </DialogDescription>
       </div>
       <button
         type="button"
         aria-label="Close"
         onClick={onClose}
-        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-slate-muted transition-colors hover:bg-muted hover:text-ink"
+        className="-mt-2 -mr-2 flex size-11 shrink-0 items-center justify-center rounded-full text-slate-muted transition-colors hover:bg-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <X className="size-3.5" strokeWidth={2.5} />
       </button>

@@ -27,6 +27,8 @@ export function Step2Templates({
     : buildTemplateSuggestions(selectedActivity, currentUser);
   const {
     canPage,
+    page,
+    pageCount,
     showNextPage,
     showPreviousPage,
     visibleItems: visibleSuggestions,
@@ -36,21 +38,27 @@ export function Step2Templates({
   });
 
   return (
-    <div className="flex flex-col gap-4 pb-6">
+    <section
+      aria-labelledby="template-suggestions-heading"
+      className="flex flex-col gap-4 pb-6"
+    >
       <div className="flex items-start justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-start gap-3">
           <IconTile icon={LayoutTemplate} size="md" tone="teal" />
           <div className="min-w-0">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <p className="font-semibold text-foreground text-sm leading-tight">
+              <h3
+                id="template-suggestions-heading"
+                className="font-semibold text-foreground text-sm leading-tight"
+              >
                 Start from a template
-              </p>
+              </h3>
               {selectedActivity && (
                 <StatusPill
                   icon={Tag}
                   size="xs"
                   tone="neutral"
-                  className="max-w-full border-border/45 bg-card px-2 py-0.5 text-micro"
+                  className="max-w-full border-border/45 bg-card px-2 py-0.5 text-xs"
                 >
                   <span className="truncate">{selectedActivity}</span>
                 </StatusPill>
@@ -66,6 +74,8 @@ export function Step2Templates({
           canPage={canPage}
           onNext={showNextPage}
           onPrevious={showPreviousPage}
+          page={page}
+          pageCount={pageCount}
         />
       </div>
 
@@ -85,6 +95,6 @@ export function Step2Templates({
       )}
 
       <StartBlankTemplateButton onStartBlank={onStartBlank} />
-    </div>
+    </section>
   );
 }

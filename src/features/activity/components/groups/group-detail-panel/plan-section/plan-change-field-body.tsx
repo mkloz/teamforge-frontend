@@ -30,6 +30,10 @@ export function PlanFieldBody({
   onLocationModeChange,
   option,
 }: PlanFieldBodyProps) {
+  const errorId = `activity-plan-change-error-${option.value}`;
+  const labelId = `activity-plan-change-value-label-${option.value}`;
+  const hasError = Boolean(form.error);
+
   return (
     <AnimatePresence initial={false}>
       {isExpanded ? (
@@ -62,12 +66,18 @@ export function PlanFieldBody({
         >
           <div className="px-5 pt-0 pb-5">
             <CurrentValueNote currentValue={currentValue} />
+            <span id={labelId} className="sr-only">
+              New {option.label}
+            </span>
             <PlanFieldInput
+              errorId={hasError ? errorId : undefined}
               form={form}
+              invalid={hasError}
+              labelId={labelId}
               onLocationModeChange={onLocationModeChange}
               option={option}
             />
-            <PlanFieldError error={form.error} />
+            <PlanFieldError error={form.error} id={errorId} />
             <PlanChangeActions form={form} />
           </div>
         </m.div>
@@ -90,11 +100,17 @@ function CurrentValueNote({ currentValue }: { currentValue: string }) {
 }
 
 function PlanFieldInput({
+  errorId,
   form,
+  invalid,
+  labelId,
   onLocationModeChange,
   option,
 }: {
+  errorId?: string;
   form: PlanProposalForm;
+  invalid: boolean;
+  labelId: string;
   onLocationModeChange: (mode: string) => void;
   option: PlanProposalFieldOption;
 }) {
@@ -111,12 +127,24 @@ function PlanFieldInput({
   }
 
   if (form.isDateField) {
-    return <DateTimeInput value={form.value} onValueChange={form.setValue} />;
+    return (
+      <fieldset
+        aria-describedby={errorId}
+        aria-invalid={invalid}
+        aria-labelledby={labelId}
+        className="min-w-0 border-0 p-0"
+      >
+        <DateTimeInput value={form.value} onValueChange={form.setValue} />
+      </fieldset>
+    );
   }
 
   if (form.isLocationField) {
     return (
       <LocationInput
+        errorId={errorId}
+        invalid={invalid}
+        labelId={labelId}
         locationValue={form.locationValue}
         onModeChange={onLocationModeChange}
         onLocationSelect={handleLocationSelect}
@@ -127,6 +155,9 @@ function PlanFieldInput({
 
   return (
     <Textarea
+      aria-describedby={errorId}
+      aria-invalid={invalid}
+      aria-labelledby={labelId}
       value={form.value}
       onChange={(event) => form.setValue(event.target.value)}
       rows={option.value === "DESCRIPTION" ? 4 : 2}
@@ -135,13 +166,14 @@ function PlanFieldInput({
   );
 }
 
-function PlanFieldError({ error }: { error: string | null }) {
+function PlanFieldError({ error, id }: { error: string | null; id: string }) {
   if (!error) {
     return null;
   }
 
   return (
     <Notice
+      id={id}
       aria-live="polite"
       tone="danger"
       size="sm"

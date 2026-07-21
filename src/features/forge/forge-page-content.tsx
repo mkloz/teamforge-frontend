@@ -142,7 +142,7 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
                   },
                 })
               }
-              className="rounded-full border border-border/50 bg-card/70 px-4 py-2 font-medium text-muted-foreground text-sm transition-colors duration-150 hover:border-forge-teal/40 hover:bg-forge-teal/5 hover:text-forge-teal"
+              className="min-h-11 rounded-full border border-border/50 bg-card/70 px-4 py-2 font-medium text-muted-foreground text-sm transition-colors duration-150 hover:border-forge-teal/40 hover:bg-forge-teal/5 hover:text-forge-teal md:min-h-9"
             >
               {chip.label}
             </button>

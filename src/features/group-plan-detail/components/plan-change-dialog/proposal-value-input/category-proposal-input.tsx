@@ -9,6 +9,9 @@ import {
 } from "@/shared/components/ui/select";
 
 export function CategoryProposalInput({
+  errorId,
+  inputId,
+  invalid,
   labelId,
   onValueChange,
   value,
@@ -16,7 +19,9 @@ export function CategoryProposalInput({
   return (
     <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger
-        id="plan-change-value"
+        id={inputId}
+        aria-describedby={errorId}
+        aria-invalid={invalid}
         aria-labelledby={labelId}
         className="bg-card"
       >

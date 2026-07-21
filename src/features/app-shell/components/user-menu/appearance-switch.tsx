@@ -12,7 +12,7 @@ export function AppearanceSwitch() {
     appearance === ThemeAppearance.SYSTEM ? Monitor : isDark ? Moon : Sun;
 
   return (
-    <div className="flex items-center gap-3 rounded-xl px-3 py-2">
+    <div className="flex min-w-0 flex-wrap items-center gap-3 rounded-xl px-3 py-2">
       <IconTile
         icon={CurrentIcon}
         tone="neutral"
@@ -25,7 +25,7 @@ export function AppearanceSwitch() {
         Theme
       </span>
 
-      <div className="grid w-52 shrink-0 grid-cols-3 gap-1 rounded-full border border-border/70 bg-card p-1.5">
+      <div className="grid w-full min-w-0 basis-full grid-cols-3 gap-1 rounded-full border border-border/70 bg-card p-1.5 md:w-52 md:shrink-0 md:basis-auto">
         <AppearanceOption
           icon={Monitor}
           isActive={appearance === ThemeAppearance.SYSTEM}
@@ -68,7 +68,7 @@ function AppearanceOption({
       aria-pressed={isActive}
       onClick={onClick}
       className={cn(
-        "flex h-7 items-center justify-center gap-1.5 rounded-full px-2 font-black text-xs transition-all duration-150",
+        "flex h-11 items-center justify-center gap-1.5 rounded-full px-2 font-black text-xs transition-all duration-150 md:h-7",
         isActive
           ? "bg-primary text-primary-foreground shadow-primary/20 shadow-sm"
           : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",

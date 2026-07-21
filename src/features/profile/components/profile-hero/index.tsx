@@ -90,7 +90,11 @@ export function ProfileHero({
             {isSelf ? "Friends Management" : "Mutual Friends"}
           </SheetTitle>
         </SheetHeader>
-        <ProfileFriendsPanel user={user} initialTab={friendsTab} />
+        <ProfileFriendsPanel
+          user={user}
+          activeTab={friendsTab}
+          onTabChange={setFriendsTab}
+        />
       </SheetContent>
     </Sheet>
   );

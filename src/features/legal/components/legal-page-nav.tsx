@@ -23,7 +23,7 @@ export function LegalPageNav({ kind }: LegalPageNavProps) {
   const alternateCopy = legalPageCopy[alternate];
 
   return (
-    <aside className="rounded-2xl border border-border/70 bg-card/55 p-4 lg:sticky lg:top-6">
+    <aside className="rounded-2xl border border-border/70 bg-card/55 p-4 lg:sticky lg:top-20">
       <p className="font-semibold text-slate-muted text-xs">On this page</p>
       <nav
         aria-label={`${copy.eyebrow} sections`}

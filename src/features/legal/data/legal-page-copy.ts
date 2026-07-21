@@ -105,9 +105,9 @@ export const legalPageCopy: Record<LegalPageKind, LegalPageCopy> = {
       {
         id: "choices",
         heading: "9. Choices and rights",
-        body: "People can adjust many privacy and matching controls directly in TeamForge, and may also have legal privacy rights depending on location.",
+        body: "People can adjust many privacy and group-formation controls directly in TeamForge, and may also have legal privacy rights depending on location.",
         bullets: [
-          "Users can update profile details, avatar, interests, personality answers, matching preferences, notifications, privacy settings, blocks, and sessions.",
+          "Users can update profile details, avatar, interests, personality answers, group-formation preferences, notifications, privacy settings, blocks, and sessions.",
           "Where available by law, users may request access, correction, deletion, export, restriction, objection, or withdrawal of consent.",
           "TeamForge may verify requests and may limit a request when needed for safety, fraud prevention, legal compliance, or another person's privacy.",
           "TeamForge is for people 18 and older and does not knowingly collect information from minors.",

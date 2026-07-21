@@ -134,8 +134,8 @@ function ConversationTimestamp({
   return (
     <time
       className={cn(
-        "shrink-0 font-medium text-micro text-slate-muted tabular-nums",
-        isCompact && "origin-right scale-90",
+        "shrink-0 font-medium text-slate-muted text-xs tabular-nums",
+        isCompact && "leading-none",
       )}
     >
       {formattedTimestamp}

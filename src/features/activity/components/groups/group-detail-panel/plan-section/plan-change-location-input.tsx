@@ -11,6 +11,9 @@ import {
 import type { PlanLocationSelection } from "./plan-change-dialog-types";
 
 interface LocationInputProps {
+  errorId?: string;
+  invalid: boolean;
+  labelId: string;
   locationValue: {
     locationMode: string;
     location: string;
@@ -23,13 +26,21 @@ interface LocationInputProps {
 }
 
 export function LocationInput({
+  errorId,
+  invalid,
+  labelId,
   locationValue,
   onModeChange,
   onLocationSelect,
   onLinkChange,
 }: LocationInputProps) {
   return (
-    <fieldset className="flex min-w-0 flex-col gap-2 border-0 p-0">
+    <fieldset
+      aria-describedby={errorId}
+      aria-invalid={invalid}
+      aria-labelledby={labelId}
+      className="flex min-w-0 flex-col gap-2 border-0 p-0"
+    >
       <Select value={locationValue.locationMode} onValueChange={onModeChange}>
         <SelectTrigger aria-label="Location type">
           <SelectValue />

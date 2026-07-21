@@ -54,16 +54,16 @@ function GroupPlanDetailPageLoadingFixture() {
       </div>
 
       <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)]">
-        <div className="flex min-w-0 flex-col gap-12">
+        <div className="min-w-0 border-border/70 lg:col-start-2 lg:row-start-1 lg:border-l lg:pl-8 xl:pl-10">
+          <GroupPlanDecisionRailSkeleton />
+        </div>
+
+        <div className="flex min-w-0 flex-col gap-12 lg:col-start-1 lg:row-start-1">
           <GroupPlanGroupSectionSkeleton />
           <GroupPlanPlanSectionSkeleton />
           <GroupPlanPeopleSectionSkeleton />
           <GroupPlanFitSectionSkeleton />
         </div>
-
-        <aside className="min-w-0 border-border/70 lg:border-l lg:pl-8 xl:pl-10">
-          <GroupPlanDecisionRailSkeleton />
-        </aside>
       </div>
     </div>
   );

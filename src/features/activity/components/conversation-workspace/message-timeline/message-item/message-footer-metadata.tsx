@@ -27,7 +27,7 @@ export function MessageFooterMetadata({
       <EditedMessageLabel isVisible={state.isEdited} />
       <span
         className={cn(
-          "select-none font-bold text-nano text-slate-muted tabular-nums",
+          "select-none font-bold text-slate-muted text-xs tabular-nums",
         )}
       >
         {formatChatTime(createdAt)}
@@ -76,9 +76,7 @@ function FailedOwnMessageLabel({ isVisible }: { isVisible: boolean }) {
   }
 
   return (
-    <span className="mr-0.5 font-bold text-destructive text-nano">
-      Not sent
-    </span>
+    <span className="mr-0.5 font-bold text-destructive text-xs">Not sent</span>
   );
 }
 
@@ -88,7 +86,7 @@ function EditedMessageLabel({ isVisible }: { isVisible: boolean | undefined }) {
   }
 
   return (
-    <span className="mr-0.5 font-bold text-nano italic opacity-60">Edited</span>
+    <span className="mr-0.5 font-bold text-xs italic opacity-60">Edited</span>
   );
 }
 
@@ -111,7 +109,7 @@ function ReadBySummary({
       className="ml-0.5 inline-flex min-w-0 items-center gap-1 rounded-full bg-primary/8 px-1.5 py-0.5 text-primary"
       title={readerNames ? `Read by ${readerNames}` : label}
     >
-      <span className="max-w-18 truncate font-black text-nano">{label}</span>
+      <span className="max-w-18 truncate font-black text-xs">{label}</span>
       {visibleReaders.length > 0 ? (
         <span className="flex shrink-0 items-center -space-x-1">
           {visibleReaders.map((reader) => (

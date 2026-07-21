@@ -37,12 +37,12 @@ export function DownloadHeroSection({
 }: DownloadHeroSectionProps) {
   return (
     <section
-      className="dark public-forge-theme relative h-svh min-h-0 overflow-hidden border-canvas border-b bg-hero-bg pt-16"
+      className="dark public-forge-theme relative min-h-svh overflow-hidden border-canvas border-b bg-hero-bg pt-16"
       aria-label="Install TeamForge"
     >
       <DownloadHeroGrid />
 
-      <div className="relative z-10 mx-auto grid h-[calc(100svh-4rem)] min-h-0 max-w-6xl grid-cols-1 gap-10 overflow-hidden px-6 py-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
+      <div className="relative z-10 mx-auto grid min-h-[calc(100svh-4rem)] max-w-6xl grid-cols-1 gap-10 px-6 py-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
         <div className="flex min-h-0 flex-col items-center justify-center text-center lg:items-start lg:text-left">
           <h1 className="mb-4 text-balance font-extrabold text-4xl text-white leading-none sm:text-5xl lg:text-6xl">
             Your groups, <span className="text-forge-teal">one tap away.</span>

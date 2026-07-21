@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   getProfileQrUrl,
   getPublicFriendsPanelState,
@@ -14,14 +13,15 @@ import type { User } from "@/shared/schemas";
 
 export function ProfileFriendsPanel({
   user,
-  initialTab = "friends",
+  activeTab,
+  onTabChange,
 }: {
   user: User;
-  initialTab?: TabValue;
+  activeTab: TabValue;
+  onTabChange: (tab: TabValue) => void;
 }) {
   const { data: currentUser } = useCurrentUserQuery();
   const isSelf = currentUser?.id === user.id;
-  const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
 
   const { commonFriends } = useProfileCommonFriends(
     !isSelf ? user.id : undefined,
@@ -39,7 +39,7 @@ export function ProfileFriendsPanel({
       <PublicProfileFriendsPanel
         activeTab={activeTab}
         hasMultipleTabs={publicPanelState.hasMultipleTabs}
-        onTabChange={setActiveTab}
+        onTabChange={onTabChange}
         userId={user.id}
       />
     );
@@ -48,7 +48,7 @@ export function ProfileFriendsPanel({
   return (
     <SelfProfileFriendsPanel
       activeTab={activeTab}
-      onTabChange={setActiveTab}
+      onTabChange={onTabChange}
       profileQrUrl={profileQrUrl}
       user={user}
     />

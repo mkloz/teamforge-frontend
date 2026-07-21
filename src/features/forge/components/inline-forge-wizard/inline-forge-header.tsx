@@ -35,7 +35,7 @@ export function InlineForgeHeader({
               variant="ghost"
               size="sm"
               onClick={fw.goBack}
-              className="size-8 shrink-0 rounded-full p-0 text-slate-muted hover:text-ink"
+              className="size-11 shrink-0 rounded-full p-0 text-slate-muted hover:text-ink md:size-8"
               aria-label="Go back"
             >
               <ChevronLeft size={18} />
@@ -91,7 +91,7 @@ export function InlineForgeHeader({
                       onCancelDialogChange(true);
                     }
                   }}
-                  className="h-8 px-3 font-bold text-xs"
+                  className="h-11 px-4 font-bold text-xs md:h-8 md:px-3"
                 >
                   <X className="size-3.5" aria-hidden="true" />
                   Cancel

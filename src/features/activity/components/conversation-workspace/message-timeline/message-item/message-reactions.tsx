@@ -6,7 +6,6 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import { useState } from "react";
-import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 export interface ReactionGroup {
@@ -67,32 +66,52 @@ export function MessageReactions({
         const hasVisibleCount = reaction.count > 1;
 
         return (
-          <Button
+          <button
+            type="button"
             key={reaction.emoji}
-            variant="subtle"
-            size="xs"
+            aria-label={getReactionAriaLabel(reaction)}
+            aria-pressed={Boolean(reaction.isActive)}
             className={cn(
-              "h-5 rounded-full border py-0 font-bold text-nano leading-none transition-all active:enabled:scale-95",
-              hasVisibleCount ? "min-w-7 px-1" : "size-5 px-0",
-              getReactionButtonTone({ isOwn, isActive: reaction.isActive }),
+              "flex h-11 min-w-11 items-center justify-center rounded-full bg-transparent p-0 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 active:scale-95 [@media(pointer:fine)]:h-5",
+              hasVisibleCount
+                ? "[@media(pointer:fine)]:w-auto [@media(pointer:fine)]:min-w-7"
+                : "[@media(pointer:fine)]:size-5 [@media(pointer:fine)]:min-w-5",
             )}
-            contentClassName={hasVisibleCount ? "gap-0.5" : "gap-0"}
             onClick={() => onToggleReaction?.(reaction.emoji)}
           >
             <span
+              aria-hidden="true"
               className={cn(
-                "grid place-items-center self-center text-xs leading-none",
-                hasVisibleCount ? "size-3.5" : "size-4",
+                "inline-flex h-5 items-center justify-center rounded-full border font-bold text-xs leading-none transition-all",
+                hasVisibleCount ? "min-w-7 gap-0.5 px-1" : "size-5",
+                getReactionButtonTone({
+                  isOwn,
+                  isActive: reaction.isActive,
+                }),
               )}
             >
-              {reaction.emoji}
+              <span
+                className={cn(
+                  "grid place-items-center self-center text-xs leading-none",
+                  hasVisibleCount ? "size-3.5" : "size-4",
+                )}
+              >
+                {reaction.emoji}
+              </span>
+              <AnimatedReactionCount count={reaction.count} />
             </span>
-            <AnimatedReactionCount count={reaction.count} />
-          </Button>
+          </button>
         );
       })}
     </div>
   );
+}
+
+function getReactionAriaLabel(reaction: ReactionGroup) {
+  const action = reaction.isActive ? "Remove" : "Add";
+  const total = `${reaction.count} ${reaction.count === 1 ? "reaction" : "reactions"} total`;
+
+  return `${action} ${reaction.emoji} reaction. ${total}.`;
 }
 
 function getReactionButtonTone({

@@ -58,15 +58,21 @@ export function RecentActivityRow({
   }
 
   return (
-    <section className="flex flex-col gap-2.5">
+    <section
+      aria-labelledby="recent-activity-heading"
+      className="flex flex-col gap-2.5"
+    >
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-center gap-2">
           <IconTile icon={History} shape="circle" size="sm" tone="neutral" />
           <div className="min-w-0">
-            <p className="font-semibold text-muted-foreground text-xs leading-none">
+            <h3
+              id="recent-activity-heading"
+              className="font-semibold text-muted-foreground text-xs leading-none"
+            >
               Recent activity
-            </p>
-            <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
+            </h3>
+            <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
               Reuse what you forge often.
             </p>
           </div>

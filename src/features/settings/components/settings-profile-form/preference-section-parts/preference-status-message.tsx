@@ -11,7 +11,11 @@ export function PreferenceStatusMessage({
     return null;
   }
 
-  return <p className="text-destructive text-sm">{error}</p>;
+  return (
+    <p role="alert" aria-atomic="true" className="text-destructive text-sm">
+      {error}
+    </p>
+  );
 }
 
 interface OfflineSettingsNoticeProps {

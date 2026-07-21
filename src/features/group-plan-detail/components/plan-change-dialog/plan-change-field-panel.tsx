@@ -81,6 +81,11 @@ function PlanChangeFieldPanelContent({
   option,
   renderState,
 }: PlanChangeFieldPanelContentProps) {
+  const errorId = `plan-change-error-${option.value}`;
+  const inputId = `plan-change-value-${option.value}`;
+  const labelId = `plan-change-value-label-${option.value}`;
+  const hasError = Boolean(form.error);
+
   return (
     <div className="px-5 pt-1 pb-5">
       {currentValue ? (
@@ -90,15 +95,18 @@ function PlanChangeFieldPanelContent({
         </p>
       ) : null}
 
-      <div id="plan-change-value-label" className="sr-only">
+      <div id={labelId} className="sr-only">
         {`New ${option.label}`}
       </div>
       <ProposalValueInput
+        errorId={hasError ? errorId : undefined}
         field={form.field}
+        inputId={inputId}
+        invalid={hasError}
         value={form.value}
         locationValue={form.locationValue}
         costValue={form.costValue}
-        labelId="plan-change-value-label"
+        labelId={labelId}
         onCostChange={form.setCostValue}
         onLocationChange={form.setLocationValue}
         onValueChange={form.setValue}
@@ -106,7 +114,7 @@ function PlanChangeFieldPanelContent({
 
       {form.error ? (
         <Notice
-          id="plan-change-error"
+          id={errorId}
           aria-live="polite"
           tone="danger"
           size="sm"

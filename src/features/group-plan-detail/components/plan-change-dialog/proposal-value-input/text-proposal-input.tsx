@@ -3,14 +3,19 @@ import { Textarea } from "@/shared/components/ui/textarea";
 import type { PlanProposalField } from "@/shared/schemas/enums";
 
 export function TextProposalInput({
+  errorId,
   field,
+  inputId,
+  invalid,
   labelId,
   onValueChange,
   value,
 }: ProposalValueInputProps) {
   return (
     <Textarea
-      id="plan-change-value"
+      id={inputId}
+      aria-describedby={errorId}
+      aria-invalid={invalid}
       aria-labelledby={labelId}
       value={value}
       rows={getTextProposalRows(field)}

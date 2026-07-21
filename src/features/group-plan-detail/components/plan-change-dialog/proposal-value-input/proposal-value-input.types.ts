@@ -6,7 +6,10 @@ import type { PlanProposalField } from "@/shared/schemas/enums";
 
 export interface ProposalValueInputProps {
   costValue: PlanCostValue | null;
+  errorId?: string;
   field: PlanProposalField;
+  inputId: string;
+  invalid?: boolean;
   labelId: string;
   locationValue: PlanLocationValue | null;
   onCostChange: (value: PlanCostValue) => void;

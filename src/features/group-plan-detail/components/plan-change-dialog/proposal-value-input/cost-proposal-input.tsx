@@ -23,6 +23,8 @@ const DEFAULT_PLAN_COST_VALUE = {
 
 export function CostProposalInput({
   costValue,
+  errorId,
+  invalid,
   labelId,
   onCostChange,
 }: ProposalValueInputProps) {
@@ -30,6 +32,8 @@ export function CostProposalInput({
 
   return (
     <fieldset
+      aria-describedby={errorId}
+      aria-invalid={invalid}
       aria-labelledby={labelId}
       className="grid min-w-0 gap-2 border-0 p-0"
     >

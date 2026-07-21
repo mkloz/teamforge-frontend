@@ -43,7 +43,7 @@ export function FriendCard({
       />
 
       {actions && (
-        <div className="relative z-20 flex shrink-0 items-center gap-1 transition-opacity duration-150 md:opacity-0 md:group-hover:opacity-100">
+        <div className="relative z-20 flex shrink-0 items-center gap-1 transition-opacity duration-150 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 md:[@media(pointer:coarse)]:opacity-100">
           {actions}
         </div>
       )}
