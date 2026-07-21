@@ -39,11 +39,6 @@ export function getGroupIdentityViewState({
 >): GroupIdentityViewState {
   const statusLabel = formatPanelToken(status);
   const displayName = stripPanelStatusPrefix(name, statusLabel);
-  const displayDescription = getDisplayDescription(
-    description,
-    displayName,
-    isReadOnly,
-  );
   const groupLink = buildAppUrl(`/groups/${encodeURIComponent(groupId)}`);
 
   return {
@@ -52,7 +47,7 @@ export function getGroupIdentityViewState({
     canEditGroup:
       canEditGroup ?? canEditGroupDetails(currentUserRole, isReadOnly),
     createdLabel: getCreatedLabel(createdAt),
-    displayDescription,
+    displayDescription: description || null,
     displayName,
     groupLink,
   };
@@ -84,25 +79,4 @@ function getDisplayAvatarSrc(
   coverImage: string | null | undefined,
 ) {
   return avatar && avatar !== coverImage ? avatar : null;
-}
-
-function getDisplayDescription(
-  description: string | null,
-  groupName: string,
-  isReadOnly: boolean,
-) {
-  if (!description) {
-    return null;
-  }
-
-  const looksInternal =
-    /historical group volume|extra ratings|mini retro|seed data|fixture/i.test(
-      description,
-    );
-
-  if (!isReadOnly || !looksInternal) {
-    return description;
-  }
-
-  return `${groupName} is saved in this group's history.`;
 }
