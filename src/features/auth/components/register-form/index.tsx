@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { FormLevelError } from "@/features/auth/components/form-level-error";
 import {
   type Step,
@@ -30,7 +30,15 @@ const LazyStepProfile = lazy(loadStepProfile);
 const LazyStepOtp = lazy(loadStepOtp);
 
 function RegisterStepFallback() {
-  return <div className="min-h-80" aria-hidden="true" />;
+  return (
+    <div
+      className="flex min-h-80 items-center justify-center"
+      role="status"
+      aria-live="polite"
+    >
+      <p className="text-slate-muted text-sm">Loading the next step…</p>
+    </div>
+  );
 }
 
 /** Handles account details, profile details, and email verification. */
@@ -55,10 +63,19 @@ export function RegisterForm({
     onSubmit,
     resendOtp,
   } = useRegisterForm({ onSuccess, onProgress, onStepChange });
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const previousStepRef = useRef(step);
+
+  useEffect(() => {
+    if (previousStepRef.current !== step) {
+      previousStepRef.current = step;
+      headingRef.current?.focus();
+    }
+  }, [step]);
 
   return (
     <div className="flex w-full flex-col">
-      <StepHeader step={step} />
+      <StepHeader headingRef={headingRef} step={step} />
 
       {rootError && <FormLevelError message={rootError} />}
 
@@ -82,6 +99,7 @@ export function RegisterForm({
                   onBack={goBackToStep1}
                   onNextIntent={loadStepOtp}
                   isOnline={isOnline}
+                  loading={loading}
                 />
               )}
               {step === 3 && (

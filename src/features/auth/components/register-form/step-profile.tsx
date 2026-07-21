@@ -17,6 +17,7 @@ interface StepProfileProps {
   onNext: () => void;
   onBack: () => void;
   isOnline: boolean;
+  loading: boolean;
   onNextIntent?: () => void;
 }
 
@@ -24,6 +25,7 @@ export function StepProfile({
   onNext,
   onBack,
   isOnline,
+  loading,
   onNextIntent,
 }: StepProfileProps) {
   const { control } = useFormContext<RegisterValues>();
@@ -76,7 +78,8 @@ export function StepProfile({
         onClick={onNext}
         onFocus={onNextIntent}
         onPointerEnter={onNextIntent}
-        disabled={!isOnline}
+        disabled={loading || !isOnline}
+        loading={loading}
         title={isOnline ? undefined : "Reconnect before creating your account."}
         size="lg"
         className="mt-4 w-full"
@@ -89,6 +92,7 @@ export function StepProfile({
         type="button"
         variant="ghost"
         onClick={onBack}
+        disabled={loading}
         size="sm"
         className="text-slate-muted hover:bg-transparent hover:text-ink"
       >

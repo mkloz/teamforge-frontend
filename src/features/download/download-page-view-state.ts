@@ -38,7 +38,10 @@ export function getDownloadPageViewState({
   selectedDevice,
 }: DownloadPageViewStateInput): DownloadPageViewState {
   return {
-    canUseNativePrompt: canPromptInstall && !isStandalone,
+    canUseNativePrompt:
+      canPromptInstall &&
+      !isStandalone &&
+      selectedDevice === platformToDevice(detected),
     feedback: getInstallFeedback(installState),
     heroSubtitle: getHeroSubtitle(selectedDevice, desktopBrowser),
     installStepsHeading: getInstallStepsHeading(selectedDevice),

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { AuthCommands } from "@/features/auth/api/auth-commands";
 import { calculateRegisterProgress } from "@/features/auth/lib/auth-form-progress";
@@ -40,6 +40,7 @@ export function useRegisterForm({
   const [resendLoading, setResendLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
   const [otpMessage, setOtpMessage] = useState<string | null>(null);
+  const registrationRequestPendingRef = useRef(false);
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const form = useForm<RegisterValues>({
@@ -78,56 +79,70 @@ export function useRegisterForm({
   }
 
   async function goToStep3() {
-    setRootError(null);
-    const isValid = await form.trigger([
-      "dateOfBirth",
-      "age",
-      "city",
-      "gender",
-    ]);
-    if (!isValid) {
+    if (registrationRequestPendingRef.current) {
       return;
     }
 
-    if (
-      guardOfflineAction({
-        id: "auth-register-offline",
-        description: "Reconnect before creating your account.",
-      })
-    ) {
-      setRootError("You are offline. Reconnect before creating your account.");
-      return;
-    }
-
+    registrationRequestPendingRef.current = true;
     setLoading(true);
 
     try {
-      const email = form.getValues("email");
-      const result = await AuthCommands.registerWithEmail(form.getValues());
-      form.resetField("dateOfBirth", { defaultValue: "" });
-      trackMutationOutcome(trackedMutationNames.authRegisterEmail, "success", {
-        requestId: result.requestId,
-      });
-      setOtpMessage(`We sent a 6-digit verification code to ${email}.`);
-      showAppSuccessToast("Verification code sent.", {
-        description: `Check ${email} to finish your account.`,
-        id: "auth-register-otp",
-      });
-      setDirection(1);
-      changeStep(3);
+      setRootError(null);
+      const isValid = await form.trigger([
+        "dateOfBirth",
+        "age",
+        "city",
+        "gender",
+      ]);
+      if (!isValid) {
+        return;
+      }
+
+      if (
+        guardOfflineAction({
+          id: "auth-register-offline",
+          description: "Reconnect before creating your account.",
+        })
+      ) {
+        setRootError(
+          "You are offline. Reconnect before creating your account.",
+        );
+        return;
+      }
+
+      try {
+        const email = form.getValues("email");
+        const result = await AuthCommands.registerWithEmail(form.getValues());
+        form.resetField("dateOfBirth", { defaultValue: "" });
+        trackMutationOutcome(
+          trackedMutationNames.authRegisterEmail,
+          "success",
+          {
+            requestId: result.requestId,
+          },
+        );
+        setOtpMessage(`We sent a 6-digit verification code to ${email}.`);
+        showAppSuccessToast("Verification code sent.", {
+          description: `Check ${email} to finish your account.`,
+          id: "auth-register-otp",
+        });
+        setDirection(1);
+        changeStep(3);
+      } catch (error) {
+        captureException(trackedMutationNames.authRegisterEmail, error, {
+          emailDomain: getEmailDomain(form.getValues("email")),
+        });
+        trackMutationOutcome(trackedMutationNames.authRegisterEmail, "error");
+        setRootError(
+          AuthCommands.getAuthErrorMessage(
+            error,
+            "We couldn't start your verification step. Please try again.",
+          ),
+        );
+      }
+    } finally {
       setLoading(false);
-    } catch (error) {
-      captureException(trackedMutationNames.authRegisterEmail, error, {
-        emailDomain: getEmailDomain(form.getValues("email")),
-      });
-      trackMutationOutcome(trackedMutationNames.authRegisterEmail, "error");
-      setRootError(
-        AuthCommands.getAuthErrorMessage(
-          error,
-          "We couldn't start your verification step. Please try again.",
-        ),
-      );
-      setLoading(false);
+      registrationRequestPendingRef.current = false;
     }
   }
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useEventCallback, useEventListener } from "usehooks-ts";
+import { useEventCallback } from "usehooks-ts";
 import {
   scrollToLandingSection,
   scrollToLandingTop,
@@ -22,27 +22,6 @@ function isLandingSectionId(id: string): id is LandingSectionId {
 
 const TOP_SCROLL_ACTIVE_CORRECTION_MS = 1300;
 const TOP_SCROLL_Y_THRESHOLD = 96;
-
-function isEditableTarget(target: EventTarget | null) {
-  return (
-    target instanceof HTMLElement &&
-    (target.isContentEditable ||
-      target.closest(
-        "input, textarea, select, [contenteditable], [role='textbox']",
-      ) !== null)
-  );
-}
-
-function shouldIgnoreSectionShortcut(event: KeyboardEvent) {
-  return (
-    event.defaultPrevented ||
-    event.altKey ||
-    event.ctrlKey ||
-    event.metaKey ||
-    event.shiftKey ||
-    isEditableTarget(event.target)
-  );
-}
 
 export function useLandingSectionNavigation() {
   const [activeSection, setActiveSection] = useState<LandingSectionId>("hero");
@@ -83,21 +62,6 @@ export function useLandingSectionNavigation() {
       topScrollCorrectionRef.current = null;
     }, TOP_SCROLL_ACTIVE_CORRECTION_MS);
   });
-
-  const handleKeyDown = useEventCallback((event: KeyboardEvent) => {
-    if (shouldIgnoreSectionShortcut(event)) {
-      return;
-    }
-
-    const key = Number.parseInt(event.key, 10);
-
-    if (key >= 1 && key <= LANDING_SECTIONS.length) {
-      event.preventDefault();
-      scrollToSection(LANDING_SECTIONS[key - 1].id);
-    }
-  });
-
-  useEventListener("keydown", handleKeyDown);
 
   return {
     activeSection,

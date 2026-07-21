@@ -21,7 +21,7 @@ interface AuthPageContentProps {
   children: ReactNode;
   onInput?: () => void;
   progress: number;
-  scrollContainerRef?: RefObject<HTMLDivElement | null>;
+  scrollContainerRef?: RefObject<HTMLElement | null>;
 }
 
 export function AuthPageContent({
@@ -72,7 +72,7 @@ export function AuthPageContent({
           className="absolute top-0 right-0 left-0 z-50 w-full"
         />
 
-        <div
+        <main
           ref={scrollContainerRef}
           className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth pb-4"
           onInput={onInput}
@@ -82,7 +82,7 @@ export function AuthPageContent({
               {children}
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

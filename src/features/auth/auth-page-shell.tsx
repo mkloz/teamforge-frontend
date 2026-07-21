@@ -15,7 +15,7 @@ export function AuthPageShell({
   progress,
   scrollDeps,
 }: AuthPageShellProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLElement>(null);
   const catalystRef = useRef<VoronoiCatalystHandle>(null);
 
   useScrollToTop(scrollDeps, scrollContainerRef);

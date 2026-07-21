@@ -22,7 +22,12 @@ export function NativeInstallCallout({
           only if the prompt does not appear.
         </p>
         {feedback && (
-          <p className="mt-2 font-medium text-primary text-sm">{feedback}</p>
+          <p
+            className="mt-2 font-medium text-primary text-sm"
+            aria-hidden="true"
+          >
+            {feedback}
+          </p>
         )}
       </div>
       <Button

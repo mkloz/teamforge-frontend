@@ -11,7 +11,7 @@ import { scrollToPageTop } from "@/shared/lib/browser-scroll";
  */
 export function useScrollToTop(
   deps: unknown[] = [],
-  ref?: RefObject<HTMLDivElement | null>,
+  ref?: RefObject<HTMLElement | null>,
   behavior: ScrollBehavior = "smooth",
 ) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: deps is the explicit trigger list for this custom hook.

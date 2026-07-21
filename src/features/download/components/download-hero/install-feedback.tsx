@@ -11,7 +11,11 @@ export function HeroInstallFeedback({
 }: HeroInstallFeedbackProps) {
   if (isStandalone) {
     return (
-      <p className="mt-4 flex items-center gap-2 font-medium text-forge-teal text-sm">
+      <p
+        className="mt-4 flex items-center gap-2 font-medium text-forge-teal text-sm"
+        role="status"
+        aria-live="polite"
+      >
         <CheckCircle2 size={15} strokeWidth={2} aria-hidden="true" />
         TeamForge is already installed on this device.
       </p>
@@ -20,7 +24,11 @@ export function HeroInstallFeedback({
 
   if (feedback) {
     return (
-      <p className="mt-4 font-medium text-sm text-text-dark-secondary">
+      <p
+        className="mt-4 font-medium text-sm text-text-dark-secondary"
+        role="status"
+        aria-live="polite"
+      >
         {feedback}
       </p>
     );

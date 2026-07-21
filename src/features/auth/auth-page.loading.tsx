@@ -133,7 +133,7 @@ function AuthLoadingShell({
           />
         ) : null}
 
-        <div
+        <main
           className={cn(
             "relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth pb-4",
             shellLayout.scrollClassName,
@@ -155,7 +155,7 @@ function AuthLoadingShell({
               {children}
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

@@ -1,10 +1,12 @@
+import type { Ref } from "react";
 import type { Step } from "@/features/auth/hooks/use-register-form";
 
 interface StepHeaderProps {
+  headingRef?: Ref<HTMLHeadingElement>;
   step: Step;
 }
 
-export function StepHeader({ step }: StepHeaderProps) {
+export function StepHeader({ headingRef, step }: StepHeaderProps) {
   const title =
     step === 1
       ? "Let's build your profile"
@@ -21,7 +23,11 @@ export function StepHeader({ step }: StepHeaderProps) {
 
   return (
     <div className="mb-6 flex flex-col items-center sm:mb-8">
-      <h1 className="text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight tracking-tight sm:text-4xl">
+      <h1
+        ref={headingRef}
+        tabIndex={-1}
+        className="text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight tracking-tight outline-none sm:text-4xl"
+      >
         {title}
         <span className="text-forge-teal">.</span>
       </h1>

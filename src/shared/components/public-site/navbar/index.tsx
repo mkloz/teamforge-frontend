@@ -7,6 +7,7 @@ import { scrollToLandingSection } from "@/shared/components/public-site/landing-
 import { usePublicSiteAuthActions } from "@/shared/components/public-site/use-public-site-auth-actions";
 import { Button } from "@/shared/components/ui/button";
 import { useWindowScrollThreshold } from "@/shared/hooks/use-window-scroll-threshold";
+import { captureException } from "@/shared/lib/telemetry";
 import { cn } from "@/shared/lib/utils";
 import { NavbarActions } from "./navbar-actions";
 import { NavbarBrand } from "./navbar-brand";
@@ -143,9 +144,13 @@ export function Navbar({
   async function handleSignOut() {
     setIsSigningOut(true);
 
-    await runLandingSignOut(closeMenu).finally(() => {
+    try {
+      await runLandingSignOut(closeMenu);
+    } catch (error) {
+      captureException("public-navbar-sign-out", error);
+    } finally {
       setIsSigningOut(false);
-    });
+    }
   }
 
   return (
