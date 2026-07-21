@@ -5,7 +5,7 @@ import { useActivityRouteSync } from "@/features/activity/hooks/activity-route-s
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 
 export function useActivityRouteState() {
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isDesktop = useMediaQuery("(min-width: 1280px)");
   const routeStore = useActivityRouteStoreState();
   const { route, setRouteState } = useActivityRouteQueryState();
 

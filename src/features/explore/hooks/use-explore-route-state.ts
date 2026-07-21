@@ -147,9 +147,18 @@ export function useExploreRouteState() {
 
   function updateTimeWindow(nextTimeWindow: ExploreTimeWindow) {
     setTimeWindow(nextTimeWindow);
-    void setExploreRouteState(getTimeRoutePatch(nextTimeWindow), {
-      history: "push",
-    });
+    setStartsAfter(null);
+    setStartsBefore(null);
+    void setExploreRouteState(
+      {
+        ...getTimeRoutePatch(nextTimeWindow),
+        from: null,
+        to: null,
+      },
+      {
+        history: "push",
+      },
+    );
   }
 
   function updateStartsAfter(nextStartsAfter: string | null) {

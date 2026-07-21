@@ -196,7 +196,7 @@ export function ActivityConversationStageSkeleton({
 
 function ActivityDetailSkeleton() {
   return (
-    <aside className="hidden h-full w-96 flex-col border-border border-l bg-canvas lg:flex">
+    <aside className="hidden h-full w-96 flex-col border-border border-l bg-canvas xl:flex">
       <div className="z-20 flex h-16 shrink-0 items-center justify-between border-border/70 border-b bg-canvas/95 px-5 backdrop-blur-md">
         <Skeleton className="h-5 w-28" />
         <div className="flex items-center gap-1">

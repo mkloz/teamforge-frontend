@@ -10,5 +10,6 @@ export function useProfileCommonFriends(userId?: string) {
     commonFriends: commonFriendsQuery.data ?? [],
     isLoading: commonFriendsQuery.isLoading,
     isError: commonFriendsQuery.isError,
+    refetchCommonFriends: commonFriendsQuery.refetch,
   };
 }

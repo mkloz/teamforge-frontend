@@ -64,6 +64,28 @@ export function MessageReactions({
     >
       {reactions.map((reaction) => {
         const hasVisibleCount = reaction.count > 1;
+        const reactionContent = (
+          <ReactionContent
+            count={reaction.count}
+            hasVisibleCount={hasVisibleCount}
+            isActive={reaction.isActive}
+            isOwn={isOwn}
+            emoji={reaction.emoji}
+          />
+        );
+
+        if (!onToggleReaction) {
+          return (
+            <span
+              key={reaction.emoji}
+              role="img"
+              aria-label={getStaticReactionAriaLabel(reaction)}
+              className={getReactionControlClassName(hasVisibleCount, false)}
+            >
+              {reactionContent}
+            </span>
+          );
+        }
 
         return (
           <button
@@ -71,40 +93,68 @@ export function MessageReactions({
             key={reaction.emoji}
             aria-label={getReactionAriaLabel(reaction)}
             aria-pressed={Boolean(reaction.isActive)}
-            className={cn(
-              "flex h-11 min-w-11 items-center justify-center rounded-full bg-transparent p-0 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 active:scale-95 [@media(pointer:fine)]:h-5",
-              hasVisibleCount
-                ? "[@media(pointer:fine)]:w-auto [@media(pointer:fine)]:min-w-7"
-                : "[@media(pointer:fine)]:size-5 [@media(pointer:fine)]:min-w-5",
-            )}
-            onClick={() => onToggleReaction?.(reaction.emoji)}
+            className={getReactionControlClassName(hasVisibleCount)}
+            onClick={() => onToggleReaction(reaction.emoji)}
           >
-            <span
-              aria-hidden="true"
-              className={cn(
-                "inline-flex h-5 items-center justify-center rounded-full border font-bold text-xs leading-none transition-all",
-                hasVisibleCount ? "min-w-7 gap-0.5 px-1" : "size-5",
-                getReactionButtonTone({
-                  isOwn,
-                  isActive: reaction.isActive,
-                }),
-              )}
-            >
-              <span
-                className={cn(
-                  "grid place-items-center self-center text-xs leading-none",
-                  hasVisibleCount ? "size-3.5" : "size-4",
-                )}
-              >
-                {reaction.emoji}
-              </span>
-              <AnimatedReactionCount count={reaction.count} />
-            </span>
+            {reactionContent}
           </button>
         );
       })}
     </div>
   );
+}
+
+function ReactionContent({
+  count,
+  emoji,
+  hasVisibleCount,
+  isActive,
+  isOwn,
+}: {
+  count: number;
+  emoji: string;
+  hasVisibleCount: boolean;
+  isActive?: boolean;
+  isOwn?: boolean;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "inline-flex h-5 items-center justify-center rounded-full border font-bold text-xs leading-none transition-all",
+        hasVisibleCount ? "min-w-7 gap-0.5 px-1" : "size-5",
+        getReactionButtonTone({ isOwn, isActive }),
+      )}
+    >
+      <span
+        className={cn(
+          "grid place-items-center self-center text-xs leading-none",
+          hasVisibleCount ? "size-3.5" : "size-4",
+        )}
+      >
+        {emoji}
+      </span>
+      <AnimatedReactionCount count={count} />
+    </span>
+  );
+}
+
+function getReactionControlClassName(
+  hasVisibleCount: boolean,
+  isInteractive = true,
+) {
+  return cn(
+    "flex h-11 min-w-11 items-center justify-center rounded-full bg-transparent p-0 transition [@media(pointer:fine)]:h-5",
+    hasVisibleCount
+      ? "[@media(pointer:fine)]:w-auto [@media(pointer:fine)]:min-w-7"
+      : "[@media(pointer:fine)]:size-5 [@media(pointer:fine)]:min-w-5",
+    isInteractive &&
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 active:scale-95",
+  );
+}
+
+function getStaticReactionAriaLabel(reaction: ReactionGroup) {
+  return `${reaction.emoji}, ${reaction.count} ${reaction.count === 1 ? "reaction" : "reactions"}.`;
 }
 
 function getReactionAriaLabel(reaction: ReactionGroup) {

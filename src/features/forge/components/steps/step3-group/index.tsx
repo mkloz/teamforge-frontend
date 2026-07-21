@@ -32,9 +32,12 @@ export function Step3Group({
   existingGroupNames = EMPTY_GROUP_NAMES,
   selectedActivity,
 }: Step3GroupProps) {
-  const { data: friends = [], isLoading: isLoadingFriends } = useQuery(
-    forgeFriendCandidatesQueryOptions(),
-  );
+  const {
+    data: friends = [],
+    isError: isFriendsError,
+    isLoading: isLoadingFriends,
+    refetch: refetchFriends,
+  } = useQuery(forgeFriendCandidatesQueryOptions());
 
   return (
     <div className="flex flex-col gap-5 pb-4">
@@ -76,7 +79,9 @@ export function Step3Group({
             manualInviteeIds={manualInviteeIds}
             onManualInviteeToggle={onManualInviteeToggle}
             friends={friends}
+            isFriendsError={isFriendsError}
             isLoadingFriends={isLoadingFriends}
+            onRetryFriends={() => void refetchFriends()}
           />
         ) : (
           <div className="grid gap-4">

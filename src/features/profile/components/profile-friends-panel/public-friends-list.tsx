@@ -19,7 +19,7 @@ export function PublicFriendsList({ userId }: PublicFriendsListProps) {
       >
         <Loader2
           aria-hidden="true"
-          className="size-6 animate-spin text-muted-foreground"
+          className="size-6 animate-spin text-muted-foreground motion-reduce:animate-none"
         />
         <span className="sr-only">Loading friends.</span>
       </div>

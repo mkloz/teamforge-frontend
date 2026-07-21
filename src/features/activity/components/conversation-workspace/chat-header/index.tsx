@@ -67,7 +67,7 @@ export function ChatHeader(props: ChatHeaderProps) {
           variant="ghost"
           size="icon-sm"
           onClick={onBack}
-          className="mr-1 shrink-0 text-slate-muted lg:hidden"
+          className="mr-1 shrink-0 text-slate-muted xl:hidden"
           aria-label="Back to conversations"
         >
           <ArrowLeft size={20} strokeWidth={2.5} />

@@ -2,6 +2,7 @@ import type { Group } from "@/features/activity/lib/activity-contract";
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
@@ -29,38 +30,42 @@ export function GroupDetailPanel({
   onClose,
   onSelectedMemberIdChange,
 }: GroupDetailPanelProps) {
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isDesktop = useMediaQuery("(min-width: 1280px)");
   useEscapeKey({ enabled: isOpen, onEscape: onClose });
 
-  return (
-    <>
-      {/* Desktop sidebar */}
+  if (isDesktop) {
+    return (
       <aside
         className={cn(
-          "hidden h-full flex-col border-border border-l bg-canvas lg:flex",
+          "hidden h-full flex-col border-border border-l bg-canvas xl:flex",
           "transition duration-300 ease-in-out",
           isOpen ? "w-96 opacity-100" : "w-0 overflow-hidden opacity-0",
         )}
       >
-        <GroupPanelContent
-          group={group}
-          focusedPlanId={focusedPlanId}
-          focusedProposalId={focusedProposalId}
-          selectedMemberId={selectedMemberId}
-          onClose={onClose}
-          onSelectedMemberIdChange={onSelectedMemberIdChange}
-        />
+        {isOpen ? (
+          <GroupPanelContent
+            group={group}
+            focusedPlanId={focusedPlanId}
+            focusedProposalId={focusedProposalId}
+            selectedMemberId={selectedMemberId}
+            onClose={onClose}
+            onSelectedMemberIdChange={onSelectedMemberIdChange}
+          />
+        ) : null}
       </aside>
+    );
+  }
 
-      {/* Mobile/Tablet overlay sheet using shadcn Drawer */}
-      <Drawer
-        open={isOpen && !isDesktop}
-        onOpenChange={(open) => !open && onClose()}
-      >
-        <DrawerContent className="flex h-dvh max-h-dvh flex-col overflow-hidden rounded-t-3xl border-t-0 bg-canvas lg:hidden [&>div:first-child]:hidden">
-          <DrawerHeader className="sr-only">
-            <DrawerTitle>{group.name} Details</DrawerTitle>
-          </DrawerHeader>
+  return (
+    <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DrawerContent className="flex h-dvh max-h-dvh flex-col overflow-hidden rounded-t-3xl border-t-0 bg-canvas xl:hidden [&>div:first-child]:hidden">
+        <DrawerHeader className="sr-only">
+          <DrawerTitle>{group.name} Details</DrawerTitle>
+          <DrawerDescription>
+            Group members, plan details, and group actions.
+          </DrawerDescription>
+        </DrawerHeader>
+        {isOpen ? (
           <GroupPanelContent
             group={group}
             focusedPlanId={focusedPlanId}
@@ -70,8 +75,8 @@ export function GroupDetailPanel({
             onSelectedMemberIdChange={onSelectedMemberIdChange}
             isMobile
           />
-        </DrawerContent>
-      </Drawer>
-    </>
+        ) : null}
+      </DrawerContent>
+    </Drawer>
   );
 }

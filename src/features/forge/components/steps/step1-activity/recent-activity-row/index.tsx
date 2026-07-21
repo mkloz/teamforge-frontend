@@ -73,7 +73,7 @@ export function RecentActivityRow({
               Recent activity
             </h3>
             <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
-              Reuse what you forge often.
+              Use a recent activity as your starting point.
             </p>
           </div>
         </div>

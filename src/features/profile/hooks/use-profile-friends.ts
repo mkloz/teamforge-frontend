@@ -33,6 +33,7 @@ export function useProfileFriends() {
     friends: friendsQuery.data ?? [],
     isLoading: friendsQuery.isLoading,
     isError: friendsQuery.isError,
+    refetchFriends: friendsQuery.refetch,
     removeFriend,
     removingFriendId: removeMutation.variables ?? null,
     isRemoving: removeMutation.isPending,

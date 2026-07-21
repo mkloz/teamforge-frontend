@@ -46,7 +46,7 @@ export function SettingsSidebar({
             Settings
           </h1>
           <p className="mt-2 text-slate-muted text-sm leading-relaxed">
-            The parts of TeamForge that should bend around you.
+            Manage your profile, privacy, safety, and app preferences.
           </p>
         </div>
 

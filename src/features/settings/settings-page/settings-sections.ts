@@ -44,7 +44,7 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     description: "What other people can see",
     headline: "Choose what shows on your profile",
     summary:
-      "Decide which personal details others can see and which TeamForge only uses to form groups.",
+      "Choose whether your age, gender, city, and friends appear. Your personality portrait stays part of your profile.",
     icon: Eye,
   },
   {

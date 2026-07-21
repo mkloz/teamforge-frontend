@@ -69,13 +69,16 @@ export function FormationOpeningCard({
       </p>
 
       <dl className="flex flex-wrap gap-x-4 gap-y-2 border-border/70 border-y py-3 font-semibold text-muted-foreground text-xs">
-        <OpeningDetail icon={CalendarClock}>
+        <OpeningDetail icon={CalendarClock} label="When">
           {formatOpeningSchedule(opening)}
         </OpeningDetail>
-        <OpeningDetail icon={opening.scope === "ONLINE" ? Globe2 : MapPin}>
+        <OpeningDetail
+          icon={opening.scope === "ONLINE" ? Globe2 : MapPin}
+          label="Where"
+        >
           {opening.scope === "ONLINE" ? "Online" : opening.broadArea || "Local"}
         </OpeningDetail>
-        <OpeningDetail icon={ShieldCheck}>
+        <OpeningDetail icon={ShieldCheck} label="Cost">
           {opening.cost.type === "FREE" ? "Free" : "Paid"}
         </OpeningDetail>
       </dl>
@@ -136,13 +139,15 @@ export function FormationOpeningCard({
 function OpeningDetail({
   children,
   icon: Icon,
+  label,
 }: {
   children: string;
   icon: typeof CalendarClock;
+  label: string;
 }) {
   return (
     <div className="flex items-center gap-1.5">
-      <dt className="sr-only">Plan detail</dt>
+      <dt className="sr-only">{label}</dt>
       <Icon className="size-3.5 text-primary" aria-hidden="true" />
       <dd>{children}</dd>
     </div>

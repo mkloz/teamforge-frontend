@@ -13,7 +13,7 @@ export function SearchInput() {
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.target.value)}
         placeholder="Search groups or activities..."
-        aria-label="Search groups"
+        aria-label="Search groups or activities"
         leftIcon={<Search className="size-3.5" />}
       />
     </div>

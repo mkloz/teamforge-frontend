@@ -23,6 +23,7 @@ export const CLEAR_EXPLORE_FILTER_ROUTE = {
   distance: null,
   from: null,
   location: null,
+  q: null,
   size: null,
   sort: null,
   time: null,

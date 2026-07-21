@@ -1,14 +1,11 @@
-import type { KeyboardEvent } from "react";
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { MessageContent } from "../../conversation-workspace/message-timeline/message-item/message-content";
 import { MessageFooter } from "../../conversation-workspace/message-timeline/message-item/message-footer";
 import { MessageMedia } from "../../conversation-workspace/message-timeline/message-item/message-media";
 import { ReplyReference } from "../../conversation-workspace/message-timeline/message-item/reply-reference";
-import {
-  isSavedMessageOpenKey,
-  type SavedMessageBubbleViewState,
-} from "../saved-messages-conversation-view-state";
+import type { SavedMessageBubbleViewState } from "../saved-messages-conversation-view-state";
 import { ForwardedIndicator } from "./saved-message-forwarded-indicator";
 import type { SavedMessageLayoutState } from "./types";
 
@@ -33,36 +30,17 @@ export function SavedMessageOpenTarget({
   usesInlineFooter,
   viewState,
 }: SavedMessageOpenTargetProps) {
-  function handleOpenKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.currentTarget !== event.target) {
-      return;
-    }
-
-    if (isSavedMessageOpenKey(event.key)) {
-      event.preventDefault();
-      onOpen();
-    }
-  }
-
   return (
-    // biome-ignore lint/a11y/useSemanticElements: Saved bubbles contain nested action buttons, so they cannot be native buttons.
     <div
-      tabIndex={0}
-      // react-doctor-disable-next-line react-doctor/prefer-tag-over-role -- Saved bubbles contain nested action buttons, so replacing this open target with a native button would create invalid interactive nesting.
-      role="button"
-      aria-label={`Open original saved message from ${viewState.senderName}`}
       className={cn(
-        "relative flex min-w-0 cursor-pointer flex-col rounded-xl rounded-tl-none px-1 py-1 text-left shadow-xs transition duration-300",
+        "relative flex min-w-0 flex-col rounded-xl rounded-tl-none px-1 py-1 text-left shadow-xs transition duration-300",
         bubbleSizeClass,
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
         viewState.isOwn
           ? "border border-primary/15 bg-primary/8 text-ink shadow-sm backdrop-blur-md"
           : "border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md",
         !viewState.displayContent && "min-w-30",
         usesInlineFooter && "min-w-40",
       )}
-      onClick={onOpen}
-      onKeyDown={handleOpenKeyDown}
     >
       <SavedMessageOpenTargetContents
         galleryRounding={galleryRounding}
@@ -112,6 +90,12 @@ function SavedMessageOpenTargetContents({
         isOwn={viewState.isOwn}
         reactionGroupsLength={reactionGroups.length}
       />
+
+      <div className="flex justify-end px-1">
+        <Button type="button" variant="ghost" size="xs" onClick={onOpen}>
+          Open original
+        </Button>
+      </div>
 
       <MessageFooter
         attachments={message.attachments}

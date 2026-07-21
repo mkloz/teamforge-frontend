@@ -16,7 +16,6 @@ export function useInlineForgeStepActions({
     applyActivityTemplate,
     clearActivityTemplate,
     goNext,
-    goToStep,
     handleReforge,
     setForgeMode,
   } = fw;
@@ -35,7 +34,6 @@ export function useInlineForgeStepActions({
 
   function selectStepTemplate(templateId: string, template: ActivityTemplate) {
     applyActivityTemplate(templateId, template);
-    goToStep(3);
   }
 
   function startBlankPlan() {

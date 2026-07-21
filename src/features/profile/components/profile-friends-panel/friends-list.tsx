@@ -14,6 +14,7 @@ export function FriendsList() {
     friends,
     isLoading,
     isError,
+    refetchFriends,
     removeFriend,
     isRemoving,
     removingFriendId,
@@ -22,16 +23,35 @@ export function FriendsList() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      <div
+        className="flex justify-center py-12"
+        role="status"
+        aria-live="polite"
+      >
+        <Loader2
+          aria-hidden="true"
+          className="size-6 animate-spin text-muted-foreground motion-reduce:animate-none"
+        />
+        <span className="sr-only">Loading friends.</span>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="flex justify-center py-12 text-center text-muted-foreground text-sm">
-        We couldn't load your friends list right now.
+      <div
+        className="flex flex-col items-center justify-center gap-3 py-12 text-center text-muted-foreground text-sm"
+        role="alert"
+      >
+        <p>We couldn't load your friends list right now.</p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => void refetchFriends()}
+        >
+          Try again
+        </Button>
       </div>
     );
   }

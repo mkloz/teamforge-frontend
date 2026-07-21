@@ -1,5 +1,6 @@
 import { Users } from "lucide-react";
 import { EmptyInviteCandidatesVisual } from "@/assets/empty-state/empty-invite-candidates";
+import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Slider } from "@/shared/components/ui/slider";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -18,10 +19,12 @@ type ManualFriendship = ManualGroupDetailsProps["friends"][number];
 export function ManualGroupDetails({
   fixedSize,
   friends,
+  isFriendsError,
   isLoadingFriends,
   manualInviteeIds,
   onFixedSizeChange,
   onManualInviteeToggle,
+  onRetryFriends,
 }: ManualGroupDetailsProps) {
   const inviteState = getManualGroupInviteState({
     fixedSize,
@@ -41,9 +44,11 @@ export function ManualGroupDetails({
       <ManualFriendInviteList
         friends={friends}
         inviteState={inviteState}
+        isFriendsError={isFriendsError}
         isLoadingFriends={isLoadingFriends}
         manualInviteeIds={manualInviteeIds}
         onManualInviteeToggle={onManualInviteeToggle}
+        onRetryFriends={onRetryFriends}
       />
     </div>
   );
@@ -79,7 +84,7 @@ function ManualCapacityCard({
   inviteState: ManualGroupInviteState;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-border/35 bg-card/65 px-3 py-3">
+    <div className="flex flex-col gap-3 border-border/35 border-b pb-4">
       <div className="flex items-center justify-between gap-3">
         <div>
           <span className="font-bold text-muted-foreground/50 text-xs tracking-wide">
@@ -90,12 +95,7 @@ function ManualCapacityCard({
             {getInvitedMemberLabel(inviteState.inviteLimit)}.
           </p>
         </div>
-        <StatusPill
-          size="sm"
-          tone="amber"
-          numeric
-          className="rounded-lg font-black"
-        >
+        <StatusPill size="sm" tone="amber" numeric className="font-black">
           {inviteState.selectedInviteeCount + 1}/{fixedSize}
         </StatusPill>
       </div>
@@ -123,7 +123,7 @@ function ManualCapacityCard({
 
 function ManualInviteIntro() {
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-border/35 bg-muted/20 p-3">
+    <div className="flex flex-col gap-2">
       <div className="flex min-w-0 items-center gap-2">
         <IconTile icon={Users} size="xs" tone="amber" />
         <h5 className="min-w-0 font-black text-foreground text-sm leading-5 tracking-tight">
@@ -141,12 +141,19 @@ function ManualInviteIntro() {
 function ManualFriendInviteList({
   friends,
   inviteState,
+  isFriendsError,
   isLoadingFriends,
   manualInviteeIds,
   onManualInviteeToggle,
+  onRetryFriends,
 }: Pick<
   ManualGroupDetailsProps,
-  "friends" | "isLoadingFriends" | "manualInviteeIds" | "onManualInviteeToggle"
+  | "friends"
+  | "isFriendsError"
+  | "isLoadingFriends"
+  | "manualInviteeIds"
+  | "onManualInviteeToggle"
+  | "onRetryFriends"
 > & {
   inviteState: ManualGroupInviteState;
 }) {
@@ -155,9 +162,11 @@ function ManualFriendInviteList({
       <ManualInviteFriendsContent
         friends={friends}
         inviteState={inviteState}
+        isFriendsError={isFriendsError}
         isLoadingFriends={isLoadingFriends}
         manualInviteeIds={manualInviteeIds}
         onManualInviteeToggle={onManualInviteeToggle}
+        onRetryFriends={onRetryFriends}
       />
 
       <CapacityReachedNotice show={inviteState.hasReachedInviteLimit} />
@@ -168,17 +177,28 @@ function ManualFriendInviteList({
 function ManualInviteFriendsContent({
   friends,
   inviteState,
+  isFriendsError,
   isLoadingFriends,
   manualInviteeIds,
   onManualInviteeToggle,
+  onRetryFriends,
 }: Pick<
   ManualGroupDetailsProps,
-  "friends" | "isLoadingFriends" | "manualInviteeIds" | "onManualInviteeToggle"
+  | "friends"
+  | "isFriendsError"
+  | "isLoadingFriends"
+  | "manualInviteeIds"
+  | "onManualInviteeToggle"
+  | "onRetryFriends"
 > & {
   inviteState: ManualGroupInviteState;
 }) {
   if (isLoadingFriends) {
     return <ManualFriendsSkeleton />;
+  }
+
+  if (isFriendsError) {
+    return <FriendsErrorNotice onRetry={onRetryFriends} />;
   }
 
   if (friends.length === 0) {
@@ -192,6 +212,22 @@ function ManualInviteFriendsContent({
       manualInviteeIds={manualInviteeIds}
       onManualInviteeToggle={onManualInviteeToggle}
     />
+  );
+}
+
+function FriendsErrorNotice({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div
+      className="flex min-h-28 items-center justify-between gap-3 border-border/40 border-y px-1 py-4"
+      role="alert"
+    >
+      <p className="text-muted-foreground text-xs leading-relaxed">
+        We couldn't load your friends. Check your connection and try again.
+      </p>
+      <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+        Try again
+      </Button>
+    </div>
   );
 }
 
@@ -247,7 +283,7 @@ function CapacityReachedNotice({ show }: { show: boolean }) {
 
 function EmptyFriendsNotice() {
   return (
-    <div className="flex min-h-28 items-center justify-center gap-3 rounded-lg border border-border/40 bg-card p-4">
+    <div className="flex min-h-28 items-center justify-center gap-3 border-border/40 border-y px-1 py-4">
       <EmptyInviteCandidatesVisual className="h-10 w-auto shrink-0 text-foreground" />
       <p className="text-muted-foreground text-xs leading-relaxed">
         You do not have friends to invite yet. You can create the group now and

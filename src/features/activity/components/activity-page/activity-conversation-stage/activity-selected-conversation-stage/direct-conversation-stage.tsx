@@ -57,13 +57,14 @@ export function DirectConversationStage({
           onClearSendError={composer.clearSendError}
         />
       </div>
-      <ProfilePanel
-        chat={selectedChat}
-        isOpen={activity.direct.isProfilePanelOpen}
-        onClose={activity.closeProfilePanel}
-      />
-      {isMobile && (
+      {isMobile ? (
         <ProfilePanelMobile
+          chat={selectedChat}
+          isOpen={activity.direct.isProfilePanelOpen}
+          onClose={activity.closeProfilePanel}
+        />
+      ) : (
+        <ProfilePanel
           chat={selectedChat}
           isOpen={activity.direct.isProfilePanelOpen}
           onClose={activity.closeProfilePanel}

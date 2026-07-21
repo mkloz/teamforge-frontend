@@ -6,7 +6,7 @@ import { useUiStore } from "@/shared/store/ui.store";
 
 export function useActivityPanels() {
   const isBottomNavViewport = useMediaQuery("(max-width: 767px)");
-  const isDesktopPanelViewport = useMediaQuery("(min-width: 1024px)");
+  const isDesktopPanelViewport = useMediaQuery("(min-width: 1280px)");
   const selectedId = useActivityStore((state) => state.selectedId);
   const groups = useActivityStore((state) => state.groups);
   const direct = useActivityStore((state) => state.direct);

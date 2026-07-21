@@ -20,27 +20,34 @@ import type { ExploreFeedItem } from "@/shared/schemas";
 import { RecommendedGroupCard } from "./recommended-group-card";
 
 export function RecommendedGroups() {
-  const { recommendations, isRecommendationsLoading } = useHomeData({
-    include: {
-      recommendations: true,
-    },
-  });
+  const { recommendations, isError, isRecommendationsLoading, refetchAll } =
+    useHomeData({
+      include: {
+        recommendations: true,
+      },
+    });
 
   return (
     <RecommendedGroupsView
       isRecommendationsLoading={isRecommendationsLoading}
+      isRecommendationsError={isError}
+      onRetry={() => void refetchAll()}
       recommendations={recommendations}
     />
   );
 }
 
 interface RecommendedGroupsViewProps {
+  isRecommendationsError?: boolean;
   isRecommendationsLoading?: boolean;
+  onRetry?: () => void;
   recommendations: ExploreFeedItem[];
 }
 
 function RecommendedGroupsView({
+  isRecommendationsError = false,
   isRecommendationsLoading = false,
+  onRetry,
   recommendations,
 }: RecommendedGroupsViewProps) {
   const currentRecommendations = useUnexpiredExploreFeedItems(recommendations);
@@ -73,7 +80,24 @@ function RecommendedGroupsView({
         }
       />
 
-      {visibleRecommendations.length === 0 ? (
+      {isRecommendationsError && visibleRecommendations.length === 0 ? (
+        <div
+          className="flex min-h-36 items-center justify-between gap-4 border-border/70 border-y border-dashed px-3 py-5 sm:px-4"
+          role="alert"
+        >
+          <div className="min-w-0">
+            <p className="font-bold text-foreground text-sm">
+              We couldn't load open plans.
+            </p>
+            <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
+              Check your connection and try again.
+            </p>
+          </div>
+          <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+            Try again
+          </Button>
+        </div>
+      ) : visibleRecommendations.length === 0 ? (
         <div className="flex min-h-36 items-center justify-center gap-3 border-border/70 border-y border-dashed px-3 py-5 sm:px-4">
           <EmptyRecommendationsVisual className="h-11 w-auto shrink-0 text-foreground sm:h-12" />
           <div className="min-w-0">

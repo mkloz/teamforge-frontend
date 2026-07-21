@@ -10,7 +10,7 @@ export function AdminOverviewPage() {
   return (
     <AdminPageShell
       title="Admin overview"
-      description="A private starting point for moderation cases that need attention. Open a review queue for current cases or continue to the connected operations tools."
+      description="Review moderation cases, account appeals, worker status, and pilot readiness."
     >
       <div className="grid gap-8">
         <section className="grid gap-3 border-border border-t py-6 sm:grid-cols-2">

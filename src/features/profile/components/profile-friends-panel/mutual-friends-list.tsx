@@ -1,5 +1,6 @@
 import { Loader2, MessageSquare } from "lucide-react";
 import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
+import { Button } from "@/shared/components/ui/button";
 import { FriendCard } from "./friend-card";
 import { FriendMessageAction } from "./friend-message-action";
 
@@ -12,20 +13,40 @@ type MutualFriendship = ReturnType<
 >["commonFriends"][number];
 
 export function MutualFriendsList({ userId }: MutualFriendsListProps) {
-  const { commonFriends, isLoading, isError } = useProfileCommonFriends(userId);
+  const { commonFriends, isLoading, isError, refetchCommonFriends } =
+    useProfileCommonFriends(userId);
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      <div
+        className="flex justify-center py-12"
+        role="status"
+        aria-live="polite"
+      >
+        <Loader2
+          aria-hidden="true"
+          className="size-6 animate-spin text-muted-foreground motion-reduce:animate-none"
+        />
+        <span className="sr-only">Loading mutual friends.</span>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="flex justify-center py-12 text-center text-muted-foreground text-sm">
-        We couldn't load your mutual friends right now.
+      <div
+        className="flex flex-col items-center justify-center gap-3 py-12 text-center text-muted-foreground text-sm"
+        role="alert"
+      >
+        <p>We couldn't load your mutual friends right now.</p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => void refetchCommonFriends()}
+        >
+          Try again
+        </Button>
       </div>
     );
   }

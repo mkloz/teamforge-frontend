@@ -27,8 +27,10 @@ export interface Step3GroupProps {
 export interface ManualGroupDetailsProps {
   fixedSize: FixedGroupSize;
   friends: FriendshipApi[];
+  isFriendsError: boolean;
   isLoadingFriends: boolean;
   manualInviteeIds: string[];
   onFixedSizeChange: (v: number) => void;
   onManualInviteeToggle: (userId: string) => void;
+  onRetryFriends: () => void;
 }

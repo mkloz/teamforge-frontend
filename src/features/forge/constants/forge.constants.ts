@@ -50,7 +50,7 @@ export const ACTIVITIES: ActivityOption[] = [
   {
     id: "TECH",
     label: "Tech & Build",
-    description: "Coding, startups, demos, AI",
+    description: "Coding, startups, demos, prototypes",
   },
   {
     id: "WELLNESS",
