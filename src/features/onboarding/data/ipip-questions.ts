@@ -22,25 +22,25 @@ export const TEST_LENGTH_CONFIG: Record<
 > = {
   30: {
     label: "Quick",
-    sublabel: "10 pages · about 2 minutes",
+    sublabel: "6 short pages · about 2 minutes",
     estimatedMinutes: 2,
     itemsPerDimension: 6,
-    questionsPerPage: 3,
+    questionsPerPage: 5,
   },
   50: {
     label: "Standard",
-    sublabel: "17 pages · about 5 minutes",
+    sublabel: "10 short pages · about 5 minutes",
     estimatedMinutes: 5,
     itemsPerDimension: 10,
-    questionsPerPage: 3,
+    questionsPerPage: 5,
     recommended: true,
   },
   150: {
     label: "Detailed",
-    sublabel: "50 pages · about 15 minutes",
+    sublabel: "30 pages · about 15 minutes",
     estimatedMinutes: 15,
     itemsPerDimension: 30,
-    questionsPerPage: 3,
+    questionsPerPage: 5,
   },
 };
 

@@ -3,8 +3,10 @@ import { lazy, type ReactNode, Suspense } from "react";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
 import type { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
+import { getDynamicPageItems } from "@/features/onboarding/lib/dynamic-personality-engine";
 import type { ScreenState } from "@/features/onboarding/store/personality-test-store.types";
 import { CompatibilityInputLockState } from "./compatibility-input-lock-state";
+import { DynamicQuestionPage } from "./dynamic-question-page";
 import { PersonalityIntro } from "./personality-intro";
 import { usePersonalityScreenNavigation } from "./use-personality-screen-navigation";
 
@@ -44,6 +46,9 @@ type PersonalityTestState = ReturnType<typeof usePersonalityTest>;
 type PersonalityAssessmentFlow = ReturnType<
   typeof usePersonalityTestPageFlow
 >["assessment"];
+type DynamicAssessmentFlow = ReturnType<
+  typeof usePersonalityTestPageFlow
+>["dynamic"];
 type PersonalityScreenNavigation = ReturnType<
   typeof usePersonalityScreenNavigation
 >;
@@ -53,6 +58,7 @@ interface PersonalityScreenRenderContext {
   backLabel: string;
   assessment: PersonalityAssessmentFlow;
   continueLabel: string;
+  dynamic: DynamicAssessmentFlow;
   isOnline: boolean;
   navigation: PersonalityScreenNavigation;
   onContinue: () => void;
@@ -71,6 +77,7 @@ interface PersonalityScreenRendererProps {
   backLabel: string;
   assessment: PersonalityAssessmentFlow;
   continueLabel: string;
+  dynamic: DynamicAssessmentFlow;
   isOnline: boolean;
   onBack: () => void;
   onContinue: () => void;
@@ -85,6 +92,7 @@ export function PersonalityScreenRenderer({
   backLabel,
   assessment,
   continueLabel,
+  dynamic,
   isOnline,
   onBack,
   onContinue,
@@ -105,6 +113,7 @@ export function PersonalityScreenRenderer({
     backLabel,
     assessment,
     continueLabel,
+    dynamic,
     isOnline,
     navigation,
     onContinue,
@@ -142,6 +151,7 @@ function renderPersonalityScreen(context: PersonalityScreenRenderContext) {
 }
 
 const PERSONALITY_SCREEN_RENDERERS: PersonalityScreenRendererMap = {
+  "dynamic-questions": renderDynamicQuestionsScreen,
   guidelines: renderGuidelinesScreen,
   intermission: renderIntermissionScreen,
   intro: renderIntroScreen,
@@ -190,6 +200,7 @@ function renderGuidelinesScreen({
 }
 
 function renderLengthScreen({
+  dynamic,
   navigation,
   onSelectionChange,
   state,
@@ -197,9 +208,35 @@ function renderLengthScreen({
   return (
     <LengthSelector
       {...navigation.length}
+      dynamicCapability={dynamic.capability}
+      onBeginDynamic={dynamic.start}
       initialLength={state.testLength}
       answers={state.answers}
       onSelectionChange={onSelectionChange}
+    />
+  );
+}
+
+function renderDynamicQuestionsScreen({
+  dynamic,
+}: PersonalityScreenRenderContext) {
+  const engineState = dynamic.state.engineState;
+  const capability = dynamic.capability;
+
+  if (!engineState || !capability) {
+    return null;
+  }
+
+  return (
+    <DynamicQuestionPage
+      answers={dynamic.state.pageAnswers}
+      maximumPages={capability.maximumPages}
+      maximumQuestions={capability.maximumQuestions}
+      minimumPages={capability.minimumPages}
+      onAnswer={dynamic.state.setAnswer}
+      onNext={dynamic.continue}
+      pageItems={getDynamicPageItems(engineState.currentPage)}
+      pageNumber={engineState.currentPage.pageNumber}
     />
   );
 }

@@ -6,6 +6,7 @@ import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
 import { PersonalityAssessmentApi } from "@/shared/api/personality-assessment-api";
 import {
   PERSONALITY_ASSESSMENT_QUERY_KEY,
+  personalityAssessmentCapabilitiesQueryOptions,
   personalityAssessmentQueryOptions,
 } from "@/shared/api/personality-assessment-query";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
@@ -18,6 +19,10 @@ import type {
 import type { PublicPersonalityProfile } from "@/shared/schemas/public-personality-profile";
 
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
+import {
+  DYNAMIC_ASSESSMENT_MANIFEST_HASH,
+  DYNAMIC_ASSESSMENT_PACKAGE_ID,
+} from "../lib/dynamic-personality-engine";
 import {
   toOptionalOnboardingSearch,
   useOnboardingFlowState,
@@ -32,6 +37,7 @@ import {
   buildPersonalityPreviousSearch,
   resolvePersonalityExitNavigation,
 } from "../lib/personality-test-page-flow";
+import { useDynamicPersonalityTestStore } from "../store/dynamic-personality-test-store";
 import { usePersonalityTestStore } from "../store/personality-test-store";
 import { usePersonalityTest } from "./use-personality-test";
 
@@ -83,11 +89,17 @@ export function usePersonalityTestPageFlow() {
   const invalidateCurrentUser = useInvalidateCurrentUser();
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const assessmentQuery = useQuery(personalityAssessmentQueryOptions());
+  const capabilitiesQuery = useQuery(
+    personalityAssessmentCapabilitiesQueryOptions(),
+  );
   const testState = usePersonalityTest({
     questionsPerPage: QUESTIONS_PER_PAGE,
   });
+  const dynamicTestState = useDynamicPersonalityTestStore();
 
-  const hasUnsentAnswers = Object.keys(testState.answers).length > 0;
+  const hasUnsentAnswers =
+    Object.keys(testState.answers).length > 0 ||
+    Boolean(dynamicTestState.engineState);
   const clearAssessmentRequestMemory = useCallback(() => {
     submissionPairRef.current = null;
     const snapshot = usePersonalityTestStore.getState();
@@ -95,6 +107,7 @@ export function usePersonalityTestPageFlow() {
     if (Object.keys(snapshot.answers).length > 0) {
       snapshot.reset();
     }
+    useDynamicPersonalityTestStore.getState().reset();
   }, []);
   const shouldBlockNavigation = useCallback(() => {
     const shouldLeave = window.confirm(
@@ -119,6 +132,47 @@ export function usePersonalityTestPageFlow() {
       clearAssessmentRequestMemory();
     },
     [clearAssessmentRequestMemory],
+  );
+
+  const completeSubmission = useCallback(
+    (
+      response: Awaited<
+        ReturnType<typeof PersonalityAssessmentApi.submitAnswers>
+      >,
+      snapshot: ReturnType<typeof usePersonalityTestStore.getState>,
+      dynamicSnapshot: ReturnType<
+        typeof useDynamicPersonalityTestStore.getState
+      >,
+    ) => {
+      setSubmittedPreview(response.publicProjectionPreview);
+      setSubmittedDisclosure(response.disclosure);
+      queryClient.setQueryData<PersonalityAssessmentState | undefined>(
+        PERSONALITY_ASSESSMENT_QUERY_KEY,
+        (current) =>
+          current
+            ? {
+                ...current,
+                draft:
+                  response.assessment.lifecycle === "DRAFT_RESULT"
+                    ? response.assessment
+                    : current.draft,
+                current:
+                  response.assessment.lifecycle === "CURRENT"
+                    ? response.assessment
+                    : current.current,
+                disclosure: response.disclosure,
+              }
+            : current,
+      );
+      submissionPairRef.current = null;
+      snapshot.clearSubmittedAnswers();
+      dynamicSnapshot.clearSubmittedAnswers();
+      snapshot.setScreen({ id: "results" });
+      void queryClient.invalidateQueries({
+        queryKey: PERSONALITY_ASSESSMENT_QUERY_KEY,
+      });
+    },
+    [queryClient],
   );
 
   const submitCurrentAssessment = useCallback(async () => {
@@ -151,6 +205,9 @@ export function usePersonalityTestPageFlow() {
 
     try {
       const snapshot = usePersonalityTestStore.getState();
+      const dynamicSnapshot = useDynamicPersonalityTestStore.getState();
+      const isDynamic =
+        dynamicSnapshot.engineState?.status === "READY_TO_SUBMIT";
       let submissionPair = submissionPairRef.current;
 
       if (!submissionPair) {
@@ -158,8 +215,18 @@ export function usePersonalityTestPageFlow() {
           personalityAssessmentQueryOptions(),
         );
         const attempt = await PersonalityAssessmentApi.createAttempt({
-          formVersion: FORM_VERSION_BY_LENGTH[snapshot.testLength],
+          formVersion: isDynamic
+            ? "TF_OCEAN_DYNAMIC_V1"
+            : FORM_VERSION_BY_LENGTH[snapshot.testLength],
           source: ownerState?.current ? "RETAKE" : "ONBOARDING",
+          ...(isDynamic
+            ? {
+                baseAssessmentGeneration: ownerState.assessmentGeneration,
+                packageId: DYNAMIC_ASSESSMENT_PACKAGE_ID,
+                manifestHash: DYNAMIC_ASSESSMENT_MANIFEST_HASH,
+                selectionSeed: dynamicSnapshot.engineState?.seed,
+              }
+            : {}),
         });
 
         submissionPair = {
@@ -167,6 +234,26 @@ export function usePersonalityTestPageFlow() {
           idempotencyKey: crypto.randomUUID(),
         };
         submissionPairRef.current = submissionPair;
+      }
+
+      if (isDynamic && dynamicSnapshot.engineState) {
+        const dynamic = dynamicSnapshot.engineState;
+        const response = await PersonalityAssessmentApi.submitDynamicAnswers(
+          submissionPair.attemptId,
+          submissionPair.idempotencyKey,
+          {
+            packageId: DYNAMIC_ASSESSMENT_PACKAGE_ID,
+            manifestHash: DYNAMIC_ASSESSMENT_MANIFEST_HASH,
+            selectionSeed: dynamic.seed,
+            pages: dynamic.pages,
+            answers: Object.entries(dynamic.answers).map(
+              ([itemVersionId, value]) => ({ itemVersionId, value }),
+            ),
+          },
+        );
+
+        completeSubmission(response, snapshot, dynamicSnapshot);
+        return;
       }
 
       const answers: Array<{
@@ -189,33 +276,7 @@ export function usePersonalityTestPageFlow() {
         submissionPair.idempotencyKey,
         answers,
       );
-
-      setSubmittedPreview(response.publicProjectionPreview);
-      setSubmittedDisclosure(response.disclosure);
-      queryClient.setQueryData<PersonalityAssessmentState | undefined>(
-        PERSONALITY_ASSESSMENT_QUERY_KEY,
-        (current) =>
-          current
-            ? {
-                ...current,
-                draft:
-                  response.assessment.lifecycle === "DRAFT_RESULT"
-                    ? response.assessment
-                    : current.draft,
-                current:
-                  response.assessment.lifecycle === "CURRENT"
-                    ? response.assessment
-                    : current.current,
-                disclosure: response.disclosure,
-              }
-            : current,
-      );
-      submissionPairRef.current = null;
-      snapshot.clearSubmittedAnswers();
-      snapshot.setScreen({ id: "results" });
-      void queryClient.invalidateQueries({
-        queryKey: PERSONALITY_ASSESSMENT_QUERY_KEY,
-      });
+      completeSubmission(response, snapshot, dynamicSnapshot);
     } catch (error) {
       if (shouldReplaceSubmissionPair(error)) {
         submissionPairRef.current = null;
@@ -227,6 +288,7 @@ export function usePersonalityTestPageFlow() {
   }, [
     compatibilityInputLock.isBlocked,
     compatibilityInputLock.message,
+    completeSubmission,
     guardOfflineAction,
     isEditMode,
     queryClient,
@@ -343,7 +405,43 @@ export function usePersonalityTestPageFlow() {
     setSubmittedDisclosure(null);
     submissionPairRef.current = null;
     testState.actions.reset();
+    dynamicTestState.reset();
     testState.actions.setScreen({ id: "length" });
+  }
+
+  function beginDynamicAssessment() {
+    const capability = capabilitiesQuery.data?.dynamic;
+
+    if (
+      !capability ||
+      !["PUBLIC_BETA", "AVAILABLE"].includes(capability.startPolicy) ||
+      capability.packageId !== DYNAMIC_ASSESSMENT_PACKAGE_ID ||
+      capability.manifestHash !== DYNAMIC_ASSESSMENT_MANIFEST_HASH
+    ) {
+      setSubmissionError(
+        "Dynamic is temporarily unavailable. Quick and Standard are still available.",
+      );
+      return;
+    }
+
+    submissionPairRef.current = null;
+    setSubmissionError(null);
+    useDynamicPersonalityTestStore.getState().begin(crypto.randomUUID());
+    testState.actions.setScreen({ id: "dynamic-questions" });
+  }
+
+  function continueDynamicAssessment() {
+    try {
+      const nextState = useDynamicPersonalityTestStore
+        .getState()
+        .commitCurrentPage();
+
+      if (nextState.status === "READY_TO_SUBMIT") {
+        testState.actions.setScreen({ id: "submitting" });
+      }
+    } catch {
+      setSubmissionError("Answer all five statements before continuing.");
+    }
   }
 
   async function runResultAction(
@@ -437,6 +535,16 @@ export function usePersonalityTestPageFlow() {
   }
 
   const displayProgress = (() => {
+    if (
+      testState.screen.id === "dynamic-questions" &&
+      dynamicTestState.engineState
+    ) {
+      return (
+        Object.keys(dynamicTestState.engineState.answers).length /
+        (capabilitiesQuery.data?.dynamic.maximumQuestions ?? 50)
+      );
+    }
+
     if (testState.screen.id !== "length" || !pendingLength) {
       return testState.progress;
     }
@@ -456,6 +564,7 @@ export function usePersonalityTestPageFlow() {
         ? testState.screen.currentPage
         : undefined,
       "type" in testState.screen ? testState.screen.type : undefined,
+      dynamicTestState.engineState?.currentPage.pageNumber,
     ],
     scrollContainerRef,
   );
@@ -468,6 +577,14 @@ export function usePersonalityTestPageFlow() {
     toPublicProfile(
       assessmentQuery.data?.draft ?? assessmentQuery.data?.current ?? null,
     );
+  const draftAssessment = assessmentQuery.data?.draft ?? null;
+  const currentAssessment = assessmentQuery.data?.current ?? null;
+  const displayedAssessment =
+    draftAssessment?.assessmentId === displayedProfile?.assessmentId
+      ? draftAssessment
+      : currentAssessment?.assessmentId === displayedProfile?.assessmentId
+        ? currentAssessment
+        : null;
   const assessmentStateStatus = getAssessmentQueryStatus({
     hasData: Boolean(assessmentQuery.data),
     isError: assessmentQuery.isError,
@@ -495,17 +612,26 @@ export function usePersonalityTestPageFlow() {
         assessmentQuery.data?.current?.assessmentId ===
           displayedProfile?.assessmentId &&
         assessmentQuery.data?.current?.quality === "LEGACY_UNVERIFIED",
+      isCompatibilityEligible:
+        displayedAssessment?.compatibilityEligible ?? false,
       onDiscard: discardDraft,
       onDeleteAll: deleteAllPersonalityData,
       onSave: publishResult,
       onRetake: retakeAssessment,
       preview: displayedProfile,
+      measurement: displayedAssessment?.measurement ?? null,
       stateStatus: assessmentStateStatus,
     },
     backLabel: buildBackToLabel(backDestination),
     continueLabel: isEditMode ? "Back to settings" : "Continue",
     continueToInterests,
     displayProgress,
+    dynamic: {
+      capability: capabilitiesQuery.data?.dynamic ?? null,
+      continue: continueDynamicAssessment,
+      start: beginDynamicAssessment,
+      state: dynamicTestState,
+    },
     goBack,
     isEditMode,
     isOnline,

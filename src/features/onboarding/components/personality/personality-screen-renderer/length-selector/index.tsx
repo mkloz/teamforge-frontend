@@ -1,6 +1,7 @@
 import { domAnimation, LazyMotion, m } from "framer-motion";
 import { staggerContainer } from "@/features/onboarding/constants/motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
+import type { PersonalityAssessmentCapabilities } from "@/shared/schemas/personality-assessment";
 import { LengthSelectorActions } from "./length-selector-actions";
 import { LengthSelectorHeader } from "./length-selector-header";
 import type { LengthSelectorMode } from "./length-selector-options";
@@ -10,10 +11,12 @@ import { useLengthSelector } from "./use-length-selector";
 interface LengthSelectorProps {
   onBack: () => void;
   onBegin: (length: TestLength) => void;
+  onBeginDynamic: () => void;
   onSelectionChange?: (length: TestLength) => void;
   initialLength?: TestLength;
   mode?: LengthSelectorMode;
   answers?: Record<number, number>;
+  dynamicCapability?: PersonalityAssessmentCapabilities["dynamic"] | null;
 }
 
 const EMPTY_LENGTH_SELECTOR_ANSWERS: Record<number, number> = {};
@@ -21,23 +24,26 @@ const EMPTY_LENGTH_SELECTOR_ANSWERS: Record<number, number> = {};
 export function LengthSelector({
   onBack,
   onBegin,
+  onBeginDynamic,
   onSelectionChange,
   initialLength = 50,
   mode = "begin",
   answers = EMPTY_LENGTH_SELECTOR_ANSWERS,
+  dynamicCapability = null,
 }: LengthSelectorProps) {
   const {
     actionLabel,
     content,
     handleBegin,
     isAdjust,
-    selectedLength,
-    setSelectedLength,
+    selection,
+    setSelection,
   } = useLengthSelector({
     answers,
     initialLength,
     mode,
     onBegin,
+    onBeginDynamic,
     onSelectionChange,
   });
 
@@ -53,8 +59,9 @@ export function LengthSelector({
         <LengthSelectorOptionsList
           answers={answers}
           isAdjust={isAdjust}
-          onSelect={setSelectedLength}
-          selectedLength={selectedLength}
+          dynamicCapability={dynamicCapability}
+          onSelect={setSelection}
+          selection={selection}
         />
         <LengthSelectorActions
           actionLabel={actionLabel}

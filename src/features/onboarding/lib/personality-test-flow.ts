@@ -85,7 +85,7 @@ function shouldShowFinalIntermission(
   testLength: TestLength,
   totalPages: number,
 ) {
-  return currentPage === totalPages && testLength < 150;
+  return currentPage === totalPages && testLength < 50;
 }
 
 function getQuestionIntermissionStep(

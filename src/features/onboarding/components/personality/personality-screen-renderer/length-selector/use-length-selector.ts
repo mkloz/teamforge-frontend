@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 
 import {
+  type AssessmentSelection,
   getLengthProgress,
   getLengthSelectorActionLabel,
   getLengthSelectorContent,
@@ -14,6 +15,7 @@ interface UseLengthSelectorParams {
   initialLength: TestLength;
   mode: LengthSelectorMode;
   onBegin: (length: TestLength) => void;
+  onBeginDynamic: () => void;
   onSelectionChange?: (length: TestLength) => void;
 }
 
@@ -22,25 +24,41 @@ export function useLengthSelector({
   initialLength,
   mode,
   onBegin,
+  onBeginDynamic,
   onSelectionChange,
 }: UseLengthSelectorParams) {
-  const [selectedLength, setSelectedLength] =
-    useState<TestLength>(initialLength);
-  const selectedProgress = getLengthProgress(selectedLength, answers);
+  const [selection, setSelection] = useState<AssessmentSelection>({
+    kind: "fixed",
+    length: initialLength,
+  });
+  const selectedProgress =
+    selection.kind === "fixed"
+      ? getLengthProgress(selection.length, answers)
+      : { isComplete: false };
 
   useEffect(() => {
-    onSelectionChange?.(selectedLength);
-  }, [selectedLength, onSelectionChange]);
+    if (selection.kind === "fixed") {
+      onSelectionChange?.(selection.length);
+    }
+  }, [selection, onSelectionChange]);
 
   return {
     actionLabel: getLengthSelectorActionLabel(
       mode,
       selectedProgress.isComplete,
+      selection.kind === "dynamic",
     ),
     content: getLengthSelectorContent(mode),
-    handleBegin: () => onBegin(selectedLength),
+    handleBegin: () => {
+      if (selection.kind === "dynamic") {
+        onBeginDynamic();
+        return;
+      }
+
+      onBegin(selection.length);
+    },
     isAdjust: mode === "adjust",
-    selectedLength,
-    setSelectedLength,
+    selection,
+    setSelection,
   };
 }

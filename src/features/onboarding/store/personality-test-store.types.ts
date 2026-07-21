@@ -7,6 +7,7 @@ export type ScreenState =
   | { id: "guidelines" }
   | { id: "length" }
   | { id: "questions"; currentPage: number }
+  | { id: "dynamic-questions" }
   | { id: "intermission"; type: number; nextPageIndex: number }
   | { id: "submitting" }
   | { id: "results" };

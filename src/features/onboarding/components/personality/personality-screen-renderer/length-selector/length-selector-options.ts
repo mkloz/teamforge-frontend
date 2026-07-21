@@ -6,8 +6,11 @@ import {
 } from "@/features/onboarding/data/ipip-questions";
 
 export type LengthSelectorMode = "begin" | "adjust";
+export type AssessmentSelection =
+  | { kind: "fixed"; length: TestLength }
+  | { kind: "dynamic" };
 
-export const TEST_LENGTH_OPTIONS: TestLength[] = [30, 50, 150];
+export const TEST_LENGTH_OPTIONS: TestLength[] = [30, 50];
 export const RESOLUTION_SEGMENTS = [0, 1, 2, 3, 4, 5];
 
 const LENGTH_SELECTOR_CONTENT: Record<
@@ -39,9 +42,10 @@ export function getLengthSelectorContent(mode: LengthSelectorMode) {
 export function getLengthSelectorActionLabel(
   mode: LengthSelectorMode,
   isSelectedComplete: boolean,
+  isDynamic: boolean,
 ) {
   if (mode === "begin") {
-    return "Begin assessment";
+    return isDynamic ? "Begin Dynamic assessment" : "Begin assessment";
   }
 
   return isSelectedComplete ? "Finish and review result" : "Keep this length";

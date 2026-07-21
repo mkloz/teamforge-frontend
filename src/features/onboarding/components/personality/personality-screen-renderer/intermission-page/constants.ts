@@ -93,7 +93,7 @@ const INTERMISSION_CONTENT: {
   },
 ];
 
-const INTERMISSION_UPGRADE_OPTIONS: TestLength[] = [30, 50, 150];
+const INTERMISSION_UPGRADE_OPTIONS: TestLength[] = [30, 50];
 
 export function getIntermissionContent(milestoneIndex: number) {
   const validIndex = Math.max(0, milestoneIndex - 1);
@@ -102,7 +102,7 @@ export function getIntermissionContent(milestoneIndex: number) {
 }
 
 export function canExtendIntermission(totalQuestions: number) {
-  return totalQuestions < 150;
+  return totalQuestions < 50;
 }
 
 export function getIntermissionActionLabel({

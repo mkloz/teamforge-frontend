@@ -5,6 +5,7 @@ import { resultsContainer } from "@/features/onboarding/constants/motion";
 import type { PersonalityAssessmentQueryStatus } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import { getPersonalityResultViewModel } from "@/features/onboarding/lib/personality-results";
 import { Button } from "@/shared/components/ui/button";
+import type { PersonalityAssessmentMeasurement } from "@/shared/schemas/personality-assessment";
 import type { PublicPersonalityProfile } from "@/shared/schemas/public-personality-profile";
 
 import { PersonalityResultActions } from "./personality-result-actions";
@@ -30,6 +31,8 @@ interface PersonalityResultsProps {
   isOnline: boolean;
   isSaved: boolean;
   isLegacyResult: boolean;
+  isCompatibilityEligible: boolean;
+  measurement: PersonalityAssessmentMeasurement | null;
   onContinue: () => void;
   onDiscard: () => void;
   onDeleteAll: () => void;
@@ -50,6 +53,8 @@ export function PersonalityResults({
   isOnline,
   isSaved,
   isLegacyResult,
+  isCompatibilityEligible,
+  measurement,
   onContinue,
   onDiscard,
   onDeleteAll,
@@ -87,6 +92,43 @@ export function PersonalityResults({
         oceanScores={viewModel.oceanScores}
       />
 
+      {measurement?.mode === "DYNAMIC" && measurement.uncertainty ? (
+        <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
+          <SectionHeading
+            eyebrow="Estimated precision"
+            title="Your likely score ranges"
+          />
+          <p className="text-pretty text-muted-foreground text-sm leading-relaxed">
+            These ranges show normal measurement uncertainty, not a limit on who
+            you are. A narrower range means this set of answers located that
+            trait more precisely.
+          </p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {Object.entries(measurement.uncertainty).map(
+              ([trait, uncertainty]) => (
+                <div
+                  key={trait}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5"
+                >
+                  <span className="font-semibold text-ink text-sm capitalize">
+                    {trait}
+                  </span>
+                  <span className="text-muted-foreground text-sm tabular-nums">
+                    {uncertainty.lower90}–{uncertainty.upper90}
+                  </span>
+                </div>
+              ),
+            )}
+          </div>
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            Dynamic beta used {measurement.questionCount} questions and stopped
+            {measurement.stopReason === "PRECISION_REACHED"
+              ? " when every trait met the current precision rule."
+              : " at the disclosed maximum length."}
+          </p>
+        </section>
+      ) : null}
+
       <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
         <SectionHeading
           eyebrow="Keep in mind"
@@ -105,9 +147,9 @@ export function PersonalityResults({
           title="A portrait people can understand"
         />
         <p className="text-pretty text-ink/82 text-sm leading-relaxed">
-          Save this result to add the portrait to your profile. Other signed-in
-          TeamForge users can see it, and TeamForge can use it when forming
-          groups.
+          {isCompatibilityEligible
+            ? "Save this result to add the portrait to your profile. Other signed-in TeamForge users can see it, and TeamForge can use it when forming groups."
+            : "Save this result to add the portrait to your profile. Other signed-in TeamForge users can see it, but this Dynamic beta score is not yet used to form groups."}
         </p>
         <p className="text-pretty text-muted-foreground text-xs leading-relaxed">
           Your answers were used for this assessment and are not saved.

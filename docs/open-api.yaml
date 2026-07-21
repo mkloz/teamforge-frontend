@@ -462,6 +462,24 @@ paths:
       summary: Return a lightweight uptime response
       tags: *a10
       security: []
+  /api/v1/users/me/personality-assessment/capabilities:
+    get:
+      operationId: PersonalityController_getCapabilities
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalityAssessmentCapabilitiesEntity'
+        '429':
+          description: Too many requests
+      security: &a11
+        - bearer: []
+      summary: Get available personality assessment modes
+      tags: &a12
+        - Personality assessment
   /api/v1/users/me/personality-assessment:
     get:
       operationId: PersonalityController_getOwnerState
@@ -475,11 +493,9 @@ paths:
                 $ref: '#/components/schemas/OwnerPersonalityStateEntity'
         '429':
           description: Too many requests
-      security: &a11
-        - bearer: []
+      security: *a11
       summary: Get the authenticated user personality state
-      tags: &a12
-        - Personality assessment
+      tags: *a12
     delete:
       operationId: PersonalityController_deleteAll
       parameters: []
@@ -6954,6 +6970,94 @@ components:
           example: https://example.com
       required:
         - url
+    DynamicPersonalityCapabilityEntity:
+      type: object
+      properties:
+        startPolicy:
+          type: string
+          enum:
+            - HIDDEN
+            - INTERNAL
+            - PUBLIC_BETA
+            - AVAILABLE
+            - PAUSED
+        resumePolicy:
+          type: string
+          enum:
+            - NOT_SUPPORTED_V1
+        pageSize:
+          type: integer
+        minimumPages:
+          type: integer
+        maximumPages:
+          type: integer
+        minimumQuestions:
+          type: integer
+        maximumQuestions:
+          type: integer
+        displayUse:
+          type: string
+          enum:
+            - ENABLED
+            - DISABLED
+        publicationUse:
+          type: string
+          enum:
+            - ENABLED
+            - DISABLED
+        compatibilityUse:
+          type: string
+          enum:
+            - ENABLED
+            - DISABLED_PENDING_LINK
+        onboardingUse:
+          type: string
+          enum:
+            - ENABLED
+            - DISABLED
+        packageId:
+          type: string
+        manifestHash:
+          type: string
+        policyVersion:
+          type: string
+      required:
+        - startPolicy
+        - resumePolicy
+        - pageSize
+        - minimumPages
+        - maximumPages
+        - minimumQuestions
+        - maximumQuestions
+        - displayUse
+        - publicationUse
+        - compatibilityUse
+        - onboardingUse
+        - packageId
+        - manifestHash
+        - policyVersion
+    PersonalityAssessmentCapabilitiesEntity:
+      type: object
+      properties:
+        availableFixedForms:
+          type: array
+          items:
+            type: string
+            enum:
+              - IPIP_30_V1
+              - IPIP_50_V1
+        retiredForms:
+          type: array
+          items:
+            type: string
+            enum:
+              - IPIP_150_V1
+        dynamic:
+          $ref: '#/components/schemas/DynamicPersonalityCapabilityEntity'
+      required:
+        - availableFixedForms
+        - retiredForms
+        - dynamic
     PersonalityOceanEntity:
       type: object
       properties:
@@ -6983,6 +7087,71 @@ components:
         - extraversion
         - agreeableness
         - neuroticism
+    PersonalityTraitUncertaintyEntity:
+      type: object
+      properties:
+        lower90:
+          type: integer
+          minimum: 0
+          maximum: 100
+        posteriorSd:
+          type: number
+          minimum: 0
+        upper90:
+          type: integer
+          minimum: 0
+          maximum: 100
+      required:
+        - lower90
+        - posteriorSd
+        - upper90
+    PersonalityTraitUncertaintiesEntity:
+      type: object
+      properties:
+        openness:
+          $ref: '#/components/schemas/PersonalityTraitUncertaintyEntity'
+        conscientiousness:
+          $ref: '#/components/schemas/PersonalityTraitUncertaintyEntity'
+        extraversion:
+          $ref: '#/components/schemas/PersonalityTraitUncertaintyEntity'
+        agreeableness:
+          $ref: '#/components/schemas/PersonalityTraitUncertaintyEntity'
+        neuroticism:
+          $ref: '#/components/schemas/PersonalityTraitUncertaintyEntity'
+      required:
+        - openness
+        - conscientiousness
+        - extraversion
+        - agreeableness
+        - neuroticism
+    PersonalityAssessmentMeasurementEntity:
+      type: object
+      properties:
+        mode:
+          type: string
+          enum:
+            - FIXED
+            - DYNAMIC
+        questionCount:
+          type: integer
+          minimum: 1
+        stopReason:
+          type: string
+          enum:
+            - FIXED_LENGTH
+            - PRECISION_REACHED
+            - MAXIMUM_REACHED
+          nullable: true
+        uncertainty:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PersonalityTraitUncertaintiesEntity'
+      required:
+        - mode
+        - questionCount
+        - stopReason
+        - uncertainty
     OwnerPersonalityAssessmentEntity:
       type: object
       properties:
@@ -7030,6 +7199,11 @@ components:
           format: date-time
           type: string
           nullable: true
+        measurement:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/PersonalityAssessmentMeasurementEntity'
       required:
         - assessmentId
         - instrumentVersion
@@ -7044,6 +7218,7 @@ components:
         - compatibilityEligible
         - formVersion
         - completedAt
+        - measurement
     PublicPersonalityProfileEntity:
       type: object
       properties:
@@ -7152,11 +7327,22 @@ components:
             - IPIP_30_V1
             - IPIP_50_V1
             - IPIP_150_V1
+            - TF_OCEAN_DYNAMIC_V1
         source:
           type: string
           enum:
             - ONBOARDING
             - RETAKE
+        baseAssessmentGeneration:
+          type: integer
+          minimum: 0
+        packageId:
+          type: string
+        manifestHash:
+          type: string
+        selectionSeed:
+          type: string
+          format: uuid
       required:
         - formVersion
         - source
@@ -7169,6 +7355,10 @@ components:
           type: string
         expiresAt:
           format: date-time
+          type: string
+        packageId:
+          type: string
+        manifestHash:
           type: string
       required:
         - attemptId
@@ -7194,6 +7384,65 @@ components:
       required:
         - questionId
         - value
+    DynamicAssessmentPageDto:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          minimum: 1
+          maximum: 10
+        itemVersionIds:
+          minItems: 5
+          maxItems: 5
+          type: array
+          items:
+            type: string
+      required:
+        - pageNumber
+        - itemVersionIds
+    DynamicAssessmentAnswerDto:
+      type: object
+      properties:
+        itemVersionId:
+          type: string
+        value:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+      required:
+        - itemVersionId
+        - value
+    DynamicAssessmentSubmissionDto:
+      type: object
+      properties:
+        packageId:
+          type: string
+        manifestHash:
+          type: string
+        selectionSeed:
+          type: string
+        pages:
+          minItems: 6
+          maxItems: 10
+          type: array
+          items:
+            $ref: '#/components/schemas/DynamicAssessmentPageDto'
+        answers:
+          minItems: 30
+          maxItems: 50
+          type: array
+          items:
+            $ref: '#/components/schemas/DynamicAssessmentAnswerDto'
+      required:
+        - packageId
+        - manifestHash
+        - selectionSeed
+        - pages
+        - answers
     SubmitAssessmentDto:
       type: object
       properties:
@@ -7203,6 +7452,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PersonalityAnswerDto'
+        dynamic:
+          $ref: '#/components/schemas/DynamicAssessmentSubmissionDto'
       required:
         - answers
     SubmittedPersonalityAssessmentEntity:

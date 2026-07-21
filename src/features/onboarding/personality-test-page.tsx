@@ -19,6 +19,7 @@ export function PersonalityTestPage() {
     continueLabel,
     continueToInterests,
     displayProgress,
+    dynamic,
     goBack,
     isOnline,
     scrollContainerRef,
@@ -29,6 +30,7 @@ export function PersonalityTestPage() {
   } = usePersonalityTestPageFlow();
   const hasTopPadding =
     testState.screen.id !== "questions" &&
+    testState.screen.id !== "dynamic-questions" &&
     testState.screen.id !== "results" &&
     testState.screen.id !== "submitting";
   const screenTransitionKey = getPersonalityScreenTransitionKey(
@@ -46,6 +48,7 @@ export function PersonalityTestPage() {
       <div key={screenTransitionKey} className="flex flex-1 flex-col">
         <PersonalityScreenRenderer
           assessment={assessment}
+          dynamic={dynamic}
           state={testState}
           backLabel={backLabel}
           onBack={goBack}
@@ -67,6 +70,10 @@ function getPersonalityScreenTransitionKey(
 ) {
   if (screen.id === "questions") {
     return `questions-${screen.currentPage}`;
+  }
+
+  if (screen.id === "dynamic-questions") {
+    return "dynamic-questions";
   }
 
   if (screen.id === "intermission") {

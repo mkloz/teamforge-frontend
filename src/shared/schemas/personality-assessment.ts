@@ -9,6 +9,7 @@ export const personalityAssessmentFormVersionSchema = z.enum([
   "IPIP_30_V1",
   "IPIP_50_V1",
   "IPIP_150_V1",
+  "TF_OCEAN_DYNAMIC_V1",
 ]);
 
 export const personalityAssessmentSourceSchema = z.enum([
@@ -19,6 +20,29 @@ export const personalityAssessmentSourceSchema = z.enum([
 export const personalityAssessmentAnswerSchema = z.object({
   questionId: z.number().int().min(1).max(150),
   value: z.number().int().min(1).max(5),
+});
+
+const personalityTraitUncertaintySchema = z.object({
+  lower90: z.number().int().min(0).max(100),
+  posteriorSd: z.number().nonnegative(),
+  upper90: z.number().int().min(0).max(100),
+});
+
+export const personalityAssessmentMeasurementSchema = z.object({
+  mode: z.enum(["FIXED", "DYNAMIC"]),
+  questionCount: z.number().int().positive(),
+  stopReason: z
+    .enum(["FIXED_LENGTH", "PRECISION_REACHED", "MAXIMUM_REACHED"])
+    .nullable(),
+  uncertainty: z
+    .object({
+      openness: personalityTraitUncertaintySchema,
+      conscientiousness: personalityTraitUncertaintySchema,
+      extraversion: personalityTraitUncertaintySchema,
+      agreeableness: personalityTraitUncertaintySchema,
+      neuroticism: personalityTraitUncertaintySchema,
+    })
+    .nullable(),
 });
 
 export const ownerPersonalityAssessmentSchema = z.object({
@@ -35,6 +59,7 @@ export const ownerPersonalityAssessmentSchema = z.object({
   personalityType: personalityTypeSchema,
   ocean: personalityTraitScoresSchema,
   completedAt: z.string().datetime().nullable(),
+  measurement: personalityAssessmentMeasurementSchema.nullable(),
 });
 
 export const personalityDisclosureSchema = z.object({
@@ -63,6 +88,53 @@ export const createPersonalityAssessmentAttemptResponseSchema = z.object({
   attemptId: z.string().min(1),
   formVersion: personalityAssessmentFormVersionSchema,
   expiresAt: z.string().datetime(),
+  packageId: z.string().min(1).optional(),
+  manifestHash: z.string().min(1).optional(),
+});
+
+export const personalityAssessmentCapabilitiesSchema = z.object({
+  availableFixedForms: z.array(personalityAssessmentFormVersionSchema),
+  retiredForms: z.array(personalityAssessmentFormVersionSchema),
+  dynamic: z.object({
+    startPolicy: z.enum([
+      "HIDDEN",
+      "INTERNAL",
+      "PUBLIC_BETA",
+      "AVAILABLE",
+      "PAUSED",
+    ]),
+    resumePolicy: z.literal("NOT_SUPPORTED_V1"),
+    pageSize: z.number().int().positive(),
+    minimumPages: z.number().int().positive(),
+    maximumPages: z.number().int().positive(),
+    minimumQuestions: z.number().int().positive(),
+    maximumQuestions: z.number().int().positive(),
+    displayUse: z.enum(["ENABLED", "DISABLED"]),
+    publicationUse: z.enum(["ENABLED", "DISABLED"]),
+    compatibilityUse: z.enum(["ENABLED", "DISABLED_PENDING_LINK"]),
+    onboardingUse: z.enum(["ENABLED", "DISABLED"]),
+    packageId: z.string().min(1),
+    manifestHash: z.string().min(1),
+    policyVersion: z.string().min(1),
+  }),
+});
+
+export const dynamicAssessmentPageSchema = z.object({
+  pageNumber: z.number().int().positive(),
+  itemVersionIds: z.array(z.string().min(1)).length(5),
+});
+
+export const dynamicAssessmentAnswerSchema = z.object({
+  itemVersionId: z.string().min(1),
+  value: z.number().int().min(1).max(5),
+});
+
+export const dynamicAssessmentSubmissionSchema = z.object({
+  packageId: z.string().min(1),
+  manifestHash: z.string().min(1),
+  selectionSeed: z.string().min(1),
+  pages: z.array(dynamicAssessmentPageSchema).min(6).max(10),
+  answers: z.array(dynamicAssessmentAnswerSchema).min(30).max(50),
 });
 
 export const submitPersonalityAssessmentResponseSchema = z.object({
@@ -77,6 +149,12 @@ export type PersonalityAssessmentFormVersion = z.infer<
 export type PersonalityAssessmentSource = z.infer<
   typeof personalityAssessmentSourceSchema
 >;
+export type PersonalityAssessmentCapabilities = z.infer<
+  typeof personalityAssessmentCapabilitiesSchema
+>;
+export type DynamicAssessmentSubmission = z.infer<
+  typeof dynamicAssessmentSubmissionSchema
+>;
 export type PersonalityAssessmentAnswer = z.infer<
   typeof personalityAssessmentAnswerSchema
 >;
@@ -87,6 +165,9 @@ export type PersonalityAssessmentState = z.infer<
   typeof personalityAssessmentStateSchema
 >;
 export type PersonalityDisclosure = z.infer<typeof personalityDisclosureSchema>;
+export type PersonalityAssessmentMeasurement = z.infer<
+  typeof personalityAssessmentMeasurementSchema
+>;
 export type SubmitPersonalityAssessmentResponse = z.infer<
   typeof submitPersonalityAssessmentResponseSchema
 >;
