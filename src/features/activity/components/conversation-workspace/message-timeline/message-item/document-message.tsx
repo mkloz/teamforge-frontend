@@ -119,7 +119,7 @@ function DocumentMetaValue({
   return (
     <span
       className={cn(
-        "font-black text-nano uppercase tracking-wider",
+        "font-black text-xs uppercase tracking-wider",
         isOwn ? "text-white/80" : "text-slate-muted",
       )}
     >

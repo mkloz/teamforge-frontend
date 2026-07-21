@@ -215,7 +215,7 @@ function AddressSuggestionText({
         {getSuggestionMainText(suggestion)}
       </span>
       {secondaryText ? (
-        <span className="block truncate font-medium text-micro text-slate-muted leading-4">
+        <span className="block truncate font-medium text-slate-muted text-xs leading-4">
           {secondaryText}
         </span>
       ) : null}

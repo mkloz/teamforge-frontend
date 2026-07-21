@@ -79,7 +79,7 @@ export function AttachmentMenu({
               <Button
                 variant="accentGhost"
                 size="icon-sm"
-                className="size-8 cursor-pointer rounded-full outline-none"
+                className="size-11 cursor-pointer rounded-full outline-none [@media(pointer:fine)]:size-8"
                 aria-label="Add attachment"
                 disabled={disabled}
               >

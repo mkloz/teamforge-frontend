@@ -232,7 +232,7 @@ export function GalleryItemLoadedOverlays({
         </div>
       ) : null}
       {isGif ? (
-        <span className="absolute top-2 left-2 rounded-md border border-white/10 bg-black/35 px-1.5 py-0.5 font-black text-nano text-white/90 leading-none tracking-wide backdrop-blur-sm">
+        <span className="absolute top-2 left-2 rounded-md border border-white/10 bg-black/35 px-1.5 py-0.5 font-black text-white/90 text-xs leading-none tracking-wide backdrop-blur-sm">
           GIF
         </span>
       ) : null}

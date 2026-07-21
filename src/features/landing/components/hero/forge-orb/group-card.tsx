@@ -16,7 +16,7 @@ export function GroupCard() {
     <ForgeOrbPanel className="w-45 animate-forge-card-float-b motion-reduce:animate-none">
       <div className="mb-2.5 flex items-center justify-between">
         <ForgeOrbEyebrow>Your group</ForgeOrbEyebrow>
-        <StatusPill tone="amber" size="xs" className="font-sans text-nano">
+        <StatusPill tone="amber" size="xs" className="font-sans text-xs">
           Strong fit
         </StatusPill>
       </div>
@@ -38,7 +38,7 @@ export function GroupCard() {
         {["Coffee", "Study", "Walk"].map((tag) => (
           <span
             key={tag}
-            className="rounded bg-white/5 px-1.5 py-0.5 font-medium font-sans text-nano text-text-dark-muted"
+            className="rounded bg-white/5 px-1.5 py-0.5 font-medium font-sans text-text-dark-muted text-xs"
           >
             {tag}
           </span>

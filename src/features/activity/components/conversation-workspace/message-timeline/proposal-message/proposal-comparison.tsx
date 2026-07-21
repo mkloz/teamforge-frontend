@@ -15,7 +15,7 @@ export function ProposalComparison({
         Current value {current}. Proposed value {proposed}.
       </span>
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)] items-center gap-2">
-        <span className="wrap-break-word block min-w-0 font-semibold text-micro text-muted-foreground/75 leading-snug line-through decoration-muted-foreground/50">
+        <span className="wrap-break-word block min-w-0 font-semibold text-muted-foreground/75 text-xs leading-snug line-through decoration-muted-foreground/50">
           {current}
         </span>
         <span className="flex size-5 shrink-0 items-center justify-center text-accent">
@@ -25,7 +25,7 @@ export function ProposalComparison({
             strokeWidth={2.25}
           />
         </span>
-        <span className="wrap-break-word block min-w-0 font-bold text-foreground text-micro leading-snug">
+        <span className="wrap-break-word block min-w-0 font-bold text-foreground text-xs leading-snug">
           {proposed}
         </span>
       </div>

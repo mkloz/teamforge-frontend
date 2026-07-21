@@ -47,7 +47,7 @@ export function ProposalHeader({
           className="bg-accent/14"
         />
         <div className="min-w-0 flex-1">
-          <h4 className="mb-0.5 truncate font-bold text-accent/80 text-micro leading-none">
+          <h4 className="mb-0.5 truncate font-bold text-accent/80 text-xs leading-none">
             Plan change
           </h4>
           <p className="truncate font-bold text-foreground text-xs leading-none">
@@ -59,7 +59,7 @@ export function ProposalHeader({
       <div className="flex shrink-0 items-center gap-1.5">
         <span
           className={cn(
-            "font-bold text-micro leading-none transition-colors",
+            "font-bold text-xs leading-none transition-colors",
             STATUS_STYLES[status],
           )}
         >

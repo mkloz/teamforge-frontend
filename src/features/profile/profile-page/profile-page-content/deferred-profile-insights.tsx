@@ -14,6 +14,7 @@ const PROFILE_DEFERRED_INSIGHTS_DELAY_MS = 12_000;
 
 export function DeferredProfileInsights({
   dimensionScores,
+  mode,
   oceanScores,
   profileInsights,
 }: ComponentProps<typeof LazyProfileDeferredInsights>) {
@@ -28,6 +29,7 @@ export function DeferredProfileInsights({
         <Suspense fallback={<ProfileDeferredInsightsFallback />}>
           <LazyProfileDeferredInsights
             dimensionScores={dimensionScores}
+            mode={mode}
             oceanScores={oceanScores}
             profileInsights={profileInsights}
           />

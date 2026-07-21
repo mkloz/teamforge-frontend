@@ -39,7 +39,7 @@ export function HeaderSearch({
         />
         {resultLabel && (
           <output
-            className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full bg-muted px-2 py-0.5 font-semibold text-micro text-slate-muted"
+            className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full bg-muted px-2 py-0.5 font-semibold text-slate-muted text-xs"
             aria-live="polite"
           >
             {resultLabel}

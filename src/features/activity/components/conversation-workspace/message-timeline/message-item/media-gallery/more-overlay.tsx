@@ -6,7 +6,7 @@ export function MoreOverlay({ count }: { count: number }) {
           +{count - 4}
         </span>
       </div>
-      <span className="mt-2 font-bold text-micro text-white/60">
+      <span className="mt-2 font-bold text-white/60 text-xs">
         Discover More
       </span>
     </div>

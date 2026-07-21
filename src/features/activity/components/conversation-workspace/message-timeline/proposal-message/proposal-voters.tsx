@@ -64,9 +64,7 @@ export function ProposalVoters({
             );
           })}
         </div>
-        <span className="font-bold text-micro text-muted-foreground">
-          {score}
-        </span>
+        <span className="font-bold text-muted-foreground text-xs">{score}</span>
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-full border border-border/10 bg-muted/30">
         <LazyMotion features={domAnimation}>

@@ -35,7 +35,7 @@ export function TypingPresence({
                 />
               ))}
             </div>
-            <span className="truncate font-bold text-micro text-slate-muted/80 tracking-tight">
+            <span className="truncate font-bold text-slate-muted/80 text-xs tracking-tight">
               {typingUsers.length === 1
                 ? `${typingUsers[0].name} is typing`
                 : typingUsers.length === 2

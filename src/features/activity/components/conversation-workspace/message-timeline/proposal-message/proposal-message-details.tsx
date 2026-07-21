@@ -58,7 +58,7 @@ export function ProposalMessageDetails({
           progress={voteProgress}
         />
 
-        <div className="flex items-center justify-between gap-3 text-micro text-muted-foreground">
+        <div className="flex items-center justify-between gap-3 text-muted-foreground text-xs">
           <span className="min-w-0 truncate">
             {formatProposalDate(proposal.createdAt)}
           </span>

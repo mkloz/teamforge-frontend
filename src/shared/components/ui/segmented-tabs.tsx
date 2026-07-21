@@ -29,7 +29,7 @@ const SEGMENTED_TAB_SIZE_CLASS_NAMES: Record<
     icon: "size-3.5",
   },
   sm: {
-    button: "h-7 gap-1 px-2.5 text-micro",
+    button: "h-7 gap-1 px-2.5 text-xs",
     gap: "gap-0.5",
     icon: "size-3",
   },

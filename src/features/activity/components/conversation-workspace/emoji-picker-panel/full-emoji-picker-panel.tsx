@@ -176,22 +176,16 @@ function getViewportHeightClass(height?: number) {
   );
 }
 
-function EmojiCategoryHeader(props: EmojiPickerListCategoryHeaderProps) {
-  return <EmojiCategoryHeaderBase {...props} compact={false} />;
-}
-
-function EmojiCategoryHeaderBase({
+function EmojiCategoryHeader({
   category,
   className,
-  compact,
   ...props
-}: EmojiPickerListCategoryHeaderProps & { compact: boolean }) {
+}: EmojiPickerListCategoryHeaderProps) {
   return (
     <div
       {...props}
       className={cn(
-        "z-10 flex items-center bg-popover/94 px-2 font-black text-slate-muted text-xs backdrop-blur-md",
-        compact ? "h-5 text-micro" : "h-6 text-xs",
+        "z-10 flex h-6 items-center bg-popover/94 px-2 font-black text-slate-muted text-xs backdrop-blur-md",
         className,
       )}
     >

@@ -60,7 +60,7 @@ function CompactReactionSearch({
           name="emoji-search"
           aria-label="Search emoji"
           value={search}
-          className="h-8 w-full border-0 bg-transparent pr-2 pl-7 font-bold text-ink text-micro outline-none transition-colors placeholder:text-slate-muted/70 focus-visible:ring-0"
+          className="h-8 w-full border-0 bg-transparent pr-2 pl-7 font-bold text-ink text-xs outline-none transition-colors placeholder:text-slate-muted/70 focus-visible:ring-0"
           placeholder="Search emoji"
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
             onSearchChange(event.target.value)
@@ -113,7 +113,7 @@ function CompactReactionEmojiGroup({
 
   return (
     <section>
-      <div className="sticky -top-px z-10 flex h-5 snap-start items-center bg-popover/97 px-2 font-black text-micro text-slate-muted backdrop-blur-md">
+      <div className="sticky -top-px z-10 flex h-6 snap-start items-center bg-popover/97 px-2 font-black text-slate-muted text-xs backdrop-blur-md">
         {group.title}
       </div>
       <div>

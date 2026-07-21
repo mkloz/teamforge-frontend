@@ -88,7 +88,7 @@ function TagPillContent({
       asChild
       disabled={viewState.isToggleDisabled}
       className={cn(
-        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-micro sm:px-2 sm:py-1",
+        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-xs sm:px-2 sm:py-1",
         viewState.surfaceClass,
       )}
     >

@@ -159,7 +159,7 @@ export function ExpressionPicker({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="size-8 cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-accent"
+              className="size-11 cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-accent [@media(pointer:fine)]:size-8"
               aria-label={allowGif ? "Add emoji or GIF" : "Add emoji"}
               disabled={disabled}
             >
@@ -177,7 +177,7 @@ export function ExpressionPicker({
         sideOffset={14}
         aria-hidden={!open}
         className={getActivityPopupPanelClass(
-          "w-[min(calc(100vw-1.5rem),22rem)] overflow-hidden rounded-lg p-0 will-change-transform data-[state=closed]:pointer-events-none data-[state=closed]:invisible data-[state=closed]:opacity-0",
+          "max-h-(--radix-popover-content-available-height) w-[min(calc(100vw-1.5rem),22rem)] overflow-y-auto rounded-lg p-0 will-change-transform data-[state=closed]:pointer-events-none data-[state=closed]:invisible data-[state=closed]:opacity-0",
         )}
       >
         {allowGif ? (
@@ -251,7 +251,7 @@ function ExpressionTab({
       aria-controls={controlsId}
       tabIndex={active ? 0 : -1}
       className={cn(
-        "inline-flex h-9 items-center justify-center gap-2 rounded-full font-black text-xs transition-colors",
+        "inline-flex h-11 items-center justify-center gap-2 rounded-full font-black text-xs transition-colors [@media(pointer:fine)]:h-9",
         active
           ? "bg-primary/10 text-ink ring-1 ring-primary/20"
           : "text-muted-foreground hover:bg-background/45 hover:text-ink",

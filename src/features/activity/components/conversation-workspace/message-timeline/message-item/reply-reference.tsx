@@ -51,11 +51,11 @@ function ReplyReferenceContent({
       <div className="min-w-0 flex-1">
         <div className="mb-0.5 flex min-w-0 items-center gap-1.5">
           <Reply className="size-3 shrink-0 text-primary" />
-          <span className="min-w-0 flex-1 truncate font-bold text-micro text-primary">
+          <span className="min-w-0 flex-1 truncate font-bold text-primary text-xs">
             {replyTo.sender?.name}
           </span>
         </div>
-        <p className="truncate font-medium text-micro text-slate-muted leading-relaxed">
+        <p className="truncate font-medium text-slate-muted text-xs leading-relaxed">
           {replyTo.content}
         </p>
       </div>

@@ -17,10 +17,10 @@ const statusPillVariants = cva(
         teal: "border-primary/20 bg-primary/10 text-primary",
       },
       size: {
-        "2xs": "gap-0.5 px-1.5 py-0.5 text-micro",
+        "2xs": "gap-0.5 px-1.5 py-0.5 text-xs",
         signature:
           "type-signature-label h-4 min-w-4 justify-center gap-0.5 px-1.5 py-0",
-        xs: "gap-1 px-2 py-0.5 text-micro",
+        xs: "gap-1 px-2 py-0.5 text-xs",
         sm: "gap-1.5 px-2.5 py-1 text-xs",
         md: "gap-1.5 px-3 py-1.5 text-xs",
       },

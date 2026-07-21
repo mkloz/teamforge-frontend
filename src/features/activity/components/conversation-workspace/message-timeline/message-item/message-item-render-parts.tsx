@@ -113,7 +113,7 @@ function MessageSenderLabel({
   }
 
   return (
-    <p className="mb-0.5 ml-1.5 font-bold text-micro text-primary opacity-90">
+    <p className="mb-0.5 ml-1.5 font-bold text-primary text-xs opacity-90">
       {label}
     </p>
   );
@@ -263,7 +263,7 @@ export function ForwardedIndicator({
   return (
     <div
       className={cn(
-        "mx-1.5 mt-1 mb-0.5 flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-0.5 font-bold text-micro",
+        "mx-1.5 mt-1 mb-0.5 flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-0.5 font-bold text-xs",
         isOwn ? "bg-primary/8 text-primary" : "bg-muted/55 text-slate-muted",
       )}
     >

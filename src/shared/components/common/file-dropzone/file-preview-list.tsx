@@ -54,9 +54,7 @@ function FilePreviewItem({ file, index, onRemove }: FilePreviewItemProps) {
       />
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold text-ink text-xs">{file.name}</p>
-        <p className="text-micro text-slate-muted">
-          {formatFileSize(file.size)}
-        </p>
+        <p className="text-slate-muted text-xs">{formatFileSize(file.size)}</p>
       </div>
       {onRemove ? (
         <Tooltip>

@@ -49,7 +49,7 @@ export function CompletionBlueprintCard({
         <div className="flex flex-1 flex-col gap-8 p-8 pt-10">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <p className="font-bold font-sans text-muted-foreground text-nano">
+              <p className="font-bold font-sans text-muted-foreground text-xs">
                 Interests
               </p>
               <p className="font-bold font-sans text-2xl text-foreground">
@@ -60,7 +60,7 @@ export function CompletionBlueprintCard({
               </p>
             </div>
             <div className="flex flex-col gap-1">
-              <p className="font-bold font-sans text-muted-foreground text-nano">
+              <p className="font-bold font-sans text-muted-foreground text-xs">
                 Status
               </p>
               <StatusPill

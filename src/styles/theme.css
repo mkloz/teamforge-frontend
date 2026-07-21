@@ -86,10 +86,6 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --text-micro: 0.6875rem;
-  --text-micro--line-height: 1rem;
-  --text-nano: 0.5625rem;
-  --text-nano--line-height: 0.75rem;
   --text-md: 0.9375rem;
   --text-md--line-height: 1.375rem;
 

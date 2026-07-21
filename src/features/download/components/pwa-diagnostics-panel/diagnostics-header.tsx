@@ -36,7 +36,8 @@ export function PwaDiagnosticsHeader({
           </Button>
         </div>
         <p className="mt-2 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          Check installation, offline access, and notifications on this device.
+          Check installation, whether TeamForge can start without a connection,
+          and notifications on this device.
         </p>
       </div>
 

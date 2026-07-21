@@ -64,7 +64,7 @@ export function SystemMessage({
     <div className="pointer-events-none my-0.5 flex justify-center px-6">
       <div
         className={cn(
-          "max-w-full rounded-full border px-2.5 py-1 font-bold text-micro leading-snug tracking-tight sm:max-w-lg md:max-w-xl",
+          "max-w-full rounded-full border px-2.5 py-1 font-bold text-xs leading-snug tracking-tight sm:max-w-lg md:max-w-xl",
           container,
           isHighlighted && "message-search-focus",
         )}

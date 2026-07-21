@@ -15,7 +15,7 @@ export function MbtiCard() {
           { label: "J", fill: 65, peer: "P" },
         ].map(({ label, fill, peer }) => (
           <div key={label} className="flex items-center gap-1.5">
-            <span className="w-2.5 font-bold font-sans text-forge-teal text-nano">
+            <span className="w-2.5 font-bold font-sans text-forge-teal text-xs">
               {label}
             </span>
             <div className="h-0.75 flex-1 overflow-hidden rounded-full bg-white/5">
@@ -24,7 +24,7 @@ export function MbtiCard() {
                 style={{ width: `${fill}%` }}
               />
             </div>
-            <span className="w-2.5 text-right font-sans text-nano text-text-dark-muted">
+            <span className="w-2.5 text-right font-sans text-text-dark-muted text-xs">
               {peer}
             </span>
           </div>

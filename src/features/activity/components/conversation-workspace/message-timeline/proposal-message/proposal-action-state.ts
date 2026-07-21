@@ -44,4 +44,4 @@ export function getWithdrawProposalState({
 }
 
 export const PROPOSAL_STATUS_CLASS_NAME =
-  "inline-flex h-8 min-w-0 flex-1 items-center justify-center rounded-lg bg-muted px-3 font-bold text-micro text-muted-foreground";
+  "inline-flex h-8 min-w-0 flex-1 items-center justify-center rounded-lg bg-muted px-3 font-bold text-muted-foreground text-xs";

@@ -108,7 +108,7 @@ function FloatingTypingIndicator({
 
         <TypingDots />
 
-        <span className="pr-1 font-semibold text-micro text-slate-muted tracking-tight">
+        <span className="pr-1 font-semibold text-slate-muted text-xs tracking-tight">
           {text.toUpperCase()}
         </span>
       </div>
@@ -132,7 +132,7 @@ function TypingAvatarStack({ users }: { users: TypingUser[] }) {
               src={user.avatar}
               name={user.name}
               className="size-5.5 shadow-sm ring-2 ring-canvas"
-              fallbackClassName="text-nano"
+              fallbackClassName="text-xs"
             />
           </m.div>
         ))}

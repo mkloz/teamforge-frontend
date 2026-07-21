@@ -74,7 +74,7 @@ export function VoiceNoteErrorMessage({ hasError }: { hasError: boolean }) {
   }
 
   return (
-    <p className="w-full px-13 font-semibold text-destructive/70 text-micro">
+    <p className="w-full px-13 font-semibold text-destructive/70 text-xs">
       Voice note unavailable
     </p>
   );
@@ -94,7 +94,7 @@ export function VoiceNoteTimeInfo({
   return (
     <div
       className={cn(
-        "-mt-1 flex w-full justify-between pr-12 pl-13 font-bold text-micro tracking-tight opacity-50",
+        "-mt-1 flex w-full justify-between pr-12 pl-13 font-bold text-xs tracking-tight opacity-50",
         isOwn
           ? "flex-row-reverse text-slate-muted"
           : "flex-row text-slate-muted",

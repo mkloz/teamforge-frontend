@@ -29,7 +29,7 @@ export function RecordingOverlay({ timeLabel }: RecordingOverlayProps) {
           />
         ))}
       </div>
-      <span className="fade-in slide-in-from-right-2 animate-in font-bold text-micro text-slate-muted">
+      <span className="fade-in slide-in-from-right-2 animate-in font-bold text-slate-muted text-xs">
         Recording...
       </span>
     </div>

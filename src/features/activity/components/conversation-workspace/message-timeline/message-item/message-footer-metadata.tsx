@@ -117,8 +117,8 @@ function ReadBySummary({
               key={reader.id}
               src={reader.avatar}
               name={reader.name}
-              className="size-4 border border-canvas bg-primary/10 text-[0.45rem]"
-              fallbackClassName="text-[0.45rem]"
+              className="size-5 border border-canvas bg-primary/10 text-xs"
+              fallbackClassName="text-xs"
               imageSize={32}
             />
           ))}

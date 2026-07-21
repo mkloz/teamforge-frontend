@@ -39,7 +39,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
         </span>
         <span
           className={cn(
-            "font-black text-micro transition-colors",
+            "font-black text-xs transition-colors",
             score.isBorderline ? "text-spark-amber" : "text-forge-teal",
           )}
         >

@@ -160,7 +160,7 @@ function SelectedInterestButtons({
         key={`shelf-${id}`}
         size="xs"
         onClick={() => onToggle(id)}
-        className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-micro sm:px-2 sm:py-1"
+        className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-xs sm:px-2 sm:py-1"
       >
         <span className="min-w-0 max-w-33 truncate leading-none sm:max-w-none">
           {tag.name}

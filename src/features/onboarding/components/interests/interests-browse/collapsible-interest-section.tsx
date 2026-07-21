@@ -57,7 +57,7 @@ export function CollapsibleInterestSection({
             <Icon className={cn("size-3 shrink-0", iconClassName)} />
             <span
               className={cn(
-                "min-w-0 truncate font-bold font-sans text-micro transition-colors",
+                "min-w-0 truncate font-bold font-sans text-xs transition-colors",
                 titleClassName,
               )}
             >

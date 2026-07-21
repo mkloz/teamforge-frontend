@@ -20,8 +20,8 @@ export const CAPABILITIES = [
   },
   {
     icon: Wifi,
-    title: "Offline opening",
-    body: "Previously loaded screens can reopen while your connection catches up.",
+    title: "Reopen while reconnecting",
+    body: "TeamForge can reopen its basic screen while your connection comes back.",
   },
   {
     icon: Bell,

@@ -171,7 +171,7 @@ function ThumbnailVideoLoadedOverlay({
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
       {isGif ? (
-        <span className="rounded bg-black/35 px-1 font-black text-nano text-white/90 leading-3">
+        <span className="rounded bg-black/35 px-1 font-black text-white/90 text-xs leading-3">
           GIF
         </span>
       ) : (

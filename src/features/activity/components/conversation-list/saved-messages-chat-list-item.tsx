@@ -189,7 +189,7 @@ function SavedMessagesListItemContent({
           </StatusPill>
         </div>
         {latestSavedMessage ? (
-          <time className="shrink-0 font-medium text-micro text-slate-muted tabular-nums">
+          <time className="shrink-0 font-medium text-slate-muted text-xs tabular-nums">
             {formatRelativeTime(latestSavedMessage.savedAt)}
           </time>
         ) : null}
