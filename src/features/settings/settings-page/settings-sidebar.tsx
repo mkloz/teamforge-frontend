@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, LogOut } from "lucide-react";
-import { lazy, type MouseEvent, Suspense, useState } from "react";
+import { lazy, type MouseEvent, type Ref, Suspense, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
@@ -19,6 +19,7 @@ const ActionDialog = lazy(() =>
 
 interface SettingsSidebarProps {
   activeSection: SettingsSection;
+  activeSectionLinkRef: Ref<HTMLAnchorElement>;
   isMobileDetailOpen: boolean;
   isSigningOut: boolean;
   onSectionSelect: (section: SettingsSection) => void;
@@ -29,6 +30,7 @@ type SettingsSectionItem = (typeof SETTINGS_SECTIONS)[number];
 
 export function SettingsSidebar({
   activeSection,
+  activeSectionLinkRef,
   isMobileDetailOpen,
   isSigningOut,
   onSectionSelect,
@@ -50,6 +52,7 @@ export function SettingsSidebar({
 
         <SettingsSectionNav
           activeSection={activeSection}
+          activeSectionLinkRef={activeSectionLinkRef}
           onSectionSelect={onSectionSelect}
         />
 
@@ -142,11 +145,13 @@ function getSignOutLabel(isSigningOut: boolean) {
 
 interface SettingsSectionNavProps {
   activeSection: SettingsSection;
+  activeSectionLinkRef: Ref<HTMLAnchorElement>;
   onSectionSelect: (section: SettingsSection) => void;
 }
 
 function SettingsSectionNav({
   activeSection,
+  activeSectionLinkRef,
   onSectionSelect,
 }: SettingsSectionNavProps) {
   return (
@@ -158,6 +163,7 @@ function SettingsSectionNav({
         <SettingsSectionNavLink
           key={section.id}
           activeSection={activeSection}
+          activeSectionLinkRef={activeSectionLinkRef}
           section={section}
           onSectionSelect={onSectionSelect}
         />
@@ -168,10 +174,12 @@ function SettingsSectionNav({
 
 function SettingsSectionNavLink({
   activeSection,
+  activeSectionLinkRef,
   onSectionSelect,
   section,
 }: {
   activeSection: SettingsSection;
+  activeSectionLinkRef: Ref<HTMLAnchorElement>;
   onSectionSelect: (section: SettingsSection) => void;
   section: SettingsSectionItem;
 }) {
@@ -180,6 +188,7 @@ function SettingsSectionNavLink({
 
   return (
     <Link
+      ref={isActive ? activeSectionLinkRef : undefined}
       {...buildSettingsNavigation(section.id)}
       onClick={(event) => {
         if (shouldIgnoreSettingsNavigationClick(event)) {

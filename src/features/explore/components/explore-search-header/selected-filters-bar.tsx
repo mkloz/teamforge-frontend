@@ -22,13 +22,13 @@ export function SelectedFiltersBar() {
   if (selectedFilterChips.length === 0) return null;
 
   return (
-    <div className="scrollbar-hide flex min-h-11 items-center gap-1.5 overflow-x-auto py-1 sm:min-h-0">
+    <div className="scrollbar-hide flex min-h-11 items-center gap-1.5 overflow-x-auto py-1 [@media(pointer:fine)]:min-h-0">
       <Button
         type="button"
         variant="subtle"
         size="xs"
         onClick={routeState.resetFilters}
-        className="h-auto shrink-0 gap-1 rounded-full px-2.5 py-1 text-xs"
+        className="h-11 shrink-0 gap-1 rounded-full px-2.5 py-1 text-xs [@media(pointer:fine)]:h-auto"
       >
         <X className="size-3" strokeWidth={2.5} />
         Clear all

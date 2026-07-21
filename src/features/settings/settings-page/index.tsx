@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import { useSettingsRouteState } from "@/features/settings/hooks/use-settings-route-state";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import { SettingsSectionContentLoading } from "./settings-page.loading";
 import { SettingsPageContent } from "./settings-page-content";
 import { getSettingsSectionMeta } from "./settings-sections";
@@ -32,11 +33,14 @@ export function SettingsPage() {
   const currentLocation = useRouterState({
     select: (state) => state.location,
   });
-  const mobileDetail = useSettingsMobileDetail({ currentLocation });
+  const mobileDetail = useSettingsMobileDetail({
+    activeSection,
+    currentLocation,
+  });
   const signOut = useSettingsSignOut({ currentLocation });
 
-  function handleSectionSelect() {
-    mobileDetail.openMobileDetail();
+  function handleSectionSelect(section: SettingsSection) {
+    mobileDetail.openMobileDetail(section);
   }
 
   return (

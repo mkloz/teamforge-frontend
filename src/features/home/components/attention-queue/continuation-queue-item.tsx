@@ -114,7 +114,7 @@ export function ContinuationQueueItem({
             <Button
               variant="outline"
               size="xs"
-              className="h-11 sm:h-9"
+              className="h-11 [@media(pointer:fine)]:h-9"
               disabled={actionsDisabled}
               loading={isPendingResponse(checkIn.id, "NOT_CONTINUED", state)}
               onClick={() => answer("NOT_CONTINUED")}
@@ -130,7 +130,7 @@ export function ContinuationQueueItem({
             </Button>
             <Button
               size="xs"
-              className="h-11 sm:h-9"
+              className="h-11 [@media(pointer:fine)]:h-9"
               disabled={actionsDisabled}
               loading={isPendingResponse(checkIn.id, "CONTINUED", state)}
               onClick={() => answer("CONTINUED")}

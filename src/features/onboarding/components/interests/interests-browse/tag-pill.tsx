@@ -54,14 +54,7 @@ export function TagPill({
     />
   );
 
-  if (!viewState.hasAliases) return content;
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>{content}</TooltipTrigger>
-      <TooltipContent side="top">{viewState.tooltipLabel}</TooltipContent>
-    </Tooltip>
-  );
+  return content;
 }
 
 interface TagPillContentProps {
@@ -81,14 +74,16 @@ function TagPillContent({
   onReject,
   onToggle,
 }: TagPillContentProps) {
-  return (
+  const showRejectAction = Boolean(onReject && !selected);
+  const toggleAction = (
     <Button
       variant={viewState.variant}
       size="xs"
       asChild
       disabled={viewState.isToggleDisabled}
       className={cn(
-        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-xs sm:px-2 sm:py-1",
+        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-xs sm:px-2 sm:py-1 [@media(pointer:coarse)]:min-h-11",
+        showRejectAction && "[@media(pointer:coarse)]:pr-11",
         viewState.surfaceClass,
       )}
     >
@@ -100,13 +95,33 @@ function TagPillContent({
         className="min-w-0 active:scale-100"
       >
         <TagPillBody
-          label={label}
-          onReject={onReject}
           selected={selected}
           slots={viewState.slots}
+          label={label}
         />
       </TagPillInteractiveTarget>
     </Button>
+  );
+
+  return (
+    <div
+      className={cn(
+        "relative inline-flex max-w-full items-center",
+        showRejectAction && "[@media(pointer:coarse)]:min-h-11",
+      )}
+    >
+      {viewState.hasAliases ? (
+        <Tooltip>
+          <TooltipTrigger asChild>{toggleAction}</TooltipTrigger>
+          <TooltipContent side="top">{viewState.tooltipLabel}</TooltipContent>
+        </Tooltip>
+      ) : (
+        toggleAction
+      )}
+      {showRejectAction && onReject ? (
+        <RejectTagButton label={label} onReject={onReject} />
+      ) : null}
+    </div>
   );
 }
 
@@ -168,12 +183,11 @@ function TagPillInteractiveTarget({
 
 interface TagPillBodyProps {
   label: string;
-  onReject?: () => void;
   selected: boolean;
   slots: TagPillSlots;
 }
 
-function TagPillBody({ label, onReject, selected, slots }: TagPillBodyProps) {
+function TagPillBody({ label, selected, slots }: TagPillBodyProps) {
   return (
     <div className="flex min-w-0 items-center justify-center gap-0 sm:gap-0.5">
       <div
@@ -201,24 +215,26 @@ function TagPillBody({ label, onReject, selected, slots }: TagPillBodyProps) {
           "flex h-3.5 items-center justify-center overflow-visible transition-all duration-200 ease-out sm:h-4",
           slots.right,
         )}
-      >
-        {onReject && !selected && <RejectTagButton onReject={onReject} />}
-      </div>
+      />
     </div>
   );
 }
 
-function RejectTagButton({ onReject }: { onReject: () => void }) {
+function RejectTagButton({
+  label,
+  onReject,
+}: {
+  label: string;
+  onReject: () => void;
+}) {
   return (
     <Button
       type="button"
       variant="ghost"
       size="icon-xs"
-      onClick={(e) => {
-        e.stopPropagation();
-        onReject();
-      }}
-      className="group/dismiss size-3.5 rounded-full p-0 hover:bg-slate-muted/10 sm:size-4"
+      aria-label={`Dismiss ${label}`}
+      onClick={onReject}
+      className="group/dismiss absolute top-1/2 right-0 z-10 size-3.5 -translate-y-1/2 rounded-full p-0 hover:bg-slate-muted/10 sm:size-4 [@media(pointer:coarse)]:size-11"
     >
       <X
         className="text-slate-muted/60 transition-colors group-hover/dismiss:text-slate-muted"

@@ -68,7 +68,7 @@ function AppearanceOption({
       aria-pressed={isActive}
       onClick={onClick}
       className={cn(
-        "flex h-11 items-center justify-center gap-1.5 rounded-full px-2 font-black text-xs transition-all duration-150 md:h-7",
+        "flex h-11 items-center justify-center gap-1.5 rounded-full px-2 font-black text-xs transition-all duration-150 [@media(pointer:fine)]:h-7",
         isActive
           ? "bg-primary text-primary-foreground shadow-primary/20 shadow-sm"
           : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",

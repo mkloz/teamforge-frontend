@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useLayoutEffect, useRef } from "react";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { cn } from "@/shared/lib/utils";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
@@ -29,11 +29,47 @@ export function SettingsPageContent({
   const activeSectionMeta = getSettingsSectionMeta(activeSection);
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const shouldRenderDetail = !isMobile || isMobileDetailOpen;
+  const activeSectionLinkRef = useRef<HTMLAnchorElement | null>(null);
+  const mobileBackButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousActiveSectionRef = useRef(activeSection);
+  const previousIsMobileRef = useRef(false);
+  const previousMobileDetailOpenRef = useRef(false);
+
+  useLayoutEffect(() => {
+    const didSectionChange = previousActiveSectionRef.current !== activeSection;
+    const didEnterMobileLayout = isMobile && !previousIsMobileRef.current;
+    const wasMobileDetailOpen = previousMobileDetailOpenRef.current;
+
+    previousActiveSectionRef.current = activeSection;
+    previousIsMobileRef.current = isMobile;
+    previousMobileDetailOpenRef.current = isMobileDetailOpen;
+
+    if (!isMobile) {
+      return undefined;
+    }
+
+    const shouldFocusMobileDetail =
+      isMobileDetailOpen &&
+      (!wasMobileDetailOpen || didSectionChange || didEnterMobileLayout);
+    const focusTarget = shouldFocusMobileDetail
+      ? mobileBackButtonRef.current
+      : wasMobileDetailOpen
+        ? activeSectionLinkRef.current
+        : null;
+
+    if (!focusTarget) {
+      return undefined;
+    }
+
+    focusTarget.focus({ preventScroll: true });
+    return undefined;
+  }, [activeSection, isMobile, isMobileDetailOpen]);
 
   return (
     <div className="mx-auto grid w-full max-w-6xl gap-3 px-4 py-5 md:px-8 lg:grid-cols-[18rem_minmax(0,56rem)] lg:gap-6 lg:py-10 xl:gap-8">
       <SettingsSidebar
         activeSection={activeSection}
+        activeSectionLinkRef={activeSectionLinkRef}
         isMobileDetailOpen={isMobileDetailOpen}
         isSigningOut={isSigningOut}
         onSectionSelect={onSectionSelect}
@@ -50,6 +86,7 @@ export function SettingsPageContent({
           <>
             <SettingsDetailHeader
               activeSectionMeta={activeSectionMeta}
+              mobileBackButtonRef={mobileBackButtonRef}
               onMobileBack={onMobileBack}
             />
             {children}

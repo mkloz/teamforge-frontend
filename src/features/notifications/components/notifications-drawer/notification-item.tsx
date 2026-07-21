@@ -275,8 +275,8 @@ function NotificationSource({
   const actionLabel = item.isRead ? "Mark as unread" : "Mark as read";
 
   return (
-    <span className="relative mt-4 mr-3 ml-5 size-10 shrink-0">
-      <span className="block transition-opacity duration-150 lg:group-hover:opacity-0 lg:group-focus-within:opacity-0">
+    <span className="relative mt-4 mr-3 ml-5 size-11 shrink-0 [@media(pointer:fine)]:size-10">
+      <span className="flex size-full items-center justify-center transition-opacity duration-150 lg:group-hover:opacity-0 lg:group-focus-within:opacity-0 lg:[@media(pointer:coarse)]:opacity-0">
         <NotificationSourceVisual
           avatarBadgeTone={avatarBadgeTone}
           icon={Icon}
@@ -298,7 +298,7 @@ function NotificationSource({
                 ? `Reconnect to ${actionLabel.toLowerCase()}.`
                 : actionLabel
             }
-            className="absolute inset-0 hidden size-10 rounded-md bg-canvas/95 p-0 opacity-0 shadow-sm transition-opacity duration-150 lg:inline-flex lg:group-hover:opacity-100 lg:group-focus-within:opacity-100"
+            className="absolute inset-0 hidden size-11 rounded-md bg-canvas/95 p-0 opacity-0 shadow-sm transition-opacity duration-150 lg:inline-flex lg:group-hover:opacity-100 lg:group-focus-within:opacity-100 lg:[@media(pointer:coarse)]:opacity-100 [@media(pointer:fine)]:size-10"
           >
             <ReadStateIcon
               className="size-4 shrink-0 text-forge-teal"

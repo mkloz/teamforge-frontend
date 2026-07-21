@@ -25,7 +25,7 @@ export function AttentionQueueItemActions({
     <div className="flex shrink-0 items-center justify-end gap-1.5">
       <Button
         size="icon"
-        className="size-11 sm:h-9 sm:w-auto sm:px-3"
+        className="size-11 sm:w-auto sm:px-3 [@media(pointer:fine)]:h-9"
         loading={accept.loading}
         disabled={accept.disabled}
         onClick={accept.onClick}
@@ -39,7 +39,7 @@ export function AttentionQueueItemActions({
         type="button"
         variant="destructive"
         size="icon"
-        className="size-11 sm:size-9"
+        className="size-11 [@media(pointer:fine)]:size-9"
         loading={decline.loading}
         disabled={decline.disabled}
         onClick={decline.onClick}

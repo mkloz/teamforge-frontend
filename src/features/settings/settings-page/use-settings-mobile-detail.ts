@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 
 interface UseSettingsMobileDetailOptions {
+  activeSection: SettingsSection;
   currentLocation: {
     searchStr: string;
   };
 }
 
 export function useSettingsMobileDetail({
+  activeSection,
   currentLocation,
 }: UseSettingsMobileDetailOptions) {
   const hasExplicitSettingsSection = new URLSearchParams(
@@ -15,10 +18,28 @@ export function useSettingsMobileDetail({
   const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(
     hasExplicitSettingsSection,
   );
+  const pendingSidebarSectionRef = useRef<SettingsSection | null>(null);
+
+  useEffect(() => {
+    const pendingSidebarSection = pendingSidebarSectionRef.current;
+    pendingSidebarSectionRef.current = null;
+
+    if (pendingSidebarSection === activeSection) {
+      return;
+    }
+
+    setIsMobileDetailOpen(hasExplicitSettingsSection);
+  }, [activeSection, hasExplicitSettingsSection]);
 
   return {
-    closeMobileDetail: () => setIsMobileDetailOpen(false),
+    closeMobileDetail: () => {
+      pendingSidebarSectionRef.current = null;
+      setIsMobileDetailOpen(false);
+    },
     isMobileDetailOpen,
-    openMobileDetail: () => setIsMobileDetailOpen(true),
+    openMobileDetail: (section: SettingsSection) => {
+      pendingSidebarSectionRef.current = section;
+      setIsMobileDetailOpen(true);
+    },
   };
 }

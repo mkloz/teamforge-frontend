@@ -70,7 +70,7 @@ export function NotificationsDrawerHeader({
           size="icon"
           onClick={onClose}
           aria-label="Close notifications"
-          className="size-10 p-0"
+          className="size-11 p-0 [@media(pointer:fine)]:size-10"
         >
           <X className="size-5 shrink-0" strokeWidth={2} aria-hidden="true" />
         </Button>

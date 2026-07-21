@@ -35,7 +35,7 @@ export function NotificationsListHeaderActions({
             disabled={!isOnline || count === 0 || isMarkingAllRead}
             loading={isMarkingAllRead}
             aria-label="Mark all notifications as read"
-            className="size-10 p-0"
+            className="size-11 p-0 [@media(pointer:fine)]:size-10"
           >
             <CheckCheck className="size-4 shrink-0" aria-hidden="true" />
           </Button>
@@ -51,7 +51,7 @@ export function NotificationsListHeaderActions({
             disabled={!isOnline || isRefreshing}
             loading={isRefreshing}
             aria-label="Refresh notifications"
-            className="size-10 p-0"
+            className="size-11 p-0 [@media(pointer:fine)]:size-10"
           >
             <RefreshCw className="size-4 shrink-0" aria-hidden="true" />
           </Button>
