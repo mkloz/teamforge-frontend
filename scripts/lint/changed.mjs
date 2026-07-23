@@ -335,6 +335,14 @@ function hasExtension(filePath, extensions) {
  * @returns {CommandSpec} Spawn-ready command.
  */
 function resolveCommand(commandName) {
+  if (commandName === "node") {
+    return {
+      argsPrefix: [],
+      command: process.execPath,
+      shell: false,
+    };
+  }
+
   const packageBinPath = PACKAGE_BIN_PATHS[commandName];
 
   if (packageBinPath) {

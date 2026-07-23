@@ -17,6 +17,7 @@ export function NotificationsBellTrigger({
   onClick,
 }: NotificationsBellTriggerProps) {
   const { count } = useUnreadNotificationCount();
+  const visibleCount = count > 9 ? "9+" : count;
 
   return (
     <Tooltip>
@@ -26,7 +27,7 @@ export function NotificationsBellTrigger({
           size="icon"
           onClick={onClick}
           aria-label={
-            count > 0 ? `Notifications, ${count} unread` : "Notifications"
+            count > 0 ? `${visibleCount} unread notifications` : "Notifications"
           }
           className={cn(
             "relative size-10 shrink-0 rounded-lg",

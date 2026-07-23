@@ -181,9 +181,9 @@ function SavedMessagesListItemContent({
     <div className="flex min-w-0 flex-1 flex-col justify-center">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          <h3 className="min-w-0 truncate font-bold text-ink/90 text-sm tracking-tight transition-colors group-hover/item:text-ink">
+          <p className="min-w-0 truncate font-bold text-ink/90 text-sm tracking-tight transition-colors group-hover/item:text-ink">
             {SAVED_MESSAGES_TITLE}
-          </h3>
+          </p>
           <StatusPill tone="teal" size="signature" surface="soft">
             Private
           </StatusPill>

@@ -3,7 +3,7 @@ import { INSTALL_DEVICE_SWITCH_OPTIONS } from "@/features/download/data/download
 import type { SelectedDevice } from "@/features/download/download-page-view-state";
 
 const INSTALL_DEVICE_SWITCH_BUTTON_CLASS =
-  "inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+  "inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:text-secondary-foreground";
 
 interface InstallDeviceSwitchProps {
   onSelectedDeviceChange: (value: SelectedDevice) => void;

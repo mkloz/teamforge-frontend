@@ -26,9 +26,9 @@ export function FilterChipItem({
       value={value}
       aria-label={ariaLabel ?? label}
       className={cn(
-        "group/chip relative h-8 w-auto min-w-fit snap-start rounded-full px-3 md:h-7",
+        "group/chip relative h-8 w-auto min-w-fit snap-start rounded-full px-2 md:h-7",
         "aspect-auto whitespace-nowrap",
-        "inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 border font-bold text-xs leading-none outline-none",
+        "inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1 border font-bold text-xs leading-none outline-none",
         "transition-all duration-150 ease-out",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1",
         "disabled:cursor-not-allowed disabled:opacity-50",

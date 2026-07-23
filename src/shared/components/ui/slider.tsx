@@ -18,14 +18,22 @@ function getThumbKeys(count: number) {
   );
 }
 
+interface SliderProps
+  extends Omit<ComponentProps<typeof SliderPrimitive.Root>, "aria-label"> {
+  "aria-label"?: string;
+  thumbAriaLabels?: readonly string[];
+}
+
 function Slider({
+  "aria-label": ariaLabel,
   className,
   defaultValue,
+  thumbAriaLabels,
   value,
   min = 0,
   max = 100,
   ...props
-}: ComponentProps<typeof SliderPrimitive.Root>) {
+}: SliderProps) {
   const values = Array.isArray(value)
     ? value
     : Array.isArray(defaultValue)
@@ -55,15 +63,53 @@ function Slider({
           className="absolute h-full bg-primary"
         />
       </SliderPrimitive.Track>
-      {thumbKeys.map((thumbKey) => (
+      {thumbKeys.map((thumbKey, index) => (
         <SliderPrimitive.Thumb
           key={`slider-thumb-${thumbKey}`}
+          aria-label={getThumbAriaLabel({
+            ariaLabel,
+            index,
+            thumbAriaLabels,
+            thumbCount: thumbKeys.length,
+          })}
           data-slot="slider-thumb"
           className="block size-5 shrink-0 cursor-grab rounded-full border border-primary bg-background shadow-sm ring-ring/50 transition-all hover:ring-4 focus-visible:outline-none focus-visible:ring-4 active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50"
         />
       ))}
     </SliderPrimitive.Root>
   );
+}
+
+function getThumbAriaLabel({
+  ariaLabel,
+  index,
+  thumbAriaLabels,
+  thumbCount,
+}: {
+  ariaLabel?: string;
+  index: number;
+  thumbAriaLabels?: readonly string[];
+  thumbCount: number;
+}) {
+  const explicitLabel = thumbAriaLabels?.[index];
+
+  if (explicitLabel) {
+    return explicitLabel;
+  }
+
+  if (!ariaLabel || thumbCount === 1) {
+    return ariaLabel;
+  }
+
+  if (index === 0) {
+    return `${ariaLabel} minimum`;
+  }
+
+  if (index === thumbCount - 1) {
+    return `${ariaLabel} maximum`;
+  }
+
+  return `${ariaLabel} value ${index + 1}`;
 }
 
 export { Slider };

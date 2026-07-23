@@ -129,7 +129,7 @@ const PLAYWRIGHT_ROUTE_CONTRACTS: Record<string, PlaywrightAuditRoute> = {
       },
       {
         kind: "text",
-        name: "Open groups ranked by fit, timing, and available seats.",
+        name: "Browse open groups by activity, date, location, and available seats.",
         visibility: "attached",
       },
     ],
@@ -144,7 +144,7 @@ const PLAYWRIGHT_ROUTE_CONTRACTS: Record<string, PlaywrightAuditRoute> = {
       },
       {
         kind: "role",
-        name: "The Pitch",
+        name: "About this group",
         role: "region",
         visibility: "attached",
       },
@@ -214,7 +214,7 @@ const PLAYWRIGHT_ROUTE_CONTRACTS: Record<string, PlaywrightAuditRoute> = {
       {
         kind: "role",
         level: 2,
-        name: "Make your profile feel like you",
+        name: "Update your profile details",
         role: "heading",
         visibility: "attached",
       },

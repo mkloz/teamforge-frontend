@@ -2,6 +2,7 @@
 
 import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import {
   assertBaseUrlReachable,
@@ -31,7 +32,9 @@ import {
   resolveAuditRoutes,
 } from "./routes.mjs";
 
-const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
+const playwrightCliPath = fileURLToPath(
+  import.meta.resolve("@playwright/test/cli"),
+);
 const playwrightConfigPath = path.join(
   cwd,
   "test",
@@ -206,9 +209,9 @@ const playwrightRouteSlugSelectors = [
  */
 function runPlaywright({ baseUrl, lanes, outputDir, routeFilePath }) {
   return runCommand(
-    npxCommand,
+    process.execPath,
     [
-      "playwright",
+      playwrightCliPath,
       "test",
       "--config",
       playwrightConfigPath,

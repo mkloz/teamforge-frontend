@@ -8,7 +8,7 @@ type RealtimeConnectHandler = () => void;
 const API_PREFIX_PATTERN = /\/api\/v\d+$/u;
 
 function getApiUrl() {
-  if (!config.apiUrl) {
+  if (!config.apiUrl || import.meta.env.VITE_AUDIT_AUTH_ENABLED === "true") {
     return null;
   }
 

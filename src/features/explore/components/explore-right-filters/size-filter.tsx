@@ -32,6 +32,7 @@ export function SizeFilter() {
           step={1}
           minStepsBetweenThumbs={1}
           aria-label="Group size range"
+          thumbAriaLabels={["Minimum group size", "Maximum group size"]}
         />
         <div className="mt-2 flex justify-between font-semibold text-muted-foreground/70 text-xs">
           <span>Small</span>

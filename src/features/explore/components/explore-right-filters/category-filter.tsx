@@ -44,7 +44,7 @@ export function CategoryFilter() {
             className={cn(
               "h-11 border px-2.5 text-xs transition-colors hover:border-border/90 hover:bg-muted/35 hover:text-foreground active:translate-y-0 lg:h-7",
               active &&
-                "border-forge-teal/35 bg-forge-teal/9 text-forge-teal hover:border-forge-teal/45 hover:bg-forge-teal/12",
+                "border-forge-teal/35 bg-forge-teal/9 text-forge-teal hover:border-forge-teal/45 hover:bg-forge-teal/12 dark:text-secondary-foreground",
             )}
             onClick={() => toggleCategory(cat.id)}
           />

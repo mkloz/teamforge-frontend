@@ -72,7 +72,7 @@ function ConversationTitle({
   title: string;
 }) {
   return (
-    <h3
+    <p
       className={cn(
         "min-w-0 truncate font-bold tracking-tight transition-colors",
         "text-sm",
@@ -80,7 +80,7 @@ function ConversationTitle({
       )}
     >
       {title}
-    </h3>
+    </p>
   );
 }
 

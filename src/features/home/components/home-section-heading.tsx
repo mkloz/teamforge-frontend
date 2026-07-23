@@ -19,7 +19,7 @@ export function HomeSectionHeading({
     <div className="main-action-grid grid min-w-0 gap-x-4 gap-y-1.5">
       <div className="min-w-0">
         {eyebrow ? (
-          <p className="font-bold text-forge-teal text-xs leading-none">
+          <p className="font-bold text-forge-teal text-xs leading-none dark:text-secondary-foreground">
             {eyebrow}
           </p>
         ) : null}

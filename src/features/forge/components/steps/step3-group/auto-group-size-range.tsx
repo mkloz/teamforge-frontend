@@ -27,6 +27,7 @@ export function AutoGroupSizeRange({
         step={1}
         minStepsBetweenThumbs={0}
         value={[minimumGroupSize, maximumGroupSize]}
+        thumbAriaLabels={["Minimum group size", "Maximum preferred group size"]}
         onValueChange={(value) => {
           const nextMinimum = value[0] ?? minimumGroupSize;
           const nextMaximum = value[1] ?? maximumGroupSize;

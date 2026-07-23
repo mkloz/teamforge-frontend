@@ -9,7 +9,7 @@ export function InstallBenefitsSection() {
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <div className="grid gap-10 lg:grid-cols-5 lg:gap-12">
           <div className="lg:col-span-2">
-            <p className="font-semibold text-forge-teal text-xs">
+            <p className="font-semibold text-forge-teal text-xs dark:text-secondary-foreground">
               Why install it
             </p>
             <h2
@@ -100,7 +100,7 @@ function CapabilityTile({ capability, index, total }: CapabilityTileProps) {
           iconClassName="size-5.5"
         />
         <span
-          className="font-extrabold text-3xl text-slate-muted/30 leading-none"
+          className="font-extrabold text-3xl text-slate-muted/50 leading-none dark:text-muted-foreground/55"
           aria-hidden="true"
         >
           {String(index + 1).padStart(2, "0")}

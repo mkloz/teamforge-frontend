@@ -26,7 +26,9 @@ export function NavbarBrand({ isLandingPage }: NavbarBrandProps) {
       <TeamForgeLogo className="size-8" showBackground={false} />
       <span className="font-sans font-semibold text-lg tracking-tight">
         <span className="text-white">Team</span>
-        <span className="text-forge-teal">Forge</span>
+        <span className="text-forge-teal dark:text-secondary-foreground">
+          Forge
+        </span>
       </span>
     </Link>
   );

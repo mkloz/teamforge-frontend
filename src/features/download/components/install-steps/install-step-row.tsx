@@ -40,7 +40,7 @@ export function InstallStep({ index, step }: InstallStepProps) {
           {step.body}
         </p>
         {step.tip && (
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-forge-teal/8 px-3 py-1.5 font-medium text-forge-teal text-sm">
+          <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-forge-teal/8 px-3 py-1.5 font-medium text-forge-teal text-sm dark:text-secondary-foreground">
             {step.tip}
           </p>
         )}

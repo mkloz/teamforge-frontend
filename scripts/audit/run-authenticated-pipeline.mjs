@@ -364,6 +364,8 @@ async function runAuditBuild(browserApiUrl) {
       ...process.env,
       VITE_AUDIT_AUTH_ENABLED: "true",
       VITE_API_URL: browserApiUrl,
+      VITE_GOOGLE_CLIENT_ID: "",
+      VITE_GOOGLE_MAPS_API_KEY: "",
     },
     label: "npm run build",
   });

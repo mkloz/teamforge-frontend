@@ -244,7 +244,9 @@ export function PwaRuntime() {
   useEffect(() => {
     const unregisterInstallPromptCapture = registerPwaInstallPromptCapture();
 
-    registerPwaServiceWorker();
+    if (import.meta.env.VITE_AUDIT_AUTH_ENABLED !== "true") {
+      registerPwaServiceWorker();
+    }
 
     return unregisterInstallPromptCapture;
   }, []);

@@ -85,15 +85,15 @@ export function FilterHeader({
   return (
     <nav
       className={cn(
-        "sticky top-0 z-20 border-border/60 border-b px-3 pt-3 pb-2",
-        "flex items-center gap-2 bg-canvas/85 backdrop-blur-md",
+        "sticky top-0 z-20 border-border/60 border-b px-2 pt-3 pb-2",
+        "flex items-center gap-1 bg-canvas/85 backdrop-blur-md",
       )}
     >
       <RadioGroup
         value={activeFilter}
         onValueChange={handleFilterChange}
         aria-label="Filter conversations"
-        className="scrollbar-hide flex min-w-0 flex-1 snap-x scroll-px-3 gap-1.5 overflow-x-auto pt-1.5 pr-1 pb-2 outline-none"
+        className="scrollbar-hide flex min-w-0 flex-1 snap-x scroll-px-2 gap-1 overflow-x-auto pt-1.5 pr-1 pb-2 outline-none"
       >
         {visibleFilters.map(({ key, label }) => {
           const badge = getBadgeCount(key, counts);
@@ -112,7 +112,7 @@ export function FilterHeader({
         })}
       </RadioGroup>
 
-      <div className="flex shrink-0 items-center border-border/40 border-l pl-2">
+      <div className="flex shrink-0 items-center border-border/40 border-l pl-1">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -148,7 +148,7 @@ function getFilterAriaLabel(label: string, count: number | null) {
     return label;
   }
 
-  return `${label}, ${count} unread`;
+  return `${label} ${count} unread`;
 }
 
 function getMobileFilterOrderClass(key: FilterChip) {
