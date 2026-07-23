@@ -211,6 +211,11 @@ export class ForgeCommands {
         forgeResult: "SEARCHING",
         participants: [],
         activityId: existingActivityId ?? activeRequest.data.activity.id,
+        autoForgeRequest: {
+          id: activeRequest.data.id,
+          lifecycle: activeRequest.data.lifecycle,
+          revision: activeRequest.data.revision,
+        },
         groupId: null,
         chatId: null,
         planId: null,
@@ -258,6 +263,11 @@ export class ForgeCommands {
       forgeResult: "SEARCHING",
       participants: [],
       activityId,
+      autoForgeRequest: {
+        id: requestResult.data.id,
+        lifecycle: requestResult.data.lifecycle,
+        revision: requestResult.data.revision,
+      },
       groupId: null,
       chatId: null,
       planId: null,

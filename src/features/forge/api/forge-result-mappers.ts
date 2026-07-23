@@ -6,6 +6,7 @@ type ForgeRequestIds = ForgeExecutionResult["requestIds"];
 
 interface FailedForgeResultOverrides {
   activityId?: string | null;
+  autoForgeRequest?: ForgeExecutionResult["autoForgeRequest"];
   groupId?: string | null;
   chatId?: string | null;
   planId?: string | null;
@@ -14,6 +15,7 @@ interface FailedForgeResultOverrides {
 
 interface SuccessfulForgeResultInput {
   activityId: string;
+  autoForgeRequest?: ForgeExecutionResult["autoForgeRequest"];
   chatId: string;
   currentUserId: string;
   group: GroupApi;
@@ -23,6 +25,7 @@ interface SuccessfulForgeResultInput {
 
 export function buildFailedForgeResult({
   activityId = null,
+  autoForgeRequest = null,
   chatId = null,
   groupId = null,
   planId = null,
@@ -32,6 +35,7 @@ export function buildFailedForgeResult({
     forgeResult: "FAILED",
     participants: [],
     activityId,
+    autoForgeRequest,
     groupId,
     chatId,
     planId,
@@ -51,6 +55,7 @@ function getFailedForgeRequestIds(requestIds: ForgeRequestIds | undefined) {
 
 export function buildSuccessfulForgeResult({
   activityId,
+  autoForgeRequest = null,
   chatId,
   currentUserId,
   group,
@@ -61,6 +66,7 @@ export function buildSuccessfulForgeResult({
     forgeResult: "SUCCESS",
     participants: mapGroupToParticipants(group, currentUserId),
     activityId,
+    autoForgeRequest,
     groupId: group.id,
     chatId,
     planId,

@@ -42,6 +42,7 @@ interface UseForgeWizardOptions {
   syncTargets: (targets: {
     activityId?: string | null;
     groupId?: string | null;
+    requestId?: string | null;
   }) => void;
   enterGroupHub: (groupId: string) => Promise<void>;
 }
@@ -97,6 +98,7 @@ export function useForgeWizard({
   const { stepRef } = useForgeWizardRouteSync({
     dispatch,
     consumeLaunch,
+    enterGroupHub,
     routeActivityId,
     routeGroupId,
     routeIdea,
@@ -201,6 +203,7 @@ export function useForgeWizard({
     syncTargets({
       activityId: null,
       groupId: null,
+      requestId: null,
     });
     syncStep(4, { history: "push" });
   }

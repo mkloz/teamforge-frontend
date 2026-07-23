@@ -16,6 +16,7 @@ interface ForgeResultSideEffectOptions {
   syncTargets: (targets: {
     activityId?: string | null;
     groupId?: string | null;
+    requestId?: string | null;
   }) => void;
 }
 
@@ -38,6 +39,7 @@ export function applyForgeExecutionResult(
     result: result.forgeResult,
     participants: result.participants,
     activityId: result.activityId,
+    autoForgeRequest: result.autoForgeRequest,
     groupId: result.groupId,
     chatId: result.chatId,
     planId: result.planId,
@@ -46,6 +48,7 @@ export function applyForgeExecutionResult(
   syncTargets({
     activityId: result.activityId,
     groupId: result.groupId,
+    requestId: result.autoForgeRequest?.id ?? null,
   });
   syncStep(targetStep, { history: "push" });
   trackMutationOutcome(mutationName, completed ? "success" : "error", {
@@ -77,6 +80,7 @@ export function applyForgeExecutionFailure(
     result: "FAILED",
     participants: [],
     activityId: null,
+    autoForgeRequest: null,
     groupId: null,
     chatId: null,
     planId: null,
@@ -84,6 +88,7 @@ export function applyForgeExecutionFailure(
   syncTargets({
     activityId: null,
     groupId: null,
+    requestId: null,
   });
   syncStep(5, { history: "push" });
 }

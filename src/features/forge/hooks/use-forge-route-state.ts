@@ -141,6 +141,7 @@ export function useForgeRouteState() {
   function setForgeTargets(targets: {
     activityId?: string | null;
     groupId?: string | null;
+    requestId?: string | null;
   }) {
     void setRouteState(getForgeTargetsRouteState(targets), {
       history: "replace",
@@ -326,11 +327,12 @@ function getConsumedLaunchRouteState(resetStep = false) {
 function getForgeTargetsRouteState(targets: {
   activityId?: string | null;
   groupId?: string | null;
+  requestId?: string | null;
 }) {
   return {
     activityId: targets.activityId ?? null,
     groupId: targets.groupId ?? null,
-    requestId: null,
+    requestId: targets.requestId ?? null,
   };
 }
 

@@ -24,10 +24,11 @@ export function buildAutoForgeRequestWizardDraft(
 ): ForgeWizardData {
   const initial = createInitialForgeWizardState();
   const schedule = getLocalSchedule(request.plan.dateTime);
+  const isSearching = request.lifecycle === "SEARCHING";
 
   return {
     ...initial,
-    step: 3,
+    step: isSearching ? 5 : 3,
     selectedActivity: request.activity.title,
     planCategory: request.plan.category,
     planName: request.plan.title,
@@ -52,6 +53,7 @@ export function buildAutoForgeRequestWizardDraft(
     autoForgeRequestId: request.id,
     autoForgeRequestRevision: request.revision,
     autoForgeRequestLifecycle: request.lifecycle,
+    forgeResult: isSearching ? "SEARCHING" : "IDLE",
   };
 }
 

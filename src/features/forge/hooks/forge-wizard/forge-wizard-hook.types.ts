@@ -18,6 +18,7 @@ export type SetForgeWizardField = <Field extends ForgeWizardField>(
 export interface ForgeWizardRouteSyncOptions {
   consumeLaunch: (options?: { resetStep?: boolean }) => void;
   dispatch: ForgeWizardDispatch;
+  enterGroupHub: (groupId: string) => Promise<void>;
   resetInvalidLaunch: () => void;
   routeActivityId: string | null;
   routeGroupId: string | null;
@@ -29,6 +30,7 @@ export interface ForgeWizardRouteSyncOptions {
   syncTargets: (targets: {
     activityId?: string | null;
     groupId?: string | null;
+    requestId?: string | null;
   }) => void;
 }
 

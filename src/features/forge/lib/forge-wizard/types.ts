@@ -133,6 +133,10 @@ export type ForgeWizardAction =
       result: ForgeResult;
       participants: ForgeParticipant[];
       activityId: string | null;
+      autoForgeRequest?: Pick<
+        AutoForgeRequest,
+        "id" | "lifecycle" | "revision"
+      > | null;
       groupId: string | null;
       chatId: string | null;
       planId: string | null;

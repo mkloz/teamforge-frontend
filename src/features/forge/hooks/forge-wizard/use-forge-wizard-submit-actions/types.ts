@@ -19,5 +19,6 @@ export interface UseForgeWizardSubmitActionsOptions {
   syncTargets: (targets: {
     activityId?: string | null;
     groupId?: string | null;
+    requestId?: string | null;
   }) => void;
 }

@@ -2,6 +2,7 @@ import type {
   ForgeParticipant,
   ForgeResult,
 } from "@/features/forge/lib/forge-contract";
+import type { AutoForgeRequest } from "@/features/forge/schemas/auto-forge-request.schema";
 
 export type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 
@@ -12,6 +13,10 @@ export interface ForgeExecutionResult {
   groupId: string | null;
   chatId: string | null;
   planId: string | null;
+  autoForgeRequest: Pick<
+    AutoForgeRequest,
+    "id" | "lifecycle" | "revision"
+  > | null;
   requestIds: {
     autoForgeRequest: string | null;
     createActivity: string | null;

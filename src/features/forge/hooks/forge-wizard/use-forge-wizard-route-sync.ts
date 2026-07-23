@@ -41,6 +41,7 @@ function getRouteStepSyncState(
 export function useForgeWizardRouteSync({
   consumeLaunch,
   dispatch,
+  enterGroupHub,
   resetInvalidLaunch,
   routeActivityId,
   routeGroupId,
@@ -57,6 +58,7 @@ export function useForgeWizardRouteSync({
   const groupIdRef = useRef(state.groupId);
   const consumedLaunchTemplateIdRef = useRef(state.appliedTemplateId);
   const ignoredLaunchRouteStepRef = useRef(false);
+  const recoveredGroupIdRef = useRef<string | null>(null);
   const forgeReadyRef = useRef(
     getForgeReadySnapshot(state.forgeResult, state.participants.length),
   );
@@ -147,11 +149,20 @@ export function useForgeWizardRouteSync({
       forgeReadyRef.current,
     );
 
+    if (shouldResetTargets && routeGroupId) {
+      if (recoveredGroupIdRef.current !== routeGroupId) {
+        recoveredGroupIdRef.current = routeGroupId;
+        void enterGroupHub(routeGroupId);
+      }
+      return;
+    }
+
     if (shouldResetTargets) {
       syncStep(4, { history: "replace" });
       syncTargets({
         activityId: null,
         groupId: null,
+        requestId: null,
       });
     }
 
@@ -162,7 +173,7 @@ export function useForgeWizardRouteSync({
         navDirection: nextStep > stepRef.current ? "forward" : "back",
       });
     }
-  }, [dispatch, routeStep, syncStep, syncTargets]);
+  }, [dispatch, enterGroupHub, routeGroupId, routeStep, syncStep, syncTargets]);
 
   useEffect(() => {
     if (routeActivityId !== activityIdRef.current) {
