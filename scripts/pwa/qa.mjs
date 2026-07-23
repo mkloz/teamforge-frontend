@@ -948,7 +948,7 @@ function validateDerivedRealtimeUrls() {
   addCheck(
     "Deploy Guards",
     "Production realtime namespace URL",
-    productionRealtimeUrl === "https://api.mkloz.com/realtime",
+    productionRealtimeUrl === "https://arm-api.mkloz.com/realtime",
     `Production realtime namespace resolves to ${productionRealtimeUrl}.`,
   );
 }
@@ -1983,8 +1983,8 @@ async function validateDownloadRouteCopy({
     addCheck(
       "Route",
       "Diagnostics copy",
-      combinedDiagnosticsCode.includes("PWA diagnostics") ||
-        combinedDownloadCode.includes("PWA diagnostics"),
+      combinedDiagnosticsCode.includes("Installation checks") ||
+        combinedDownloadCode.includes("Installation checks"),
       diagnosticsChunks.length > 0
         ? `Built diagnostics chunk ${diagnosticsChunks.join(", ")} includes the diagnostics panel.`
         : "Built download chunk should include or lazy-load the diagnostics panel.",
