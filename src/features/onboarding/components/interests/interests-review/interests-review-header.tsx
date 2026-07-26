@@ -11,9 +11,6 @@ export function InterestsReviewHeader({
   return (
     <div className="flex w-full items-center justify-between">
       <div className="pt-4">
-        <p className="mb-1 font-bold font-sans text-forge-teal text-xs">
-          Review
-        </p>
         <h2 className="font-extrabold font-sans text-2xl text-ink">
           Your interests
         </h2>

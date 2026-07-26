@@ -54,13 +54,9 @@ function getFitSectionState(detail: GroupPlanDetail): FitSectionState {
 
 function EmptyFitSection() {
   return (
-    <Section
-      heading="Group fit is not available yet"
-      description="A group fit summary is not available yet."
-      headingId="fit-section-heading"
-    >
+    <Section heading="Group fit unavailable" headingId="fit-section-heading">
       <p className="text-muted-foreground text-sm leading-relaxed">
-        Review the plan and current members for now.
+        Review the plan and members instead.
       </p>
     </Section>
   );

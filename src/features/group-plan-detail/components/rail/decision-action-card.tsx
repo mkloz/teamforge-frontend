@@ -3,12 +3,9 @@ import { lazy, Suspense, useState } from "react";
 import { GroupPlanActionButton } from "@/features/group-plan-detail/components/group-plan-action-button";
 import { RailCard } from "@/features/group-plan-detail/components/rail/rail-card";
 import type { useGroupPlanActionState } from "@/features/group-plan-detail/hooks/use-group-plan-action-state";
-import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
-import { getSeatsLabel } from "@/features/group-plan-detail/lib/group-plan-detail-formatters";
 import { Button } from "@/shared/components/ui/button";
 
 interface DecisionActionCardProps {
-  detail: GroupPlanDetail;
   action: GroupPlanActionState;
 }
 
@@ -24,15 +21,11 @@ const ActionDialog = lazy(() =>
 
 interface DecisionActionCopy {
   headline: string;
-  seats: string;
-  summary: string;
+  summary: string | null;
 }
 
-export function DecisionActionCard({
-  detail,
-  action,
-}: DecisionActionCardProps) {
-  const copy = getDecisionActionCopy({ action, detail });
+export function DecisionActionCard({ action }: DecisionActionCardProps) {
+  const copy = getDecisionActionCopy(action);
 
   return (
     <RailCard tone="highlight">
@@ -49,10 +42,11 @@ function DecisionActionSummary({ copy }: { copy: DecisionActionCopy }) {
   return (
     <>
       <p className="font-bold text-foreground text-sm">{copy.headline}</p>
-      <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
-        {copy.summary}
-      </p>
-      <p className="mt-3 font-bold text-foreground text-xs">{copy.seats}</p>
+      {copy.summary ? (
+        <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
+          {copy.summary}
+        </p>
+      ) : null}
     </>
   );
 }
@@ -132,17 +126,15 @@ function LeaveGroupConfirmationAction({
   );
 }
 
-function getDecisionActionCopy({
-  action,
-  detail,
-}: {
-  action: GroupPlanActionState;
-  detail: GroupPlanDetail;
-}): DecisionActionCopy {
+function getDecisionActionCopy(
+  action: GroupPlanActionState,
+): DecisionActionCopy {
   return {
     headline: getDecisionActionHeadline(action.mode),
-    seats: getSeatsLabel(detail),
-    summary: action.summary,
+    summary:
+      action.mode === "invited" || action.mode === "member"
+        ? null
+        : action.summary,
   };
 }
 

@@ -15,9 +15,6 @@ export function BlockedUsersSection({
       <div className="flex max-w-2xl items-start gap-3">
         <div className="min-w-0">
           <h2 className="font-bold text-ink text-xl">Blocked users</h2>
-          <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-            See who you have blocked and unblock someone when you are ready.
-          </p>
         </div>
       </div>
 

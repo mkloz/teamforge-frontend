@@ -14,64 +14,43 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
   {
     id: "account",
     label: "Account",
-    description: "Profile details and photo",
-    headline: "Update your profile details",
-    summary:
-      "Keep the basics people see before a group starts: name, photo, city, and a short intro.",
+    headline: "Profile and account",
     icon: UserRound,
   },
   {
     id: "appearance",
     label: "Appearance",
-    description: "Theme and display comfort",
     headline: "Choose how TeamForge looks",
-    summary:
-      "Choose the interface theme that feels easiest to use in your current environment.",
     icon: Palette,
   },
   {
     id: "matching",
     label: "Group fit",
-    description: "Personality, interests, group preferences",
-    headline: "Choose your group preferences",
-    summary:
-      "Adjust the profile details and preferences TeamForge uses when forming activity groups.",
+    headline: "Group preferences",
     icon: SlidersHorizontal,
   },
   {
     id: "privacy",
     label: "Privacy",
-    description: "What other people can see",
-    headline: "Choose what shows on your profile",
-    summary:
-      "Choose whether your age, gender, city, and friends appear. Your personality portrait stays part of your profile.",
+    headline: "Profile privacy",
     icon: Eye,
   },
   {
     id: "security",
     label: "Security",
-    description: "Sign-in, sessions, and recovery",
-    headline: "Keep your account under your control",
-    summary:
-      "Review sign-in details, recover access, and remove sessions you no longer trust.",
+    headline: "Security and access",
     icon: LockKeyhole,
   },
   {
     id: "safety",
     label: "Safety",
-    description: "Reports, account actions, and blocked people",
-    headline: "Manage reports and account safety",
-    summary:
-      "See reports you sent, review any action on your account, and manage people you’ve blocked.",
+    headline: "Reports and account safety",
     icon: Shield,
   },
   {
     id: "notifications",
     label: "Notifications",
-    description: "In-app and email delivery",
-    headline: "Choose which notifications you receive",
-    summary:
-      "Choose the updates that stay in TeamForge and the ones that can also reach your inbox.",
+    headline: "Notification delivery",
     icon: Bell,
   },
 ];

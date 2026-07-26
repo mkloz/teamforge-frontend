@@ -150,9 +150,7 @@ function AttentionQueueView({
     >
       <HomeSectionHeading
         id="attention-queue-heading"
-        eyebrow="Right now"
-        title="Action queue"
-        description="Invites, requests, plans, and check-ins waiting for a decision."
+        title="Needs your attention"
         action={queueSummaryAction}
       />
 

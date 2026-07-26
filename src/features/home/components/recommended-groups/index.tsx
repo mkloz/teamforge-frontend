@@ -67,9 +67,7 @@ function RecommendedGroupsView({
     >
       <HomeSectionHeading
         id="recommended-groups-heading"
-        eyebrow="Discovery"
-        title="Plans worth a look"
-        description="Public groups and plans with a place open."
+        title="Open plans"
         action={
           <Button asChild variant="ghost" size="sm">
             <Link {...buildExploreNavigation()}>
@@ -103,9 +101,6 @@ function RecommendedGroupsView({
           <div className="min-w-0">
             <p className="font-bold text-foreground text-sm">
               Nothing open right now.
-            </p>
-            <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
-              Public groups and open places will appear here.
             </p>
           </div>
         </div>

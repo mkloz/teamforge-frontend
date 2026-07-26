@@ -203,7 +203,6 @@ function GroupPanelContentScrollArea({
             isOnline={panel.isOnline}
             isLeaving={panel.isLeaving}
             leaveGroup={panel.leaveGroup}
-            memberCount={panel.memberCount}
             members={panel.members}
             pendingPlanAction={panel.pendingPlanAction}
             onEditGroup={() => panel.setIsEditOpen(true)}

@@ -12,27 +12,26 @@ interface ForgeProgressBarProps {
 
 interface ForgeProgressStep {
   s: Step;
-  label: string;
 }
 
 const PRE_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
-  { s: 1, label: "Activity" },
-  { s: 2, label: "Template" },
-  { s: 3, label: "Plan" },
-  { s: 4, label: "Group" },
+  { s: 1 },
+  { s: 2 },
+  { s: 3 },
+  { s: 4 },
 ];
 
 const AUTO_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
-  { s: 1, label: "Activity" },
-  { s: 2, label: "Template" },
-  { s: 3, label: "Plan" },
-  { s: 4, label: "Review" },
-  { s: 5, label: "Search state" },
+  { s: 1 },
+  { s: 2 },
+  { s: 3 },
+  { s: 4 },
+  { s: 5 },
 ];
 
 const MANUAL_POST_FORGE_PROGRESS_STEPS: ForgeProgressStep[] = [
-  { s: 6, label: "Details" },
-  { s: 7, label: "Invite" },
+  { s: 6 },
+  { s: 7 },
 ];
 
 function getProgressSteps(
@@ -76,8 +75,6 @@ export function ForgeProgressBar({
   const steps = getProgressSteps(isPreForge, forgeMode);
   const progressValue = getProgressValue(steps, step);
   const progressText = getProgressText(progressValue, steps.length);
-  const activeLabel = steps.find(({ s }) => s === step)?.label;
-
   return (
     <div className={cn("flex items-center justify-between gap-3", className)}>
       <progress
@@ -92,9 +89,6 @@ export function ForgeProgressBar({
         <span className="font-semibold text-muted-foreground">
           {progressValue} of {steps.length}
         </span>
-        {activeLabel ? (
-          <span className="text-muted-foreground/70"> · {activeLabel}</span>
-        ) : null}
       </p>
       <div aria-hidden="true" className="flex shrink-0 items-center gap-1.5">
         {steps.map(({ s }) => {

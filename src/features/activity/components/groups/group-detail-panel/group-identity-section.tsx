@@ -20,8 +20,6 @@ export function GroupIdentitySection({
   isReadOnly = false,
   isOnline = true,
   isSystemManaged = false,
-  memberCount,
-  maxMembers,
   groupId,
   name,
   onEditGroup,
@@ -71,13 +69,7 @@ export function GroupIdentitySection({
         </p>
       ) : null}
 
-      <GroupFactList
-        activity={activity}
-        createdLabel={createdLabel}
-        isReadOnly={isReadOnly}
-        memberCount={memberCount}
-        maxMembers={maxMembers}
-      />
+      <GroupFactList activity={activity} createdLabel={createdLabel} />
 
       <GroupIdentityActions
         activityId={activityId}

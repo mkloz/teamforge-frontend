@@ -1,8 +1,10 @@
+import { RotateCcw } from "lucide-react";
 import { useEffect } from "react";
 import {
   OfflineSettingsNotice,
   PreferenceStatusMessage,
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
+import { Button } from "@/shared/components/ui/button";
 import type { NotificationPreferences } from "@/shared/schemas";
 import { useTheme } from "@/shared/store/theme.store";
 
@@ -16,13 +18,10 @@ import {
   getResetLoadingState,
   getThemeSavingState,
 } from "./appearance-save-state";
-import { AppearanceSectionHeader } from "./appearance-section-header";
 import { getThemeSelectionState } from "./appearance-selection-state";
 import { ColorLayer } from "./color-layer";
 import { ModeLayer } from "./mode-layer";
 import { StyleLayer } from "./style-layer";
-import { getThemeColorSwatches } from "./theme-color-swatches";
-import { ThemeRecipeStrip } from "./theme-recipe-strip";
 
 interface AppearanceSettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;
@@ -106,36 +105,32 @@ export function AppearanceSettingsSection({
 
   return (
     <section className="flex max-w-4xl flex-col gap-7">
-      <AppearanceSectionHeader
-        isResetDisabled={isResetDisabled}
-        isResetLoading={getResetLoadingState({
-          isDefaultTheme: selection.isDefaultTheme,
-          ...savingState,
-        })}
-        onReset={() => {
-          saveThemePreference(DEFAULT_THEME_PREFERENCES);
-        }}
-      />
-
       <PreferenceStatusMessage error={error} />
 
       {!isOnline ? (
         <OfflineSettingsNotice message="Reconnect before changing appearance settings." />
       ) : null}
 
-      <ThemeRecipeStrip
-        appearanceLabel={selection.selectedAppearanceOption.label}
-        appearanceIcon={selection.selectedAppearanceOption.icon}
-        styleLabel={selection.selectedStyleOption.label}
-        styleIcon={selection.selectedStyleOption.icon}
-        colorLabel={selection.selectedColorOption.label}
-        colorSwatches={getThemeColorSwatches(
-          selection.selectedColorOption,
-          isDark,
-        )}
-      />
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          variant="subtle"
+          size="xs"
+          disabled={isResetDisabled}
+          loading={getResetLoadingState({
+            isDefaultTheme: selection.isDefaultTheme,
+            ...savingState,
+          })}
+          onClick={() => {
+            saveThemePreference(DEFAULT_THEME_PREFERENCES);
+          }}
+        >
+          <RotateCcw size={14} strokeWidth={2} aria-hidden="true" />
+          Reset defaults
+        </Button>
+      </div>
 
-      <div className="flex flex-col gap-8 border-border border-t pt-6">
+      <div className="flex flex-col gap-9">
         <ModeLayer
           selectedAppearance={selection.themeAppearance}
           disabled={isDisabled || savingState.isSavingAppearance}

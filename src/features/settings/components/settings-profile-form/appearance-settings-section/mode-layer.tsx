@@ -16,7 +16,6 @@ export function ModeLayer({
 }: ModeLayerProps) {
   return (
     <LayerBlock
-      index="01"
       title="Mode"
       description="Follow your device, or pin one mode for this account."
     >

@@ -66,9 +66,7 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
           <SheetTitle className="font-black text-xl tracking-tight">
             Account
           </SheetTitle>
-          <SheetDescription className="font-medium text-sm">
-            Your profile, preferences, and session.
-          </SheetDescription>
+          <SheetDescription className="sr-only">Account menu</SheetDescription>
         </SheetHeader>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
@@ -94,7 +92,6 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
                 <MenuLinkItemContent
                   icon={UserRound}
                   label={profileLink.label}
-                  description={profileLink.description}
                 />
               </Link>
             </SheetClose>
@@ -102,14 +99,12 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             <MenuLinkItem
               icon={Settings}
               label="Settings"
-              description="All preferences"
               navigation={buildSettingsNavigation()}
             />
             {currentUser?.role === "ADMIN" ? (
               <MenuLinkItem
                 icon={ShieldCheck}
                 label="Admin"
-                description="Moderation and operations"
                 navigation={buildAdminNavigation()}
               />
             ) : null}
@@ -123,31 +118,26 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             <MenuLinkItem
               icon={SlidersHorizontal}
               label="Group preferences"
-              description="Interests and group settings"
               navigation={buildSettingsNavigation("matching")}
             />
             <MenuLinkItem
               icon={Eye}
               label="Privacy"
-              description="Profile visibility"
               navigation={buildSettingsNavigation("privacy")}
             />
             <MenuLinkItem
               icon={Shield}
               label="Safety"
-              description="Reports and account actions"
               navigation={buildSafetyNavigation()}
             />
             <MenuLinkItem
               icon={LockKeyhole}
               label="Security"
-              description="Sessions and recovery"
               navigation={buildSettingsNavigation("security")}
             />
             <MenuLinkItem
               icon={Bell}
               label="Notifications"
-              description="App and email updates"
               navigation={buildSettingsNavigation("notifications")}
             />
           </nav>
@@ -171,7 +161,6 @@ function getUserMenuProfileLink(currentUser: User | undefined) {
     return {
       navigation: buildProfileNavigation(currentUser.id),
       label: "View public profile",
-      description: "How others see you",
       ariaLabel: "View your public profile",
     };
   }
@@ -179,7 +168,6 @@ function getUserMenuProfileLink(currentUser: User | undefined) {
   return {
     navigation: buildProfileNavigation(),
     label: "Profile",
-    description: "Your profile",
     ariaLabel: "Open your profile",
   };
 }

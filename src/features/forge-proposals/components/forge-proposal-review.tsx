@@ -49,9 +49,6 @@ export function ForgeProposalReview({
     >
       <header>
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-semibold text-forge-teal text-xs">
-            Group proposal
-          </p>
           <StatusPill
             icon={proposal.scope === "LOCAL" ? MapPin : Laptop}
             tone="neutral"
@@ -161,27 +158,24 @@ function ProposalDecisionNotice({ proposal }: { proposal: ForgeProposal }) {
     );
   }
 
-  return (
-    <DecisionText
-      title="Review the proposal"
-      description="Check the activity and everyone in the proposed group. No group or shared space has been created yet."
-    />
-  );
+  return <DecisionText title="Nothing is created until everyone accepts." />;
 }
 
 function DecisionText({
   description,
   title,
 }: {
-  description: string;
+  description?: string;
   title: string;
 }) {
   return (
     <div className="max-w-2xl">
       <p className="font-bold text-foreground text-sm">{title}</p>
-      <p className="mt-1 text-pretty text-muted-foreground text-sm leading-relaxed">
-        {description}
-      </p>
+      {description ? (
+        <p className="mt-1 text-pretty text-muted-foreground text-sm leading-relaxed">
+          {description}
+        </p>
+      ) : null}
     </div>
   );
 }

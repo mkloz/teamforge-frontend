@@ -23,7 +23,7 @@ export function HomeHeroView({
   stats,
   viewer,
 }: HomeHeroViewProps) {
-  const { greeting, sub } = getGreeting(viewer.firstName);
+  const greeting = getGreeting(viewer.firstName);
   const heroRef = useRef<HTMLElement | null>(null);
   const { isCompactVisible } = useHomeCollapsibleHero({ ref: heroRef });
   const nextMove = buildHomeNextMove({
@@ -59,7 +59,6 @@ export function HomeHeroView({
           notificationButton={
             notificationButton ?? <HomeHeroNotificationButton />
           }
-          sub={sub}
         />
 
         <HomeHeroNextMovePanel nextMove={nextMove} />

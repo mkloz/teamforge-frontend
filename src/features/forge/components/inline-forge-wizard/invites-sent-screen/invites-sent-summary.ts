@@ -37,9 +37,5 @@ export function getStatusFacts({
       label: "Plan",
       value: planName,
     },
-    {
-      label: "Next",
-      value: isManual ? "Wait for replies" : "Open group workspace",
-    },
   ];
 }

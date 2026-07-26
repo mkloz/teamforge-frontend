@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
-  Gauge,
   RefreshCw,
   ShieldAlert,
   UserRoundCheck,
@@ -27,18 +26,12 @@ export function AdminOverviewQueues() {
         aria-labelledby="admin-review-queues-heading"
         className="grid gap-4"
       >
-        <header className="grid gap-1">
-          <h2
-            id="admin-review-queues-heading"
-            className="font-semibold text-ink text-xl"
-          >
-            Review queues
-          </h2>
-          <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-            Current totals returned by the critical and appeal queues. Each
-            queue links to the cases behind its total.
-          </p>
-        </header>
+        <h2
+          id="admin-review-queues-heading"
+          className="font-semibold text-ink text-xl"
+        >
+          Review queues
+        </h2>
 
         <div className="divide-y divide-border border-border border-y">
           <QueueSummary
@@ -64,32 +57,6 @@ export function AdminOverviewQueues() {
             onRetry={() => void appealsQuery.refetch()}
           />
         </div>
-      </section>
-
-      <section
-        aria-labelledby="admin-system-status-heading"
-        className="grid gap-4 border-border border-t pt-6"
-      >
-        <header className="grid gap-1">
-          <h2
-            id="admin-system-status-heading"
-            className="font-semibold text-ink text-xl"
-          >
-            System status
-          </h2>
-          <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-            Review rollout readiness, worker safeguards, and recorded pilot
-            outcomes in Operations.
-          </p>
-        </header>
-
-        <nav aria-label="Admin operations shortcuts" className="grid">
-          <OperationsLink
-            description="Review pilot readiness and server-owned outcomes."
-            icon={Gauge}
-            label="Open Operations"
-          />
-        </nav>
       </section>
     </div>
   );
@@ -199,39 +166,4 @@ function QueueTotal({
   }
 
   return null;
-}
-
-function OperationsLink({
-  description,
-  icon: Icon,
-  label,
-}: {
-  description: string;
-  icon: LucideIcon;
-  label: string;
-}) {
-  return (
-    <Link
-      {...buildAdminNavigation("operations")}
-      className="group flex items-start gap-3 border-border border-b py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
-    >
-      <Icon
-        className="mt-0.5 size-5 shrink-0 text-primary"
-        strokeWidth={1.5}
-        aria-hidden="true"
-      />
-      <span className="grid min-w-0 flex-1 gap-1">
-        <span className="flex items-center justify-between gap-3 font-semibold text-ink text-sm">
-          {label}
-          <ArrowRight
-            className="size-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5"
-            aria-hidden="true"
-          />
-        </span>
-        <span className="text-pretty text-slate-muted text-xs leading-relaxed">
-          {description}
-        </span>
-      </span>
-    </Link>
-  );
 }

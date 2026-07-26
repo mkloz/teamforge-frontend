@@ -19,7 +19,6 @@ export function PeopleSection({ detail }: PeopleSectionProps) {
   return (
     <Section
       heading="Who you'd be joining"
-      description="See the people already in this group."
       headingId="people-section-heading"
       trailing={
         <p className="font-bold text-muted-foreground text-sm">

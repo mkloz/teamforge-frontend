@@ -6,17 +6,14 @@ const SECTION_NOTES = [
   {
     icon: MousePointer2,
     title: "Start with the activity",
-    detail: "Start with the thing you would actually show up for.",
   },
   {
     icon: CalendarClock,
     title: "Add the plan details",
-    detail: "Add a date, time, and location.",
   },
   {
     icon: MessageCircle,
     title: "Open one room",
-    detail: "One small group forms around the plan, not another list.",
   },
 ] as const;
 
@@ -36,21 +33,13 @@ export function PlanToGroupSection() {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <header className="max-w-2xl lg:col-span-6">
-            <p className="font-bold text-forge-teal text-xs uppercase">
-              How TeamForge works
-            </p>
             <h2
               id="plan-to-group-heading"
-              className="mt-4 text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
+              className="text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
             >
               One plan. One compatible group.
             </h2>
           </header>
-
-          <p className="max-w-xl text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg lg:col-span-5 lg:col-start-8">
-            Choose the activity, add the plan details, and let TeamForge handle
-            the group setup. You get one room for one plan.
-          </p>
         </div>
       </div>
 
@@ -85,7 +74,6 @@ export function PlanToGroupSection() {
           points={SECTION_NOTES}
           listClassName="grid border-white/10 border-b md:grid-cols-3 md:border-t"
           itemClassName="border-white/10 border-t py-6 md:border-t-0 md:border-r md:px-8 md:last:border-r-0 md:last:pr-0 md:first:pl-0"
-          detailClassName="mt-2 max-w-sm font-medium text-sm text-text-dark-secondary leading-relaxed"
         />
       </div>
     </section>

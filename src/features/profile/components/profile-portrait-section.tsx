@@ -1,7 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { BadgeCheck, Compass, Eye, Radar, TriangleAlert } from "lucide-react";
 import { IconTile } from "@/shared/components/ui/icon-tile";
-import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { ProfilePortraitInsight } from "../lib/profile-insights";
 import { ProfileSectionHeading } from "./profile-section-heading";
 
@@ -9,12 +8,6 @@ interface ProfilePortraitSectionProps {
   mode: "self" | "public";
   portrait: ProfilePortraitInsight;
 }
-
-const PROFILE_CONFIDENCE_LABELS = {
-  early: "Early read",
-  high: "Strong read",
-  medium: "Good read",
-} satisfies Record<ProfilePortraitInsight["confidence"], string>;
 
 const DETAIL_ICON_RULES = [
   {
@@ -62,7 +55,6 @@ export function ProfilePortraitSection({
   mode,
   portrait,
 }: ProfilePortraitSectionProps) {
-  const readLabel = getPortraitReadLabel(portrait);
   const visibleDetails = getVisiblePortraitDetails(portrait);
 
   return (
@@ -70,16 +62,7 @@ export function ProfilePortraitSection({
       <div className="grid gap-5 lg:grid-cols-3 lg:items-stretch">
         <div className="flex min-w-0 flex-col gap-5 lg:col-span-2">
           <div className="flex min-w-0 flex-col gap-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <ProfileSectionHeading>Profile sketch</ProfileSectionHeading>
-              <StatusPill
-                tone="neutral"
-                size="xs"
-                className="bg-transparent text-xs"
-              >
-                {readLabel}
-              </StatusPill>
-            </div>
+            <ProfileSectionHeading>Profile sketch</ProfileSectionHeading>
             <h3 className="max-w-3xl font-black text-2xl text-ink leading-tight tracking-tight md:text-3xl">
               {portrait.title}
             </h3>
@@ -112,7 +95,7 @@ function HowYouShowUpCard({
   mode: ProfilePortraitSectionProps["mode"];
 }) {
   const visibleCandidates = getVisibleShowUpCandidates(candidates);
-  const leaderScore = visibleCandidates[0]?.score ?? 0;
+  const leaderScore = candidates[0]?.score ?? 0;
 
   if (visibleCandidates.length === 0) {
     return null;
@@ -122,7 +105,7 @@ function HowYouShowUpCard({
     <div className="flex h-full min-h-64 flex-col rounded-2xl border border-forge-teal/20 bg-forge-teal/8 p-4">
       <div className="flex items-center justify-between gap-3">
         <p className="font-black text-slate-muted text-sm">
-          {mode === "self" ? "How you show up" : "How they show up"}
+          Other profile signals
         </p>
         <Radar className="size-4 text-forge-teal" aria-hidden="true" />
       </div>
@@ -281,14 +264,6 @@ function getCompactShowUpTitle(
   return mode === "self" ? title : title.replace(/^You\b/, "They");
 }
 
-function getPortraitReadLabel(portrait: ProfilePortraitInsight) {
-  if (portrait.mode === "hybrid") {
-    return "Blended read";
-  }
-
-  return PROFILE_CONFIDENCE_LABELS[portrait.confidence];
-}
-
 function getVisiblePortraitDetails(portrait: ProfilePortraitInsight) {
   return portrait.details.slice(0, 3);
 }
@@ -296,7 +271,7 @@ function getVisiblePortraitDetails(portrait: ProfilePortraitInsight) {
 function getVisibleShowUpCandidates(
   candidates: ProfilePortraitInsight["candidates"],
 ) {
-  return candidates.slice(0, 3);
+  return candidates.slice(1, 3);
 }
 
 const SHOW_UP_SEGMENTS = [1, 2, 3, 4, 5, 6];

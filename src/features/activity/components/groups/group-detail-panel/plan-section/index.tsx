@@ -12,6 +12,7 @@ import { getPlanSectionViewState } from "./plan-section-view-state";
 interface PlanSectionProps {
   canManagePlanDirectly?: boolean;
   plan: Plan;
+  groupName?: string;
   currentUserRole?: MemberRole;
   isFocused?: boolean;
   isOnline?: boolean;
@@ -29,6 +30,7 @@ export function PlanSection({
   canManagePlanDirectly,
   currentUserRole = "MEMBER",
   plan,
+  groupName,
   isFocused = false,
   isOnline = true,
   isReadOnly = false,
@@ -41,6 +43,9 @@ export function PlanSection({
 }: PlanSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const viewState = getPlanSectionViewState(plan, isReadOnly);
+  const repeatsGroupName =
+    groupName?.trim().toLocaleLowerCase() ===
+    viewState.displayTitle.trim().toLocaleLowerCase();
 
   useEffect(() => {
     if (!isFocused) {
@@ -78,7 +83,10 @@ export function PlanSection({
 
         <h2
           id="current-plan-title"
-          className="text-balance font-bold text-ink text-xl leading-tight tracking-tight"
+          className={cn(
+            "text-balance font-bold text-ink text-xl leading-tight tracking-tight",
+            repeatsGroupName && "sr-only",
+          )}
         >
           {viewState.displayTitle}
         </h2>

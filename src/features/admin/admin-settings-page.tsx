@@ -8,9 +8,8 @@ export function AdminSettingsPage() {
 
   return (
     <AdminPageShell
-      eyebrow="Moderation settings"
       title="Policy and rollout"
-      description="Review each saved policy version, prepare a draft, and control what can be released. Every change is checked and recorded by the server."
+      description="Every change is validated and recorded by the server."
     >
       <AdminModerationGovernance
         canManage={adminSession.capabilities.manageConfiguration}

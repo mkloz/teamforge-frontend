@@ -10,11 +10,7 @@ export function FailureHero({ description }: FailureHeroProps) {
       <div className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center">
         <ErrorForgeGroupFailedVisual className="h-14 w-auto shrink-0 text-foreground" />
         <div className="min-w-0 flex-1">
-          <p className="font-bold text-spark-amber text-xs">Group not formed</p>
-          <h3 className="mt-1 font-black text-foreground text-lg leading-tight">
-            We could not form this group yet
-          </h3>
-          <p className="mt-1 text-muted-foreground text-xs leading-snug">
+          <p className="text-muted-foreground text-sm leading-snug">
             {description}
           </p>
         </div>

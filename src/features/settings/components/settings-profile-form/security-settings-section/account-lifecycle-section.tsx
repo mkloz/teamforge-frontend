@@ -35,15 +35,19 @@ export function AccountLifecycleSection({
         DELETED: ACCOUNT_DATA_COPY.lifecycle.deleted,
       }[lifecycle.lifecycle]
     : "Checking your account status…";
+  const shouldShowLifecycleDescription =
+    lifecycle !== null && lifecycle.lifecycle !== "ACTIVE";
 
   return (
     <section className="border-border border-t pt-7">
       <div className="flex max-w-2xl flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="font-semibold text-ink text-lg">Account status</h3>
-          <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-            {lifecycleDescription}
-          </p>
+          {shouldShowLifecycleDescription ? (
+            <p className="mt-1 text-slate-muted text-sm leading-relaxed">
+              {lifecycleDescription}
+            </p>
+          ) : null}
         </div>
         <StatusPill
           tone={lifecycle?.lifecycle === "ACTIVE" ? "teal" : "neutral"}

@@ -45,20 +45,12 @@ export function GroupFeelsRightSection() {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <header className="mx-auto max-w-4xl text-center">
-          <p className="font-bold text-forge-teal text-xs uppercase">
-            Why the group feels right
-          </p>
           <h2
             id="group-feels-right-heading"
-            className="mt-4 text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
+            className="text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
           >
             TeamForge considers more than shared interests.
           </h2>
-          <p className="mx-auto mt-6 max-w-3xl text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
-            Shared interests help, but they are not enough. TeamForge also
-            considers social pace, practical fit, and follow-through, so the
-            group has enough common ground to start well.
-          </p>
         </header>
 
         <div className="relative mt-8 mb-6 overflow-hidden border-white/10 border-t md:mt-10">
@@ -84,11 +76,6 @@ export function GroupFeelsRightSection() {
             />
           </picture>
         </div>
-
-        <p className="mx-auto mt-6 text-pretty text-center font-black text-base text-white leading-relaxed">
-          Personality is one part. Shared interests, timing, location, and
-          follow-through also matter.
-        </p>
 
         <LandingFeaturePointList
           points={FIT_POINTS}

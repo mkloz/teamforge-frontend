@@ -62,10 +62,7 @@ export function AccountSettingsSection({
 
       <Form {...form}>
         <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-          <FormGroup
-            title="Name and intro"
-            description="These are the first details people see when they open your profile."
-          >
+          <FormGroup title="Name and intro">
             <ProfileIdentityFields currentUser={currentUser} form={form} />
           </FormGroup>
 
@@ -97,10 +94,7 @@ export function AccountSettingsSection({
             </Notice>
           ) : null}
 
-          <FormGroup
-            title="Personal context"
-            description="Update your age, gender, and city."
-          >
+          <FormGroup title="Personal context">
             <PersonalContextFields
               form={form}
               compatibilityInputsDisabled={compatibilityInputLock.isBlocked}
@@ -109,7 +103,7 @@ export function AccountSettingsSection({
 
           <FormGroup
             title="Area"
-            description="Your city helps nearby groups make sense. Exact coordinates stay private."
+            description="Your exact location stays private."
           >
             <AreaFields
               currentUser={currentUser}

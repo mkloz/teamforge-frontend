@@ -14,7 +14,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 
 interface ProposalStatusStateProps {
   action?: ReactNode;
-  description: string;
+  description?: string;
   icon: typeof Inbox;
   statusMessage?: string;
   title: string;
@@ -42,9 +42,11 @@ function ProposalStatusState({
       >
         {title}
       </h1>
-      <p className="mt-2 max-w-sm text-pretty text-muted-foreground text-sm leading-relaxed">
-        {description}
-      </p>
+      {description ? (
+        <p className="mt-2 max-w-sm text-pretty text-muted-foreground text-sm leading-relaxed">
+          {description}
+        </p>
+      ) : null}
       {statusMessage ? (
         <p
           className="mt-3 max-w-sm text-pretty text-muted-foreground text-sm leading-relaxed"
@@ -76,7 +78,6 @@ export function ForgeProposalExpiredState({ action }: { action?: ReactNode }) {
     <ProposalStatusState
       icon={Clock3}
       title="This proposal has ended"
-      description="The response window has closed. This proposal is no longer available."
       action={action}
     />
   );
@@ -102,7 +103,7 @@ export function ForgeProposalCompleteState({ action }: { action?: ReactNode }) {
     <ProposalStatusState
       icon={UsersRound}
       title="Your group has formed"
-      description="This proposal is complete. Open the group to decide the remaining plan details together."
+      description="Open it to decide the remaining plan details together."
       action={action}
     />
   );

@@ -36,7 +36,7 @@ export function GroupIdentityHeaderCard({
           {displayName}
         </h2>
 
-        {activityTitle ? (
+        {activityTitle && activityTitle.trim() !== displayName.trim() ? (
           <p className="wrap-break-word mt-2 line-clamp-2 font-semibold text-forge-teal text-xs leading-snug">
             {activityTitle}
           </p>

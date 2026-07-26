@@ -21,7 +21,6 @@ export function InviteSuggestionsSection({
   return (
     <Section
       heading="People who may be interested"
-      description="People who are open to invitations and share an interest with this activity."
       headingId="invite-suggestions-heading"
       trailing={
         suggestions.isRefreshing ? (

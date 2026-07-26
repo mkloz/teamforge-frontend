@@ -13,14 +13,10 @@ interface SettingsDetailHeaderProps {
 
 const SETTINGS_DETAIL_HEADER_FALLBACK = {
   headline: "Manage your account",
-  label: "Settings",
-  summary: "Keep your account preferences clear and current.",
 } satisfies SettingsDetailHeaderContent;
 
 interface SettingsDetailHeaderContent {
   headline: string;
-  label: string;
-  summary: string;
 }
 
 export function SettingsDetailHeader({
@@ -47,18 +43,12 @@ export function SettingsDetailHeader({
       </div>
       <div className="flex items-start gap-3">
         <div className="min-w-0">
-          <p className="font-semibold text-slate-muted text-xs">
-            {content.label}
-          </p>
-          <h1 className="mt-2 font-bold text-2xl text-ink leading-tight lg:hidden">
+          <h1 className="font-bold text-2xl text-ink leading-tight lg:hidden">
             {content.headline}
           </h1>
-          <h2 className="mt-2 hidden font-bold text-3xl text-ink leading-tight lg:block">
+          <h2 className="hidden font-bold text-3xl text-ink leading-tight lg:block">
             {content.headline}
           </h2>
-          <p className="mt-3 max-w-2xl text-slate-muted text-sm leading-relaxed">
-            {content.summary}
-          </p>
         </div>
       </div>
     </div>
@@ -74,7 +64,5 @@ function getSettingsDetailHeaderContent(
 
   return {
     headline: activeSectionMeta.headline,
-    label: activeSectionMeta.label,
-    summary: activeSectionMeta.summary,
   };
 }

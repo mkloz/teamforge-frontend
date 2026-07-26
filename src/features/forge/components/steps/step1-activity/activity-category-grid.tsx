@@ -60,13 +60,7 @@ export function ActivityCategoryGrid({
           >
             Choose a category
           </h3>
-          <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
-            Choose the kind of activity you want to plan.
-          </p>
         </div>
-        <p className="shrink-0 font-semibold text-muted-foreground/50 text-xs leading-none">
-          {ACTIVITIES.length} options
-        </p>
       </div>
 
       <div

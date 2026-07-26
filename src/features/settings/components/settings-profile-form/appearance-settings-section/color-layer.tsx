@@ -22,7 +22,7 @@ export function ColorLayer({
   onSelect,
 }: ColorLayerProps) {
   return (
-    <LayerBlock index="03" title="Color" description="Choose a color theme.">
+    <LayerBlock title="Color">
       <ColorTableGrid
         options={COLOR_OPTIONS}
         isDark={isDark}

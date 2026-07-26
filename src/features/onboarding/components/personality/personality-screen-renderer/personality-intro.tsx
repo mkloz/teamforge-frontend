@@ -27,26 +27,16 @@ export function PersonalityIntro({
 
   return (
     <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
-      <p className="mb-3 text-center font-bold font-sans text-forge-teal text-xs">
-        Before the assessment
-      </p>
-
       <h1 className="mb-4 text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight sm:text-display-lg">
         Know what happens to your answers
       </h1>
 
       <div className="text-left">
-        <p className="mb-3 text-pretty font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-base">
-          You will answer questions about how you usually think, feel, and act.
-          TeamForge calculates the result after you finish.
-        </p>
         <p className="mb-6 text-pretty font-sans text-muted-foreground text-xs leading-relaxed">
           The questions come from the public-domain International Personality
           Item Pool. The result is an estimate, not a diagnosis.
         </p>
       </div>
-
-      <div className="mb-6 h-px w-full bg-muted dark:bg-white/10" />
 
       <OnboardingIntroBenefitList
         benefits={benefits}

@@ -108,8 +108,8 @@ export function OperatorWorkerOperationsPage() {
           </p>
         </div>
         <p className="max-w-3xl text-slate-muted text-sm leading-relaxed">
-          Review queue health, pause new work, and requeue failed jobs. These
-          controls do not decide a case or apply an account action.
+          Pause or requeue work; these controls never decide cases or apply
+          account actions.
         </p>
       </header>
 

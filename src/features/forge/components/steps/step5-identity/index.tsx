@@ -63,7 +63,7 @@ export function Step5Identity({
         groupDescription={groupDescription}
         onGroupDescriptionChange={(v) => onGroupDescriptionChange?.(v)}
         selectedActivity={activityTitle}
-        subtitle="Refine the name and description you set earlier."
+        subtitle=""
       />
 
       <PlanPhotoSection

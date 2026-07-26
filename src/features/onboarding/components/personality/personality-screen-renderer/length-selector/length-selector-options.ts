@@ -15,19 +15,15 @@ export const RESOLUTION_SEGMENTS = [0, 1, 2, 3, 4, 5];
 
 const LENGTH_SELECTOR_CONTENT: Record<
   LengthSelectorMode,
-  { eyebrow: string; title: string; description: string }
+  { title: string; description: string }
 > = {
   adjust: {
-    eyebrow: "Assessment length",
     title: "Change assessment length",
-    description:
-      "Choose how much time you want to spend. Your existing answers will be kept.",
+    description: "Your existing answers will be kept.",
   },
   begin: {
-    eyebrow: "Assessment length",
     title: "Choose an assessment length",
-    description:
-      "Choose how much time you want to spend. You can change this later.",
+    description: "You can change this later.",
   },
 };
 

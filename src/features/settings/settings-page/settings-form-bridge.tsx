@@ -24,7 +24,7 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
       <PageErrorState
         className="w-full"
         title="Settings could not load"
-        description="Your account settings could not be refreshed right now."
+        description="Check your connection and try again."
         onRetry={() => profileFormState.refetch()}
       />
     );

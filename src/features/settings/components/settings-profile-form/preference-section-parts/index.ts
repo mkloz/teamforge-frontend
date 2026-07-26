@@ -1,4 +1,3 @@
-export { PreferenceGroup } from "./preference-group";
 export {
   OfflineSettingsNotice,
   PreferenceStatusMessage,

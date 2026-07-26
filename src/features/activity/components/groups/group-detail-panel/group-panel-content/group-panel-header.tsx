@@ -16,9 +16,7 @@ export function GroupPanelHeader({
 }: GroupPanelHeaderProps) {
   return (
     <div className="z-20 flex h-16 shrink-0 items-center justify-between border-border/70 border-b bg-canvas/95 px-5 backdrop-blur-md">
-      <h3 className="font-bold text-ink text-sm tracking-tight">
-        Group details
-      </h3>
+      <h3 className="sr-only">Group details</h3>
       <div className="flex items-center gap-1">
         <Button
           asChild

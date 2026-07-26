@@ -10,7 +10,6 @@ import type { ActionDialogTone } from "./action-dialog.types";
 
 export const ACTION_DIALOG_TONE_CONFIG = {
   danger: {
-    defaultEyebrow: "Safety check",
     defaultIcon: ShieldAlert,
     iconClassName: "text-destructive",
     detailLabel: "Impact",
@@ -18,7 +17,6 @@ export const ACTION_DIALOG_TONE_CONFIG = {
     confirmVariant: "destructive",
   },
   info: {
-    defaultEyebrow: "Before you continue",
     defaultIcon: Info,
     iconClassName: "text-primary",
     detailLabel: "Worth knowing",
@@ -26,7 +24,6 @@ export const ACTION_DIALOG_TONE_CONFIG = {
     confirmVariant: "primary",
   },
   success: {
-    defaultEyebrow: "Ready to confirm",
     defaultIcon: CheckCircle2,
     iconClassName: "text-primary",
     detailLabel: "What happens",
@@ -34,7 +31,6 @@ export const ACTION_DIALOG_TONE_CONFIG = {
     confirmVariant: "primary",
   },
   warning: {
-    defaultEyebrow: "Quick check",
     defaultIcon: AlertTriangle,
     iconClassName: "text-accent",
     detailLabel: "Note",
@@ -45,7 +41,6 @@ export const ACTION_DIALOG_TONE_CONFIG = {
   ActionDialogTone,
   {
     confirmVariant: ButtonV2Props["variant"];
-    defaultEyebrow: string;
     defaultIcon: LucideIcon;
     detailLabel: string;
     iconClassName: string;

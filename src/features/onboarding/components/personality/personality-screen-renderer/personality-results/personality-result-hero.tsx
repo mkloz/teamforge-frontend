@@ -10,8 +10,7 @@ export function PersonalityResultHero({
   personalityType,
 }: PersonalityResultHeroProps) {
   return (
-    <section className="flex flex-col gap-3">
-      <p className="font-bold text-forge-teal text-xs">Personality result</p>
+    <section>
       <TypeSignature personalityType={personalityType} />
     </section>
   );

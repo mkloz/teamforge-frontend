@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 
 interface LandingFeaturePoint {
-  detail: string;
+  detail?: string;
   icon: LucideIcon;
   title: string;
 }
@@ -35,7 +35,7 @@ export function LandingFeaturePointList({
                 {title}
               </h3>
             </div>
-            <p className={detailClassName}>{detail}</p>
+            {detail ? <p className={detailClassName}>{detail}</p> : null}
           </div>
         </li>
       ))}

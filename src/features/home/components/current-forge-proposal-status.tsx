@@ -56,7 +56,6 @@ function CurrentProposalSummary({ proposal }: { proposal: ForgeProposal }) {
     >
       <HomeSectionHeading
         id="current-forge-proposal-heading"
-        eyebrow="Group proposal"
         title={proposal.activity.title}
         description={view.description}
       />
@@ -141,8 +140,7 @@ function getProposalView(proposal: ForgeProposal) {
   if (proposal.state === "FORMING") {
     return {
       actionLabel: "View status",
-      description:
-        "Your response is saved. The group space is being prepared now.",
+      description: "The group space is being prepared now.",
       label: "Group forming",
       navigation: buildForgeProposalNavigation(proposal.id),
     };
@@ -151,8 +149,7 @@ function getProposalView(proposal: ForgeProposal) {
   if (proposal.viewer.decision === "ACCEPTED") {
     return {
       actionLabel: "View proposal",
-      description:
-        "Your response is saved. You can withdraw before the group forms.",
+      description: "You can withdraw before the group forms.",
       label: "Response saved",
       navigation: buildForgeProposalNavigation(proposal.id),
     };

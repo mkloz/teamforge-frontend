@@ -32,7 +32,7 @@ export function AccountExportSection({ state }: AccountExportSectionProps) {
     <section className="border-border border-t pt-7">
       <SectionHeading
         title="Download your data"
-        description="Create a private copy of your TeamForge account data. Passwords, sessions, and other people's private details are not included."
+        description="Passwords, sessions, and other people's private details are excluded."
       />
 
       <div className="mt-5 flex max-w-2xl flex-col gap-4">

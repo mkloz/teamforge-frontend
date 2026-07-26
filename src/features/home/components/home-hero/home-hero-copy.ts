@@ -1,29 +1,17 @@
 import type { HomeNextMove } from "@/features/home/lib/home-insights";
 
-export function getGreeting(firstName: string): {
-  greeting: string;
-  sub: string;
-} {
+export function getGreeting(firstName: string): string {
   const hour = new Date().getHours();
 
   if (hour < 12) {
-    return {
-      greeting: `Good morning, ${firstName}`,
-      sub: "Review what needs your attention today.",
-    };
+    return `Good morning, ${firstName}`;
   }
 
   if (hour < 17) {
-    return {
-      greeting: `Good afternoon, ${firstName}`,
-      sub: "Check your plans and open groups.",
-    };
+    return `Good afternoon, ${firstName}`;
   }
 
-  return {
-    greeting: `Good evening, ${firstName}`,
-    sub: "Review plans and invitations before you sign off.",
-  };
+  return `Good evening, ${firstName}`;
 }
 
 export function getCompactHeroCopy(nextMove: HomeNextMove): {

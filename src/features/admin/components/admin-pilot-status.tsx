@@ -98,8 +98,7 @@ function CohortSection({ status }: { status: AdminPilotStatusData }) {
             No active cohort
           </StatusPill>
           <p className="mt-2 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-            No controlled-pilot cohort is configured. The gate and readiness
-            rows below still show the server's current status.
+            Gate and readiness rows still show the server's current status.
           </p>
         </div>
       )}

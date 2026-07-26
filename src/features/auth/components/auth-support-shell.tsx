@@ -17,7 +17,7 @@ const LazyVoronoiCatalyst = lazy(() =>
 
 interface AuthSupportShellProps {
   title: string;
-  description: string;
+  description?: string;
   backNavigation: {
     to: "/auth/login" | "/auth/register" | "/auth/forgot-password";
     search?: {
@@ -81,9 +81,11 @@ export function AuthSupportShell({
                 <h1 className="font-semibold text-2xl text-foreground tracking-tight">
                   {title}
                 </h1>
-                <p className="text-slate-muted text-sm leading-6">
-                  {description}
-                </p>
+                {description ? (
+                  <p className="text-slate-muted text-sm leading-6">
+                    {description}
+                  </p>
+                ) : null}
               </div>
 
               <div className="mt-6">{children}</div>

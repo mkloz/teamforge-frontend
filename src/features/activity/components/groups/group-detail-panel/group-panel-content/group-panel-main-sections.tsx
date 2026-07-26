@@ -39,7 +39,6 @@ interface GroupPanelMainSectionsProps {
   isOnline: boolean;
   isLeaving: boolean;
   leaveGroup: () => Promise<void> | void;
-  memberCount: number;
   members: GroupMember[];
   onEditGroup: () => void;
   onEditPlan: () => void;
@@ -77,7 +76,6 @@ export function GroupPanelMainSections({
   isOnline,
   isLeaving,
   leaveGroup,
-  memberCount,
   members,
   onEditGroup,
   onEditPlan,
@@ -122,8 +120,6 @@ export function GroupPanelMainSections({
         canSuggestPlanChange={capabilities?.canSuggestPlanChange}
         description={group.description}
         isReadOnly={isGroupLocked}
-        memberCount={memberCount}
-        maxMembers={group.maxMembers}
         groupId={group.id}
         isOnline={isOnline}
         name={group.name}
@@ -136,6 +132,7 @@ export function GroupPanelMainSections({
       <CurrentPlanSection
         currentPlan={group.plan}
         currentUserRole={currentUserRole}
+        groupName={group.name}
         focusedPlanId={focusedPlanId}
         focusedProposalId={focusedProposalId}
         isGroupLocked={isGroupLocked}
@@ -197,6 +194,7 @@ export function GroupPanelMainSections({
 function CurrentPlanSection({
   currentPlan,
   currentUserRole,
+  groupName,
   focusedPlanId,
   focusedProposalId,
   isGroupLocked,
@@ -211,6 +209,7 @@ function CurrentPlanSection({
 }: {
   currentPlan: Group["plan"];
   currentUserRole: MemberRole;
+  groupName: string;
   focusedPlanId: string | null;
   focusedProposalId: string | null;
   isGroupLocked: boolean;
@@ -230,6 +229,7 @@ function CurrentPlanSection({
   return (
     <PlanSection
       plan={currentPlan}
+      groupName={groupName}
       isFocused={focusedPlanId === currentPlan.id}
       focusedProposalId={focusedProposalId}
       isReadOnly={isGroupLocked}

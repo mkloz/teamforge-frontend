@@ -103,9 +103,7 @@ function CandidateAvailabilityEditor({
       />
 
       <p className="text-muted-foreground text-sm leading-relaxed">
-        TeamForge may show you an activity-led group proposal. This is not a
-        calendar, and you will never join automatically. You decide after
-        reviewing the proposal.
+        You review every proposal before deciding whether to join.
       </p>
 
       {availability.legacyAvailabilityPrompt ? (
@@ -152,7 +150,7 @@ function CandidateAvailabilityEditor({
             availability.onlineEnabled &&
             !availability.canReceiveOnlineProposals
               ? "Saved, but online proposals are unavailable right now."
-              : "Proposals for activities that happen online."
+              : undefined
           }
           onToggle={() =>
             setDraft({
@@ -236,9 +234,6 @@ function AvailabilityHeader({
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div>
         <h3 className="font-semibold text-base text-ink">Group proposals</h3>
-        <p className="mt-1 text-muted-foreground text-xs">
-          Choose whether TeamForge may show you local or online proposals.
-        </p>
       </div>
       <StatusPill
         size="sm"

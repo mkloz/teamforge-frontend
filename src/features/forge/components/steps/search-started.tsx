@@ -7,14 +7,10 @@ export function SearchStarted({ activityTitle }: { activityTitle: string }) {
         <Search className="size-6" aria-hidden="true" />
       </div>
       <div className="grid gap-2">
-        <h3 className="font-bold text-foreground text-xl">
-          Your request is active
-        </h3>
         <p className="mx-auto max-w-md text-muted-foreground text-sm leading-relaxed">
-          TeamForge saved an active request for
+          No group has formed for
           {activityTitle.trim() ? ` ${activityTitle.trim()}` : " this activity"}
-          . It will check the request again automatically. No group has formed
-          yet. You can review or pause the request from Home.
+          . Review or pause the request from Home.
         </p>
       </div>
       <p className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-muted-foreground text-xs">

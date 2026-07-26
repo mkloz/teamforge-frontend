@@ -1,4 +1,4 @@
-import { Lock, RefreshCw, Users } from "lucide-react";
+import { Lock, RefreshCw } from "lucide-react";
 import {
   OnboardingIntroActions,
   OnboardingIntroBenefitList,
@@ -11,10 +11,6 @@ interface InterestsIntroProps {
 }
 
 const BENEFITS = [
-  {
-    icon: Users,
-    text: "Pick the things you would actually say yes to. The best profile feels honest, not impressive.",
-  },
   {
     icon: Lock,
     text: "Your interests are used to shape group ideas. They are not shown as a public checklist.",
@@ -37,19 +33,14 @@ export function InterestsIntro({
       </h1>
 
       <div>
-        <p className="mb-3 text-pretty font-medium font-sans text-slate-muted text-sm leading-relaxed">
-          Choose hobbies, places, games, and topics you would make time for.
-        </p>
         <p className="mb-6 text-pretty font-sans text-slate-muted/80 text-sm leading-relaxed">
-          Pick at least{" "}
+          Choose at least{" "}
           <span className="border-forge-teal/30 border-b font-bold text-ink">
             15 interests
           </span>
-          . There are no wrong answers – only honest ones.
+          .
         </p>
       </div>
-
-      <div className="mb-6 h-px w-full bg-slate-muted/10" />
 
       <OnboardingIntroBenefitList
         benefits={BENEFITS}

@@ -8,7 +8,6 @@ import type { buildSafetyNavigation } from "@/shared/navigation/safety-navigatio
 import type { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
 interface MenuLinkItemProps {
-  description?: string;
   icon: LucideIcon;
   label: string;
   navigation:
@@ -19,7 +18,6 @@ interface MenuLinkItemProps {
 }
 
 export function MenuLinkItem({
-  description,
   icon,
   label,
   navigation,
@@ -36,26 +34,19 @@ export function MenuLinkItem({
             : "text-foreground hover:bg-muted/55",
         )}
       >
-        <MenuLinkItemContent
-          icon={icon}
-          label={label}
-          description={description}
-          tone={tone}
-        />
+        <MenuLinkItemContent icon={icon} label={label} tone={tone} />
       </Link>
     </SheetClose>
   );
 }
 
 interface MenuLinkItemContentProps {
-  description?: string;
   icon: LucideIcon;
   label: string;
   tone?: "default" | "destructive";
 }
 
 export function MenuLinkItemContent({
-  description,
   icon,
   label,
   tone = "default",
@@ -68,13 +59,8 @@ export function MenuLinkItemContent({
         size="md"
         bordered
       />
-      <span className="min-w-0 flex-1">
-        <span className="block truncate font-semibold text-sm">{label}</span>
-        {description && (
-          <span className="block truncate text-muted-foreground text-xs">
-            {description}
-          </span>
-        )}
+      <span className="min-w-0 flex-1 truncate font-semibold text-sm">
+        {label}
       </span>
     </>
   );

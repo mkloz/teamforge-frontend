@@ -3,11 +3,6 @@ import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { StatusPill } from "@/shared/components/ui/status-pill";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import type { AuthSession } from "@/shared/schemas";
 import {
@@ -98,7 +93,7 @@ function SessionDeviceSummary({
           )}
         </div>
         <SessionTimestampFacts session={session} />
-        <SessionUserAgentTooltip userAgent={session.userAgent} />
+        <SessionTechnicalDetails session={session} />
       </div>
     </div>
   );
@@ -119,37 +114,32 @@ function SessionTimestampFacts({ session }: { session: AuthSession }) {
           Expires {formatSessionTime(session.expiresAt)}
         </span>
       </span>
-      <span className="flex min-w-0 items-center gap-2">
-        <Wifi size={14} className="shrink-0" />
-        <span className="truncate">
-          {session.ipAddress ? `IP ${session.ipAddress}` : "IP unknown"}
-        </span>
-      </span>
     </div>
   );
 }
 
-function SessionUserAgentTooltip({
-  userAgent,
-}: {
-  userAgent: string | null | undefined;
-}) {
-  if (!userAgent) {
-    return null;
-  }
-
+function SessionTechnicalDetails({ session }: { session: AuthSession }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          className="mt-3 block max-w-3xl cursor-help truncate border-0 bg-transparent p-0 text-left text-slate-muted/75 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
-        >
-          {userAgent}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent>{userAgent}</TooltipContent>
-    </Tooltip>
+    <details className="mt-3 text-xs">
+      <summary className="w-fit cursor-pointer text-slate-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35">
+        Technical details
+      </summary>
+      <dl className="mt-2 grid gap-2 text-slate-muted">
+        <div className="flex items-start gap-2">
+          <Wifi size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
+          <div>
+            <dt className="sr-only">IP address</dt>
+            <dd>{session.ipAddress ?? "IP unknown"}</dd>
+          </div>
+        </div>
+        {session.userAgent ? (
+          <div>
+            <dt className="sr-only">Browser details</dt>
+            <dd className="break-all">{session.userAgent}</dd>
+          </div>
+        ) : null}
+      </dl>
+    </details>
   );
 }
 

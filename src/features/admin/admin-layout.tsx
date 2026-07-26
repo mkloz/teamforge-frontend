@@ -26,7 +26,6 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -48,41 +47,34 @@ const ADMIN_NAVIGATION = [
   {
     id: "overview",
     label: "Overview",
-    description: "What needs attention",
     icon: LayoutDashboard,
   },
   {
     id: "moderation",
     label: "Moderation",
-    description: "Human review queue",
     icon: ShieldCheck,
   },
   {
     id: "intake",
     label: "Intake",
-    description: "Unassigned reports",
     icon: ClipboardList,
   },
   {
     id: "workers",
     label: "Workers",
-    description: "Queue health and controls",
     icon: ServerCog,
   },
   {
     id: "operations",
     label: "Operations",
-    description: "Pilot readiness",
     icon: Gauge,
   },
   {
     id: "settings",
     label: "Settings",
-    description: "Policy and rollout",
     icon: Settings,
   },
 ] as const satisfies ReadonlyArray<{
-  description: string;
   icon: LucideIcon;
   id: AdminNavigationTarget;
   label: string;
@@ -161,9 +153,6 @@ function AdminMobileHeader({ displayName }: { displayName: string }) {
         <SheetContent side="right" className="flex w-full flex-col sm:max-w-sm">
           <SheetHeader className="text-left">
             <SheetTitle>Admin navigation</SheetTitle>
-            <SheetDescription>
-              Review moderation exceptions and system health.
-            </SheetDescription>
           </SheetHeader>
           <AdminNavigationLinks className="mt-5 flex-1" mobile />
           <AdminSessionFooter displayName={displayName} mobile />
@@ -222,13 +211,8 @@ function AdminNavigationLinks({
             )}
           >
             <Icon className="size-5 shrink-0" aria-hidden="true" />
-            <span className="min-w-0">
-              <span className="block truncate font-semibold text-sm">
-                {item.label}
-              </span>
-              <span className="block truncate text-xs opacity-80">
-                {item.description}
-              </span>
+            <span className="min-w-0 truncate font-semibold text-sm">
+              {item.label}
             </span>
           </Link>
         );

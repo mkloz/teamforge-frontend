@@ -3,7 +3,6 @@ import {
   PrimaryAction,
   SecondaryAction,
 } from "@/features/home/components/home-hero/home-hero-actions";
-import { HomeHeroQuickActions } from "@/features/home/components/home-hero/home-hero-quick-actions";
 import { HomeHeroNextMoveHeader } from "@/features/home/components/home-hero/home-hero-sections/home-hero-next-move-header";
 import { HomeHeroSignalMap } from "@/features/home/components/home-hero/home-hero-signal-map";
 
@@ -28,8 +27,6 @@ export function HomeHeroNextMovePanel({
           <PrimaryAction move={nextMove} />
           <SecondaryAction move={nextMove} />
         </div>
-
-        <HomeHeroQuickActions signal={nextMove.signal} />
       </div>
 
       <HomeHeroSignalMap />

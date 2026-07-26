@@ -10,11 +10,7 @@ export function AdminOperationsPage() {
   const { adminSession } = useRouteContext({ from: "/admin" });
 
   return (
-    <AdminPageShell
-      eyebrow="Moderation operations"
-      title="Controlled pilot"
-      description="Review the server's current cohort, rollout gates, readiness checks, activity outcomes, retention status, and fixed pilot summary."
-    >
+    <AdminPageShell title="Controlled pilot">
       <div className="grid gap-8">
         <AdminPilotStatus />
         <AdminPilotOperationsReadiness />

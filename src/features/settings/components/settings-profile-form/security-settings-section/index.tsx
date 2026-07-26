@@ -19,16 +19,6 @@ export function SecuritySettingsSection({
   return (
     <div className="flex flex-col gap-10">
       <section>
-        <div className="flex max-w-2xl items-start gap-3">
-          <div className="min-w-0">
-            <h2 className="font-bold text-ink text-xl">Security & Access</h2>
-            <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-              Review how this account signs in, recover access, and manage
-              active sessions.
-            </p>
-          </div>
-        </div>
-
         <SecuritySummary currentUser={currentUser} />
 
         {!status.isOnline ? (

@@ -1,10 +1,4 @@
-import {
-  Ban,
-  DoorOpen,
-  ListChecks,
-  ShieldCheck,
-  UserCheck,
-} from "lucide-react";
+import { Ban, DoorOpen, ListChecks, ShieldCheck } from "lucide-react";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
 
@@ -12,22 +6,18 @@ const CONTROL_POINTS = [
   {
     icon: ListChecks,
     title: "Review first",
-    detail: "See the room before you decide.",
   },
   {
     icon: Ban,
     title: "Say no clearly",
-    detail: "Decline a group that does not feel right.",
   },
   {
     icon: DoorOpen,
     title: "Leave when needed",
-    detail: "Step out when the plan no longer works.",
   },
   {
     icon: ShieldCheck,
     title: "Reliability matters",
-    detail: "Showing up as planned helps TeamForge form more reliable groups.",
   },
 ] as const;
 
@@ -47,34 +37,16 @@ export function TrustControlSection() {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid gap-10 lg:grid-cols-12 lg:items-center xl:gap-12">
           <div className="max-w-xl lg:col-span-5">
-            <p className="font-bold text-forge-teal text-xs uppercase">
-              Trust and control
-            </p>
             <h2
               id="trust-control-heading"
-              className="mt-4 text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
+              className="text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
             >
               You stay in control.
             </h2>
-            <p className="mt-6 text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
-              Review a group before joining, decline it, leave when plans
-              change, or report behavior that breaks the rules. You decide what
-              happens next.
-            </p>
 
             <p className="mt-8 text-pretty border-forge-teal/45 border-l-2 pl-4 font-black text-base text-white leading-relaxed">
               Group formation considers reliability, not popularity.
             </p>
-
-            <div className="mt-8 flex items-center gap-3 text-text-dark-secondary">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
-                <UserCheck className="size-4" aria-hidden="true" />
-              </span>
-              <p className="text-pretty font-semibold text-sm leading-relaxed">
-                Built for small groups around shared activities, with a clear
-                way to opt out.
-              </p>
-            </div>
           </div>
 
           <div className="relative lg:col-span-7 lg:-mr-6 xl:-mr-12">

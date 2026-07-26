@@ -7,7 +7,7 @@ export interface AvatarActionState {
   deleteOrResetLabel: string;
   deleteOrResetVariant: "outline" | "destructive";
   hasSelectedAvatarFile: boolean;
-  hintText: string;
+  hintText: string | null;
   uploadDisabled: boolean;
   uploadLabel: string;
 }
@@ -187,7 +187,7 @@ function getDeleteOrResetLabel({
 
 function getAvatarHintText(selectedAvatarFile: File | null) {
   if (!selectedAvatarFile) {
-    return "Choose an image first, then upload when it looks right.";
+    return null;
   }
 
   return `${selectedAvatarFile.name} - ${formatAvatarFileSize(selectedAvatarFile)}`;

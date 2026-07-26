@@ -8,7 +8,6 @@ import { CandidateAvailabilityControl } from "@/features/settings/components/set
 import {
   OfflineSettingsNotice,
   PreferenceStatusMessage,
-  SectionHeading,
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import {
   MatchingThresholdControl,
@@ -79,12 +78,7 @@ export function MatchingSettingsSection({
 
   return (
     <section className="flex flex-col gap-8">
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-        <SectionHeading
-          title="Availability and group fit"
-          description="Choose which group proposals and activity invitations you receive, and review the profile details TeamForge uses when forming groups."
-        />
-
+      <div className="flex justify-end">
         <MatchingStats currentUser={currentUser} />
       </div>
 
@@ -266,12 +260,7 @@ function MatchingEditActions({
   interestsDisabledReason: string | null;
 }) {
   return (
-    <div className="flex flex-col gap-3 border-border border-t pt-5 md:flex-row md:items-center md:justify-between">
-      <p className="text-slate-muted text-sm">
-        Review your personality result or update your interests when they
-        change.
-      </p>
-
+    <div className="border-border border-t pt-5">
       <div className="responsive-action-grid grid w-full gap-3 md:max-w-92">
         <Button asChild variant="outline" size="compact" className="min-w-0">
           <Link

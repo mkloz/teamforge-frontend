@@ -2,7 +2,6 @@ import { AccountExportSection } from "@/features/settings/components/settings-pr
 import {
   OfflineSettingsNotice,
   PreferenceStatusMessage,
-  SectionHeading,
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import { NotificationPreferenceRow } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import type { useAccountExport } from "@/features/settings/hooks/use-account-export";
@@ -12,22 +11,18 @@ const PRIVACY_TOGGLE_ITEMS = [
   {
     key: "showAgeOnProfile",
     title: "Show age",
-    description: "Display your exact age on public profile surfaces.",
   },
   {
     key: "showGenderOnProfile",
     title: "Show gender",
-    description: "Display gender on your public profile.",
   },
   {
     key: "showCityOnProfile",
     title: "Show city",
-    description: "Display your city to other people.",
   },
   {
     key: "showFriendsListOnProfile",
     title: "Show friends",
-    description: "Display your friends list on your public profile.",
   },
 ] as const satisfies ReadonlyArray<{
   key: keyof Pick<
@@ -38,7 +33,6 @@ const PRIVACY_TOGGLE_ITEMS = [
     | "showFriendsListOnProfile"
   >;
   title: string;
-  description: string;
 }>;
 
 interface PrivacySettingsSectionProps {
@@ -75,10 +69,9 @@ export function PrivacySettingsSection({
   return (
     <div className="flex flex-col gap-9">
       <section className="flex flex-col gap-6">
-        <SectionHeading
-          title="Profile privacy"
-          description="Choose which details appear on your public profile. Hidden details may still be used when TeamForge forms groups."
-        />
+        <p className="max-w-2xl text-slate-muted text-sm leading-relaxed">
+          Hidden details may still be used when TeamForge forms groups.
+        </p>
 
         {!isOnline ? (
           <OfflineSettingsNotice message="Reconnect before changing profile privacy." />
@@ -90,7 +83,6 @@ export function PrivacySettingsSection({
               key={item.key}
               checked={notificationPreferences?.[item.key] ?? true}
               title={item.title}
-              description={item.description}
               disabled={
                 isDisabled || savingNotificationPreferenceKeys.has(item.key)
               }

@@ -79,8 +79,8 @@ function ActivityInviteAvailabilityEditor({
       />
 
       <p className="text-muted-foreground text-sm leading-relaxed">
-        Group organizers may invite you when an open place fits an activity you
-        care about. You still review the invitation and decide whether to join.
+        Organizers may invite you to a relevant opening; you decide whether to
+        join.
       </p>
 
       <fieldset className="grid gap-0 lg:grid-cols-2 lg:gap-8">
@@ -210,9 +210,6 @@ function ActivityInviteAvailabilityHeader({
         <h3 className="font-semibold text-base text-ink">
           Activity invitations
         </h3>
-        <p className="mt-1 text-muted-foreground text-xs">
-          Choose whether organizers may find you for an open place.
-        </p>
       </div>
       <StatusPill
         size="sm"
@@ -405,7 +402,7 @@ function getScopeDescription(
 
   return scope === "local"
     ? "Invitations for activities near your saved area."
-    : "Invitations for activities that happen online.";
+    : undefined;
 }
 
 function canAppearInSuggestions(availability: ActivityInviteAvailability) {

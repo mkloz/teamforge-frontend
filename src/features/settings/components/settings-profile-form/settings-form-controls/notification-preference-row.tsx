@@ -7,7 +7,7 @@ import { cn } from "@/shared/lib/utils";
 interface NotificationPreferenceRowProps {
   checked: boolean;
   title: string;
-  description: string;
+  description?: string;
   onToggle: () => void;
   disabled: boolean;
 }
@@ -33,9 +33,11 @@ export function NotificationPreferenceRow({
         <Label htmlFor={switchId} className="font-semibold text-ink text-sm">
           {title}
         </Label>
-        <p className="mt-1 text-slate-muted text-xs leading-relaxed">
-          {description}
-        </p>
+        {description ? (
+          <p className="mt-1 text-slate-muted text-xs leading-relaxed">
+            {description}
+          </p>
+        ) : null}
       </div>
 
       <Switch

@@ -144,14 +144,9 @@ export function ActionsSection({
 
   return (
     <section className="flex flex-col gap-3" aria-labelledby="group-controls">
-      <div className="flex flex-col gap-1">
-        <h3 id="group-controls" className="font-bold text-foreground text-sm">
-          Membership
-        </h3>
-        <p className="text-slate-muted text-xs leading-relaxed">
-          Manage your access to this group chat and plan.
-        </p>
-      </div>
+      <h3 id="group-controls" className="font-bold text-foreground text-sm">
+        Membership
+      </h3>
 
       <MembershipActionButtons
         actionsLocked={actionsLocked}

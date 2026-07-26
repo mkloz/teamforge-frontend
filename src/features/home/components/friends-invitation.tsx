@@ -45,31 +45,10 @@ export function FriendsInvitation() {
 
   return (
     <section className="flex w-full flex-col gap-4">
-      <HomeSectionHeading
-        title="Bring someone in"
-        description="Invite someone you know to TeamForge."
-      />
+      <HomeSectionHeading title="Invite someone" />
 
       <div className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 px-3 py-3">
-        <div className="flex min-w-0 items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="font-bold text-foreground text-sm">Share TeamForge</p>
-            <p className="mt-1 font-medium text-muted-foreground text-xs leading-snug">
-              Send the app link now. Add them to a group when it fits.
-            </p>
-          </div>
-
-          <div
-            className="relative mt-0.5 flex h-9 w-14 shrink-0 items-center"
-            aria-hidden="true"
-          >
-            <span className="absolute right-7 size-7 rounded-full border-2 border-background bg-forge-teal/80" />
-            <span className="absolute right-3.5 size-7 rounded-full border-2 border-background bg-spark-amber/85" />
-            <span className="absolute right-0 size-7 rounded-full border-2 border-background bg-slate-muted/80" />
-          </div>
-        </div>
-
-        <div className="main-action-grid mt-3 grid items-center gap-2">
+        <div className="main-action-grid grid items-center gap-2">
           <div
             className={cn(
               "group relative flex h-11 min-w-0 items-center rounded-md border border-border/45 bg-background/70 py-0 pr-12 pl-3",

@@ -6,7 +6,7 @@ interface StatusFactsProps {
 
 export function StatusFacts({ facts }: StatusFactsProps) {
   return (
-    <div className="grid gap-4 border-border/25 border-y py-4 sm:grid-cols-3">
+    <div className="grid gap-4 border-border/25 border-y py-4 sm:grid-cols-2">
       {facts.map((fact) => (
         <StatusFact key={fact.label} label={fact.label} value={fact.value} />
       ))}

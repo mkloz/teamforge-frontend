@@ -52,11 +52,7 @@ export function NotificationsDrawerHeader({
         <ActionDialog
           cancelLabel="Not now"
           confirmLabel={isMarkingAllRead ? "Marking..." : "Mark all as read"}
-          description="This marks every notification as read."
-          details={[
-            "Notifications will stay in your history.",
-            "New notifications will still appear as unread.",
-          ]}
+          description="Notifications stay in your history; future notifications remain unread."
           loading={isMarkingAllRead}
           disabled={!isOnline || count === 0}
           onConfirm={onMarkAllRead}

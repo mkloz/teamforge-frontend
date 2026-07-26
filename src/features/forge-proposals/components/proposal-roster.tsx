@@ -20,14 +20,11 @@ export function ProposalRoster({ proposal }: ProposalRosterProps) {
   return (
     <section aria-labelledby="proposal-roster-heading" className="py-8">
       <div className="max-w-2xl">
-        <p className="font-semibold text-forge-teal text-xs">
-          Your proposed group
-        </p>
         <h2
           id="proposal-roster-heading"
-          className="mt-2 text-balance font-bold text-2xl text-foreground"
+          className="text-balance font-bold text-2xl text-foreground"
         >
-          Meet everyone before you decide
+          Proposed group
         </h2>
         <p className="mt-2 text-pretty text-muted-foreground text-sm leading-relaxed">
           Everyone sees the same roster. Compatibility below is only between you
@@ -144,7 +141,7 @@ function SeatCompatibility({
   return (
     <div className="max-w-xs sm:text-right">
       <p className="font-bold text-forge-teal text-lg tabular-nums">
-        Compatibility score: {compatibility.score}/100
+        {compatibility.score}/100 compatibility
       </p>
       <p className="mt-1 text-pretty text-muted-foreground text-xs leading-relaxed">
         <Info

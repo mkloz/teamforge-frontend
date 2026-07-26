@@ -63,12 +63,10 @@ function ReportHistory() {
     <SafetyCollection
       id="safety-reports"
       title="Your reports"
-      description="Reports you sent to TeamForge and their latest status."
       isLoading={query.isLoading}
       error={query.error}
       isEmpty={query.data?.items.length === 0}
       emptyTitle="No reports yet"
-      emptyDescription="Reports you send will appear here."
       onRetry={() => void query.refetch()}
     >
       {query.data?.items.map((report) => (
@@ -99,12 +97,10 @@ function AccountActions() {
     <SafetyCollection
       id="safety-account-actions"
       title="Account actions"
-      description="Notices on your account and the status of any appeal."
       isLoading={query.isLoading}
       error={query.error}
       isEmpty={query.data?.items.length === 0}
       emptyTitle="No account actions"
-      emptyDescription="There are no account actions to review."
       onRetry={() => void query.refetch()}
     >
       {query.data?.items.map((notice) => (
@@ -135,12 +131,10 @@ function SafetyRestrictions() {
     <SafetyCollection
       id="safety-restrictions"
       title="Safety restrictions"
-      description="Temporary restrictions and the status of any review request."
       isLoading={query.isLoading}
       error={query.error}
       isEmpty={query.data?.items.length === 0}
       emptyTitle="No safety restrictions"
-      emptyDescription="There are no current or past restrictions to review."
       onRetry={() => void query.refetch()}
     >
       {query.data?.items.map((containment) => (
@@ -168,8 +162,6 @@ function RestrictionRow({ containment }: { containment: Containment }) {
 
 function SafetyCollection({
   children,
-  description,
-  emptyDescription,
   emptyTitle,
   error,
   id,
@@ -179,8 +171,6 @@ function SafetyCollection({
   title,
 }: {
   children: ReactNode;
-  description: string;
-  emptyDescription: string;
   emptyTitle: string;
   error: Error | null;
   id: string;
@@ -193,14 +183,10 @@ function SafetyCollection({
     <section id={id} className="scroll-mt-6">
       <div className="max-w-2xl">
         <h2 className="font-bold text-ink text-xl">{title}</h2>
-        <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          {description}
-        </p>
       </div>
 
       <div className="mt-5 border-border border-t" aria-live="polite">
         <SafetyCollectionState
-          emptyDescription={emptyDescription}
           emptyTitle={emptyTitle}
           error={error}
           isEmpty={isEmpty}
@@ -216,7 +202,6 @@ function SafetyCollection({
 
 function SafetyCollectionState({
   children,
-  emptyDescription,
   emptyTitle,
   error,
   isEmpty,
@@ -224,7 +209,6 @@ function SafetyCollectionState({
   onRetry,
 }: {
   children: ReactNode;
-  emptyDescription: string;
   emptyTitle: string;
   error: Error | null;
   isEmpty: boolean;
@@ -238,14 +222,9 @@ function SafetyCollectionState({
   if (error) {
     return (
       <div className="flex flex-col items-start gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="font-semibold text-ink text-sm">
-            This safety information could not load
-          </p>
-          <p className="mt-1 text-slate-muted text-sm">
-            Try again to refresh this section.
-          </p>
-        </div>
+        <p className="font-semibold text-ink text-sm">
+          Safety information could not load.
+        </p>
         <Button type="button" variant="outline" size="sm" onClick={onRetry}>
           <RefreshCw className="size-4" aria-hidden="true" />
           Try again
@@ -258,9 +237,6 @@ function SafetyCollectionState({
     return (
       <div className="py-6">
         <p className="font-semibold text-ink text-sm">{emptyTitle}</p>
-        <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          {emptyDescription}
-        </p>
       </div>
     );
   }

@@ -45,9 +45,6 @@ export function SettingsSidebar({
           <h1 className="font-bold text-2xl text-ink leading-tight lg:text-3xl">
             Settings
           </h1>
-          <p className="mt-2 text-slate-muted text-sm leading-relaxed">
-            Manage your profile, privacy, safety, and app preferences.
-          </p>
         </div>
 
         <SettingsSectionNav
@@ -127,7 +124,6 @@ function SettingsSignOutDialog({
         cancelLabel="Stay signed in"
         confirmLabel={confirmLabel}
         description="This ends the current session and returns you to the login screen."
-        details={["You can come back with the same email and password."]}
         loading={isSigningOut}
         onConfirm={onSignOut}
         onOpenChange={onOpenChange}
@@ -211,9 +207,6 @@ function SettingsSectionNavLink({
         <span className={getSettingsSectionLabelClassName(isActive)}>
           {section.label}
         </span>
-        <span className={getSettingsSectionDescriptionClassName(isActive)}>
-          {section.description}
-        </span>
       </span>
       <ChevronRight
         size={16}
@@ -259,12 +252,5 @@ function getSettingsSectionLabelClassName(isActive: boolean) {
   return cn(
     "block font-semibold text-base leading-snug lg:text-sm",
     isActive ? "text-ink" : "text-inherit",
-  );
-}
-
-function getSettingsSectionDescriptionClassName(isActive: boolean) {
-  return cn(
-    "mt-1 block text-xs leading-snug",
-    isActive ? "text-slate-muted" : "text-slate-muted/85",
   );
 }

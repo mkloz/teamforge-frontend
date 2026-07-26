@@ -64,10 +64,7 @@ function CandidateAvailabilityLoading() {
 function CandidateAvailabilityError({ onRetry }: { onRetry: () => void }) {
   return (
     <section className="grid gap-3" aria-label="Group proposals" role="alert">
-      <HomeSectionHeading
-        eyebrow="Group proposals"
-        title="Choose whether you’re open"
-      />
+      <HomeSectionHeading title="Group proposals" />
       <p className="text-muted-foreground text-sm">
         We couldn’t load your group proposal status.
       </p>
@@ -105,7 +102,6 @@ function CandidateAvailabilityContent({
     <section className="grid gap-4" aria-labelledby={SECTION_HEADING_ID}>
       <HomeSectionHeading
         id={SECTION_HEADING_ID}
-        eyebrow="Group proposals"
         title={view.title}
         description={view.description}
         action={
@@ -201,7 +197,6 @@ function AvailabilityChoices({
       />
       <AvailabilityChoice
         checked={onlineEnabled}
-        description="In an online group space"
         disabled={actionDisabled}
         icon={Monitor}
         label="Online"
@@ -238,7 +233,7 @@ function AvailabilityChoice({
   onCheckedChange,
 }: {
   checked: boolean;
-  description: string;
+  description?: string;
   disabled: boolean;
   icon: typeof MapPin;
   label: string;
@@ -252,9 +247,11 @@ function AvailabilityChoice({
         <Icon className="size-4 shrink-0 text-forge-teal" aria-hidden="true" />
         <span className="min-w-0">
           <span className="block font-semibold text-ink text-sm">{label}</span>
-          <span className="block text-muted-foreground text-xs">
-            {description}
-          </span>
+          {description ? (
+            <span className="block text-muted-foreground text-xs">
+              {description}
+            </span>
+          ) : null}
         </span>
       </label>
       <Switch
@@ -280,41 +277,39 @@ function SelectedScopes({
   const hasAvailableScope =
     availability.canReceiveLocalProposals ||
     availability.canReceiveOnlineProposals;
+  const showAvailableScopes =
+    availability.lifecycle === "OPEN" && hasAvailableScope;
+  const showLocal = showAvailableScopes
+    ? availability.canReceiveLocalProposals
+    : availability.localEnabled;
+  const showOnline = showAvailableScopes
+    ? availability.canReceiveOnlineProposals
+    : availability.onlineEnabled;
 
   return (
-    <div className="grid gap-2">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="mr-1 font-semibold text-muted-foreground text-xs">
-          Saved choices
-        </span>
-        {availability.localEnabled ? (
-          <StatusPill icon={MapPin} size="sm" surface="soft" tone="neutral">
-            Local
-          </StatusPill>
-        ) : null}
-        {availability.onlineEnabled ? (
-          <StatusPill icon={Monitor} size="sm" surface="soft" tone="neutral">
-            Online
-          </StatusPill>
-        ) : null}
-      </div>
-
-      {availability.lifecycle === "OPEN" && hasAvailableScope ? (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="mr-1 font-semibold text-muted-foreground text-xs">
-            Available now
-          </span>
-          {availability.canReceiveLocalProposals ? (
-            <StatusPill icon={MapPin} size="sm" surface="soft" tone="teal">
-              Local
-            </StatusPill>
-          ) : null}
-          {availability.canReceiveOnlineProposals ? (
-            <StatusPill icon={Monitor} size="sm" surface="soft" tone="teal">
-              Online
-            </StatusPill>
-          ) : null}
-        </div>
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="mr-1 font-semibold text-muted-foreground text-xs">
+        {showAvailableScopes ? "Available now" : "Saved choices"}
+      </span>
+      {showLocal ? (
+        <StatusPill
+          icon={MapPin}
+          size="sm"
+          surface="soft"
+          tone={showAvailableScopes ? "teal" : "neutral"}
+        >
+          Local
+        </StatusPill>
+      ) : null}
+      {showOnline ? (
+        <StatusPill
+          icon={Monitor}
+          size="sm"
+          surface="soft"
+          tone={showAvailableScopes ? "teal" : "neutral"}
+        >
+          Online
+        </StatusPill>
       ) : null}
     </div>
   );
@@ -491,8 +486,7 @@ function getAvailabilityView(availability: CandidateAvailability) {
 
     if (!canReceiveProposal) {
       return {
-        description:
-          "Your choices are saved, but TeamForge cannot send you a new proposal right now.",
+        description: "A current limit is holding new proposals.",
         label: "Waiting",
         title: "Your proposal choices are saved",
         tone: "amber" as const,
@@ -500,8 +494,7 @@ function getAvailabilityView(availability: CandidateAvailability) {
     }
 
     return {
-      description:
-        "TeamForge can send a proposal for the available choices shown below. You decide whether to join.",
+      description: "You decide whether to join.",
       label: "Available",
       title: "You’re open to a group proposal",
       tone: "teal" as const,
@@ -510,8 +503,7 @@ function getAvailabilityView(availability: CandidateAvailability) {
 
   if (availability.lifecycle === "PAUSED") {
     return {
-      description:
-        "New proposals are paused. Confirm when you want TeamForge to consider you again.",
+      description: undefined,
       label: "Paused",
       title: "Group proposals are paused",
       tone: "muted" as const,
@@ -520,8 +512,7 @@ function getAvailabilityView(availability: CandidateAvailability) {
 
   if (availability.lifecycle === "EXPIRED") {
     return {
-      description:
-        "Your last confirmation ended. Confirm again if you still want group proposals.",
+      description: undefined,
       label: "Confirm again",
       title: "Are you still open to a proposal?",
       tone: "muted" as const,
@@ -530,8 +521,7 @@ function getAvailabilityView(availability: CandidateAvailability) {
 
   if (availability.lifecycle === "RESTRICTED") {
     return {
-      description:
-        "TeamForge cannot send new group proposals to this account right now.",
+      description: undefined,
       label: "Unavailable",
       title: "Group proposals are unavailable",
       tone: "muted" as const,
@@ -540,8 +530,7 @@ function getAvailabilityView(availability: CandidateAvailability) {
 
   if (availability.legacyAvailabilityPrompt) {
     return {
-      description:
-        "Your previous group-formation setting needs a review. Choose local activities, online activities, or both, then confirm what you want now.",
+      description: "Review where activities can happen.",
       label: "Review needed",
       title: "Review your group proposal choices",
       tone: "amber" as const,
@@ -549,8 +538,7 @@ function getAvailabilityView(availability: CandidateAvailability) {
   }
 
   return {
-    description:
-      "Choose local activities, online activities, or both. You decide on every proposal before joining.",
+    description: "You review every proposal before joining.",
     label: "Not enabled",
     title: "Choose whether you’re open",
     tone: "muted" as const,

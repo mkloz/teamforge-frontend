@@ -90,8 +90,8 @@ export function AdminAdultEligibilityCorrections({
           ) : null}
         </div>
         <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          Review requests that can change account access. Resolve only after
-          verifying the correction, or reject it with a recorded reason.
+          Verify each correction before resolving it; rejections require a
+          recorded reason.
         </p>
       </header>
 
@@ -180,15 +180,9 @@ function CorrectionsContent({
   if (!corrections?.length) {
     return (
       <div className="grid min-h-28 place-items-center border-border border-y px-4 py-8 text-center">
-        <div className="grid max-w-md gap-1">
-          <p className="font-semibold text-ink text-sm">
-            No corrections need review
-          </p>
-          <p className="text-pretty text-slate-muted text-xs leading-relaxed">
-            New requests will appear here when an adult eligibility correction
-            needs an admin decision.
-          </p>
-        </div>
+        <p className="font-semibold text-ink text-sm">
+          No corrections need review
+        </p>
       </div>
     );
   }

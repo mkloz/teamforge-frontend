@@ -27,7 +27,6 @@ export function InterestsBrowse({
   onToggleCategory,
   onToggleSubcategory,
   onRegisterCategory,
-  hideContextLabel = false,
 }: InterestsBrowseProps) {
   const viewState = getInterestsBrowseViewState({
     categories,
@@ -54,10 +53,7 @@ export function InterestsBrowse({
   return (
     <LazyMotion features={domMax}>
       <div className="mx-auto flex w-full max-w-xl flex-col pb-8">
-        <PageTitle
-          isSearching={viewState.isSearching}
-          hideContextLabel={hideContextLabel}
-        />
+        <PageTitle isSearching={viewState.isSearching} />
 
         <div className="relative w-full">
           <Activity mode={viewState.isSearching ? "hidden" : "visible"}>

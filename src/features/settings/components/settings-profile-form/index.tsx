@@ -247,9 +247,6 @@ function NotificationSettingsPanel({
         isLoadingNotificationPreferences={
           notifications.isLoadingNotificationPreferences
         }
-        isSavingNotificationPreferences={
-          notifications.isSavingNotificationPreferences
-        }
         savingNotificationPreferenceKeys={
           notifications.savingNotificationPreferenceKeys
         }

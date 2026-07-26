@@ -1,6 +1,5 @@
 import { lazy, type Ref, Suspense, useRef } from "react";
 import { GroupSection } from "@/features/group-plan-detail/components/content/group-section";
-import { PitchSection } from "@/features/group-plan-detail/components/content/pitch-section";
 import { PlanSection } from "@/features/group-plan-detail/components/content/plan-section";
 import { GroupPlanHero } from "@/features/group-plan-detail/components/hero/group-plan-hero";
 import { DecisionRail } from "@/features/group-plan-detail/components/rail/decision-rail";
@@ -73,16 +72,7 @@ function GroupPlanDetailPageShell({
         isCompactVisible={isCompactVisible}
         search={search}
       />
-      <GroupPlanPitch detail={detail} />
       <GroupPlanDetailGrid detail={detail} focus={focus} />
-    </div>
-  );
-}
-
-function GroupPlanPitch({ detail }: { detail: GroupPlanDetail }) {
-  return (
-    <div className="mt-8 mb-10">
-      <PitchSection detail={detail} />
     </div>
   );
 }

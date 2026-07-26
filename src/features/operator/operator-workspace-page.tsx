@@ -104,7 +104,7 @@ export function OperatorWorkspacePage() {
       </nav>
 
       <section className="grid min-w-0 content-start gap-4">
-        <header className="grid gap-1">
+        <header>
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h1
               ref={pageHeadingRef}
@@ -120,9 +120,6 @@ export function OperatorWorkspacePage() {
               {query.data.total} {query.data.total === 1 ? "case" : "cases"}
             </span>
           </div>
-          <p className="text-slate-muted text-sm leading-relaxed">
-            {activeQueue.description}
-          </p>
         </header>
 
         {query.data.data.length ? (
@@ -133,12 +130,7 @@ export function OperatorWorkspacePage() {
           </div>
         ) : (
           <div className="grid min-h-48 place-items-center rounded-2xl border border-border bg-card p-6 text-center">
-            <div className="grid gap-1">
-              <h2 className="font-bold text-ink text-lg">Queue clear</h2>
-              <p className="text-slate-muted text-sm">
-                There are no assigned cases waiting here.
-              </p>
-            </div>
+            <h2 className="font-bold text-ink text-lg">No assigned cases</h2>
           </div>
         )}
         <QueuePagination page={page} queue={queue} totalPages={totalPages} />

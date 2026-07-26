@@ -214,9 +214,7 @@ function RecoveryManager({
             />
           ))
         ) : (
-          <p className="py-5 text-muted-foreground text-sm">
-            No requests yet. This page will update as people ask to join.
-          </p>
+          <p className="py-5 text-muted-foreground text-sm">No requests yet</p>
         )}
       </div>
 

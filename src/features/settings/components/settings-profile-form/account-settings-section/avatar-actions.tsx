@@ -23,7 +23,9 @@ export function AvatarActions({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="min-h-5 text-slate-muted text-sm">{actionState.hintText}</p>
+      {actionState.hintText ? (
+        <p className="text-slate-muted text-sm">{actionState.hintText}</p>
+      ) : null}
       <div className="responsive-action-grid grid gap-3">
         <Button
           type="button"
@@ -43,7 +45,6 @@ export function AvatarActions({
             cancelLabel="Keep avatar"
             confirmLabel={actionState.deleteDialogConfirmLabel}
             description="This removes your saved profile photo from TeamForge."
-            details={["You can upload a new avatar whenever you want."]}
             disabled={actionState.deleteDialogDisabled}
             loading={isDeletingAvatar}
             onConfirm={onDeleteOrReset}

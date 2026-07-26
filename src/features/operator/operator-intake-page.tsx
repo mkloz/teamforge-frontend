@@ -140,12 +140,7 @@ export function OperatorIntakePage() {
         </div>
       ) : (
         <div className="grid min-h-48 place-items-center rounded-2xl border border-border bg-card p-6 text-center">
-          <div className="grid gap-1">
-            <h2 className="font-bold text-ink text-lg">Intake clear</h2>
-            <p className="text-slate-muted text-sm">
-              There are no unassigned cases waiting here.
-            </p>
-          </div>
+          <h2 className="font-bold text-ink text-lg">No unassigned cases</h2>
         </div>
       )}
       <IntakePagination page={page} totalPages={totalPages} />

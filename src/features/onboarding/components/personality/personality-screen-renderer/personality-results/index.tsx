@@ -78,10 +78,7 @@ export function PersonalityResults({
       <PersonalityResultSummary profile={viewModel.profile} />
 
       <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
-        <SectionHeading
-          eyebrow="Personality summary"
-          title="How you may contribute to a group"
-        />
+        <SectionHeading title="How you may contribute to a group" />
         <p className="text-pretty font-medium text-base text-ink/82 leading-relaxed">
           {viewModel.groupRead}
         </p>
@@ -94,10 +91,7 @@ export function PersonalityResults({
 
       {measurement?.mode === "DYNAMIC" && measurement.uncertainty ? (
         <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
-          <SectionHeading
-            eyebrow="How certain the result is"
-            title="Your likely score ranges"
-          />
+          <SectionHeading title="Your likely score ranges" />
           <p className="text-pretty text-muted-foreground text-sm leading-relaxed">
             These ranges show how much each score could reasonably vary, not a
             limit on who you are. A narrower range means this set of answers
@@ -130,10 +124,7 @@ export function PersonalityResults({
       ) : null}
 
       <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
-        <SectionHeading
-          eyebrow="Keep in mind"
-          title="An estimate, not a diagnosis"
-        />
+        <SectionHeading title="An estimate, not a diagnosis" />
         <p className="text-pretty text-muted-foreground text-sm leading-relaxed">
           This is an estimate based on your answers. It is not a diagnosis or a
           fixed description of who you are. It does not measure safety or
@@ -142,10 +133,7 @@ export function PersonalityResults({
       </section>
 
       <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
-        <SectionHeading
-          eyebrow="Your TeamForge profile"
-          title="A portrait people can understand"
-        />
+        <SectionHeading title="A portrait people can understand" />
         <p className="text-pretty text-ink/82 text-sm leading-relaxed">
           {isCompatibilityEligible
             ? "Save this result to add the portrait to your profile. Other signed-in TeamForge users can see it, and TeamForge can use it when forming groups."

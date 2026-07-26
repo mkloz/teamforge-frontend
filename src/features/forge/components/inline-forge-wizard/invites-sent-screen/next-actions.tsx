@@ -1,4 +1,4 @@
-import { Bell, MessageSquare, UsersRound } from "lucide-react";
+import { MessageSquare, UsersRound } from "lucide-react";
 
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
@@ -48,13 +48,6 @@ function getNextActions(isManual: boolean): NextActionItem[] {
       icon: MessageSquare,
       text: "Settle timing, links, and small details.",
       title: "Start chat",
-    },
-    {
-      icon: Bell,
-      text: isManual
-        ? "You will be notified when someone accepts."
-        : "Members get their group updates from here.",
-      title: "Stay updated",
     },
   ];
 }

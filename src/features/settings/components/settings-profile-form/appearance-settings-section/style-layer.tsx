@@ -19,11 +19,7 @@ export function StyleLayer({
   onSelect,
 }: StyleLayerProps) {
   return (
-    <LayerBlock
-      index="02"
-      title="Art style"
-      description="Change the interface style without changing its colors."
-    >
+    <LayerBlock title="Interface style">
       <StyleTableGrid
         selectedThemeStyle={selectedThemeStyle}
         disabled={disabled}

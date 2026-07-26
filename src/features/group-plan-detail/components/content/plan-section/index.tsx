@@ -1,13 +1,9 @@
 import {
   Banknote,
   CalendarClock,
-  CheckCircle2,
-  CircleDashed,
-  CircleDot,
   type LucideIcon,
   MapPinned,
   Wifi,
-  XCircle,
 } from "lucide-react";
 import type { Ref } from "react";
 import { Section } from "@/features/group-plan-detail/components/section";
@@ -41,18 +37,7 @@ interface PlanSectionState {
   locationSupporting: string;
   plan: Plan;
   statusContext?: string;
-  statusIcon: LucideIcon;
-  statusLabel: string;
 }
-
-const PLAN_STATUS_ICONS = {
-  CANCELLED: XCircle,
-  COMPLETED: CheckCircle2,
-  CONFIRMED: CheckCircle2,
-  DRAFT: CircleDashed,
-  IN_PROGRESS: CircleDot,
-  PROPOSED: CircleDashed,
-} satisfies Record<Plan["status"], LucideIcon>;
 
 export function PlanSection({
   detail,
@@ -68,14 +53,21 @@ export function PlanSection({
   return (
     <Section
       heading="The plan"
-      description="See the confirmed details and decisions still open."
       headingId="plan-section-heading"
       sectionRef={sectionRef}
       isHighlighted={isHighlighted}
       trailing={<PlanStatusPill status={state.plan.status} />}
     >
       <div className="flex flex-col gap-8">
-        <PlanDescription description={state.plan.description} />
+        <PlanDescription
+          description={state.plan.description}
+          groupDescription={detail.group.description}
+        />
+        {state.statusContext ? (
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            {state.statusContext}
+          </p>
+        ) : null}
         <PlanFactsGrid state={state} />
       </div>
     </Section>
@@ -104,8 +96,6 @@ function getPlanSectionState(detail: GroupPlanDetail): PlanSectionState | null {
       plan.status,
       detail.planning.pendingProposalCount,
     ),
-    statusIcon: PLAN_STATUS_ICONS[plan.status],
-    statusLabel: formatStatusLabel(plan.status),
   };
 }
 
@@ -151,8 +141,18 @@ function getLocationIcon(plan: Plan) {
   return plan.locationMode === "ONLINE" ? Wifi : MapPinned;
 }
 
-function PlanDescription({ description }: { description: string | null }) {
-  if (!description) {
+function PlanDescription({
+  description,
+  groupDescription,
+}: {
+  description: string | null;
+  groupDescription: string | null;
+}) {
+  if (
+    !description ||
+    description.trim().toLocaleLowerCase() ===
+      groupDescription?.trim().toLocaleLowerCase()
+  ) {
     return null;
   }
 
@@ -183,12 +183,6 @@ function PlanFactsGrid({ state }: { state: PlanSectionState }) {
         label="Cost"
         value={state.cost}
         supporting={state.costSupporting}
-      />
-      <PlanFact
-        icon={state.statusIcon}
-        label="Status"
-        value={state.statusLabel}
-        supporting={state.statusContext}
       />
     </div>
   );

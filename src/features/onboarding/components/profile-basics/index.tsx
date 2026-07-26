@@ -34,8 +34,7 @@ export function ProfileBasicsCard({
           <span className="text-forge-teal">.</span>
         </h1>
         <p className="mt-1 max-w-sm text-center font-sans text-slate-muted text-xs sm:mt-2 sm:text-base">
-          Google handled sign-in. Add the details TeamForge needs before you
-          continue.
+          Add the details TeamForge needs to continue.
         </p>
       </div>
 

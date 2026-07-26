@@ -98,9 +98,6 @@ export function AdultEligibilitySection({
     <section className="border-border border-t pt-7">
       <div className="mb-5 max-w-2xl">
         <h3 className="font-semibold text-ink text-lg">Age eligibility</h3>
-        <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          Confirm your age for age-restricted group features.
-        </p>
       </div>
 
       <div className="flex max-w-2xl flex-col gap-5">

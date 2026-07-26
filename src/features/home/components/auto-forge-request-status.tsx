@@ -128,7 +128,6 @@ function RequestStatusCard({
     <section className="grid gap-4" aria-labelledby="forge-request-heading">
       <HomeSectionHeading
         id="forge-request-heading"
-        eyebrow="Forge request"
         title={request.activity.title}
         description={view.description}
       />
@@ -449,8 +448,7 @@ function getRequestView(request: AutoForgeRequest) {
   if (request.lifecycle === "SEARCHING") {
     return {
       label: "Searching",
-      description:
-        "Your request is active. TeamForge will check it again automatically; no group has formed yet.",
+      description: "TeamForge checks automatically; no group has formed yet.",
     };
   }
   if (request.lifecycle === "PAUSED") {
@@ -476,15 +474,14 @@ function getRequestView(request: AutoForgeRequest) {
   if (request.lifecycle === "PROPOSED") {
     return {
       label: "Ready to review",
-      description:
-        "Your proposal is ready to review. Check the activity and everyone in the proposal before deciding.",
+      description: "Check the activity and proposed group before deciding.",
     };
   }
   return {
     label: request.lifecycle === "FORMED" ? "Group formed" : "Closed",
     description:
       request.lifecycle === "FORMED"
-        ? "Your group has formed. Its group workspace will show the next planning action."
+        ? "Open its workspace for the next planning action."
         : "This request is no longer active.",
   };
 }

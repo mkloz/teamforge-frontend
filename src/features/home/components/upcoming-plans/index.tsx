@@ -59,9 +59,7 @@ function UpcomingPlansView({
     >
       <HomeSectionHeading
         id="upcoming-plans-heading"
-        eyebrow="Next up"
-        title="Plans on the calendar"
-        description="Your next scheduled plans."
+        title="Upcoming plans"
         action={
           <Button asChild variant="ghost" size="sm">
             <Link {...buildActivityNavigation({ filter: "groups" })}>

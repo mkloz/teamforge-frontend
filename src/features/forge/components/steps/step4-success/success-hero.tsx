@@ -1,4 +1,4 @@
-import { Check, UsersRound } from "lucide-react";
+import { Check } from "lucide-react";
 import { ForgeGroupReadyVisual } from "@/features/forge/assets/forge-group-ready";
 import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
 import { Avatar } from "@/shared/components/common/avatar";
@@ -42,14 +42,11 @@ export function SuccessHero({ planTitle, participants }: SuccessHeroProps) {
               iconClassName="size-5"
             />
             <div className="min-w-0 flex-1">
-              <p className="font-semibold text-muted-foreground text-xs">
-                Group ready
-              </p>
-              <h3 className="mt-1 font-bold text-foreground text-xl leading-tight">
-                {displayTitle} is ready.
+              <h3 className="font-bold text-foreground text-xl leading-tight">
+                {displayTitle}
               </h3>
               <p className="mt-1.5 text-muted-foreground text-sm leading-snug">
-                Keep this group as-is, or remove someone before you continue.
+                Review the members. You can remove someone before continuing.
               </p>
             </div>
           </div>
@@ -59,13 +56,6 @@ export function SuccessHero({ planTitle, participants }: SuccessHeroProps) {
 
         <div className="flex items-center justify-between gap-3 border-border/35 border-y py-3">
           <SuccessHeroPeopleStack activeParticipants={participants} />
-          <ReviewStatus />
-        </div>
-
-        <div className="grid grid-cols-1 gap-2 text-xs">
-          <p className="min-w-0 text-muted-foreground">
-            Review the selected people before continuing.
-          </p>
         </div>
       </div>
     </section>
@@ -117,22 +107,6 @@ function HiddenParticipantCount({ hiddenCount }: { hiddenCount: number }) {
   return (
     <div className="-ml-2 flex size-8 items-center justify-center rounded-lg border border-card bg-muted font-bold text-muted-foreground text-xs">
       +{hiddenCount}
-    </div>
-  );
-}
-
-function ReviewStatus() {
-  return (
-    <div className="flex shrink-0 items-center gap-2 text-right">
-      <UsersRound size={15} className="text-forge-teal" />
-      <div>
-        <p className="font-bold text-foreground text-sm leading-tight">
-          Ready to review
-        </p>
-        <p className="font-semibold text-muted-foreground text-xs">
-          Group status
-        </p>
-      </div>
     </div>
   );
 }

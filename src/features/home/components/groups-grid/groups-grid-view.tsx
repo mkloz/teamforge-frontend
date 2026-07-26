@@ -47,7 +47,6 @@ export function GroupsGridView({
       <HomeSectionHeading
         id="groups-grid-heading"
         title="Active groups"
-        description="Groups with recent activity."
         action={
           <Button asChild variant="ghost" size="sm">
             <Link {...buildActivityNavigation({ filter: "groups" })}>

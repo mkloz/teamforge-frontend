@@ -90,13 +90,11 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
       >
         <div className="flex min-w-0 flex-col gap-7">
           <div className="flex flex-col gap-4">
-            <p className="font-bold text-muted-foreground text-sm">Forge</p>
             <h1 className="max-w-3xl text-balance text-center font-black text-4xl text-foreground leading-tight md:text-left md:text-display-lg">
               What are you trying to make happen?
             </h1>
             <p className="max-w-xl text-pretty font-medium text-base text-muted-foreground leading-relaxed">
-              Describe the activity and set the group size. TeamForge chooses
-              people and opens a shared conversation.
+              Set the activity and group size. TeamForge opens the conversation.
             </p>
           </div>
 
@@ -106,10 +104,10 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
               variant="primary"
               size="hero"
               className="w-full sm:w-auto"
-              aria-label="Forge my group"
+              aria-label="Start forging a group"
             >
               <Plus size={20} />
-              Forge my group
+              Start
             </Button>
           </div>
         </div>
@@ -119,14 +117,11 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
 
       {/* Idea chips */}
       <section aria-labelledby="starter-ideas-title">
-        <p
+        <h2
           id="starter-ideas-title"
-          className="font-bold text-muted-foreground text-sm"
+          className="text-balance font-black text-2xl text-foreground leading-tight"
         >
-          Start here
-        </p>
-        <h2 className="mt-2 text-balance font-black text-2xl text-foreground leading-tight">
-          Pick an idea and we'll pre-fill the details.
+          Or start with an idea
         </h2>
         <div className="mt-4 flex flex-wrap gap-2">
           {FORGE_IDEA_CHIPS.map((chip) => (

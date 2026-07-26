@@ -13,13 +13,11 @@ interface BriefEntry {
 }
 
 interface Brief {
-  badge: string;
   rows: BriefEntry[];
 }
 
 const BRIEFS: Brief[] = [
   {
-    badge: "Example activity",
     rows: [
       { label: "Activity", value: "Beginner bouldering" },
       { label: "When", value: "Thursday, 6:30 PM" },
@@ -28,7 +26,6 @@ const BRIEFS: Brief[] = [
     ],
   },
   {
-    badge: "Example activity",
     rows: [
       { label: "Activity", value: "Sunday cycle route" },
       { label: "When", value: "Sunday, 9 AM" },
@@ -37,7 +34,6 @@ const BRIEFS: Brief[] = [
     ],
   },
   {
-    badge: "Example activity",
     rows: [
       { label: "Activity", value: "Exam revision block" },
       { label: "When", value: "Saturday, 2 PM" },
@@ -76,16 +72,13 @@ export function AnimatedBriefCycler() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4 border-forge-teal/20 border-b px-4 py-3">
         <div>
-          <p className="font-black text-foreground text-sm">{brief.badge}</p>
-          <p className="font-medium text-muted-foreground text-xs">
-            Specific enough to start
-          </p>
+          <p className="font-black text-foreground text-sm">Example</p>
         </div>
         {/* Animated dot indicators */}
         <div className="flex items-center gap-1" aria-hidden="true">
-          {BRIEFS.map((b, i) => (
+          {BRIEFS.map((briefItem, i) => (
             <span
-              key={b.badge + String(i)}
+              key={briefItem.rows[0]?.value}
               className="block size-1.5 rounded-full transition-colors duration-300"
               style={{
                 backgroundColor:

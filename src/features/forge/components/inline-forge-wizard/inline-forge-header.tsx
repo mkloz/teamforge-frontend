@@ -59,11 +59,6 @@ export function InlineForgeHeader({
               >
                 {currentMetadata.title}
               </h2>
-              {currentMetadata.hint && (
-                <p className="mt-0.5 font-medium text-muted-foreground text-xs">
-                  {currentMetadata.hint}
-                </p>
-              )}
             </div>
           </div>
         </div>

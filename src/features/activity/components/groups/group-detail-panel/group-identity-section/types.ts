@@ -23,8 +23,6 @@ export interface GroupIdentitySectionProps {
   isReadOnly?: boolean;
   isOnline?: boolean;
   isSystemManaged?: boolean;
-  memberCount: number;
-  maxMembers: number;
   groupId: string;
   name: string;
   onEditGroup: () => void;
