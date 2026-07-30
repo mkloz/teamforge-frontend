@@ -160,7 +160,7 @@ export function CoverageDeclarationForm({
   };
 
   return (
-    <div className="mt-6 border-border border-t pt-6">
+    <div className="mt-6">
       <div className="grid gap-1">
         <h3 className="font-semibold text-ink text-sm">
           {coverage.declarationId
@@ -168,46 +168,67 @@ export function CoverageDeclarationForm({
             : "Declare coverage window"}
         </h3>
         <p className="max-w-2xl text-slate-muted text-sm leading-relaxed">
-          A declaration may span up to 24 hours. The server checks both
-          operators and the current declaration again before saving it.
+          Pair two eligible operators with a shift of up to 24 hours.
         </p>
       </div>
 
-      <form className="mt-5 grid gap-5" onSubmit={handleSubmit} noValidate>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <OperatorSelectField
-            error={fieldErrors.primary}
-            id="pilot-primary-operator"
-            label="Primary operator"
-            operators={eligibleOperators}
-            unavailableOperatorId={backupOperatorId}
-            value={primaryOperatorId}
-            onValueChange={updatePrimary}
-          />
-          <OperatorSelectField
-            error={fieldErrors.backup}
-            id="pilot-backup-operator"
-            label="Backup operator"
-            operators={eligibleOperators}
-            unavailableOperatorId={primaryOperatorId}
-            value={backupOperatorId}
-            onValueChange={updateBackup}
-          />
-          <DateTimeField
-            error={fieldErrors.startsAt}
-            id="pilot-coverage-start"
-            label="Coverage starts"
-            value={startsAt}
-            onChange={setStartsAt}
-          />
-          <DateTimeField
-            error={fieldErrors.endsAt}
-            id="pilot-coverage-end"
-            label="Coverage ends"
-            value={endsAt}
-            onChange={setEndsAt}
-          />
-        </div>
+      <form
+        className="mt-5 grid gap-6 rounded-2xl bg-card p-5 sm:p-6"
+        onSubmit={handleSubmit}
+        noValidate
+      >
+        <fieldset className="grid gap-4">
+          <legend className="mb-3 font-semibold text-ink text-sm">
+            Coverage team
+          </legend>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <OperatorSelectField
+              error={fieldErrors.primary}
+              id="pilot-primary-operator"
+              label="Primary operator"
+              operators={eligibleOperators}
+              unavailableOperatorId={backupOperatorId}
+              value={primaryOperatorId}
+              onValueChange={updatePrimary}
+            />
+            <OperatorSelectField
+              error={fieldErrors.backup}
+              id="pilot-backup-operator"
+              label="Backup operator"
+              operators={eligibleOperators}
+              unavailableOperatorId={primaryOperatorId}
+              value={backupOperatorId}
+              onValueChange={updateBackup}
+            />
+          </div>
+        </fieldset>
+
+        <fieldset className="grid gap-4">
+          <legend className="mb-3 font-semibold text-ink text-sm">
+            Shift window
+          </legend>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <DateTimeField
+              error={fieldErrors.startsAt}
+              id="pilot-coverage-start"
+              label="Starts"
+              value={startsAt}
+              onChange={setStartsAt}
+            />
+            <DateTimeField
+              error={fieldErrors.endsAt}
+              id="pilot-coverage-end"
+              label="Ends"
+              value={endsAt}
+              onChange={setEndsAt}
+            />
+          </div>
+          <div className="grid grid-cols-[auto_minmax(2rem,1fr)_auto] items-center gap-3 text-slate-muted text-xs">
+            <span>Handoff</span>
+            <span className="h-1 rounded-full bg-primary/35" />
+            <span>Up to 24h</span>
+          </div>
+        </fieldset>
 
         {fieldErrors.form || declareMutation.error ? (
           <p className="text-destructive text-sm" role="alert">

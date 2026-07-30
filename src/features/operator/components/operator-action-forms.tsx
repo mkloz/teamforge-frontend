@@ -462,7 +462,7 @@ function ActionForm({
 }) {
   return (
     <form
-      className="grid gap-3 border-border border-b pb-5 last:border-b-0 last:pb-0"
+      className="grid gap-3 rounded-xl bg-card p-4"
       onSubmit={(event) => {
         if (!commandsEnabled) {
           event.preventDefault();

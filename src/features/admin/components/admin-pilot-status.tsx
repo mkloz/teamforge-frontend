@@ -1,33 +1,40 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertTriangle,
+  type LucideIcon,
   RefreshCw,
-  type ShieldCheck,
   SlidersHorizontal,
   UsersRound,
 } from "lucide-react";
-import type { ReactNode } from "react";
-
 import { adminPilotStatusQueryOptions } from "@/features/admin/api/admin.api";
 import type { AdminPilotStatus as AdminPilotStatusData } from "@/features/admin/schemas/admin-pilot-status.schema";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import {
-  StatusPill,
-  type StatusPillTone,
-} from "@/shared/components/ui/status-pill";
+import { cn } from "@/shared/lib/utils";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
   timeStyle: "short",
+});
+const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
 });
 
 interface StatusRow {
   description: string;
   label: string;
   state: string;
-  tone: StatusPillTone;
+  tone: "amber" | "destructive" | "neutral" | "teal";
 }
+
+const GATE_STAGES = [
+  { label: "Safety", start: 0, end: 3 },
+  { label: "Intake", start: 3, end: 5 },
+  { label: "Formation", start: 5, end: 7 },
+  { label: "Experience", start: 7, end: 10 },
+] as const;
 
 export function AdminPilotStatus() {
   const pilotStatusQuery = useQuery(adminPilotStatusQueryOptions());
@@ -76,28 +83,11 @@ function CohortSection({ status }: { status: AdminPilotStatusData }) {
       />
 
       {cohort ? (
-        <dl className="mt-4 grid gap-x-8 border-border border-t sm:grid-cols-2">
-          <CohortDetail label="Cohort" value={cohort.code} />
-          <CohortDetail
-            label="Members"
-            value={`${cohort.memberCount} of ${cohort.memberCap}`}
-          />
-          <CohortDetail label="Pilot window">
-            <AdminDateTime value={cohort.startsAt} />
-            <span aria-hidden="true"> – </span>
-            <span className="sr-only"> to </span>
-            <AdminDateTime value={cohort.endsAt} />
-          </CohortDetail>
-          <CohortDetail label="Outcome window ends">
-            <AdminDateTime value={cohort.outcomeWindowEndsAt} />
-          </CohortDetail>
-        </dl>
+        <CohortVisual status={status} />
       ) : (
-        <div className="mt-4 border-border border-t py-5">
-          <StatusPill size="sm" surface="soft" tone="neutral">
-            No active cohort
-          </StatusPill>
-          <p className="mt-2 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+        <div className="mt-4 rounded-xl border border-border border-dashed px-5 py-6">
+          <p className="font-semibold text-ink text-sm">No active cohort</p>
+          <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
             Gate and readiness rows still show the server's current status.
           </p>
         </div>
@@ -106,21 +96,116 @@ function CohortSection({ status }: { status: AdminPilotStatusData }) {
   );
 }
 
-function CohortDetail({
-  children,
+function CohortVisual({ status }: { status: AdminPilotStatusData }) {
+  const cohort = status.activeCohort;
+  if (!cohort) return null;
+
+  const startTime = new Date(cohort.startsAt).getTime();
+  const pilotEndTime = new Date(cohort.endsAt).getTime();
+  const outcomeEndTime = new Date(cohort.outcomeWindowEndsAt).getTime();
+  const evaluatedTime = new Date(status.evaluatedAt).getTime();
+  const pilotWindow = Math.max(1, pilotEndTime - startTime);
+  const outcomeWindow = Math.max(1, outcomeEndTime - pilotEndTime);
+  const currentProgress =
+    evaluatedTime <= pilotEndTime
+      ? Math.min(
+          50,
+          Math.max(0, ((evaluatedTime - startTime) / pilotWindow) * 50),
+        )
+      : Math.min(
+          100,
+          50 + ((evaluatedTime - pilotEndTime) / outcomeWindow) * 50,
+        );
+  const capacityProgress =
+    cohort.memberCap > 0
+      ? Math.min(100, (cohort.memberCount / cohort.memberCap) * 100)
+      : 0;
+
+  return (
+    <div className="mt-4 grid gap-7 rounded-2xl bg-card p-5 sm:p-6">
+      <div className="main-action-grid grid items-end gap-4">
+        <div className="grid gap-1">
+          <p className="text-slate-muted text-xs">Active cohort</p>
+          <p className="font-semibold text-ink text-xl">{cohort.code}</p>
+        </div>
+        <p className="font-semibold text-ink text-sm tabular-nums">
+          {cohort.memberCount} of {cohort.memberCap} members
+        </p>
+      </div>
+
+      <div className="grid gap-2">
+        <div className="h-2 overflow-hidden rounded-full bg-muted/80">
+          <div
+            className="h-full rounded-full bg-primary"
+            style={{ width: `${capacityProgress}%` }}
+          />
+        </div>
+        <p className="text-slate-muted text-xs">
+          {cohort.memberCount >= cohort.memberCap
+            ? "Cohort is at capacity"
+            : `${cohort.memberCap - cohort.memberCount} places remain`}
+        </p>
+      </div>
+
+      <div className="grid gap-3">
+        <div className="relative h-3">
+          <div className="absolute top-1 right-0 left-0 h-px bg-border" />
+          <span className="absolute top-0 left-0 size-2.5 rounded-full border-2 border-card bg-slate-muted" />
+          <span
+            className="absolute top-0 size-2.5 -translate-x-1/2 rounded-full border-2 border-card bg-slate-muted"
+            style={{ left: "50%" }}
+          />
+          <span className="absolute top-0 right-0 size-2.5 rounded-full border-2 border-card bg-slate-muted" />
+          <span
+            className="absolute -top-0.5 size-3.5 -translate-x-1/2 rounded-full border-card border-thick bg-primary"
+            style={{ left: `${currentProgress}%` }}
+            aria-hidden="true"
+          />
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <CohortMilestone
+            align="start"
+            label="Started"
+            value={cohort.startsAt}
+          />
+          <CohortMilestone
+            align="center"
+            label="Pilot ends"
+            value={cohort.endsAt}
+          />
+          <CohortMilestone
+            align="end"
+            label="Outcome closes"
+            value={cohort.outcomeWindowEndsAt}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CohortMilestone({
+  align,
   label,
   value,
 }: {
-  children?: ReactNode;
+  align: "center" | "end" | "start";
   label: string;
-  value?: string;
+  value: string;
 }) {
   return (
-    <div className="flex min-w-0 items-start justify-between gap-4 border-border border-b py-3">
-      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
-      <dd className="min-w-0 text-right font-semibold text-ink text-sm tabular-nums">
-        {children ?? value}
-      </dd>
+    <div
+      className={cn(
+        align === "center" && "justify-items-center text-center",
+        align === "end" && "justify-items-end text-right",
+      )}
+    >
+      <div className="grid gap-0.5">
+        <p className="font-semibold text-ink text-xs">{label}</p>
+        <p className="text-slate-muted text-xs">
+          <AdminDate value={value} />
+        </p>
+      </div>
     </div>
   );
 }
@@ -133,41 +218,97 @@ function StatusSection({
   title,
 }: {
   description: string;
-  icon: typeof ShieldCheck;
+  icon: LucideIcon;
   id: string;
   rows: StatusRow[];
   title: string;
 }) {
   return (
-    <section aria-labelledby={id} className="border-border border-t pt-6">
+    <section aria-labelledby={id} className="pt-2">
       <AdminStatusSectionHeading
         description={description}
         icon={icon}
         id={id}
         title={title}
       />
-      <dl className="mt-4 grid gap-x-8 sm:grid-cols-2">
-        {rows.map((row) => (
-          <div
-            key={row.label}
-            className="flex min-w-0 items-start justify-between gap-4 border-border border-b py-3"
-          >
-            <dt className="min-w-0">
-              <span className="block font-semibold text-ink text-sm">
-                {row.label}
-              </span>
-              <span className="mt-0.5 block text-pretty text-slate-muted text-xs leading-relaxed">
-                {row.description}
-              </span>
-            </dt>
-            <dd className="shrink-0">
-              <StatusPill size="xs" surface="soft" tone={row.tone}>
-                {row.state}
-              </StatusPill>
-            </dd>
-          </div>
-        ))}
-      </dl>
+      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-2xl bg-background md:grid-cols-2 xl:grid-cols-4">
+        {GATE_STAGES.map((stage) => {
+          const stageRows = rows.slice(stage.start, stage.end);
+          const enabledCount = stageRows.filter(
+            (row) => row.tone === "teal",
+          ).length;
+
+          return (
+            <section
+              key={stage.label}
+              className="grid content-start gap-4 bg-card p-5 sm:p-6"
+            >
+              <div className="grid gap-2">
+                <div className="flex items-baseline justify-between gap-2">
+                  <h3 className="font-semibold text-ink text-sm">
+                    {stage.label}
+                  </h3>
+                  <p className="text-slate-muted text-xs">
+                    {enabledCount}/{stageRows.length} open
+                  </p>
+                </div>
+                <span
+                  className="grid gap-1"
+                  style={{
+                    gridTemplateColumns: `repeat(${stageRows.length}, minmax(0, 1fr))`,
+                  }}
+                  aria-hidden="true"
+                >
+                  {stageRows.map((row) => (
+                    <span
+                      key={row.label}
+                      className={cn(
+                        "h-1.5 rounded-full",
+                        row.tone === "teal"
+                          ? "bg-primary"
+                          : row.tone === "destructive"
+                            ? "bg-danger"
+                            : row.tone === "amber"
+                              ? "bg-accent"
+                              : "bg-muted",
+                      )}
+                    />
+                  ))}
+                </span>
+              </div>
+
+              <dl className="grid gap-4">
+                {stageRows.map((row) => (
+                  <div key={row.label} className="grid gap-0.5">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <dt className="font-semibold text-ink text-sm">
+                        {row.label}
+                      </dt>
+                      <dd
+                        className={cn(
+                          "shrink-0 font-medium text-xs",
+                          row.tone === "teal"
+                            ? "text-primary"
+                            : row.tone === "destructive"
+                              ? "text-danger"
+                              : row.tone === "amber"
+                                ? "text-accent"
+                                : "text-slate-muted",
+                        )}
+                      >
+                        {row.state}
+                      </dd>
+                    </div>
+                    <p className="text-pretty text-slate-muted text-xs leading-relaxed">
+                      {row.description}
+                    </p>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          );
+        })}
+      </div>
     </section>
   );
 }
@@ -179,23 +320,22 @@ function AdminStatusSectionHeading({
   title,
 }: {
   description: string;
-  icon: typeof ShieldCheck;
+  icon: LucideIcon;
   id: string;
   title: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary">
-        <Icon className="size-4" aria-hidden="true" />
-      </span>
-      <div className="min-w-0">
-        <h2 id={id} className="font-semibold text-base text-ink">
-          {title}
-        </h2>
-        <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          {description}
-        </p>
-      </div>
+    <div className="grid gap-1">
+      <h2
+        id={id}
+        className="flex items-center gap-2 font-semibold text-base text-ink"
+      >
+        <Icon className="size-4 shrink-0" aria-hidden="true" />
+        {title}
+      </h2>
+      <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+        {description}
+      </p>
     </div>
   );
 }
@@ -204,10 +344,7 @@ function AdminPilotStatusLoading() {
   return (
     <div className="grid gap-8" role="status" aria-label="Loading pilot status">
       {["cohort", "gates"].map((section) => (
-        <section
-          key={section}
-          className="border-border border-t pt-6 first:border-t-0 first:pt-0"
-        >
+        <section key={section} className="pt-2 first:pt-0">
           <div className="flex items-start gap-3">
             <Skeleton shape="circle" className="size-9 shrink-0" />
             <div className="grid flex-1 gap-2">
@@ -215,11 +352,11 @@ function AdminPilotStatusLoading() {
               <Skeleton className="h-4 w-full max-w-lg" />
             </div>
           </div>
-          <div className="mt-4 grid gap-x-8 sm:grid-cols-2">
+          <div className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2">
             {[0, 1, 2, 3].map((row) => (
               <div
                 key={row}
-                className="flex items-center justify-between gap-4 border-border border-b py-3"
+                className="flex items-center justify-between gap-4 bg-card px-4 py-3"
               >
                 <Skeleton className="h-4 w-32" />
                 <Skeleton shape="pill" className="h-5 w-16" />
@@ -234,11 +371,8 @@ function AdminPilotStatusLoading() {
 
 function AdminPilotStatusError({ onRetry }: { onRetry: () => void }) {
   return (
-    <section
-      aria-labelledby="pilot-status-error-heading"
-      className="border-border border-t py-8"
-    >
-      <AlertTriangle className="size-8 text-accent" aria-hidden="true" />
+    <section aria-labelledby="pilot-status-error-heading" className="py-8">
+      <AlertTriangle className="size-8" aria-hidden="true" />
       <h2
         id="pilot-status-error-heading"
         className="mt-3 font-semibold text-ink text-lg"
@@ -266,6 +400,10 @@ function AdminDateTime({ value }: { value: string }) {
   return (
     <time dateTime={value}>{DATE_TIME_FORMATTER.format(new Date(value))}</time>
   );
+}
+
+function AdminDate({ value }: { value: string }) {
+  return <time dateTime={value}>{DATE_FORMATTER.format(new Date(value))}</time>;
 }
 
 function buildGateRows(status: AdminPilotStatusData): StatusRow[] {

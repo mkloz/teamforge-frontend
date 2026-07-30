@@ -3,8 +3,8 @@ import {
   AlertTriangle,
   Gauge,
   RefreshCw,
-  ShieldCheck,
   ShieldOff,
+  Workflow,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -19,10 +19,19 @@ import {
 } from "@/features/admin/lib/pilot-operations-language";
 import type { AdminPilotOperationsReadiness as Readiness } from "@/features/admin/schemas/admin-pilot-operations.schema";
 import { getOperatorControlErrorKind } from "@/features/operator/public/operator-governance";
-import { useOperatorSessionStepUp } from "@/features/operator/public/use-operator-session-step-up";
+import {
+  OperatorReauthenticationDialog,
+  useOperatorSessionStepUp,
+} from "@/features/operator/public/use-operator-session-step-up";
+import {
+  AdminSummaryMetric,
+  AdminSummaryStrip,
+} from "@/shared/components/admin/admin-visuals";
 import { Button } from "@/shared/components/ui/button";
+import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
+import { Notice } from "@/shared/components/ui/notice";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { StatusPill } from "@/shared/components/ui/status-pill";
+import { cn } from "@/shared/lib/utils";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
@@ -36,14 +45,8 @@ const ACTION_KEYS = [
 
 export function AdminPilotOperationsReadiness() {
   const readinessQuery = useQuery(adminPilotOperationsReadinessQueryOptions());
-  const {
-    hasCurrentStepUp,
-    isSigningInAgain,
-    rejectCurrentStepUp,
-    sessionQuery,
-    signInAgain,
-    signInAgainError,
-  } = useOperatorSessionStepUp();
+  const { reauthenticationDialogProps, rejectCurrentStepUp, sessionQuery } =
+    useOperatorSessionStepUp();
   const [announcement, setAnnouncement] = useState("");
   const [commandError, setCommandError] = useState<string | null>(null);
 
@@ -57,7 +60,7 @@ export function AdminPilotOperationsReadiness() {
     sessionQuery.data?.roles.includes("OWNER_ADMIN") &&
       !sessionQuery.data.breakGlass,
   );
-  const commandsEnabled = ownsControls && hasCurrentStepUp;
+  const commandsEnabled = ownsControls;
   const handleCommandError = (error: unknown) => {
     setAnnouncement("");
     setCommandError(coverageErrorMessage(error));
@@ -70,14 +73,22 @@ export function AdminPilotOperationsReadiness() {
     <div className="grid gap-8">
       <ReadinessSummary readiness={readiness} />
       <ActionReadiness readiness={readiness} />
-      <OperationalSignals readiness={readiness} />
+      <CollapsibleSection
+        variant="panel"
+        summary={
+          <div className="grid gap-1">
+            <span className="text-base">Operational signals</span>
+            <span className="font-normal text-slate-muted text-xs">
+              Cohort checks, urgent queues, and worker-level evidence
+            </span>
+          </div>
+        }
+      >
+        <OperationalSignals readiness={readiness} />
+      </CollapsibleSection>
       <CoverageCommandAccess
         ownsControls={ownsControls}
         sessionQuery={sessionQuery}
-        hasCurrentStepUp={hasCurrentStepUp}
-        isSigningInAgain={isSigningInAgain}
-        onSignInAgain={() => void signInAgain()}
-        signInAgainError={signInAgainError}
       />
       {commandError ? (
         <CoverageCommandError
@@ -86,12 +97,9 @@ export function AdminPilotOperationsReadiness() {
         />
       ) : null}
       {announcement ? (
-        <p
-          className="border-primary/20 border-y py-4 text-primary text-sm"
-          role="status"
-        >
-          {announcement}
-        </p>
+        <Notice role="status" size="sm" statusIcon tone="success">
+          <p>{announcement}</p>
+        </Notice>
       ) : null}
       <AdminPilotCoverageControls
         commandsEnabled={commandsEnabled}
@@ -103,121 +111,177 @@ export function AdminPilotOperationsReadiness() {
           setAnnouncement(message);
         }}
       />
+      <OperatorReauthenticationDialog {...reauthenticationDialogProps} />
     </div>
   );
 }
 
 function ReadinessSummary({ readiness }: { readiness: Readiness }) {
   const ready = readiness.status === "READY";
+  const allowedActions = ACTION_KEYS.filter(
+    (key) => readiness.actions[key].allowed,
+  ).length;
+  const visibleReasons = readiness.reasonCodes.slice(0, 3);
+  const remainingReasons = readiness.reasonCodes.length - visibleReasons.length;
 
   return (
-    <section
-      aria-labelledby="operations-readiness-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="operations-readiness-heading" className="pt-2">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary">
-            <Gauge className="size-4" aria-hidden="true" />
-          </span>
-          <div className="min-w-0">
-            <h2
-              id="operations-readiness-heading"
-              className="font-semibold text-base text-ink"
-            >
-              Operational readiness
-            </h2>
-            <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-              The server evaluates pilot gates, coverage, moderation safeguards,
-              worker health, and urgent queues together.
-            </p>
-          </div>
+        <div className="grid min-w-0 gap-1">
+          <h2
+            id="operations-readiness-heading"
+            className="flex items-center gap-2 font-semibold text-base text-ink"
+          >
+            <Gauge className="size-4 shrink-0" aria-hidden="true" />
+            Operational readiness
+          </h2>
+          <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+            The server evaluates pilot gates, coverage, moderation safeguards,
+            worker health, and urgent queues together.
+          </p>
         </div>
-        <StatusPill size="sm" surface="soft" tone={ready ? "teal" : "amber"}>
+        <p
+          className={cn(
+            "flex items-center gap-2 font-semibold text-sm",
+            ready ? "text-primary" : "text-accent",
+          )}
+        >
+          <span
+            className={cn(
+              "size-2 rounded-full",
+              ready ? "bg-primary" : "bg-accent",
+            )}
+            aria-hidden="true"
+          />
           {ready ? "Ready" : "Needs attention"}
-        </StatusPill>
+        </p>
       </div>
 
-      {ready ? (
-        <p className="mt-5 border-border border-t py-4 text-ink text-sm">
-          Every required server check is currently passing.
-        </p>
-      ) : (
-        <div className="mt-5 border-border border-t pt-4">
-          <h3 className="font-semibold text-ink text-sm">
-            What needs attention
-          </h3>
-          <ul className="mt-3 grid gap-2 text-slate-muted text-sm leading-relaxed sm:grid-cols-2">
-            {readiness.reasonCodes.map((reason) => (
-              <li key={reason} className="flex items-start gap-2">
-                <AlertTriangle
-                  className="mt-0.5 size-4 shrink-0 text-accent"
-                  aria-hidden="true"
-                />
-                <span>{pilotOperationsReasonCopy(reason)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <AdminSummaryStrip className="mt-5">
+        <AdminSummaryMetric
+          label="Current decision"
+          value={ready ? "Proceed" : "Hold"}
+          tone={ready ? "success" : "danger"}
+          detail={ready ? "All required checks pass" : "Pilot activity blocked"}
+        />
+        <AdminSummaryMetric
+          label="Actions open"
+          value={`${allowedActions}/${ACTION_KEYS.length}`}
+          tone={
+            allowedActions === ACTION_KEYS.length
+              ? "success"
+              : allowedActions > 0
+                ? "warning"
+                : "danger"
+          }
+          detail="Server-authorized paths"
+        />
+        <AdminSummaryMetric
+          label="Blocking checks"
+          value={readiness.reasonCodes.length}
+          tone={readiness.reasonCodes.length > 0 ? "danger" : "success"}
+          detail="Across every dependency"
+        />
+        <AdminSummaryMetric
+          label="Coverage"
+          value={readiness.coverage.status.toLowerCase().replace("_", " ")}
+          tone={readiness.coverage.status === "ACTIVE" ? "success" : "warning"}
+          detail="Operator declaration"
+        />
+      </AdminSummaryStrip>
 
-      <p className="mt-4 text-slate-muted text-xs leading-relaxed">
-        Evaluated <AdminDateTime value={readiness.evaluatedAt} />
-      </p>
+      <div className="mt-0.5 grid gap-6 rounded-2xl bg-card p-5 sm:p-6">
+        <div className="flex items-end justify-between gap-5">
+          <div>
+            <p className="text-slate-muted text-xs">Decision rationale</p>
+            <p className="mt-1 font-semibold text-ink text-xl">
+              {ready ? "Pilot can proceed" : "Hold pilot activity"}
+            </p>
+          </div>
+          <p className="shrink-0 font-semibold text-slate-muted text-xs">
+            Evaluated <AdminDateTime value={readiness.evaluatedAt} />
+          </p>
+        </div>
+
+        {ready ? (
+          <p className="text-ink text-sm">
+            Every required server check is currently passing.
+          </p>
+        ) : (
+          <div>
+            <h3 className="font-semibold text-ink text-sm">
+              First blockers to clear
+            </h3>
+            <ul className="mt-3 grid gap-3 text-slate-muted text-sm leading-relaxed sm:grid-cols-3">
+              {visibleReasons.map((reason) => (
+                <li key={reason} className="flex items-start gap-2">
+                  <AlertTriangle
+                    className="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{pilotOperationsReasonCopy(reason)}</span>
+                </li>
+              ))}
+            </ul>
+            {remainingReasons > 0 ? (
+              <p className="mt-3 text-slate-muted text-xs">
+                +{remainingReasons} more checks are reflected in the action
+                paths below.
+              </p>
+            ) : null}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
 
 function ActionReadiness({ readiness }: { readiness: Readiness }) {
   return (
-    <section
-      aria-labelledby="pilot-actions-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="pilot-actions-heading" className="pt-2">
       <ReadinessSectionHeading
         description="Each pilot action is allowed only when its complete server-owned check passes."
-        icon={ShieldCheck}
+        icon={Workflow}
         id="pilot-actions-heading"
         title="Pilot actions"
       />
-      <div className="mt-4 grid gap-x-8 sm:grid-cols-2">
-        {ACTION_KEYS.map((key) => {
+      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-2xl bg-background md:grid-cols-3">
+        {ACTION_KEYS.map((key, index) => {
           const action = readiness.actions[key];
           const copy = PILOT_OPERATIONS_ACTION_COPY[key];
 
           return (
-            <div key={key} className="border-border border-b py-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h3 className="font-semibold text-ink text-sm">
-                    {copy.label}
-                  </h3>
-                  <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
-                    {copy.description}
-                  </p>
-                </div>
-                <StatusPill
-                  size="xs"
-                  surface="soft"
-                  tone={action.allowed ? "teal" : "amber"}
-                >
-                  {action.allowed ? "Allowed" : "Blocked"}
-                </StatusPill>
+            <section
+              key={key}
+              className="grid content-start gap-3 bg-card p-5 sm:p-6"
+            >
+              <div
+                className={cn(
+                  "flex items-center justify-between gap-3 font-semibold text-xs",
+                  action.allowed ? "text-primary" : "text-accent",
+                )}
+              >
+                <span className="tabular-nums">
+                  0{index + 1} · {action.allowed ? "Open" : "Blocked"}
+                </span>
+                <span>{action.reasonCodes.length} checks</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-ink text-sm">{copy.label}</h3>
+                <p className="mt-1 text-pretty text-slate-muted text-xs leading-relaxed">
+                  {copy.description}
+                </p>
               </div>
               {!action.allowed ? (
-                <details className="mt-3 text-sm">
-                  <summary className="cursor-pointer font-semibold text-primary text-xs">
-                    {action.reasonCodes.length} blocking check
-                    {action.reasonCodes.length === 1 ? "" : "s"}
-                  </summary>
-                  <ul className="mt-2 grid gap-1.5 text-slate-muted text-xs leading-relaxed">
+                <CollapsibleSection summary="Review blockers">
+                  <ul className="grid gap-1.5 text-slate-muted text-xs leading-relaxed">
                     {action.reasonCodes.map((reason) => (
                       <li key={reason}>{pilotOperationsReasonCopy(reason)}</li>
                     ))}
                   </ul>
-                </details>
+                </CollapsibleSection>
               ) : null}
-            </div>
+            </section>
           );
         })}
       </div>
@@ -226,99 +290,65 @@ function ActionReadiness({ readiness }: { readiness: Readiness }) {
 }
 
 function CoverageCommandAccess({
-  hasCurrentStepUp,
-  isSigningInAgain,
-  onSignInAgain,
-  signInAgainError,
   ownsControls,
   sessionQuery,
 }: {
-  hasCurrentStepUp: boolean;
-  isSigningInAgain: boolean;
-  onSignInAgain: () => void;
-  signInAgainError: boolean;
   ownsControls: boolean;
   sessionQuery: ReturnType<typeof useOperatorSessionStepUp>["sessionQuery"];
 }) {
   if (sessionQuery.isPending) {
     return (
-      <div
-        className="flex items-center gap-3 border-border border-y py-5 text-slate-muted text-sm"
+      <Notice
+        icon={<RefreshCw className="size-4 animate-spin" aria-hidden="true" />}
         role="status"
+        size="lg"
+        tone="neutral"
       >
-        <RefreshCw className="size-4 animate-spin" aria-hidden="true" />
-        Checking coverage permissions
-      </div>
+        <p>Checking coverage permissions</p>
+      </Notice>
     );
   }
 
   if (sessionQuery.isError) {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3 border-border border-y py-5">
+      <Notice
+        action={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => void sessionQuery.refetch()}
+          >
+            <RefreshCw className="size-4" aria-hidden="true" />
+            Try again
+          </Button>
+        }
+        role="alert"
+        size="lg"
+        statusIcon
+        tone="warning"
+      >
         <p className="text-slate-muted text-sm">
           Coverage permissions could not be checked. Changes remain disabled.
         </p>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => void sessionQuery.refetch()}
-        >
-          <RefreshCw className="size-4" aria-hidden="true" />
-          Try again
-        </Button>
-      </div>
+      </Notice>
     );
   }
 
   if (!ownsControls) {
     return (
-      <div className="flex items-start gap-3 border-border border-y py-5">
-        <ShieldOff
-          className="mt-0.5 size-5 shrink-0 text-primary"
-          aria-hidden="true"
-        />
-        <div className="grid gap-1">
-          <h2 className="font-semibold text-ink text-sm">Read-only access</h2>
-          <p className="text-slate-muted text-sm">
+      <Notice
+        icon={<ShieldOff className="size-4" aria-hidden="true" />}
+        size="lg"
+        tone="neutral"
+      >
+        <p>
+          <strong>Read-only access</strong>
+          <span className="mt-1 block font-normal text-slate-muted">
             Coverage changes require a standard owner administrator session.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!hasCurrentStepUp) {
-    return (
-      <div className="flex flex-wrap items-start justify-between gap-4 border-accent/30 border-y bg-accent/8 py-5 text-amber-900 dark:text-amber-200">
-        <div className="flex min-w-0 items-start gap-3">
-          <AlertTriangle
-            className="mt-0.5 size-5 shrink-0"
-            aria-hidden="true"
-          />
-          <div className="grid gap-1">
-            <h2 className="font-semibold text-sm">Recent sign-in required</h2>
-            <p className="max-w-2xl text-sm">
-              Sign out and sign in again to refresh admin verification. You will
-              return to this page afterward.
-            </p>
-          </div>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          loading={isSigningInAgain}
-          onClick={onSignInAgain}
-        >
-          Sign in again
-        </Button>
-        {signInAgainError ? (
-          <p className="w-full text-destructive text-sm" role="alert">
-            Sign-out could not be completed. Try again.
-          </p>
-        ) : null}
-      </div>
+          </span>
+        </p>
+      </Notice>
     );
   }
 
@@ -333,22 +363,26 @@ function CoverageCommandError({
   onDismiss: () => void;
 }) {
   return (
-    <div
-      className="flex flex-wrap items-center justify-between gap-3 border-destructive/30 border-y py-5"
+    <Notice
+      action={
+        <Button type="button" variant="outline" size="sm" onClick={onDismiss}>
+          Dismiss
+        </Button>
+      }
       role="alert"
+      size="lg"
+      statusIcon
+      tone="danger"
     >
       <p className="max-w-2xl text-destructive text-sm">{message}</p>
-      <Button type="button" variant="outline" size="sm" onClick={onDismiss}>
-        Dismiss
-      </Button>
-    </div>
+    </Notice>
   );
 }
 
 function ReadinessLoading() {
   return (
     <div
-      className="grid gap-8 border-border border-t pt-6"
+      className="grid gap-8 pt-2"
       role="status"
       aria-label="Loading operational readiness"
     >
@@ -365,11 +399,8 @@ function ReadinessLoading() {
 
 function ReadinessLoadError({ onRetry }: { onRetry: () => void }) {
   return (
-    <section
-      aria-labelledby="operations-readiness-error"
-      className="border-border border-t py-8"
-    >
-      <AlertTriangle className="size-8 text-accent" aria-hidden="true" />
+    <section aria-labelledby="operations-readiness-error" className="py-8">
+      <AlertTriangle className="size-8" aria-hidden="true" />
       <h2
         id="operations-readiness-error"
         className="mt-3 font-semibold text-ink text-lg"

@@ -1,6 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, RefreshCw, ShieldOff } from "lucide-react";
-import { useState } from "react";
+import {
+  FileText,
+  GitCompareArrows,
+  History,
+  type LucideIcon,
+  RefreshCw,
+  ShieldCheck,
+  ShieldOff,
+} from "lucide-react";
+import { type ReactNode, useState } from "react";
 
 import { ModerationConfigurationActions } from "@/features/admin/components/moderation-configuration-actions";
 import { ModerationConfigurationEditor } from "@/features/admin/components/moderation-configuration-editor";
@@ -14,8 +22,13 @@ import {
   type OperatorModerationEvaluationApproval,
   operatorGovernanceQueries,
 } from "@/features/operator/public/operator-governance";
-import { useOperatorSessionStepUp } from "@/features/operator/public/use-operator-session-step-up";
+import {
+  OperatorReauthenticationDialog,
+  useOperatorSessionStepUp,
+} from "@/features/operator/public/use-operator-session-step-up";
 import { Button } from "@/shared/components/ui/button";
+import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
+import { Notice } from "@/shared/components/ui/notice";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 
@@ -23,6 +36,12 @@ const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
   timeStyle: "short",
 });
+const ROLLOUT_STAGES = [
+  { label: "Observe", mode: "SHADOW" },
+  { label: "Approve", mode: "APPROVAL" },
+  { label: "Limited", mode: "AUTONOMOUS_LIMITED" },
+  { label: "Automatic", mode: "AUTONOMOUS" },
+] as const;
 
 interface AdminModerationGovernanceProps {
   canManage: boolean;
@@ -39,15 +58,9 @@ export function AdminModerationGovernance({
     operatorGovernanceQueries.configurationDraftTemplate(),
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const {
-    hasCurrentStepUp,
-    isSigningInAgain,
-    rejectCurrentStepUp,
-    sessionQuery,
-    signInAgain,
-    signInAgainError,
-  } = useOperatorSessionStepUp({ enabled: canManage });
-  const commandsEnabled = hasCurrentStepUp && canManage;
+  const { reauthenticationDialogProps, rejectCurrentStepUp, sessionQuery } =
+    useOperatorSessionStepUp({ enabled: canManage });
+  const commandsEnabled = canManage;
   const handleCommandError = (error: unknown) => {
     if (getOperatorControlErrorKind(error) === "STALE_SESSION") {
       rejectCurrentStepUp();
@@ -59,11 +72,20 @@ export function AdminModerationGovernance({
     stateQuery.data?.activeConfigurationId ??
     versionsQuery.data?.[0]?.id ??
     null;
+  const activeConfigurationId = stateQuery.data?.activeConfigurationId ?? null;
   const detailQuery = useQuery({
     ...operatorGovernanceQueries.configurationDetail(
       resolvedSelectedId ?? "configuration-not-selected",
     ),
     enabled: resolvedSelectedId !== null,
+  });
+  const activeDetailQuery = useQuery({
+    ...operatorGovernanceQueries.configurationDetail(
+      activeConfigurationId ?? "configuration-not-active",
+    ),
+    enabled:
+      activeConfigurationId !== null &&
+      activeConfigurationId !== resolvedSelectedId,
   });
   const approvalQuery = useQuery({
     ...operatorGovernanceQueries.evaluationApproval(
@@ -101,12 +123,6 @@ export function AdminModerationGovernance({
         <GovernanceSessionLoading />
       ) : sessionQuery.isError ? (
         <GovernanceSessionError onRetry={() => void sessionQuery.refetch()} />
-      ) : !commandsEnabled ? (
-        <GovernanceStepUpNotice
-          isSigningInAgain={isSigningInAgain}
-          onSignInAgain={() => void signInAgain()}
-          signInAgainError={signInAgainError}
-        />
       ) : null}
 
       <ConfigurationStateSummary
@@ -118,45 +134,108 @@ export function AdminModerationGovernance({
 
       <section
         aria-labelledby="configuration-history-heading"
-        className="grid gap-4 border-border border-t pt-6"
+        className="grid gap-4 pt-2"
       >
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="grid gap-1">
-            <h2
+            <GovernanceSectionTitle
               id="configuration-history-heading"
-              className="font-semibold text-base text-ink"
+              icon={History}
             >
               Version history
-            </h2>
+            </GovernanceSectionTitle>
             <p className="max-w-2xl text-slate-muted text-sm leading-relaxed">
               Earlier versions stay available for review. Restoring one creates
               a new version instead of changing the record.
             </p>
           </div>
           {versions.length > 0 ? (
-            <label className="grid min-w-56 gap-1 text-slate-muted text-xs">
-              Version to inspect
-              <select
-                className="h-10 rounded-xl border border-border bg-input px-3 font-medium text-foreground text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
-                value={resolvedSelectedId ?? ""}
-                onChange={(event) => setSelectedId(event.target.value)}
-              >
-                {versions.map((version) => (
-                  <option key={version.id} value={version.id}>
-                    Version {version.version} · {formatStatus(version.status)}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <p className="font-semibold text-slate-muted text-xs">
+              {versions.length} immutable{" "}
+              {versions.length === 1 ? "version" : "versions"}
+            </p>
           ) : null}
         </div>
 
+        {versions.length > 0 ? (
+          <nav
+            aria-label="Configuration version history"
+            className="grid gap-2 rounded-2xl bg-card p-4 sm:p-5"
+          >
+            <div className="flex gap-1.5" aria-hidden="true">
+              {versions.map((version) => (
+                <span
+                  key={version.id}
+                  className={`h-1.5 min-w-6 flex-1 rounded-full ${
+                    version.id === resolvedSelectedId
+                      ? "bg-primary"
+                      : version.status === "ACTIVE"
+                        ? "bg-primary/45"
+                        : version.status === "RETIRED"
+                          ? "bg-slate-muted/30"
+                          : "bg-accent/65"
+                  }`}
+                />
+              ))}
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {versions.map((version) => {
+                const selected = version.id === resolvedSelectedId;
+                return (
+                  <button
+                    key={version.id}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => setSelectedId(version.id)}
+                    className={`grid min-w-32 shrink-0 gap-0.5 rounded-xl px-3 py-2 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/35 ${
+                      selected
+                        ? "bg-primary/8 text-primary"
+                        : "text-slate-muted hover:bg-muted/55 hover:text-ink"
+                    }`}
+                  >
+                    <span className="font-semibold text-sm">
+                      Version {version.version}
+                    </span>
+                    <span className="text-xs">
+                      {formatStatus(version.status)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        ) : null}
+
         {versions.length === 0 ? (
           <div className="grid gap-6">
-            <p className="border-border border-y py-5 text-slate-muted text-sm">
-              No server configuration has been recorded yet. Start with the
-              server's safe observe-only template.
-            </p>
+            <div className="rounded-xl border border-border border-dashed px-5 py-6 sm:px-6">
+              <p className="font-semibold text-ink text-sm">
+                No configuration history yet
+              </p>
+              <p className="mt-1 max-w-2xl text-slate-muted text-sm leading-relaxed">
+                The first saved draft will start the immutable policy record.
+                Begin with the server-safe template below.
+              </p>
+              <ol className="mt-5 grid gap-4 sm:grid-cols-3">
+                {[
+                  ["01", "Draft", "Set policy and worker limits."],
+                  ["02", "Validate", "Run server and evaluation checks."],
+                  ["03", "Release", "Activate an approved rollout stage."],
+                ].map(([number, label, description]) => (
+                  <li key={number} className="flex items-start gap-3">
+                    <span className="font-semibold text-primary text-xs tabular-nums">
+                      {number}
+                    </span>
+                    <div>
+                      <p className="font-semibold text-ink text-sm">{label}</p>
+                      <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
+                        {description}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
             {draftTemplateQuery.isPending ? (
               <ConfigurationDetailLoading />
             ) : draftTemplateQuery.isError || !draftTemplateQuery.data ? (
@@ -181,6 +260,11 @@ export function AdminModerationGovernance({
           />
         ) : (
           <ConfigurationWorkspace
+            activeConfiguration={
+              state.activeConfigurationId === detailQuery.data.id
+                ? detailQuery.data
+                : (activeDetailQuery.data ?? null)
+            }
             approval={approvalQuery.data ?? null}
             approvalError={approvalQuery.isError}
             approvalLoading={approvalQuery.isPending}
@@ -193,11 +277,13 @@ export function AdminModerationGovernance({
           />
         )}
       </section>
+      <OperatorReauthenticationDialog {...reauthenticationDialogProps} />
     </div>
   );
 }
 
 function ConfigurationWorkspace({
+  activeConfiguration,
   approval,
   approvalError,
   approvalLoading,
@@ -208,6 +294,7 @@ function ConfigurationWorkspace({
   onCreated,
   state,
 }: {
+  activeConfiguration: OperatorModerationConfigurationDetail | null;
   approval: OperatorModerationEvaluationApproval | null;
   approvalError: boolean;
   approvalLoading: boolean;
@@ -221,6 +308,12 @@ function ConfigurationWorkspace({
   return (
     <div className="grid gap-8">
       <ConfigurationDetail configuration={configuration} />
+      {configuration.id !== activeConfiguration?.id ? (
+        <ConfigurationDiff
+          activeConfiguration={activeConfiguration}
+          configuration={configuration}
+        />
+      ) : null}
       <ModerationConfigurationActions
         commandsEnabled={commandsEnabled}
         configuration={configuration}
@@ -249,6 +342,125 @@ function ConfigurationWorkspace({
   );
 }
 
+const CONFIGURATION_DIFF_GROUPS = [
+  {
+    label: "Policy identity",
+    keys: [
+      "policyVersion",
+      "promptVersion",
+      "schemaVersion",
+      "thresholdVersion",
+    ],
+  },
+  {
+    label: "Runtime models",
+    keys: ["moderationModel", "assessmentModel"],
+  },
+  { label: "Release posture", keys: ["rolloutMode"] },
+  { label: "Thresholds", keys: ["moderationThresholds"] },
+  { label: "Authority", keys: ["authorityRules"] },
+  { label: "Failure handling", keys: ["failurePolicy"] },
+  { label: "Worker timing", keys: ["workerSettings"] },
+] as const;
+
+function ConfigurationDiff({
+  activeConfiguration,
+  configuration,
+}: {
+  activeConfiguration: OperatorModerationConfigurationDetail | null;
+  configuration: OperatorModerationConfigurationDetail;
+}) {
+  if (!activeConfiguration) {
+    return (
+      <section
+        aria-labelledby="configuration-diff-heading"
+        className="grid gap-1"
+      >
+        <GovernanceSectionTitle
+          id="configuration-diff-heading"
+          icon={GitCompareArrows}
+        >
+          Change from active
+        </GovernanceSectionTitle>
+        <p className="text-slate-muted text-sm">
+          No active configuration is available as a comparison baseline.
+        </p>
+      </section>
+    );
+  }
+
+  const selectedPayload = moderationConfigurationPayload(configuration);
+  const activePayload = moderationConfigurationPayload(activeConfiguration);
+  const changedGroups = CONFIGURATION_DIFF_GROUPS.filter((group) =>
+    group.keys.some(
+      (key) =>
+        JSON.stringify(selectedPayload[key]) !==
+        JSON.stringify(activePayload[key]),
+    ),
+  );
+
+  return (
+    <section
+      aria-labelledby="configuration-diff-heading"
+      className="grid gap-3"
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div className="grid gap-1">
+          <GovernanceSectionTitle
+            id="configuration-diff-heading"
+            icon={GitCompareArrows}
+          >
+            Change from active
+          </GovernanceSectionTitle>
+          <p className="text-slate-muted text-sm">
+            Version {configuration.version} compared with active version{" "}
+            {activeConfiguration.version}.
+          </p>
+        </div>
+        <p className="font-semibold text-slate-muted text-xs">
+          {changedGroups.length} of {CONFIGURATION_DIFF_GROUPS.length} areas
+          changed
+        </p>
+      </div>
+      <div className="flex gap-1.5" aria-hidden="true">
+        {CONFIGURATION_DIFF_GROUPS.map((group) => {
+          const changed = changedGroups.includes(group);
+          return (
+            <span
+              key={group.label}
+              className={`h-1.5 min-w-5 flex-1 rounded-full ${
+                changed ? "bg-accent" : "bg-muted"
+              }`}
+            />
+          );
+        })}
+      </div>
+      <ul className="grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2">
+        {CONFIGURATION_DIFF_GROUPS.map((group) => {
+          const changed = changedGroups.includes(group);
+          return (
+            <li
+              key={group.label}
+              className="flex items-center justify-between gap-3 rounded-xl bg-card px-4 py-3"
+            >
+              <span className="font-medium text-ink text-sm">
+                {group.label}
+              </span>
+              <span
+                className={`font-semibold text-xs ${
+                  changed ? "text-accent" : "text-slate-muted"
+                }`}
+              >
+                {changed ? "Changed" : "Same"}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
 function ConfigurationStateSummary({
   active,
   state,
@@ -256,42 +468,112 @@ function ConfigurationStateSummary({
   active?: OperatorModerationConfigurationSummary;
   state: OperatorModerationConfigurationState;
 }) {
+  const activeStage = active
+    ? ROLLOUT_STAGES.findIndex((stage) => stage.mode === active.rolloutMode)
+    : -1;
+
   return (
     <section
       aria-labelledby="active-configuration-heading"
-      className="grid gap-4 border-border border-t pt-6"
+      className="grid gap-4 pt-2"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="grid gap-1">
-          <h2
-            id="active-configuration-heading"
-            className="font-semibold text-base text-ink"
-          >
-            Active configuration
-          </h2>
-          <p className="text-slate-muted text-sm">
-            The version currently used by moderation workers.
-          </p>
-        </div>
-        <StatusPill size="xs" tone={active ? "teal" : "amber"}>
-          {active ? formatRollout(active.rolloutMode) : "No active version"}
-        </StatusPill>
+      <div className="grid gap-1">
+        <GovernanceSectionTitle
+          id="active-configuration-heading"
+          icon={ShieldCheck}
+        >
+          Active configuration
+        </GovernanceSectionTitle>
+        <p className="text-slate-muted text-sm">
+          The policy and release mode currently controlling moderation workers.
+        </p>
       </div>
-      <dl className="grid gap-x-8 border-border border-y sm:grid-cols-3">
-        <ConfigurationFact
-          label="Version"
-          value={active ? `Version ${active.version}` : "Not set"}
-        />
-        <ConfigurationFact
-          label="Policy"
-          value={active?.policyVersion ?? "Not set"}
-        />
-        <ConfigurationFact
-          label="State revision"
-          value={String(state.stateRowVersion)}
-        />
-      </dl>
+
+      <div className="grid gap-0.5 overflow-hidden rounded-2xl bg-background">
+        <div className="grid gap-6 rounded-xl bg-card p-5 sm:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] sm:p-6">
+          <div>
+            <p className="font-semibold text-slate-muted text-xs">
+              Worker policy
+            </p>
+            <p className="mt-2 font-semibold text-2xl text-ink tracking-tight">
+              {active ? `Version ${active.version}` : "No policy deployed"}
+            </p>
+            <p
+              className={`mt-1 font-semibold text-sm ${active ? "text-primary" : "text-accent"}`}
+            >
+              {active
+                ? formatRollout(active.rolloutMode)
+                : "Server-safe defaults remain in control"}
+            </p>
+          </div>
+
+          <div className="min-w-0">
+            <div
+              aria-label={
+                active
+                  ? `${activeStage + 1} of ${ROLLOUT_STAGES.length} rollout stages enabled`
+                  : "No rollout stage enabled"
+              }
+              className="grid grid-cols-4 gap-1.5"
+              role="img"
+            >
+              {ROLLOUT_STAGES.map((stage, index) => (
+                <span
+                  key={stage.mode}
+                  className={`h-1.5 rounded-full ${
+                    index <= activeStage ? "bg-primary" : "bg-muted"
+                  }`}
+                />
+              ))}
+            </div>
+            <div className="mt-4 grid grid-cols-4 gap-2">
+              {ROLLOUT_STAGES.map((stage, index) => (
+                <p
+                  key={stage.mode}
+                  className={`font-semibold text-xs ${
+                    index === activeStage ? "text-primary" : "text-slate-muted"
+                  }`}
+                >
+                  {stage.label}
+                </p>
+              ))}
+            </div>
+            <p className="mt-4 max-w-xl text-slate-muted text-xs leading-relaxed">
+              Each stage expands worker authority. New versions begin in
+              observe-only mode and move forward only after server validation.
+            </p>
+          </div>
+        </div>
+
+        <dl className="grid gap-0.5 bg-background sm:grid-cols-2">
+          <ConfigurationStateFact
+            label="Policy definition"
+            value={active?.policyVersion ?? "Not configured"}
+          />
+          <ConfigurationStateFact
+            label="Server state revision"
+            value={String(state.stateRowVersion)}
+          />
+        </dl>
+      </div>
     </section>
+  );
+}
+
+function ConfigurationStateFact({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="min-w-0 rounded-xl bg-card px-5 py-4 sm:px-6">
+      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
+      <dd className="wrap-break-word mt-1 font-semibold text-ink text-sm">
+        {value}
+      </dd>
+    </div>
   );
 }
 
@@ -307,12 +589,12 @@ function ConfigurationDetail({
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid gap-1">
-          <h2
+          <GovernanceSectionTitle
             id="configuration-detail-heading"
-            className="font-semibold text-base text-ink"
+            icon={FileText}
           >
             Version {configuration.version}
-          </h2>
+          </GovernanceSectionTitle>
           <p className="text-slate-muted text-sm">
             Created{" "}
             {DATE_TIME_FORMATTER.format(new Date(configuration.createdAt))}
@@ -325,7 +607,7 @@ function ConfigurationDetail({
           {formatStatus(configuration.status)}
         </StatusPill>
       </div>
-      <dl className="grid gap-x-8 border-border border-y sm:grid-cols-2 lg:grid-cols-3">
+      <dl className="grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2 lg:grid-cols-3">
         <ConfigurationFact
           label="Rollout"
           value={formatRollout(configuration.rolloutMode)}
@@ -345,10 +627,7 @@ function ConfigurationDetail({
           value={configuration.thresholdVersion}
         />
       </dl>
-      <details className="border-border border-b pb-4">
-        <summary className="cursor-pointer font-semibold text-ink text-sm">
-          View saved policy fields
-        </summary>
+      <CollapsibleSection variant="card" summary="View saved policy fields">
         <pre className="mt-3 max-h-96 overflow-auto rounded-xl bg-input p-4 text-foreground text-xs leading-relaxed">
           {JSON.stringify(
             moderationConfigurationPayload(configuration),
@@ -356,17 +635,37 @@ function ConfigurationDetail({
             2,
           )}
         </pre>
-      </details>
+      </CollapsibleSection>
     </section>
   );
 }
 
 function ConfigurationFact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid gap-1 border-border border-t py-4 first:border-t-0 sm:[&:nth-child(2)]:border-t-0 lg:[&:nth-child(3)]:border-t-0">
+    <div className="grid gap-1 rounded-xl bg-card px-4 py-3">
       <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
       <dd className="wrap-break-word font-medium text-ink text-sm">{value}</dd>
     </div>
+  );
+}
+
+function GovernanceSectionTitle({
+  children,
+  icon: Icon,
+  id,
+}: {
+  children: ReactNode;
+  icon: LucideIcon;
+  id: string;
+}) {
+  return (
+    <h2
+      id={id}
+      className="flex items-center gap-2 font-semibold text-base text-ink"
+    >
+      <Icon className="size-4 shrink-0" aria-hidden="true" />
+      <span>{children}</span>
+    </h2>
   );
 }
 
@@ -394,140 +693,122 @@ function ConfigurationDetailLoading() {
 
 function GovernanceLoadError({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="grid justify-items-start gap-3 border-border border-y py-6">
-      <div className="flex items-start gap-3">
-        <AlertTriangle
-          className="mt-0.5 size-5 text-accent"
-          aria-hidden="true"
-        />
-        <div className="grid gap-1">
-          <h2 className="font-semibold text-ink">
-            Settings could not be loaded
-          </h2>
-          <p className="text-slate-muted text-sm">
-            Your access may have ended, or the server may be unavailable. No
-            configuration details were kept on this page.
-          </p>
-        </div>
-      </div>
-      <Button type="button" variant="outline" size="sm" onClick={onRetry}>
-        <RefreshCw className="size-4" aria-hidden="true" />
-        Try again
-      </Button>
-    </div>
+    <Notice
+      action={
+        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+          <RefreshCw className="size-4" aria-hidden="true" />
+          Try again
+        </Button>
+      }
+      role="alert"
+      size="lg"
+      statusIcon
+      tone="danger"
+    >
+      <p>
+        <strong>Settings could not be loaded</strong>
+        <span className="mt-1 block font-normal text-slate-muted">
+          Your access may have ended, or the server may be unavailable. No
+          configuration details were kept on this page.
+        </span>
+      </p>
+    </Notice>
   );
 }
 
 function ConfigurationDetailError({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-border border-y py-5">
+    <Notice
+      action={
+        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+          <RefreshCw className="size-4" aria-hidden="true" />
+          Refresh version
+        </Button>
+      }
+      role="alert"
+      size="lg"
+      statusIcon
+      tone="danger"
+    >
       <p className="text-slate-muted text-sm">
         This version changed or is no longer available. Refresh before taking
         action.
       </p>
-      <Button type="button" variant="outline" size="sm" onClick={onRetry}>
-        <RefreshCw className="size-4" aria-hidden="true" />
-        Refresh version
-      </Button>
-    </div>
+    </Notice>
   );
 }
 
 function DraftTemplateError({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-border border-y py-5">
+    <Notice
+      action={
+        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+          <RefreshCw className="size-4" aria-hidden="true" />
+          Try again
+        </Button>
+      }
+      role="alert"
+      size="lg"
+      statusIcon
+      tone="warning"
+    >
       <p className="text-slate-muted text-sm">
         The safe starting template could not be loaded. No draft has been
         created.
       </p>
-      <Button type="button" variant="outline" size="sm" onClick={onRetry}>
-        <RefreshCw className="size-4" aria-hidden="true" />
-        Try again
-      </Button>
-    </div>
+    </Notice>
   );
 }
 
 function GovernanceAccessNotice() {
   return (
-    <div className="flex items-start gap-3 border-border border-y py-5">
-      <ShieldOff
-        className="mt-0.5 size-5 shrink-0 text-primary"
-        aria-hidden="true"
-      />
-      <div className="grid gap-1">
-        <h2 className="font-semibold text-ink text-sm">Read-only access</h2>
-        <p className="text-slate-muted text-sm">
+    <Notice
+      icon={<ShieldOff className="size-4" aria-hidden="true" />}
+      size="lg"
+      tone="neutral"
+    >
+      <p>
+        <strong>Read-only access</strong>
+        <span className="mt-1 block font-normal text-slate-muted">
           You can inspect saved versions, but your current admin access cannot
           change them.
-        </p>
-      </div>
-    </div>
+        </span>
+      </p>
+    </Notice>
   );
 }
 
 function GovernanceSessionLoading() {
   return (
-    <div
-      className="flex items-center gap-3 border-border border-y py-5 text-slate-muted text-sm"
+    <Notice
+      icon={<RefreshCw className="size-4 animate-spin" aria-hidden="true" />}
       role="status"
+      size="lg"
+      tone="neutral"
     >
-      <RefreshCw className="size-4 animate-spin" aria-hidden="true" />
-      Checking recent admin verification
-    </div>
+      <p>Checking recent admin verification</p>
+    </Notice>
   );
 }
 
 function GovernanceSessionError({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-border border-y py-5">
+    <Notice
+      action={
+        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+          <RefreshCw className="size-4" aria-hidden="true" />
+          Try again
+        </Button>
+      }
+      role="alert"
+      size="lg"
+      statusIcon
+      tone="warning"
+    >
       <p className="text-slate-muted text-sm">
         Recent admin verification could not be checked. Changes remain disabled.
       </p>
-      <Button type="button" variant="outline" size="sm" onClick={onRetry}>
-        <RefreshCw className="size-4" aria-hidden="true" />
-        Try again
-      </Button>
-    </div>
-  );
-}
-
-function GovernanceStepUpNotice({
-  isSigningInAgain,
-  onSignInAgain,
-  signInAgainError,
-}: {
-  isSigningInAgain: boolean;
-  onSignInAgain: () => void;
-  signInAgainError: boolean;
-}) {
-  return (
-    <div className="flex flex-wrap items-start justify-between gap-4 border-accent/30 border-y bg-accent/8 py-5 text-amber-900 dark:text-amber-200">
-      <div className="flex min-w-0 items-start gap-3">
-        <AlertTriangle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
-        <div className="grid gap-1">
-          <h2 className="font-semibold text-sm">Recent sign-in required</h2>
-          <p className="max-w-2xl text-sm">
-            Sign out and sign in again to refresh admin verification. You will
-            return to this page afterward.
-          </p>
-        </div>
-      </div>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        loading={isSigningInAgain}
-        onClick={onSignInAgain}
-      >
-        Sign in again
-      </Button>
-      {signInAgainError ? (
-        <p className="w-full text-destructive text-sm" role="alert">
-          Sign-out could not be completed. Try again.
-        </p>
-      ) : null}
-    </div>
+    </Notice>
   );
 }
 

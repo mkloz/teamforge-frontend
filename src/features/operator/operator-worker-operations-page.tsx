@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { HTTPError } from "ky";
-import { ArrowLeft, RefreshCw, ShieldOff, TriangleAlert } from "lucide-react";
+import { RefreshCw, ServerCrash, ShieldOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getOperatorControlErrorKind } from "@/features/operator/api/operator-control-errors";
 import {
@@ -9,6 +9,7 @@ import {
   operatorQueries,
 } from "@/features/operator/api/operator-queries";
 import { OperatorJobList } from "@/features/operator/components/operator-job-list";
+import { OperatorReauthenticationDialog } from "@/features/operator/components/operator-reauthentication-dialog";
 import {
   OperatorAccessState,
   OperatorLoading,
@@ -19,18 +20,17 @@ import {
   humanizeCode,
 } from "@/features/operator/lib/operator-language";
 import { useOperatorSessionStepUp } from "@/features/operator/public/use-operator-session-step-up";
+import {
+  AdminSectionHeader,
+  AdminSummaryMetric,
+  AdminSummaryStrip,
+} from "@/shared/components/admin/admin-visuals";
 import { Button } from "@/shared/components/ui/button";
 
 export function OperatorWorkerOperationsPage() {
   const queryClient = useQueryClient();
-  const {
-    hasCurrentStepUp: commandsEnabled,
-    isSigningInAgain,
-    rejectCurrentStepUp,
-    sessionQuery,
-    signInAgain,
-    signInAgainError,
-  } = useOperatorSessionStepUp();
+  const { reauthenticationDialogProps, rejectCurrentStepUp, sessionQuery } =
+    useOperatorSessionStepUp();
   const canView = Boolean(
     sessionQuery.data?.roles.includes("OWNER_ADMIN") &&
       !sessionQuery.data.breakGlass,
@@ -89,32 +89,76 @@ export function OperatorWorkerOperationsPage() {
   const activeKind =
     workers.find((worker) => worker.kind === selectedKind)?.kind ??
     workers[0]?.kind;
+  const healthyWorkers = workers.filter(
+    (worker) => worker.state === "HEALTHY",
+  ).length;
+  const unavailableWorkers = workers.filter(
+    (worker) => worker.state === "PAUSED" || worker.state === "UNAVAILABLE",
+  ).length;
+  const queuedJobs = workers.reduce(
+    (sum, worker) => sum + worker.queueDepth,
+    0,
+  );
+  const activeJobs = workers.reduce(
+    (sum, worker) => sum + worker.activeLeases,
+    0,
+  );
+  const exhaustedJobs = workers.reduce(
+    (sum, worker) => sum + worker.failedJobs + worker.deadJobs,
+    0,
+  );
   return (
-    <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-8 md:py-10">
-      <Button asChild variant="ghost" className="w-fit px-2">
-        <Link to="/admin/moderation" search={{ queue: "CRITICAL_NOW" }}>
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          Back to queues
-        </Link>
-      </Button>
-
-      <header className="grid gap-2">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h1 className="font-extrabold text-2xl text-ink">
+    <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-6 md:px-8 md:py-10">
+      <header className="main-action-grid grid items-end gap-x-6 gap-y-2">
+        <div className="grid max-w-3xl gap-2">
+          <h1 className="font-extrabold text-3xl text-ink">
             Worker operations
           </h1>
-          <p className="text-slate-muted text-xs">
-            Updated {formatOperatorDate(workersQuery.data.generatedAt)}
+          <p className="text-pretty text-slate-muted text-sm leading-relaxed sm:text-base">
+            Monitor queue pressure and worker health, then intervene only when
+            processing stalls.
           </p>
         </div>
-        <p className="max-w-3xl text-slate-muted text-sm leading-relaxed">
-          Pause or requeue work; these controls never decide cases or apply
-          account actions.
+        <p className="text-slate-muted text-xs sm:justify-self-end">
+          Updated {formatOperatorDate(workersQuery.data.generatedAt)}
         </p>
       </header>
 
+      <AdminSummaryStrip>
+        <AdminSummaryMetric
+          label="Healthy workers"
+          value={`${healthyWorkers}/${workers.length}`}
+          tone={
+            unavailableWorkers > 0
+              ? "danger"
+              : healthyWorkers === workers.length
+                ? "success"
+                : "warning"
+          }
+          detail="Reporting normally"
+        />
+        <AdminSummaryMetric
+          label="Queued"
+          value={queuedJobs}
+          tone={queuedJobs > 0 ? "warning" : "success"}
+          detail="Waiting to be claimed"
+        />
+        <AdminSummaryMetric
+          label="Processing"
+          value={activeJobs}
+          tone="success"
+          detail="Active leases"
+        />
+        <AdminSummaryMetric
+          label="Exhausted"
+          value={exhaustedJobs}
+          tone={exhaustedJobs > 0 ? "danger" : "success"}
+          detail="Failed or dead"
+        />
+      </AdminSummaryStrip>
+
       <section
-        className="grid gap-4 rounded-2xl border border-border bg-card p-5 sm:grid-cols-2"
+        className="grid gap-4 rounded-2xl bg-card p-5 sm:grid-cols-2 sm:p-6"
         aria-label="Moderation assistance settings"
       >
         <OperationsModeFact
@@ -127,69 +171,45 @@ export function OperatorWorkerOperationsPage() {
           value={
             workersQuery.data.automaticActionsEnabled ? "Enabled" : "Disabled"
           }
-          detail="This setting is read-only in the admin workspace."
+          detail="Read-only control inherited from the active policy."
         />
       </section>
-
-      {!commandsEnabled ? (
-        <div className="flex items-start gap-3 rounded-2xl border border-accent/25 bg-accent/10 p-4 text-amber-900 dark:text-amber-200">
-          <TriangleAlert
-            className="mt-0.5 size-5 shrink-0"
-            aria-hidden="true"
-          />
-          <div className="grid gap-1">
-            <h2 className="font-semibold text-sm">Recent sign-in required</h2>
-            <p className="text-sm leading-relaxed">
-              Worker status is visible, but pause, resume, and requeue commands
-              require a recently verified admin session. Sign out and sign in
-              again to continue; you will return to this page afterward.
-            </p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-2 w-fit"
-              disabled={isSigningInAgain}
-              loading={isSigningInAgain}
-              onClick={() => void signInAgain()}
-            >
-              Sign in again
-            </Button>
-            {signInAgainError ? (
-              <p className="mt-2 text-destructive text-sm" role="alert">
-                Sign-out could not be completed. Try again.
-              </p>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
 
       <OperatorWorkerHealthList
         workers={workers}
         selectedKind={activeKind ?? ""}
-        commandsEnabled={commandsEnabled}
+        commandsEnabled
         onSelect={setSelectedKind}
         onCommandError={handleCommandError}
       />
 
-      {activeKind ? (
-        <OperatorJobList
-          key={activeKind}
-          workerKind={activeKind}
-          commandsEnabled={commandsEnabled}
-          onCommandError={handleCommandError}
+      <section className="grid gap-4">
+        <AdminSectionHeader
+          icon={ServerCrash}
+          title="Failure queue"
+          description="Inspect exhausted jobs for the selected worker and requeue only after the underlying cause is clear."
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => void workersQuery.refetch()}
+            >
+              <RefreshCw className="size-4" aria-hidden="true" />
+              Refresh
+            </Button>
+          }
         />
-      ) : null}
-
-      <Button
-        type="button"
-        variant="outline"
-        className="w-fit"
-        onClick={() => void workersQuery.refetch()}
-      >
-        <RefreshCw className="size-4" aria-hidden="true" />
-        Refresh worker status
-      </Button>
+        {activeKind ? (
+          <OperatorJobList
+            key={activeKind}
+            workerKind={activeKind}
+            commandsEnabled
+            onCommandError={handleCommandError}
+          />
+        ) : null}
+      </section>
+      <OperatorReauthenticationDialog {...reauthenticationDialogProps} />
     </div>
   );
 }
@@ -222,7 +242,7 @@ function OwnerAccessRequired() {
   return (
     <div className="mx-auto grid min-h-[60dvh] w-full max-w-xl place-items-center px-4 py-10 text-center">
       <div className="grid gap-4 rounded-2xl border border-border bg-card p-8">
-        <ShieldOff className="mx-auto size-9 text-primary" aria-hidden="true" />
+        <ShieldOff className="mx-auto size-9" aria-hidden="true" />
         <div className="grid gap-2">
           <h1 className="font-bold text-2xl text-ink">Owner access required</h1>
           <p className="text-pretty text-slate-muted text-sm leading-relaxed">

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, FileCheck2, ShieldX } from "lucide-react";
+import { CheckCircle2, FileCheck2, FlaskConical, ShieldX } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { controlErrorMessage } from "@/features/admin/components/moderation-configuration-actions";
@@ -12,6 +12,7 @@ import {
   operatorModerationEvaluationRunPayloadSchema,
 } from "@/features/operator/public/operator-governance";
 import { Button } from "@/shared/components/ui/button";
+import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
 import { Input } from "@/shared/components/ui/input";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -117,14 +118,15 @@ export function ModerationEvaluationEvidence({
   return (
     <section
       aria-labelledby="evaluation-evidence-heading"
-      className="grid gap-6 border-border border-t pt-6"
+      className="grid gap-6 pt-2"
     >
       <div className="grid gap-1">
         <h2
           id="evaluation-evidence-heading"
-          className="font-semibold text-base text-ink"
+          className="flex items-center gap-2 font-semibold text-base text-ink"
         >
-          Evaluation evidence
+          <FlaskConical className="size-4 shrink-0" aria-hidden="true" />
+          <span>Evaluation evidence</span>
         </h2>
         <p className="max-w-3xl text-slate-muted text-sm leading-relaxed">
           {commandsEnabled
@@ -138,7 +140,7 @@ export function ModerationEvaluationEvidence({
           <Skeleton className="h-32 rounded-2xl" aria-hidden="true" />
         </div>
       ) : approvalError ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-border border-y py-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-card px-5 py-4">
           <p className="text-slate-muted text-sm">
             Approval evidence could not be loaded. Its current status is
             unknown.
@@ -155,7 +157,7 @@ export function ModerationEvaluationEvidence({
       ) : approval ? (
         <ApprovalSummary approval={approval} />
       ) : (
-        <div className="flex items-start gap-3 border-border border-y py-5">
+        <div className="flex items-start gap-3 rounded-xl bg-card px-5 py-4">
           <ShieldX
             className="mt-0.5 size-5 shrink-0 text-slate-muted"
             aria-hidden="true"
@@ -172,12 +174,16 @@ export function ModerationEvaluationEvidence({
         </div>
       )}
 
-      <details className="border-border border-b pb-5">
-        <summary className="cursor-pointer font-semibold text-ink text-sm">
-          {commandsEnabled
+      <CollapsibleSection
+        variant="card"
+        summary={
+          commandsEnabled
             ? "Record a saved evaluation result"
-            : "View evaluation result fields"}
-        </summary>
+            : "View evaluation result fields"
+        }
+        triggerClassName="px-5 py-4"
+        contentClassName="px-5 pb-5"
+      >
         <div className="mt-4 grid gap-4">
           <label
             htmlFor="moderation-evaluation-completed-at"
@@ -238,12 +244,12 @@ export function ModerationEvaluationEvidence({
             Record evaluation
           </Button>
         </div>
-      </details>
+      </CollapsibleSection>
 
       {recordedRun ? <RecordedRunSummary run={recordedRun} /> : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="grid content-start gap-3 border-border border-b pb-5 lg:border-r lg:border-b-0 lg:pr-6">
+        <div className="grid content-start gap-3">
           <div className="grid gap-1">
             <h3 className="font-semibold text-ink text-sm">
               {commandsEnabled
@@ -403,7 +409,7 @@ function ApprovalSummary({
   approval: OperatorModerationEvaluationApproval;
 }) {
   return (
-    <div className="grid gap-4 border-border border-y py-5">
+    <div className="grid gap-4 rounded-xl bg-card px-5 py-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid gap-1">
           <h3 className="font-semibold text-ink text-sm">Exact run approved</h3>
@@ -442,7 +448,7 @@ function ApprovalSummary({
 
 function RecordedRunSummary({ run }: { run: OperatorModerationEvaluationRun }) {
   return (
-    <div className="grid gap-3 border-border border-y py-5">
+    <div className="grid gap-3 rounded-xl bg-card px-5 py-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="font-semibold text-ink text-sm">Recorded run</h3>
         <StatusPill size="xs" tone={run.eligibleForAutonomy ? "teal" : "amber"}>

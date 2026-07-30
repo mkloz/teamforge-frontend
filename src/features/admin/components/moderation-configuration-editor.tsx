@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CopyPlus } from "lucide-react";
+import { CopyPlus, Cpu, FileKey2, Gauge, PencilRuler } from "lucide-react";
 import { useId, useRef, useState } from "react";
 
 import { controlErrorMessage } from "@/features/admin/components/moderation-configuration-actions";
@@ -10,8 +10,10 @@ import {
   operatorModerationConfigurationPayloadSchema,
 } from "@/features/operator/public/operator-governance";
 import { Button } from "@/shared/components/ui/button";
+import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
 import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
+import { cn } from "@/shared/lib/utils";
 
 interface ModerationConfigurationEditorProps {
   commandsEnabled: boolean;
@@ -74,16 +76,19 @@ export function ModerationConfigurationEditor({
   return (
     <section
       aria-labelledby="configuration-draft-heading"
-      className="grid gap-4 border-border border-t pt-6"
+      className="grid gap-4 pt-2"
     >
       <div className="grid gap-1">
         <h2
           id="configuration-draft-heading"
-          className="font-semibold text-base text-ink"
+          className="flex items-center gap-2 font-semibold text-base text-ink"
         >
-          {commandsEnabled
-            ? `Create a draft from ${sourceLabel}`
-            : `Review draft fields from ${sourceLabel}`}
+          <PencilRuler className="size-4 shrink-0" aria-hidden="true" />
+          <span>
+            {commandsEnabled
+              ? `Create a draft from ${sourceLabel}`
+              : `Review draft fields from ${sourceLabel}`}
+          </span>
         </h2>
         <p className="max-w-3xl text-slate-muted text-sm leading-relaxed">
           {commandsEnabled
@@ -92,66 +97,125 @@ export function ModerationConfigurationEditor({
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <TextField
-          readOnly={!commandsEnabled || createDraft.isPending}
-          label="Policy version"
-          value={fields.policyVersion}
-          onChange={(value) => updateField("policyVersion", value)}
-        />
-        <TextField
-          readOnly={!commandsEnabled || createDraft.isPending}
-          label="Prompt version"
-          value={fields.promptVersion}
-          onChange={(value) => updateField("promptVersion", value)}
-        />
-        <TextField
-          readOnly={!commandsEnabled || createDraft.isPending}
-          label="Schema version"
-          value={fields.schemaVersion}
-          onChange={(value) => updateField("schemaVersion", value)}
-        />
-        <TextField
-          readOnly={!commandsEnabled || createDraft.isPending}
-          label="Threshold version"
-          value={fields.thresholdVersion}
-          onChange={(value) => updateField("thresholdVersion", value)}
-        />
-        <TextField
-          readOnly={!commandsEnabled || createDraft.isPending}
-          label="Moderation model"
-          value={fields.moderationModel}
-          onChange={(value) => updateField("moderationModel", value)}
-        />
-        <TextField
-          readOnly={!commandsEnabled || createDraft.isPending}
-          label="Assessment model"
-          value={fields.assessmentModel}
-          onChange={(value) => updateField("assessmentModel", value)}
-        />
-        <label className="grid gap-1.5 font-semibold text-ink text-sm">
-          Rollout
-          <select
-            className="h-10 rounded-xl border border-input-border bg-input px-3 font-normal text-foreground outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
-            disabled={!commandsEnabled || createDraft.isPending}
-            value={fields.rolloutMode}
-            onChange={(event) => updateField("rolloutMode", event.target.value)}
-          >
-            {OPERATOR_MODERATION_ROLLOUT_MODES.map((mode) => (
-              <option key={mode} value={mode}>
-                {rolloutLabel(mode)}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="grid gap-0.5 overflow-hidden rounded-2xl bg-background">
+        <fieldset className="grid gap-4 rounded-xl bg-card p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-4">
+          <legend className="mb-1">
+            <span className="flex items-center gap-2 font-semibold text-ink text-sm">
+              <FileKey2 className="size-4 shrink-0" aria-hidden="true" />
+              Policy identity
+            </span>
+          </legend>
+          <TextField
+            readOnly={!commandsEnabled || createDraft.isPending}
+            label="Policy"
+            value={fields.policyVersion}
+            onChange={(value) => updateField("policyVersion", value)}
+          />
+          <TextField
+            readOnly={!commandsEnabled || createDraft.isPending}
+            label="Prompt"
+            value={fields.promptVersion}
+            onChange={(value) => updateField("promptVersion", value)}
+          />
+          <TextField
+            readOnly={!commandsEnabled || createDraft.isPending}
+            label="Schema"
+            value={fields.schemaVersion}
+            onChange={(value) => updateField("schemaVersion", value)}
+          />
+          <TextField
+            readOnly={!commandsEnabled || createDraft.isPending}
+            label="Thresholds"
+            value={fields.thresholdVersion}
+            onChange={(value) => updateField("thresholdVersion", value)}
+          />
+        </fieldset>
+
+        <fieldset className="grid gap-4 rounded-xl bg-card p-5 sm:grid-cols-2 sm:p-6">
+          <legend className="mb-1">
+            <span className="flex items-center gap-2 font-semibold text-ink text-sm">
+              <Cpu className="size-4 shrink-0" aria-hidden="true" />
+              Runtime models
+            </span>
+          </legend>
+          <TextField
+            readOnly={!commandsEnabled || createDraft.isPending}
+            label="Moderation"
+            value={fields.moderationModel}
+            onChange={(value) => updateField("moderationModel", value)}
+          />
+          <TextField
+            readOnly={!commandsEnabled || createDraft.isPending}
+            label="Assessment"
+            value={fields.assessmentModel}
+            onChange={(value) => updateField("assessmentModel", value)}
+          />
+        </fieldset>
+
+        <fieldset className="rounded-xl bg-card p-5 sm:p-6">
+          <legend>
+            <span className="flex items-center gap-2 font-semibold text-ink text-sm">
+              <Gauge className="size-4 shrink-0" aria-hidden="true" />
+              Release posture
+            </span>
+          </legend>
+          <p className="mt-1 text-slate-muted text-xs leading-relaxed">
+            Choose how much authority this version gives moderation workers.
+          </p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {OPERATOR_MODERATION_ROLLOUT_MODES.map((mode) => {
+              const checked = fields.rolloutMode === mode;
+              return (
+                <label
+                  key={mode}
+                  className={cn(
+                    "cursor-pointer rounded-xl border px-4 py-3 transition-colors",
+                    checked
+                      ? "border-primary/45 bg-primary/8"
+                      : "border-border bg-background/20",
+                    (!commandsEnabled || createDraft.isPending) &&
+                      "cursor-default",
+                  )}
+                >
+                  <input
+                    className="sr-only"
+                    type="radio"
+                    name="rollout-mode"
+                    value={mode}
+                    checked={checked}
+                    disabled={!commandsEnabled || createDraft.isPending}
+                    onChange={(event) =>
+                      updateField("rolloutMode", event.target.value)
+                    }
+                  />
+                  <span
+                    className={cn(
+                      "font-semibold text-sm",
+                      checked ? "text-primary" : "text-ink",
+                    )}
+                  >
+                    {rolloutLabel(mode)}
+                  </span>
+                  <span className="mt-1 block text-slate-muted text-xs leading-relaxed">
+                    {rolloutDescription(mode)}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
       </div>
 
-      <details className="border-border border-y py-4">
-        <summary className="cursor-pointer font-semibold text-ink text-sm">
-          {commandsEnabled
+      <CollapsibleSection
+        variant="card"
+        summary={
+          commandsEnabled
             ? "Edit thresholds, authority, failures, and worker timing"
-            : "View thresholds, authority, failures, and worker timing"}
-        </summary>
+            : "View thresholds, authority, failures, and worker timing"
+        }
+        triggerClassName="px-5 py-4"
+        contentClassName="px-5 pb-5"
+      >
         <p className="mt-2 max-w-3xl text-slate-muted text-xs leading-relaxed">
           These fields use the exact saved JSON shape. The form validates them
           against the frontend copy of the server contract before sending.
@@ -182,7 +246,7 @@ export function ModerationConfigurationEditor({
             onChange={(value) => updateField("workerSettings", value)}
           />
         </div>
-      </details>
+      </CollapsibleSection>
 
       {validationError ? (
         <p className="text-destructive text-sm" role="alert">
@@ -291,6 +355,23 @@ function TextField({
   value: string;
 }) {
   const id = useId();
+  if (readOnly) {
+    const configured = value.trim() !== "" && value !== "unconfigured";
+    return (
+      <div className="min-w-0">
+        <p className="font-semibold text-slate-muted text-xs">{label}</p>
+        <p
+          className={cn(
+            "wrap-break-word mt-1 font-semibold text-sm",
+            configured ? "text-ink" : "text-accent",
+          )}
+        >
+          {configured ? value : "Not configured"}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <label htmlFor={id} className="grid gap-1.5 font-semibold text-ink text-sm">
       {label}
@@ -336,4 +417,13 @@ function rolloutLabel(mode: string) {
   if (mode === "APPROVAL") return "Human approval";
   if (mode === "AUTONOMOUS_LIMITED") return "Limited automatic safeguards";
   return "Automatic safeguards";
+}
+
+function rolloutDescription(mode: string) {
+  if (mode === "SHADOW") return "Measure decisions without taking action.";
+  if (mode === "APPROVAL") return "Require an operator before every action.";
+  if (mode === "AUTONOMOUS_LIMITED") {
+    return "Allow only the server-approved safeguards.";
+  }
+  return "Apply all configured safeguards automatically.";
 }

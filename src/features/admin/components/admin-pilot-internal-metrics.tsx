@@ -1,13 +1,22 @@
+import {
+  Activity,
+  CalendarCheck2,
+  type LucideIcon,
+  Route,
+  UsersRound,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 import type {
   AdminPilotMetricDefinition,
   AdminPilotMetrics,
 } from "@/features/admin/schemas/admin-pilot-metrics.schema";
+import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
 import {
   StatusPill,
   type StatusPillTone,
 } from "@/shared/components/ui/status-pill";
+import { cn } from "@/shared/lib/utils";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
@@ -22,7 +31,7 @@ type InternalMetricState = {
   measurementState?: "PROVISIONAL" | "FINAL";
   unavailableReason?: "NOT_INSTRUMENTED";
 };
-type MetricRow = { label: string; value: ReactNode };
+type MetricRow = { label: string; value: ReactNode; wide?: boolean };
 
 export function AdminPilotInternalMetricSections({
   activityActivation,
@@ -40,10 +49,17 @@ export function AdminPilotInternalMetricSections({
   const metrics = cohort.internal;
 
   return (
-    <div className="mt-6 grid gap-8">
+    <div className="mt-6 grid gap-3">
       <MetricGroup
+        defaultOpen
+        icon={Route}
         description="How cohort members reached candidate availability, created a request, and received a proposal."
         id="pilot-request-journey-heading"
+        states={{
+          activation: metrics.candidatePoolActivation,
+          creation: metrics.requestCreationByPoolState,
+          proposal: cohort.proposalCoverage,
+        }}
         title="Request journey"
       >
         <CandidatePoolActivationMetric
@@ -54,8 +70,14 @@ export function AdminPilotInternalMetricSections({
       </MetricGroup>
 
       <MetricGroup
+        icon={UsersRound}
         description="The group sizes people requested and what happened when a group needed more members."
         id="pilot-formation-details-heading"
+        states={{
+          conversion: cohort.formationConversion,
+          distribution: metrics.formationDistribution,
+          recovery: metrics.recoveryLifecycle,
+        }}
         title="Formation details"
       >
         {formationConversion}
@@ -64,8 +86,17 @@ export function AdminPilotInternalMetricSections({
       </MetricGroup>
 
       <MetricGroup
+        icon={CalendarCheck2}
         description="What formed groups did next, from settling a schedule to continuing after the activity window."
         id="pilot-plans-activity-heading"
+        states={{
+          activity: cohort.activityActivation,
+          completed: metrics.completedActivities,
+          continuation: metrics.continuation,
+          readiness: metrics.firstPlanReadiness,
+          schedule: metrics.scheduleResolution,
+          scheduled: metrics.scheduledPlans,
+        }}
         title="Plans and activity"
       >
         <GroupOutcomeMetric
@@ -105,8 +136,16 @@ export function AdminPilotInternalMetricSections({
       </MetricGroup>
 
       <MetricGroup
+        icon={Activity}
         description="Historical proposal timing, candidate responses, and candidate supply recorded during group creation."
         id="pilot-candidate-pool-health-heading"
+        states={{
+          candidate: cohort.candidateWillingness,
+          fatigue: metrics.nonresponseFatigue,
+          pressure: metrics.capacityPressure,
+          supply: metrics.activeCandidateSupply,
+          timing: metrics.timeToFirstProposal,
+        }}
         title="Candidate pool health"
       >
         <div>
@@ -127,25 +166,81 @@ export function AdminPilotInternalMetricSections({
 
 function MetricGroup({
   children,
+  defaultOpen = false,
   description,
+  icon: Icon,
   id,
+  states,
   title,
 }: {
   children: ReactNode;
+  defaultOpen?: boolean;
   description: string;
+  icon: LucideIcon;
   id: string;
+  states: Record<string, InternalMetricState>;
   title: string;
 }) {
+  const stateEntries = Object.entries(states);
+  const reportingCount = stateEntries.filter(
+    ([, state]) =>
+      state.dataCompleteness === "COMPLETE" &&
+      state.unavailableReason !== "NOT_INSTRUMENTED",
+  ).length;
+
   return (
-    <section aria-labelledby={id} className="border-border border-t pt-6">
-      <h3 id={id} className="font-semibold text-base text-ink">
-        {title}
-      </h3>
-      <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-        {description}
-      </p>
-      <div className="mt-5 grid gap-6">{children}</div>
-    </section>
+    <CollapsibleSection
+      defaultOpen={defaultOpen}
+      variant="panel"
+      summary={
+        <div className="sm:main-action-grid grid gap-4 sm:items-center">
+          <div className="min-w-0">
+            <h3
+              id={id}
+              className="flex items-center gap-2.5 font-semibold text-base text-ink"
+            >
+              <Icon className="size-5 shrink-0" aria-hidden="true" />
+              <span>{title}</span>
+            </h3>
+            <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+              {description}
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="grid min-w-32 flex-1 gap-2">
+              <p className="text-right text-slate-muted text-xs">
+                {reportingCount}/{stateEntries.length} reporting
+              </p>
+              <span
+                className="grid gap-1"
+                style={{
+                  gridTemplateColumns: `repeat(${stateEntries.length}, minmax(0, 1fr))`,
+                }}
+                aria-hidden="true"
+              >
+                {stateEntries.map(([key, state]) => (
+                  <span
+                    key={key}
+                    className={cn(
+                      "h-1.5 rounded-full",
+                      state.dataCompleteness === "COMPLETE" &&
+                        state.unavailableReason !== "NOT_INSTRUMENTED"
+                        ? "bg-primary"
+                        : state.dataCompleteness === "SOURCE_INCOMPLETE"
+                          ? "bg-accent"
+                          : "bg-muted",
+                    )}
+                  />
+                ))}
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+      contentClassName="grid gap-6"
+    >
+      {children}
+    </CollapsibleSection>
   );
 }
 
@@ -252,7 +347,7 @@ function RequestCreationMetric({
     >
       {metric.byPoolState ? (
         <MetricDisclosure label="Member availability breakdown">
-          <dl className="border-border border-t">
+          <dl className="grid gap-0.5 overflow-hidden rounded-xl bg-background">
             {metric.byPoolState.map((bucket) => (
               <MetricValueRow
                 key={bucket.poolState}
@@ -381,7 +476,7 @@ function RecoveryLifecycleMetric({
     >
       {metric.completedOpeningCount !== null ? (
         <MetricDisclosure label="Opening outcomes">
-          <dl className="grid gap-x-8 border-border border-t sm:grid-cols-2">
+          <dl className="grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2">
             <MetricValueRow
               label="Applications received"
               value={formatCount(metric.applicationCount)}
@@ -597,7 +692,7 @@ function NonresponseMetric({
     >
       {metric.byExposureOrdinal ? (
         <MetricDisclosure label="Invitation number breakdown">
-          <dl className="border-border border-t">
+          <dl className="grid gap-0.5 overflow-hidden rounded-xl bg-background">
             {metric.byExposureOrdinal.map((bucket) => (
               <MetricValueRow
                 key={bucket.bucket}
@@ -780,7 +875,7 @@ function MetricBlock({
   const state = getMetricDisplayState(metric);
 
   return (
-    <section aria-labelledby={id} className="border-border border-t pt-5">
+    <section aria-labelledby={id} className="pt-2">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h4 id={id} className="font-semibold text-ink text-sm">
@@ -802,12 +897,13 @@ function MetricBlock({
       ) : null}
 
       {rows.length > 0 ? (
-        <dl className="mt-4 grid gap-x-8 border-border border-t sm:grid-cols-3">
+        <dl className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-3">
           {rows.map((item) => (
             <MetricValueRow
               key={item.label}
               label={item.label}
               value={item.value}
+              wide={item.wide}
             />
           ))}
         </dl>
@@ -819,9 +915,14 @@ function MetricBlock({
   );
 }
 
-function MetricValueRow({ label, value }: MetricRow) {
+function MetricValueRow({ label, value, wide }: MetricRow) {
   return (
-    <div className="flex min-w-0 items-start justify-between gap-4 border-border border-b py-3">
+    <div
+      className={cn(
+        "flex min-w-0 items-start justify-between gap-4 rounded-xl bg-card px-4 py-3",
+        wide && "sm:col-span-3",
+      )}
+    >
       <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
       <dd className="min-w-0 text-right font-semibold text-ink text-sm tabular-nums">
         {value}
@@ -838,12 +939,14 @@ function MetricDisclosure({
   label: string;
 }) {
   return (
-    <details className="mt-4 border-border border-y py-3">
-      <summary className="cursor-pointer font-semibold text-primary text-xs">
-        {label}
-      </summary>
-      <div className="pt-3">{children}</div>
-    </details>
+    <CollapsibleSection
+      className="mt-4"
+      variant="card"
+      summary={label}
+      triggerClassName="text-primary text-xs"
+    >
+      {children}
+    </CollapsibleSection>
   );
 }
 
@@ -864,15 +967,15 @@ export function MetricDefinitionDetails({
   ] as const;
 
   return (
-    <details className={className ?? "mt-4"}>
-      <summary className="cursor-pointer font-semibold text-primary text-xs">
-        How this measure works
-      </summary>
-      <dl className="mt-3 border-border border-t">
+    <CollapsibleSection
+      className={className ?? "mt-4"}
+      summary="How this measure works"
+    >
+      <dl className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
         {rows.map(([label, value]) => (
           <div
             key={label}
-            className="grid gap-1 border-border border-b py-2 sm:grid-cols-3 sm:gap-4"
+            className="grid gap-1 rounded-xl bg-card px-4 py-2 sm:grid-cols-3 sm:gap-4"
           >
             <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
             <dd className="text-ink text-xs leading-relaxed sm:col-span-2">
@@ -881,7 +984,7 @@ export function MetricDefinitionDetails({
           </div>
         ))}
       </dl>
-    </details>
+    </CollapsibleSection>
   );
 }
 
@@ -895,7 +998,7 @@ function DistributionList({
   return (
     <div>
       <h5 className="font-semibold text-ink text-xs">{label}</h5>
-      <dl className="mt-2 border-border border-t">
+      <dl className="mt-2 grid gap-0.5 overflow-hidden rounded-xl bg-background">
         {rows.length > 0 ? (
           rows.map((item) => (
             <MetricValueRow
@@ -929,9 +1032,9 @@ function coverageRow(
   coverageStartsAt: string | null,
   sourceDefinitionVersion: string | null,
 ): MetricRow {
-  return row(
-    "Source coverage",
-    coverageStartsAt ? (
+  return {
+    label: "Source coverage",
+    value: coverageStartsAt ? (
       <span>
         From <AdminDateTime value={coverageStartsAt} />
         {sourceDefinitionVersion ? ` · ${sourceDefinitionVersion}` : ""}
@@ -939,7 +1042,8 @@ function coverageRow(
     ) : (
       "Not recorded"
     ),
-  );
+    wide: true,
+  };
 }
 
 function isUnavailableMetric(

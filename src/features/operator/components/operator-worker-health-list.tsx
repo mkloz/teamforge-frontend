@@ -39,9 +39,11 @@ export function OperatorWorkerHealthList({
 }) {
   if (!workers.length) {
     return (
-      <div className="grid min-h-40 place-items-center rounded-2xl border border-border bg-card p-6 text-center">
-        <div className="grid gap-1">
-          <h2 className="font-bold text-ink text-lg">No workers configured</h2>
+      <div className="grid min-h-40 place-items-center rounded-xl border border-border border-dashed p-6 text-center">
+        <div className="grid max-w-md gap-1">
+          <h2 className="font-semibold text-base text-ink">
+            No workers configured
+          </h2>
           <p className="text-slate-muted text-sm">
             No moderation workers were returned by the moderation API.
           </p>
@@ -50,16 +52,44 @@ export function OperatorWorkerHealthList({
     );
   }
 
+  const totalQueued = workers.reduce(
+    (sum, worker) => sum + worker.queueDepth,
+    0,
+  );
+  const totalFailures = workers.reduce(
+    (sum, worker) => sum + worker.failedJobs + worker.deadJobs,
+    0,
+  );
+  const maxWorkload = Math.max(
+    1,
+    ...workers.map((worker) => worker.queueDepth + worker.activeLeases),
+  );
+
   return (
-    <section className="grid gap-3" aria-labelledby="worker-health-heading">
-      <h2 id="worker-health-heading" className="font-bold text-ink text-xl">
-        Worker health
-      </h2>
-      <div className="grid gap-3 lg:grid-cols-2">
+    <section className="grid gap-4" aria-labelledby="worker-health-heading">
+      <header className="sm:main-action-grid grid items-end gap-3">
+        <div className="grid gap-1">
+          <h2
+            id="worker-health-heading"
+            className="font-semibold text-ink text-xl"
+          >
+            Worker health
+          </h2>
+          <p className="text-slate-muted text-sm">
+            Compare current load, failures, and heartbeat recency.
+          </p>
+        </div>
+        <p className="font-medium text-slate-muted text-sm">
+          {totalQueued} queued · {totalFailures} failed or dead
+        </p>
+      </header>
+
+      <div className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:bg-card">
         {workers.map((worker) => (
-          <WorkerCard
+          <WorkerRow
             key={worker.kind}
             worker={worker}
+            maxWorkload={maxWorkload}
             selected={worker.kind === selectedKind}
             commandsEnabled={commandsEnabled}
             onCommandError={onCommandError}
@@ -71,68 +101,107 @@ export function OperatorWorkerHealthList({
   );
 }
 
-function WorkerCard({
+function WorkerRow({
   commandsEnabled,
+  maxWorkload,
   onCommandError,
   onSelect,
   selected,
   worker,
 }: {
   commandsEnabled: boolean;
+  maxWorkload: number;
   onCommandError: (error: unknown) => void;
   onSelect: () => void;
   selected: boolean;
   worker: OperatorWorkerStatus;
 }) {
+  const queuedWidth = (worker.queueDepth / maxWorkload) * 100;
+  const activeWidth = (worker.activeLeases / maxWorkload) * 100;
+  const failureCount = worker.failedJobs + worker.deadJobs;
+
   return (
     <article
       className={cn(
-        "grid gap-4 rounded-2xl border bg-card p-5",
-        selected ? "border-primary/40" : "border-border",
+        "relative grid gap-5 px-5 py-5 sm:px-6 lg:grid-cols-2 lg:items-center 2xl:grid-cols-[minmax(13rem,0.9fr)_minmax(12rem,0.85fr)_minmax(16rem,1fr)_auto]",
+        selected &&
+          "bg-primary/[0.035] before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-primary",
       )}
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="grid gap-1">
-          <h3 className="font-semibold text-ink">{worker.displayName}</h3>
-          <p className="text-slate-muted text-xs">
-            {humanizeCode(worker.mode)} mode
-          </p>
-        </div>
-        <span className="rounded-full bg-muted px-2.5 py-1 font-semibold text-slate-muted text-xs">
-          {humanizeCode(worker.state)}
-        </span>
-      </div>
-
-      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <WorkerFact label="Queued" value={String(worker.queueDepth)} />
-        <WorkerFact label="Active leases" value={String(worker.activeLeases)} />
-        <WorkerFact label="Failed" value={String(worker.failedJobs)} />
-        <WorkerFact label="Dead" value={String(worker.deadJobs)} />
-        <WorkerFact
-          label="Oldest queued"
-          value={formatOperatorDate(worker.oldestQueuedAt)}
-        />
-        <WorkerFact
-          label="Last success"
-          value={formatOperatorDate(worker.lastSuccessAt)}
-        />
-        <WorkerFact
-          label="Last heartbeat"
-          value={formatOperatorDate(worker.lastHeartbeatAt)}
-        />
-      </dl>
-
-      {worker.pauseReasonCode ? (
-        <p className="flex items-start gap-2 rounded-xl bg-accent/12 p-3 text-amber-900 text-xs dark:text-amber-200">
-          <TriangleAlert
-            className="mt-0.5 size-4 shrink-0"
+      <div className="grid min-w-0 gap-1">
+        <h3 className="truncate font-semibold text-ink">
+          {worker.displayName}
+        </h3>
+        <p className="flex items-center gap-2 text-slate-muted text-xs">
+          <span
+            className={cn(
+              "size-1.5 rounded-full",
+              worker.state === "HEALTHY"
+                ? "bg-primary"
+                : worker.state === "DELAYED"
+                  ? "bg-accent"
+                  : "bg-danger",
+            )}
             aria-hidden="true"
           />
-          Paused since {formatOperatorDate(worker.pausedAt)}
+          {humanizeCode(worker.state)}
+          <span aria-hidden="true">·</span>
+          {humanizeCode(worker.mode)} mode
         </p>
-      ) : null}
+        {worker.pauseReasonCode ? (
+          <p className="flex items-center gap-1.5 font-medium text-accent text-xs [&_svg]:text-current">
+            <TriangleAlert className="size-3.5" aria-hidden="true" />
+            Paused {formatOperatorDate(worker.pausedAt)}
+          </p>
+        ) : null}
+      </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="grid gap-2">
+        <div className="flex items-baseline justify-between gap-2">
+          <p className="font-semibold text-slate-muted text-xs">Workload</p>
+          <p className="text-ink text-xs">
+            {worker.queueDepth} queued · {worker.activeLeases} processing
+          </p>
+        </div>
+        <span
+          className="flex h-1.5 overflow-hidden rounded-full bg-muted/80"
+          aria-label={`${worker.queueDepth} queued and ${worker.activeLeases} active`}
+          role="img"
+        >
+          <span
+            className="h-full bg-accent"
+            style={{ width: `${queuedWidth}%` }}
+          />
+          <span
+            className="h-full bg-primary"
+            style={{ width: `${activeWidth}%` }}
+          />
+        </span>
+        <p className="text-slate-muted text-xs">
+          Oldest {formatOperatorDate(worker.oldestQueuedAt)}
+        </p>
+      </div>
+
+      <div className="grid gap-3">
+        <div className="grid grid-cols-2 gap-5">
+          <WorkerFact
+            label="Failed"
+            value={String(worker.failedJobs)}
+            danger={worker.failedJobs > 0}
+          />
+          <WorkerFact
+            label="Dead"
+            value={String(worker.deadJobs)}
+            danger={worker.deadJobs > 0}
+          />
+        </div>
+        <WorkerHeartbeat
+          heartbeatAt={worker.lastHeartbeatAt}
+          successAt={worker.lastSuccessAt}
+        />
+      </div>
+
+      <div className="flex flex-wrap gap-2 2xl:justify-end">
         <Button
           type="button"
           variant={selected ? "primary" : "outline"}
@@ -148,6 +217,11 @@ function WorkerCard({
           <WorkerStateCommand worker={worker} onCommandError={onCommandError} />
         ) : null}
       </div>
+      {failureCount > 0 ? (
+        <span className="sr-only">
+          {failureCount} failed or dead jobs need attention
+        </span>
+      ) : null}
     </article>
   );
 }
@@ -254,11 +328,81 @@ function WorkerStateCommand({
   );
 }
 
-function WorkerFact({ label, value }: { label: string; value: string }) {
+function WorkerFact({
+  danger = false,
+  label,
+  value,
+}: {
+  danger?: boolean;
+  label: string;
+  value: string;
+}) {
   return (
     <div className="grid gap-0.5">
       <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
-      <dd className="wrap-break-word text-ink text-sm">{value}</dd>
+      <dd
+        className={cn(
+          "wrap-break-word font-semibold text-sm tabular-nums",
+          danger ? "text-danger" : "text-ink",
+        )}
+      >
+        {value}
+      </dd>
+    </div>
+  );
+}
+
+function WorkerHeartbeat({
+  heartbeatAt,
+  successAt,
+}: {
+  heartbeatAt: string | null;
+  successAt: string | null;
+}) {
+  const heartbeatAge = heartbeatAt
+    ? Math.max(0, Date.now() - new Date(heartbeatAt).getTime())
+    : Number.POSITIVE_INFINITY;
+  const healthy = heartbeatAge <= 5 * 60_000;
+  const delayed = heartbeatAge > 5 * 60_000 && heartbeatAge <= 30 * 60_000;
+  const activeSegments = healthy ? 4 : delayed ? 2 : heartbeatAt ? 1 : 0;
+
+  return (
+    <div className="grid gap-1.5">
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-semibold text-slate-muted text-xs">Heartbeat</p>
+        <p
+          className={cn(
+            "truncate text-xs",
+            healthy ? "text-primary" : delayed ? "text-accent" : "text-danger",
+          )}
+        >
+          {formatOperatorDate(heartbeatAt)}
+        </p>
+      </div>
+      <span
+        className="grid grid-cols-4 gap-1"
+        aria-label={`Last heartbeat ${formatOperatorDate(heartbeatAt)}`}
+        role="img"
+      >
+        {[0, 1, 2, 3].map((segment) => (
+          <span
+            key={segment}
+            className={cn(
+              "h-1.5 rounded-full",
+              segment < activeSegments
+                ? healthy
+                  ? "bg-primary"
+                  : delayed
+                    ? "bg-accent"
+                    : "bg-danger"
+                : "bg-muted",
+            )}
+          />
+        ))}
+      </span>
+      <p className="truncate text-slate-muted text-xs">
+        Last success {formatOperatorDate(successAt)}
+      </p>
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CalendarClock,
+  ClipboardCheck,
   RefreshCw,
-  ShieldCheck,
   TriangleAlert,
+  UserRoundCheck,
   UserRoundCog,
   XCircle,
 } from "lucide-react";
@@ -38,7 +39,6 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { StatusPill } from "@/shared/components/ui/status-pill";
 import {
   getApiErrorMessage,
   getHttpErrorStatus,
@@ -73,23 +73,22 @@ export function AdminAdultEligibilityCorrections({
   return (
     <section
       aria-labelledby="adult-eligibility-corrections-heading"
-      className="grid gap-4 border-border border-t pt-6"
+      className="grid gap-4"
     >
-      <header className="grid gap-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <h2
-            id="adult-eligibility-corrections-heading"
-            className="font-semibold text-ink text-xl"
-          >
-            Adult eligibility corrections
-          </h2>
-          {canManage && correctionsQuery.data ? (
-            <StatusPill numeric size="xs" tone="amber">
-              {correctionsQuery.data.length} open
-            </StatusPill>
-          ) : null}
-        </div>
-        <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+      <header className="main-action-grid grid items-start gap-x-4 gap-y-1.5">
+        <h2
+          id="adult-eligibility-corrections-heading"
+          className="flex items-center gap-2.5 font-semibold text-ink text-xl"
+        >
+          <ClipboardCheck className="size-5 shrink-0" aria-hidden="true" />
+          <span>Adult eligibility corrections</span>
+        </h2>
+        {canManage && correctionsQuery.data ? (
+          <p className="font-medium text-slate-muted text-sm">
+            {correctionsQuery.data.length} waiting
+          </p>
+        ) : null}
+        <p className="col-span-2 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
           Verify each correction before resolving it; rejections require a
           recorded reason.
         </p>
@@ -179,16 +178,21 @@ function CorrectionsContent({
 
   if (!corrections?.length) {
     return (
-      <div className="grid min-h-28 place-items-center border-border border-y px-4 py-8 text-center">
-        <p className="font-semibold text-ink text-sm">
-          No corrections need review
-        </p>
+      <div className="rounded-2xl border border-border/70 border-dashed px-5 py-5 sm:px-6">
+        <div className="grid gap-1">
+          <p className="font-semibold text-base text-ink">
+            No corrections need review
+          </p>
+          <p className="max-w-md text-pretty text-slate-muted text-sm leading-relaxed">
+            New adult eligibility requests will appear here for verification.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <ul className="divide-y divide-border border-border border-y">
+    <ul className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:rounded-xl [&>*]:bg-card">
       {corrections.map((correction) => (
         <li key={correction.id}>
           <CorrectionRow correction={correction} />
@@ -202,16 +206,16 @@ function CorrectionsSkeleton() {
   return (
     <div
       aria-label="Loading adult eligibility corrections"
-      className="divide-y divide-border border-border border-y"
+      className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:rounded-xl [&>*]:bg-card"
       role="status"
     >
       {["first", "second"].map((key) => (
-        <div className="grid gap-3 py-4 sm:grid-cols-[1fr_auto]" key={key}>
-          <div className="grid gap-2">
-            <Skeleton className="h-5 w-52" />
-            <Skeleton className="h-4 w-full max-w-md" />
-            <Skeleton className="h-4 w-64" />
-          </div>
+        <div
+          className="grid gap-4 px-5 py-5 lg:grid-cols-[minmax(15rem,0.9fr)_minmax(22rem,1.4fr)_auto] lg:items-center"
+          key={key}
+        >
+          <Skeleton className="h-12 w-full max-w-64" />
+          <Skeleton className="h-12 w-full" />
           <Skeleton className="h-9 w-40" />
         </div>
       ))}
@@ -311,48 +315,35 @@ function CorrectionRow({
     decisionMutation.variables?.decision === "REJECT";
 
   return (
-    <article className="lg:main-action-grid grid gap-4 py-5 lg:items-center">
-      <div className="grid min-w-0 gap-3">
-        <div className="flex min-w-0 items-start gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <CalendarClock className="size-4" aria-hidden="true" />
-          </span>
-          <div className="grid min-w-0 gap-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="font-semibold text-base text-ink">
-                {correctionReasonLabels[correction.reasonCode]}
-              </h3>
-              <StatusPill size="xs" tone="amber">
-                Open
-              </StatusPill>
-            </div>
-            <p className="break-all text-slate-muted text-xs">
-              User {correction.userId}
-            </p>
-          </div>
+    <article className="grid gap-5 px-5 py-5 sm:px-6 lg:grid-cols-[minmax(15rem,0.9fr)_minmax(22rem,1.4fr)_auto] lg:items-center">
+      <div className="flex min-w-0 items-start gap-3">
+        <CalendarClock className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+        <div className="grid min-w-0 gap-1">
+          <h3 className="font-semibold text-base text-ink">
+            {correctionReasonLabels[correction.reasonCode]}
+          </h3>
+          <p className="break-all text-slate-muted text-xs">
+            User {correction.userId} · revision {correction.revision}
+          </p>
         </div>
-
-        <dl className="grid gap-x-6 gap-y-2 pl-12 text-xs sm:grid-cols-2 xl:grid-cols-4">
-          <CorrectionFact
-            label="Requested"
-            value={requestedAtFormatter.format(new Date(correction.createdAt))}
-          />
-          <CorrectionFact
-            label="Revision"
-            value={String(correction.revision)}
-          />
-          <CorrectionFact
-            label="Authority version"
-            value={`${correction.priorAuthorityVersion} → ${correction.openedAuthorityVersion}`}
-          />
-          <CorrectionFact
-            label="Access version"
-            value={`${correction.priorAccessVersion} → ${correction.openedAccessVersion}`}
-          />
-        </dl>
       </div>
 
-      <div className="flex flex-wrap gap-2 pl-12 lg:justify-end lg:pl-0">
+      <dl className="grid gap-x-6 gap-y-2 text-xs sm:grid-cols-3">
+        <CorrectionFact
+          label="Requested"
+          value={requestedAtFormatter.format(new Date(correction.createdAt))}
+        />
+        <CorrectionFact
+          label="Authority"
+          value={`${correction.priorAuthorityVersion} → ${correction.openedAuthorityVersion}`}
+        />
+        <CorrectionFact
+          label="Access"
+          value={`${correction.priorAccessVersion} → ${correction.openedAccessVersion}`}
+        />
+      </dl>
+
+      <div className="flex flex-wrap gap-2 lg:justify-end">
         <AlertDialog
           open={resolveOpen}
           onOpenChange={(open) => {
@@ -369,7 +360,7 @@ function CorrectionRow({
               size="sm"
               disabled={decisionMutation.isPending}
             >
-              <ShieldCheck className="size-4" aria-hidden="true" />
+              <UserRoundCheck className="size-4" aria-hidden="true" />
               Resolve
             </Button>
           </AlertDialogTrigger>
@@ -520,7 +511,7 @@ function DecisionSummary({
   reason: string;
 }) {
   return (
-    <dl className="grid gap-2 border-border border-y py-3 text-sm">
+    <dl className="grid gap-2 rounded-xl bg-card px-4 py-3 text-sm">
       <CorrectionFact label="User" value={correction.userId} />
       <CorrectionFact label="Recorded reason" value={reason} />
       <CorrectionFact

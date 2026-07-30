@@ -28,6 +28,7 @@ import {
 } from "@/shared/components/ui/alert-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { cn } from "@/shared/lib/utils";
 
 const JOB_FILTERS = ["DEAD", "FAILED"] as const;
 const PAGE_SIZE = 25;
@@ -89,40 +90,44 @@ export function OperatorJobList({
   return (
     <section
       id="operator-worker-jobs"
-      className="grid gap-4 rounded-2xl border border-border bg-card p-5"
+      className="grid gap-4"
       aria-labelledby="worker-jobs-heading"
     >
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div className="grid gap-1">
-          <h2 id="worker-jobs-heading" className="font-bold text-ink text-xl">
+          <h2
+            id="worker-jobs-heading"
+            className="font-semibold text-ink text-xl"
+          >
             {humanizeCode(workerKind)} jobs needing attention
           </h2>
           <p className="text-slate-muted text-sm">
             Requeue only after checking the safe error code and worker status.
           </p>
         </div>
-        <label className="grid gap-1 font-semibold text-ink text-xs">
-          Job state
-          <select
-            value={status}
-            onChange={(event) => {
-              const nextStatus = JOB_FILTERS.find(
-                (filter) => filter === event.target.value,
-              );
-              if (!nextStatus) return;
-              setStatus(nextStatus);
-              setPage(1);
-            }}
-            className="h-10 rounded-xl border border-border bg-input px-3 text-ink text-sm"
-          >
-            {JOB_FILTERS.map((filter) => (
-              <option key={filter} value={filter}>
-                {humanizeCode(filter)}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+        <fieldset className="inline-grid grid-cols-2 gap-1 rounded-xl bg-card p-1">
+          <legend className="sr-only">Job state</legend>
+          {JOB_FILTERS.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              aria-pressed={status === filter}
+              className={cn(
+                "min-h-9 rounded-lg px-3 font-semibold text-sm transition-colors",
+                status === filter
+                  ? "bg-primary/10 text-ink"
+                  : "text-slate-muted hover:bg-muted/50 hover:text-ink",
+              )}
+              onClick={() => {
+                setStatus(filter);
+                setPage(1);
+              }}
+            >
+              {humanizeCode(filter)}
+            </button>
+          ))}
+        </fieldset>
+      </header>
 
       {query.isLoading || isRecoveringLastValidPage ? (
         <div
@@ -134,8 +139,8 @@ export function OperatorJobList({
               : "Loading worker jobs"
           }
         >
-          <Skeleton className="h-28 rounded-xl" />
-          <Skeleton className="h-28 rounded-xl" />
+          <Skeleton className="h-24 rounded-2xl" />
+          <Skeleton className="h-24 rounded-2xl" />
         </div>
       ) : query.isError || !query.data ? (
         <JobListError
@@ -144,7 +149,7 @@ export function OperatorJobList({
         />
       ) : query.data.data.length ? (
         <>
-          <ul className="grid gap-3">
+          <ul className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:bg-card">
             {query.data.data.map((job) => (
               <WorkerJobCard
                 key={job.id}
@@ -155,7 +160,7 @@ export function OperatorJobList({
               />
             ))}
           </ul>
-          <div className="flex flex-wrap items-center justify-between gap-3 border-border border-t pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
             <p className="text-slate-muted text-xs" role="status">
               Page {page} of {totalPages} · {query.data.total} jobs
             </p>
@@ -184,8 +189,8 @@ export function OperatorJobList({
           </div>
         </>
       ) : (
-        <div className="grid min-h-32 place-items-center rounded-xl bg-muted/45 p-5 text-center">
-          <div className="grid gap-1">
+        <div className="grid min-h-32 place-items-center rounded-xl border border-border border-dashed p-5 text-center">
+          <div className="grid max-w-md gap-1">
             <h3 className="font-semibold text-ink">
               No {status.toLowerCase()} jobs
             </h3>
@@ -211,35 +216,43 @@ function WorkerJobCard({
   workerKind: OperatorWorkerKind;
 }) {
   return (
-    <li className="sm:main-action-grid grid gap-4 rounded-xl bg-muted/45 p-4 sm:items-center">
-      <div className="grid min-w-0 gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="break-all font-semibold text-ink text-sm">{job.id}</h3>
-          <span className="rounded-full bg-card px-2.5 py-1 font-semibold text-slate-muted text-xs">
+    <li className="grid gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[minmax(14rem,0.9fr)_minmax(22rem,1.35fr)_auto] lg:items-center">
+      <div className="grid min-w-0 gap-1">
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
+          <h3 className="truncate font-mono font-semibold text-ink text-sm">
+            {job.id}
+          </h3>
+          <span
+            className={cn(
+              "font-semibold text-xs",
+              job.status === "DEAD" ? "text-danger" : "text-accent",
+            )}
+          >
             {humanizeCode(job.status)}
           </span>
         </div>
-        <dl className="grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
-          <JobFact label="Case" value={job.caseReference ?? "Not linked"} />
-          <JobFact
-            label="Attempts since requeue"
-            value={`${job.attempts} of ${job.maxAttempts}`}
-          />
-          <JobFact
-            label="Lifetime attempts"
-            value={String(job.lifetimeAttempts)}
-          />
-          <JobFact
-            label="Safe error code"
-            value={job.lastErrorCode ? humanizeCode(job.lastErrorCode) : "None"}
-          />
-          <JobFact
-            label="Next retry"
-            value={formatOperatorDate(job.nextRetryAt)}
-          />
-          <JobFact label="Updated" value={formatOperatorDate(job.updatedAt)} />
-        </dl>
+        <p className="text-slate-muted text-xs">
+          Case {job.caseReference ?? "not linked"}
+        </p>
       </div>
+
+      <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
+        <JobFact
+          label="Attempts"
+          value={`${job.attempts} of ${job.maxAttempts}`}
+        />
+        <JobFact label="Lifetime" value={String(job.lifetimeAttempts)} />
+        <JobFact
+          label="Safe error"
+          value={job.lastErrorCode ? humanizeCode(job.lastErrorCode) : "None"}
+        />
+        <JobFact
+          label="Next retry"
+          value={formatOperatorDate(job.nextRetryAt)}
+        />
+        <JobFact label="Updated" value={formatOperatorDate(job.updatedAt)} />
+      </dl>
+
       {commandsEnabled ? (
         <ReplayJobCommand
           job={job}

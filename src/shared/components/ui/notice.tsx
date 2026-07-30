@@ -1,5 +1,12 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import {
+  CircleAlert,
+  CircleCheck,
+  Info,
+  type LucideIcon,
+  TriangleAlert,
+} from "lucide-react";
+import {
   Children,
   cloneElement,
   type HTMLAttributes,
@@ -10,7 +17,7 @@ import {
 import { cn } from "@/shared/lib/utils";
 
 const noticeVariants = cva(
-  "flex min-w-0 items-start border font-medium leading-relaxed",
+  "flex min-w-0 flex-col items-start border font-medium leading-relaxed sm:flex-row",
   {
     variants: {
       tone: {
@@ -57,6 +64,7 @@ export interface NoticeProps
   contentClassName?: string;
   icon?: ReactNode;
   iconClassName?: string;
+  statusIcon?: boolean;
 }
 
 export function Notice({
@@ -67,22 +75,48 @@ export function Notice({
   icon,
   iconClassName,
   size,
+  statusIcon = false,
   tone,
   ...props
 }: NoticeProps) {
+  const resolvedIcon =
+    icon !== undefined
+      ? icon
+      : statusIcon
+        ? renderStatusIcon(tone ?? "info")
+        : null;
+
   return (
     <div className={cn(noticeVariants({ size, tone }), className)} {...props}>
       <div className={cn("min-w-0 flex-1", contentClassName)}>
-        {icon ? (
+        {resolvedIcon ? (
           <span className={cn(noticeIconVariants({ tone }), iconClassName)}>
-            {icon}
+            {resolvedIcon}
           </span>
         ) : null}
-        {icon ? renderInlineNoticeChildren(children) : children}
+        {resolvedIcon ? renderInlineNoticeChildren(children) : children}
       </div>
-      {action ? <div className="shrink-0 self-center">{action}</div> : null}
+      {action ? (
+        <div className="w-full shrink-0 self-start sm:w-auto sm:self-center">
+          {action}
+        </div>
+      ) : null}
     </div>
   );
+}
+
+const STATUS_ICONS: Record<NonNullable<NoticeProps["tone"]>, LucideIcon> = {
+  danger: CircleAlert,
+  info: Info,
+  neutral: Info,
+  success: CircleCheck,
+  warning: TriangleAlert,
+};
+
+function renderStatusIcon(tone: NonNullable<NoticeProps["tone"]>) {
+  const StatusIcon = STATUS_ICONS[tone];
+
+  return <StatusIcon aria-hidden="true" className="size-4" />;
 }
 
 function renderInlineNoticeChildren(children: ReactNode) {

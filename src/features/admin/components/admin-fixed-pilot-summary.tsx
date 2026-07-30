@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, FileCheck2, FileLock2, RefreshCw } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { FileCheck2, FileLock2, RefreshCw } from "lucide-react";
+import { useState } from "react";
 
 import {
   ADMIN_SPONSOR_ARTIFACT_QUERY_KEY,
@@ -23,6 +23,8 @@ import {
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
+import { Notice } from "@/shared/components/ui/notice";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import {
   StatusPill,
@@ -32,6 +34,11 @@ import {
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
   timeStyle: "short",
+});
+const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
 });
 const NUMBER_FORMATTER = new Intl.NumberFormat();
 const PERCENT_FORMATTER = new Intl.NumberFormat(undefined, {
@@ -97,41 +104,21 @@ export function AdminFixedPilotSummary({ canManage }: { canManage: boolean }) {
     status.artifact === null;
 
   return (
-    <section
-      aria-labelledby="fixed-pilot-summary-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="fixed-pilot-summary-heading" className="pt-2">
       <FixedSummaryHeading status={status} />
 
-      {status.targetCohort ? (
-        <dl className="mt-4 grid gap-x-8 border-border border-t sm:grid-cols-2">
-          <SummaryDetail label="Cohort" value={status.targetCohort.code} />
-          <SummaryDetail
-            label="Members"
-            value={NUMBER_FORMATTER.format(status.targetCohort.memberCount)}
-          />
-          <SummaryDetail label="Cohort window">
-            <AdminDateTime value={status.targetCohort.startsAt} />
-            <span aria-hidden="true"> – </span>
-            <span className="sr-only"> to </span>
-            <AdminDateTime value={status.targetCohort.endsAt} />
-          </SummaryDetail>
-          <SummaryDetail label="Outcome window ends">
-            <AdminDateTime value={status.targetCohort.outcomeWindowEndsAt} />
-          </SummaryDetail>
-        </dl>
-      ) : null}
+      {status.targetCohort ? <FixedWindowOverview status={status} /> : null}
 
       {status.artifact ? (
         <GeneratedSummary artifact={status.artifact} />
-      ) : (
+      ) : status.targetCohort ? null : (
         <SummaryAvailability status={status} />
       )}
 
       <SummaryHistory artifacts={status.history} />
 
       {canCreate ? (
-        <div className="mt-5 border-border border-t pt-5">
+        <div className="mt-6">
           <CreateSummaryDialog
             error={createMutation.isError}
             loading={createMutation.isPending}
@@ -166,28 +153,148 @@ function FixedSummaryHeading({
 
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
-      <div className="flex items-start gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary">
-          <FileLock2 className="size-4" aria-hidden="true" />
-        </span>
-        <div className="min-w-0">
-          <h2
-            id="fixed-pilot-summary-heading"
-            className="font-semibold text-base text-ink"
-          >
-            Fixed pilot summary
-          </h2>
-          <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-            A fixed internal summary for one cohort and one outcome window.
-            Small results are withheld before they reach this view. Creating it
-            does not approve or send it.
+      <div className="grid min-w-0 gap-1">
+        <h2
+          id="fixed-pilot-summary-heading"
+          className="flex items-center gap-2 font-semibold text-base text-ink"
+        >
+          <FileLock2 className="size-4 shrink-0" aria-hidden="true" />
+          Fixed pilot summary
+        </h2>
+        <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+          A fixed internal summary for one cohort and one outcome window. Small
+          results are withheld before they reach this view. Creating it does not
+          approve or send it.
+        </p>
+      </div>
+
+      <span
+        className={`flex items-center gap-2 font-semibold text-xs ${getToneTextClass(displayState.tone)}`}
+      >
+        <span
+          className={`size-2 rounded-full ${getToneBackgroundClass(displayState.tone)}`}
+          aria-hidden="true"
+        />
+        {displayState.label}
+      </span>
+    </div>
+  );
+}
+
+function FixedWindowOverview({
+  status,
+}: {
+  status: AdminSponsorArtifactStatus;
+}) {
+  const cohort = status.targetCohort;
+  if (!cohort) {
+    return null;
+  }
+
+  const blocker = getPrimaryBlocker(status.eligibility.blockers);
+  const message = getBlockerMessage(blocker, status.viewer.canGenerate);
+  const evaluatedAt = new Date(status.evaluatedAt).getTime();
+  const stages = [
+    {
+      date: cohort.startsAt,
+      label: "Cohort opened",
+      reached: evaluatedAt >= new Date(cohort.startsAt).getTime(),
+    },
+    {
+      date: cohort.endsAt,
+      label: "Cohort closes",
+      reached: evaluatedAt >= new Date(cohort.endsAt).getTime(),
+    },
+    {
+      date: cohort.outcomeWindowEndsAt,
+      label: "Summary unlocks",
+      reached: evaluatedAt >= new Date(cohort.outcomeWindowEndsAt).getTime(),
+    },
+  ];
+  const daysRemaining = Math.max(
+    0,
+    Math.ceil(
+      (new Date(cohort.outcomeWindowEndsAt).getTime() - evaluatedAt) /
+        (1000 * 60 * 60 * 24),
+    ),
+  );
+
+  return (
+    <div className="mt-5 overflow-hidden rounded-2xl bg-card">
+      <div className="grid gap-6 p-5 sm:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] sm:p-6">
+        <div>
+          <p className="font-semibold text-slate-muted text-xs">
+            Summary unlocks
           </p>
+          <p className="mt-2 font-semibold text-2xl text-ink tracking-tight">
+            {DATE_FORMATTER.format(new Date(cohort.outcomeWindowEndsAt))}
+          </p>
+          <p className="mt-1 font-semibold text-primary text-sm tabular-nums">
+            {daysRemaining === 0
+              ? "Ready now"
+              : `${NUMBER_FORMATTER.format(daysRemaining)} days remaining`}
+          </p>
+        </div>
+
+        <div className="min-w-0">
+          <div
+            aria-label={`${stages.filter((stage) => stage.reached).length} of ${stages.length} summary stages reached`}
+            className="grid grid-cols-3 gap-1.5"
+            role="img"
+          >
+            {stages.map((stage) => (
+              <span
+                key={stage.label}
+                className={`h-1.5 rounded-full ${stage.reached ? "bg-primary" : "bg-muted"}`}
+              />
+            ))}
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            {stages.map((stage) => (
+              <div key={stage.label} className="min-w-0">
+                <p
+                  className={`font-semibold text-xs ${stage.reached ? "text-primary" : "text-slate-muted"}`}
+                >
+                  {stage.label}
+                </p>
+                <p className="mt-1 text-slate-muted text-xs tabular-nums">
+                  {DATE_FORMATTER.format(new Date(stage.date))}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <StatusPill size="sm" surface="soft" tone={displayState.tone}>
-        {displayState.label}
-      </StatusPill>
+      <dl className="grid gap-0.5 bg-background sm:grid-cols-3 [&>*]:bg-card">
+        <WindowFact label="Cohort" value={cohort.code} />
+        <WindowFact
+          label="Members"
+          value={NUMBER_FORMATTER.format(cohort.memberCount)}
+        />
+        <WindowFact
+          label="Measurement period"
+          value={`${DATE_FORMATTER.format(new Date(cohort.startsAt))} – ${DATE_FORMATTER.format(new Date(cohort.outcomeWindowEndsAt))}`}
+        />
+      </dl>
+
+      <div className="mt-0.5 bg-card px-5 py-4 sm:px-6">
+        <p className="font-semibold text-ink text-sm">{message.title}</p>
+        <p className="mt-1 max-w-2xl text-slate-muted text-sm leading-relaxed">
+          {message.description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function WindowFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 px-5 py-4 sm:px-6">
+      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
+      <dd className="wrap-break-word mt-1 font-semibold text-ink text-sm tabular-nums">
+        {value}
+      </dd>
     </div>
   );
 }
@@ -201,7 +308,7 @@ function SummaryAvailability({
   const message = getBlockerMessage(blocker, status.viewer.canGenerate);
 
   return (
-    <div className="mt-4 border-border border-t py-5">
+    <div className="mt-5 rounded-xl bg-card px-5 py-4">
       <p className="font-semibold text-ink text-sm">{message.title}</p>
       <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
         {message.description}
@@ -221,7 +328,7 @@ function GeneratedSummary({
 
   return (
     <div className="mt-6">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-border border-y py-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl bg-card px-5 py-4">
         <div>
           <p className="font-semibold text-ink text-sm">Current summary</p>
           <p className="mt-1 text-slate-muted text-xs leading-relaxed">
@@ -260,18 +367,24 @@ function SummaryHistory({
       <h3 className="font-semibold text-ink text-sm">
         Earlier summaries ({NUMBER_FORMATTER.format(artifacts.length)})
       </h3>
-      <div className="mt-3 border-border border-t">
+      <div className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
         {artifacts.map((artifact) => (
-          <details key={artifact.id} className="border-border border-b">
-            <summary className="cursor-pointer py-4 font-semibold text-ink text-sm marker:text-slate-muted">
-              {getArtifactVersionLabel(artifact.definitionVersion)}
-              <span className="ml-2 font-normal text-slate-muted text-xs leading-relaxed">
-                Reference {artifact.referenceCode} · Created{" "}
-                <AdminDateTime value={artifact.generatedAt} />
-              </span>
-            </summary>
+          <CollapsibleSection
+            key={artifact.id}
+            variant="card"
+            className="rounded-none first:rounded-t-xl last:rounded-b-xl"
+            summary={
+              <>
+                {getArtifactVersionLabel(artifact.definitionVersion)}
+                <span className="ml-2 font-normal text-slate-muted text-xs leading-relaxed">
+                  Reference {artifact.referenceCode} · Created{" "}
+                  <AdminDateTime value={artifact.generatedAt} />
+                </span>
+              </>
+            }
+          >
             <ArtifactMeasureList artifact={artifact} className="pb-5" />
-          </details>
+          </CollapsibleSection>
         ))}
       </div>
     </div>
@@ -288,7 +401,7 @@ function ArtifactMeasureList({
   return (
     <div className={className}>
       <h4 className="font-semibold text-ink text-sm">Fixed measures</h4>
-      <dl className="mt-3 border-border border-t">
+      <dl className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
         {MEASURE_ROWS.map(([key, label]) => (
           <MeasureRow
             key={key}
@@ -311,7 +424,7 @@ function MeasureRow({
   const display = getMeasureDisplay(measure);
 
   return (
-    <div className="flex min-w-0 items-start justify-between gap-4 border-border border-b py-3">
+    <div className="flex min-w-0 items-start justify-between gap-4 bg-card px-4 py-3">
       <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
       <dd className="min-w-0 text-right font-semibold text-ink text-sm tabular-nums">
         {display.value ? (
@@ -378,25 +491,6 @@ function CreateSummaryDialog({
   );
 }
 
-function SummaryDetail({
-  children,
-  label,
-  value,
-}: {
-  children?: ReactNode;
-  label: string;
-  value?: string;
-}) {
-  return (
-    <div className="flex min-w-0 items-start justify-between gap-4 border-border border-b py-3">
-      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
-      <dd className="min-w-0 text-right font-semibold text-ink text-sm tabular-nums">
-        {children ?? value}
-      </dd>
-    </div>
-  );
-}
-
 function AdminDateTime({ value }: { value: string }) {
   return (
     <time dateTime={value}>{DATE_TIME_FORMATTER.format(new Date(value))}</time>
@@ -405,12 +499,9 @@ function AdminDateTime({ value }: { value: string }) {
 
 function AdminFixedPilotSummaryUnavailable() {
   return (
-    <section
-      aria-labelledby="fixed-pilot-summary-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="fixed-pilot-summary-heading" className="pt-2">
       <FixedSummaryStaticHeading />
-      <p className="mt-4 border-border border-t py-5 text-slate-muted text-sm leading-relaxed">
+      <p className="mt-4 rounded-xl bg-card px-5 py-4 text-slate-muted text-sm leading-relaxed">
         Your admin session cannot view or create fixed pilot summaries.
       </p>
     </section>
@@ -419,13 +510,10 @@ function AdminFixedPilotSummaryUnavailable() {
 
 function AdminFixedPilotSummaryLoading() {
   return (
-    <section
-      aria-labelledby="fixed-pilot-summary-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="fixed-pilot-summary-heading" className="pt-2">
       <FixedSummaryStaticHeading />
       <div
-        className="mt-5 grid gap-3 border-border border-t pt-5"
+        className="mt-5 grid gap-3 rounded-xl bg-card p-5"
         aria-hidden="true"
       >
         <Skeleton className="h-5 w-36" />
@@ -439,49 +527,44 @@ function AdminFixedPilotSummaryLoading() {
 
 function AdminFixedPilotSummaryError({ onRetry }: { onRetry: () => void }) {
   return (
-    <section
-      aria-labelledby="fixed-pilot-summary-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="fixed-pilot-summary-heading" className="pt-2">
       <FixedSummaryStaticHeading />
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-border border-y py-4">
-        <div className="flex items-start gap-3">
-          <AlertTriangle
-            className="mt-0.5 size-4 shrink-0 text-destructive"
-            aria-hidden="true"
-          />
-          <p className="text-slate-muted text-sm" role="alert">
-            The fixed pilot summary could not be loaded.
-          </p>
-        </div>
-        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
-          <RefreshCw className="size-4" aria-hidden="true" />
-          Try again
-        </Button>
-      </div>
+      <Notice
+        action={
+          <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+            <RefreshCw className="size-4" aria-hidden="true" />
+            Try again
+          </Button>
+        }
+        className="mt-5"
+        role="alert"
+        size="lg"
+        statusIcon
+        tone="danger"
+      >
+        <p className="text-slate-muted text-sm">
+          The fixed pilot summary could not be loaded.
+        </p>
+      </Notice>
     </section>
   );
 }
 
 function FixedSummaryStaticHeading() {
   return (
-    <div className="flex items-start gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary">
-        <FileLock2 className="size-4" aria-hidden="true" />
-      </span>
-      <div>
-        <h2
-          id="fixed-pilot-summary-heading"
-          className="font-semibold text-base text-ink"
-        >
-          Fixed pilot summary
-        </h2>
-        <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          A fixed internal summary for one cohort and one outcome window. Small
-          results are withheld before they reach this view. Creating it does not
-          approve or send it.
-        </p>
-      </div>
+    <div className="grid gap-1">
+      <h2
+        id="fixed-pilot-summary-heading"
+        className="flex items-center gap-2 font-semibold text-base text-ink"
+      >
+        <FileLock2 className="size-4 shrink-0" aria-hidden="true" />
+        Fixed pilot summary
+      </h2>
+      <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+        A fixed internal summary for one cohort and one outcome window. Small
+        results are withheld before they reach this view. Creating it does not
+        approve or send it.
+      </p>
     </div>
   );
 }
@@ -610,4 +693,30 @@ function getArtifactVersionLabel(
     "pilot-fixed-window-summary.v2": "Version 2",
     "pilot-fixed-window-summary.v3": "Version 3",
   }[definitionVersion];
+}
+
+function getToneTextClass(tone: StatusPillTone) {
+  if (tone === "teal") {
+    return "text-primary";
+  }
+  if (tone === "amber") {
+    return "text-accent";
+  }
+  if (tone === "destructive") {
+    return "text-destructive";
+  }
+  return "text-slate-muted";
+}
+
+function getToneBackgroundClass(tone: StatusPillTone) {
+  if (tone === "teal") {
+    return "bg-primary";
+  }
+  if (tone === "amber") {
+    return "bg-accent";
+  }
+  if (tone === "destructive") {
+    return "bg-destructive";
+  }
+  return "bg-muted";
 }

@@ -57,10 +57,7 @@ function AdminPilotMetricsContent({
   const cohort = metrics.activeCohort;
 
   return (
-    <section
-      aria-labelledby="pilot-measures-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="pilot-measures-heading" className="pt-2">
       <MetricsSectionHeading />
 
       {cohort ? (
@@ -85,13 +82,15 @@ function PilotOutcomeDetails({ cohort }: { cohort: PilotMetricsCohort }) {
 
   return (
     <>
-      <dl className="mt-4 grid gap-x-8 border-border border-t sm:grid-cols-2">
-        <MetricsDetail label="Cohort" value={cohort.code} />
-        <MetricsDetail
-          label="Cohort members"
-          value={formatCount(cohort.memberCount)}
-        />
-      </dl>
+      <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-1 text-sm">
+        <p className="font-semibold text-ink">{cohort.code}</p>
+        <p className="text-slate-muted">
+          <span className="font-semibold text-ink tabular-nums">
+            {formatCount(cohort.memberCount)}
+          </span>{" "}
+          cohort members
+        </p>
+      </div>
 
       <AdminPilotInternalMetricSections
         activityActivation={
@@ -190,103 +189,90 @@ function RequestRateMetricSection({
   const isRetentionPurged = dataCompleteness === "RETENTION_PURGED";
 
   return (
-    <section aria-labelledby={id} className="border-border border-t pt-5">
+    <section aria-labelledby={id} className="pt-2">
       <OutcomeHeading
         description={description}
         id={id}
         measurementState={measurementState}
         title={title}
       />
-      <MetricDefinitionDetails definition={definition} />
 
       {isRetentionPurged ? (
         <RetentionPurgedNotice />
       ) : (
-        <>
-          <dl className="mt-4 grid gap-x-8 border-border border-t sm:grid-cols-3">
-            <MetricsDetail
-              label="Requests measured"
-              value={formatOutcomeCount(overall.denominator)}
-            />
-            <MetricsDetail
-              label={numeratorLabel}
-              value={formatOutcomeCount(overall.numerator)}
-            />
-            <MetricsDetail label={rateLabel}>
+        <div className="mt-5 grid items-center gap-6 sm:grid-cols-[minmax(10rem,0.65fr)_minmax(0,1.35fr)]">
+          <div>
+            <p className="text-slate-muted text-xs">{rateLabel}</p>
+            <p className="mt-1 font-semibold text-4xl text-ink tabular-nums">
               {formatRequestRate(overall)}
-            </MetricsDetail>
-          </dl>
-
-          <div className="mt-5 grid gap-6 lg:grid-cols-2">
-            <RequestRateScopeSection
-              description="The controlled pilot uses local request outcomes."
-              id={`${id}-local`}
+            </p>
+            <p className="mt-2 text-slate-muted text-xs">
+              {formatOutcomeCount(overall.numerator)}{" "}
+              {numeratorLabel.toLowerCase()} from{" "}
+              {formatOutcomeCount(overall.denominator)} measured
+            </p>
+          </div>
+          <div className="grid gap-4">
+            <RequestRateBar
               label="Local"
-              numeratorLabel={numeratorLabel}
+              primary
               rateLabel={rateLabel}
               scope={local}
-              statusLabel="Primary pilot measure"
-              statusTone="teal"
             />
-            <RequestRateScopeSection
-              description="Online request outcomes stay separate."
-              id={`${id}-online`}
+            <RequestRateBar
               label="Online"
-              numeratorLabel={numeratorLabel}
               rateLabel={rateLabel}
               scope={online}
-              statusLabel="Separate measure"
-              statusTone="neutral"
             />
           </div>
-        </>
+        </div>
       )}
+      <MetricDefinitionDetails definition={definition} />
     </section>
   );
 }
 
-function RequestRateScopeSection({
-  description,
-  id,
+function RequestRateBar({
   label,
-  numeratorLabel,
+  primary = false,
   rateLabel,
   scope,
-  statusLabel,
-  statusTone,
 }: {
-  description: string;
-  id: string;
   label: string;
-  numeratorLabel: string;
+  primary?: boolean;
   rateLabel: string;
   scope: RequestRateScope;
-  statusLabel: string;
-  statusTone: "neutral" | "teal";
 }) {
+  const rate = scope.ratePercent ?? 0;
+
   return (
-    <section aria-labelledby={id} className="border-border border-t pt-4">
-      <ScopeHeading
-        description={description}
-        id={id}
-        label={label}
-        statusLabel={statusLabel}
-        statusTone={statusTone}
-      />
-      <dl className="mt-3 border-border border-t">
-        <MetricsDetail
-          label="Requests measured"
-          value={formatOutcomeCount(scope.denominator)}
-        />
-        <MetricsDetail
-          label={numeratorLabel}
-          value={formatOutcomeCount(scope.numerator)}
-        />
-        <MetricsDetail label={rateLabel}>
+    <div className="grid gap-2">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="font-semibold text-ink text-sm">
+          {label}
+          {primary ? (
+            <span className="ml-2 font-medium text-primary text-xs">
+              primary
+            </span>
+          ) : null}
+        </p>
+        <p className="text-slate-muted text-xs tabular-nums">
           {formatRequestRate(scope)}
-        </MetricsDetail>
-      </dl>
-    </section>
+        </p>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-muted">
+        <div
+          className={primary ? "h-full bg-primary" : "h-full bg-slate-muted"}
+          style={{ width: `${rate}%` }}
+          role="img"
+          aria-label={`${label} ${rateLabel.toLowerCase()}: ${formatRequestRate(scope)}`}
+        />
+      </div>
+      <p className="text-slate-muted text-xs">
+        {formatOutcomeCount(scope.numerator)} of{" "}
+        {formatOutcomeCount(scope.denominator)} requests
+      </p>
+    </div>
   );
 }
 
@@ -300,7 +286,7 @@ function ActivityActivationMetricSection({
   return (
     <section
       aria-labelledby="pilot-activity-activation-heading"
-      className="border-border border-t pt-5"
+      className="pt-2"
     >
       <OutcomeHeading
         description="A request counts when its requester and two original group members report taking part before the fixed deadline."
@@ -314,7 +300,7 @@ function ActivityActivationMetricSection({
         <RetentionPurgedNotice />
       ) : (
         <>
-          <dl className="mt-4 grid gap-x-8 border-border border-t sm:grid-cols-3">
+          <dl className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-3">
             <MetricsDetail
               label="Requesting members"
               value={formatOutcomeCount(activation.requestingMemberCount)}
@@ -369,7 +355,7 @@ function ActivityScopeSection({
   statusTone: "neutral" | "teal";
 }) {
   return (
-    <section aria-labelledby={id} className="border-border border-t pt-4">
+    <section aria-labelledby={id} className="rounded-xl bg-card p-4">
       <ScopeHeading
         description={description}
         id={id}
@@ -377,7 +363,7 @@ function ActivityScopeSection({
         statusLabel={statusLabel}
         statusTone={statusTone}
       />
-      <dl className="mt-3 border-border border-t">
+      <dl className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
         <MetricsDetail
           label="Requesting members"
           value={formatOutcomeCount(scope.requestingMemberCount)}
@@ -432,22 +418,18 @@ function ScopeHeading({
 
 function MetricsSectionHeading() {
   return (
-    <div className="flex items-start gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary">
-        <Activity className="size-4" aria-hidden="true" />
-      </span>
-      <div className="min-w-0">
-        <h2
-          id="pilot-measures-heading"
-          className="font-semibold text-base text-ink"
-        >
-          Pilot measures
-        </h2>
-        <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          Counts, rates, and distributions for the controlled pilot, with clear
-          notes when source records are missing.
-        </p>
-      </div>
+    <div className="grid gap-1">
+      <h2
+        id="pilot-measures-heading"
+        className="flex items-center gap-2 font-semibold text-base text-ink"
+      >
+        <Activity className="size-4 shrink-0" aria-hidden="true" />
+        Pilot measures
+      </h2>
+      <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+        Counts, rates, and distributions for the controlled pilot, with clear
+        notes when source records are missing.
+      </p>
     </div>
   );
 }
@@ -486,7 +468,7 @@ function OutcomeHeading({
 
 function RetentionPurgedNotice() {
   return (
-    <div className="mt-4 border-border border-y py-4">
+    <div className="mt-4 rounded-xl bg-card px-4 py-4">
       <p className="font-semibold text-ink text-sm">Source records removed</p>
       <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
         Records needed for this measure were removed under the retention
@@ -506,7 +488,7 @@ function MetricsDetail({
   value?: string;
 }) {
   return (
-    <div className="flex min-w-0 items-start justify-between gap-4 border-border border-b py-3">
+    <div className="flex min-w-0 items-start justify-between gap-4 bg-card px-4 py-3">
       <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
       <dd className="min-w-0 text-right font-semibold text-ink text-sm tabular-nums">
         {children ?? value}
@@ -517,7 +499,7 @@ function MetricsDetail({
 
 function AdminPilotMetricsEmpty() {
   return (
-    <div className="mt-4 border-border border-t py-5">
+    <div className="mt-4 rounded-xl bg-card px-5 py-4">
       <StatusPill size="sm" surface="soft" tone="neutral">
         No active cohort
       </StatusPill>
@@ -531,11 +513,7 @@ function AdminPilotMetricsEmpty() {
 
 function AdminPilotMetricsLoading() {
   return (
-    <section
-      className="border-border border-t pt-6"
-      role="status"
-      aria-label="Loading pilot outcomes"
-    >
+    <section className="pt-2" role="status" aria-label="Loading pilot outcomes">
       <div className="flex items-start gap-3">
         <Skeleton shape="circle" className="size-9 shrink-0" />
         <div className="grid flex-1 gap-2">
@@ -543,11 +521,11 @@ function AdminPilotMetricsLoading() {
           <Skeleton className="h-4 w-full max-w-xl" />
         </div>
       </div>
-      <div className="mt-4 grid gap-x-8 sm:grid-cols-2">
+      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2">
         {[0, 1, 2, 3, 4, 5, 6, 7].map((row) => (
           <div
             key={row}
-            className="flex items-center justify-between gap-4 border-border border-b py-3"
+            className="flex items-center justify-between gap-4 bg-card px-4 py-3"
           >
             <Skeleton className="h-4 w-32" />
             <Skeleton className="h-4 w-16" />
@@ -560,11 +538,8 @@ function AdminPilotMetricsLoading() {
 
 function AdminPilotMetricsError({ onRetry }: { onRetry: () => void }) {
   return (
-    <section
-      aria-labelledby="pilot-metrics-error-heading"
-      className="border-border border-t py-8"
-    >
-      <AlertTriangle className="size-8 text-accent" aria-hidden="true" />
+    <section aria-labelledby="pilot-metrics-error-heading" className="py-8">
+      <AlertTriangle className="size-8" aria-hidden="true" />
       <h2
         id="pilot-metrics-error-heading"
         className="mt-3 font-semibold text-ink text-lg"

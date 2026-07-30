@@ -16,10 +16,7 @@ export function AdminAccessUnavailable({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="grid min-h-dvh place-items-center bg-canvas px-6 py-12 text-center">
       <div className="grid max-w-md gap-3">
-        <ShieldAlert
-          className="mx-auto size-9 text-primary"
-          aria-hidden="true"
-        />
+        <ShieldAlert className="mx-auto size-9" aria-hidden="true" />
         <h1 className="font-bold text-2xl text-ink">
           Admin access could not be checked
         </h1>

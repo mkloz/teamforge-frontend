@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight, Clock3 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { OperatorApi } from "@/features/operator/api/operator.api";
 import { getOperatorControlErrorKind } from "@/features/operator/api/operator-control-errors";
@@ -8,10 +8,10 @@ import {
   OPERATOR_QUERY_KEYS,
   operatorQueries,
 } from "@/features/operator/api/operator-queries";
+import { OperatorReauthenticationDialog } from "@/features/operator/components/operator-reauthentication-dialog";
 import {
   OperatorAccessState,
   OperatorLoading,
-  OperatorStepUpNotice,
 } from "@/features/operator/components/operator-states";
 import {
   formatOperatorDate,
@@ -20,7 +20,13 @@ import {
 } from "@/features/operator/lib/operator-language";
 import { useOperatorSessionStepUp } from "@/features/operator/public/use-operator-session-step-up";
 import type { OperatorCaseSummary } from "@/features/operator/schemas/operator.schemas";
+import {
+  AdminSegmentedBar,
+  AdminSummaryMetric,
+  AdminSummaryStrip,
+} from "@/shared/components/admin/admin-visuals";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 const CASES_PER_PAGE = 50;
 const SELF_ASSIGNMENT_DURATION_MS = 8 * 60 * 60_000;
@@ -32,14 +38,8 @@ export function OperatorIntakePage() {
   const query = useQuery(
     operatorQueries.intake({ page, limit: CASES_PER_PAGE }),
   );
-  const {
-    hasCurrentStepUp: commandsEnabled,
-    isSigningInAgain,
-    rejectCurrentStepUp,
-    sessionQuery,
-    signInAgain,
-    signInAgainError,
-  } = useOperatorSessionStepUp();
+  const { reauthenticationDialogProps, rejectCurrentStepUp, sessionQuery } =
+    useOperatorSessionStepUp();
   const pageHeadingRef = useRef<HTMLHeadingElement>(null);
   const previousPageRef = useRef(page);
   const totalPages = query.data
@@ -87,49 +87,112 @@ export function OperatorIntakePage() {
     );
   }
 
+  const now = Date.now();
+  const waitingAges = query.data.data
+    .map((item) => Math.max(0, now - new Date(item.createdAt).getTime()))
+    .sort((a, b) => a - b);
+  const oldestWaiting = waitingAges.at(-1) ?? 0;
+  const medianWaiting =
+    waitingAges.length === 0
+      ? 0
+      : (waitingAges[Math.floor(waitingAges.length / 2)] ?? 0);
+  const highSeverity = query.data.data.filter(
+    (item) => item.severity === "P0" || item.severity === "P1",
+  ).length;
+  const overdue = query.data.data.filter(
+    (item) => item.dueAt && new Date(item.dueAt).getTime() < now,
+  ).length;
+
   return (
-    <div className="mx-auto grid w-full max-w-5xl gap-6 px-4 py-6 md:px-8 md:py-10">
-      <Button asChild variant="ghost" className="w-fit px-2">
-        <Link to="/admin/moderation" search={{ queue: "CRITICAL_NOW" }}>
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          Back to queues
-        </Link>
-      </Button>
-      <header className="grid gap-1">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h1
-            ref={pageHeadingRef}
-            tabIndex={-1}
-            className="rounded-sm font-extrabold text-2xl text-ink outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            Unassigned intake
-            <span className="sr-only">
-              , page {page} of {totalPages}
-            </span>
-          </h1>
-          <span className="font-semibold text-slate-muted text-sm">
-            {query.data.total} {query.data.total === 1 ? "case" : "cases"}
+    <div className="mx-auto grid w-full max-w-7xl content-start gap-10 px-4 py-6 md:px-8 md:py-10">
+      <header className="main-action-grid grid items-end gap-x-6 gap-y-2">
+        <h1
+          ref={pageHeadingRef}
+          tabIndex={-1}
+          className="rounded-sm font-extrabold text-3xl text-ink outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          Unassigned intake
+          <span className="sr-only">
+            , page {page} of {totalPages}
           </span>
-        </div>
-        <p className="text-slate-muted text-sm leading-relaxed">
-          Assign a case to yourself before opening its review workspace.
+        </h1>
+        <span className="text-slate-muted text-xs sm:justify-self-end">
+          Page {page} of {totalPages}
+        </span>
+        <p className="col-span-2 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+          See queue pressure and aging before claiming the next case.
         </p>
       </header>
-      {!commandsEnabled ? (
-        <OperatorStepUpNotice
-          description="Case assignment requires a recently verified admin session. Sign out and sign in again to continue; you will return to this page afterward."
-          isSigningInAgain={isSigningInAgain}
-          onSignInAgain={() => void signInAgain()}
-          signInAgainError={signInAgainError}
+
+      <AdminSummaryStrip>
+        <AdminSummaryMetric
+          label="Unassigned"
+          value={query.data.total}
+          tone={query.data.total > 0 ? "warning" : "success"}
+          detail="Waiting for an operator"
         />
-      ) : null}
+        <AdminSummaryMetric
+          label="High severity"
+          value={highSeverity}
+          tone={highSeverity > 0 ? "danger" : "success"}
+          detail="P0 or P1 on this page"
+        />
+        <AdminSummaryMetric
+          label="Oldest waiting"
+          value={formatWaitingAge(oldestWaiting)}
+          tone={oldestWaiting > 24 * 60 * 60_000 ? "danger" : "muted"}
+          detail="Current page"
+        />
+        <AdminSummaryMetric
+          label="Median wait"
+          value={formatWaitingAge(medianWaiting)}
+          tone={medianWaiting > 8 * 60 * 60_000 ? "warning" : "muted"}
+          detail="Current page"
+        />
+      </AdminSummaryStrip>
+
       {query.data.data.length ? (
-        <div className="grid gap-3">
+        <div className="grid gap-3 rounded-2xl bg-card p-5 sm:p-6">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <div>
+              <h2 className="font-semibold text-base text-ink">Queue aging</h2>
+              <p className="mt-1 text-slate-muted text-sm">
+                Urgency across the cases currently visible.
+              </p>
+            </div>
+            <span className="font-semibold text-slate-muted text-xs">
+              {overdue} overdue
+            </span>
+          </div>
+          <AdminSegmentedBar
+            label="Intake urgency"
+            segments={[
+              { label: "Overdue", value: overdue, tone: "danger" },
+              {
+                label: "High severity",
+                value: Math.max(0, highSeverity - overdue),
+                tone: "warning",
+              },
+              {
+                label: "Routine",
+                value: Math.max(
+                  0,
+                  query.data.data.length - Math.max(overdue, highSeverity),
+                ),
+                tone: "muted",
+              },
+            ]}
+          />
+        </div>
+      ) : null}
+
+      {query.data.data.length ? (
+        <div className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:bg-card">
           {query.data.data.map((item) => (
             <IntakeCaseCard
               key={item.id}
               item={item}
-              commandsEnabled={commandsEnabled}
+              commandsEnabled
               onCommandError={(error) => {
                 if (getOperatorControlErrorKind(error) === "STALE_SESSION") {
                   rejectCurrentStepUp();
@@ -139,13 +202,29 @@ export function OperatorIntakePage() {
           ))}
         </div>
       ) : (
-        <div className="grid min-h-48 place-items-center rounded-2xl border border-border bg-card p-6 text-center">
-          <h2 className="font-bold text-ink text-lg">No unassigned cases</h2>
+        <div className="grid min-h-44 place-items-center rounded-xl border border-border border-dashed px-5 py-8 text-center">
+          <div className="grid max-w-md justify-items-center gap-2">
+            <h2 className="font-semibold text-base text-ink">
+              Intake is clear
+            </h2>
+            <p className="text-pretty text-slate-muted text-sm leading-relaxed">
+              Every received case has been routed to an operator.
+            </p>
+          </div>
         </div>
       )}
       <IntakePagination page={page} totalPages={totalPages} />
+      <OperatorReauthenticationDialog {...reauthenticationDialogProps} />
     </div>
   );
+}
+
+function formatWaitingAge(milliseconds: number) {
+  if (milliseconds <= 0) return "—";
+  const hours = Math.floor(milliseconds / 3_600_000);
+  if (hours < 1) return "<1h";
+  if (hours < 24) return `${hours}h`;
+  return `${Math.floor(hours / 24)}d`;
 }
 
 function IntakePagination({
@@ -160,7 +239,7 @@ function IntakePagination({
   return (
     <nav
       aria-label="Intake pagination"
-      className="flex flex-wrap items-center justify-between gap-3 border-border border-t pt-4"
+      className="flex flex-wrap items-center justify-between gap-3 pt-2"
     >
       <p className="font-medium text-slate-muted text-sm" aria-live="polite">
         Page {page} of {totalPages}
@@ -229,37 +308,74 @@ function IntakeCaseCard({
     },
     onError: onCommandError,
   });
+  const dueAt = item.dueAt ? new Date(item.dueAt) : null;
+  const isOverdue = dueAt ? dueAt.getTime() < Date.now() : false;
 
   return (
-    <article className="sm:main-action-grid grid gap-4 rounded-2xl border border-border bg-card p-5 sm:items-center">
-      <div className="grid min-w-0 gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-semibold text-ink">{item.reference}</h2>
-          <span className="rounded-full bg-muted px-2.5 py-1 font-semibold text-slate-muted text-xs">
+    <article className="grid gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[minmax(14rem,1fr)_minmax(20rem,1.25fr)_minmax(12rem,0.7fr)_auto] lg:items-center">
+      <div className="grid min-w-0 gap-1.5">
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
+          <h2 className="truncate font-semibold text-ink">{item.reference}</h2>
+          <span
+            className={cn(
+              "font-semibold text-xs",
+              item.severity === "P0" || item.severity === "P1"
+                ? "text-danger"
+                : item.severity === "P2"
+                  ? "text-accent"
+                  : "text-slate-muted",
+            )}
+          >
             {item.severity
               ? SEVERITY_LABELS[item.severity]
               : "Severity pending"}
           </span>
-          <span className="rounded-full bg-primary/9 px-2.5 py-1 font-semibold text-primary text-xs">
-            {humanizeCode(item.status)}
-          </span>
         </div>
-        <p className="text-slate-muted text-sm">
-          {item.reportCount} {item.reportCount === 1 ? "report" : "reports"} ·
-          due {formatOperatorDate(item.dueAt)}
+        <p className="truncate text-slate-muted text-xs">
+          {item.mandatoryHumanReasons.length
+            ? item.mandatoryHumanReasons.map(humanizeCode).join(" · ")
+            : humanizeCode(item.status)}
         </p>
       </div>
+
+      <dl className="grid grid-cols-3 gap-x-6 gap-y-2 text-sm">
+        <IntakeFact
+          label="Evidence"
+          value={humanizeCode(item.evidenceCompleteness)}
+        />
+        <IntakeFact
+          label="Uncertainty"
+          value={humanizeCode(item.uncertainty)}
+        />
+        <IntakeFact label="Reports" value={String(item.reportCount)} />
+      </dl>
+
+      <div className="grid gap-1.5">
+        <p className="font-medium text-ink text-sm">
+          Received {formatOperatorDate(item.createdAt)}
+        </p>
+        <p
+          className={cn(
+            "flex items-center gap-1.5 text-xs",
+            isOverdue ? "font-medium text-danger" : "text-slate-muted",
+          )}
+        >
+          <Clock3 className="size-3.5" aria-hidden="true" />
+          {dueAt ? `Due ${formatOperatorDate(item.dueAt)}` : "No due date"}
+        </p>
+      </div>
+
       {assigned ? (
         <Link
           to="/admin/moderation/cases/$caseId"
           params={{ caseId: item.id }}
-          className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm"
+          className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm lg:justify-self-end"
         >
           Open assigned case
           <ArrowRight className="size-4" aria-hidden="true" />
         </Link>
       ) : (
-        <div className="grid gap-2">
+        <div className="grid gap-2 lg:justify-items-end">
           <Button
             disabled={!commandsEnabled || mutation.isPending}
             loading={mutation.isPending}
@@ -269,12 +385,20 @@ function IntakeCaseCard({
           </Button>
           {mutation.isError ? (
             <p className="max-w-64 text-destructive text-xs" role="alert">
-              Assignment failed. Check your owner access, then sign in again
-              before retrying.
+              Assignment failed. Check your owner access, then verify and retry.
             </p>
           ) : null}
         </div>
       )}
     </article>
+  );
+}
+
+function IntakeFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid gap-0.5">
+      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
+      <dd className="text-ink">{value}</dd>
+    </div>
   );
 }

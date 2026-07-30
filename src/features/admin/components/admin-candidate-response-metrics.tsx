@@ -48,7 +48,7 @@ export function AdminCandidateResponseMetrics({
   return (
     <section
       aria-labelledby="pilot-candidate-responses-heading"
-      className="border-border border-t pt-5"
+      className="pt-2"
     >
       <CandidateResponseHeading measurementState={metric.measurementState} />
 
@@ -133,7 +133,7 @@ function CandidateResponseDetails({
   values: CandidateResponseValues;
 }) {
   return (
-    <dl className="mt-4 grid gap-x-8 border-border border-t sm:grid-cols-2 lg:grid-cols-3">
+    <dl className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2 lg:grid-cols-3">
       <CandidateMetricDetail
         label="Invitations measured"
         value={formatCount(values.eligibleExposureCount)}
@@ -178,7 +178,7 @@ function CandidateResponseScope({
   values: CandidateResponseValues;
 }) {
   return (
-    <section aria-labelledby={id} className="border-border border-t pt-4">
+    <section aria-labelledby={id} className="rounded-xl bg-card p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 id={id} className="font-semibold text-ink text-sm">
           {label}
@@ -208,7 +208,7 @@ function CandidateActivityScopeBreakdown({
   return (
     <section
       aria-labelledby="pilot-candidate-activity-scope-heading"
-      className="mt-6 border-border border-t pt-5"
+      className="mt-6"
     >
       <h4
         id="pilot-candidate-activity-scope-heading"
@@ -222,11 +222,11 @@ function CandidateActivityScopeBreakdown({
       </p>
 
       {visibleRows.length === 0 ? (
-        <p className="mt-3 border-border border-y py-4 text-slate-muted text-sm leading-relaxed">
+        <p className="mt-3 rounded-xl bg-card px-4 py-4 text-slate-muted text-sm leading-relaxed">
           No activity response totals are available yet.
         </p>
       ) : (
-        <ul className="mt-3 border-border border-t">
+        <ul className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
           {visibleRows.map((row) => (
             <CandidateActivityScopeRow
               key={`${row.activityCategory}-${row.scope}`}
@@ -243,7 +243,7 @@ function CandidateActivityScopeRow({ row }: { row: CandidateActivityScope }) {
   const reasons = row.declineReasons.filter(({ count }) => count > 0);
 
   return (
-    <li className="border-border border-b py-4">
+    <li className="bg-card px-4 py-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="font-semibold text-ink text-sm">
           {CATEGORY_LABELS[row.activityCategory]}
@@ -273,7 +273,7 @@ function CandidateDeclineReasonBreakdown({
   return (
     <section
       aria-labelledby="pilot-candidate-decline-reasons-heading"
-      className="mt-6 border-border border-t pt-5"
+      className="mt-6"
     >
       <h4
         id="pilot-candidate-decline-reasons-heading"
@@ -287,11 +287,11 @@ function CandidateDeclineReasonBreakdown({
       </p>
 
       {recordedReasons.length === 0 ? (
-        <p className="mt-3 border-border border-y py-4 text-slate-muted text-sm leading-relaxed">
+        <p className="mt-3 rounded-xl bg-card px-4 py-4 text-slate-muted text-sm leading-relaxed">
           No decline reasons have been recorded.
         </p>
       ) : (
-        <dl className="mt-3 border-border border-t">
+        <dl className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
           {recordedReasons.map(({ count, reason }) => (
             <CandidateMetricDetail
               key={reason}
@@ -313,7 +313,7 @@ function CandidateMetricDetail({
   value: string;
 }) {
   return (
-    <div className="flex min-w-0 items-start justify-between gap-4 border-border border-b py-3">
+    <div className="flex min-w-0 items-start justify-between gap-4 bg-card px-4 py-3">
       <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
       <dd className="min-w-0 text-right font-semibold text-ink text-sm tabular-nums">
         {value}
@@ -328,7 +328,7 @@ function CandidateResponseEmpty({
   cancelledCount: number;
 }) {
   return (
-    <div className="mt-4 border-border border-y py-4">
+    <div className="mt-4 rounded-xl bg-card px-4 py-4">
       <StatusPill size="sm" surface="soft" tone="neutral">
         No measured candidate invitations
       </StatusPill>
@@ -360,7 +360,7 @@ function CandidateResponseIncomplete({
   const isSourceIncomplete = dataCompleteness === "SOURCE_INCOMPLETE";
 
   return (
-    <div className="mt-4 border-border border-y py-4">
+    <div className="mt-4 rounded-xl bg-card px-4 py-4">
       <p className="font-semibold text-ink text-sm">
         {isSourceIncomplete
           ? "Candidate response records are incomplete"

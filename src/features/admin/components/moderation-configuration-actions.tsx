@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { History, Power } from "lucide-react";
+import { History, Power, Rocket } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { ModerationControlConfirmation } from "@/features/admin/components/moderation-control-confirmation";
@@ -51,14 +51,15 @@ export function ModerationConfigurationActions({
   return (
     <section
       aria-labelledby="configuration-actions-heading"
-      className="grid gap-3 border-border border-t pt-6"
+      className="sticky bottom-4 z-20 grid gap-3 rounded-2xl bg-canvas/95 p-4 shadow-lg backdrop-blur sm:p-5"
     >
       <div className="grid gap-1">
         <h2
           id="configuration-actions-heading"
-          className="font-semibold text-base text-ink"
+          className="flex items-center gap-2 font-semibold text-base text-ink"
         >
-          Release controls
+          <Rocket className="size-4 shrink-0" aria-hidden="true" />
+          <span>Release controls</span>
         </h2>
         <p className="max-w-2xl text-slate-muted text-sm leading-relaxed">
           The server checks the current state again before accepting either

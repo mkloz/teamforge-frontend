@@ -5,11 +5,9 @@ import type { ReactNode } from "react";
 import { adminPilotRetentionQueryOptions } from "@/features/admin/api/admin.api";
 import type { AdminPilotRetentionStatus as RetentionStatus } from "@/features/admin/schemas/admin-pilot-retention.schema";
 import { Button } from "@/shared/components/ui/button";
+import { Notice } from "@/shared/components/ui/notice";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import {
-  StatusPill,
-  type StatusPillTone,
-} from "@/shared/components/ui/status-pill";
+import { cn } from "@/shared/lib/utils";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
@@ -23,6 +21,7 @@ type RetentionFailureStage = Extract<
   RetentionRun,
   { status: "FAILED" }
 >["lastFailureStage"];
+type RetentionTone = "amber" | "destructive" | "neutral" | "teal";
 
 const SOURCE_LABELS: Record<RetentionSource["source"], string> = {
   CANDIDATE_WILLINGNESS: "Candidate response history",
@@ -77,55 +76,10 @@ function AdminPilotRetentionContent({ status }: { status: RetentionStatus }) {
   const failedRun = status.lastRun?.status === "FAILED" ? status.lastRun : null;
 
   return (
-    <section
-      aria-labelledby="pilot-retention-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="pilot-retention-heading" className="pt-2">
       <RetentionHeading displayState={displayState} />
 
-      <dl className="mt-4 grid gap-x-8 border-border border-t sm:grid-cols-2">
-        <RetentionDetail
-          description="Whether the approved server process is available to run."
-          label="Scheduled retention"
-        >
-          <StatusPill
-            size="xs"
-            surface="soft"
-            tone={status.enabled ? "teal" : "neutral"}
-          >
-            {status.enabled ? "Enabled" : "Disabled"}
-          </StatusPill>
-        </RetentionDetail>
-        <RetentionDetail
-          description="Records older than this period are eligible once protected cohort windows are clear."
-          label="Approved retention period"
-          value={
-            status.retentionDays === null
-              ? "Not configured"
-              : `${NUMBER_FORMATTER.format(status.retentionDays)} days`
-          }
-        />
-        <RetentionDetail
-          description="The most recent scheduled attempt, whether or not it finished."
-          label="Latest run"
-        >
-          {status.lastRun ? (
-            <RetentionRunSummary run={status.lastRun} />
-          ) : (
-            "No run recorded"
-          )}
-        </RetentionDetail>
-        <RetentionDetail
-          description="The latest run that completed all required source work."
-          label="Last successful run"
-        >
-          {status.lastSuccess ? (
-            <RetentionRunSummary run={status.lastSuccess} />
-          ) : (
-            "No successful run yet"
-          )}
-        </RetentionDetail>
-      </dl>
+      <RetentionOverview status={status} />
 
       {failedRun ? <RetentionFailureNotice run={failedRun} /> : null}
 
@@ -141,83 +95,123 @@ function AdminPilotRetentionContent({ status }: { status: RetentionStatus }) {
 function RetentionHeading({
   displayState,
 }: {
-  displayState?: { label: string; tone: StatusPillTone };
+  displayState?: { label: string; tone: RetentionTone };
 }) {
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
-      <div className="flex items-start gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary">
-          <Database className="size-4" aria-hidden="true" />
-        </span>
-        <div className="min-w-0">
-          <h2
-            id="pilot-retention-heading"
-            className="font-semibold text-base text-ink"
-          >
-            Pilot data retention
-          </h2>
-          <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-            Read-only status for the approved pilot data removal schedule and
-            each source it covers.
-          </p>
-        </div>
+      <div className="grid min-w-0 gap-1">
+        <h2
+          id="pilot-retention-heading"
+          className="flex items-center gap-2 font-semibold text-base text-ink"
+        >
+          <Database className="size-4 shrink-0" aria-hidden="true" />
+          Pilot data retention
+        </h2>
+        <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+          Read-only status for the approved pilot data removal schedule and each
+          source it covers.
+        </p>
       </div>
       {displayState ? (
-        <StatusPill size="sm" surface="soft" tone={displayState.tone}>
+        <p
+          className={cn(
+            "flex items-center gap-2 font-semibold text-sm",
+            toneText(displayState.tone),
+          )}
+        >
+          <span
+            className={cn(
+              "size-2 rounded-full",
+              toneBackground(displayState.tone),
+            )}
+            aria-hidden="true"
+          />
           {displayState.label}
-        </StatusPill>
+        </p>
       ) : null}
     </div>
   );
 }
 
-function RetentionDetail({
-  children,
-  description,
-  label,
-  value,
-}: {
-  children?: ReactNode;
-  description: string;
-  label: string;
-  value?: string;
-}) {
+function RetentionOverview({ status }: { status: RetentionStatus }) {
+  const latestRun = status.lastRun
+    ? getRunDisplay(status.lastRun.status)
+    : null;
+  const stages = [
+    {
+      label: "Schedule",
+      state: status.enabled ? "Enabled" : "Disabled",
+      tone: status.enabled ? "teal" : "amber",
+    },
+    {
+      label: "Policy",
+      state:
+        status.retentionDays === null
+          ? "Not configured"
+          : `${NUMBER_FORMATTER.format(status.retentionDays)} days`,
+      tone: status.retentionDays === null ? "amber" : "teal",
+    },
+    {
+      label: "Latest run",
+      state: latestRun?.label ?? "No run",
+      tone: latestRun?.tone ?? "neutral",
+    },
+    {
+      label: "Successful cutoff",
+      state: status.lastSuccess
+        ? DATE_TIME_FORMATTER.format(new Date(status.lastSuccess.cutoffAt))
+        : "Not recorded",
+      tone: status.lastSuccess ? "teal" : "neutral",
+    },
+  ] satisfies Array<{ label: string; state: string; tone: RetentionTone }>;
+
   return (
-    <div className="flex min-w-0 items-start justify-between gap-4 border-border border-b py-3">
-      <dt className="min-w-0">
-        <span className="block font-semibold text-ink text-sm">{label}</span>
-        <span className="mt-0.5 block text-slate-muted text-xs leading-relaxed">
-          {description}
-        </span>
-      </dt>
-      <dd className="min-w-0 max-w-64 text-right font-semibold text-ink text-sm tabular-nums">
-        {children ?? value}
-      </dd>
+    <div className="mt-4 grid gap-6 rounded-2xl bg-card p-5 sm:p-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-slate-muted text-xs">Approved policy</p>
+          <p className="mt-1 font-semibold text-ink text-xl">
+            {status.retentionDays === null
+              ? "Retention not configured"
+              : `${NUMBER_FORMATTER.format(status.retentionDays)} day retention`}
+          </p>
+        </div>
+        <p className="text-slate-muted text-xs">
+          Protected cohort windows are never removed early.
+        </p>
+      </div>
+
+      <div
+        className="grid gap-1.5"
+        style={{
+          gridTemplateColumns: `repeat(${stages.length}, minmax(0, 1fr))`,
+        }}
+        aria-hidden="true"
+      >
+        {stages.map((stage) => (
+          <span
+            key={stage.label}
+            className={cn("h-2 rounded-full", toneBackground(stage.tone))}
+          />
+        ))}
+      </div>
+
+      <dl className="grid gap-5 sm:grid-cols-4">
+        {stages.map((stage) => (
+          <div key={stage.label} className="grid gap-1">
+            <dt className="text-slate-muted text-xs">{stage.label}</dt>
+            <dd
+              className={cn(
+                "font-semibold text-sm tabular-nums",
+                toneText(stage.tone),
+              )}
+            >
+              {stage.state}
+            </dd>
+          </div>
+        ))}
+      </dl>
     </div>
-  );
-}
-
-function RetentionRunSummary({ run }: { run: RetentionRun }) {
-  const display = getRunDisplay(run.status);
-
-  return (
-    <span className="grid justify-items-end gap-1">
-      <StatusPill size="xs" surface="soft" tone={display.tone}>
-        {display.label}
-      </StatusPill>
-      <span className="font-normal text-slate-muted text-xs leading-relaxed">
-        Cutoff <AdminDateTime value={run.cutoffAt} />
-      </span>
-      {run.completedAt ? (
-        <span className="font-normal text-slate-muted text-xs leading-relaxed">
-          Finished <AdminDateTime value={run.completedAt} />
-        </span>
-      ) : run.startedAt ? (
-        <span className="font-normal text-slate-muted text-xs leading-relaxed">
-          Started <AdminDateTime value={run.startedAt} />
-        </span>
-      ) : null}
-    </span>
   );
 }
 
@@ -227,21 +221,21 @@ function RetentionFailureNotice({
   run: Extract<RetentionRun, { status: "FAILED" }>;
 }) {
   return (
-    <div className="mt-5 flex items-start gap-3 border-border border-y py-4">
-      <AlertTriangle
-        className="mt-0.5 size-4 shrink-0 text-destructive"
-        aria-hidden="true"
-      />
-      <div>
-        <h3 className="font-semibold text-ink text-sm">
-          Latest run did not finish
-        </h3>
-        <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+    <Notice
+      className="mt-5"
+      icon={<AlertTriangle className="size-4" aria-hidden="true" />}
+      role="alert"
+      size="lg"
+      tone="danger"
+    >
+      <p>
+        <strong>Latest run did not finish</strong>
+        <span className="mt-1 block max-w-2xl font-normal text-slate-muted">
           {FAILURE_COPY[run.lastFailureStage]} The attempt is recorded; the
           scheduled process can retry safely after the cause is resolved.
-        </p>
-      </div>
-    </div>
+        </span>
+      </p>
+    </Notice>
   );
 }
 
@@ -251,10 +245,7 @@ function RetentionSourceStatus({
   sources: RetentionStatus["sourceCompleteness"];
 }) {
   return (
-    <section
-      aria-labelledby="pilot-retention-sources-heading"
-      className="mt-6 border-border border-t pt-5"
-    >
+    <section aria-labelledby="pilot-retention-sources-heading" className="mt-6">
       <h3
         id="pilot-retention-sources-heading"
         className="font-semibold text-ink text-sm"
@@ -266,10 +257,18 @@ function RetentionSourceStatus({
         work for each source.
       </p>
 
-      <div className="mt-3 border-border border-t">
-        {sources.map((source) => (
-          <RetentionSourceRow key={source.source} source={source} />
-        ))}
+      <div className="mt-4 overflow-hidden rounded-2xl bg-background">
+        <div className="hidden grid-cols-[minmax(0,1.4fr)_minmax(0,1.5fr)_minmax(8rem,1fr)_minmax(7rem,0.8fr)] gap-4 bg-card px-5 py-3 text-slate-muted text-xs sm:grid">
+          <span>Source</span>
+          <span>Function</span>
+          <span>Cutoff</span>
+          <span>Removed</span>
+        </div>
+        <div className="grid gap-0.5 bg-background">
+          {sources.map((source) => (
+            <RetentionSourceRow key={source.source} source={source} />
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -279,35 +278,36 @@ function RetentionSourceRow({ source }: { source: RetentionSource }) {
   const retained = source.completeness === "COMPLETE";
 
   return (
-    <div className="border-border border-b py-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="grid gap-4 bg-card px-5 py-4 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1.5fr)_minmax(8rem,1fr)_minmax(7rem,0.8fr)] sm:items-center">
+      <div className="min-w-0">
         <h4 className="font-semibold text-ink text-sm">
           {SOURCE_LABELS[source.source]}
         </h4>
-        <StatusPill size="xs" surface="soft" tone={retained ? "teal" : "amber"}>
-          {retained ? "Source complete" : "Source records removed"}
-        </StatusPill>
-      </div>
-      <dl className="mt-3 grid gap-3 sm:grid-cols-3">
-        <SourceDetail label="Function version">
-          <span className="wrap-break-word">{source.functionVersion}</span>
-        </SourceDetail>
-        <SourceDetail label="Last successful cutoff">
-          {source.lastSuccessfulCutoffAt ? (
-            <AdminDateTime value={source.lastSuccessfulCutoffAt} />
-          ) : (
-            "Not recorded"
+        <p
+          className={cn(
+            "mt-1 font-medium text-xs",
+            retained ? "text-primary" : "text-accent",
           )}
-        </SourceDetail>
-        <SourceDetail label="Records removed">
-          {getRemovedRecordsLabel(source)}
-        </SourceDetail>
-      </dl>
+        >
+          {retained ? "Source complete" : "Source records removed"}
+        </p>
+      </div>
+      <SourceValue label="Function">{source.functionVersion}</SourceValue>
+      <SourceValue label="Cutoff">
+        {source.lastSuccessfulCutoffAt ? (
+          <AdminDateTime value={source.lastSuccessfulCutoffAt} />
+        ) : (
+          "Not recorded"
+        )}
+      </SourceValue>
+      <SourceValue label="Removed">
+        {getRemovedRecordsLabel(source)}
+      </SourceValue>
     </div>
   );
 }
 
-function SourceDetail({
+function SourceValue({
   children,
   label,
 }: {
@@ -315,23 +315,18 @@ function SourceDetail({
   label: string;
 }) {
   return (
-    <div className="min-w-0">
-      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
-      <dd className="mt-1 text-ink text-xs tabular-nums leading-relaxed">
-        {children}
-      </dd>
-    </div>
+    <p className="wrap-break-word min-w-0 text-ink text-xs tabular-nums leading-relaxed">
+      <span className="mb-1 block text-slate-muted sm:hidden">{label}</span>
+      {children}
+    </p>
   );
 }
 
 function AdminPilotRetentionUnavailable() {
   return (
-    <section
-      aria-labelledby="pilot-retention-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="pilot-retention-heading" className="pt-2">
       <RetentionHeading />
-      <p className="mt-4 border-border border-t py-5 text-slate-muted text-sm leading-relaxed">
+      <p className="mt-4 rounded-xl bg-card px-5 py-4 text-slate-muted text-sm leading-relaxed">
         Your admin session cannot view pilot retention status.
       </p>
     </section>
@@ -342,18 +337,18 @@ function AdminPilotRetentionLoading() {
   return (
     <section
       aria-labelledby="pilot-retention-heading"
-      className="border-border border-t pt-6"
+      className="pt-2"
       role="status"
     >
       <RetentionHeading />
       <div
-        className="mt-4 grid gap-x-8 border-border border-t sm:grid-cols-2"
+        className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2"
         aria-hidden="true"
       >
         {[0, 1, 2, 3].map((row) => (
           <div
             key={row}
-            className="flex items-center justify-between gap-4 border-border border-b py-4"
+            className="flex items-center justify-between gap-4 bg-card px-4 py-4"
           >
             <Skeleton className="h-4 w-36" />
             <Skeleton className="h-4 w-20" />
@@ -367,12 +362,9 @@ function AdminPilotRetentionLoading() {
 
 function AdminPilotRetentionError({ onRetry }: { onRetry: () => void }) {
   return (
-    <section
-      aria-labelledby="pilot-retention-heading"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="pilot-retention-heading" className="pt-2">
       <RetentionHeading />
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-border border-y py-4">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-card px-5 py-4">
         <div className="flex items-start gap-3">
           <AlertTriangle
             className="mt-0.5 size-4 shrink-0 text-destructive"
@@ -399,10 +391,10 @@ function AdminDateTime({ value }: { value: string }) {
 
 function getDisplayState(status: RetentionStatus): {
   label: string;
-  tone: StatusPillTone;
+  tone: RetentionTone;
 } {
   if (!status.enabled) {
-    return { label: "Disabled", tone: "neutral" };
+    return { label: "Disabled", tone: "amber" };
   }
   if (status.lastRun?.status === "FAILED") {
     return { label: "Needs attention", tone: "destructive" };
@@ -421,7 +413,7 @@ function getDisplayState(status: RetentionStatus): {
 
 function getRunDisplay(status: RetentionRun["status"]): {
   label: string;
-  tone: StatusPillTone;
+  tone: RetentionTone;
 } {
   return (
     {
@@ -431,9 +423,23 @@ function getRunDisplay(status: RetentionRun["status"]): {
       SUCCEEDED: { label: "Completed", tone: "teal" },
     } satisfies Record<
       RetentionRun["status"],
-      { label: string; tone: StatusPillTone }
+      { label: string; tone: RetentionTone }
     >
   )[status];
+}
+
+function toneText(tone: RetentionTone) {
+  if (tone === "teal") return "text-primary";
+  if (tone === "amber") return "text-accent";
+  if (tone === "destructive") return "text-destructive";
+  return "text-slate-muted";
+}
+
+function toneBackground(tone: RetentionTone) {
+  if (tone === "teal") return "bg-primary";
+  if (tone === "amber") return "bg-accent";
+  if (tone === "destructive") return "bg-destructive";
+  return "bg-muted";
 }
 
 function getRemovedRecordsLabel(source: RetentionSource) {

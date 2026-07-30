@@ -12,18 +12,17 @@ export function ReadinessSectionHeading({
   title: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary">
-        <Icon className="size-4" aria-hidden="true" />
-      </span>
-      <div className="min-w-0">
-        <h2 id={id} className="font-semibold text-base text-ink">
-          {title}
-        </h2>
-        <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-          {description}
-        </p>
-      </div>
+    <div className="grid gap-1">
+      <h2
+        id={id}
+        className="flex items-center gap-2 font-semibold text-base text-ink"
+      >
+        <Icon className="size-4 shrink-0" aria-hidden="true" />
+        {title}
+      </h2>
+      <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
+        {description}
+      </p>
     </div>
   );
 }

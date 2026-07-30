@@ -7,28 +7,104 @@ import {
 import type { OperatorCaseDetail } from "@/features/operator/schemas/operator.schemas";
 
 export function CaseOverview({ item }: { item: OperatorCaseDetail }) {
+  const severity = item.severity
+    ? SEVERITY_LABELS[item.severity]
+    : "Pending classification";
+  const severityLevel = item.severity
+    ? { P0: 5, P1: 4, P2: 3, P3: 2, P4: 1 }[item.severity]
+    : 0;
+
   return (
-    <OperatorPanel title="Case overview">
-      <dl className="grid gap-3 sm:grid-cols-2">
-        <Fact
-          label="Severity"
-          value={item.severity ? SEVERITY_LABELS[item.severity] : "Pending"}
+    <section
+      aria-labelledby="case-overview-heading"
+      className="grid gap-5 pt-2"
+    >
+      <div>
+        <h2 id="case-overview-heading" className="font-bold text-ink text-lg">
+          Review position
+        </h2>
+        <p className="mt-1 text-slate-muted text-sm">
+          The current urgency, evidence state, and human-review requirements.
+        </p>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl bg-card">
+        <div className="grid gap-6 p-5 sm:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] sm:p-6">
+          <div>
+            <p className="font-semibold text-slate-muted text-xs">Severity</p>
+            <p className="mt-2 font-semibold text-2xl text-ink tracking-tight">
+              {severity}
+            </p>
+            <p className="mt-1 text-slate-muted text-sm">
+              Due {formatOperatorDate(item.dueAt)}
+            </p>
+          </div>
+          <div className="min-w-0">
+            <div
+              aria-label={`Severity level ${severityLevel} of 5`}
+              className="grid grid-cols-5 gap-1.5"
+              role="img"
+            >
+              {["level-1", "level-2", "level-3", "level-4", "level-5"].map(
+                (segment, index) => (
+                  <span
+                    key={segment}
+                    className={`h-1.5 rounded-full ${
+                      index < severityLevel
+                        ? severityLevel >= 4
+                          ? "bg-accent"
+                          : "bg-primary"
+                        : "bg-muted"
+                    }`}
+                  />
+                ),
+              )}
+            </div>
+            <p className="mt-4 font-semibold text-ink text-sm">
+              {item.reportCount === 1
+                ? "1 linked report"
+                : `${item.reportCount} linked reports`}
+            </p>
+            <p className="mt-1 text-slate-muted text-xs leading-relaxed">
+              {`Evidence is ${humanizeCode(
+                item.evidenceCompleteness,
+              ).toLowerCase()}; uncertainty is ${humanizeCode(
+                item.uncertainty,
+              ).toLowerCase()}.`}
+            </p>
+          </div>
+        </div>
+
+        <dl className="grid gap-0.5 bg-background sm:grid-cols-3 [&>*]:bg-card">
+          <OverviewFact label="Status" value={humanizeCode(item.status)} />
+          <OverviewFact
+            label="Evidence"
+            value={humanizeCode(item.evidenceCompleteness)}
+          />
+          <OverviewFact
+            label="Uncertainty"
+            value={humanizeCode(item.uncertainty)}
+          />
+        </dl>
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <TokenList title="Policy labels" values={item.policyLabels} />
+        <TokenList
+          title="Human review reasons"
+          values={item.mandatoryHumanReasons}
         />
-        <Fact label="Status" value={humanizeCode(item.status)} />
-        <Fact
-          label="Evidence completeness"
-          value={humanizeCode(item.evidenceCompleteness)}
-        />
-        <Fact label="Uncertainty" value={humanizeCode(item.uncertainty)} />
-        <Fact label="Reports" value={String(item.reportCount)} />
-        <Fact label="Due" value={formatOperatorDate(item.dueAt)} />
-      </dl>
-      <TokenList title="Policy labels" values={item.policyLabels} />
-      <TokenList
-        title="Human review reasons"
-        values={item.mandatoryHumanReasons}
-      />
-    </OperatorPanel>
+      </div>
+    </section>
+  );
+}
+
+function OverviewFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 px-5 py-4 sm:px-6">
+      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
+      <dd className="mt-1 font-semibold text-ink text-sm">{value}</dd>
+    </div>
   );
 }
 
@@ -36,12 +112,9 @@ export function DecisionChronology({ item }: { item: OperatorCaseDetail }) {
   return (
     <OperatorPanel title="Decision chronology">
       {item.decisions.length ? (
-        <ol className="grid gap-3">
+        <ol className="grid gap-0.5 overflow-hidden rounded-xl bg-background">
           {item.decisions.map((decision) => (
-            <li
-              key={decision.id}
-              className="grid gap-1 border-border border-b pb-3 last:border-b-0 last:pb-0"
-            >
+            <li key={decision.id} className="grid gap-1 bg-card px-4 py-3">
               <div className="flex flex-wrap justify-between gap-2">
                 <span className="font-semibold text-ink text-sm">
                   {decision.sequence}. {humanizeCode(decision.kind)}
@@ -245,19 +318,10 @@ export function OperatorPanel({
   title: string;
 }) {
   return (
-    <section className="grid gap-4 rounded-2xl border border-border bg-card p-5">
+    <section className="grid gap-4 pt-2">
       <h2 className="font-bold text-ink text-lg">{title}</h2>
       {children}
     </section>
-  );
-}
-
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid gap-0.5">
-      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
-      <dd className="text-ink text-sm">{value}</dd>
-    </div>
   );
 }
 

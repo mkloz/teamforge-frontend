@@ -1,13 +1,10 @@
-import { ServerCog, ShieldCheck } from "lucide-react";
+import { ListChecks, ServerCog, Siren } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { ReadinessSectionHeading } from "@/features/admin/components/admin-pilot-operations-readiness/readiness-section-heading";
 import { PILOT_OPERATIONS_WORKER_LABELS } from "@/features/admin/lib/pilot-operations-language";
 import type { AdminPilotOperationsReadiness as Readiness } from "@/features/admin/schemas/admin-pilot-operations.schema";
-import {
-  StatusPill,
-  type StatusPillTone,
-} from "@/shared/components/ui/status-pill";
+import { cn } from "@/shared/lib/utils";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
@@ -19,127 +16,251 @@ interface SignalRow {
   description: ReactNode;
   label: string;
   state: string;
-  tone: StatusPillTone;
+  tone: "amber" | "neutral" | "teal";
+  value?: number;
 }
 
 export function OperationalSignals({ readiness }: { readiness: Readiness }) {
   return (
     <div className="grid gap-8">
-      <SignalSection
-        description="Authoritative cohort and moderation checks used in the readiness decision."
-        id="pilot-readiness-signals"
-        rows={buildReadinessSignalRows(readiness)}
-        title="Readiness signals"
-      />
-      <SignalSection
-        description="Open safety work that must be cleared before pilot operations are ready."
-        id="pilot-safety-queues"
-        rows={buildSafetyQueueRows(readiness)}
-        title="Urgent safety queues"
-      />
+      <ReadinessSignals rows={buildReadinessSignalRows(readiness)} />
+      <SafetyQueueSignals rows={buildSafetyQueueRows(readiness)} />
       <WorkerSignals workers={readiness.workers} />
     </div>
   );
 }
 
-function SignalSection({
-  description,
-  id,
-  rows,
-  title,
-}: {
-  description: string;
-  id: string;
-  rows: SignalRow[];
-  title: string;
-}) {
+function ReadinessSignals({ rows }: { rows: SignalRow[] }) {
+  const passing = rows.filter((row) => row.tone === "teal").length;
+
   return (
-    <section aria-labelledby={id} className="border-border border-t pt-6">
+    <section aria-labelledby="pilot-readiness-signals" className="pt-2">
       <ReadinessSectionHeading
-        description={description}
-        icon={ShieldCheck}
-        id={id}
-        title={title}
+        description="Authoritative cohort and moderation checks used in the readiness decision."
+        icon={ListChecks}
+        id="pilot-readiness-signals"
+        title="Readiness signals"
       />
-      <dl className="mt-4 grid gap-x-8 sm:grid-cols-2">
-        {rows.map((row) => (
-          <div
-            key={row.label}
-            className="flex min-w-0 items-start justify-between gap-4 border-border border-b py-3"
-          >
-            <dt className="min-w-0">
-              <span className="block font-semibold text-ink text-sm">
-                {row.label}
-              </span>
-              <span className="mt-0.5 block text-slate-muted text-xs leading-relaxed">
-                {row.description}
-              </span>
-            </dt>
-            <dd className="shrink-0">
-              <StatusPill size="xs" surface="soft" tone={row.tone}>
-                {row.state}
-              </StatusPill>
-            </dd>
+
+      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-2xl bg-background">
+        <div className="grid gap-6 bg-card p-5 sm:p-6">
+          <div className="flex items-baseline justify-between gap-4">
+            <p className="font-semibold text-ink text-sm">
+              {passing} of {rows.length} checks passing
+            </p>
+            <p className="text-slate-muted text-xs tabular-nums">
+              {Math.round((passing / rows.length) * 100)}%
+            </p>
           </div>
-        ))}
-      </dl>
+          <div
+            className="grid gap-1.5"
+            style={{
+              gridTemplateColumns: `repeat(${rows.length}, minmax(0, 1fr))`,
+            }}
+            aria-hidden="true"
+          >
+            {rows.map((row) => (
+              <span
+                key={row.label}
+                className={cn(
+                  "h-2 rounded-full",
+                  row.tone === "teal"
+                    ? "bg-primary"
+                    : row.tone === "amber"
+                      ? "bg-accent"
+                      : "bg-muted",
+                )}
+              />
+            ))}
+          </div>
+        </div>
+
+        <dl className="grid gap-0.5 bg-background sm:grid-cols-2">
+          {rows.map((row) => (
+            <div key={row.label} className="grid gap-1 bg-card p-5 sm:px-6">
+              <div className="flex items-baseline justify-between gap-3">
+                <dt className="font-semibold text-ink text-sm">{row.label}</dt>
+                <dd
+                  className={cn(
+                    "shrink-0 font-medium text-xs",
+                    row.tone === "teal"
+                      ? "text-primary"
+                      : row.tone === "amber"
+                        ? "text-accent"
+                        : "text-slate-muted",
+                  )}
+                >
+                  {row.state}
+                </dd>
+              </div>
+              <p className="text-pretty text-slate-muted text-xs leading-relaxed">
+                {row.description}
+              </p>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  );
+}
+
+function SafetyQueueSignals({ rows }: { rows: SignalRow[] }) {
+  const total = rows.reduce((sum, row) => sum + (row.value ?? 0), 0);
+  const maximum = Math.max(1, ...rows.map((row) => row.value ?? 0));
+  const shortLabels = ["Critical", "Urgent", "Appeals", "Reviews", "Contests"];
+
+  return (
+    <section aria-labelledby="pilot-safety-queues" className="pt-2">
+      <ReadinessSectionHeading
+        description="Open safety work that must be cleared before pilot operations are ready."
+        icon={Siren}
+        id="pilot-safety-queues"
+        title="Urgent safety queues"
+      />
+
+      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-2xl bg-background sm:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)]">
+        <div className="grid content-center gap-1 bg-card p-5 sm:p-6">
+          <p
+            className={cn(
+              "font-semibold text-4xl tabular-nums",
+              total === 0 ? "text-primary" : "text-accent",
+            )}
+          >
+            {NUMBER_FORMATTER.format(total)}
+          </p>
+          <p className="font-semibold text-ink text-sm">
+            {total === 0 ? "Urgent queues clear" : "items need intervention"}
+          </p>
+          <p className="mt-1 text-pretty text-slate-muted text-xs leading-relaxed">
+            {total === 0
+              ? "No urgent work is currently holding pilot activity."
+              : "Open items are grouped by the deadline or assignment failure that triggered them."}
+          </p>
+        </div>
+
+        <div
+          className="grid h-40 grid-cols-5 items-end gap-2 bg-card p-5 sm:h-52 sm:gap-3 sm:p-6"
+          role="img"
+          aria-label={`${total} urgent safety queue items across ${rows.length} queues`}
+        >
+          {rows.map((row, index) => {
+            const value = row.value ?? 0;
+            const height =
+              value === 0 ? 4 : Math.max(18, (value / maximum) * 96);
+
+            return (
+              <div key={row.label} className="grid min-w-0 gap-2">
+                <p className="text-center font-semibold text-ink text-sm tabular-nums">
+                  {NUMBER_FORMATTER.format(value)}
+                </p>
+                <div className="flex h-16 items-end justify-center sm:h-24">
+                  <span
+                    className={cn(
+                      "w-full max-w-10 rounded-md",
+                      value === 0 ? "bg-muted" : "bg-accent",
+                    )}
+                    style={{ height }}
+                  />
+                </div>
+                <p className="truncate text-center text-slate-muted text-xs">
+                  {shortLabels[index]}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </section>
   );
 }
 
 function WorkerSignals({ workers }: { workers: Readiness["workers"] }) {
   return (
-    <section
-      aria-labelledby="pilot-worker-signals"
-      className="border-border border-t pt-6"
-    >
+    <section aria-labelledby="pilot-worker-signals" className="pt-2">
       <ReadinessSectionHeading
         description="Queue totals and health states reported by each required worker."
         icon={ServerCog}
         id="pilot-worker-signals"
         title="Worker signals"
       />
-      <div className="mt-4 grid gap-x-8 sm:grid-cols-2">
-        {workers.map((worker) => (
-          <div key={worker.kind} className="border-border border-b py-4">
-            <div className="flex items-start justify-between gap-3">
-              <h3 className="font-semibold text-ink text-sm">
-                {PILOT_OPERATIONS_WORKER_LABELS[worker.kind]}
-              </h3>
-              <StatusPill
-                size="xs"
-                surface="soft"
-                tone={workerTone(worker.state)}
-              >
-                {workerState(worker.state)}
-              </StatusPill>
+
+      <div className="mt-4 overflow-hidden rounded-2xl bg-background">
+        <div className="hidden grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(4rem,0.5fr))_minmax(8rem,1fr)] gap-4 bg-card px-5 py-3 text-slate-muted text-xs sm:grid">
+          <span>Worker</span>
+          <span>Queue</span>
+          <span>Failed</span>
+          <span>Dead</span>
+          <span>Heartbeat</span>
+        </div>
+        <div className="grid gap-0.5 bg-background">
+          {workers.map((worker) => (
+            <div
+              key={worker.kind}
+              className="grid gap-4 bg-card px-5 py-4 sm:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(4rem,0.5fr))_minmax(8rem,1fr)] sm:items-center"
+            >
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      "size-2 shrink-0 rounded-full",
+                      worker.state === "HEALTHY"
+                        ? "bg-primary"
+                        : worker.state === "PAUSED"
+                          ? "bg-accent"
+                          : "bg-danger",
+                    )}
+                    aria-hidden="true"
+                  />
+                  <h3 className="truncate font-semibold text-ink text-sm">
+                    {PILOT_OPERATIONS_WORKER_LABELS[worker.kind]}
+                  </h3>
+                </div>
+                <p className="mt-1 text-slate-muted text-xs">
+                  {workerState(worker.state)}
+                  {!worker.enabled
+                    ? " · disabled"
+                    : worker.paused
+                      ? " · paused"
+                      : ""}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 sm:contents">
+                <WorkerMetric label="Queue" value={worker.queueDepth} />
+                <WorkerMetric label="Failed" value={worker.failedJobs} />
+                <WorkerMetric label="Dead" value={worker.deadJobs} />
+              </div>
+
+              <p className="text-slate-muted text-xs leading-relaxed">
+                <span className="sm:hidden">Heartbeat · </span>
+                {worker.heartbeatAt ? (
+                  <AdminDateTime value={worker.heartbeatAt} />
+                ) : (
+                  "Not reported"
+                )}
+                {worker.oldestPendingAt ? (
+                  <>
+                    <br />
+                    Oldest <AdminDateTime value={worker.oldestPendingAt} />
+                  </>
+                ) : null}
+              </p>
             </div>
-            <p className="mt-2 text-slate-muted text-xs leading-relaxed">
-              {worker.enabled ? "Enabled" : "Disabled"}
-              {worker.paused ? ", paused" : ", not paused"} · Queue{" "}
-              {NUMBER_FORMATTER.format(worker.queueDepth)} · Failed{" "}
-              {NUMBER_FORMATTER.format(worker.failedJobs)} · Cannot retry{" "}
-              {NUMBER_FORMATTER.format(worker.deadJobs)}
-            </p>
-            <p className="mt-1 text-slate-muted text-xs leading-relaxed">
-              Last heartbeat:{" "}
-              {worker.heartbeatAt ? (
-                <AdminDateTime value={worker.heartbeatAt} />
-              ) : (
-                "Not reported"
-              )}
-              {worker.oldestPendingAt ? (
-                <>
-                  {" "}
-                  · Oldest pending:{" "}
-                  <AdminDateTime value={worker.oldestPendingAt} />
-                </>
-              ) : null}
-            </p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
+  );
+}
+
+function WorkerMetric({ label, value }: { label: string; value: number }) {
+  return (
+    <p className="grid gap-1 text-sm sm:block">
+      <span className="text-slate-muted text-xs sm:hidden">{label}</span>
+      <span className="font-semibold text-ink tabular-nums">
+        {NUMBER_FORMATTER.format(value)}
+      </span>
+    </p>
   );
 }
 
@@ -174,6 +295,7 @@ function countSignal(
     label,
     state: NUMBER_FORMATTER.format(value),
     tone: value === 0 ? "teal" : "amber",
+    value,
   };
 }
 
@@ -270,14 +392,6 @@ function buildSafetyQueueRows(readiness: Readiness): SignalRow[] {
       readiness.safetyQueues.expiredOpenContainmentContests,
     ),
   ];
-}
-
-function workerTone(
-  state: Readiness["workers"][number]["state"],
-): StatusPillTone {
-  if (state === "HEALTHY") return "teal";
-  if (state === "PAUSED") return "amber";
-  return "destructive";
 }
 
 function workerState(state: Readiness["workers"][number]["state"]) {
