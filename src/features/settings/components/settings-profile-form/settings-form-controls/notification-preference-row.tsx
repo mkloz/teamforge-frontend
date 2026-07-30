@@ -24,8 +24,8 @@ export function NotificationPreferenceRow({
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-between gap-4 border-border border-b py-4 text-left transition-colors",
-        checked && "border-primary/20",
+        "flex w-full items-center justify-between gap-3 rounded-xl bg-muted/35 p-3 text-left transition-colors sm:gap-4 sm:p-4",
+        checked && "bg-primary/7",
         disabled && "cursor-not-allowed opacity-70",
       )}
     >

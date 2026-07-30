@@ -29,8 +29,9 @@ Do not introduce new hue families without explicit approval. When a new surface 
 | --- | --- | --- | --- | --- |
 | App background | `#F1F4F1` | `#0B0F0E` | `--background` | Body background and floating nav bases |
 | Canvas | `#F7F8F4` | `#111716` | `--canvas`, `--color-canvas` | Main page and long-session reading surfaces |
-| Card / popover | `#FFFEFA` | `#18201E` | `--card`, `--popover` | Cards, overlays, menus, elevated panels |
-| Input | `#EEF2ED` | `#202927` | `--input` | Text fields, selects, radios, OTP slots, tactile controls |
+| Card / popover | `#FFFEFA` | `#131615` | `--card`, `--popover` | Cards, overlays, menus, elevated panels |
+| Input | `#EEF2ED` | `#171B1A` | `--input` | Text fields, selects, radios, OTP slots, tactile controls |
+| Input border | `12% Ink` | `7% Ink` | `--input-border` | Low-contrast form-control outlines |
 | Muted | `#E7EBE6` | `#202725` | `--muted` | Skeletons, inactive pills, hover surfaces |
 | Border | `rgba(29, 38, 35, 0.11)` | `rgba(229, 239, 234, 0.11)` | `--border` | Dividers, card outlines, rail separation |
 

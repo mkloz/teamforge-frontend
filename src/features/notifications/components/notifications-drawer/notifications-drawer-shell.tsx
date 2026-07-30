@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
@@ -29,15 +30,26 @@ export function NotificationsDrawerShell({
       direction={isDesktop ? "right" : "bottom"}
     >
       <DrawerContent
+        style={
+          isDesktop
+            ? {
+                maxWidth: "none",
+                width: "min(29rem, 34vw)",
+              }
+            : undefined
+        }
         className={cn(
           "border-border bg-canvas text-ink shadow-none",
           isDesktop
-            ? "lg:w-96 lg:rounded-l-2xl lg:border-l"
-            : "max-lg:max-h-screen max-lg:rounded-t-2xl max-lg:border-t",
+            ? "lg:rounded-l-2xl lg:border-l"
+            : "max-lg:h-[92dvh] max-lg:max-h-[92dvh] max-lg:rounded-t-[1.25rem] max-lg:border-t",
         )}
       >
         <DrawerHeader className="sr-only">
           <DrawerTitle>Notifications</DrawerTitle>
+          <DrawerDescription>
+            Recent account, group, and plan updates.
+          </DrawerDescription>
         </DrawerHeader>
         {children}
       </DrawerContent>

@@ -1,7 +1,6 @@
-import { ChevronDown } from "lucide-react";
-
 import type { ForgeProposalSeat } from "@/features/forge-proposals/lib/forge-proposal-contract";
 import { proposalTraitLabels } from "@/features/forge-proposals/lib/forge-proposal-presentation";
+import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
 import { cn } from "@/shared/lib/utils";
 
 interface ProposalPersonalityDetailsProps {
@@ -14,17 +13,12 @@ export function ProposalPersonalityDetails({
   seat,
 }: ProposalPersonalityDetailsProps) {
   return (
-    <details className="group/personality mt-4">
-      <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-lg font-semibold text-muted-foreground text-xs outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
-        Public personality details
-        <ChevronDown
-          className="size-3.5 transition-transform group-open/personality:rotate-180"
-          aria-hidden="true"
-          strokeWidth={2}
-        />
-      </summary>
-
-      <dl className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2">
+    <CollapsibleSection
+      className="mt-4"
+      summary="Public personality details"
+      triggerClassName="text-muted-foreground hover:text-foreground"
+    >
+      <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
         {proposalTraitLabels.map(([key, label]) => {
           const value = seat.profile.ocean[key];
 
@@ -59,6 +53,6 @@ export function ProposalPersonalityDetails({
           );
         })}
       </dl>
-    </details>
+    </CollapsibleSection>
   );
 }

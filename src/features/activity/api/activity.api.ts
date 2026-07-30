@@ -36,4 +36,5 @@ export const ActivityApi = {
   withdrawPlanProposal: PlanEndpoints.withdrawActivityPlanProposal,
   ...RatingEndpoints,
   createInvite: InviteEndpoints.createActivityInvite,
+  cancelInvite: InviteEndpoints.cancelActivityInvite,
 };

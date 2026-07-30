@@ -46,6 +46,7 @@ export function useSettingsProfileForm({
     userId,
   });
   const accountExport = useAccountExport({
+    authProvider: profile.currentUser?.authProvider,
     enabled: Boolean(userId) && activeSection === "privacy",
     userId,
   });

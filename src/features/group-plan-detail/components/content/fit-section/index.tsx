@@ -54,7 +54,11 @@ function getFitSectionState(detail: GroupPlanDetail): FitSectionState {
 
 function EmptyFitSection() {
   return (
-    <Section heading="Group fit unavailable" headingId="fit-section-heading">
+    <Section
+      heading="Group fit unavailable"
+      headingId="fit-section-heading"
+      className="pt-8"
+    >
       <p className="text-muted-foreground text-sm leading-relaxed">
         Review the plan and members instead.
       </p>
@@ -72,6 +76,8 @@ function FitSignalsSection({
       heading={getFitVerdict(state.percent)}
       description={state.fit.summary}
       headingId="fit-section-heading"
+      className="pt-8"
+      trailingInline
       trailing={
         state.percent !== null ? <FitScore percent={state.percent} /> : null
       }

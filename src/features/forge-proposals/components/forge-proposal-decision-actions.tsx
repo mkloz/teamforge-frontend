@@ -177,7 +177,7 @@ function DeclineAction({
       cancelLabel="Keep reviewing"
       confirmLabel="Not this group"
       confirmVariant="outline"
-      contentClassName="rounded-3xl"
+      contentClassName="rounded-2xl"
       onConfirm={async () => {
         if (await onDecline(reason)) setOpen(false);
       }}
@@ -257,7 +257,7 @@ function WithdrawAction({
       cancelLabel="Keep my response"
       confirmLabel="Withdraw"
       confirmVariant="outline"
-      contentClassName="rounded-3xl"
+      contentClassName="rounded-2xl"
       onConfirm={async () => {
         if (await onWithdraw()) setOpen(false);
       }}

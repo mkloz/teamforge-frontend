@@ -1,19 +1,12 @@
-import { lazy, Suspense } from "react";
 import { ExploreFeed } from "@/features/explore/components/explore-feed";
-import { ExploreLeftSection } from "@/features/explore/components/explore-left-section";
+import { ExploreQuickFilters } from "@/features/explore/components/explore-left-section/explore-quick-filters";
+import { ForgeCTA } from "@/features/explore/components/explore-left-section/forge-cta";
 import { ExploreSearchHeader } from "@/features/explore/components/explore-search-header";
 import { ExplorePageLoading } from "@/features/explore/explore-page.loading";
 import { ExplorePageContent } from "@/features/explore/explore-page-content";
 import { useExploreFeedQuery } from "@/features/explore/hooks/use-explore-feed-query";
-import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
-
-const ExploreRightFilters = lazy(() =>
-  import("@/features/explore/components/explore-right-filters").then(
-    (module) => ({ default: module.ExploreRightFilters }),
-  ),
-);
 
 const EXPLORE_PAGE_METADATA = createTeamForgePageMetadata({
   title: "Explore",
@@ -25,7 +18,6 @@ export function ExplorePage() {
   usePageMetadata(EXPLORE_PAGE_METADATA);
 
   const feedQuery = useExploreFeedQuery();
-  const shouldRenderDesktopFilters = useMediaQuery("(min-width: 1024px)");
   const isInitialLoading = feedQuery.isLoading && !feedQuery.data;
 
   if (isInitialLoading) {
@@ -34,16 +26,10 @@ export function ExplorePage() {
 
   return (
     <ExplorePageContent
-      leftRail={<ExploreLeftSection />}
+      quickFilters={<ExploreQuickFilters />}
       searchHeader={<ExploreSearchHeader />}
       feed={<ExploreFeed />}
-      filters={
-        shouldRenderDesktopFilters ? (
-          <Suspense fallback={null}>
-            <ExploreRightFilters />
-          </Suspense>
-        ) : null
-      }
+      forgeCta={<ForgeCTA />}
     />
   );
 }

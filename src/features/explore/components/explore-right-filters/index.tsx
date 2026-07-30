@@ -1,6 +1,4 @@
-import { ChevronDown, Filter } from "lucide-react";
-import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
-import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { Filter } from "lucide-react";
 import { CategoryFilter } from "./category-filter";
 import { DateRangeFilter } from "./date-range-filter";
 import { LocationFilter } from "./location-filter";
@@ -12,12 +10,6 @@ interface ExploreRightFiltersProps {
 }
 
 export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
-  const { sizeRange, startsAfter, startsBefore } = useExploreRouteState();
-  const hasMoreOptionFilters =
-    Boolean(startsAfter || startsBefore) ||
-    sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
-    sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1];
-
   return (
     <aside className="flex flex-col gap-4">
       {!hideHeader && (
@@ -42,24 +34,8 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
 
         <LocationFilter />
         <TimeFilter />
-
-        <details
-          className="group flex flex-col gap-3"
-          open={hasMoreOptionFilters}
-        >
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-lg border border-border/60 bg-card/35 px-3 py-2 font-bold text-muted-foreground text-xs transition-colors hover:border-border hover:bg-muted/25 hover:text-foreground lg:min-h-0 [&::-webkit-details-marker]:hidden">
-            <span>More options</span>
-            <ChevronDown
-              className="size-3.5 text-muted-foreground transition-transform group-open:rotate-180"
-              aria-hidden="true"
-            />
-          </summary>
-
-          <div className="flex flex-col gap-4 pt-0.5">
-            <DateRangeFilter />
-            <SizeFilter />
-          </div>
-        </details>
+        <DateRangeFilter />
+        <SizeFilter />
       </div>
     </aside>
   );

@@ -15,15 +15,35 @@ const paginatedUserBlocksSchema = createPaginatedSchema(userBlockApiSchema);
 type FriendshipPageLimit = number | string;
 
 export async function getFriends(limit: FriendshipPageLimit) {
+  return (await getFriendsPage({ limit })).items;
+}
+
+export async function getFriendsPage({
+  limit,
+  page = 1,
+  search,
+}: {
+  limit: FriendshipPageLimit;
+  page?: number;
+  search?: string;
+}) {
+  const searchParams: Record<string, string> = {
+    limit: String(limit),
+    page: String(page),
+  };
+  const normalizedSearch = search?.trim();
+
+  if (normalizedSearch) {
+    searchParams.search = normalizedSearch;
+  }
+
   const response = await apiClient
     .get("friends", {
-      searchParams: {
-        limit: String(limit),
-      },
+      searchParams,
     })
     .json<unknown>();
 
-  return parseFriendshipPage(response);
+  return paginatedFriendshipsSchema.parse(response);
 }
 
 export async function getBlockedUsers(limit: FriendshipPageLimit) {

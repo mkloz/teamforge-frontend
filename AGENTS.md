@@ -146,8 +146,9 @@ Follow `docs/visual-style-guide.md`. Key enforced rules:
 | `--color-spark-amber` / `--accent` | `#F59E0B` | `#FBBF24` | Trust scores, notifications, highlights                     |
 | `--background`                     | `#F1F4F1` | `#0B0F0E` | Body background and floating navigation bases               |
 | `--color-canvas`                   | `#F7F8F4` | `#111716` | Main page and long-session reading surfaces                 |
-| `--card` / `--popover`             | `#FFFEFA` | `#18201E` | Cards, menus, dialogs, elevated panels                      |
-| `--input`                          | `#EEF2ED` | `#202927` | Text fields, selects, radios, tactile controls              |
+| `--card` / `--popover`             | `#FFFEFA` | `#131615` | Cards, menus, dialogs, elevated panels                      |
+| `--input`                          | `#EEF2ED` | `#171B1A` | Text fields, selects, radios, tactile controls              |
+| `--input-border`                   | `12% Ink` | `7% Ink`  | Low-contrast form-control outlines                          |
 | `--color-ink`                      | `#1C1F1D` | `#F2F5F1` | Headings and body text                                      |
 | `--color-slate-muted`              | `#68756F` | `#A4B2AC` | Secondary text, captions, placeholders                      |
 

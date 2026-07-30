@@ -10,6 +10,7 @@ import {
   parseJsonWithRequestId,
 } from "@/shared/api/api";
 import { sendResetPasswordLink as sharedSendResetPasswordLink } from "@/shared/api/auth-session-commands";
+import { getAgeFromDateOfBirth } from "@/shared/validators/date-of-birth.validator";
 import type { GoogleAuthIntent } from "./auth.types";
 
 interface RegisterDto {
@@ -82,12 +83,18 @@ export class AuthApi {
   }
 
   static async registerWithEmail(values: RegisterValues) {
+    const age = getAgeFromDateOfBirth(values.dateOfBirth);
+
+    if (age === null) {
+      throw new TypeError("Registration date of birth was not valid.");
+    }
+
     const payload: RegisterDto = {
       email: values.email,
       password: values.password,
       name: values.name,
       dateOfBirth: values.dateOfBirth,
-      age: values.age,
+      age,
       city: values.city,
       gender: normalizeGender(values.gender),
     };

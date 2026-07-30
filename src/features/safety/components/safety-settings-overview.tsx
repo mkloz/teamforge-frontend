@@ -1,7 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronRight, RefreshCw } from "lucide-react";
+import {
+  ChevronRight,
+  Flag,
+  Gavel,
+  type LucideIcon,
+  RefreshCw,
+  ShieldAlert,
+} from "lucide-react";
 import { type ReactNode, useEffect } from "react";
+
 import { safetyQueries } from "@/features/safety/api/safety-queries";
 import {
   ACCOUNT_ACTION_STATE_LABELS,
@@ -11,9 +19,17 @@ import {
   RESTRICTION_STATE_LABELS,
 } from "@/features/safety/lib/safety-language";
 import { Button } from "@/shared/components/ui/button";
+import {
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { StatusPill } from "@/shared/components/ui/status-pill";
+import {
+  StatusPill,
+  type StatusPillTone,
+} from "@/shared/components/ui/status-pill";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import {
   buildAccountActionNavigation,
@@ -43,33 +59,48 @@ export function SafetySettingsOverview() {
   }, []);
 
   return (
-    <div className="grid gap-9">
+    <div className="grid gap-5">
       {!isOnline ? (
         <OfflineNotice withIcon={false} size="md" className="px-3">
           You’re offline. Safety status updates may be out of date.
         </OfflineNotice>
       ) : null}
-      <ReportHistory />
-      <AccountActions />
-      <SafetyRestrictions />
+
+      <section>
+        <div className="px-1">
+          <h2 className="font-bold text-ink text-xl">Safety activity</h2>
+          <p className="mt-1 max-w-2xl text-slate-muted text-sm leading-relaxed">
+            Track reports you sent and any safety decisions affecting your
+            account.
+          </p>
+        </div>
+
+        <GroupedMenuList aria-label="Safety activity" className="mt-5">
+          <ReportHistory />
+          <AccountActions />
+          <SafetyRestrictions />
+        </GroupedMenuList>
+      </section>
     </div>
   );
 }
 
 function ReportHistory() {
   const query = useQuery(safetyQueries.reports());
+  const items = query.data?.items ?? [];
 
   return (
     <SafetyCollection
-      id="safety-reports"
-      title="Your reports"
-      isLoading={query.isLoading}
+      description="Reports you send to TeamForge appear here."
       error={query.error}
-      isEmpty={query.data?.items.length === 0}
-      emptyTitle="No reports yet"
+      icon={Flag}
+      id="safety-reports"
+      isLoading={query.isLoading}
+      itemCount={items.length}
       onRetry={() => void query.refetch()}
+      title="Your reports"
     >
-      {query.data?.items.map((report) => (
+      {items.map((report) => (
         <ReportRow key={report.id} report={report} />
       ))}
     </SafetyCollection>
@@ -92,18 +123,21 @@ function ReportRow({ report }: { report: ReportSummary }) {
 
 function AccountActions() {
   const query = useQuery(safetyQueries.notices());
+  const items = query.data?.items ?? [];
 
   return (
     <SafetyCollection
-      id="safety-account-actions"
-      title="Account actions"
-      isLoading={query.isLoading}
+      activityTone="amber"
+      description="Warnings or moderation decisions affecting your account."
       error={query.error}
-      isEmpty={query.data?.items.length === 0}
-      emptyTitle="No account actions"
+      icon={Gavel}
+      id="safety-account-actions"
+      isLoading={query.isLoading}
+      itemCount={items.length}
       onRetry={() => void query.refetch()}
+      title="Account actions"
     >
-      {query.data?.items.map((notice) => (
+      {items.map((notice) => (
         <AccountActionRow key={notice.id} notice={notice} />
       ))}
     </SafetyCollection>
@@ -126,18 +160,21 @@ function AccountActionRow({ notice }: { notice: EnforcementNotice }) {
 
 function SafetyRestrictions() {
   const query = useQuery(safetyQueries.containments());
+  const items = query.data?.items ?? [];
 
   return (
     <SafetyCollection
-      id="safety-restrictions"
-      title="Safety restrictions"
-      isLoading={query.isLoading}
+      activityTone="amber"
+      description="Temporary limits used to protect people and groups."
       error={query.error}
-      isEmpty={query.data?.items.length === 0}
-      emptyTitle="No safety restrictions"
+      icon={ShieldAlert}
+      id="safety-restrictions"
+      isLoading={query.isLoading}
+      itemCount={items.length}
       onRetry={() => void query.refetch()}
+      title="Safety restrictions"
     >
-      {query.data?.items.map((containment) => (
+      {items.map((containment) => (
         <RestrictionRow key={containment.id} containment={containment} />
       ))}
     </SafetyCollection>
@@ -161,106 +198,112 @@ function RestrictionRow({ containment }: { containment: Containment }) {
 }
 
 function SafetyCollection({
+  activityTone = "neutral",
   children,
-  emptyTitle,
+  description,
   error,
+  icon,
   id,
-  isEmpty,
   isLoading,
+  itemCount,
   onRetry,
   title,
 }: {
+  activityTone?: StatusPillTone;
   children: ReactNode;
-  emptyTitle: string;
+  description: string;
   error: Error | null;
+  icon: LucideIcon;
   id: string;
-  isEmpty: boolean;
   isLoading: boolean;
+  itemCount: number;
   onRetry: () => void;
   title: string;
 }) {
   return (
-    <section id={id} className="scroll-mt-6">
-      <div className="max-w-2xl">
-        <h2 className="font-bold text-ink text-xl">{title}</h2>
-      </div>
+    <>
+      <GroupedMenuItem id={id} className="scroll-mt-6">
+        <div className="flex min-h-16 flex-wrap items-center gap-3 px-3 py-3 sm:flex-nowrap sm:px-5">
+          <IconTile
+            icon={icon}
+            shape="circle"
+            size="lg"
+            tone={itemCount > 0 ? "teal" : "neutral"}
+          />
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-ink text-sm">{title}</p>
+            <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
+              {error ? "This safety information could not load." : description}
+            </p>
+          </div>
+          <SafetyCollectionStatus
+            activityTone={activityTone}
+            error={error}
+            isLoading={isLoading}
+            itemCount={itemCount}
+            onRetry={onRetry}
+          />
+        </div>
+      </GroupedMenuItem>
 
-      <div className="mt-5 border-border border-t" aria-live="polite">
-        <SafetyCollectionState
-          emptyTitle={emptyTitle}
-          error={error}
-          isEmpty={isEmpty}
-          isLoading={isLoading}
-          onRetry={onRetry}
-        >
-          {children}
-        </SafetyCollectionState>
-      </div>
-    </section>
+      {isLoading ? <SafetyRowLoading /> : null}
+      {!isLoading && !error ? children : null}
+    </>
   );
 }
 
-function SafetyCollectionState({
-  children,
-  emptyTitle,
+function SafetyCollectionStatus({
+  activityTone,
   error,
-  isEmpty,
   isLoading,
+  itemCount,
   onRetry,
 }: {
-  children: ReactNode;
-  emptyTitle: string;
+  activityTone: StatusPillTone;
   error: Error | null;
-  isEmpty: boolean;
   isLoading: boolean;
+  itemCount: number;
   onRetry: () => void;
 }) {
-  if (isLoading) {
-    return <SafetyRowsLoading />;
-  }
-
   if (error) {
     return (
-      <div className="flex flex-col items-start gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
-        <p className="font-semibold text-ink text-sm">
-          Safety information could not load.
-        </p>
-        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
-          <RefreshCw className="size-4" aria-hidden="true" />
-          Try again
-        </Button>
-      </div>
+      <Button type="button" variant="ghost" size="xs" onClick={onRetry}>
+        <RefreshCw className="size-3.5" aria-hidden="true" />
+        Retry
+      </Button>
     );
   }
 
-  if (isEmpty) {
+  if (isLoading) {
+    return <Skeleton shape="pill" className="h-5 w-16 shrink-0" />;
+  }
+
+  if (itemCount === 0) {
     return (
-      <div className="py-6">
-        <p className="font-semibold text-ink text-sm">{emptyTitle}</p>
-      </div>
+      <StatusPill size="xs" surface="soft" tone="teal">
+        Clear
+      </StatusPill>
     );
   }
 
-  return children;
+  return (
+    <StatusPill size="xs" surface="soft" tone={activityTone} numeric>
+      {itemCount}
+    </StatusPill>
+  );
 }
 
-function SafetyRowsLoading() {
+function SafetyRowLoading() {
   return (
-    <div aria-busy="true">
-      <output className="sr-only">Loading safety information</output>
-      {["first", "second"].map((item) => (
-        <div
-          key={item}
-          className="flex items-center gap-4 border-border border-b py-5 last:border-b-0"
-        >
-          <div className="min-w-0 flex-1">
-            <Skeleton className="h-4 w-40" />
-            <Skeleton className="mt-2 h-3 w-full max-w-sm" />
-          </div>
-          <Skeleton className="h-8 w-20 rounded-full" />
+    <GroupedMenuItem className="bg-background/55">
+      <div className="flex min-h-16 items-center gap-3 px-3 py-3 sm:px-5">
+        <div className="min-w-0 flex-1">
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="mt-2 h-3 w-full max-w-sm" />
         </div>
-      ))}
-    </div>
+        <Skeleton className="h-8 w-20 rounded-full" />
+      </div>
+    </GroupedMenuItem>
   );
 }
 
@@ -278,23 +321,27 @@ function SafetyRow({
   title: string;
 }) {
   return (
-    <article className="sm:main-action-grid grid gap-3 border-border border-b py-4 last:border-b-0 sm:items-center sm:gap-6">
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="font-semibold text-base text-ink">{title}</h3>
-          <StatusPill tone="teal" surface="soft" size="xs">
-            {status}
-          </StatusPill>
+    <GroupedMenuItem className="bg-background/55 transition-colors hover:bg-foreground/5">
+      <article className="sm:main-action-grid grid min-h-16 gap-3 px-3 py-3 sm:items-center sm:gap-6 sm:px-5">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-semibold text-ink text-sm">{title}</h3>
+            <StatusPill tone="teal" surface="soft" size="xs">
+              {status}
+            </StatusPill>
+          </div>
+          <p className="mt-1 line-clamp-2 text-slate-muted text-xs leading-relaxed">
+            {description}
+          </p>
+          {date ? (
+            <p className="mt-1 text-slate-muted text-xs">{date}</p>
+          ) : null}
         </div>
-        <p className="mt-1 line-clamp-2 text-slate-muted text-sm leading-relaxed">
-          {description}
-        </p>
-        {date ? <p className="mt-1 text-slate-muted text-xs">{date}</p> : null}
-      </div>
-      <div className="inline-flex items-center gap-1 font-semibold text-primary text-sm [&_a:focus-visible]:ring-2 [&_a:focus-visible]:ring-primary/30 [&_a]:rounded-md [&_a]:outline-none">
-        {link}
-        <ChevronRight className="size-4" aria-hidden="true" />
-      </div>
-    </article>
+        <div className="inline-flex items-center gap-1 font-semibold text-primary text-sm [&_a:focus-visible]:ring-2 [&_a:focus-visible]:ring-primary/30 [&_a]:rounded-md [&_a]:outline-none">
+          {link}
+          <ChevronRight className="size-4" aria-hidden="true" />
+        </div>
+      </article>
+    </GroupedMenuItem>
   );
 }

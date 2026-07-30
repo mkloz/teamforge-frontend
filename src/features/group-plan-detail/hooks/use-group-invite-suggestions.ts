@@ -17,6 +17,7 @@ import {
 import { isSystemManagedGroupGovernance } from "@/shared/schemas/group-governance";
 
 export interface GroupInviteSuggestionsState {
+  cancellingInviteId: string | null;
   error: string | null;
   isEligible: boolean;
   isInviting: boolean;
@@ -25,7 +26,8 @@ export interface GroupInviteSuggestionsState {
   isRefreshing: boolean;
   items: GroupInviteSuggestion[];
   pendingSuggestionId: string | null;
-  onInvite: (suggestionId: string) => Promise<void>;
+  onCancelInvitation: (inviteId: string) => Promise<void>;
+  onInvite: (suggestionId: string) => Promise<boolean>;
   onRetry: () => void;
 }
 
@@ -36,6 +38,7 @@ export function useGroupInviteSuggestions(
   const planId = detail.plan?.id ?? "";
   const [actionError, setActionError] = useState<string | null>(null);
   const inviteInFlightRef = useRef(false);
+  const cancelInviteInFlightRef = useRef(false);
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const query = useQuery(
     groupPlanDetailQueries.inviteSuggestions(
@@ -61,10 +64,22 @@ export function useGroupInviteSuggestions(
       void refreshSuggestionContext(detail.group.id, query.refetch);
     },
   });
+  const cancelMutation = useMutation({
+    mutationFn: (inviteId: string) =>
+      GroupPlanDetailCommands.cancelInvite(detail.group.id, planId, inviteId),
+    onSuccess: () => {
+      setActionError(null);
+    },
+    onError: () => {
+      setActionError(
+        "We could not cancel that invitation. Refresh the group and try again.",
+      );
+    },
+  });
 
   async function invite(suggestionId: string) {
     if (inviteInFlightRef.current) {
-      return;
+      return false;
     }
 
     if (
@@ -76,15 +91,16 @@ export function useGroupInviteSuggestions(
       setActionError(
         "You are offline. Reconnect before sending an invitation.",
       );
-      return;
+      return false;
     }
 
     setActionError(null);
     inviteInFlightRef.current = true;
     try {
       await mutation.mutateAsync(suggestionId);
+      return true;
     } catch {
-      return;
+      return false;
     } finally {
       inviteInFlightRef.current = false;
     }
@@ -105,6 +121,9 @@ export function useGroupInviteSuggestions(
     : null;
 
   return {
+    cancellingInviteId: cancelMutation.isPending
+      ? (cancelMutation.variables ?? null)
+      : null,
     error:
       actionError ??
       queryError ??
@@ -118,6 +137,28 @@ export function useGroupInviteSuggestions(
     isRefreshing: query.isFetching && Boolean(query.data),
     items: responseForCurrentPlan ? (query.data?.items ?? []) : [],
     pendingSuggestionId: mutation.isPending ? mutation.variables : null,
+    onCancelInvitation: async (inviteId: string) => {
+      if (cancelInviteInFlightRef.current) {
+        return;
+      }
+
+      if (
+        guardOfflineAction({
+          id: "group-invite-cancel-offline",
+          description: "Reconnect before cancelling an invitation.",
+        })
+      ) {
+        return;
+      }
+
+      cancelInviteInFlightRef.current = true;
+
+      try {
+        await cancelMutation.mutateAsync(inviteId).catch(() => undefined);
+      } finally {
+        cancelInviteInFlightRef.current = false;
+      }
+    },
     onInvite: invite,
     onRetry: () =>
       void refreshSuggestionContext(detail.group.id, query.refetch),
@@ -187,7 +228,8 @@ function getSuggestionEligibility(detail: GroupPlanDetail) {
   const groupCanAddPeople =
     detail.group.status !== "COMPLETED" &&
     detail.group.status !== "DISBANDED" &&
-    detail.group.activeMembersCount < detail.group.maxMembers;
+    detail.group.activeMembersCount + detail.group.pendingInvitationsCount <
+      detail.group.maxMembers;
 
   return canInvite && isOrganizer && isCurrentPlanOpen && groupCanAddPeople;
 }

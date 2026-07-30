@@ -1,43 +1,65 @@
-import { StatPill } from "@/features/settings/components/settings-profile-form/settings-form-controls";
+import { KeyRound, Mail } from "lucide-react";
+import { GroupedMenuItem } from "@/shared/components/ui/grouped-menu";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { User } from "@/shared/schemas";
 
 interface SecuritySummaryProps {
   currentUser: User | undefined;
 }
 
-const EMPTY_SECURITY_SUMMARY_ITEMS = [
-  { label: "Email", value: "Not set" },
-  { label: "Provider", value: "Email" },
-  { label: "Verification", value: "Pending" },
-];
-
 export function SecuritySummary({ currentUser }: SecuritySummaryProps) {
-  const summaryItems = getSecuritySummaryItems(currentUser);
+  const email = currentUser?.email ?? "Not set";
+  const isVerified = currentUser?.emailVerified ?? false;
+  const authProvider = getAuthProviderLabel(currentUser);
 
   return (
-    <div className="grid gap-5 border-border border-y py-5 md:grid-cols-3">
-      {summaryItems.map((item) => (
-        <StatPill key={item.label} label={item.label} value={item.value} />
-      ))}
-    </div>
+    <>
+      <GroupedMenuItem>
+        <div className="flex min-h-16 items-center gap-3 px-3 py-3 sm:px-5">
+          <IconTile icon={Mail} shape="circle" size="lg" tone="neutral" />
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-ink text-sm">Account email</p>
+            <p className="mt-0.5 truncate text-slate-muted text-xs">{email}</p>
+          </div>
+          <StatusPill
+            size="xs"
+            surface="soft"
+            tone={isVerified ? "teal" : "amber"}
+          >
+            {isVerified ? "Verified" : "Pending"}
+          </StatusPill>
+        </div>
+      </GroupedMenuItem>
+
+      <GroupedMenuItem>
+        <div className="flex min-h-16 items-center gap-3 px-3 py-3 sm:px-5">
+          <IconTile icon={KeyRound} shape="circle" size="lg" tone="neutral" />
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-ink text-sm">Sign-in method</p>
+            <p className="mt-0.5 text-slate-muted text-xs">
+              {authProvider.description}
+            </p>
+          </div>
+          <StatusPill size="xs" surface="soft" tone="neutral">
+            {authProvider.label}
+          </StatusPill>
+        </div>
+      </GroupedMenuItem>
+    </>
   );
 }
 
-function getSecuritySummaryItems(currentUser: User | undefined) {
-  if (!currentUser) {
-    return EMPTY_SECURITY_SUMMARY_ITEMS;
+function getAuthProviderLabel(currentUser: User | undefined) {
+  if (currentUser?.authProvider === "GOOGLE") {
+    return {
+      label: "Google",
+      description: "Your Google account controls sign-in.",
+    };
   }
 
-  return [
-    { label: "Email", value: currentUser.email },
-    { label: "Provider", value: getAuthProviderLabel(currentUser) },
-    {
-      label: "Verification",
-      value: currentUser.emailVerified ? "Verified" : "Pending",
-    },
-  ];
-}
-
-function getAuthProviderLabel(currentUser: User) {
-  return currentUser.authProvider === "GOOGLE" ? "Google" : "Email";
+  return {
+    label: "Email",
+    description: "Sign in with your email and password.",
+  };
 }

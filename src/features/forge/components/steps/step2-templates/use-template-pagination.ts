@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 
+import type {
+  CarouselApi,
+  CarouselOptions,
+} from "@/shared/components/ui/carousel-context";
 import { TEMPLATES_PER_PAGE } from "./types";
 
 interface UseTemplatePaginationParams<T> {
@@ -11,40 +15,64 @@ export function useTemplatePagination<T>({
   items,
   selectedActivity,
 }: UseTemplatePaginationParams<T>) {
+  const [api, setApi] = useState<CarouselApi>();
+  const pages = getTemplatePages(items);
+  const pageCount = pages.length;
   const [pageState, setPageState] = useState({
     page: 0,
     selectedActivity,
   });
-  const pageCount = Math.max(1, Math.ceil(items.length / TEMPLATES_PER_PAGE));
   const page =
     pageState.selectedActivity === selectedActivity
       ? Math.min(pageState.page, pageCount - 1)
       : 0;
-  const visibleItems = items.slice(
-    page * TEMPLATES_PER_PAGE,
-    page * TEMPLATES_PER_PAGE + TEMPLATES_PER_PAGE,
-  );
-
-  function showPreviousPage() {
+  const syncPage = useEffectEvent((carouselApi: NonNullable<CarouselApi>) => {
     setPageState({
+      page: carouselApi.selectedScrollSnap(),
       selectedActivity,
-      page: page === 0 ? pageCount - 1 : page - 1,
     });
-  }
+  });
 
-  function showNextPage() {
-    setPageState({
-      selectedActivity,
-      page: (page + 1) % pageCount,
-    });
-  }
+  useEffect(() => {
+    if (!api) return undefined;
+
+    const sync = () => syncPage(api);
+    api.on("select", sync);
+    api.on("reInit", sync);
+    sync();
+
+    return () => {
+      api.off("select", sync);
+      api.off("reInit", sync);
+    };
+  }, [api]);
+
+  const canPage = pageCount > 1;
+  const options: CarouselOptions = {
+    align: "start",
+    containScroll: "trimSnaps",
+    loop: canPage,
+  };
 
   return {
-    canPage: pageCount > 1,
+    canPage,
+    options,
     page,
     pageCount,
-    showNextPage,
-    showPreviousPage,
-    visibleItems,
+    pages,
+    setApi,
+    showNextPage: () => api?.scrollNext(),
+    showPreviousPage: () => api?.scrollPrev(),
   };
+}
+
+function getTemplatePages<T>(items: T[]) {
+  const pageCount = Math.max(1, Math.ceil(items.length / TEMPLATES_PER_PAGE));
+
+  return Array.from({ length: pageCount }, (_, page) =>
+    items.slice(
+      page * TEMPLATES_PER_PAGE,
+      page * TEMPLATES_PER_PAGE + TEMPLATES_PER_PAGE,
+    ),
+  );
 }

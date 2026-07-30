@@ -19,12 +19,14 @@ import type {
 
 interface EditGroupCoverSectionProps extends GroupIdentityUploadSectionProps {
   group: Group;
+  showHeading?: boolean;
 }
 
 export function EditGroupCoverSection({
   editor,
   group,
   inputRef,
+  showHeading = true,
 }: EditGroupCoverSectionProps) {
   const activeCoverPreset = getPlanCoverPreset(editor.coverImage);
 
@@ -34,7 +36,11 @@ export function EditGroupCoverSection({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="font-semibold text-muted-foreground text-xs">Plan cover</p>
+      {showHeading ? (
+        <p className="font-semibold text-muted-foreground text-xs">
+          Plan cover
+        </p>
+      ) : null}
       <div className="relative">
         <FileDropzone
           inputRef={inputRef}

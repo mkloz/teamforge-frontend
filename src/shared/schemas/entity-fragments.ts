@@ -44,6 +44,7 @@ export const userCoreFields = {
   oceanN: z.number().nullable(),
   searchStatus: searchStatusSchema,
   onlineStatus: onlineStatusSchema.optional(),
+  lastSeenAt: z.string().datetime().nullable().optional(),
   trustScore: z.number(),
   profileComplete: z.boolean(),
   personalitySetupComplete: z.boolean().optional(),
@@ -89,4 +90,5 @@ export const userOptionalTrustScoreField = {
 
 export const userPresenceFields = {
   onlineStatus: userCoreFields.onlineStatus,
+  lastSeenAt: userCoreFields.lastSeenAt,
 };

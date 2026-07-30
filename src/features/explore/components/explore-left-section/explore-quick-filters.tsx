@@ -3,7 +3,6 @@ import {
   Clock,
   MapPin,
   Monitor,
-  SlidersHorizontal,
   Unlock,
   Users,
   X,
@@ -11,7 +10,6 @@ import {
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { Button } from "@/shared/components/ui/button";
-import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 
 const QUICK_FILTERS = [
@@ -148,25 +146,16 @@ export function ExploreQuickFilters() {
   return (
     <section
       aria-labelledby="explore-quick-filters-heading"
-      className="flex flex-col gap-3 px-1 py-1"
+      className="flex min-w-0 items-center gap-3"
     >
-      <div className="flex items-center gap-2.5">
-        <IconTile icon={SlidersHorizontal} shape="square" size="md" />
+      <h2
+        id="explore-quick-filters-heading"
+        className="shrink-0 font-bold text-muted-foreground text-xs"
+      >
+        Show me
+      </h2>
 
-        <div className="min-w-0 flex-1">
-          <h2
-            id="explore-quick-filters-heading"
-            className="font-black text-base text-foreground leading-tight tracking-tight"
-          >
-            Quick filters
-          </h2>
-          <p className="mt-0.5 font-semibold text-muted-foreground text-xs leading-relaxed">
-            Shape the list in one tap
-          </p>
-        </div>
-      </div>
-
-      <fieldset className="flex flex-wrap gap-1.5">
+      <fieldset className="scrollbar-hide flex min-w-0 flex-1 gap-2 overflow-x-auto py-1 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <legend className="sr-only">Quick filters</legend>
         {QUICK_FILTERS.map((filter) => {
           const active = getIsQuickFilterActive(filter.id, quickFilterState);
@@ -179,13 +168,17 @@ export function ExploreQuickFilters() {
               aria-pressed={active}
               onClick={() => toggleFilter(filter.id)}
               className={cn(
-                "inline-flex h-9 min-w-0 items-center gap-1.5 rounded-full border border-border/60 bg-card/30 px-2.5 font-bold text-muted-foreground text-xs transition-colors",
-                "hover:border-border hover:bg-muted/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
+                "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-card px-3 font-bold text-muted-foreground text-xs transition-colors",
+                "hover:border-border hover:bg-muted/25 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
                 active &&
-                  "border-forge-teal/40 bg-forge-teal/10 text-forge-teal hover:border-forge-teal/50 hover:bg-forge-teal/12",
+                  "border-forge-teal/55 bg-primary/8 text-foreground hover:border-forge-teal/70",
               )}
             >
-              <Icon size={13} strokeWidth={2} aria-hidden="true" />
+              <Icon
+                className={cn("size-3.5", active && "text-primary")}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
               <span className="min-w-0 truncate">{filter.label}</span>
             </button>
           );
@@ -198,10 +191,11 @@ export function ExploreQuickFilters() {
           variant="subtle"
           size="xs"
           onClick={clearQuickFilters}
-          className="w-full"
+          aria-label="Reset quick filters"
+          title="Clear quick filters"
+          className="size-9 shrink-0 rounded-full px-0"
         >
-          <X className="size-3" aria-hidden="true" />
-          Clear quick filters
+          <X className="size-3.5" aria-hidden="true" />
         </Button>
       ) : null}
     </section>

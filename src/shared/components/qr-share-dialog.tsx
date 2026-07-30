@@ -1,7 +1,8 @@
-import { Share, X } from "lucide-react";
+import { Copy, Share, X } from "lucide-react";
 import type { ReactNode } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { StyledQrCode } from "@/shared/components/styled-qr-code";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -12,8 +13,13 @@ import {
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
 import {
+  showAppErrorMessageToast,
+  showAppSuccessToast,
+} from "@/shared/lib/app-toast";
+import {
   type BrowserShareData,
   canShareBrowserData,
+  copyTextToClipboard,
   shareBrowserData,
 } from "@/shared/lib/browser-capabilities";
 import { cn } from "@/shared/lib/utils";
@@ -42,10 +48,6 @@ function getQrShareData(shareTitle: string, url: string): BrowserShareData {
   };
 }
 
-function getQrShareButtonLabel(shareTitle: string) {
-  return shareTitle === "Share" ? "Share link" : `Share ${shareTitle}`;
-}
-
 function getQrCodeLabel(shareTitle: string) {
   return shareTitle === "Share"
     ? "QR code for this link"
@@ -63,25 +65,14 @@ function getQrShareAvatarSrc(avatarSrc: QrShareDialogProps["avatarSrc"]) {
   return avatarSrc || null;
 }
 
-function getQrCodeFrameClassName({
-  avatarSrc,
-  description,
-  title,
-}: Pick<QrShareDialogProps, "avatarSrc" | "description" | "title">) {
-  return cn(
-    "relative mx-auto w-full",
-    !title && !description && avatarSrc && "pt-10",
-  );
-}
-
 function QrShareAvatar({ src }: { src: string | null }) {
   if (!src) {
     return null;
   }
 
   return (
-    <div className="absolute top-10 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
-      <div className="size-16 overflow-hidden rounded-full border-4 border-forge-deep-panel bg-forge-deep-panel shadow-sm ring-1 ring-white/15">
+    <div className="absolute top-8 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
+      <div className="size-16 overflow-hidden rounded-full border-4 border-popover bg-popover shadow-sm ring-1 ring-border/60">
         <img src={src} alt="" className="size-full object-cover" />
       </div>
     </div>
@@ -100,16 +91,16 @@ function QrShareHeader({
   }
 
   return (
-    <DialogHeader className="mb-4 max-w-[calc(100%-3rem)] gap-1 text-left">
+    <DialogHeader className="max-w-[calc(100%-3rem)] gap-1 text-left">
       {title ? (
-        <DialogTitle className="font-bold text-white text-xl leading-tight tracking-tight">
+        <DialogTitle className="font-black text-ink text-xl leading-tight tracking-tight">
           {title}
         </DialogTitle>
       ) : (
         <DialogTitle className="sr-only">{shareTitle}</DialogTitle>
       )}
       {description && (
-        <DialogDescription className="font-medium text-sm text-text-dark-secondary leading-relaxed">
+        <DialogDescription className="font-medium text-slate-muted text-sm leading-relaxed">
           {description}
         </DialogDescription>
       )}
@@ -117,66 +108,15 @@ function QrShareHeader({
   );
 }
 
-function QrShareOverlay({ canShare }: { canShare: boolean }) {
-  if (!canShare) {
-    return null;
-  }
-
+function QrShareCode({ shareTitle, url }: { shareTitle: string; url: string }) {
   return (
-    <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/0 opacity-0 transition-[background-color,opacity] duration-200 group-hover:bg-black/58 group-hover:opacity-100">
-      <div className="flex flex-col items-center gap-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-        <div className="flex size-11 items-center justify-center rounded-full bg-forge-deep-surface text-white shadow-xl ring-1 ring-white/10 transition-transform duration-200 group-active:scale-95">
-          <Share className="size-5" aria-hidden="true" />
-        </div>
-        <span className="font-bold text-white text-xs tracking-wide drop-shadow-md">
-          Share Link
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function QrShareCodeButton({
-  canShare,
-  onShare,
-  shareTitle,
-  url,
-}: {
-  canShare: boolean;
-  onShare: () => Promise<void>;
-  shareTitle: string;
-  url: string;
-}) {
-  const content = (
-    <>
-      <StyledQrCode url={url} className="max-w-none rounded-2xl" />
-      <QrShareOverlay canShare={canShare} />
-    </>
-  );
-
-  if (!canShare) {
-    return (
-      <div
-        role="img"
-        aria-label={getQrCodeLabel(shareTitle)}
-        className="relative flex aspect-square w-full cursor-default items-center justify-center rounded-2xl bg-transparent p-0"
-      >
-        {content}
-      </div>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      aria-label={getQrShareButtonLabel(shareTitle)}
-      onClick={() => {
-        void onShare();
-      }}
-      className="group relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-2xl bg-transparent p-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal"
+    <div
+      role="img"
+      aria-label={getQrCodeLabel(shareTitle)}
+      className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl bg-canvas p-2 ring-1 ring-border/55"
     >
-      {content}
-    </button>
+      <StyledQrCode url={url} className="max-w-none rounded-xl" />
+    </div>
   );
 }
 
@@ -188,12 +128,18 @@ function QrShareBottomText({
   }
 
   return (
-    <div className="mt-4">
-      <p className="text-center font-bold text-white text-xs uppercase tracking-wide">
-        {bottomText}
-      </p>
+    <div className="text-center">
+      <p className="font-semibold text-slate-muted text-xs">{bottomText}</p>
     </div>
   );
+}
+
+function getShareDestination(url: string) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return url;
+  }
 }
 
 export function QrShareDialog({
@@ -205,6 +151,7 @@ export function QrShareDialog({
   trigger,
 }: QrShareDialogProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isCopying, setIsCopying] = useState(false);
   const shareTitle = getQrShareTitle({ bottomText, title });
   const shareData = getQrShareData(shareTitle, url);
   const canShare = canShareBrowserData(shareData);
@@ -212,6 +159,19 @@ export function QrShareDialog({
 
   const handleShare = async () => {
     await shareBrowserData(shareData);
+  };
+
+  const handleCopy = async () => {
+    setIsCopying(true);
+    const copied = await copyTextToClipboard(url);
+    setIsCopying(false);
+
+    if (!copied) {
+      showAppErrorMessageToast("We couldn't copy that link in this browser.");
+      return;
+    }
+
+    showAppSuccessToast("Link copied.", { id: "qr-share-link-copied" });
   };
 
   return (
@@ -226,11 +186,16 @@ export function QrShareDialog({
         }}
         className="w-[calc(100vw-2rem)] border-none bg-transparent p-0 shadow-none outline-none sm:max-w-sm [&>button]:hidden"
       >
-        <div className={cn("relative w-full", avatarImageSrc && "pt-10")}>
+        <div className={cn("relative w-full", avatarImageSrc && "pt-8")}>
           <QrShareAvatar src={avatarImageSrc} />
 
-          <div className="relative w-full overflow-hidden rounded-2xl bg-forge-deep-panel p-5 shadow-xl ring-1 ring-white/10">
-            <DialogClose className="absolute top-4 right-4 z-50 flex size-10 items-center justify-center rounded-full text-text-dark-secondary transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/60">
+          <div
+            className={cn(
+              "relative grid w-full gap-4 overflow-hidden rounded-2xl border border-border/50 bg-popover p-5 shadow-black/10 shadow-xl",
+              avatarImageSrc && "pt-10",
+            )}
+          >
+            <DialogClose className="absolute top-4 right-4 z-50 flex size-9 items-center justify-center rounded-full text-slate-muted transition-colors hover:bg-foreground/6 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/60">
               <X className="size-4" />
               <span className="sr-only">Close</span>
             </DialogClose>
@@ -241,22 +206,46 @@ export function QrShareDialog({
               title={title}
             />
 
-            <div
-              className={getQrCodeFrameClassName({
-                avatarSrc,
-                description,
-                title,
-              })}
-            >
-              <QrShareCodeButton
-                canShare={canShare}
-                onShare={handleShare}
-                shareTitle={shareTitle}
-                url={url}
-              />
-            </div>
+            <QrShareCode shareTitle={shareTitle} url={url} />
 
             <QrShareBottomText bottomText={bottomText} />
+
+            <p className="truncate text-center text-slate-muted text-xs">
+              {getShareDestination(url)}
+            </p>
+
+            <div
+              className={cn(
+                "grid gap-2",
+                canShare ? "grid-cols-2" : "grid-cols-1",
+              )}
+            >
+              <Button
+                type="button"
+                variant="outline"
+                loading={isCopying}
+                onClick={() => {
+                  void handleCopy();
+                }}
+                className="rounded-xl"
+              >
+                <Copy className="size-4" aria-hidden="true" />
+                Copy link
+              </Button>
+              {canShare ? (
+                <Button
+                  type="button"
+                  variant="primary"
+                  onClick={() => {
+                    void handleShare();
+                  }}
+                  className="rounded-xl"
+                >
+                  <Share className="size-4" aria-hidden="true" />
+                  Share
+                </Button>
+              ) : null}
+            </div>
           </div>
         </div>
       </DialogContent>

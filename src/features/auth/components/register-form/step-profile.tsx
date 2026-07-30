@@ -3,8 +3,8 @@ import { useFormContext } from "react-hook-form";
 import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
-import { AgeGenderFields } from "@/shared/components/profile/age-gender-fields";
 import { DateOfBirthField } from "@/shared/components/profile/date-of-birth-field";
+import { GenderField } from "@/shared/components/profile/gender-field";
 import { Button } from "@/shared/components/ui/button";
 import {
   FormControl,
@@ -34,12 +34,12 @@ export function StepProfile({
     <div className="flex flex-col gap-4">
       <DateOfBirthField control={control} name="dateOfBirth" />
 
-      <AgeGenderFields
-        ageName="age"
-        ageValueMode="number"
-        control={control}
-        genderName="gender"
-      />
+      <GenderField control={control} name="gender" />
+
+      <p className="text-center text-slate-muted text-xs">
+        Your age is calculated automatically. Age and gender can appear on your
+        profile.
+      </p>
 
       <FormField
         control={control}

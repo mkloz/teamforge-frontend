@@ -26,19 +26,25 @@ export function NotificationsDrawerHeader({
   return (
     <div
       className={cn(
-        "flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 pt-4",
+        "relative z-20 flex shrink-0 items-center justify-between gap-3 bg-canvas/92 px-5 pt-4 backdrop-blur-md",
         headerState.containerClassName,
       )}
     >
       <div className="min-w-0 flex-1">
-        <h2 className="font-bold text-ink text-lg leading-tight tracking-tight">
+        <p className="font-bold text-ink text-xl leading-tight tracking-tight">
           Notifications
-        </h2>
-        <p className="mt-1 text-slate-muted text-xs">
+        </p>
+        <p className="mt-1 flex items-center gap-1.5 text-slate-muted text-xs">
+          {count > 0 && !selectedNotification ? (
+            <span
+              className="size-1.5 rounded-full bg-forge-teal"
+              aria-hidden="true"
+            />
+          ) : null}
           {headerState.countLabel}
         </p>
       </div>
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 items-center gap-1">
         {headerState.showListActions ? (
           <NotificationsListHeaderActions
             count={count}
@@ -62,13 +68,13 @@ export function NotificationsDrawerHeader({
           tone="info"
         />
         <Button
-          variant="accentGhost"
+          variant="ghost"
           size="icon"
           onClick={onClose}
           aria-label="Close notifications"
-          className="size-11 p-0 [@media(pointer:fine)]:size-10"
+          className="size-10 rounded-full p-0 text-slate-muted hover:text-ink [@media(pointer:fine)]:size-9"
         >
-          <X className="size-5 shrink-0" strokeWidth={2} aria-hidden="true" />
+          <X className="size-4.5 shrink-0" strokeWidth={2} aria-hidden="true" />
         </Button>
       </div>
     </div>

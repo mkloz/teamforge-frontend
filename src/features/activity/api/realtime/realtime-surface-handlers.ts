@@ -17,8 +17,9 @@ export function applyRealtimeChatRead(
 export function applyRealtimePresenceChanged(
   userId: string,
   onlineStatus: OnlineStatus,
+  lastSeenAt: string | null,
 ) {
-  ActivitySurfaceCache.applyPresenceChanged(userId, onlineStatus);
+  ActivitySurfaceCache.applyPresenceChanged(userId, onlineStatus, lastSeenAt);
 }
 
 export function applyRealtimeFriendshipUpdate(

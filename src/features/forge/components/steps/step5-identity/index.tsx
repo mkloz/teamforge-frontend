@@ -56,45 +56,65 @@ export function Step5Identity({
   };
 
   return (
-    <div className="flex flex-col gap-8 pb-10">
-      <GroupIdentityFields
-        groupName={groupName}
-        onGroupNameChange={(v) => onGroupNameChange?.(v)}
-        groupDescription={groupDescription}
-        onGroupDescriptionChange={(v) => onGroupDescriptionChange?.(v)}
-        selectedActivity={activityTitle}
-        subtitle=""
-      />
+    <div className="grid gap-8 pb-10 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
+      <div className="flex min-w-0 flex-col">
+        <section className="pb-7">
+          <GroupIdentityFields
+            groupName={groupName}
+            onGroupNameChange={(v) => onGroupNameChange?.(v)}
+            groupDescription={groupDescription}
+            onGroupDescriptionChange={(v) => onGroupDescriptionChange?.(v)}
+            planTitle={planTitle}
+            selectedActivity={activityTitle}
+            heading="Name and description"
+            subtitle="Give members a clear name and a short reason to belong."
+          />
+        </section>
 
-      <PlanPhotoSection
-        activePreset={activePreset}
-        coverImage={coverImage}
-        coverInputRef={coverInputRef}
-        coverUploadError={coverUploadError}
-        isCoverUploading={isCoverUploading}
-        isOnline={isOnline}
-        templateCoverImage={templateCoverImage}
-        onCoverFiles={handleCoverFiles}
-        onCoverImageChange={onCoverImageChange}
-      />
+        <section className="border-border/35 border-t pt-7">
+          <div className="mb-5 px-0.5">
+            <h3 className="font-bold text-base text-foreground">
+              Visual identity
+            </h3>
+            <p className="mt-1 text-muted-foreground text-sm leading-relaxed">
+              Choose the plan cover, then add a recognisable group icon.
+            </p>
+          </div>
 
-      <GroupAvatarSection
-        avatarImage={avatarImage}
-        avatarInputRef={avatarInputRef}
-        avatarUploadError={avatarUploadError}
-        groupName={groupName}
-        isAvatarUploading={isAvatarUploading}
-        isOnline={isOnline}
-        onAvatarFiles={handleAvatarFiles}
-        onAvatarImageChange={onAvatarImageChange}
-        planTitle={planTitle}
-      />
+          <div className="flex flex-col gap-7">
+            <PlanPhotoSection
+              activePreset={activePreset}
+              coverImage={coverImage}
+              coverInputRef={coverInputRef}
+              coverUploadError={coverUploadError}
+              isCoverUploading={isCoverUploading}
+              isOnline={isOnline}
+              templateCoverImage={templateCoverImage}
+              onCoverFiles={handleCoverFiles}
+              onCoverImageChange={onCoverImageChange}
+            />
+
+            <GroupAvatarSection
+              avatarImage={avatarImage}
+              avatarInputRef={avatarInputRef}
+              avatarUploadError={avatarUploadError}
+              groupName={groupName}
+              isAvatarUploading={isAvatarUploading}
+              isOnline={isOnline}
+              onAvatarFiles={handleAvatarFiles}
+              onAvatarImageChange={onAvatarImageChange}
+              planTitle={planTitle}
+            />
+          </div>
+        </section>
+      </div>
 
       <IdentityPreviewCard
         activePreset={activePreset}
         activityTitle={activityTitle}
         avatarImage={avatarImage}
         coverImage={coverImage}
+        groupDescription={groupDescription}
         groupName={groupName}
         isImageAvatar={isImageAvatar}
         planTitle={planTitle}

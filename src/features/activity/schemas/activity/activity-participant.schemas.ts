@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   userAvatarMediaField,
   userIdentitySummaryFields,
+  userOptionalTrustScoreField,
   userPersonalityScoreFields,
   userPresenceFields,
   userProfileSummaryFields,
@@ -16,6 +17,7 @@ export const activityParticipantSchema = z.object({
   personalityType: personalityTypeSchema.nullable().optional(),
   ...userPersonalityScoreFields,
   ...userPresenceFields,
+  ...userOptionalTrustScoreField,
   lastReadMessageId: z.string().nullable().optional(),
 });
 

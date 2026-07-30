@@ -21,8 +21,8 @@ export function SectionHeadingSkeleton() {
 
 export function SettingsDetailHeaderSkeleton() {
   return (
-    <div className="mb-7 border-border border-b pb-5 lg:mb-9 lg:pb-7">
-      <div className="fixed inset-x-0 top-0 z-50 border-border border-b bg-canvas px-4 py-2 lg:hidden">
+    <div className="mb-8 lg:mb-10">
+      <div className="fixed inset-x-0 top-0 z-50 border-border border-b bg-canvas px-3 py-2 sm:px-4 lg:hidden">
         <SkeletonButton className="h-8 w-24" />
       </div>
       <div className="min-w-0">
@@ -86,7 +86,7 @@ export function SettingsInputSkeleton({
 
 export function StatPillSkeleton() {
   return (
-    <div className="border-border border-l pl-4">
+    <div>
       <Skeleton className="h-3 w-20" />
       <Skeleton className="mt-2 h-5 w-24" />
     </div>
@@ -99,7 +99,7 @@ export function PreferenceRowSkeleton({
   tone?: "default" | "teal";
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-border border-b py-4">
+    <div className="flex items-center justify-between gap-3 rounded-xl bg-muted/30 p-3 sm:gap-4 sm:p-4">
       <SkeletonText
         className="min-w-0 flex-1"
         lines={2}

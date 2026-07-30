@@ -8,7 +8,7 @@ import {
   updateAutoForgeRequestInputSchema,
 } from "@/features/forge/schemas/auto-forge-request.schema";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
-import { getFriends as sharedGetFriends } from "@/shared/api/friendship-membership-api";
+import { getFriendsPage as sharedGetFriendsPage } from "@/shared/api/friendship-membership-api";
 import {
   getGroupById as sharedGetGroupById,
   updateGroup as sharedUpdateGroup,
@@ -137,8 +137,12 @@ export class ForgeApi {
     );
   }
 
-  static async getFriends() {
-    return sharedGetFriends(50);
+  static async getFriendsPage(page: number, search: string) {
+    return sharedGetFriendsPage({
+      limit: 20,
+      page,
+      search,
+    });
   }
 
   static async getRecentActivities() {

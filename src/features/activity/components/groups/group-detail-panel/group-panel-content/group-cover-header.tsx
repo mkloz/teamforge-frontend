@@ -77,15 +77,13 @@ function GroupCoverImageLayer({ group }: { group: Group }) {
           media={group.plan?.coverImageMedia ?? null}
           alt={`${group.name} cover`}
           imageClassName={cn(
-            "transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
+            "transition-transform duration-300 ease-out motion-reduce:transition-none",
             "transform-[translate3d(0,var(--collapsible-panel-image-y,0px),0)_scale(var(--collapsible-panel-image-scale,1))] origin-[center_top]",
           )}
           loading="eager"
-          loadingClassName="bg-canvas/35"
-          loadingComponent={null}
+          showLoadingState={false}
         />
       </div>
-      <div className="absolute inset-0 bg-linear-to-t from-canvas via-canvas/20 to-ink/20" />
     </div>
   );
 }

@@ -1,30 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { Brain, RefreshCcw, Tags } from "lucide-react";
 import type { CandidateAvailabilityState } from "@/features/forge/public/candidate-availability";
 import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
-import { ActivityInviteAvailabilityControl } from "@/features/settings/components/settings-profile-form/activity-invite-availability-control";
-import { CandidateAvailabilityControl } from "@/features/settings/components/settings-profile-form/candidate-availability-control";
+import { GroupReachabilityControl } from "@/features/settings/components/settings-profile-form/group-reachability-control";
+import { MatchingProfileCard } from "@/features/settings/components/settings-profile-form/matching-profile-card";
 import {
   OfflineSettingsNotice,
   PreferenceStatusMessage,
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
-import {
-  MatchingThresholdControl,
-  StatPill,
-} from "@/features/settings/components/settings-profile-form/settings-form-controls";
-import { normalizeTrustScore } from "@/features/settings/components/settings-profile-form/settings-formatters";
+import { MatchingThresholdControl } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import type { ActivityInviteAvailabilityState } from "@/features/settings/hooks/use-activity-invite-availability";
-import { personalityAssessmentQueryOptions } from "@/shared/api/personality-assessment-query";
 import { Button } from "@/shared/components/ui/button";
 import { Notice } from "@/shared/components/ui/notice";
-import { StatusPill } from "@/shared/components/ui/status-pill";
-import {
-  buildInterestsEditNavigation,
-  buildPersonalityEditNavigation,
-} from "@/shared/navigation";
 import type { NotificationPreferences, User } from "@/shared/schemas";
-import type { PersonalityAssessmentState } from "@/shared/schemas/personality-assessment";
 
 interface MatchingSettingsSectionProps {
   activityInviteAvailability: ActivityInviteAvailabilityState;
@@ -45,16 +31,12 @@ type MatchingPreferenceValues = Pick<
   NotificationPreferences,
   "minCompatibilityScore"
 >;
-type UserInterest = NonNullable<User["interests"]>[number];
-
 interface MatchingPreferenceControlsProps {
   disabled: boolean;
   notificationPreferences: NotificationPreferences | null;
   onChange: (values: MatchingPreferenceValues) => Promise<void>;
   savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
 }
-
-const MAX_INTERESTS_PREVIEW = 12;
 
 export function MatchingSettingsSection({
   activityInviteAvailability,
@@ -77,11 +59,8 @@ export function MatchingSettingsSection({
     });
 
   return (
-    <section className="flex flex-col gap-8">
-      <div className="flex justify-end">
-        <MatchingStats currentUser={currentUser} />
-      </div>
-
+    <section className="flex flex-col gap-4">
+      <PreferenceStatusMessage error={error} />
       {!isOnline ? (
         <OfflineSettingsNotice message="Reconnect before changing group proposal settings." />
       ) : null}
@@ -90,18 +69,10 @@ export function MatchingSettingsSection({
         <CompatibilityInputLockNotice lock={compatibilityInputLock} />
       ) : null}
 
-      <CandidateAvailabilityControl
-        hasSavedLocation={
-          currentUser?.locationLat != null && currentUser.locationLng != null
-        }
-        state={candidateAvailability}
-      />
-
-      <ActivityInviteAvailabilityControl
-        hasSavedLocation={
-          currentUser?.locationLat != null && currentUser.locationLng != null
-        }
-        state={activityInviteAvailability}
+      <MatchingProfileCard
+        currentUser={currentUser}
+        interestsDisabled={compatibilityInputLock.isBlocked}
+        interestsDisabledReason={compatibilityInputLock.message}
       />
 
       <MatchingPreferenceControls
@@ -115,46 +86,14 @@ export function MatchingSettingsSection({
         savingNotificationPreferenceKeys={savingNotificationPreferenceKeys}
       />
 
-      <PreferenceStatusMessage error={error} />
-
-      <SavedInterestsPreview interests={currentUser?.interests} />
-
-      <MatchingEditActions
-        interestsDisabled={compatibilityInputLock.isBlocked}
-        interestsDisabledReason={compatibilityInputLock.message}
+      <GroupReachabilityControl
+        activityInvites={activityInviteAvailability}
+        candidateProposals={candidateAvailability}
+        hasSavedLocation={
+          currentUser?.locationLat != null && currentUser.locationLng != null
+        }
       />
     </section>
-  );
-}
-
-function MatchingStats({ currentUser }: { currentUser: User | undefined }) {
-  const personalityAssessment = useQuery(personalityAssessmentQueryOptions());
-
-  return (
-    <div className="grid gap-3">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <StatPill
-          label="Personality type"
-          value={getPersonalityStatusLabel(personalityAssessment)}
-        />
-        <StatPill label="Trust score" value={getTrustScoreLabel(currentUser)} />
-      </div>
-      {personalityAssessment.isError ? (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="justify-self-start"
-          onClick={() => void personalityAssessment.refetch()}
-        >
-          <RefreshCcw className="size-4" aria-hidden="true" />
-          Retry personality status
-        </Button>
-      ) : personalityAssessment.isFetching && personalityAssessment.data ? (
-        <p className="text-slate-muted text-xs" role="status">
-          Refreshing personality status
-        </p>
-      ) : null}
-    </div>
   );
 }
 
@@ -173,7 +112,7 @@ function MatchingPreferenceControls({
   }
 
   return (
-    <div className="grid gap-0 border-border border-t">
+    <div>
       <MatchingThresholdControl
         value={notificationPreferences?.minCompatibilityScore ?? 0}
         disabled={getMatchingPreferenceDisabled(
@@ -212,96 +151,6 @@ function getCompatibilityScoreValues(
   };
 }
 
-function SavedInterestsPreview({
-  interests,
-}: {
-  interests: User["interests"];
-}) {
-  const visibleInterests = interests?.slice(0, MAX_INTERESTS_PREVIEW) ?? [];
-
-  return (
-    <div className="border-border border-t pt-6">
-      <p className="font-semibold text-slate-muted text-xs">Interests</p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {visibleInterests.length ? (
-          visibleInterests.map((interest) => (
-            <InterestPill key={interest.id} interest={interest} />
-          ))
-        ) : (
-          <div className="flex min-h-24 w-full items-center justify-center text-center">
-            <p className="text-slate-muted text-sm">
-              No interests have been saved yet.
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function InterestPill({ interest }: { interest: UserInterest }) {
-  return (
-    <StatusPill
-      size="sm"
-      tone="teal"
-      surface="outline"
-      className="bg-primary/8 px-3 py-1 font-semibold"
-    >
-      {interest.name}
-    </StatusPill>
-  );
-}
-
-function MatchingEditActions({
-  interestsDisabled,
-  interestsDisabledReason,
-}: {
-  interestsDisabled: boolean;
-  interestsDisabledReason: string | null;
-}) {
-  return (
-    <div className="border-border border-t pt-5">
-      <div className="responsive-action-grid grid w-full gap-3 md:max-w-92">
-        <Button asChild variant="outline" size="compact" className="min-w-0">
-          <Link
-            {...buildPersonalityEditNavigation({
-              returnTo: "/settings",
-              returnSection: "matching",
-            })}
-          >
-            <Brain className="size-4" aria-hidden="true" />
-            Review personality
-          </Link>
-        </Button>
-        {interestsDisabled ? (
-          <Button
-            variant="outline"
-            size="compact"
-            className="min-w-0"
-            disabled
-            title={interestsDisabledReason ?? undefined}
-          >
-            <Tags className="size-4" aria-hidden="true" />
-            Update interests
-          </Button>
-        ) : (
-          <Button asChild variant="outline" size="compact" className="min-w-0">
-            <Link
-              {...buildInterestsEditNavigation({
-                returnTo: "/settings",
-                returnSection: "matching",
-              })}
-            >
-              <Tags className="size-4" aria-hidden="true" />
-              Update interests
-            </Link>
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function CompatibilityInputLockNotice({
   lock,
 }: {
@@ -324,32 +173,6 @@ function CompatibilityInputLockNotice({
   );
 }
 
-function getPersonalityStatusLabel(query: {
-  data: PersonalityAssessmentState | undefined;
-  isError: boolean;
-  isPending: boolean;
-}) {
-  if (query.isPending) return "Loading…";
-  if (query.isError) return "Unavailable";
-
-  const state = query.data;
-  if (state?.draft) {
-    return `${state.draft.personalityType} draft`;
-  }
-
-  if (state?.publicProfile) {
-    return `${state.publicProfile.personalityType} saved`;
-  }
-
-  if (state?.current) {
-    return state.current.provenance === "LEGACY_CLIENT_RESULT"
-      ? `${state.current.personalityType} · retake needed`
-      : `${state.current.personalityType} saved`;
-  }
-
-  return "Not set";
-}
-
 function getMatchingControlsDisabled({
   isLoadingNotificationPreferences,
   isOnline,
@@ -361,8 +184,4 @@ function getMatchingControlsDisabled({
   return (
     !isOnline || isLoadingNotificationPreferences || !notificationPreferences
   );
-}
-
-function getTrustScoreLabel(currentUser: User | undefined) {
-  return currentUser ? `${normalizeTrustScore(currentUser.trustScore)}%` : "0%";
 }

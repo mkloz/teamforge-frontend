@@ -24,7 +24,7 @@ export function getForgeStepMetadata(fw: ForgeWizardState) {
             : "We found a group!",
     },
     6: {
-      title: "Give it a look",
+      title: "Group details",
     },
     7: {
       title: "Ready to go!",

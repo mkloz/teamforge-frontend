@@ -22,6 +22,7 @@ export function ForwardMessageDialog({
   open,
 }: ForwardMessageDialogProps) {
   const [pendingTargetId, setPendingTargetId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const messagesToForward = getMessagesToForward({ message, messages });
   const sourceChatId = getForwardSourceChatId(messagesToForward);
   const forwardDialogModel = useForwardDialogModel({
@@ -44,19 +45,31 @@ export function ForwardMessageDialog({
     });
   }
 
+  function handleOpenChange(nextOpen: boolean) {
+    if (!nextOpen) {
+      setQuery("");
+    }
+    onOpenChange(nextOpen);
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         className={getActivityPopupPanelClass(
-          "flex max-h-[min(30rem,calc(100dvh-2rem))] w-[calc(100%-2rem)] max-w-sm flex-col gap-0 overflow-hidden rounded-lg p-0 [&>button]:shadow-none",
+          "flex max-h-[min(36rem,calc(100dvh-1.5rem))] w-[calc(100%-1.5rem)] max-w-md flex-col gap-0 overflow-hidden rounded-2xl p-0 [&>button]:top-4 [&>button]:right-4 [&>button]:shadow-none",
         )}
       >
-        <ForwardDialogHeader messageCount={messagesToForward.length} />
+        <ForwardDialogHeader
+          messageCount={messagesToForward.length}
+          onQueryChange={setQuery}
+          query={query}
+        />
         <ForwardDialogBody
           forwardDialogModel={forwardDialogModel}
           isOnline={isOnline}
           onForward={handleForward}
           pendingTargetId={pendingTargetId}
+          query={query}
         />
       </DialogContent>
     </Dialog>

@@ -24,6 +24,7 @@ const LazyLoadedAttentionQueue = lazy(() =>
 );
 
 interface AttentionQueueProps {
+  maxVisibleItems?: number;
   focusedPanel?: HomePanel | null;
   focusedInviteId?: string | null;
   focusedRequestId?: string | null;
@@ -34,6 +35,7 @@ interface AttentionQueueProps {
 }
 
 export function AttentionQueue({
+  maxVisibleItems,
   focusedPanel = null,
   focusedInviteId = null,
   focusedRequestId = null,
@@ -79,12 +81,25 @@ export function AttentionQueue({
   }
 
   if (!shouldLoadInteractiveQueue) {
-    return <AttentionQueueShell focusRef={focusRef} />;
+    return (
+      <AttentionQueueShell
+        focusRef={focusRef}
+        maxVisibleItems={maxVisibleItems}
+      />
+    );
   }
 
   return (
-    <Suspense fallback={<AttentionQueueShell focusRef={focusRef} />}>
+    <Suspense
+      fallback={
+        <AttentionQueueShell
+          focusRef={focusRef}
+          maxVisibleItems={maxVisibleItems}
+        />
+      }
+    >
       <LazyLoadedAttentionQueue
+        maxVisibleItems={maxVisibleItems}
         focusedPanel={focusedPanel}
         focusedInviteId={focusedInviteId}
         focusedRequestId={focusedRequestId}
@@ -99,8 +114,10 @@ export function AttentionQueue({
 
 function AttentionQueueShell({
   focusRef,
+  maxVisibleItems,
 }: {
   focusRef?: RefObject<HTMLElement | null>;
+  maxVisibleItems?: number;
 }) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const scrollRef = focusRef ?? sectionRef;
@@ -119,9 +136,9 @@ function AttentionQueueShell({
 
       <ul
         aria-label="Things that need attention"
-        className="mt-4 grid min-w-0 list-none border-border/55 border-y p-0"
+        className="mt-4 grid min-w-0 list-none gap-2.5 p-0"
       >
-        <HomeAttentionQueueRowsSkeleton />
+        <HomeAttentionQueueRowsSkeleton limit={maxVisibleItems} />
       </ul>
     </section>
   );

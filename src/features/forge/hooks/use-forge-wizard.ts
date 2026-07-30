@@ -19,6 +19,7 @@ import {
   getNextStep,
   getPreviousStep,
 } from "@/features/forge/lib/forge-wizard";
+import { isRecentActivityTemplateId } from "@/features/forge/lib/recent-activity/recent-activity-template-id";
 import {
   cloneForgeWizardDraft,
   useForgeWizardDraftStore,
@@ -167,11 +168,14 @@ export function useForgeWizard({
 
   function goBack() {
     const previousStep =
-      state.forgeMode === "MANUAL" &&
-      stepRef.current === 6 &&
-      state.forgeResult === "SUCCESS"
-        ? 4
-        : getPreviousStep(stepRef.current);
+      stepRef.current === 3 &&
+      isRecentActivityTemplateId(state.appliedTemplateId)
+        ? 1
+        : state.forgeMode === "MANUAL" &&
+            stepRef.current === 6 &&
+            state.forgeResult === "SUCCESS"
+          ? 4
+          : getPreviousStep(stepRef.current);
 
     dispatch({
       type: "set-step",

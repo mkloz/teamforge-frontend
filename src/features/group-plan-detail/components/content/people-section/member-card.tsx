@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Handshake } from "lucide-react";
+import { Handshake, type LucideIcon, ShieldCheck, Target } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { AdminCrownBadge } from "@/shared/components/common/admin-crown-badge";
-import { Avatar } from "@/shared/components/common/avatar";
+import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
+import { PresenceLabel } from "@/shared/components/common/presence-label";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
@@ -70,6 +71,12 @@ function MemberAvatar({
         imageSize={64}
         className="size-10 ring-1 ring-border/40"
       />
+      {member.onlineStatus ? (
+        <AvatarStatus
+          status={member.onlineStatus}
+          borderClassName="border-canvas"
+        />
+      ) : null}
       {isHost ? (
         <AdminCrownBadge
           aria-label={member.role === "ADMIN" ? "Host" : "Moderator"}
@@ -103,20 +110,128 @@ function MemberIdentity({
           You
         </StatusPill>
       ) : null}
+      <PresenceLabel
+        lastSeenAt={member.lastSeenAt}
+        status={member.onlineStatus}
+      />
     </div>
   );
 }
 
 function MemberMeta({ member }: { member: GroupPlanDetailMember }) {
-  if (!member.knownConnection) {
+  const metrics = getMemberMetrics(member);
+
+  return (
+    <div className="mt-1.5 flex min-w-0 items-center gap-1.5 overflow-hidden text-xs">
+      {member.personalityType ? (
+        <span className="shrink-0 font-semibold text-muted-foreground">
+          {member.personalityType}
+        </span>
+      ) : null}
+      {metrics.map((metric, index) => (
+        <MemberMetric
+          key={metric.label}
+          metric={metric}
+          showSeparator={index > 0 || Boolean(member.personalityType)}
+        />
+      ))}
+      {member.knownConnection ? (
+        <KnownConnectionIndicator label={member.knownConnection} />
+      ) : null}
+    </div>
+  );
+}
+
+interface MemberMetricViewModel {
+  icon: LucideIcon;
+  label: string;
+  tone: "muted" | "teal";
+  value: string;
+}
+
+function MemberMetric({
+  metric,
+  showSeparator,
+}: {
+  metric: MemberMetricViewModel;
+  showSeparator: boolean;
+}) {
+  const Icon = metric.icon;
+
+  return (
+    <>
+      {showSeparator ? (
+        <span
+          className="size-1 shrink-0 rounded-full bg-muted-foreground/35"
+          aria-hidden="true"
+        />
+      ) : null}
+      <StatusPill
+        icon={Icon}
+        iconClassName="size-3.5"
+        tone={metric.tone === "teal" ? "teal" : "neutral"}
+        surface="ghost"
+        className={cn(
+          "gap-1 p-0 text-xs leading-tight",
+          metric.tone !== "teal" && "text-muted-foreground",
+        )}
+        title={`${metric.label} ${metric.value}`}
+      >
+        <span className="sr-only">{metric.label}</span>
+        <span>{metric.value}</span>
+      </StatusPill>
+    </>
+  );
+}
+
+function getMemberMetrics(member: GroupPlanDetailMember) {
+  return [
+    getMemberMetric({
+      icon: ShieldCheck,
+      label: "Trust",
+      score: member.trustScore,
+    }),
+    getMemberMetric({
+      icon: Target,
+      label: "Fit",
+      score: member.compatibilityScore,
+    }),
+  ].filter(isMemberMetric);
+}
+
+function getMemberMetric({
+  icon,
+  label,
+  score,
+}: {
+  icon: LucideIcon;
+  label: string;
+  score: number | null;
+}): MemberMetricViewModel | null {
+  const percent = formatPercent(score);
+
+  return percent === null
+    ? null
+    : {
+        icon,
+        label,
+        tone: percent >= 80 ? "teal" : "muted",
+        value: `${percent}%`,
+      };
+}
+
+function isMemberMetric(
+  metric: MemberMetricViewModel | null,
+): metric is MemberMetricViewModel {
+  return metric !== null;
+}
+
+function formatPercent(score: number | null) {
+  if (typeof score !== "number") {
     return null;
   }
 
-  return (
-    <div className="mt-1.5 flex min-w-0 items-center gap-1.5">
-      <KnownConnectionIndicator label={member.knownConnection} />
-    </div>
-  );
+  return Math.round(score > 0 && score <= 1 ? score * 100 : score);
 }
 
 function shouldShowMemberAction({

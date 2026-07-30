@@ -16,6 +16,7 @@ function invalidateActivityGroupSurfaces() {
   return invalidateQueries([
     APP_QUERY_KEYS.activity.groups,
     APP_QUERY_KEYS.activity.chats,
+    APP_QUERY_KEYS.activity.pendingInvitations,
     APP_QUERY_KEYS.activity.groupSelection,
   ]);
 }
@@ -126,6 +127,7 @@ export function invalidateGroupPlanDetailSurfaces() {
 
 export function invalidateInvitationSurfaces() {
   return invalidateQueries([
+    APP_QUERY_KEYS.activity.pendingInvitations,
     APP_QUERY_KEYS.home.invitations,
     APP_QUERY_KEYS.home.sentInvitations,
     APP_QUERY_KEYS.notifications.unreadCount,

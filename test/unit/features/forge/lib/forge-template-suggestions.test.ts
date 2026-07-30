@@ -2,6 +2,7 @@ import { createInterest, createUser } from "@test/support/factories/user";
 import { describe, expect, it } from "vitest";
 import {
   buildCategoryFitHighlights,
+  buildCrossCategoryTemplateSuggestions,
   buildTemplateSuggestions,
 } from "@/features/forge/lib/forge-template-suggestions";
 
@@ -137,5 +138,30 @@ describe("forge template personalization", () => {
 
   it("does not produce category highlights without real profile signals", () => {
     expect(buildCategoryFitHighlights(createUser({ city: null }))).toEqual([]);
+  });
+
+  it("builds profile-ranked landing recommendations from different categories", () => {
+    const user = createUser({
+      personalityType: "ENTP",
+      oceanO: 82,
+      interests: [
+        createInterest("AI", ["automation", "machine learning"]),
+        createInterest("Board games", ["tabletop"]),
+        createInterest("Photography", ["photo walks"]),
+      ],
+    });
+    const recommendations = buildCrossCategoryTemplateSuggestions(user);
+    const profileCategoryIds = buildCategoryFitHighlights(user).map(
+      (item) => item.categoryId,
+    );
+
+    expect(recommendations).toHaveLength(3);
+    expect(new Set(recommendations.map((item) => item.categoryId)).size).toBe(
+      3,
+    );
+    expect(recommendations.map((item) => item.categoryId)).toEqual(
+      profileCategoryIds,
+    );
+    expect(recommendations.every((item) => item.coverImage)).toBe(true);
   });
 });

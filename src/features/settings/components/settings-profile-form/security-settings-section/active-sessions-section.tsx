@@ -1,9 +1,15 @@
-import { Shield } from "lucide-react";
-import { EmptyActiveSessionsVisual } from "@/features/settings/assets/empty-active-sessions";
+import { MonitorX, Shield } from "lucide-react";
 import { SessionRow } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { SettingsActiveSessionsSkeleton } from "@/features/settings/components/settings-section-skeletons";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import {
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { Notice } from "@/shared/components/ui/notice";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { AuthSession } from "@/shared/schemas";
 
 interface ActiveSessionsSectionProps {
@@ -40,17 +46,20 @@ export function ActiveSessionsSection({
   });
 
   return (
-    <section className="border-border border-t pt-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <section>
+      <div className="flex flex-col gap-4 px-1 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-2xl">
-          <h3 className="font-semibold text-ink text-lg">
-            Active sessions
+          <div className="flex items-center gap-2">
+            <h2 className="font-bold text-ink text-xl">Active devices</h2>
             {!isLoadingSessions && !sessionsError ? (
-              <span className="ml-2 font-medium text-slate-muted text-sm">
+              <StatusPill size="xs" surface="soft" tone="neutral" numeric>
                 {sessions.length}
-              </span>
+              </StatusPill>
             ) : null}
-          </h3>
+          </div>
+          <p className="mt-1 text-slate-muted text-sm leading-relaxed">
+            Review browsers and devices that can currently access your account.
+          </p>
         </div>
 
         <RevokeOtherSessionsAction
@@ -101,7 +110,8 @@ function RevokeOtherSessionsAction({
         <Button
           type="button"
           variant="outline"
-          className="w-full md:w-auto"
+          size="sm"
+          className="w-full sm:w-auto"
           disabled={viewState.revokeOtherDisabled}
         >
           <Shield size={14} />
@@ -130,7 +140,7 @@ function ActiveSessionsContent({
   sessionsError: string | null;
 }) {
   return (
-    <div className="mt-5 border-border border-t">
+    <div className="mt-5">
       {isLoadingSessions ? (
         <SettingsActiveSessionsSkeleton />
       ) : sessionsError ? (
@@ -149,8 +159,6 @@ function ActiveSessionsContent({
   );
 }
 
-const INITIAL_SESSION_COUNT = 5;
-
 function SessionRows({
   isOnline,
   onRevokeSession,
@@ -165,12 +173,10 @@ function SessionRows({
   const orderedSessions = [...sessions].sort(
     (left, right) => Number(right.isCurrent) - Number(left.isCurrent),
   );
-  const initialSessions = orderedSessions.slice(0, INITIAL_SESSION_COUNT);
-  const remainingSessions = orderedSessions.slice(INITIAL_SESSION_COUNT);
 
   return (
-    <>
-      {initialSessions.map((session) => (
+    <GroupedMenuList aria-label="Active account sessions">
+      {orderedSessions.map((session) => (
         <SessionRow
           key={session.id}
           session={session}
@@ -179,26 +185,7 @@ function SessionRows({
           onRevoke={onRevokeSession}
         />
       ))}
-
-      {remainingSessions.length ? (
-        <details className="border-border border-b py-4">
-          <summary className="cursor-pointer font-semibold text-primary text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
-            Show {remainingSessions.length} more sessions
-          </summary>
-          <div className="mt-3 border-border border-t">
-            {remainingSessions.map((session) => (
-              <SessionRow
-                key={session.id}
-                session={session}
-                isOnline={isOnline}
-                isRevoking={revokingSessionId === session.id}
-                onRevoke={onRevokeSession}
-              />
-            ))}
-          </div>
-        </details>
-      ) : null}
-    </>
+    </GroupedMenuList>
   );
 }
 
@@ -208,20 +195,24 @@ function ActiveSessionsErrorMessage({
   sessionsError: string;
 }) {
   return (
-    <div className="flex min-h-32 items-center justify-center py-4 text-center">
-      <p className="text-destructive text-sm">{sessionsError}</p>
-    </div>
+    <Notice role="alert" tone="danger" size="md">
+      {sessionsError}
+    </Notice>
   );
 }
 
 function ActiveSessionsEmptyState() {
   return (
-    <div className="flex min-h-36 flex-col items-center justify-center gap-3 py-5 text-center sm:flex-row sm:gap-4 sm:text-left">
-      <EmptyActiveSessionsVisual className="h-6 w-auto shrink-0 text-foreground" />
-      <p className="text-slate-muted text-sm">
-        No active sessions are available right now.
-      </p>
-    </div>
+    <GroupedMenuList aria-label="Active account sessions">
+      <GroupedMenuItem>
+        <div className="flex min-h-20 items-center gap-3 px-3 py-3 sm:px-5">
+          <IconTile icon={MonitorX} size="lg" shape="circle" tone="neutral" />
+          <p className="text-slate-muted text-sm">
+            No active sessions are available right now.
+          </p>
+        </div>
+      </GroupedMenuItem>
+    </GroupedMenuList>
   );
 }
 

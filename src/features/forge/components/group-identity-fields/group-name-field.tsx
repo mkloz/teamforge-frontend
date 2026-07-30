@@ -22,7 +22,7 @@ export function GroupNameField({
   suggestions,
 }: GroupNameFieldProps) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex min-w-0 flex-col gap-1.5">
       <Label
         htmlFor={nameId}
         className="block font-semibold text-muted-foreground/70 text-xs"
@@ -60,7 +60,7 @@ export function GroupNameField({
       />
 
       {suggestions.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 pt-1">
+        <div className="flex max-w-full flex-wrap gap-1.5 pt-1">
           {suggestions.map((name) => (
             <Button
               key={name}

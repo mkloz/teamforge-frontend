@@ -23,6 +23,7 @@ export function handleRealtimePresenceChanged(payload: unknown) {
   ActivityRealtimeHandlers.applyPresenceChanged(
     parsed.user.id,
     parsed.onlineStatus,
+    parsed.user.lastSeenAt,
   );
 }
 

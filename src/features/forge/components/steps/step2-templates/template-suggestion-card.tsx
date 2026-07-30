@@ -1,17 +1,154 @@
-import { ArrowRight, Check, Users, Wifi } from "lucide-react";
+import {
+  ArrowUpRight,
+  Check,
+  type LucideIcon,
+  Users,
+  Wifi,
+} from "lucide-react";
 
 import { PlanCover } from "@/shared/components/common/plan-cover";
-import { IconTile } from "@/shared/components/ui/icon-tile";
-import {
-  StatusPill,
-  type StatusPillTone,
-} from "@/shared/components/ui/status-pill";
+import type { CompactBentoSlot } from "@/shared/components/ui/bento-grid";
 import { cn } from "@/shared/lib/utils";
 
 import { ICON_MAP } from "../step1-activity/activity-icon-map";
 import type { TemplateSuggestionCardProps } from "./types";
 
 type TemplateSuggestion = TemplateSuggestionCardProps["suggestion"];
+
+export function TemplateSuggestionCard({
+  active,
+  onTemplateSelect,
+  slot,
+  suggestion,
+}: TemplateSuggestionCardProps) {
+  const coverImage = getTemplateCoverImage(suggestion);
+  const CategoryIcon = ICON_MAP[suggestion.categoryId] ?? ICON_MAP.fallback;
+  const presentation = TEMPLATE_TILE_PRESENTATION[slot];
+  const isOnline = suggestion.template.locationType === "ONLINE";
+  const isProfilePick = suggestion.badge === "Based on your profile";
+  const isRecommended = suggestion.badge === "Recommended";
+
+  function handleTemplateSelect() {
+    onTemplateSelect(
+      suggestion.id,
+      getTemplateSelectionPayload(suggestion, coverImage),
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={handleTemplateSelect}
+      className={cn(
+        "group relative size-full min-w-0 overflow-hidden rounded-2xl border bg-muted text-left transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal active:scale-[0.99]",
+        getTemplateBorderClassName({
+          active,
+          isProfilePick,
+          isRecommended,
+        }),
+      )}
+    >
+      <PlanCover
+        value={coverImage}
+        alt=""
+        className="absolute inset-0 size-full"
+        imageClassName="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+        fallbackComponent={<TemplateCoverFallback icon={CategoryIcon} />}
+      />
+      <div
+        className={cn(
+          "absolute inset-0 bg-linear-to-t from-black/90 via-black/25 to-black/15 transition-colors group-hover:from-black/95",
+          active && "bg-forge-teal/8",
+        )}
+      />
+
+      {isOnline ? (
+        <span className="absolute top-2.5 left-2.5 z-10 flex size-7 items-center justify-center rounded-full bg-black/60 text-white/90 ring-1 ring-white/12 backdrop-blur-sm">
+          <Wifi className="size-3.5" aria-hidden="true" />
+          <span className="sr-only">Online activity</span>
+        </span>
+      ) : null}
+
+      {active ? (
+        <span className="absolute top-2.5 right-2.5 z-10 flex size-7 items-center justify-center rounded-full bg-forge-teal text-white ring-1 ring-white/20">
+          <Check className="size-4" strokeWidth={2.5} aria-hidden="true" />
+          <span className="sr-only">Selected template</span>
+        </span>
+      ) : (
+        <ArrowUpRight
+          className="absolute top-3 right-3 z-10 size-4 text-white/85 drop-shadow transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white"
+          aria-hidden="true"
+        />
+      )}
+
+      {!active && isProfilePick ? (
+        <span className="sr-only">Profile pick</span>
+      ) : null}
+      {!active && isRecommended ? (
+        <span className="sr-only">Recommended template</span>
+      ) : null}
+
+      <div className="absolute inset-x-0 bottom-0 z-10 flex min-w-0 flex-col gap-1.5 p-3 pt-10 sm:p-3.5 sm:pt-12">
+        <h4
+          className={cn(
+            "line-clamp-2 font-bold text-white leading-snug drop-shadow-sm",
+            presentation.titleClassName,
+          )}
+        >
+          {suggestion.title}
+        </h4>
+
+        {presentation.showDescription ? (
+          <p className="line-clamp-2 text-white/78 text-xs leading-relaxed">
+            {suggestion.description}
+          </p>
+        ) : null}
+
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1 text-white/75 text-xs">
+          <span className="inline-flex min-w-0 items-center gap-1.5">
+            <Users className="size-3.5 shrink-0" aria-hidden="true" />
+            <span className="truncate">
+              {getTemplateGroupSizeText(suggestion.template)}
+            </span>
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function getTemplateBorderClassName({
+  active,
+  isProfilePick,
+  isRecommended,
+}: {
+  active: boolean;
+  isProfilePick: boolean;
+  isRecommended: boolean;
+}) {
+  if (active) {
+    return "border-2 border-forge-teal ring-2 ring-forge-teal/25";
+  }
+
+  if (isProfilePick) {
+    return "border-2 border-forge-teal hover:border-forge-teal";
+  }
+
+  if (isRecommended) {
+    return "border-2 border-spark-amber hover:border-spark-amber";
+  }
+
+  return "border-border/35 hover:border-forge-teal/45";
+}
+
+function TemplateCoverFallback({ icon: Icon }: { icon: LucideIcon }) {
+  return (
+    <div className="flex size-full items-center justify-center bg-primary/8">
+      <Icon className="size-10 text-primary/55" aria-hidden="true" />
+    </div>
+  );
+}
 
 function getTemplateCoverImage(suggestion: TemplateSuggestion) {
   return suggestion.coverImage ?? suggestion.template.coverImage;
@@ -25,119 +162,6 @@ function getTemplateSelectionPayload(
     ...suggestion.template,
     coverImage,
   };
-}
-
-function getTemplateBadgeTone(badge: string): StatusPillTone {
-  return badge === "Based on your profile" ? "teal" : "neutral";
-}
-
-function getTemplateBadgeClassName(badge: string) {
-  return cn(
-    badge === "Based on your profile" ? "bg-forge-teal/10" : "bg-muted",
-  );
-}
-
-function getTemplateCardClassName(active: boolean) {
-  return cn(
-    "group flex h-24 min-w-0 overflow-hidden rounded-lg border bg-card text-left transition-colors duration-200 hover:border-forge-teal/35 hover:bg-forge-teal/5 active:scale-95",
-    active
-      ? "border-forge-teal/65 bg-forge-teal/10 ring-1 ring-forge-teal/20"
-      : "border-border/40",
-  );
-}
-
-function getTemplateTitleClassName(active: boolean) {
-  return cn(
-    "min-w-0 flex-1 truncate font-semibold text-sm leading-tight",
-    active ? "text-forge-teal" : "text-foreground",
-  );
-}
-
-export function TemplateSuggestionCard({
-  active,
-  onTemplateSelect,
-  suggestion,
-}: TemplateSuggestionCardProps) {
-  const Icon = ICON_MAP[suggestion.categoryId] ?? ICON_MAP.fallback;
-  const coverImage = getTemplateCoverImage(suggestion);
-  const handleTemplateSelect = () => {
-    onTemplateSelect(
-      suggestion.id,
-      getTemplateSelectionPayload(suggestion, coverImage),
-    );
-  };
-
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={handleTemplateSelect}
-      className={getTemplateCardClassName(active)}
-    >
-      <div className="relative w-20 shrink-0 overflow-hidden bg-muted sm:w-24">
-        <PlanCover
-          value={coverImage}
-          alt=""
-          className="size-full"
-          imageClassName="transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-foreground/10 transition-colors duration-200 group-hover:bg-foreground/0" />
-        <IconTile
-          icon={Icon}
-          shape="circle"
-          size="sm"
-          tone="none"
-          className="absolute top-2 left-2 bg-background/90 text-foreground shadow-sm backdrop-blur"
-          iconClassName="size-3"
-        />
-        {active && (
-          <IconTile
-            icon={Check}
-            shape="circle"
-            size="sm"
-            tone="teal"
-            className="absolute top-2 right-2 size-6 bg-forge-teal text-white shadow-sm"
-            iconClassName="size-3"
-          />
-        )}
-      </div>
-
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5 px-3 py-2.5">
-        <div className="flex min-w-0 items-center gap-2">
-          <p className={getTemplateTitleClassName(active)}>
-            {suggestion.title}
-          </p>
-          <ArrowRight
-            size={13}
-            className="shrink-0 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-forge-teal"
-          />
-        </div>
-        <p className="line-clamp-1 text-muted-foreground text-xs leading-snug">
-          {suggestion.description}
-        </p>
-
-        <div className="mt-auto flex items-center justify-between gap-2">
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold text-muted-foreground text-xs">
-              <Users aria-hidden="true" size={11} />
-              {getTemplateGroupSizeText(suggestion.template)}
-            </span>
-            <OnlineTemplatePill
-              locationType={suggestion.template.locationType}
-            />
-          </div>
-          <StatusPill
-            size="xs"
-            tone={getTemplateBadgeTone(suggestion.badge)}
-            surface="soft"
-            className={getTemplateBadgeClassName(suggestion.badge)}
-          >
-            {suggestion.badge}
-          </StatusPill>
-        </div>
-      </div>
-    </button>
-  );
 }
 
 function getTemplateGroupSizeText(template: TemplateSuggestion["template"]) {
@@ -154,25 +178,35 @@ function getTemplateGroupSizeText(template: TemplateSuggestion["template"]) {
     : `${template.fixedSize} people`;
 }
 
-function OnlineTemplatePill({
-  locationType,
-}: {
-  locationType: TemplateSuggestion["template"]["locationType"];
-}) {
-  if (locationType !== "ONLINE") {
-    return null;
+const TEMPLATE_TILE_PRESENTATION = {
+  lead: {
+    showDescription: true,
+    titleClassName: "text-base",
+  },
+  "center-top": {
+    showDescription: false,
+    titleClassName: "text-sm",
+  },
+  "right-rail": {
+    showDescription: false,
+    titleClassName: "text-sm",
+  },
+  "center-bottom": {
+    showDescription: false,
+    titleClassName: "text-sm",
+  },
+  "lower-left": {
+    showDescription: false,
+    titleClassName: "text-sm",
+  },
+  closing: {
+    showDescription: false,
+    titleClassName: "text-sm",
+  },
+} satisfies Record<
+  CompactBentoSlot,
+  {
+    showDescription: boolean;
+    titleClassName: string;
   }
-
-  return (
-    <StatusPill
-      icon={Wifi}
-      iconClassName="size-2.5"
-      size="xs"
-      tone="teal"
-      surface="soft"
-      className="gap-1 px-1.5"
-    >
-      Online
-    </StatusPill>
-  );
-}
+>;

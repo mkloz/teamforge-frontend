@@ -21,6 +21,7 @@ export function AddressAutocomplete({
   disabled,
   required,
   badge = "Location use",
+  badgeAction,
   hint = "TeamForge uses coordinates for nearby group formation. Public profiles can show your city, but not your coordinates.",
   className,
 }: AddressAutocompleteProps) {
@@ -44,6 +45,7 @@ export function AddressAutocomplete({
     handleInputKeyDown,
     closeSuggestions,
     clearLocation,
+    resetInputDraft,
     selectPrediction,
     useCurrentArea,
   } = useAddressAutocomplete({ value, onLocationSelect });
@@ -87,6 +89,17 @@ export function AddressAutocomplete({
     >
       <AddressAutocompleteLabelRow
         badge={badge}
+        badgeAction={
+          badgeAction
+            ? {
+                ...badgeAction,
+                onClick: () => {
+                  resetInputDraft();
+                  badgeAction.onClick();
+                },
+              }
+            : undefined
+        }
         inputId={inputId}
         label={label}
         required={required}

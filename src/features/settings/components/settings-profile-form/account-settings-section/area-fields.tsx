@@ -1,11 +1,9 @@
-import { MapPin } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import {
   AddressAutocomplete,
   type LocationValue,
 } from "@/shared/components/maps/address-autocomplete";
-import { FactItem } from "@/shared/components/ui/fact-item";
 import {
   FormControl,
   FormField,
@@ -28,10 +26,16 @@ const LOCATION_SET_OPTIONS = {
 export function AreaFields({ currentUser, disabled, form }: AreaFieldsProps) {
   const locationLat = form.watch("locationLat");
   const locationLng = form.watch("locationLng");
-  const cityLabel = currentUser?.city ?? "City not set";
+  const currentLocation = getSettingsProfileLocationValue({
+    city: form.watch("city"),
+    locationLat,
+    locationLng,
+  });
+  const savedLocation = getSavedSettingsProfileLocation(currentUser);
+  const hasEditedLocation = !areLocationsEqual(currentLocation, savedLocation);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-start">
+    <div>
       <FormField
         control={form.control}
         name="city"
@@ -42,6 +46,22 @@ export function AreaFields({ currentUser, disabled, form }: AreaFieldsProps) {
                 label="City"
                 placeholder="Search your city or area..."
                 disabled={disabled}
+                badge={
+                  hasEditedLocation && savedLocation
+                    ? savedLocation.city
+                    : "Location use"
+                }
+                badgeAction={
+                  hasEditedLocation && savedLocation
+                    ? {
+                        ariaLabel: `Reset location to ${savedLocation.city}`,
+                        onClick: () => {
+                          field.onChange(savedLocation.city);
+                          setSettingsProfileCoordinates(form, savedLocation);
+                        },
+                      }
+                    : undefined
+                }
                 value={getSettingsProfileLocationValue({
                   city: field.value,
                   locationLat,
@@ -56,16 +76,6 @@ export function AreaFields({ currentUser, disabled, form }: AreaFieldsProps) {
             <FormMessage />
           </FormItem>
         )}
-      />
-      <FactItem
-        icon={MapPin}
-        iconTone="teal"
-        iconTileClassName="bg-primary/8"
-        label="Current city"
-        labelClassName="font-semibold"
-        value={cityLabel}
-        valueClassName="mt-1"
-        className="min-h-10 items-start gap-3 border-border border-t pt-4 lg:mt-7 lg:items-center lg:border-t-0 lg:border-l lg:pt-0 lg:pl-4"
       />
       <FormField
         control={form.control}
@@ -82,6 +92,32 @@ export function AreaFields({ currentUser, disabled, form }: AreaFieldsProps) {
         )}
       />
     </div>
+  );
+}
+
+function getSavedSettingsProfileLocation(
+  currentUser: User | undefined,
+): LocationValue | null {
+  if (!currentUser?.city) {
+    return null;
+  }
+
+  return {
+    address: currentUser.city,
+    city: currentUser.city,
+    lat: currentUser.locationLat ?? null,
+    lng: currentUser.locationLng ?? null,
+  };
+}
+
+function areLocationsEqual(
+  firstLocation: LocationValue | null,
+  secondLocation: LocationValue | null,
+) {
+  return (
+    firstLocation?.city === secondLocation?.city &&
+    firstLocation?.lat === secondLocation?.lat &&
+    firstLocation?.lng === secondLocation?.lng
   );
 }
 

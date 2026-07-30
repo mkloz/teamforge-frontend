@@ -3,11 +3,3 @@ import type { planProposalFieldOptions } from "@/features/group-plan-detail/lib/
 
 export type PlanProposalFieldOption = (typeof planProposalFieldOptions)[number];
 export type PlanChangeFormState = ReturnType<typeof usePlanChangeForm>;
-
-export interface PlanChangeFieldRenderState {
-  creating: boolean;
-  disabled: boolean;
-  last: boolean;
-  online: boolean;
-  open: boolean;
-}

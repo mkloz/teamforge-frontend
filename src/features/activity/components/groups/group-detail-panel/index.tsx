@@ -58,7 +58,7 @@ export function GroupDetailPanel({
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="flex h-dvh max-h-dvh flex-col overflow-hidden rounded-t-3xl border-t-0 bg-canvas xl:hidden [&>div:first-child]:hidden">
+      <DrawerContent className="flex h-dvh max-h-dvh flex-col overflow-hidden rounded-t-2xl border-t-0 bg-canvas xl:hidden [&>div:first-child]:hidden">
         <DrawerHeader className="sr-only">
           <DrawerTitle>{group.name} Details</DrawerTitle>
           <DrawerDescription>

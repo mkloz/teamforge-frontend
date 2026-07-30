@@ -1,6 +1,5 @@
 import { type ReactNode, useRef } from "react";
 import { ProfileHero } from "@/features/profile/components/profile-hero";
-import { ProfileCompactHeader } from "@/features/profile/components/profile-hero/profile-compact-header";
 import { ProfilePortraitSection } from "@/features/profile/components/profile-portrait-section";
 import { DeferredProfileInsights } from "@/features/profile/profile-page/profile-page-content/deferred-profile-insights";
 import { ProfileDeferredInsightsFallback } from "@/features/profile/profile-page/profile-page-content/profile-deferred-insights-fallback";
@@ -41,7 +40,7 @@ export function ProfilePageContent({
   const shouldShowUserMenu = getShouldShowUserMenu(showUserMenu, mode);
   const profileQrUrl = getProfileQrUrl(profile.id);
 
-  const { isPinned: isProfileHeaderPinned } = useProfileCollapsibleHeader({
+  useProfileCollapsibleHeader({
     ref: profilePageRef,
   });
 
@@ -51,7 +50,6 @@ export function ProfilePageContent({
       className="relative min-h-full overflow-x-clip bg-canvas pb-(--profile-cover-phase-reserve) [--personality-cover-type-opacity:0.82] [--personality-cover-type-scale:1] [--personality-cover-type-y:0px] [--profile-cover-collapsed-height:80px] [--profile-cover-expanded-height:160px] [--profile-cover-height:var(--profile-cover-expanded-height)] [--profile-cover-phase-offset:0px] [--profile-cover-phase-reserve:104px] [--profile-hero-original-delay:0ms] [--profile-hero-original-opacity:1] [--profile-hero-original-y:0px] [--profile-hero-z-index:40] [--profile-shell-offset:0px] [--profile-sidebar-sticky-top:var(--profile-cover-collapsed-height)] sm:[--profile-cover-expanded-height:168px] sm:[--profile-cover-phase-reserve:112px] md:[--profile-cover-expanded-height:152px] md:[--profile-cover-phase-reserve:96px] md:[--profile-shell-offset:3.5rem] lg:[--profile-cover-collapsed-height:64px] lg:[--profile-cover-phase-reserve:112px]"
     >
       <ProfileCoverBanner personalityType={profile.personalityType} />
-      <ProfileCompactHeader user={profile} visible={isProfileHeaderPinned} />
 
       {shouldShowUserMenu ? (
         <ProfileHeaderActions profile={profile} profileQrUrl={profileQrUrl} />

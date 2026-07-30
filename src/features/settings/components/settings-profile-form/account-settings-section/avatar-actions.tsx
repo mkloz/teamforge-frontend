@@ -11,50 +11,73 @@ interface AvatarActionsProps {
 }
 
 export function AvatarActions({
-  isDeletingAvatar,
   actionState,
   onUploadSelectedAvatar,
   onDeleteOrReset,
 }: AvatarActionsProps) {
-  const deleteOrResetButton = renderDeleteOrResetButton({
-    actionState,
-    onDeleteOrReset,
-  });
+  if (!actionState.hasSelectedAvatarFile) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-3">
       {actionState.hintText ? (
         <p className="text-slate-muted text-sm">{actionState.hintText}</p>
       ) : null}
-      <div className="responsive-action-grid grid gap-3">
+      <div className="flex flex-wrap gap-3">
         <Button
           type="button"
           variant="primary"
           size="compact"
-          className="min-w-0"
           disabled={actionState.uploadDisabled}
           onClick={onUploadSelectedAvatar}
         >
           <Upload size={14} />
           {actionState.uploadLabel}
         </Button>
-        {actionState.hasSelectedAvatarFile ? (
-          deleteOrResetButton
-        ) : (
-          <ActionDialog
-            cancelLabel="Keep avatar"
-            confirmLabel={actionState.deleteDialogConfirmLabel}
-            description="This removes your saved profile photo from TeamForge."
-            disabled={actionState.deleteDialogDisabled}
-            loading={isDeletingAvatar}
-            onConfirm={onDeleteOrReset}
-            title="Delete your avatar?"
-            tone="danger"
-            trigger={deleteOrResetButton}
-          />
-        )}
+        {renderDeleteOrResetButton({
+          actionState,
+          onDeleteOrReset,
+        })}
       </div>
     </div>
+  );
+}
+
+export function AvatarDeleteAction({
+  isDeletingAvatar,
+  actionState,
+  onDeleteOrReset,
+}: Pick<
+  AvatarActionsProps,
+  "actionState" | "isDeletingAvatar" | "onDeleteOrReset"
+>) {
+  const trigger = (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon-xs"
+      disabled={actionState.deleteOrResetDisabled}
+      className="size-7 rounded-full border border-destructive/35 bg-card/95 text-destructive shadow-sm backdrop-blur-sm hover:bg-destructive/10"
+      aria-label="Delete avatar"
+      title="Delete avatar"
+    >
+      <Trash2 size={14} />
+    </Button>
+  );
+
+  return (
+    <ActionDialog
+      cancelLabel="Keep avatar"
+      confirmLabel={actionState.deleteDialogConfirmLabel}
+      description="This removes your saved profile photo from TeamForge."
+      disabled={actionState.deleteDialogDisabled}
+      loading={isDeletingAvatar}
+      onConfirm={onDeleteOrReset}
+      title="Delete your avatar?"
+      tone="danger"
+      trigger={trigger}
+    />
   );
 }
 
@@ -70,7 +93,6 @@ function renderDeleteOrResetButton({
       type="button"
       variant={actionState.deleteOrResetVariant}
       size="compact"
-      className="min-w-0"
       disabled={actionState.deleteOrResetDisabled}
       onClick={actionState.hasSelectedAvatarFile ? onDeleteOrReset : undefined}
     >

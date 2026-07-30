@@ -5,6 +5,7 @@ import type { ForgeWizardChildProps } from "../types";
 export function PlanStepPanel({ fw }: ForgeWizardChildProps) {
   return (
     <Step2Plan
+      coverImage={fw.coverImage}
       forgeMode={fw.forgeMode}
       onForgeModeChange={fw.setForgeMode}
       forgeScope={fw.forgeScope}
@@ -26,6 +27,7 @@ export function PlanStepPanel({ fw }: ForgeWizardChildProps) {
       onPlanLocationCoordinatesChange={fw.setPlanLocationCoordinates}
       locationType={fw.locationType}
       onLocationTypeChange={fw.setLocationType}
+      selectedActivity={fw.selectedActivity}
     />
   );
 }

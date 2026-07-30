@@ -1,3 +1,8 @@
+import {
+  COMPACT_BENTO_SLOTS,
+  CompactBentoGrid,
+  CompactBentoItem,
+} from "@/shared/components/ui/bento-grid";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function TemplateSuggestionsSkeleton() {
@@ -6,38 +11,26 @@ export function TemplateSuggestionsSkeleton() {
 
 function TemplateSuggestionsSkeletonContent() {
   return (
-    <div aria-busy="true" className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+    <CompactBentoGrid aria-busy="true">
       <output className="sr-only">Loading template suggestions</output>
-      {["arts", "tech", "movement", "food"].map((item, index) => (
-        <div
-          key={item}
-          className="flex h-24 min-w-0 overflow-hidden rounded-lg border border-border/40 bg-card text-left"
-        >
-          <Skeleton
-            shape="square"
-            className="h-full w-20 shrink-0 rounded-lg sm:w-24"
-            tone={index === 0 ? "teal" : "default"}
-          />
-          <div className="flex min-w-0 flex-1 flex-col gap-1.5 px-3 py-2.5">
-            <div className="flex min-w-0 items-center gap-2">
-              <Skeleton className="h-4 min-w-0 flex-1" />
-              <Skeleton shape="circle" className="size-4 shrink-0" />
-            </div>
-            <Skeleton className="h-3 w-4/5" />
-            <div className="mt-auto flex items-center justify-between gap-2">
+      {COMPACT_BENTO_SLOTS.map((slot, index) => (
+        <CompactBentoItem key={slot} slot={slot}>
+          <div className="relative size-full min-w-0 overflow-hidden rounded-2xl">
+            <Skeleton
+              shape="square"
+              className="absolute inset-0 size-full"
+              tone={index === 0 ? "teal" : "default"}
+            />
+            <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-3">
+              <Skeleton className="h-4 w-3/5 rounded-md" />
               <div className="flex items-center gap-2">
-                <Skeleton className="h-3 w-10" />
-                <Skeleton shape="pill" className="h-5 w-14" />
+                <Skeleton shape="pill" className="h-3 w-16" />
+                <Skeleton shape="pill" className="h-3 w-12" />
               </div>
-              <Skeleton
-                shape="pill"
-                className="h-5 w-20"
-                tone={index === 0 ? "teal" : "default"}
-              />
             </div>
           </div>
-        </div>
+        </CompactBentoItem>
       ))}
-    </div>
+    </CompactBentoGrid>
   );
 }

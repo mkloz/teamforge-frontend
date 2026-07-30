@@ -67,10 +67,10 @@ export function AnimatedBriefCycler() {
   return (
     <aside
       aria-label="Example activity"
-      className="overflow-hidden rounded-2xl border border-forge-teal/25 bg-forge-teal/6"
+      className="overflow-hidden rounded-2xl bg-background p-0.5"
     >
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 border-forge-teal/20 border-b px-4 py-3">
+      <div className="flex items-center justify-between gap-4 bg-(--grouped-menu-selected) px-4 py-3">
         <div>
           <p className="font-black text-foreground text-sm">Example</p>
         </div>
@@ -100,10 +100,13 @@ export function AnimatedBriefCycler() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-            className="divide-y divide-forge-teal/15"
+            className="mt-0.5 grid gap-0.5"
           >
             {brief.rows.map(({ label, value }, rowIndex) => (
-              <div key={label} className="flex items-baseline gap-4 px-4 py-3">
+              <div
+                key={label}
+                className="flex items-baseline gap-4 bg-(--grouped-menu-selected) px-4 py-3"
+              >
                 <dt className="w-16 shrink-0 font-semibold text-muted-foreground text-xs">
                   {label}
                 </dt>

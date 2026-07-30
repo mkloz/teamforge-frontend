@@ -5,27 +5,22 @@ import { buildForgeLaunchNavigation } from "@/shared/navigation/forge-navigation
 
 export function ForgeCTA() {
   return (
-    <div className="group/card border-border/50 border-t px-1 pt-4">
-      <div className="relative z-10 flex flex-col gap-3">
-        <div className="flex flex-col gap-1.5">
-          <h3 className="font-black text-base text-foreground leading-tight tracking-tight">
-            Nothing quite right?
-          </h3>
-          <p className="font-medium text-muted-foreground text-xs leading-relaxed">
-            Start the opening yourself and let TeamForge fill the remaining
-            spots around the plan.
-          </p>
-        </div>
-
-        <div className="transition-transform duration-150 group-hover/card:-translate-y-0.5">
-          <Button asChild size="md" className="w-full">
-            <Link {...buildForgeLaunchNavigation()}>
-              <Plus className="size-4 transition-transform group-hover:rotate-90" />
-              Forge my group
-            </Link>
-          </Button>
-        </div>
+    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="max-w-2xl">
+        <h3 className="font-black text-2xl text-foreground leading-tight tracking-tight">
+          Nothing fits yet?
+        </h3>
+        <p className="mt-1.5 font-medium text-muted-foreground text-sm leading-relaxed">
+          Start with your own idea, then let TeamForge help find the people.
+        </p>
       </div>
+
+      <Button asChild size="md" className="w-full shrink-0 sm:w-auto">
+        <Link {...buildForgeLaunchNavigation()}>
+          <Plus className="size-4" />
+          Forge a plan
+        </Link>
+      </Button>
     </div>
   );
 }

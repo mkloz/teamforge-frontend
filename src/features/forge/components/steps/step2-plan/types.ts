@@ -3,6 +3,7 @@ export type ForgeScope = "LOCAL" | "ONLINE";
 export type PlanScheduleMode = "TO_BE_DECIDED" | "FIXED";
 
 export interface Step2PlanProps {
+  coverImage: string | null;
   forgeMode: "AUTO" | "MANUAL";
   onForgeModeChange: (value: "AUTO" | "MANUAL") => void;
   forgeScope: ForgeScope;
@@ -27,4 +28,5 @@ export interface Step2PlanProps {
   ) => void;
   locationType: LocationType;
   onLocationTypeChange: (v: LocationType) => void;
+  selectedActivity: string | null;
 }

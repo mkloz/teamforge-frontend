@@ -1,10 +1,15 @@
-import { LogOut, Trash2 } from "lucide-react";
+import { LogOut, ShieldCheck, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import type { useAccountLifecycle } from "@/features/settings/hooks/use-account-lifecycle";
 import { ACCOUNT_DATA_COPY } from "@/features/settings/lib/account-data-copy";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import {
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Input } from "@/shared/components/ui/input";
 import { Notice } from "@/shared/components/ui/notice";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -35,31 +40,19 @@ export function AccountLifecycleSection({
         DELETED: ACCOUNT_DATA_COPY.lifecycle.deleted,
       }[lifecycle.lifecycle]
     : "Checking your account status…";
-  const shouldShowLifecycleDescription =
-    lifecycle !== null && lifecycle.lifecycle !== "ACTIVE";
 
   return (
-    <section className="border-border border-t pt-7">
-      <div className="flex max-w-2xl flex-wrap items-start justify-between gap-3">
-        <div>
-          <h3 className="font-semibold text-ink text-lg">Account status</h3>
-          {shouldShowLifecycleDescription ? (
-            <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-              {lifecycleDescription}
-            </p>
-          ) : null}
-        </div>
-        <StatusPill
-          tone={lifecycle?.lifecycle === "ACTIVE" ? "teal" : "neutral"}
-          size="sm"
-        >
-          {lifecycleLabel}
-        </StatusPill>
+    <section>
+      <div className="px-1">
+        <h2 className="font-bold text-ink text-xl">Account access</h2>
+        <p className="mt-1 max-w-2xl text-slate-muted text-sm leading-relaxed">
+          Pause access to TeamForge or permanently remove your account.
+        </p>
       </div>
 
       {state.error ? (
         <Notice
-          className="mt-5 max-w-2xl"
+          className="mt-4"
           role="alert"
           tone="danger"
           size="md"
@@ -81,107 +74,140 @@ export function AccountLifecycleSection({
       ) : null}
 
       {lifecycle?.retainedRecordNotice === "SHARED_HISTORY_AND_SAFETY" ? (
-        <Notice className="mt-5 max-w-2xl" tone="neutral" size="md">
+        <Notice className="mt-4" tone="neutral" size="md">
           {ACCOUNT_DATA_COPY.lifecycle.retainedRecords}
         </Notice>
       ) : null}
 
-      {lifecycle?.canDeactivate ? (
-        <div className="mt-6 flex flex-col gap-4 border-border border-t py-5 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-xl">
-            <h4 className="font-semibold text-ink text-sm">
-              Take a break from TeamForge
-            </h4>
-            <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-              This signs you out and stops new group proposals. Your account
-              data and reviewed safety records stay in place.
-            </p>
-          </div>
-          <ActionDialog
-            cancelLabel="Keep account active"
-            closeOnConfirm={false}
-            confirmLabel={state.isDeactivating ? "Deactivating…" : "Deactivate"}
-            description="You will be signed out on every device. Signing in again reactivates the account, but availability stays off until you turn it on."
-            disabled={!state.isOnline || state.isDeactivating}
-            loading={state.isDeactivating}
-            onConfirm={state.deactivateAccount}
-            title="Deactivate your account?"
-            tone="warning"
-            trigger={
-              <Button
-                type="button"
-                variant="outline"
-                size="compact"
-                disabled={!state.isOnline || state.isDeactivating}
-              >
-                <LogOut className="size-4" aria-hidden="true" />
-                Deactivate
-              </Button>
-            }
-          />
-        </div>
-      ) : null}
-
-      {lifecycle?.canDelete ? (
-        <div className="flex flex-col gap-4 border-destructive/30 border-t pt-5 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-xl">
-            <p className="font-semibold text-destructive text-xs">
-              Permanent action
-            </p>
-            <h4 className="mt-2 font-semibold text-ink text-sm">
-              Delete account
-            </h4>
-            <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-              This removes your active account. Some reviewed safety records and
-              shared group history may be kept when required.
-            </p>
-          </div>
-          <ActionDialog
-            cancelLabel="Keep account"
-            closeOnConfirm={false}
-            confirmLabel={state.isDeleting ? "Deleting…" : "Delete account"}
-            description={`Type DELETE to confirm deletion for ${currentUser?.email ?? "this account"}.`}
-            details={[
-              "You will be signed out on every device.",
-              "Open corrections and data exports will be cancelled.",
-              "This cannot be undone in the app.",
-            ]}
-            disabled={
-              !state.isOnline ||
-              state.isDeleting ||
-              confirmation !== DELETE_CONFIRMATION
-            }
-            loading={state.isDeleting}
-            onConfirm={state.deleteAccount}
-            onOpenChange={(open) => {
-              if (!open) {
-                setConfirmation("");
-              }
-            }}
-            title="Delete your TeamForge account?"
-            tone="danger"
-            trigger={
-              <Button
-                type="button"
-                variant="destructive"
-                size="compact"
-                disabled={!state.isOnline || state.isDeleting}
-              >
-                <Trash2 className="size-4" aria-hidden="true" />
-                Delete account
-              </Button>
-            }
-          >
-            <Input
-              value={confirmation}
-              onChange={(event) => setConfirmation(event.target.value)}
-              disabled={!state.isOnline || state.isDeleting}
-              placeholder={DELETE_CONFIRMATION}
-              aria-label="Type DELETE to confirm account deletion"
+      <GroupedMenuList aria-label="Account access" className="mt-5">
+        <GroupedMenuItem>
+          <div className="flex min-h-16 items-center gap-3 px-3 py-3 sm:px-5">
+            <IconTile
+              icon={ShieldCheck}
+              shape="circle"
+              size="lg"
+              tone={lifecycle?.lifecycle === "ACTIVE" ? "teal" : "neutral"}
             />
-          </ActionDialog>
-        </div>
-      ) : null}
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-ink text-sm">Account status</p>
+              <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
+                {lifecycleDescription}
+              </p>
+            </div>
+            <StatusPill
+              tone={lifecycle?.lifecycle === "ACTIVE" ? "teal" : "neutral"}
+              size="xs"
+              surface="soft"
+            >
+              {lifecycleLabel}
+            </StatusPill>
+          </div>
+        </GroupedMenuItem>
+
+        {lifecycle?.canDeactivate ? (
+          <GroupedMenuItem>
+            <div className="flex min-h-18 flex-wrap items-center gap-3 px-3 py-3 sm:flex-nowrap sm:px-5 sm:py-4">
+              <IconTile icon={LogOut} shape="circle" size="lg" tone="neutral" />
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-ink text-sm">
+                  Take a break from TeamForge
+                </p>
+                <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
+                  Sign out everywhere and stop new proposals until you return.
+                </p>
+              </div>
+              <ActionDialog
+                cancelLabel="Keep account active"
+                closeOnConfirm={false}
+                confirmLabel={
+                  state.isDeactivating ? "Deactivating…" : "Deactivate"
+                }
+                description="You will be signed out on every device. Signing in again reactivates the account, but availability stays off until you turn it on."
+                disabled={!state.isOnline || state.isDeactivating}
+                loading={state.isDeactivating}
+                onConfirm={state.deactivateAccount}
+                title="Deactivate your account?"
+                tone="warning"
+                trigger={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full sm:w-auto"
+                    disabled={!state.isOnline || state.isDeactivating}
+                  >
+                    Deactivate
+                  </Button>
+                }
+              />
+            </div>
+          </GroupedMenuItem>
+        ) : null}
+
+        {lifecycle?.canDelete ? (
+          <GroupedMenuItem className="bg-destructive/5">
+            <div className="flex min-h-18 flex-wrap items-center gap-3 px-3 py-3 sm:flex-nowrap sm:px-5 sm:py-4">
+              <IconTile
+                icon={Trash2}
+                shape="circle"
+                size="lg"
+                tone="destructive"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-ink text-sm">Delete account</p>
+                <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
+                  Permanently remove this account and end access on every
+                  device.
+                </p>
+              </div>
+              <ActionDialog
+                cancelLabel="Keep account"
+                closeOnConfirm={false}
+                confirmLabel={state.isDeleting ? "Deleting…" : "Delete account"}
+                description={`Type DELETE to confirm deletion for ${currentUser?.email ?? "this account"}.`}
+                details={[
+                  "You will be signed out on every device.",
+                  "Open corrections and data exports will be cancelled.",
+                  "This cannot be undone in the app.",
+                ]}
+                disabled={
+                  !state.isOnline ||
+                  state.isDeleting ||
+                  confirmation !== DELETE_CONFIRMATION
+                }
+                loading={state.isDeleting}
+                onConfirm={state.deleteAccount}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setConfirmation("");
+                  }
+                }}
+                title="Delete your TeamForge account?"
+                tone="danger"
+                trigger={
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="w-full sm:w-auto"
+                    disabled={!state.isOnline || state.isDeleting}
+                  >
+                    Delete account
+                  </Button>
+                }
+              >
+                <Input
+                  value={confirmation}
+                  onChange={(event) => setConfirmation(event.target.value)}
+                  disabled={!state.isOnline || state.isDeleting}
+                  placeholder={DELETE_CONFIRMATION}
+                  aria-label="Type DELETE to confirm account deletion"
+                />
+              </ActionDialog>
+            </div>
+          </GroupedMenuItem>
+        ) : null}
+      </GroupedMenuList>
     </section>
   );
 }

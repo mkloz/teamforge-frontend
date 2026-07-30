@@ -11,15 +11,15 @@ export function getAddressInputRightPaddingClassName({
     Number(mapsReady) + Number(showBusyIndicator) + Number(Boolean(inputValue));
 
   if (rightControlCount >= 3) {
-    return "pr-24";
+    return "pr-22";
   }
 
   if (rightControlCount === 2) {
-    return "pr-20";
+    return "pr-18";
   }
 
   if (rightControlCount === 1) {
-    return "pr-12";
+    return "pr-10";
   }
 
   return undefined;

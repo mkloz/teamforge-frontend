@@ -1,17 +1,21 @@
 import { Link } from "@tanstack/react-router";
-import { Clock3, Pause, RefreshCcw } from "lucide-react";
+import { Clock3, MapPin, Pause, RefreshCcw, Wifi } from "lucide-react";
 import { useState } from "react";
 import type {
   CandidateAvailability,
   CandidateAvailabilityState,
 } from "@/features/forge/public/candidate-availability";
+import { AvailabilityScopeOption } from "@/features/settings/components/settings-profile-form/availability-scope-option";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import {
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
 import { Notice } from "@/shared/components/ui/notice";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { buildSettingsNavigation } from "@/shared/navigation";
-import { NotificationPreferenceRow } from "./settings-form-controls";
 
 interface CandidateAvailabilityControlProps {
   hasSavedLocation: boolean;
@@ -26,9 +30,12 @@ export function CandidateAvailabilityControl({
 
   if (state.isLoading) {
     return (
-      <section className="grid gap-3 border-border border-t pt-6" role="status">
+      <section
+        className="grid gap-3 rounded-2xl bg-card p-3 sm:p-5"
+        role="status"
+      >
         <div className="h-5 w-40 animate-pulse rounded-full bg-muted motion-reduce:animate-none" />
-        <div className="h-20 animate-pulse rounded-2xl bg-muted motion-reduce:animate-none" />
+        <div className="h-24 animate-pulse rounded-xl bg-muted motion-reduce:animate-none" />
         <span className="sr-only">Loading proposal availability</span>
       </section>
     );
@@ -36,7 +43,10 @@ export function CandidateAvailabilityControl({
 
   if (state.isLoadError || !availability) {
     return (
-      <section className="grid gap-3 border-border border-t pt-6" role="alert">
+      <section
+        className="grid gap-3 rounded-2xl bg-card p-3 sm:p-5"
+        role="alert"
+      >
         <p className="text-muted-foreground text-sm">
           We could not load your proposal availability.
         </p>
@@ -96,7 +106,7 @@ function CandidateAvailabilityEditor({
   const actionDisabled = !state.isOnline || state.isStateError || isBusy;
 
   return (
-    <section className="grid gap-5 border-border border-t pt-6">
+    <section className="grid gap-3 rounded-2xl bg-card px-3 py-4 sm:gap-4 sm:px-5">
       <AvailabilityHeader
         availability={availability}
         isRefreshing={state.isRefreshing}
@@ -121,52 +131,43 @@ function CandidateAvailabilityEditor({
         </Notice>
       ) : null}
 
-      <fieldset className="grid gap-0 lg:grid-cols-2 lg:gap-8">
-        <legend className="mb-2 font-semibold text-ink text-sm lg:col-span-2">
-          Where activities happen
+      <fieldset className="min-w-0">
+        <legend className="mb-2 font-bold text-ink text-sm">
+          Choose where proposals can happen
         </legend>
-        <NotificationPreferenceRow
-          checked={localEnabled}
-          disabled={!canEditScopes || actionDisabled}
-          title="Local activities"
-          description={
-            availability.localEnabled && !availability.canReceiveLocalProposals
-              ? "Saved, but local proposals are unavailable right now."
-              : "Proposals for activities near your saved area."
-          }
-          onToggle={() =>
-            setDraft({
-              sourceKey,
-              localEnabled: !localEnabled,
-              onlineEnabled,
-            })
-          }
-        />
-        <NotificationPreferenceRow
-          checked={onlineEnabled}
-          disabled={!canEditScopes || actionDisabled}
-          title="Online activities"
-          description={
-            availability.onlineEnabled &&
-            !availability.canReceiveOnlineProposals
-              ? "Saved, but online proposals are unavailable right now."
-              : undefined
-          }
-          onToggle={() =>
-            setDraft({
-              sourceKey,
-              localEnabled,
-              onlineEnabled: !onlineEnabled,
-            })
-          }
-        />
+        <GroupedMenuList>
+          <GroupedMenuItem className="bg-background/55">
+            <AvailabilityScopeOption
+              checked={localEnabled}
+              disabled={!canEditScopes || actionDisabled}
+              icon={MapPin}
+              title="Local activities"
+              onToggle={() =>
+                setDraft({
+                  sourceKey,
+                  localEnabled: !localEnabled,
+                  onlineEnabled,
+                })
+              }
+            />
+          </GroupedMenuItem>
+          <GroupedMenuItem className="bg-background/55">
+            <AvailabilityScopeOption
+              checked={onlineEnabled}
+              disabled={!canEditScopes || actionDisabled}
+              icon={Wifi}
+              title="Online activities"
+              onToggle={() =>
+                setDraft({
+                  sourceKey,
+                  localEnabled,
+                  onlineEnabled: !onlineEnabled,
+                })
+              }
+            />
+          </GroupedMenuItem>
+        </GroupedMenuList>
       </fieldset>
-
-      {!hasScope ? (
-        <p className="text-muted-foreground text-xs">
-          Choose at least one activity type to allow proposals.
-        </p>
-      ) : null}
 
       {localEnabled && !hasSavedLocation ? (
         <p className="text-muted-foreground text-sm">
@@ -183,7 +184,7 @@ function CandidateAvailabilityEditor({
       <AvailabilityFacts availability={availability} />
 
       {state.error ? (
-        <div className="flex flex-wrap items-center gap-3" role="alert">
+        <div className="flex flex-wrap items-center gap-2 px-0.5" role="alert">
           <p className="text-destructive text-sm">{state.error}</p>
           {state.isStateError ? (
             <Button variant="outline" size="sm" onClick={state.onRetry}>
@@ -271,7 +272,7 @@ function AvailabilityFacts({
   }
 
   return (
-    <dl className="grid border-border/70 border-y text-sm sm:grid-cols-2">
+    <dl className="grid gap-4 rounded-xl bg-background/55 px-4 py-3 text-sm sm:grid-cols-2">
       {showAvailableUntil && availability.availableUntil ? (
         <AvailabilityFact
           icon={Clock3}
@@ -303,13 +304,7 @@ function AvailabilityFact({
   value: string;
 }) {
   return (
-    <div
-      className={cn(
-        "flex items-start gap-2 py-3",
-        separated &&
-          "border-border/70 border-t sm:border-t-0 sm:border-l sm:pl-5",
-      )}
-    >
+    <div className={cn("flex items-start gap-2", separated && "sm:pl-2")}>
       <Icon className="mt-0.5 size-4 text-forge-teal" aria-hidden="true" />
       <div>
         <dt className="text-muted-foreground text-xs">{label}</dt>
@@ -358,8 +353,8 @@ function AvailabilityActions({
 }) {
   if (availability.lifecycle === "RESTRICTED") {
     return (
-      <div className="flex flex-wrap items-center gap-3">
-        <p className="text-muted-foreground text-sm">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="max-w-md text-muted-foreground text-sm">
           New group proposals are unavailable right now. This status can change,
           so check again later.
         </p>
@@ -384,23 +379,32 @@ function AvailabilityActions({
       actionDisabled || (availability.localEnabled && !hasSavedLocation);
 
     return (
-      <ActionDialog
-        cancelLabel="Not now"
-        confirmLabel="Confirm I'm open"
-        description="This reopens your saved proposal types for 30 days. You still review every proposal before deciding whether to join."
-        disabled={reconfirmDisabled}
-        loading={activeAction === "reconfirm"}
-        onConfirm={() =>
-          onReconfirm(availability.policyVersion, availability.revision)
-        }
-        title="Open to group proposals again?"
-        trigger={
-          <Button disabled={reconfirmDisabled} className="w-fit">
-            <RefreshCcw className="size-4" aria-hidden="true" />
-            Confirm I'm still open
-          </Button>
-        }
-      />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="max-w-sm text-muted-foreground text-sm">
+          Reopen your saved proposal choices for another 30 days.
+        </p>
+        <ActionDialog
+          cancelLabel="Not now"
+          confirmLabel="Confirm I'm open"
+          description="This reopens your saved proposal types for 30 days. You still review every proposal before deciding whether to join."
+          disabled={reconfirmDisabled}
+          loading={activeAction === "reconfirm"}
+          onConfirm={() =>
+            onReconfirm(availability.policyVersion, availability.revision)
+          }
+          title="Open to group proposals again?"
+          trigger={
+            <Button
+              size="compact"
+              disabled={reconfirmDisabled}
+              className="shrink-0"
+            >
+              <RefreshCcw className="size-4" aria-hidden="true" />
+              Reopen proposals
+            </Button>
+          }
+        />
+      </div>
     );
   }
 
@@ -409,52 +413,98 @@ function AvailabilityActions({
     hasScope &&
     (!localEnabled || hasSavedLocation) &&
     (!isOpen || scopesChanged);
+  const actionMessage = getProposalActionMessage({
+    hasSavedLocation,
+    hasScope,
+    isOpen,
+    localEnabled,
+    scopesChanged,
+  });
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-      <ActionDialog
-        cancelLabel="Go back"
-        confirmLabel={isOpen ? "Save choices" : "Allow proposals"}
-        description="TeamForge may show you activity-led group proposals for the next 30 days. You review each one before deciding whether to join."
-        disabled={actionDisabled || !canSave}
-        loading={activeAction === "update"}
-        onConfirm={() =>
-          onUpdate({
-            expectedRevision: isOpen ? availability.revision : null,
-            localEnabled,
-            onlineEnabled,
-            policyVersion: availability.policyVersion,
-          })
-        }
-        title={isOpen ? "Update proposal types?" : "Allow group proposals?"}
-        trigger={
-          <Button disabled={actionDisabled || !canSave}>
-            {isOpen ? "Save proposal types" : "Allow group proposals"}
-          </Button>
-        }
-      />
-
-      {isOpen ? (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p className="max-w-sm text-muted-foreground text-sm leading-relaxed">
+        {actionMessage}
+      </p>
+      <div className="flex flex-col gap-2 sm:flex-row">
         <ActionDialog
-          cancelLabel="Stay open"
-          confirmLabel="Pause proposals"
-          description="Pausing stops TeamForge from showing you new proposals. It does not remove you from a proposal you are already reviewing."
-          disabled={actionDisabled}
-          loading={activeAction === "pause"}
+          cancelLabel="Go back"
+          confirmLabel={isOpen ? "Save choices" : "Turn on proposals"}
+          description="TeamForge may show you activity-led group proposals for the next 30 days. You review each one before deciding whether to join."
+          disabled={actionDisabled || !canSave}
+          loading={activeAction === "update"}
           onConfirm={() =>
-            onPause(availability.policyVersion, availability.revision)
+            onUpdate({
+              expectedRevision: isOpen ? availability.revision : null,
+              localEnabled,
+              onlineEnabled,
+              policyVersion: availability.policyVersion,
+            })
           }
-          title="Pause new proposals?"
+          title={isOpen ? "Update proposal types?" : "Turn on proposals?"}
           trigger={
-            <Button variant="outline" disabled={actionDisabled}>
-              <Pause className="size-4" aria-hidden="true" />
-              Pause new proposals
+            <Button size="compact" disabled={actionDisabled || !canSave}>
+              {isOpen ? "Save changes" : "Turn on proposals"}
             </Button>
           }
         />
-      ) : null}
+
+        {isOpen ? (
+          <ActionDialog
+            cancelLabel="Stay open"
+            confirmLabel="Pause proposals"
+            description="Pausing stops TeamForge from showing you new proposals. It does not remove you from a proposal you are already reviewing."
+            disabled={actionDisabled}
+            loading={activeAction === "pause"}
+            onConfirm={() =>
+              onPause(availability.policyVersion, availability.revision)
+            }
+            title="Pause new proposals?"
+            trigger={
+              <Button
+                variant="outline"
+                size="compact"
+                disabled={actionDisabled}
+              >
+                <Pause className="size-4" aria-hidden="true" />
+                Pause
+              </Button>
+            }
+          />
+        ) : null}
+      </div>
     </div>
   );
+}
+
+function getProposalActionMessage({
+  hasSavedLocation,
+  hasScope,
+  isOpen,
+  localEnabled,
+  scopesChanged,
+}: {
+  hasSavedLocation: boolean;
+  hasScope: boolean;
+  isOpen: boolean;
+  localEnabled: boolean;
+  scopesChanged: boolean;
+}) {
+  if (!hasScope) {
+    return "Select at least one activity type to continue.";
+  }
+
+  if (localEnabled && !hasSavedLocation) {
+    return "Add a saved location before turning on local proposals.";
+  }
+
+  if (isOpen) {
+    return scopesChanged
+      ? "Your new proposal choices are ready to save."
+      : "Your proposal choices are up to date.";
+  }
+
+  return "Stay discoverable for 30 days. You still review every proposal first.";
 }
 
 function canReceiveAnyProposal(availability: CandidateAvailability) {

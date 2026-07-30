@@ -9,7 +9,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/shared/components/ui/sheet";
-import { cn } from "@/shared/lib/utils";
 
 const MobileFiltersPanel = lazy(() =>
   import("./mobile-filters-panel").then((module) => ({
@@ -26,23 +25,22 @@ export function MobileFiltersSheet() {
     <>
       <Button
         type="button"
-        variant="ghost"
-        size="icon"
+        variant="outline"
+        size="sm"
         aria-label={filtered ? "Open filters, filters active" : "Open filters"}
         title={filtered ? "Filters active" : "Open filters"}
         onClick={() => setOpen(true)}
-        className="group/filter size-11 shrink-0 rounded-full p-1 hover:bg-transparent lg:hidden"
+        className="group/filter h-11 shrink-0 rounded-full px-2 sm:h-9 sm:px-3"
       >
-        <span
-          className={cn(
-            "flex size-9 items-center justify-center rounded-full border-2 transition-colors",
+        <SlidersHorizontal
+          className={
             filtered
-              ? "border-button-primary-border bg-button-primary-border text-primary-foreground"
-              : "border-ink bg-transparent text-ink group-hover/filter:bg-ink/5 dark:border-white dark:text-white",
-          )}
-        >
-          <SlidersHorizontal className="size-3.5" aria-hidden="true" />
-        </span>
+              ? "size-4 shrink-0 text-forge-teal"
+              : "size-4 shrink-0 text-primary"
+          }
+          aria-hidden="true"
+        />
+        <span className="hidden font-bold text-xs sm:inline">Filters</span>
       </Button>
 
       {open && (

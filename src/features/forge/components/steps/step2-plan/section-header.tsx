@@ -14,15 +14,15 @@ export function SectionHeader({
   aside,
 }: SectionHeaderProps) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="shrink-0 font-semibold text-foreground text-sm leading-tight">
+    <div className="flex flex-col gap-1">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="min-w-0 font-bold text-base text-foreground leading-tight">
           {title}
-        </p>
+        </h3>
         {aside ? <div className="min-w-0">{aside}</div> : null}
       </div>
       {description && (
-        <p className="text-muted-foreground/55 text-xs leading-snug">
+        <p className="max-w-xl text-muted-foreground text-xs leading-relaxed">
           {description}
         </p>
       )}

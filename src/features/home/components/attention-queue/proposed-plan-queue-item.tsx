@@ -16,7 +16,7 @@ export function ProposedPlanQueueItem({
     getProposedPlanQueueItemRenderState(group);
 
   return (
-    <li className="group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 hover:bg-spark-amber/5 sm:px-3">
+    <li className="group min-w-0 rounded-2xl bg-card px-3 py-3 transition-colors duration-150 hover:bg-spark-amber/5 sm:px-4">
       <Link
         {...navigation}
         className="flex min-w-0 items-center justify-between gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

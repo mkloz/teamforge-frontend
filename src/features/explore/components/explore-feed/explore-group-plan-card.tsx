@@ -4,17 +4,20 @@ import { getExploreGroupPlanCardViewState } from "@/features/explore/components/
 import { useJoinExploreGroup } from "@/features/explore/hooks/use-join-explore-group";
 import { GroupPlanCard } from "@/shared/components/group-plan-card";
 import type { ExploreGroup } from "@/shared/schemas";
+import { ExploreDiscoveryGroupCard } from "./explore-discovery-group-card";
 
 interface ExploreGroupPlanCardProps {
   group: ExploreGroup;
   imagePriority?: "auto" | "high";
-  variant?: "default" | "compact";
+  variant?: "default" | "compact" | "discovery";
+  emphasis?: "lead" | "standard";
 }
 
 export function ExploreGroupPlanCard({
   group,
   imagePriority = "auto",
   variant = "default",
+  emphasis = "standard",
 }: ExploreGroupPlanCardProps) {
   const joinMutation = useJoinExploreGroup(group.id);
   const isCompact = variant === "compact";
@@ -27,6 +30,18 @@ export function ExploreGroupPlanCard({
 
   function handleJoin() {
     joinMutation.mutate();
+  }
+
+  if (variant === "discovery") {
+    return (
+      <ExploreDiscoveryGroupCard
+        emphasis={emphasis}
+        group={group}
+        imagePriority={imagePriority}
+        onJoin={handleJoin}
+        viewState={viewState}
+      />
+    );
   }
 
   return (

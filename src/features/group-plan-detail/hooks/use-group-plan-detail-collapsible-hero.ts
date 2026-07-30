@@ -21,9 +21,9 @@ interface UseGroupPlanDetailCollapsibleHeroOptions<
 
 const DEFAULT_COVER_EXPANDED_HEIGHT = 280;
 const DEFAULT_COVER_COLLAPSED_HEIGHT = 72;
-const GROUP_DETAIL_COLLAPSE_TRIGGER = 96;
-const GROUP_DETAIL_EXPAND_TRIGGER = 16;
-const COMPACT_REVEAL_DELAY_MS = 280;
+const GROUP_DETAIL_COLLAPSE_TRIGGER = 48;
+const GROUP_DETAIL_EXPAND_TRIGGER = 8;
+const COMPACT_REVEAL_DELAY_MS = 180;
 
 interface HeroState {
   collapsed: boolean;
@@ -98,6 +98,14 @@ function getHeroCoverCssProperties(
   { collapseRange, prefersReducedMotion }: HeroTransitionMetrics,
 ): CssPropertyPair[] {
   return [
+    [
+      "--group-detail-cover-shell-height",
+      getCollapsedCssValue(
+        collapsed,
+        "0px",
+        "var(--group-detail-cover-expanded-height)",
+      ),
+    ],
     [
       "--group-detail-cover-y",
       getCollapsedCssValue(collapsed, `${-collapseRange}px`, "0px"),

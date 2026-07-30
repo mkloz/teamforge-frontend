@@ -15,7 +15,10 @@ type ParticipantUserSummary = {
   age?: number | null;
   gender?: ActivityParticipant["gender"];
   city?: string | null;
+  personalityType?: ActivityParticipant["personalityType"];
   onlineStatus?: ActivityParticipant["onlineStatus"];
+  lastSeenAt?: ActivityParticipant["lastSeenAt"];
+  trustScore?: number;
 };
 
 interface ParticipantUserProjectionOptions {
@@ -32,7 +35,9 @@ export function mapParticipantUserSummary(
     name: user.name,
     avatar: user.avatar,
     ...mapParticipantProfileFields(user),
+    lastSeenAt: user.lastSeenAt,
     onlineStatus: user.onlineStatus,
+    trustScore: user.trustScore,
   };
 
   return applyParticipantProjectionOptions(participant, user, options);
@@ -44,6 +49,9 @@ function mapParticipantProfileFields(user: ParticipantUserSummary) {
     ...(user.age !== undefined && { age: user.age }),
     ...(user.gender !== undefined && { gender: user.gender }),
     ...(user.city !== undefined && { city: user.city }),
+    ...(user.personalityType !== undefined && {
+      personalityType: user.personalityType,
+    }),
   };
 }
 
@@ -90,6 +98,8 @@ export function mapCurrentUserParticipant(user: User): ActivityParticipant {
     oceanE: user.oceanE,
     oceanA: user.oceanA,
     oceanN: user.oceanN,
+    lastSeenAt: user.lastSeenAt,
     onlineStatus: user.onlineStatus,
+    trustScore: user.trustScore,
   };
 }

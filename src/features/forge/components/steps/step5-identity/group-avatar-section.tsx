@@ -1,5 +1,4 @@
-import { X } from "lucide-react";
-import { GroupAvatarPlaceholderVisual } from "@/features/forge/assets/group-avatar-placeholder";
+import { ImagePlus, X } from "lucide-react";
 import { Avatar } from "@/shared/components/common/avatar";
 import { FileDropzone } from "@/shared/components/common/file-dropzone";
 import { Button } from "@/shared/components/ui/button";
@@ -20,10 +19,8 @@ export function GroupAvatarSection({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <p className="font-semibold text-muted-foreground text-xs">
-          Group avatar
-        </p>
-        <p className="mt-0.5 text-muted-foreground/60 text-xs">
+        <p className="font-semibold text-foreground text-sm">Group icon</p>
+        <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
           {getGroupAvatarHelpText(isOnline)}
         </p>
       </div>
@@ -45,7 +42,6 @@ export function GroupAvatarSection({
           title={getGroupAvatarDropzoneTitle(avatarImage)}
           description="Drop a square image here or tap to browse."
           helper="PNG, JPG, WEBP up to 30 MB"
-          actionLabel="Browse"
           disabled={!isOnline}
           isUploading={isAvatarUploading}
           error={avatarUploadError}
@@ -100,7 +96,11 @@ function GroupAvatarImage({
 
   return (
     <div className="flex size-full items-center justify-center bg-card/70 p-2">
-      <GroupAvatarPlaceholderVisual className="h-10 w-auto text-foreground sm:h-12" />
+      <ImagePlus
+        className="size-7 text-muted-foreground/55"
+        strokeWidth={1.75}
+        aria-hidden="true"
+      />
     </div>
   );
 }
@@ -135,7 +135,7 @@ function RemoveGroupAvatarButton({
 
 function getGroupAvatarHelpText(isOnline: boolean) {
   return isOnline
-    ? "A square icon that identifies your group across the app. Drag and drop or tap to upload."
+    ? "A square image that helps members recognise the group."
     : "Reconnect before uploading a group avatar.";
 }
 

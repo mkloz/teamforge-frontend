@@ -15,7 +15,12 @@ export function ActionDialogDetails({
   }
 
   return (
-    <div className="mx-6 mb-4 border-border/60 border-t pt-4">
+    <div
+      className={cn(
+        "mx-5 mb-4 border-l-2 py-0.5 pl-3 sm:mx-6",
+        config.ruleClassName,
+      )}
+    >
       <p className={cn("font-semibold text-xs", config.iconClassName)}>
         {config.detailLabel}
       </p>

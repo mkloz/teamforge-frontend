@@ -1,7 +1,6 @@
-import { Check, Copy, Link2, QrCode } from "lucide-react";
+import { Check, Copy, QrCode } from "lucide-react";
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
-import { IconTile } from "@/shared/components/ui/icon-tile";
 import {
   showAppErrorMessageToast,
   showAppSuccessToast,
@@ -34,21 +33,21 @@ export function InviteLinkSection({
   };
 
   return (
-    <section className="flex flex-col gap-3 border-border/25 border-t pt-4">
-      <div className="flex items-center gap-2 px-0.5">
-        <IconTile icon={Link2} tone="teal" size="sm" />
-        <div className="min-w-0">
-          <p className="font-semibold text-foreground text-sm leading-none">
-            Group link
-          </p>
-          <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
-            Keep this handy for members who have access.
-          </p>
-        </div>
+    <section aria-labelledby="share-group-heading" className="mt-7">
+      <div>
+        <h3
+          id="share-group-heading"
+          className="font-black text-foreground text-lg tracking-tight"
+        >
+          Share the group
+        </h3>
+        <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
+          Anyone you invite can open the group from this link.
+        </p>
       </div>
 
-      <div className="flex min-w-0 items-center gap-2 border-border/25 border-t pt-3">
-        <code className="min-w-0 flex-1 truncate font-semibold text-muted-foreground text-xs">
+      <div className="mt-3 flex min-w-0 items-center gap-1.5 rounded-lg border border-border/55 bg-card/45 p-1.5">
+        <code className="min-w-0 flex-1 truncate px-2 font-semibold text-muted-foreground text-xs">
           {groupLink ?? "Group link pending"}
         </code>
         <InviteQrButton groupLink={groupLink} />
@@ -92,19 +91,23 @@ async function copyGroupLink({
 }
 
 function InviteQrButton({ groupLink }: Pick<InviteLinkState, "groupLink">) {
+  const trigger = (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      aria-label={
+        groupLink ? "Show group QR code" : "Group QR code unavailable"
+      }
+      disabled={!groupLink}
+      className="size-9 shrink-0 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+    >
+      <QrCode className="size-4" strokeWidth={2} />
+    </Button>
+  );
+
   if (!groupLink) {
-    return (
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        aria-label="Group QR code unavailable"
-        disabled
-        className="size-11 shrink-0 rounded-lg border-border/40 text-muted-foreground md:size-8"
-      >
-        <QrCode size={15} strokeWidth={2} />
-      </Button>
-    );
+    return trigger;
   }
 
   return (
@@ -112,16 +115,7 @@ function InviteQrButton({ groupLink }: Pick<InviteLinkState, "groupLink">) {
       url={groupLink}
       title="Group QR Code"
       description="Scan to open this group in TeamForge."
-      trigger={
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Show group QR code"
-          className="size-11 shrink-0 rounded-lg border-border/40 text-foreground transition-colors hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal active:scale-95 md:size-8"
-        >
-          <QrCode size={15} strokeWidth={2} />
-        </Button>
-      }
+      trigger={trigger}
     />
   );
 }
@@ -142,37 +136,19 @@ function CopyInviteLinkButton({
         void onCopy();
       }}
       disabled={!groupLink}
-      aria-label="Copy group link"
-      className={getCopyButtonClassName(inviteCopied)}
+      className={cn(
+        "h-9 shrink-0 rounded-md px-3 font-bold text-xs transition-colors active:scale-95",
+        inviteCopied
+          ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal/90"
+          : "bg-muted text-foreground hover:bg-forge-teal/10 hover:text-forge-teal",
+      )}
     >
-      {inviteCopied ? <CopiedButtonContent /> : <CopyButtonContent />}
+      {inviteCopied ? (
+        <Check className="size-3.5" strokeWidth={2.5} />
+      ) : (
+        <Copy className="size-3.5" strokeWidth={2} />
+      )}
+      {inviteCopied ? "Copied" : "Copy link"}
     </Button>
-  );
-}
-
-function getCopyButtonClassName(inviteCopied: boolean) {
-  return cn(
-    "h-11 shrink-0 rounded-lg px-3 font-semibold text-xs transition-colors active:scale-95 md:h-8",
-    inviteCopied
-      ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal/90"
-      : "border border-border/40 bg-transparent text-foreground hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal",
-  );
-}
-
-function CopiedButtonContent() {
-  return (
-    <>
-      <Check size={13} strokeWidth={2.5} />
-      Copied
-    </>
-  );
-}
-
-function CopyButtonContent() {
-  return (
-    <>
-      <Copy size={13} strokeWidth={2} />
-      Copy
-    </>
   );
 }

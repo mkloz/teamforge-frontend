@@ -19,6 +19,7 @@ interface AttentionQueueRenderStateInput {
   viewer: HomeViewer;
   visibleInvitations: AttentionQueueInvitation[];
   visibleRequests: AttentionQueueFriendRequest[];
+  maxVisibleItems?: number;
 }
 
 export type AttentionQueueRenderItem =
@@ -60,6 +61,7 @@ export function getAttentionQueueRenderState({
   viewer,
   visibleInvitations,
   visibleRequests,
+  maxVisibleItems,
 }: AttentionQueueRenderStateInput) {
   const renderedInvitations = getCollapsedQueueItems(visibleInvitations);
   const renderedRequests = getCollapsedQueueItems(visibleRequests);
@@ -77,18 +79,20 @@ export function getAttentionQueueRenderState({
   });
   const hiddenItemCount = getHiddenItemCount(queueSize, collapsedQueueSize);
 
+  const queueItems = shouldShowSkeleton
+    ? []
+    : getQueueItems({
+        hiddenItemCount,
+        renderedContinuationCheckIns,
+        renderedInvitations,
+        renderedParticipations,
+        renderedPlans,
+        renderedRequests,
+        viewer,
+      });
+
   return {
-    queueItems: shouldShowSkeleton
-      ? []
-      : getQueueItems({
-          hiddenItemCount,
-          renderedContinuationCheckIns,
-          renderedInvitations,
-          renderedParticipations,
-          renderedPlans,
-          renderedRequests,
-          viewer,
-        }),
+    queueItems: limitQueueItems(queueItems, queueSize, maxVisibleItems),
     queueSummary: getQueueSummary({
       continuationCheckIns,
       pendingParticipations,
@@ -99,6 +103,65 @@ export function getAttentionQueueRenderState({
     }),
     shouldShowEmptyQueue: !shouldShowSkeleton && queueSize === 0,
   };
+}
+
+function limitQueueItems(
+  items: AttentionQueueRenderItem[],
+  queueSize: number,
+  maxVisibleItems?: number,
+) {
+  if (!maxVisibleItems || maxVisibleItems < 1) {
+    return items;
+  }
+
+  const queueItems = items.filter((item) => item.kind !== "see-rest");
+  const visibleItems = getVariedQueueItems(queueItems, maxVisibleItems);
+  const hiddenItemCount = Math.max(queueSize - visibleItems.length, 0);
+
+  return hiddenItemCount > 0
+    ? [
+        ...visibleItems,
+        {
+          hiddenItemCount,
+          kind: "see-rest" as const,
+        },
+      ]
+    : visibleItems;
+}
+
+function getVariedQueueItems(
+  items: AttentionQueueRenderItem[],
+  maxVisibleItems: number,
+) {
+  const visibleItems: AttentionQueueRenderItem[] = [];
+  const representedKinds = new Set<AttentionQueueRenderItem["kind"]>();
+
+  for (const item of items) {
+    if (representedKinds.has(item.kind)) {
+      continue;
+    }
+
+    visibleItems.push(item);
+    representedKinds.add(item.kind);
+
+    if (visibleItems.length === maxVisibleItems) {
+      return visibleItems;
+    }
+  }
+
+  for (const item of items) {
+    if (visibleItems.includes(item)) {
+      continue;
+    }
+
+    visibleItems.push(item);
+
+    if (visibleItems.length === maxVisibleItems) {
+      break;
+    }
+  }
+
+  return visibleItems;
 }
 
 function getCollapsedQueueItems<Item>(items: Item[]) {

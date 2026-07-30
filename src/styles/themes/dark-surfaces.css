@@ -1,0 +1,9 @@
+:root.dark {
+  --card: #131615;
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --input: #171b1a;
+  --input-border: color-mix(in srgb, var(--foreground) 7%, transparent);
+  --grouped-menu-selected: #0e1918;
+}

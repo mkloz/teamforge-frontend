@@ -49,8 +49,8 @@ export function GroupPlanHero({
     : governance !== undefined && detail.viewer.canLeaveGroup;
 
   return (
-    <header className="flex flex-col gap-4">
-      <Button asChild variant="ghost" size="sm" className="px-0">
+    <header className="flex flex-col gap-6">
+      <Button asChild variant="ghost" size="sm" className="self-center px-0">
         <Link {...hero.backLink.navigation}>
           <ArrowLeft className="size-4" aria-hidden="true" />
           {hero.backLink.label}
@@ -84,18 +84,18 @@ export function GroupPlanHero({
           ) : null}
         </div>
 
-        <h1 className="mt-4 max-w-3xl text-balance font-extrabold text-3xl text-foreground leading-none tracking-tight md:text-4xl lg:text-5xl">
+        <h1 className="max-w-3xl text-balance font-extrabold text-3xl text-white leading-none tracking-tight [text-shadow:0_3px_20px_rgb(0_0_0/75%)] md:text-4xl lg:text-5xl">
           {hero.title}
         </h1>
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <p className="font-semibold text-foreground/85 text-sm md:text-base">
+          <p className="font-semibold text-sm text-white/90 [text-shadow:0_2px_12px_rgb(0_0_0/85%)] md:text-base">
             {hero.metadata}
           </p>
         </div>
 
         {hero.shouldShowGroupContext ? (
-          <p className="mt-2 font-medium text-foreground/70 text-sm">
+          <p className="mt-2 font-medium text-sm text-white/70 [text-shadow:0_2px_12px_rgb(0_0_0/85%)]">
             {hero.groupName} · gathering around {hero.activityTitle}
           </p>
         ) : null}
@@ -196,7 +196,7 @@ function GroupPlanCompactHero({
       )}
       aria-hidden={!visible}
     >
-      <div className="mx-auto w-full max-w-5xl px-4 sm:px-5 lg:px-8">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-5 lg:px-8">
         <div
           className={cn(
             "relative h-(--group-detail-cover-collapsed-height,72px) overflow-hidden rounded-b-md bg-canvas shadow-[0_18px_44px_rgb(0_0_0/80%)]",

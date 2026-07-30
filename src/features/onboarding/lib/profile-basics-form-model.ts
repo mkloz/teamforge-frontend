@@ -4,13 +4,13 @@ import {
   type OnboardingReturnSearchParams,
 } from "@/features/onboarding/lib/onboarding-flow-state";
 import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
-import type { User } from "@/shared/schemas";
+import type { AdultEligibility, User } from "@/shared/schemas";
+import { getAgeFromDateOfBirth } from "@/shared/validators/date-of-birth.validator";
 
-const PROFILE_BASICS_FIELD_COUNT = 4;
+const PROFILE_BASICS_FIELD_COUNT = 3;
 
 export const PROFILE_BASICS_DEFAULT_VALUES: ProfileBasicsValues = {
   dateOfBirth: "",
-  age: "",
   gender: "",
   city: "",
   locationLat: null,
@@ -30,16 +30,11 @@ export function getProfileBasicsValuesFromUser(
 function buildProfileBasicsValues(user: User): ProfileBasicsValues {
   return {
     dateOfBirth: "",
-    age: toProfileBasicsAgeValue(user.age),
     gender: toProfileBasicsTextValue(user.gender),
     city: toProfileBasicsTextValue(user.city),
     locationLat: toProfileBasicsLocationValue(user.locationLat),
     locationLng: toProfileBasicsLocationValue(user.locationLng),
   };
-}
-
-function toProfileBasicsAgeValue(age: User["age"]) {
-  return age ? String(age) : "";
 }
 
 function toProfileBasicsTextValue<T extends string>(
@@ -52,27 +47,55 @@ function toProfileBasicsLocationValue(value: number | null | undefined) {
   return value ?? null;
 }
 
-export function getProfileBasicsProgress(values: Partial<ProfileBasicsValues>) {
+export function requiresProfileBasicsDateOfBirth(
+  adultEligibility?: AdultEligibility,
+) {
+  return !adultEligibility || adultEligibility.status === "UNKNOWN";
+}
+
+export function getProfileBasicsProgress(
+  values: Partial<ProfileBasicsValues>,
+  requiresDateOfBirth = true,
+) {
   const filledFields = [
-    Boolean(values.dateOfBirth?.trim().length),
-    Boolean(values.age?.trim().length),
+    ...(requiresDateOfBirth
+      ? [Boolean(values.dateOfBirth?.trim().length)]
+      : []),
     Boolean(values.gender),
     Boolean(values.city?.trim().length),
   ].filter(Boolean).length;
 
-  return filledFields / PROFILE_BASICS_FIELD_COUNT;
+  const fieldCount = requiresDateOfBirth
+    ? PROFILE_BASICS_FIELD_COUNT
+    : PROFILE_BASICS_FIELD_COUNT - 1;
+
+  return filledFields / fieldCount;
 }
 
 export function toProfileBasicsDto(
   values: ProfileBasicsValues,
+  options: {
+    includeDateOfBirth?: boolean;
+    today?: Date;
+  } = {},
 ): UpdateProfileBasicsDto | null {
   if (!values.gender) {
     return null;
   }
 
+  const includeDateOfBirth = options.includeDateOfBirth !== false;
+  const age = includeDateOfBirth
+    ? getAgeFromDateOfBirth(values.dateOfBirth, options.today)
+    : null;
+
+  if (includeDateOfBirth && age === null) {
+    return null;
+  }
+
   return {
-    dateOfBirth: values.dateOfBirth,
-    age: Number(values.age),
+    ...(includeDateOfBirth
+      ? { age: age ?? undefined, dateOfBirth: values.dateOfBirth }
+      : {}),
     gender: values.gender,
     city: values.city.trim(),
     locationLat: values.locationLat,

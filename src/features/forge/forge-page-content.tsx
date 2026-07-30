@@ -2,54 +2,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { AnimatedBriefCycler } from "./components/animated-brief-cycler";
-
-interface ChipIdea {
-  detail?: string;
-  label: string;
-  laneKey?: string;
-  title: string;
-}
-
-const FORGE_IDEA_CHIPS: ChipIdea[] = [
-  {
-    label: "Coffee between classes",
-    title: "Coffee between classes",
-    laneKey: "social",
-  },
-  {
-    label: "Beginner climbing",
-    title: "Beginner climbing session",
-    laneKey: "outdoors",
-  },
-  {
-    label: "Board games Friday",
-    title: "Board game night",
-    detail: "Friday evening at a board game café",
-    laneKey: "play",
-  },
-  { label: "Sunday cycle", title: "Sunday cycle route", laneKey: "outdoors" },
-  {
-    label: "Exam revision block",
-    title: "Exam revision session",
-    laneKey: "learning",
-  },
-  {
-    label: "Five-a-side football",
-    title: "Five-a-side football",
-    laneKey: "outdoors",
-  },
-  {
-    label: "Hack session",
-    title: "Hackathon or coding session",
-    laneKey: "builder",
-  },
-  { label: "Walk after work", title: "Walk after work", laneKey: "outdoors" },
-  {
-    label: "Portfolio review",
-    title: "Portfolio review session",
-    laneKey: "creative",
-  },
-];
+import { ForgeTemplateRecommendations } from "./components/forge-template-recommendations";
 
 interface ForgePageShellProps {
   children: React.ReactNode;
@@ -59,6 +12,7 @@ interface ForgePageShellProps {
 interface ForgeIntroContentProps {
   onForgeClick: (options?: {
     idea?: { detail?: string; laneKey?: string; title: string };
+    templateId?: string;
   }) => void;
 }
 
@@ -115,35 +69,9 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
         <AnimatedBriefCycler />
       </section>
 
-      {/* Idea chips */}
-      <section aria-labelledby="starter-ideas-title">
-        <h2
-          id="starter-ideas-title"
-          className="text-balance font-black text-2xl text-foreground leading-tight"
-        >
-          Or start with an idea
-        </h2>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {FORGE_IDEA_CHIPS.map((chip) => (
-            <button
-              key={chip.title}
-              type="button"
-              onClick={() =>
-                onForgeClick({
-                  idea: {
-                    detail: chip.detail,
-                    laneKey: chip.laneKey,
-                    title: chip.title,
-                  },
-                })
-              }
-              className="min-h-11 rounded-full border border-border/50 bg-card/70 px-4 py-2 font-medium text-muted-foreground text-sm transition-colors duration-150 hover:border-forge-teal/40 hover:bg-forge-teal/5 hover:text-forge-teal md:min-h-9"
-            >
-              {chip.label}
-            </button>
-          ))}
-        </div>
-      </section>
+      <ForgeTemplateRecommendations
+        onSelect={(templateId) => onForgeClick({ templateId })}
+      />
     </div>
   );
 }

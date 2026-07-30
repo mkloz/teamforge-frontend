@@ -6,9 +6,9 @@ import { HomeGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { getActiveGroupPreview } from "@/features/home/lib/home-insights";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import { Button } from "@/shared/components/ui/button";
+import { GroupedMenuList } from "@/shared/components/ui/grouped-menu";
 import { buildActivityNavigation } from "@/shared/navigation/activity-navigation";
 
-import { BrowseGroupsRow } from "./browse-groups-row";
 import { GroupRow } from "./group-row";
 import { GroupsGridEmpty } from "./groups-grid-empty";
 
@@ -42,11 +42,12 @@ export function GroupsGridView({
   return (
     <section
       aria-labelledby="groups-grid-heading"
-      className="flex w-full flex-col gap-4"
+      className="flex w-full min-w-0 flex-col gap-5 lg:pr-10"
     >
       <HomeSectionHeading
         id="groups-grid-heading"
         title="Active groups"
+        description="Latest updates and upcoming plans."
         action={
           <Button asChild variant="ghost" size="sm">
             <Link {...buildActivityNavigation({ filter: "groups" })}>
@@ -57,40 +58,31 @@ export function GroupsGridView({
         }
       />
 
-      <ul
-        aria-label="Your groups"
-        className="flex list-none flex-col gap-2 p-0"
-      >
+      <GroupedMenuList aria-label="Your groups">
         {visibleGroups.length > 0 ? (
-          <>
-            {visibleGroups.map((group) => {
-              const unreadCount =
-                groupChatState.unreadCountsByGroupId.get(group.id) ?? 0;
-              const lastActivityAt =
-                groupChatState.lastActivityByGroupId.get(group.id) ??
-                group.updatedAt;
-              const messagePreview =
-                groupChatState.messagePreviewsByGroupId.get(group.id);
-              const status = groupChatState.statusesByGroupId.get(group.id);
+          visibleGroups.map((group) => {
+            const unreadCount =
+              groupChatState.unreadCountsByGroupId.get(group.id) ?? 0;
+            const messagePreview = groupChatState.messagePreviewsByGroupId.get(
+              group.id,
+            );
+            const status = groupChatState.statusesByGroupId.get(group.id);
 
-              return (
-                <GroupRow
-                  key={group.id}
-                  group={group}
-                  isMuted={status?.isMuted}
-                  isPinned={status?.isPinned}
-                  lastActivityAt={lastActivityAt}
-                  messagePreview={messagePreview}
-                  unreadCount={unreadCount}
-                />
-              );
-            })}
-            <BrowseGroupsRow />
-          </>
+            return (
+              <GroupRow
+                key={group.id}
+                group={group}
+                isMuted={status?.isMuted}
+                isPinned={status?.isPinned}
+                messagePreview={messagePreview}
+                unreadCount={unreadCount}
+              />
+            );
+          })
         ) : (
           <GroupsGridEmpty />
         )}
-      </ul>
+      </GroupedMenuList>
     </section>
   );
 }

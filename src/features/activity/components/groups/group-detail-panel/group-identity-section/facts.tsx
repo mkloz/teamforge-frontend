@@ -2,22 +2,33 @@ import { CalendarDays, Globe2, Lock, MapPin, UserCheck } from "lucide-react";
 import type { Group } from "@/features/activity/lib/activity-contract";
 import { FactItem } from "@/shared/components/ui/fact-item";
 import { formatPanelToken } from "../lib/constants";
+import { GroupCapacityMeter } from "./capacity-meter";
+import { getCapacityDisplayState } from "./capacity-state";
 import type { GroupFactProps } from "./types";
 
 interface GroupFactListProps {
   activity?: Group["activity"];
   createdLabel: string;
+  maxMembers: number;
+  memberCount: number;
 }
 
-export function GroupFactList({ activity, createdLabel }: GroupFactListProps) {
+export function GroupFactList({
+  activity,
+  createdLabel,
+  maxMembers,
+  memberCount,
+}: GroupFactListProps) {
   const access = activity ? getAccessDisplay(activity) : null;
   const facts = getGroupFacts({
     access,
     activity,
     createdLabel,
   });
+  const capacityState = getCapacityDisplayState(memberCount, maxMembers);
+
   return (
-    <div className="border-border/70 border-y py-3">
+    <div className="flex flex-col gap-4 py-1">
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
         {facts.map((fact) => (
           <FactItem
@@ -29,6 +40,12 @@ export function GroupFactList({ activity, createdLabel }: GroupFactListProps) {
           />
         ))}
       </dl>
+
+      <GroupCapacityMeter
+        capacityState={capacityState}
+        maxMembers={maxMembers}
+        memberCount={memberCount}
+      />
     </div>
   );
 }

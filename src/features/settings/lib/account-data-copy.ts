@@ -19,7 +19,9 @@ export const ACCOUNT_DATA_COPY = {
     downloadError: "We couldn't download your data export. Please try again.",
     recentAuthTitle: "Sign in again to continue",
     recentAuthDescription:
-      "For this request, we need a new sign-in. You will return to this page afterward.",
+      "Confirm your password to continue this request without leaving the page.",
+    recentGoogleAuthDescription:
+      "Sign in with Google again to continue. You will return to this page afterward.",
   },
   lifecycle: {
     active: "Your account is open and ready to use.",

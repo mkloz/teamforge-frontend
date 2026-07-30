@@ -29,7 +29,7 @@ export function InlineForgeHeader({
   return (
     <div className="sticky top-0 z-30 -mx-6 mb-2 border-border/40 border-b bg-transparent px-6 pb-3 shadow-black/5 shadow-sm backdrop-blur-xl md:-mx-12 md:px-12">
       <div className="mb-2 flex items-center justify-between pt-4 md:mb-3">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           {fw.canGoBack ? (
             <Button
               variant="ghost"
@@ -49,13 +49,13 @@ export function InlineForgeHeader({
               iconClassName="size-3.5"
             />
           )}
-          <div className="flex items-baseline overflow-hidden">
+          <div className="flex min-w-0 items-baseline">
             <div>
               <h2
                 id={headingId}
                 ref={headingRef}
                 tabIndex={-1}
-                className="rounded-sm font-black text-base text-foreground tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 md:text-lg"
+                className="whitespace-nowrap rounded-sm font-black text-base text-foreground tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 md:text-lg"
               >
                 {currentMetadata.title}
               </h2>
@@ -63,7 +63,7 @@ export function InlineForgeHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {fw.isPreForge && (
             <ActionDialog
               cancelLabel="Keep editing"
@@ -86,10 +86,11 @@ export function InlineForgeHeader({
                       onCancelDialogChange(true);
                     }
                   }}
-                  className="h-11 px-4 font-bold text-xs md:h-8 md:px-3"
+                  className="size-10 rounded-full p-0 font-bold text-xs md:h-8 md:w-auto md:rounded-lg md:px-3"
+                  aria-label="Cancel"
                 >
                   <X className="size-3.5" aria-hidden="true" />
-                  Cancel
+                  <span className="sr-only md:not-sr-only">Cancel</span>
                 </Button>
               }
             />

@@ -21,6 +21,7 @@ function getThumbKeys(count: number) {
 interface SliderProps
   extends Omit<ComponentProps<typeof SliderPrimitive.Root>, "aria-label"> {
   "aria-label"?: string;
+  segments?: number;
   thumbAriaLabels?: readonly string[];
 }
 
@@ -28,6 +29,7 @@ function Slider({
   "aria-label": ariaLabel,
   className,
   defaultValue,
+  segments,
   thumbAriaLabels,
   value,
   min = 0,
@@ -40,6 +42,10 @@ function Slider({
       ? defaultValue
       : [min, max];
   const thumbKeys = getThumbKeys(values.length);
+  const segmentCount =
+    segments && Number.isFinite(segments) ? Math.max(1, segments) : 0;
+  const selectedMinimum = values.length === 1 ? min : Math.min(...values);
+  const selectedMaximum = Math.max(...values);
 
   return (
     <SliderPrimitive.Root
@@ -56,11 +62,45 @@ function Slider({
     >
       <SliderPrimitive.Track
         data-slot="slider-track"
-        className="relative h-2 w-full grow overflow-hidden rounded-full bg-muted"
+        className={cn(
+          "relative h-2 w-full grow overflow-hidden rounded-full",
+          segmentCount ? "bg-transparent" : "bg-muted",
+        )}
       >
+        {segmentCount > 0 ? (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 grid gap-1.5"
+            style={{
+              gridTemplateColumns: `repeat(${segmentCount}, minmax(0, 1fr))`,
+            }}
+          >
+            {Array.from({ length: segmentCount }, (_, index) => {
+              const segmentStart = min + ((max - min) * index) / segmentCount;
+              const segmentEnd =
+                min + ((max - min) * (index + 1)) / segmentCount;
+              const isSelected =
+                segmentStart >= selectedMinimum &&
+                segmentEnd <= selectedMaximum;
+
+              return (
+                <span
+                  key={`slider-segment-${segmentStart}`}
+                  className={cn(
+                    "h-full rounded-full transition-colors",
+                    isSelected ? "bg-primary" : "bg-muted",
+                  )}
+                />
+              );
+            })}
+          </span>
+        ) : null}
         <SliderPrimitive.Range
           data-slot="slider-range"
-          className="absolute h-full bg-primary"
+          className={cn(
+            "absolute h-full",
+            segmentCount ? "bg-transparent" : "bg-primary",
+          )}
         />
       </SliderPrimitive.Track>
       {thumbKeys.map((thumbKey, index) => (

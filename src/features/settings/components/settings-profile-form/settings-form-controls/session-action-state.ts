@@ -60,10 +60,12 @@ export function getSessionRowViewState(
   const isCurrentSession = session.isCurrent;
 
   return {
-    deviceClassName: isCurrentSession ? "bg-primary/8" : "bg-muted",
+    deviceClassName: isCurrentSession ? "bg-primary/10" : "bg-muted",
     deviceTone: isCurrentSession ? "teal" : "neutral",
     isCurrentSession,
-    rowHighlightClassName: isCurrentSession ? "border-primary/25" : undefined,
+    rowHighlightClassName: isCurrentSession
+      ? "bg-(--grouped-menu-selected)"
+      : undefined,
   };
 }
 

@@ -5,6 +5,7 @@ import type {
   MemberRole,
   PlanHistoryItem,
 } from "@/features/activity/lib/activity-contract";
+import type { Invite } from "@/shared/schemas";
 import {
   type GroupGovernance,
   hasMissingAutoGovernance,
@@ -19,9 +20,11 @@ import { PlanHistorySection } from "../plan-history-section";
 import { PlanSection } from "../plan-section";
 
 interface GroupPanelMainSectionsProps {
+  cancelInvitation: (inviteId: string) => Promise<void> | void;
   currentUserId: string | null;
   currentUserRole: MemberRole;
   cancelPlan: (planId: string) => Promise<void> | void;
+  cancellingInviteId: string | null;
   completePlan: (planId: string) => Promise<void> | void;
   confirmPlan: (planId: string) => Promise<void> | void;
   createNextGroupPlan: (
@@ -40,9 +43,11 @@ interface GroupPanelMainSectionsProps {
   isLeaving: boolean;
   leaveGroup: () => Promise<void> | void;
   members: GroupMember[];
+  memberCount: number;
   onEditGroup: () => void;
   onEditPlan: () => void;
   pendingPlanAction: string | null;
+  pendingInvitations: Invite[];
   removeMember: (memberId: string) => Promise<void> | void;
   removingMemberId: string | null;
   setSelectedMember: (member: GroupMember) => void;
@@ -58,9 +63,11 @@ interface GroupPanelMembershipActionState {
 }
 
 export function GroupPanelMainSections({
+  cancelInvitation,
   currentUserId,
   currentUserRole,
   cancelPlan,
+  cancellingInviteId,
   completePlan,
   confirmPlan,
   createNextGroupPlan,
@@ -77,9 +84,11 @@ export function GroupPanelMainSections({
   isLeaving,
   leaveGroup,
   members,
+  memberCount,
   onEditGroup,
   onEditPlan,
   pendingPlanAction,
+  pendingInvitations,
   removeMember,
   removingMemberId,
   setSelectedMember,
@@ -121,6 +130,8 @@ export function GroupPanelMainSections({
         description={group.description}
         isReadOnly={isGroupLocked}
         groupId={group.id}
+        maxMembers={group.maxMembers}
+        memberCount={memberCount + pendingInvitations.length}
         isOnline={isOnline}
         name={group.name}
         onEditGroup={onEditGroup}
@@ -147,6 +158,8 @@ export function GroupPanelMainSections({
       />
 
       <GroupMembersSection
+        cancelInvitation={cancelInvitation}
+        cancellingInviteId={cancellingInviteId}
         currentUserId={currentUserId}
         currentUserRole={currentUserRole}
         group={group}
@@ -156,6 +169,7 @@ export function GroupPanelMainSections({
         isGroupLocked={isGroupLocked}
         isOnline={isOnline}
         members={members}
+        pendingInvitations={pendingInvitations}
         removeMember={removeMember}
         removingMemberId={removingMemberId}
         setSelectedMember={setSelectedMember}
@@ -277,6 +291,8 @@ function CurrentPlanSection({
 }
 
 function GroupMembersSection({
+  cancelInvitation,
+  cancellingInviteId,
   currentUserId,
   currentUserRole,
   group,
@@ -286,12 +302,15 @@ function GroupMembersSection({
   isGroupLocked,
   isOnline,
   members,
+  pendingInvitations,
   removeMember,
   removingMemberId,
   setSelectedMember,
   canInviteMembers,
   canRemoveMembers,
 }: {
+  cancelInvitation: (inviteId: string) => Promise<void> | void;
+  cancellingInviteId: string | null;
   currentUserId: string | null;
   currentUserRole: MemberRole;
   group: Group;
@@ -301,6 +320,7 @@ function GroupMembersSection({
   isGroupLocked: boolean;
   isOnline: boolean;
   members: GroupMember[];
+  pendingInvitations: Invite[];
   removeMember: (memberId: string) => Promise<void> | void;
   removingMemberId: string | null;
   setSelectedMember: (member: GroupMember) => void;
@@ -314,6 +334,7 @@ function GroupMembersSection({
   return (
     <MembersSection
       members={members}
+      pendingInvitations={pendingInvitations}
       maxMembers={group.maxMembers}
       currentUserId={currentUserId}
       currentUserRole={currentUserRole}
@@ -327,6 +348,8 @@ function GroupMembersSection({
       removingMemberId={removingMemberId}
       canInviteMembers={canInviteMembers}
       canRemoveMembers={canRemoveMembers}
+      cancellingInviteId={cancellingInviteId}
+      onCancelInvitation={cancelInvitation}
     />
   );
 }

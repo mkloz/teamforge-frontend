@@ -15,14 +15,16 @@ export function GroupPanelHeader({
   onClose,
 }: GroupPanelHeaderProps) {
   return (
-    <div className="z-20 flex h-16 shrink-0 items-center justify-between border-border/70 border-b bg-canvas/95 px-5 backdrop-blur-md">
-      <h3 className="sr-only">Group details</h3>
+    <div className="z-20 flex h-16 shrink-0 items-center justify-between gap-3 border-border/70 border-b bg-canvas px-5">
+      <h3 className="font-bold text-base text-ink leading-tight tracking-tight">
+        Group details
+      </h3>
       <div className="flex items-center gap-1">
         <Button
           asChild
           variant="ghost"
           size="icon-sm"
-          className="rounded-lg text-slate-muted transition-colors hover:text-ink"
+          className="rounded-full text-slate-muted transition-colors hover:text-ink"
         >
           <Link
             {...buildGroupPlanDetailNavigation(groupId, { source: "activity" })}
@@ -35,7 +37,7 @@ export function GroupPanelHeader({
           variant="ghost"
           size="icon-sm"
           onClick={onClose}
-          className="rounded-lg text-slate-muted transition-colors hover:text-ink"
+          className="rounded-full text-slate-muted transition-colors hover:text-ink"
           aria-label="Close panel"
         >
           <X className="size-4" />

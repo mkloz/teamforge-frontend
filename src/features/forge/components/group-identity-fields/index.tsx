@@ -14,7 +14,9 @@ export interface GroupIdentityFieldsProps {
   groupDescription: string;
   onGroupDescriptionChange: (v: string) => void;
   selectedActivity?: string | null;
+  planTitle?: string | null;
   existingGroupNames?: string[];
+  heading?: string | null;
   subtitle?: string;
 }
 
@@ -24,7 +26,9 @@ export function GroupIdentityFields({
   groupDescription,
   onGroupDescriptionChange,
   selectedActivity,
+  planTitle,
   existingGroupNames = EMPTY_GROUP_NAMES,
+  heading = "Group details",
   subtitle = "Optional — you can always update this later.",
 }: GroupIdentityFieldsProps) {
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -34,19 +38,24 @@ export function GroupIdentityFields({
     existingGroupNames,
     groupName,
     onGroupNameChange,
+    planTitle,
     selectedActivity,
   });
 
   return (
-    <div className="flex flex-col gap-3.5">
-      <div className="px-0.5">
-        <p className="font-semibold text-foreground text-xs md:text-sm">
-          Group details
-        </p>
-        {subtitle && (
-          <p className="mt-0.5 text-muted-foreground/60 text-xs">{subtitle}</p>
-        )}
-      </div>
+    <div className="flex min-w-0 flex-col gap-3.5">
+      {heading || subtitle ? (
+        <div className="px-0.5">
+          {heading ? (
+            <p className="font-bold text-base text-foreground">{heading}</p>
+          ) : null}
+          {subtitle ? (
+            <p className="mt-1 text-muted-foreground text-sm leading-relaxed">
+              {subtitle}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       <GroupNameField
         groupName={groupName}

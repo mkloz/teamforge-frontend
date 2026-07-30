@@ -9,6 +9,7 @@ import type { FormEvent } from "react";
 
 import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
 import { AdultEligibilityCorrectionControls } from "@/features/settings/components/adult-eligibility-correction-controls";
+import { AccountSettingsCard } from "@/features/settings/components/settings-profile-form/account-settings-section/account-settings-card";
 import type { useAdultEligibilityCorrection } from "@/features/settings/hooks/use-adult-eligibility-correction";
 import { useAdultEligibilityForm } from "@/features/settings/hooks/use-adult-eligibility-form";
 import { DateOfBirthField } from "@/shared/components/profile/date-of-birth-field";
@@ -95,12 +96,11 @@ export function AdultEligibilitySection({
   }
 
   return (
-    <section className="border-border border-t pt-7">
-      <div className="mb-5 max-w-2xl">
-        <h3 className="font-semibold text-ink text-lg">Age eligibility</h3>
-      </div>
-
-      <div className="flex max-w-2xl flex-col gap-5">
+    <AccountSettingsCard
+      title="Age eligibility"
+      description="Review the age check attached to your account."
+    >
+      <div className="flex flex-col gap-5">
         <Notice
           tone={statusContent.tone}
           size="md"
@@ -183,6 +183,6 @@ export function AdultEligibilitySection({
           <AdultEligibilityCorrectionControls state={correctionState} />
         ) : null}
       </div>
-    </section>
+    </AccountSettingsCard>
   );
 }

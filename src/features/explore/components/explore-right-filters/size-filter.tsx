@@ -30,6 +30,7 @@ export function SizeFilter() {
           max={FILTER_BOUNDARIES.size.max}
           min={FILTER_BOUNDARIES.size.min}
           step={1}
+          segments={6}
           minStepsBetweenThumbs={1}
           aria-label="Group size range"
           thumbAriaLabels={["Minimum group size", "Maximum group size"]}

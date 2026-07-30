@@ -11,9 +11,15 @@ import { HomeSectionHeading } from "@/features/home/components/home-section-head
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import {
+  GroupedMenuAction,
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { Switch } from "@/shared/components/ui/switch";
+import { cn } from "@/shared/lib/utils";
 import { buildSettingsNavigation } from "@/shared/navigation";
 
 const SECTION_HEADING_ID = "candidate-availability-heading";
@@ -52,9 +58,9 @@ function CandidateAvailabilityLoading() {
       role="status"
     >
       <Skeleton className="h-5 w-32" />
-      <div className="grid gap-3 border-border/70 border-y py-5">
-        <Skeleton className="h-4 w-full max-w-lg" />
-        <Skeleton className="h-10 w-44" />
+      <div className="grid gap-0.5 overflow-hidden rounded-2xl">
+        <Skeleton className="h-16 rounded-b-none" />
+        <Skeleton className="h-16 rounded-t-none" />
       </div>
       <span className="sr-only">Loading group proposal availability</span>
     </section>
@@ -111,7 +117,7 @@ function CandidateAvailabilityContent({
         }
       />
 
-      <div className="grid gap-5 border-border/70 border-y py-5">
+      <div className="grid gap-4">
         {availability.lifecycle === null ? (
           <AvailabilityChoices
             actionDisabled={isAvailabilityActionDisabled(state)}
@@ -152,14 +158,38 @@ function CandidateAvailabilityContent({
           </p>
         ) : null}
 
-        <AvailabilityActions
-          availability={availability}
-          hasSavedLocation={hasSavedLocation}
-          isCheckingLocation={isCheckingLocation}
-          localEnabled={localEnabled}
-          onlineEnabled={onlineEnabled}
-          state={state}
-        />
+        {availability.lifecycle === "RESTRICTED" ? (
+          <AvailabilityActions
+            availability={availability}
+            hasSavedLocation={hasSavedLocation}
+            isCheckingLocation={isCheckingLocation}
+            localEnabled={localEnabled}
+            onlineEnabled={onlineEnabled}
+            state={state}
+          />
+        ) : (
+          <div className="main-action-grid grid items-center gap-3 border-border/70 border-t pt-4">
+            <p className="font-medium text-muted-foreground text-sm leading-5">
+              {getAvailabilityActionSummary({
+                availability,
+                hasSavedLocation,
+                isCheckingLocation,
+                localEnabled,
+                onlineEnabled,
+              })}
+            </p>
+            <div className="sm:justify-self-end">
+              <AvailabilityActions
+                availability={availability}
+                hasSavedLocation={hasSavedLocation}
+                isCheckingLocation={isCheckingLocation}
+                localEnabled={localEnabled}
+                onlineEnabled={onlineEnabled}
+                state={state}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -183,28 +213,31 @@ function AvailabilityChoices({
   onOnlineChange: (enabled: boolean) => void;
 }) {
   return (
-    <fieldset className="grid gap-0 sm:grid-cols-2 sm:gap-8">
-      <legend className="mb-2 font-semibold text-ink text-sm sm:col-span-2">
-        Where the activity can happen
+    <fieldset className="grid gap-3">
+      <legend className="mb-3 font-semibold text-ink text-sm">
+        Where proposals can happen
       </legend>
-      <AvailabilityChoice
-        checked={localEnabled}
-        description="Near your saved area"
-        disabled={actionDisabled}
-        icon={MapPin}
-        label="Local"
-        onCheckedChange={onLocalChange}
-      />
-      <AvailabilityChoice
-        checked={onlineEnabled}
-        disabled={actionDisabled}
-        icon={Monitor}
-        label="Online"
-        onCheckedChange={onOnlineChange}
-      />
+      <GroupedMenuList>
+        <AvailabilityChoice
+          checked={localEnabled}
+          description="Activities near your saved area"
+          disabled={actionDisabled}
+          icon={MapPin}
+          label="Local"
+          onCheckedChange={onLocalChange}
+        />
+        <AvailabilityChoice
+          checked={onlineEnabled}
+          description="Remote activities you can join anywhere"
+          disabled={actionDisabled}
+          icon={Monitor}
+          label="Online"
+          onCheckedChange={onOnlineChange}
+        />
+      </GroupedMenuList>
 
       {localEnabled && !hasSavedLocation ? (
-        <p className="mt-3 text-muted-foreground text-sm sm:col-span-2">
+        <p className="text-muted-foreground text-sm">
           {isCheckingLocation ? (
             "Checking your saved location…"
           ) : (
@@ -242,26 +275,35 @@ function AvailabilityChoice({
   const switchId = `candidate-availability-${label.toLowerCase()}`;
 
   return (
-    <div className="flex min-h-14 items-center justify-between gap-4 border-border/70 border-b py-3 sm:border-y">
-      <label htmlFor={switchId} className="flex min-w-0 items-center gap-3">
-        <Icon className="size-4 shrink-0 text-forge-teal" aria-hidden="true" />
-        <span className="min-w-0">
+    <GroupedMenuItem>
+      <GroupedMenuAction
+        selected={checked}
+        className="min-h-16 gap-3 px-4 py-3 sm:px-5"
+      >
+        <Icon
+          className={cn(
+            "size-4 shrink-0",
+            checked ? "text-forge-teal" : "text-muted-foreground",
+          )}
+          aria-hidden="true"
+        />
+        <label htmlFor={switchId} className="min-w-0 flex-1 cursor-pointer">
           <span className="block font-semibold text-ink text-sm">{label}</span>
           {description ? (
-            <span className="block text-muted-foreground text-xs">
+            <span className="mt-0.5 block text-muted-foreground text-xs leading-5">
               {description}
             </span>
           ) : null}
-        </span>
-      </label>
-      <Switch
-        id={switchId}
-        checked={checked}
-        disabled={disabled}
-        onCheckedChange={onCheckedChange}
-        aria-label={`${label} group proposals`}
-      />
-    </div>
+        </label>
+        <Switch
+          id={switchId}
+          checked={checked}
+          disabled={disabled}
+          onCheckedChange={onCheckedChange}
+          aria-label={`${label} group proposals`}
+        />
+      </GroupedMenuAction>
+    </GroupedMenuItem>
   );
 }
 
@@ -413,7 +455,7 @@ function AvailabilityActions({
         title="Open to group proposals again?"
         trigger={
           <Button
-            className="w-fit"
+            className="w-full sm:w-fit"
             disabled={actionDisabled || !hasScope || localScopeUnavailable}
           >
             <RefreshCcw className="size-4" aria-hidden="true" />
@@ -437,7 +479,11 @@ function AvailabilityActions({
         }
         title="Pause new group proposals?"
         trigger={
-          <Button variant="outline" className="w-fit" disabled={actionDisabled}>
+          <Button
+            variant="outline"
+            className="w-full sm:w-fit"
+            disabled={actionDisabled}
+          >
             <Pause className="size-4" aria-hidden="true" />
             Pause new proposals
           </Button>
@@ -464,10 +510,10 @@ function AvailabilityActions({
       title="Allow group proposals?"
       trigger={
         <Button
-          className="w-fit"
+          className="w-full sm:w-fit"
           disabled={actionDisabled || !hasScope || localScopeUnavailable}
         >
-          Allow group proposals
+          Turn on proposals
         </Button>
       }
     />
@@ -488,33 +534,34 @@ function getAvailabilityView(availability: CandidateAvailability) {
       return {
         description: "A current limit is holding new proposals.",
         label: "Waiting",
-        title: "Your proposal choices are saved",
+        title: "Group proposals",
         tone: "amber" as const,
       };
     }
 
     return {
-      description: "You decide whether to join.",
-      label: "Available",
-      title: "You’re open to a group proposal",
+      description:
+        "TeamForge can consider you for relevant groups. You still decide whether to join.",
+      label: "On",
+      title: "Group proposals",
       tone: "teal" as const,
     };
   }
 
   if (availability.lifecycle === "PAUSED") {
     return {
-      description: undefined,
+      description: "Your saved choices will be ready when you turn this on.",
       label: "Paused",
-      title: "Group proposals are paused",
+      title: "Group proposals",
       tone: "muted" as const,
     };
   }
 
   if (availability.lifecycle === "EXPIRED") {
     return {
-      description: undefined,
+      description: "Confirm that you still want to hear about relevant groups.",
       label: "Confirm again",
-      title: "Are you still open to a proposal?",
+      title: "Group proposals",
       tone: "muted" as const,
     };
   }
@@ -523,7 +570,7 @@ function getAvailabilityView(availability: CandidateAvailability) {
     return {
       description: undefined,
       label: "Unavailable",
-      title: "Group proposals are unavailable",
+      title: "Group proposals",
       tone: "muted" as const,
     };
   }
@@ -532,17 +579,60 @@ function getAvailabilityView(availability: CandidateAvailability) {
     return {
       description: "Review where activities can happen.",
       label: "Review needed",
-      title: "Review your group proposal choices",
+      title: "Group proposals",
       tone: "amber" as const,
     };
   }
 
   return {
-    description: "You review every proposal before joining.",
-    label: "Not enabled",
-    title: "Choose whether you’re open",
+    description:
+      "Let TeamForge consider you for relevant groups. You still decide whether to join.",
+    label: "Off",
+    title: "Group proposals",
     tone: "muted" as const,
   };
+}
+
+function getAvailabilityActionSummary({
+  availability,
+  hasSavedLocation,
+  isCheckingLocation,
+  localEnabled,
+  onlineEnabled,
+}: {
+  availability: CandidateAvailability;
+  hasSavedLocation: boolean;
+  isCheckingLocation: boolean;
+  localEnabled: boolean;
+  onlineEnabled: boolean;
+}) {
+  if (availability.lifecycle === "PAUSED") {
+    return "Your local and online choices stay saved.";
+  }
+
+  if (availability.lifecycle === "EXPIRED") {
+    return "Renew your saved choices for another 30 days.";
+  }
+
+  if (localEnabled && onlineEnabled) {
+    return "Local and online proposals.";
+  }
+
+  if (localEnabled) {
+    if (isCheckingLocation) {
+      return "Checking your saved location…";
+    }
+
+    return hasSavedLocation
+      ? "Proposals near your saved area."
+      : "Add your location to use local proposals.";
+  }
+
+  if (onlineEnabled) {
+    return "Online proposals only.";
+  }
+
+  return "Choose local, online, or both.";
 }
 
 function getAvailabilityLimits(availability: CandidateAvailability) {

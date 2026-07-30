@@ -11,14 +11,6 @@
     display: none !important;
   }
 
-  .profile-compact-banner-shown {
-    transform: translate3d(0, 0, 0);
-  }
-
-  .profile-compact-banner-hidden {
-    transform: translate3d(0, -100%, 0);
-  }
-
   .public-forge-theme {
     --background: #0b0f0e;
     --foreground: #f2f5f1;

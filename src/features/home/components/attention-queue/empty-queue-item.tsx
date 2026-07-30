@@ -5,10 +5,10 @@ import { buildExploreNavigation } from "@/shared/navigation";
 
 export function EmptyQueueItem() {
   return (
-    <li className="border-border/55 border-b last:border-b-0">
+    <li className="overflow-hidden rounded-2xl bg-card lg:col-span-2">
       <Link
         {...buildExploreNavigation()}
-        className="group flex min-h-24 min-w-0 items-center justify-between gap-3 px-1 py-3 transition-colors duration-150 hover:bg-forge-teal/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
+        className="group flex min-h-24 min-w-0 items-center justify-between gap-3 px-3 py-3 transition-colors duration-150 hover:bg-forge-teal/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-4"
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <IconTile

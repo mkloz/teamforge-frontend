@@ -1,16 +1,14 @@
 import { useEffect } from "react";
-import { ErrorProfileSaveVisual } from "@/assets/error-state/error-profile-save";
 import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
 import { buildSettingsProfileFormValues } from "@/features/settings/lib/settings-profile-mappers";
 import { Button } from "@/shared/components/ui/button";
 import { Form } from "@/shared/components/ui/form";
 import { Notice } from "@/shared/components/ui/notice";
 import { OfflineNotice } from "@/shared/components/ui/offline-notice";
-import { AccountFacts } from "./account-facts";
 import { AccountFormFooter } from "./account-form-footer";
+import { AccountSettingsCard } from "./account-settings-card";
 import { AreaFields } from "./area-fields";
 import { AvatarProfileSection } from "./avatar-profile-section";
-import { FormGroup } from "./form-group";
 import { PersonalContextFields } from "./personal-context-fields";
 import { ProfileIdentityFields } from "./profile-identity-fields";
 import type { AccountSettingsSectionProps } from "./types";
@@ -45,100 +43,91 @@ export function AccountSettingsSection({
   }, [compatibilityInputLock.isBlocked, currentUser, form]);
 
   return (
-    <div className="flex flex-col gap-9">
-      <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start">
-        <AvatarProfileSection
-          currentUser={currentUser}
-          avatarError={errors.avatarError}
-          isUploadingAvatar={status.isUploadingAvatar}
-          isDeletingAvatar={status.isDeletingAvatar}
-          isOnline={status.isOnline}
-          onAvatarSelect={onAvatarSelect}
-          onAvatarDelete={onAvatarDelete}
-        />
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-5 [&_[data-slot=form-label]]:text-slate-muted [&_[data-slot=label]]:text-slate-muted"
+        onSubmit={onSubmit}
+      >
+        <AccountSettingsCard
+          title="Public profile"
+          description="Shape the identity other people see across TeamForge."
+        >
+          <AvatarProfileSection
+            currentUser={currentUser}
+            avatarError={errors.avatarError}
+            isUploadingAvatar={status.isUploadingAvatar}
+            isDeletingAvatar={status.isDeletingAvatar}
+            isOnline={status.isOnline}
+            onAvatarSelect={onAvatarSelect}
+            onAvatarDelete={onAvatarDelete}
+          />
 
-        <AccountFacts currentUser={currentUser} />
-      </section>
-
-      <Form {...form}>
-        <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-          <FormGroup title="Name and intro">
+          <div className="mt-6">
             <ProfileIdentityFields currentUser={currentUser} form={form} />
-          </FormGroup>
+          </div>
+        </AccountSettingsCard>
 
-          {compatibilityInputLock.isBlocked ? (
-            <Notice
-              role={
-                compatibilityInputLock.status === "error" ? "alert" : "status"
-              }
-              tone={
-                compatibilityInputLock.status === "error"
-                  ? "warning"
-                  : "neutral"
-              }
-              size="md"
-              action={
-                compatibilityInputLock.status === "error" ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="xs"
-                    onClick={() => void compatibilityInputLock.retry()}
-                  >
-                    Try again
-                  </Button>
-                ) : null
-              }
-            >
-              {compatibilityInputLock.message}
-            </Notice>
-          ) : null}
-
-          <FormGroup title="Personal context">
-            <PersonalContextFields
-              form={form}
-              compatibilityInputsDisabled={compatibilityInputLock.isBlocked}
-            />
-          </FormGroup>
-
-          <FormGroup
-            title="Area"
-            description="Your exact location stays private."
+        {compatibilityInputLock.isBlocked ? (
+          <Notice
+            role={
+              compatibilityInputLock.status === "error" ? "alert" : "status"
+            }
+            tone={
+              compatibilityInputLock.status === "error" ? "warning" : "neutral"
+            }
+            size="md"
+            action={
+              compatibilityInputLock.status === "error" ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="xs"
+                  onClick={() => void compatibilityInputLock.retry()}
+                >
+                  Try again
+                </Button>
+              ) : null
+            }
           >
+            {compatibilityInputLock.message}
+          </Notice>
+        ) : null}
+
+        <AccountSettingsCard
+          title="Personal details"
+          description="Used to improve group recommendations. You control what appears publicly."
+        >
+          <PersonalContextFields
+            form={form}
+            compatibilityInputsDisabled={compatibilityInputLock.isBlocked}
+          />
+
+          <div className="mt-6">
             <AreaFields
               currentUser={currentUser}
               form={form}
               disabled={compatibilityInputLock.isBlocked}
             />
-          </FormGroup>
+          </div>
+        </AccountSettingsCard>
 
-          {errors.saveError && (
-            <Notice
-              role="alert"
-              tone="danger"
-              size="md"
-              icon={
-                <ErrorProfileSaveVisual className="h-6 w-auto text-foreground" />
-              }
-              className="items-center gap-3"
-              iconClassName="mt-0"
-            >
-              {errors.saveError}
-            </Notice>
-          )}
+        {errors.saveError && (
+          <Notice role="alert" tone="danger" size="md" statusIcon>
+            {errors.saveError}
+          </Notice>
+        )}
 
-          {!status.isOnline ? (
-            <OfflineNotice withIcon={false} size="md" className="px-3">
-              You are offline. Reconnect before saving profile changes.
-            </OfflineNotice>
-          ) : null}
+        {!status.isOnline ? (
+          <OfflineNotice withIcon={false} size="md" className="px-3">
+            You are offline. Reconnect before saving profile changes.
+          </OfflineNotice>
+        ) : null}
 
-          <AccountFormFooter
-            isOnline={status.isOnline}
-            isSaving={status.isSaving}
-          />
-        </form>
-      </Form>
-    </div>
+        <AccountFormFooter
+          isOnline={status.isOnline}
+          isSaving={status.isSaving}
+        />
+      </form>
+    </Form>
   );
 }

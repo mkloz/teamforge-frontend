@@ -24,8 +24,8 @@ export function ActionDialogHeading({
   title: ReactNode;
 }) {
   return (
-    <div className="px-6 pt-6 pb-4">
-      <AlertDialogHeader className="relative pr-9 text-left">
+    <div className="px-5 pt-5 pb-3 sm:px-6 sm:pt-6">
+      <AlertDialogHeader className="relative text-left">
         {eyebrow ? (
           <span className="flex min-w-0 items-center gap-2">
             <span
@@ -48,13 +48,13 @@ export function ActionDialogHeading({
         ) : null}
         <AlertDialogTitle
           className={cn(
-            "max-w-80 text-balance font-black text-ink text-xl leading-tight",
+            "max-w-88 text-balance font-black text-ink text-xl leading-tight",
             eyebrow && "mt-3",
           )}
         >
           {title}
         </AlertDialogTitle>
-        <AlertDialogDescription className="mt-2 max-w-88 text-sm leading-relaxed">
+        <AlertDialogDescription className="mt-1.5 max-w-96 text-sm leading-relaxed">
           {description}
         </AlertDialogDescription>
       </AlertDialogHeader>

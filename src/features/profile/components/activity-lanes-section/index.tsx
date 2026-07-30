@@ -53,7 +53,7 @@ function ActivityLanesContent({
 
   return (
     <>
-      <div className="divide-y divide-border/70">
+      <div className="grid gap-3 sm:grid-cols-2">
         {visibility.visibleLanes.map((lane) => (
           <ActivityLaneRow key={lane.key} lane={lane} />
         ))}

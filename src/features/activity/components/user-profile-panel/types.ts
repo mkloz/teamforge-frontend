@@ -20,6 +20,7 @@ export interface UserProfilePanelParticipant {
   oceanA?: number | null;
   oceanN?: number | null;
   onlineStatus?: OnlineStatus;
+  lastSeenAt?: string | null;
   groupRole?: GroupRole | null;
 }
 

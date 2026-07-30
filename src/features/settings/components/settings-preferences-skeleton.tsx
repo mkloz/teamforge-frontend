@@ -3,12 +3,12 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function SettingsPreferencesSkeleton() {
   return (
-    <div aria-busy="true" className="border-border border-t">
+    <div aria-busy="true" className="grid gap-2">
       <output className="sr-only">Loading preferences</output>
       {["one", "two", "three", "four", "five"].map((item, index) => (
         <div
           key={item}
-          className="flex w-full items-center justify-between gap-4 border-border border-b py-4 text-left"
+          className="flex w-full items-center justify-between gap-3 rounded-xl bg-muted/30 p-3 text-left sm:gap-4 sm:p-4"
         >
           <SkeletonText
             className="min-w-0 flex-1"

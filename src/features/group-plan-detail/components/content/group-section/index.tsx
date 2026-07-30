@@ -20,18 +20,15 @@ export function GroupSection({ detail }: GroupSectionProps) {
     (isSystemManagedGroupGovernance(governance) && !governance.chat.writable);
 
   return (
-    <Section heading="About this group" headingId="group-section-heading">
-      <div className="flex flex-col gap-8">
+    <Section
+      eyebrow="The group"
+      heading={detail.group.name}
+      headingId="group-section-heading"
+    >
+      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_12rem] md:items-start">
         <GroupIdentity detail={detail} />
 
-        {isReadOnly ? (
-          <p className="border-border/70 border-t pt-4 text-slate-muted text-sm leading-relaxed">
-            This group is read-only right now. You can still review the plan,
-            report a concern, or leave if that option is available.
-          </p>
-        ) : null}
-
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="border-border/60 border-t pt-5 md:border-t-0 md:border-l md:pt-0 md:pl-6">
           <GroupFact
             icon={detail.group.access === "OPEN" ? Globe : Lock}
             label="Access"
@@ -39,6 +36,13 @@ export function GroupSection({ detail }: GroupSectionProps) {
             supporting={visibilityLabel}
           />
         </div>
+
+        {isReadOnly ? (
+          <p className="border-border/70 border-t pt-4 text-slate-muted text-sm leading-relaxed md:col-span-2">
+            This group is read-only right now. You can still review the plan,
+            report a concern, or leave if that option is available.
+          </p>
+        ) : null}
       </div>
     </Section>
   );

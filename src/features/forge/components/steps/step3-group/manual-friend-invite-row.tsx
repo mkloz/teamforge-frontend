@@ -26,8 +26,8 @@ export function ManualFriendInviteRow({
   return (
     <div
       className={cn(
-        "group relative flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors duration-150",
-        selected ? "bg-forge-teal/8" : "hover:bg-muted/50",
+        "group relative flex w-full items-center gap-3 rounded-[inherit] px-3 py-3 text-left transition-colors duration-150",
+        selected ? "bg-(--grouped-menu-selected)" : "hover:bg-foreground/5",
         disabled && "cursor-not-allowed opacity-50",
       )}
     >
@@ -49,7 +49,7 @@ function FriendProfileLink({ friend }: { friend: FriendProfile }) {
     <Link
       {...buildProfileNavigation(friend.id)}
       aria-label={`View ${friend.name}'s profile`}
-      className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45"
+      className="absolute inset-0 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-inset"
     >
       <span className="sr-only">View {friend.name}'s profile</span>
     </Link>
@@ -96,10 +96,8 @@ function FriendIdentityMeta({
     <span className="flex min-w-0 flex-1 flex-col gap-1">
       <span
         className={cn(
-          "truncate font-black text-sm leading-tight transition-colors",
-          selected
-            ? "text-forge-teal"
-            : "text-foreground group-hover:text-forge-teal",
+          "truncate font-black text-foreground text-sm leading-tight transition-colors",
+          !selected && "group-hover:text-forge-teal",
         )}
       >
         {friend.name}

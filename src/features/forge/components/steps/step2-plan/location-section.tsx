@@ -1,16 +1,13 @@
-import { Globe, Monitor } from "lucide-react";
+import { Monitor } from "lucide-react";
 
 import {
   AddressAutocomplete,
   type LocationValue,
 } from "@/shared/components/maps/address-autocomplete";
 import { Input } from "@/shared/components/ui/input";
-import { SegmentedTabs } from "@/shared/components/ui/segmented-tabs";
 
 import { FieldLabel } from "./field-label";
-import { SectionCard } from "./section-card";
-import { SectionHeader } from "./section-header";
-import { LOCATION_TYPES } from "./step2-plan.constants";
+import { PlanDecisionToggle } from "./plan-decision-toggle";
 import type { ForgeScope, LocationType } from "./types";
 
 const EMPTY_SELECTED_PLAN_LOCATION = {
@@ -20,7 +17,7 @@ const EMPTY_SELECTED_PLAN_LOCATION = {
 };
 
 interface LocationSectionProps {
-  forgeScope: ForgeScope | null;
+  forgeScope: ForgeScope;
   locationType: LocationType;
   onLocationTypeChange: (value: LocationType) => void;
   onPlanLocationChange: (value: string) => void;
@@ -32,12 +29,6 @@ interface LocationSectionProps {
   planLocationLat: number | null;
   planLocationLng: number | null;
 }
-
-const LOCATION_TYPE_TABS = LOCATION_TYPES.map(({ id, label, Icon }) => ({
-  icon: Icon,
-  id,
-  label,
-}));
 
 interface LocationSectionRenderState {
   showAddress: boolean;
@@ -56,47 +47,50 @@ export function LocationSection({
   planLocationLng,
 }: LocationSectionProps) {
   const renderState = getLocationSectionRenderState(locationType);
-  const locationOptions = LOCATION_TYPE_TABS.filter(({ id }) =>
-    forgeScope === "LOCAL"
-      ? id !== "ONLINE"
-      : forgeScope === "ONLINE"
-        ? id !== "IN_PERSON"
-        : true,
-  );
+  const isMeetingPointSet = locationType !== "TBD";
+
+  function handleMeetingPointToggle(checked: boolean) {
+    onLocationTypeChange(
+      checked ? (forgeScope === "ONLINE" ? "ONLINE" : "IN_PERSON") : "TBD",
+    );
+  }
 
   return (
-    <SectionCard>
-      <SectionHeader title="Exact plan location" />
-
-      <SegmentedTabs
-        ariaLabel="Location type"
-        className="self-start"
-        options={locationOptions}
-        size="lg"
-        value={locationType}
-        onChange={onLocationTypeChange}
+    <div className="flex flex-col">
+      <PlanDecisionToggle
+        checked={isMeetingPointSet}
+        checkedDescription={
+          forgeScope === "ONLINE"
+            ? "Add the platform or meeting link below."
+            : "Add the venue or address below."
+        }
+        label="Set meeting details now"
+        onCheckedChange={handleMeetingPointToggle}
+        uncheckedDescription="The group can decide after it forms."
       />
 
-      {renderState.showAddress && (
-        <InPersonLocationInput
-          onPlanLocationChange={onPlanLocationChange}
-          onPlanLocationCoordinatesChange={onPlanLocationCoordinatesChange}
-          planLocation={planLocation}
-          planLocationLat={planLocationLat}
-          planLocationLng={planLocationLng}
-        />
-      )}
+      <div className="pt-4">
+        {renderState.showAddress && (
+          <InPersonLocationInput
+            onPlanLocationChange={onPlanLocationChange}
+            onPlanLocationCoordinatesChange={onPlanLocationCoordinatesChange}
+            planLocation={planLocation}
+            planLocationLat={planLocationLat}
+            planLocationLng={planLocationLng}
+          />
+        )}
 
-      {renderState.showOnlineLocation && (
-        <OnlineLocationInput
-          onPlanLocationChange={onPlanLocationChange}
-          planLocation={planLocation}
-          showOnlineLocation={renderState.showOnlineLocation}
-        />
-      )}
+        {renderState.showOnlineLocation && (
+          <OnlineLocationInput
+            onPlanLocationChange={onPlanLocationChange}
+            planLocation={planLocation}
+            showOnlineLocation={renderState.showOnlineLocation}
+          />
+        )}
 
-      {renderState.showTbdNotice && <LocationTbdNotice />}
-    </SectionCard>
+        {renderState.showTbdNotice && <LocationTbdNotice />}
+      </div>
+    </div>
   );
 }
 
@@ -222,11 +216,8 @@ function OnlineLocationInput({
 
 function LocationTbdNotice() {
   return (
-    <div className="fade-in flex animate-in items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 duration-200">
-      <Globe size={12} className="shrink-0 text-muted-foreground/50" />
-      <p className="text-muted-foreground/70 text-xs leading-snug">
-        The group can decide the exact venue or meeting link after it forms.
-      </p>
-    </div>
+    <p className="fade-in animate-in text-muted-foreground text-xs leading-relaxed duration-200">
+      No meeting point is locked yet.
+    </p>
   );
 }

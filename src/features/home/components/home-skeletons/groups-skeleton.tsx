@@ -8,24 +8,25 @@ import {
   SkeletonAvatar,
   SkeletonText,
 } from "@/shared/components/loading/skeleton-patterns";
+import {
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function HomeGroupsSkeleton() {
   return (
-    <section aria-busy="true" className="flex flex-col gap-4">
+    <section aria-busy="true" className="flex flex-col gap-5 lg:pr-10">
       <output className="sr-only">Loading active groups</output>
       <HomeSectionHeadingSkeleton actionWidth="w-14" eyebrow={false} />
-      <ul
-        aria-label="Loading your groups"
-        className="flex list-none flex-col gap-2 p-0"
-      >
+      <GroupedMenuList aria-label="Loading your groups">
         {GROUP_ROW_KEYS.map((item, index) => (
-          <li
+          <GroupedMenuItem
             key={item}
-            className="grid min-h-20 grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-x-3 rounded-xl px-2.5 py-2.5"
+            className="grid min-h-24 grid-cols-[3.5rem_minmax(0,1fr)_2rem] items-center gap-x-3 px-3 py-3 sm:grid-cols-[4.25rem_minmax(0,1fr)_2rem] sm:gap-x-4"
           >
             <SkeletonAvatar
-              className="size-11"
+              className="size-14 rounded-full sm:size-16"
               tone={getFirstItemTone(index)}
             />
             <SkeletonText
@@ -34,14 +35,10 @@ export function HomeGroupsSkeleton() {
               size="sm"
               widths={getGroupRowTextWidths(index)}
             />
-            <Skeleton shape="square" className="h-7 w-12 rounded-lg" />
-          </li>
+            <Skeleton shape="circle" className="size-8" />
+          </GroupedMenuItem>
         ))}
-        <li className="flex h-12 items-center justify-between gap-3 rounded-xl px-3 py-3">
-          <Skeleton className="h-3 w-32" />
-          <Skeleton shape="circle" className="size-4" />
-        </li>
-      </ul>
+      </GroupedMenuList>
     </section>
   );
 }

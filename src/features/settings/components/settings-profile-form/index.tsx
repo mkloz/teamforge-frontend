@@ -84,7 +84,7 @@ function AccountSettingsPanel({
   account,
 }: Pick<SettingsProfileFormProps, "account">) {
   return (
-    <div className="flex flex-col gap-9">
+    <div className="flex min-w-0 flex-col gap-5">
       <AccountSettingsSection
         currentUser={account.currentUser}
         form={account.form}
@@ -219,7 +219,7 @@ function SafetySettingsPanel({
   safety,
 }: Pick<SettingsProfileFormProps, "safety">) {
   return (
-    <div className="grid gap-9">
+    <div className="grid gap-10">
       <Suspense fallback={<SafetySettingsOverviewSkeleton />}>
         <SafetySettingsOverview />
       </Suspense>

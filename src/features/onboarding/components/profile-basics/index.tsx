@@ -1,6 +1,5 @@
 import type { FormEventHandler } from "react";
 import type { UseFormReturn } from "react-hook-form";
-import { ErrorProfileSaveVisual } from "@/assets/error-state/error-profile-save";
 import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
@@ -14,6 +13,7 @@ interface ProfileBasicsCardProps {
   isOnline: boolean;
   isSaving: boolean;
   onSubmit: FormEventHandler<HTMLFormElement>;
+  requiresDateOfBirth: boolean;
   saveError: string | null;
   watchedValues: Partial<ProfileBasicsValues>;
 }
@@ -23,6 +23,7 @@ export function ProfileBasicsCard({
   isOnline,
   isSaving,
   onSubmit,
+  requiresDateOfBirth,
   saveError,
   watchedValues,
 }: ProfileBasicsCardProps) {
@@ -40,19 +41,14 @@ export function ProfileBasicsCard({
 
       <Form {...form}>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          <ProfileBasicsFormFields form={form} watchedValues={watchedValues} />
+          <ProfileBasicsFormFields
+            form={form}
+            requiresDateOfBirth={requiresDateOfBirth}
+            watchedValues={watchedValues}
+          />
 
           {saveError ? (
-            <Notice
-              role="alert"
-              tone="danger"
-              size="md"
-              icon={
-                <ErrorProfileSaveVisual className="h-6 w-auto text-foreground" />
-              }
-              className="items-center gap-3"
-              iconClassName="mt-0"
-            >
+            <Notice role="alert" tone="danger" size="md" statusIcon>
               {saveError}
             </Notice>
           ) : null}

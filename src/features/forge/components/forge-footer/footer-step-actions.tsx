@@ -6,6 +6,7 @@ import {
   PrimaryButton,
   ReforgeButton,
 } from "@/features/forge/components/forge-buttons";
+import { isRecentActivityTemplateId } from "@/features/forge/lib/recent-activity/recent-activity-template-id";
 import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import {
@@ -36,6 +37,11 @@ export function Step1FooterAction({
         label={getStep1ContinueLabel(Boolean(fw.selectedActivity))}
         icon={<ChevronRight size={16} />}
         onClick={() => {
+          if (isRecentActivityTemplateId(fw.appliedTemplateId)) {
+            fw.goToStep(3);
+            return;
+          }
+
           fw.goNext();
         }}
         disabled={!fw.canAdvanceStep1}

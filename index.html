@@ -54,8 +54,10 @@
         color: var(--tf-boot-foreground);
         margin: 0;
       }
-      body {
+      html {
         overflow-y: scroll;
+      }
+      body {
         font-family:
           Inter,
           ui-sans-serif,
@@ -70,7 +72,7 @@
           scrollbar-gutter: stable;
         }
         body {
-          overflow-y: auto;
+          overflow-y: visible;
         }
         :root {
           --removed-body-scroll-bar-size: 0px;

@@ -1,5 +1,6 @@
 export {
   buildCategoryFitHighlights,
+  buildCrossCategoryTemplateSuggestions,
   buildTemplateFromSeed,
   buildTemplateSuggestions,
 } from "@/features/forge/lib/forge-template-suggestions/builders";

@@ -1,18 +1,18 @@
-import { Link } from "@tanstack/react-router";
 import {
   Bell,
   Eye,
   LockKeyhole,
-  Settings,
   Shield,
   ShieldCheck,
   SlidersHorizontal,
-  UserRound,
 } from "lucide-react";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import {
+  GroupedMenuList,
+  GroupedMenuSection,
+} from "@/shared/components/ui/grouped-menu";
+import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -25,13 +25,11 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { buildAdminNavigation } from "@/shared/navigation/admin-navigation";
-import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import { buildSafetyNavigation } from "@/shared/navigation/safety-navigation";
 import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
-import type { User } from "@/shared/schemas";
 
 import { AppearanceSwitch } from "./appearance-switch";
-import { MenuLinkItem, MenuLinkItemContent } from "./menu-link-item";
+import { MenuLinkItem } from "./menu-link-item";
 import { UserMenuProfileSummary } from "./profile-summary";
 import { UserMenuSignOutButton } from "./sign-out-button";
 import { TeamForgeLinks } from "./teamforge-links";
@@ -43,7 +41,6 @@ interface UserMenuProps {
 
 export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
   const { data: currentUser } = useCurrentUserQuery();
-  const profileLink = getUserMenuProfileLink(currentUser);
 
   return (
     <Sheet>
@@ -59,93 +56,82 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
       <SheetContent
         side="right"
         overlayClassName="z-110"
-        className="z-110 flex w-full flex-col border-border border-l bg-canvas p-0 text-foreground shadow-black/15 shadow-xl sm:max-w-sm [&>button]:top-5 [&>button]:right-5 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card/85 [&>button]:p-2 [&>button]:opacity-100"
+        className="z-110 flex w-full flex-col border-border border-l bg-background p-0 text-foreground shadow-black/15 shadow-xl sm:max-w-108 [&>button]:top-5 [&>button]:right-5 [&>button]:z-20 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card [&>button]:p-2 [&>button]:text-foreground [&>button]:opacity-100"
       >
-        {/* Header */}
-        <SheetHeader className="border-border/70 border-b px-5 py-4 pr-14 text-left">
+        <SheetHeader className="sticky top-0 z-10 bg-background/95 px-5 pt-5 pr-14 pb-3 text-left backdrop-blur-sm">
           <SheetTitle className="font-black text-xl tracking-tight">
             Account
           </SheetTitle>
-          <SheetDescription className="sr-only">Account menu</SheetDescription>
+          <SheetDescription className="text-muted-foreground text-sm">
+            Your profile, preferences and privacy.
+          </SheetDescription>
         </SheetHeader>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-          {/* Profile card */}
           <UserMenuProfileSummary />
 
-          {/* Theme toggle */}
-          <div className="px-4 pb-2">
+          <div className="px-4 pb-6">
             <AppearanceSwitch />
           </div>
 
-          {/* Divider */}
-          <div className="mx-4 border-border/50 border-t" />
-
-          {/* Primary nav */}
-          <nav className="flex flex-col gap-0.5 px-4 py-2">
-            <SheetClose asChild>
-              <Link
-                {...profileLink.navigation}
-                className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2 text-foreground transition-colors duration-150 hover:bg-muted/55"
-                aria-label={profileLink.ariaLabel}
-              >
-                <MenuLinkItemContent
-                  icon={UserRound}
-                  label={profileLink.label}
+          <div className="space-y-6 px-4 pb-6">
+            <GroupedMenuSection label="Preferences">
+              <GroupedMenuList>
+                <MenuLinkItem
+                  description="Matching, availability and invitations"
+                  icon={SlidersHorizontal}
+                  label="Group preferences"
+                  navigation={buildSettingsNavigation("matching")}
                 />
-              </Link>
-            </SheetClose>
+                <MenuLinkItem
+                  description="Choose what reaches you"
+                  icon={Bell}
+                  label="Notifications"
+                  navigation={buildSettingsNavigation("notifications")}
+                />
+              </GroupedMenuList>
+            </GroupedMenuSection>
 
-            <MenuLinkItem
-              icon={Settings}
-              label="Settings"
-              navigation={buildSettingsNavigation()}
-            />
+            <GroupedMenuSection label="Privacy and protection">
+              <GroupedMenuList>
+                <MenuLinkItem
+                  description="Control what people can see"
+                  icon={Eye}
+                  label="Privacy"
+                  navigation={buildSettingsNavigation("privacy")}
+                />
+                <MenuLinkItem
+                  description="Sessions and account protection"
+                  icon={LockKeyhole}
+                  label="Security"
+                  navigation={buildSettingsNavigation("security")}
+                />
+                <MenuLinkItem
+                  description="Blocks, reports and restrictions"
+                  icon={Shield}
+                  label="Safety"
+                  navigation={buildSafetyNavigation()}
+                />
+              </GroupedMenuList>
+            </GroupedMenuSection>
+
             {currentUser?.role === "ADMIN" ? (
-              <MenuLinkItem
-                icon={ShieldCheck}
-                label="Admin"
-                navigation={buildAdminNavigation()}
-              />
+              <GroupedMenuSection label="TeamForge management">
+                <GroupedMenuList>
+                  <MenuLinkItem
+                    description="Operations and moderation"
+                    icon={ShieldCheck}
+                    label="Admin"
+                    navigation={buildAdminNavigation()}
+                  />
+                </GroupedMenuList>
+              </GroupedMenuSection>
             ) : null}
-          </nav>
-
-          {/* Divider */}
-          <div className="mx-4 border-border/50 border-t" />
-
-          {/* Settings sub-nav */}
-          <nav className="flex flex-col gap-0.5 px-4 py-2">
-            <MenuLinkItem
-              icon={SlidersHorizontal}
-              label="Group preferences"
-              navigation={buildSettingsNavigation("matching")}
-            />
-            <MenuLinkItem
-              icon={Eye}
-              label="Privacy"
-              navigation={buildSettingsNavigation("privacy")}
-            />
-            <MenuLinkItem
-              icon={Shield}
-              label="Safety"
-              navigation={buildSafetyNavigation()}
-            />
-            <MenuLinkItem
-              icon={LockKeyhole}
-              label="Security"
-              navigation={buildSettingsNavigation("security")}
-            />
-            <MenuLinkItem
-              icon={Bell}
-              label="Notifications"
-              navigation={buildSettingsNavigation("notifications")}
-            />
-          </nav>
+          </div>
 
           <div className="mt-auto">
             <TeamForgeLinks />
 
-            {/* Sign out */}
             <div className="border-border/50 border-t px-4 py-4">
               <UserMenuSignOutButton />
             </div>
@@ -154,20 +140,4 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
       </SheetContent>
     </Sheet>
   );
-}
-
-function getUserMenuProfileLink(currentUser: User | undefined) {
-  if (currentUser?.id) {
-    return {
-      navigation: buildProfileNavigation(currentUser.id),
-      label: "View public profile",
-      ariaLabel: "View your public profile",
-    };
-  }
-
-  return {
-    navigation: buildProfileNavigation(),
-    label: "Profile",
-    ariaLabel: "Open your profile",
-  };
 }

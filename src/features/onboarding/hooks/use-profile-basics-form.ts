@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import { OnboardingCache } from "@/features/onboarding/api/onboarding-cache";
@@ -16,11 +16,13 @@ import {
   getProfileBasicsProgress,
   getProfileBasicsValuesFromUser,
   PROFILE_BASICS_DEFAULT_VALUES,
+  requiresProfileBasicsDateOfBirth,
   toProfileBasicsDto,
 } from "@/features/onboarding/lib/profile-basics-form-model";
 import {
   type ProfileBasicsValues,
   profileBasicsSchema,
+  profileBasicsWithExistingEligibilitySchema,
 } from "@/features/onboarding/schemas/profile-basics.schema";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
@@ -32,7 +34,6 @@ function areProfileBasicsValuesEqual(
   nextValues: ProfileBasicsValues,
 ) {
   return (
-    currentValues.age === nextValues.age &&
     currentValues.gender === nextValues.gender &&
     currentValues.city === nextValues.city &&
     currentValues.locationLat === nextValues.locationLat &&
@@ -47,9 +48,19 @@ export function useProfileBasicsForm() {
   const { data: currentUser } = useCurrentUserQuery();
   const [saveError, setSaveError] = useState<string | null>(null);
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
+  const requiresDateOfBirth = requiresProfileBasicsDateOfBirth(
+    currentUser?.adultEligibility,
+  );
+  const validationSchema = useMemo(
+    () =>
+      requiresDateOfBirth
+        ? profileBasicsSchema
+        : profileBasicsWithExistingEligibilitySchema,
+    [requiresDateOfBirth],
+  );
 
   const form = useForm<ProfileBasicsValues>({
-    resolver: zodResolver(profileBasicsSchema),
+    resolver: zodResolver(validationSchema),
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: PROFILE_BASICS_DEFAULT_VALUES,
@@ -79,11 +90,13 @@ export function useProfileBasicsForm() {
     },
   });
 
-  const progress = getProfileBasicsProgress(watchedValues);
+  const progress = getProfileBasicsProgress(watchedValues, requiresDateOfBirth);
 
   const onSubmit = form.handleSubmit(async (values) => {
     setSaveError(null);
-    const payload = toProfileBasicsDto(values);
+    const payload = toProfileBasicsDto(values, {
+      includeDateOfBirth: requiresDateOfBirth,
+    });
 
     if (!payload) {
       return;
@@ -117,7 +130,9 @@ export function useProfileBasicsForm() {
         ),
       );
     } finally {
-      payload.dateOfBirth = "";
+      if (payload.dateOfBirth !== undefined) {
+        payload.dateOfBirth = "";
+      }
       profileBasicsMutation.reset();
     }
   });
@@ -126,6 +141,7 @@ export function useProfileBasicsForm() {
     form,
     watchedValues,
     progress,
+    requiresDateOfBirth,
     saveError,
     isOnline,
     isSaving: profileBasicsMutation.isPending,

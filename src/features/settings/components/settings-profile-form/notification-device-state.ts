@@ -34,7 +34,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
     matches: (push) => !push.support.isSupported,
     status: {
       label: "Unavailable",
-      description: "This browser cannot receive TeamForge push notifications.",
+      description: "Push notifications are not supported in this browser.",
       tone: "muted",
     },
   },
@@ -50,8 +50,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
     matches: (push) => !push.isOnline,
     status: {
       label: "Offline",
-      description:
-        "Reconnect before changing push notifications for this device.",
+      description: "Reconnect to change push notifications.",
       tone: "attention",
     },
   },
@@ -59,7 +58,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
     matches: (push) => push.isPublicKeyLoading,
     status: {
       label: "Checking",
-      description: "Checking whether this TeamForge environment can send push.",
+      description: "Checking whether push notifications are available.",
       tone: "muted",
     },
   },
@@ -67,8 +66,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
     matches: (push) => !push.isWebPushEnabled,
     status: {
       label: "Not enabled",
-      description:
-        "Push delivery is not enabled for this TeamForge environment yet.",
+      description: "Push notifications are not enabled here yet.",
       tone: "muted",
     },
   },
@@ -76,8 +74,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
     matches: (push) => push.permission === "denied",
     status: {
       label: "Blocked",
-      description:
-        "Notifications are blocked in this browser. Turn them back on in site settings.",
+      description: "Enable notifications in this browser's site settings.",
       tone: "attention",
     },
   },
@@ -85,8 +82,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
     matches: (push) => push.isSubscribed,
     status: {
       label: "On",
-      description:
-        "This device can show group invites, messages, and plan updates outside the app.",
+      description: "Important TeamForge alerts.",
       tone: "on",
     },
   },
@@ -94,8 +90,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
     matches: (push) => Boolean(push.browserEndpoint),
     status: {
       label: "Ready",
-      description:
-        "This browser already has permission. Turn it on to reconnect this device.",
+      description: "Turn push on to reconnect this device.",
       tone: "attention",
     },
   },
@@ -103,8 +98,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
 
 const DEFAULT_WEB_PUSH_STATUS = {
   label: "Off",
-  description:
-    "Turn this on to let TeamForge notify this device when something needs your attention.",
+  description: "Important TeamForge alerts.",
   tone: "muted",
 } as const;
 

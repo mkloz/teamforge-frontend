@@ -1,21 +1,26 @@
 import { z } from "zod";
 
 import { genderSchema } from "@/shared/schemas/enums";
-import { DateOfBirthValidator } from "@/shared/validators/date-of-birth.validator";
+import {
+  DateOfBirthValidator,
+  getAgeFromDateOfBirth,
+} from "@/shared/validators/date-of-birth.validator";
 
-const agePattern = /^\d+$/;
+const MINIMUM_PROFILE_AGE = 18;
+const MAXIMUM_PROFILE_AGE = 100;
+const ProfileBasicsDateOfBirthValidator = DateOfBirthValidator.refine(
+  (value) => {
+    const age = getAgeFromDateOfBirth(value);
+    return (
+      value.length === 0 ||
+      (age !== null && age >= MINIMUM_PROFILE_AGE && age <= MAXIMUM_PROFILE_AGE)
+    );
+  },
+  "Enter a date of birth for someone aged 18 to 100.",
+);
 
 export const profileBasicsSchema = z.object({
-  dateOfBirth: DateOfBirthValidator,
-  age: z
-    .string()
-    .trim()
-    .min(1, "How old are you?")
-    .refine((value) => agePattern.test(value), "Age must be a whole number.")
-    .refine((value) => {
-      const age = Number(value);
-      return age >= 16 && age <= 99;
-    }, "Enter your age (we support 16 to 99)."),
+  dateOfBirth: ProfileBasicsDateOfBirthValidator,
   gender: z
     .union([genderSchema, z.literal("")])
     .refine((value) => value !== "", "Tell us your gender."),
@@ -23,9 +28,14 @@ export const profileBasicsSchema = z.object({
     .string()
     .trim()
     .min(1, "Where are you based?")
-    .max(120, "Keep your city under 120 characters."),
+    .max(100, "Keep your city under 100 characters."),
   locationLat: z.number().nullable(),
   locationLng: z.number().nullable(),
 });
+
+export const profileBasicsWithExistingEligibilitySchema =
+  profileBasicsSchema.extend({
+    dateOfBirth: ProfileBasicsDateOfBirthValidator.or(z.literal("")),
+  });
 
 export type ProfileBasicsValues = z.input<typeof profileBasicsSchema>;

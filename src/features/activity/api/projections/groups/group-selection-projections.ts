@@ -114,9 +114,7 @@ function mapSelectionMember(
   member: SelectionMember,
   baseMember: GroupApi["members"][number] | undefined,
 ): GroupApi["members"][number] | null {
-  const user = member.user
-    ? mapSelectionMemberUser(member.user)
-    : baseMember?.user;
+  const user = member.user ?? baseMember?.user;
 
   if (!user) {
     return null;
@@ -124,16 +122,19 @@ function mapSelectionMember(
 
   return {
     ...baseMember,
+    compatibilityScore:
+      member.compatibilityScore ?? baseMember?.compatibilityScore ?? null,
     userId: member.userId,
     role: member.role,
     joinedAt: member.joinedAt,
     leftAt: member.leftAt,
-    user,
+    user: mapSelectionMemberUser(user, baseMember?.user),
   };
 }
 
 function mapSelectionMemberUser(
   user: SelectionMemberUser,
+  baseUser?: GroupApi["members"][number]["user"],
 ): GroupApi["members"][number]["user"] {
   return {
     id: user.id,
@@ -144,7 +145,10 @@ function mapSelectionMemberUser(
     age: user.age,
     gender: user.gender,
     city: user.city,
+    lastSeenAt: user.lastSeenAt,
     onlineStatus: user.onlineStatus,
+    personalityType: user.personalityType,
+    trustScore: user.trustScore ?? baseUser?.trustScore ?? 0,
   };
 }
 

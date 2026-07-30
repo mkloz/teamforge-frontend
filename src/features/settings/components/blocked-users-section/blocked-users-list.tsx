@@ -1,4 +1,5 @@
 import { SettingsBlockedUsersSkeleton } from "@/features/settings/components/settings-section-skeletons";
+import { GroupedMenuList } from "@/shared/components/ui/grouped-menu";
 import { BlockedUserRow } from "./blocked-user-row";
 import {
   BlockedUsersEmptyState,
@@ -37,7 +38,7 @@ export function BlockedUsersList({
   }
 
   return (
-    <>
+    <GroupedMenuList aria-label="Blocked people">
       {blockedUsers.map((block) => (
         <BlockedUserRow
           key={block.id}
@@ -47,6 +48,6 @@ export function BlockedUsersList({
           onUnblockUser={onUnblockUser}
         />
       ))}
-    </>
+    </GroupedMenuList>
   );
 }

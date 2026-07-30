@@ -14,7 +14,7 @@ export function ActivityLaneRow({ lane }: ActivityLaneRowProps) {
   const evidenceLabel = describeLaneEvidence(lane);
 
   return (
-    <div className="flex min-w-0 flex-col gap-3 py-5 first:pt-0 last:pb-0 sm:py-4">
+    <div className="flex min-w-0 flex-col gap-3 py-1">
       <div className="flex items-start gap-3">
         <IconTile
           icon={Icon}

@@ -16,4 +16,14 @@ export const ActivityInvitationActions = {
 
     return inviteResult;
   },
+
+  async cancelGroupInvite(inviteId: string) {
+    const inviteResult = await ActivityApi.cancelInvite(inviteId);
+
+    applyHomeInvitationUpdate(inviteResult.data);
+
+    await invalidateInvitationSurfaces();
+
+    return inviteResult;
+  },
 };

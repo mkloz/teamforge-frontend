@@ -1,4 +1,3 @@
-import { ErrorProfileSaveVisual } from "@/assets/error-state/error-profile-save";
 import { InterestsProgressBar } from "@/features/onboarding/components/interests/interests-browse/interests-progress-bar";
 import { InterestsReviewFooter } from "@/features/onboarding/components/interests/interests-review/interests-review-footer";
 import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interests";
@@ -61,14 +60,7 @@ function InterestsSaveErrorNotice({
   }
 
   return (
-    <Notice
-      role="alert"
-      tone="danger"
-      size="md"
-      icon={<ErrorProfileSaveVisual className="h-6 w-auto text-foreground" />}
-      className="mt-4 items-center gap-3"
-      iconClassName="mt-0"
-    >
+    <Notice role="alert" tone="danger" size="md" statusIcon className="mt-4">
       {state.saveErrorMessage}
     </Notice>
   );

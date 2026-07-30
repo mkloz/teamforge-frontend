@@ -2,20 +2,22 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    overflow-y: scroll;
+  }
+
   body {
     @apply bg-background text-foreground;
-    overflow-y: scroll;
     font-family: var(--font-sans);
   }
 
   @supports (scrollbar-gutter: stable) {
     html {
-      overflow-y: scroll;
       scrollbar-gutter: stable;
     }
 
     body {
-      overflow-y: auto;
+      overflow-y: visible;
     }
 
     /* Override Radix UI's injected variables and styles when scrollbar-gutter handles the spacing natively */
@@ -79,6 +81,19 @@
     /* biome-ignore lint/complexity/noImportantStyles: Prevents modal/drawer scroll lock from doubling the app's reserved scrollbar gutter. */
     margin-right: 0 !important;
   }
+}
+
+/*
+ * UI glyphs use the surrounding copy color by default.
+ *
+ * Accent color belongs to the surface that contains an icon (IconTile,
+ * status pill, solid button, etc.), not to a bare Lucide glyph. Keeping this
+ * rule unlayered intentionally lets it override one-off Tailwind text-color
+ * utilities left on icon instances throughout the app. A glyph that owns a
+ * background itself remains an explicit surface and is therefore exempt.
+ */
+:where(svg.lucide:not([class*="bg-"])) {
+  color: inherit;
 }
 
 /* Safe-area inset for notched/home-indicator devices */

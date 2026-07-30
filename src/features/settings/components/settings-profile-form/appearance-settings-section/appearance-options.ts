@@ -7,13 +7,8 @@ export {
   COLOR_OPTION_BY_VALUE,
   STYLE_OPTION_BY_VALUE,
 } from "@/features/settings/components/settings-profile-form/appearance-settings-section/appearance-options/option-maps";
-export {
-  DEFAULT_THEME_PREFERENCES,
-  GRID_OPTION_BOUNDARY_CLASS_RULES,
-} from "@/features/settings/components/settings-profile-form/appearance-settings-section/appearance-options/theme-option-constants";
+export { DEFAULT_THEME_PREFERENCES } from "@/features/settings/components/settings-profile-form/appearance-settings-section/appearance-options/theme-option-constants";
 export type {
-  GridOptionBoundaryState,
-  ThemeOptionStatus,
   ThemePreferenceKey,
   ThemePreferenceValues,
   ThemeSavingState,

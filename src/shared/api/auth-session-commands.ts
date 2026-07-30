@@ -30,3 +30,13 @@ export async function logoutCurrentSession() {
     authSession.clear();
   }
 }
+
+export async function reauthenticateCurrentSession(password: string) {
+  await apiClient.post("auth/reauthenticate", {
+    json: { password },
+    context: {
+      auth: "access",
+      retryOnUnauthorized: false,
+    },
+  });
+}

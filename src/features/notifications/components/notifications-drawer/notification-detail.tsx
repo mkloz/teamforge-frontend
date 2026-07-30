@@ -54,7 +54,7 @@ export function NotificationDetail({
 
   return (
     <article className="flex min-h-full flex-col">
-      <div className="sticky top-0 z-10 bg-canvas/95 px-5 pt-3 pb-1 backdrop-blur">
+      <div className="sticky top-0 z-10 bg-canvas/92 px-5 pt-3 pb-1 backdrop-blur-md">
         <Button
           variant="accentGhost"
           size="sm"
@@ -69,7 +69,7 @@ export function NotificationDetail({
       </div>
 
       <div className="flex flex-1 flex-col px-5 pt-5 pb-28">
-        <div className="flex min-w-0 items-start gap-3">
+        <div className="flex min-h-16 min-w-0 items-start gap-4">
           <NotificationDetailSource
             avatarBadgeTone={config.avatarBadgeTone}
             icon={Icon}
@@ -81,35 +81,28 @@ export function NotificationDetail({
             <div className="flex items-center gap-2">
               <time
                 dateTime={item.createdAt}
-                className="font-semibold text-slate-muted text-xs"
+                className="font-semibold text-slate-muted text-xs leading-4"
               >
                 {relativeTime(item.createdAt)}
               </time>
               <NotificationDetailUnreadMarker isRead={item.isRead} />
             </div>
-            <h3 className="mt-1 text-balance font-bold text-ink text-xl leading-tight tracking-tight">
+            <h3 className="mt-1 line-clamp-2 text-balance font-bold text-ink text-lg leading-5 tracking-tight">
               {item.title}
             </h3>
           </div>
         </div>
 
-        <p className="mt-6 max-w-sm whitespace-pre-wrap text-base text-ink/85 leading-7">
+        <p className="mt-6 max-w-md whitespace-pre-wrap text-base text-ink/85 leading-7">
           {item.message}
         </p>
 
-        <dl className="mt-8 grid gap-3">
-          <div>
-            <dt className="font-semibold text-slate-muted text-xs leading-tight">
-              Received
-            </dt>
-            <dd className="mt-1 font-semibold text-ink/75 text-sm">
-              {formatNotificationDate(item.createdAt)}
-            </dd>
-          </div>
-        </dl>
+        <p className="mt-8 border-border/60 border-t pt-4 font-medium text-slate-muted text-xs">
+          Received {formatNotificationDate(item.createdAt)}
+        </p>
       </div>
 
-      <div className="sticky bottom-0 bg-canvas/95 px-5 pt-3 pb-5 backdrop-blur">
+      <div className="sticky bottom-0 border-border/60 border-t bg-canvas/92 px-5 pt-3 pb-5 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <Button
             variant="accentGhost"
@@ -213,7 +206,7 @@ function NotificationDetailSource({
         name={item.title}
         icon={Icon}
         badgeTone={avatarBadgeTone}
-        avatarClassName="size-12"
+        avatarClassName="size-16"
       />
     );
   }
@@ -224,7 +217,8 @@ function NotificationDetailSource({
       tone={iconTone}
       size="xl"
       shape="square"
-      iconClassName="size-5"
+      className="size-16 rounded-xl"
+      iconClassName="size-6"
     />
   );
 }

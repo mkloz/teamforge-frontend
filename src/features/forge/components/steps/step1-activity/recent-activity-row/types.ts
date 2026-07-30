@@ -1,7 +1,8 @@
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
 import type { RecentActivityItem } from "@/features/forge/lib/recent-activity/types";
 
-export const RECENT_ACTIVITIES_PER_PAGE = 6;
+export const RECENT_ACTIVITIES_DESKTOP_PAGE_SIZE = 3;
+export const RECENT_ACTIVITIES_MOBILE_PAGE_SIZE = 1;
 
 export interface RecentActivityRowProps {
   appliedTemplateId: string | null;
@@ -12,6 +13,5 @@ export interface RecentActivityRowProps {
 export interface RecentActivityCardProps {
   activity: RecentActivityItem;
   active: boolean;
-  recommended: boolean;
   onTemplateToggle: (templateId: string, template: ForgePlanTemplate) => void;
 }

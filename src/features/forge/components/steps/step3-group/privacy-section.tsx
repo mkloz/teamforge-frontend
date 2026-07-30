@@ -1,5 +1,11 @@
+import { Check } from "lucide-react";
+
 import type { Visibility } from "@/features/forge/lib/forge-contract";
-import { IconTile } from "@/shared/components/ui/icon-tile";
+import {
+  GroupedMenuAction,
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
 import { cn } from "@/shared/lib/utils";
 
 import { VISIBILITY_OPTIONS } from "./step3-group.constants";
@@ -16,21 +22,26 @@ export function PrivacySection({
   onVisibilityChange,
 }: PrivacySectionProps) {
   return (
-    <fieldset className="grid gap-3 border-border/25 border-t pt-4">
-      <legend className="px-0.5 font-semibold text-foreground text-sm leading-tight">
+    <fieldset>
+      <legend className="px-0.5 font-black text-foreground text-lg leading-tight tracking-tight">
         Visibility
       </legend>
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <p className="mt-1 mb-3 px-0.5 text-muted-foreground text-sm">
+        Choose who can discover this group.
+      </p>
+
+      <GroupedMenuList>
         {VISIBILITY_OPTIONS.map((option) => (
-          <VisibilityOptionButton
-            key={option.value}
-            active={visibility === option.value}
-            option={option}
-            onVisibilityChange={onVisibilityChange}
-          />
+          <GroupedMenuItem key={option.value}>
+            <VisibilityOptionButton
+              active={visibility === option.value}
+              option={option}
+              onVisibilityChange={onVisibilityChange}
+            />
+          </GroupedMenuItem>
         ))}
-      </div>
+      </GroupedMenuList>
     </fieldset>
   );
 }
@@ -47,56 +58,43 @@ function VisibilityOptionButton({
   const { value, label, description, Icon } = option;
 
   return (
-    <label className={getVisibilityOptionClassName(active)}>
-      <input
-        type="radio"
-        name="forge-visibility"
-        value={value}
-        checked={active}
-        onChange={() => onVisibilityChange(value)}
-        className="sr-only"
-      />
-      <span className="flex min-w-0 items-start justify-start gap-3 whitespace-normal sm:grid sm:w-full sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-x-3 sm:gap-y-0">
-        <IconTile
-          icon={Icon}
-          size="xs"
-          tone={active ? "teal" : "neutral"}
-          className={getVisibilityOptionIconClassName(active)}
+    <GroupedMenuAction selected={active} className="min-h-16 px-4 py-3">
+      <label className="flex w-full cursor-pointer items-center gap-3">
+        <input
+          type="radio"
+          name="forge-visibility"
+          value={value}
+          checked={active}
+          onChange={() => onVisibilityChange(value)}
+          className="sr-only"
         />
-        <span className="min-w-0 flex-1 gap-1 sm:contents">
-          <span className={getVisibilityOptionLabelClassName(active)}>
+        <Icon
+          aria-hidden="true"
+          className={cn(
+            "size-4 shrink-0 transition-colors",
+            active ? "text-forge-teal" : "text-muted-foreground",
+          )}
+        />
+        <span className="min-w-0 flex-1">
+          <span className="block font-semibold text-foreground text-sm leading-tight">
             {label}
           </span>
-          <span className="min-w-0 text-pretty text-muted-foreground text-xs leading-snug sm:col-span-3 sm:col-start-1 sm:row-start-2 sm:pt-2">
+          <span className="mt-1 block text-pretty text-muted-foreground text-xs leading-snug">
             {description}
           </span>
         </span>
-      </span>
-    </label>
-  );
-}
-
-function getVisibilityOptionClassName(active: boolean) {
-  return cn(
-    "group relative flex h-auto w-full min-w-0 cursor-pointer items-start justify-start whitespace-normal rounded-lg border p-3 text-left transition-colors duration-200 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/45 focus-within:ring-offset-2 focus-within:ring-offset-background",
-    active
-      ? "border-forge-teal/55 bg-forge-teal/10 shadow-sm ring-1 ring-forge-teal/20"
-      : "border-border/40 bg-card hover:border-forge-teal/30 hover:bg-forge-teal/5",
-  );
-}
-
-function getVisibilityOptionIconClassName(active: boolean) {
-  return cn(
-    "sm:col-start-1 sm:row-start-1",
-    active
-      ? "bg-forge-teal text-white shadow-forge-teal/25 shadow-sm"
-      : "bg-muted group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
-  );
-}
-
-function getVisibilityOptionLabelClassName(active: boolean) {
-  return cn(
-    "min-w-0 text-pretty font-semibold text-sm leading-5 sm:col-start-2 sm:row-start-1 sm:self-center",
-    active ? "text-forge-teal" : "text-foreground",
+        <span
+          aria-hidden="true"
+          className={cn(
+            "grid size-6 shrink-0 place-items-center rounded-full border transition-colors",
+            active
+              ? "border-forge-teal bg-forge-teal text-white"
+              : "border-border/60 text-transparent",
+          )}
+        >
+          <Check className="size-3.5" strokeWidth={3} />
+        </span>
+      </label>
+    </GroupedMenuAction>
   );
 }

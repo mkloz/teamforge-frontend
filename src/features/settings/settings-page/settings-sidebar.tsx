@@ -2,6 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight, LogOut } from "lucide-react";
 import { lazy, type MouseEvent, type Ref, Suspense, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
+import {
+  GroupedMenuAction,
+  GroupedMenuItem,
+  GroupedMenuList,
+  GroupedMenuSection,
+} from "@/shared/components/ui/grouped-menu";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 import {
@@ -9,7 +15,7 @@ import {
   type SettingsSection,
 } from "@/shared/navigation/settings-navigation";
 
-import { SETTINGS_SECTIONS } from "./settings-sections";
+import { SETTINGS_SECTION_GROUPS } from "./settings-sections";
 
 const ActionDialog = lazy(() =>
   import("@/shared/components/ui/action-dialog").then((module) => ({
@@ -26,7 +32,8 @@ interface SettingsSidebarProps {
   onSignOut: () => Promise<void> | void;
 }
 
-type SettingsSectionItem = (typeof SETTINGS_SECTIONS)[number];
+type SettingsSectionItem =
+  (typeof SETTINGS_SECTION_GROUPS)[number]["sections"][number];
 
 export function SettingsSidebar({
   activeSection,
@@ -40,7 +47,7 @@ export function SettingsSidebar({
 
   return (
     <aside className={cn("lg:block", isMobileDetailOpen && "hidden")}>
-      <div className="lg:fixed lg:top-10 lg:max-h-[calc(100svh-5rem)] lg:w-72 lg:overflow-y-auto lg:pr-1">
+      <div className="lg:fixed lg:top-10 lg:max-h-[calc(100svh-5rem)] lg:w-60 lg:overflow-y-auto lg:pr-1">
         <div className="mb-5 border-border border-b pb-5 lg:border-b-0 lg:pb-0">
           <h1 className="font-bold text-2xl text-ink leading-tight lg:text-3xl">
             Settings
@@ -78,7 +85,7 @@ function SettingsSignOutSection({
   const signOutLabel = getSignOutLabel(isSigningOut);
 
   return (
-    <div className="mt-5 border-border border-y py-1 lg:border-x-0 lg:border-t lg:border-b-0 lg:py-4">
+    <div className="mt-7">
       <Button
         type="button"
         variant="destructive"
@@ -151,19 +158,31 @@ function SettingsSectionNav({
   onSectionSelect,
 }: SettingsSectionNavProps) {
   return (
-    <nav
-      aria-label="Settings sections"
-      className="flex flex-col overflow-hidden"
-    >
-      {SETTINGS_SECTIONS.map((section) => (
-        <SettingsSectionNavLink
-          key={section.id}
-          activeSection={activeSection}
-          activeSectionLinkRef={activeSectionLinkRef}
-          section={section}
-          onSectionSelect={onSectionSelect}
-        />
-      ))}
+    <nav aria-label="Settings sections" className="flex flex-col gap-9">
+      {SETTINGS_SECTION_GROUPS.map((group) => {
+        const headingId = `settings-section-group-${group.id}`;
+
+        return (
+          <GroupedMenuSection
+            key={group.id}
+            headingId={headingId}
+            label={group.label}
+          >
+            <GroupedMenuList>
+              {group.sections.map((section) => (
+                <GroupedMenuItem key={section.id}>
+                  <SettingsSectionNavLink
+                    activeSection={activeSection}
+                    activeSectionLinkRef={activeSectionLinkRef}
+                    section={section}
+                    onSectionSelect={onSectionSelect}
+                  />
+                </GroupedMenuItem>
+              ))}
+            </GroupedMenuList>
+          </GroupedMenuSection>
+        );
+      })}
     </nav>
   );
 }
@@ -183,37 +202,38 @@ function SettingsSectionNavLink({
   const Icon = section.icon;
 
   return (
-    <Link
-      ref={isActive ? activeSectionLinkRef : undefined}
-      {...buildSettingsNavigation(section.id)}
-      onClick={(event) => {
-        if (shouldIgnoreSettingsNavigationClick(event)) {
-          return;
-        }
+    <GroupedMenuAction asChild selected={isActive}>
+      <Link
+        ref={isActive ? activeSectionLinkRef : undefined}
+        {...buildSettingsNavigation(section.id)}
+        onClick={(event) => {
+          if (shouldIgnoreSettingsNavigationClick(event)) {
+            return;
+          }
 
-        onSectionSelect(section.id);
-      }}
-      aria-current={isActive ? "page" : undefined}
-      className={getSettingsSectionClassName(isActive)}
-    >
-      <IconTile
-        icon={Icon}
-        tone={isActive ? "teal" : "none"}
-        size="md"
-        shape="circle"
-        className={getSettingsSectionIconClassName(isActive)}
-      />
-      <span className="min-w-0 flex-1">
-        <span className={getSettingsSectionLabelClassName(isActive)}>
-          {section.label}
+          onSectionSelect(section.id);
+        }}
+        aria-current={isActive ? "page" : undefined}
+      >
+        <IconTile
+          icon={Icon}
+          tone="none"
+          size="sm"
+          shape="circle"
+          className="text-current transition-colors"
+        />
+        <span className="min-w-0 flex-1">
+          <span className="block font-semibold text-sm leading-snug">
+            {section.label}
+          </span>
         </span>
-      </span>
-      <ChevronRight
-        size={16}
-        className="shrink-0 text-slate-muted/60 transition-colors group-hover:text-slate-muted lg:hidden"
-        aria-hidden="true"
-      />
-    </Link>
+        <ChevronRight
+          size={16}
+          className="shrink-0 text-slate-muted/60 transition-colors group-hover:text-slate-muted lg:hidden"
+          aria-hidden="true"
+        />
+      </Link>
+    </GroupedMenuAction>
   );
 }
 
@@ -228,29 +248,4 @@ function shouldIgnoreSettingsNavigationClick(
     event.ctrlKey,
     event.shiftKey,
   ].some(Boolean);
-}
-
-function getSettingsSectionClassName(isActive: boolean) {
-  return cn(
-    // oxlint-disable-next-line tailwindcss/consistent-variant-order -- Preserve this pre-existing class string in a behavior-only refactor.
-    "group relative flex w-full items-center justify-between gap-3 border-border border-b px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 lg:active:bg-transparent",
-    "after:absolute after:top-2.5 after:bottom-2.5 after:left-0 after:w-0.5 after:origin-center after:scale-y-0 after:bg-primary after:transition-transform",
-    isActive
-      ? "text-ink lg:after:scale-y-100"
-      : "text-slate-muted hover:text-ink",
-  );
-}
-
-function getSettingsSectionIconClassName(isActive: boolean) {
-  return cn(
-    "transition-colors",
-    isActive ? "bg-primary/8" : "text-slate-muted group-hover:text-ink",
-  );
-}
-
-function getSettingsSectionLabelClassName(isActive: boolean) {
-  return cn(
-    "block font-semibold text-base leading-snug lg:text-sm",
-    isActive ? "text-ink" : "text-inherit",
-  );
 }

@@ -1,7 +1,7 @@
 import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import type { User } from "@/shared/schemas";
 import { getAvatarActionState } from "./avatar-action-state";
-import { AvatarActions } from "./avatar-actions";
+import { AvatarActions, AvatarDeleteAction } from "./avatar-actions";
 import { AvatarDropzones } from "./avatar-dropzones";
 import { AvatarIdentityHeader } from "./avatar-identity-header";
 import { useAvatarPreview } from "./use-avatar-preview";
@@ -85,15 +85,25 @@ export function AvatarProfileSection({
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <AvatarIdentityHeader
+        action={
+          renderState.canDeleteSavedAvatar &&
+          !avatarActionState.hasSelectedAvatarFile ? (
+            <AvatarDeleteAction
+              isDeletingAvatar={isDeletingAvatar}
+              actionState={avatarActionState}
+              onDeleteOrReset={() => {
+                void handleAvatarDeleteOrReset();
+              }}
+            />
+          ) : null
+        }
         currentUser={currentUser}
         displayedAvatarUrl={renderState.displayedAvatarUrl}
       />
 
       <AvatarDropzones
-        currentUser={currentUser}
-        displayedAvatarUrl={renderState.displayedAvatarUrl}
         selectedAvatarFile={selectedAvatarFile}
         isAvatarBusy={renderState.isAvatarBusy}
         isUploadingAvatar={isUploadingAvatar}

@@ -1,9 +1,7 @@
-import { Calendar, Check, type LucideIcon, MapPin, Users } from "lucide-react";
+import { Calendar, Check, MapPin, Users } from "lucide-react";
 
 import { Avatar } from "@/shared/components/common/avatar";
 import { PlanCover } from "@/shared/components/common/plan-cover";
-import { FactItem } from "@/shared/components/ui/fact-item";
-import { StatusPill } from "@/shared/components/ui/status-pill";
 import { getPlanCoverPreset } from "@/shared/lib/plan-cover";
 import { cn } from "@/shared/lib/utils";
 
@@ -34,48 +32,49 @@ interface GroupSummaryViewState {
 
 const IMAGE_SOURCE_PATTERN = /^(https?:\/\/|data:image\/|blob:|\/)/i;
 const DEFAULT_GROUP_DESCRIPTION =
-  "The plan is ready. Finish now, then continue in the group workspace.";
+  "A shared space for the plan, the people, and everything you decide next.";
 
 export function GroupSummaryCard(props: GroupSummaryCardProps) {
   const summary = getGroupSummaryViewState(props);
 
   return (
-    <section className="overflow-hidden rounded-lg border border-border/40 bg-card/70">
+    <section aria-label="Group preview" className="min-w-0">
       <SummaryCover
         coverImage={props.coverImage}
-        displayPlanTitle={summary.displayPlanTitle}
         hasCover={summary.hasCover}
         statusLabel={summary.statusLabel}
       />
 
-      <div className="flex flex-col gap-4 px-4 py-4">
-        <div className="flex items-start gap-3">
+      <div className="relative px-1">
+        <div className="-mt-7 flex items-end gap-3">
           <Avatar
             src={summary.avatarSrc}
             name={summary.displayGroupName}
             shape="rounded"
-            className="size-11 rounded-lg border border-border bg-muted"
-            fallbackClassName="font-bold text-xs"
+            className="size-14 rounded-xl border-4 border-canvas bg-muted shadow-sm"
+            fallbackClassName="font-black text-sm"
           />
-          <div className="min-w-0 flex-1">
-            <h4 className="truncate font-bold text-base text-foreground leading-tight">
-              {summary.displayGroupName}
-            </h4>
-            <p className="mt-1 line-clamp-2 text-muted-foreground text-xs leading-relaxed sm:max-w-2xl">
-              {summary.displayDescription}
-            </p>
-          </div>
+          <p className="mb-1 truncate font-semibold text-forge-teal text-xs">
+            {summary.displayPlanTitle}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 border-border/25 border-t pt-3 sm:grid-cols-3">
-          <SummaryItem
+        <h3 className="mt-3 font-black text-2xl text-foreground tracking-tight">
+          {summary.displayGroupName}
+        </h3>
+        <p className="mt-1.5 max-w-xl text-muted-foreground text-sm leading-relaxed">
+          {summary.displayDescription}
+        </p>
+
+        <dl className="mt-5 grid grid-cols-1 border-border/45 border-y sm:grid-cols-3 sm:divide-x sm:divide-border/35">
+          <SummaryFact
             icon={Users}
             label="People"
             value={summary.peopleValue}
           />
-          <SummaryItem icon={Calendar} label="When" value={summary.whenValue} />
-          <SummaryItem icon={MapPin} label="Where" value={summary.whereValue} />
-        </div>
+          <SummaryFact icon={Calendar} label="When" value={summary.whenValue} />
+          <SummaryFact icon={MapPin} label="Where" value={summary.whereValue} />
+        </dl>
       </div>
     </section>
   );
@@ -83,23 +82,21 @@ export function GroupSummaryCard(props: GroupSummaryCardProps) {
 
 interface SummaryCoverProps {
   coverImage: string | null;
-  displayPlanTitle: string;
   hasCover: boolean;
   statusLabel: string;
 }
 
 function SummaryCover({
   coverImage,
-  displayPlanTitle,
   hasCover,
   statusLabel,
 }: SummaryCoverProps) {
   return (
     <div
       className={cn(
-        "relative h-28 overflow-hidden transition-colors duration-500 sm:h-32",
+        "relative aspect-16/7 min-h-36 overflow-hidden rounded-xl",
         !hasCover &&
-          "bg-linear-to-br from-forge-teal/16 via-canvas to-spark-amber/16",
+          "bg-linear-to-br from-forge-teal/18 via-card to-spark-amber/12",
       )}
     >
       {hasCover ? (
@@ -110,57 +107,46 @@ function SummaryCover({
           imageClassName="size-full object-cover"
         />
       ) : (
-        <div className="flex h-full items-start p-4">
-          <StatusPill
-            tone="none"
-            className="w-fit border-white/10 bg-black/15 px-2.5 py-1 text-white/75 backdrop-blur"
-          >
-            Final review
-          </StatusPill>
+        <div className="absolute inset-0 opacity-60" aria-hidden="true">
+          <div className="absolute top-6 right-10 size-28 rounded-full bg-forge-teal/16 blur-3xl" />
+          <div className="absolute bottom-2 left-12 size-24 rounded-full bg-spark-amber/12 blur-3xl" />
         </div>
       )}
+
       <div
-        className="absolute inset-0 bg-linear-to-b from-black/10 via-transparent to-black/55"
-        aria-hidden
+        className="absolute inset-0 bg-linear-to-b from-black/10 via-transparent to-black/65"
+        aria-hidden="true"
       />
-      <div className="absolute right-4 bottom-3 left-4 flex items-end justify-between gap-3">
-        <div className="min-w-0">
-          <p className="font-bold text-white/70 text-xs">{statusLabel}</p>
-          <p className="truncate font-black text-lg text-white leading-tight">
-            {displayPlanTitle}
-          </p>
-        </div>
-        <StatusPill
-          icon={Check}
-          size="sm"
-          tone="none"
-          className="border-white/15 bg-black/25 px-2.5 py-1 text-white/95 backdrop-blur"
-        >
-          Ready
-        </StatusPill>
+
+      <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1 font-bold text-white text-xs backdrop-blur-md">
+        <Check className="size-3.5 text-forge-teal" strokeWidth={2.6} />
+        {statusLabel}
       </div>
     </div>
   );
 }
 
-interface SummaryItemProps {
-  icon: LucideIcon;
+interface SummaryFactProps {
+  icon: typeof Users;
   label: string;
   value: string;
 }
 
-function SummaryItem({ icon, label, value }: SummaryItemProps) {
+function SummaryFact({ icon: Icon, label, value }: SummaryFactProps) {
   return (
-    <FactItem
-      icon={icon}
-      iconSize="sm"
-      iconTone="teal"
-      iconTileClassName="bg-forge-teal/8"
-      label={label}
-      labelClassName="font-bold text-muted-foreground/60 text-xs"
-      value={value}
-      valueClassName="truncate text-xs"
-    />
+    <div className="flex min-w-0 items-center gap-2.5 py-3 sm:px-3 first:sm:pl-0">
+      <Icon
+        className="size-3.5 shrink-0 text-forge-teal"
+        strokeWidth={2}
+        aria-hidden="true"
+      />
+      <div className="min-w-0">
+        <dt className="font-semibold text-muted-foreground/70 text-xs">
+          {label}
+        </dt>
+        <dd className="truncate font-bold text-foreground text-xs">{value}</dd>
+      </div>
+    </div>
   );
 }
 
@@ -210,11 +196,11 @@ function getPeopleValue(participantCount: number) {
 }
 
 function getStatusLabel(forgeMode: GroupSummaryCardProps["forgeMode"]) {
-  return forgeMode === "MANUAL" ? "Invites queued" : "Group formed";
+  return forgeMode === "MANUAL" ? "Ready to invite" : "Group ready";
 }
 
 function getSetLaterValue(value: string) {
-  return value || "Set later";
+  return value || "Decide together";
 }
 
 function hasRenderableCover(coverImage: string | null) {

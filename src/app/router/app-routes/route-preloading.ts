@@ -262,7 +262,7 @@ async function preloadForgeRouteData() {
   } = await import("@/features/forge/api/forge-query-options");
 
   await Promise.allSettled([
-    appQueryClient.prefetchQuery(forgeFriendCandidatesQueryOptions()),
+    appQueryClient.prefetchInfiniteQuery(forgeFriendCandidatesQueryOptions("")),
     appQueryClient.prefetchQuery(forgeRecentActivitiesQueryOptions()),
   ]);
 }

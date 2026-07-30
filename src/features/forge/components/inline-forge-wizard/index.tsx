@@ -129,7 +129,7 @@ function InlineForgeWizardContent({
   }
 
   return (
-    <div className="mx-auto flex size-full max-w-3xl flex-col px-4 md:px-12">
+    <div className="mx-auto flex size-full max-w-208 flex-col px-4 md:px-12">
       <InlineForgeHeader
         fw={fw}
         hasProgress={hasProgress}

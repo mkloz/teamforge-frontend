@@ -1,13 +1,14 @@
-import { type RefObject, useRef } from "react";
+import { type RefObject, useRef, useState } from "react";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeAttentionQueueRowsSkeleton } from "@/features/home/components/home-skeletons";
-import { StatusPill } from "@/shared/components/ui/status-pill";
 import type {
   HomeInvitationView,
   HomePanel,
 } from "@/shared/navigation/home-navigation";
 
 import { ActionErrorBanner } from "./action-error-banner";
+import { AttentionQueueGroupedList } from "./attention-queue-grouped-list";
+import { getAttentionQueueUrgencyCounts } from "./attention-queue-item-model";
 import {
   type AttentionQueueRenderItem,
   getAttentionQueueRenderState,
@@ -19,13 +20,13 @@ import { InvitationQueueItem } from "./invitation-queue-item";
 import { ParticipationQueueItem } from "./participation-queue-item";
 import { ProfileStepQueueItem } from "./profile-step-queue-item";
 import { ProposedPlanQueueItem } from "./proposed-plan-queue-item";
-import { SeeRestButton } from "./see-rest-button";
 import { useAttentionQueueFocus } from "./use-attention-queue-focus";
 import { useAttentionQueueState } from "./use-attention-queue-state";
 
 type AttentionQueueViewState = ReturnType<typeof useAttentionQueueState>;
 
 interface LoadedAttentionQueueProps {
+  maxVisibleItems?: number;
   focusedPanel?: HomePanel | null;
   focusedInviteId?: string | null;
   focusedRequestId?: string | null;
@@ -36,6 +37,7 @@ interface LoadedAttentionQueueProps {
 }
 
 export function LoadedAttentionQueue({
+  maxVisibleItems,
   focusedPanel = null,
   focusedInviteId = null,
   focusedRequestId = null,
@@ -56,6 +58,7 @@ export function LoadedAttentionQueue({
   return (
     <AttentionQueueView
       focusedInviteId={focusedInviteId}
+      maxVisibleItems={maxVisibleItems}
       focusedPanel={focusedPanel}
       focusedRequestId={focusedRequestId}
       invitationView={invitationView}
@@ -78,11 +81,15 @@ function AttentionQueueView({
   focusedPanel = null,
   focusedRequestId = null,
   invitationView = "received",
+  maxVisibleItems,
   onClearFriendRequestFocus,
   onClearInvitationFocus,
   scrollRef,
   state,
 }: AttentionQueueViewProps) {
+  const [batchAction, setBatchAction] = useState<"accept" | "decline" | null>(
+    null,
+  );
   const {
     acceptingInviteId,
     acceptingRequestId,
@@ -126,8 +133,48 @@ function AttentionQueueView({
       viewer,
       visibleInvitations,
       visibleRequests,
+      maxVisibleItems,
     });
-  const queueSummaryAction = renderQueueSummaryAction(queueSummary);
+  const queueSummaryDescription = getQueueSummaryDescription(queueSummary);
+  const urgencyCounts = getAttentionQueueUrgencyCounts({
+    continuationCheckIns,
+    pendingParticipations,
+    proposedPlans,
+    viewer,
+    visibleInvitations,
+    visibleRequests,
+  });
+  const itemRenderContext: AttentionQueueItemRenderContext = {
+    acceptingInviteId,
+    acceptingRequestId,
+    answerVisibleContinuation,
+    answerVisibleParticipation,
+    acceptVisibleInvite,
+    acceptVisibleRequest,
+    declineVisibleInvite,
+    declineVisibleRequest,
+    decliningInviteId,
+    decliningRequestId,
+    continuationFeedbackByCheckInId,
+    focusedInviteId,
+    focusedRequestId,
+    isAccepting,
+    isAcceptingInvite,
+    isDeclining,
+    isDecliningInvite,
+    isFriendRequestOnline,
+    isContinuationActionOnline,
+    isInviteActionOnline,
+    isParticipationActionOnline,
+    isAnsweringParticipation,
+    pendingAnswer,
+    pendingContinuationAnswers,
+  };
+  const focusedItemKey = focusedInviteId
+    ? `invitation:${focusedInviteId}`
+    : focusedRequestId
+      ? `request:${focusedRequestId}`
+      : null;
 
   useAttentionQueueFocus({
     focusedInviteId,
@@ -141,6 +188,56 @@ function AttentionQueueView({
     visibleRequests,
   });
 
+  async function acceptBatchItems(
+    items: Array<Exclude<AttentionQueueRenderItem, { kind: "see-rest" }>>,
+  ) {
+    setBatchAction("accept");
+
+    try {
+      const results = await Promise.allSettled(
+        items.map((item) => {
+          if (item.kind === "invitation") {
+            return acceptVisibleInvite(item.invite.id);
+          }
+
+          if (item.kind === "request") {
+            return acceptVisibleRequest(item.request.requesterId);
+          }
+
+          return Promise.resolve();
+        }),
+      );
+      return results.every((result) => result.status === "fulfilled");
+    } finally {
+      setBatchAction(null);
+    }
+  }
+
+  async function declineBatchItems(
+    items: Array<Exclude<AttentionQueueRenderItem, { kind: "see-rest" }>>,
+  ) {
+    setBatchAction("decline");
+
+    try {
+      const results = await Promise.allSettled(
+        items.map((item) => {
+          if (item.kind === "invitation") {
+            return declineVisibleInvite(item.invite.id);
+          }
+
+          if (item.kind === "request") {
+            return declineVisibleRequest(item.request.requesterId);
+          }
+
+          return Promise.resolve();
+        }),
+      );
+      return results.every((result) => result.status === "fulfilled");
+    } finally {
+      setBatchAction(null);
+    }
+  }
+
   return (
     <section
       ref={scrollRef}
@@ -151,69 +248,68 @@ function AttentionQueueView({
       <HomeSectionHeading
         id="attention-queue-heading"
         title="Needs your attention"
-        action={queueSummaryAction}
+        description={queueSummaryDescription}
       />
 
-      <ul
-        aria-label="Things that need attention"
-        className="mt-4 grid min-w-0 list-none border-border/55 border-y p-0"
-      >
-        {actionError ? <ActionErrorBanner error={actionError} /> : null}
-        {shouldShowSkeleton ? <HomeAttentionQueueRowsSkeleton /> : null}
-        {shouldShowEmptyQueue ? <EmptyQueueItem /> : null}
-        {queueItems.map((item) =>
-          renderAttentionQueueItem(item, {
-            acceptingInviteId,
-            acceptingRequestId,
-            answerVisibleContinuation,
-            answerVisibleParticipation,
-            acceptVisibleInvite,
-            acceptVisibleRequest,
-            declineVisibleInvite,
-            declineVisibleRequest,
-            decliningInviteId,
-            decliningRequestId,
-            continuationFeedbackByCheckInId,
-            focusedInviteId,
-            focusedRequestId,
-            isAccepting,
-            isAcceptingInvite,
-            isDeclining,
-            isDecliningInvite,
-            isFriendRequestOnline,
-            isContinuationActionOnline,
-            isInviteActionOnline,
-            isParticipationActionOnline,
-            isAnsweringParticipation,
-            pendingAnswer,
-            pendingContinuationAnswers,
-          }),
-        )}
-      </ul>
+      {actionError ? (
+        <ul className="mt-4 list-none p-0">
+          <ActionErrorBanner error={actionError} />
+        </ul>
+      ) : null}
+
+      {shouldShowSkeleton ? (
+        <ul
+          aria-label="Loading things that need attention"
+          className="mt-4 grid min-w-0 list-none gap-2 p-0"
+        >
+          <HomeAttentionQueueRowsSkeleton limit={maxVisibleItems} />
+        </ul>
+      ) : null}
+
+      {shouldShowEmptyQueue ? (
+        <ul className="mt-4 list-none p-0">
+          <EmptyQueueItem />
+        </ul>
+      ) : null}
+
+      {!shouldShowSkeleton && !shouldShowEmptyQueue ? (
+        <AttentionQueueGroupedList
+          batchAcceptDisabled={
+            batchAction !== null ||
+            isAcceptingInvite ||
+            isAccepting ||
+            !isInviteActionOnline ||
+            !isFriendRequestOnline
+          }
+          batchAcceptLoading={batchAction === "accept"}
+          batchDeclineDisabled={
+            batchAction !== null ||
+            isDecliningInvite ||
+            isDeclining ||
+            !isInviteActionOnline ||
+            !isFriendRequestOnline
+          }
+          batchDeclineLoading={batchAction === "decline"}
+          focusedItemKey={focusedItemKey}
+          items={queueItems}
+          onBatchAccept={acceptBatchItems}
+          onBatchDecline={declineBatchItems}
+          urgencyCounts={urgencyCounts}
+          renderDetail={(item) =>
+            renderAttentionQueueItem(item, itemRenderContext)
+          }
+        />
+      ) : null}
     </section>
   );
 }
 
-function renderQueueSummaryAction(queueSummary: string[]) {
+function getQueueSummaryDescription(queueSummary: string[]) {
   if (queueSummary.length === 0) {
-    return null;
+    return undefined;
   }
 
-  return (
-    <div className="flex max-w-72 flex-wrap justify-end gap-1.5">
-      {queueSummary.map((item) => (
-        <StatusPill
-          key={item}
-          size="sm"
-          tone="teal"
-          surface="soft"
-          className="px-2 font-black"
-        >
-          {item}
-        </StatusPill>
-      ))}
-    </div>
-  );
+  return queueSummary.join(" · ");
 }
 
 interface AttentionQueueItemRenderContext {
@@ -334,7 +430,5 @@ function renderAttentionQueueItem(
     return <ProfileStepQueueItem key="profile-step" nextStep={item.nextStep} />;
   }
 
-  return (
-    <SeeRestButton key="see-rest" hiddenItemCount={item.hiddenItemCount} />
-  );
+  return null;
 }

@@ -1,67 +1,63 @@
 import { SectionHeadingSkeleton } from "@/features/settings/settings-page/settings-page.loading/shared-skeletons";
+import { SkeletonText } from "@/shared/components/loading/skeleton-patterns";
 import {
-  SkeletonButton,
-  SkeletonText,
-} from "@/shared/components/loading/skeleton-patterns";
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function BlockedUsersSectionSkeleton() {
   return (
     <section>
       <SectionHeadingSkeleton />
-      <div className="mt-6 border-border border-t">
+      <GroupedMenuList className="mt-5">
         {["first", "second"].map((item) => (
-          <div
-            key={item}
-            className="flex items-center gap-4 border-border border-b py-5 last:border-b-0"
-          >
-            <Skeleton shape="circle" className="size-11" />
-            <SkeletonText
-              className="min-w-0 flex-1"
-              lines={2}
-              size="sm"
-              widths={["w-36", "w-48"]}
-            />
-            <SkeletonButton className="hidden h-10 w-24 sm:block" />
-          </div>
+          <GroupedMenuItem key={item}>
+            <div className="flex min-h-18 items-center gap-3 px-3 py-3 sm:px-5 sm:py-4">
+              <Skeleton shape="circle" className="size-11" />
+              <SkeletonText
+                className="min-w-0 flex-1"
+                lines={2}
+                size="sm"
+                widths={["w-36", "w-48"]}
+              />
+              <Skeleton className="hidden h-9 w-24 sm:block" />
+            </div>
+          </GroupedMenuItem>
         ))}
-      </div>
+      </GroupedMenuList>
     </section>
   );
 }
 
 export function SafetySettingsOverviewSkeleton() {
   return (
-    <div className="grid gap-9" aria-busy="true">
+    <section aria-busy="true">
       <output className="sr-only">Loading safety information</output>
-      {["reports", "account-actions", "restrictions"].map((section) => (
-        <section key={section}>
-          <SectionHeadingSkeleton />
-          <div className="mt-6 border-border border-t">
-            {["first", "second"].map((item) => (
-              <div
-                key={item}
-                className="flex items-center gap-4 border-border border-b py-5 last:border-b-0"
-              >
-                <SkeletonText
-                  className="min-w-0 flex-1"
-                  lines={2}
-                  size="sm"
-                  widths={["w-40", "w-full max-w-sm"]}
-                />
-                <SkeletonButton className="hidden h-8 w-20 sm:block" />
-              </div>
-            ))}
-          </div>
-        </section>
-      ))}
-    </div>
+      <SectionHeadingSkeleton />
+      <GroupedMenuList className="mt-5">
+        {["reports", "account-actions", "restrictions"].map((item) => (
+          <GroupedMenuItem key={item}>
+            <div className="flex min-h-16 items-center gap-3 px-3 py-3 sm:px-5">
+              <Skeleton shape="circle" className="size-10 shrink-0" />
+              <SkeletonText
+                className="min-w-0 flex-1"
+                lines={2}
+                size="sm"
+                widths={["w-40", "w-full max-w-sm"]}
+              />
+              <Skeleton shape="pill" className="h-5 w-14" />
+            </div>
+          </GroupedMenuItem>
+        ))}
+      </GroupedMenuList>
+    </section>
   );
 }
 
 export function SafetySettingsSectionSkeleton() {
   return (
-    <div className="grid gap-9">
+    <div className="grid gap-10">
       <SafetySettingsOverviewSkeleton />
       <BlockedUsersSectionSkeleton />
     </div>

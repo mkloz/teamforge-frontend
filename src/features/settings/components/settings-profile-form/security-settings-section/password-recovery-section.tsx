@@ -1,15 +1,15 @@
-import { Link } from "@tanstack/react-router";
-import { ExternalLink, KeyRound, Mail } from "lucide-react";
+import { KeyRound, Mail } from "lucide-react";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
-import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
+import { GroupedMenuItem } from "@/shared/components/ui/grouped-menu";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { User } from "@/shared/schemas";
 
 interface PasswordRecoverySectionProps {
   currentUser: User | undefined;
   isOnline: boolean;
   isSendingPasswordResetLink: boolean;
-  securityError: string | null;
   onSendPasswordResetLink: () => Promise<unknown>;
 }
 
@@ -25,9 +25,9 @@ interface PasswordRecoveryViewState {
 type PasswordResetProgress = "idle" | "pending";
 
 const GOOGLE_PASSWORD_RECOVERY_DESCRIPTION =
-  "This account signs in with Google, so password changes are managed by Google instead of TeamForge.";
+  "Google manages password recovery for this account.";
 const EMAIL_PASSWORD_RECOVERY_DESCRIPTION =
-  "Send a password reset link to your email if you want to change your password.";
+  "Get a password reset link by email.";
 
 const PASSWORD_RESET_BUTTON_LABELS = {
   idle: "Send reset link",
@@ -43,7 +43,6 @@ export function PasswordRecoverySection({
   currentUser,
   isOnline,
   isSendingPasswordResetLink,
-  securityError,
   onSendPasswordResetLink,
 }: PasswordRecoverySectionProps) {
   const viewState = getPasswordRecoveryViewState({
@@ -53,24 +52,26 @@ export function PasswordRecoverySection({
   });
 
   return (
-    <div className="mt-8 border-border border-t pt-6">
-      <h3 className="font-semibold text-base text-ink">Password & recovery</h3>
-      <p className="mt-1 text-slate-muted text-sm">{viewState.description}</p>
-
-      {securityError && (
-        <p className="mt-4 text-destructive text-sm">{securityError}</p>
-      )}
-
-      <PasswordRecoveryActions
-        isSendingPasswordResetLink={isSendingPasswordResetLink}
-        onSendPasswordResetLink={onSendPasswordResetLink}
-        viewState={viewState}
-      />
-    </div>
+    <GroupedMenuItem>
+      <div className="flex min-h-16 flex-wrap items-center gap-3 px-3 py-3 sm:flex-nowrap sm:px-5">
+        <IconTile icon={KeyRound} shape="circle" size="lg" tone="neutral" />
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-ink text-sm">Password recovery</p>
+          <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
+            {viewState.description}
+          </p>
+        </div>
+        <PasswordRecoveryAction
+          isSendingPasswordResetLink={isSendingPasswordResetLink}
+          onSendPasswordResetLink={onSendPasswordResetLink}
+          viewState={viewState}
+        />
+      </div>
+    </GroupedMenuItem>
   );
 }
 
-function PasswordRecoveryActions({
+function PasswordRecoveryAction({
   isSendingPasswordResetLink,
   onSendPasswordResetLink,
   viewState,
@@ -79,25 +80,20 @@ function PasswordRecoveryActions({
   onSendPasswordResetLink: () => Promise<unknown>;
   viewState: PasswordRecoveryViewState;
 }) {
-  return (
-    <div className="responsive-action-grid mt-5 grid gap-3">
-      {viewState.isEmailAccount ? (
-        <PasswordResetAction
-          isSendingPasswordResetLink={isSendingPasswordResetLink}
-          onSendPasswordResetLink={onSendPasswordResetLink}
-          viewState={viewState}
-        />
-      ) : (
-        <GoogleManagedPasswordButton />
-      )}
+  if (!viewState.isEmailAccount) {
+    return (
+      <StatusPill size="xs" surface="soft" tone="neutral">
+        Managed by Google
+      </StatusPill>
+    );
+  }
 
-      <Button asChild variant="outline" size="compact" className="min-w-0">
-        <Link {...buildProfileNavigation()}>
-          <ExternalLink className="size-4" aria-hidden="true" />
-          View public profile
-        </Link>
-      </Button>
-    </div>
+  return (
+    <PasswordResetAction
+      isSendingPasswordResetLink={isSendingPasswordResetLink}
+      onSendPasswordResetLink={onSendPasswordResetLink}
+      viewState={viewState}
+    />
   );
 }
 
@@ -127,9 +123,9 @@ function PasswordResetAction({
       trigger={
         <Button
           type="button"
-          variant="primary"
-          size="compact"
-          className="min-w-0"
+          variant="outline"
+          size="sm"
+          className="w-full sm:w-auto"
           disabled={viewState.resetButtonDisabled}
         >
           <Mail className="size-4" aria-hidden="true" />
@@ -137,21 +133,6 @@ function PasswordResetAction({
         </Button>
       }
     />
-  );
-}
-
-function GoogleManagedPasswordButton() {
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      size="compact"
-      className="min-w-0"
-      disabled
-    >
-      <KeyRound className="size-4" aria-hidden="true" />
-      Password managed by Google
-    </Button>
   );
 }
 

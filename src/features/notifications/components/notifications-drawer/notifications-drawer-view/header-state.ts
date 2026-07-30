@@ -6,9 +6,11 @@ export function getNotificationsDrawerHeaderState({
 }: Pick<NotificationsDrawerHeaderProps, "count" | "selectedNotification">) {
   return {
     containerClassName: selectedNotification
-      ? "min-h-16 pb-2"
-      : "min-h-18 border-border border-b pb-4",
-    countLabel: getUnreadCountLabel(count),
+      ? "min-h-15 pb-2"
+      : "min-h-20 border-border/70 border-b pb-4",
+    countLabel: selectedNotification
+      ? "Notification detail"
+      : getUnreadCountLabel(count),
     showListActions: !selectedNotification,
   };
 }
@@ -18,7 +20,7 @@ function getUnreadCountLabel(count: number) {
     return "All caught up";
   }
 
-  return `${count} unread ${count === 1 ? "update" : "updates"}`;
+  return `${count} unread`;
 }
 
 export function getNotificationsListHeaderActionLabels(isOnline: boolean) {

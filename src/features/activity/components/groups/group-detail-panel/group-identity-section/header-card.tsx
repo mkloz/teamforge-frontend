@@ -27,6 +27,7 @@ export function GroupIdentityHeaderCard({
           alt={`${displayName} avatar`}
           shape="rounded"
           className="size-16 rounded-xl bg-muted ring-1 ring-border/70"
+          fallbackClassName="text-base"
           imageClassName="transition-transform duration-500 group-hover:scale-105"
         />
       </div>

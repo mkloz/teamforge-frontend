@@ -18,7 +18,7 @@ export function ProfileStepQueueItem({
   const { navigation, stepMeta } = getProfileStepQueueItemRenderState(nextStep);
 
   return (
-    <li className="group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 hover:bg-forge-teal/5 sm:px-3">
+    <li className="group min-w-0 rounded-2xl bg-card px-3 py-3 transition-colors duration-150 hover:bg-forge-teal/5 sm:px-4">
       <Link
         {...navigation}
         aria-label={nextStep.label}

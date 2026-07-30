@@ -7,6 +7,7 @@ import {
 } from "@/shared/api/group-membership-api";
 import {
   acceptInvite as sharedAcceptInvite,
+  cancelInvite as sharedCancelInvite,
   createInvite as sharedCreateInvite,
   declineInvite as sharedDeclineInvite,
 } from "@/shared/api/invite-membership-api";
@@ -62,6 +63,10 @@ export class GroupPlanDetailApi {
 
   static async declineInvite(inviteId: string) {
     return sharedDeclineInvite(inviteId);
+  }
+
+  static async cancelInvite(inviteId: string) {
+    return sharedCancelInvite(inviteId);
   }
 
   static async createPlanProposal(

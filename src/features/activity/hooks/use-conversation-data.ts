@@ -181,7 +181,7 @@ function getDirectHeaderProps(
 function getDirectPresenceText(participant: DirectConversationParticipant) {
   return getStatusText(
     participant.onlineStatus || "OFFLINE",
-    undefined, // lastSeen not in schema yet
+    participant.lastSeenAt ?? undefined,
   );
 }
 

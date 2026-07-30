@@ -32,6 +32,7 @@ interface OpenWizardOptions {
   mode?: ForgeMode;
   history?: RouteHistory;
   idea?: { title: string; detail?: string; laneKey?: string };
+  templateId?: string;
 }
 
 const EMPTY_OPEN_WIZARD_OPTIONS: OpenWizardOptions = {};
@@ -248,9 +249,13 @@ function getOpenWizardRouteState(options: OpenWizardOptions | undefined) {
   return {
     open: true,
     requestId: null,
-    step: getOpenWizardStep(routeOptions.step, routeOptions.idea),
+    step: getOpenWizardStep(
+      routeOptions.step,
+      routeOptions.idea,
+      routeOptions.templateId,
+    ),
     mode: getOpenWizardMode(routeOptions.mode),
-    templateId: null,
+    templateId: routeOptions.templateId ?? null,
     ideaTitle: ideaRouteState.title,
     ideaDetail: ideaRouteState.detail,
     ideaEventDescription: null,
@@ -270,8 +275,9 @@ function getRouteValueWithDraftFallback<T>(
 function getOpenWizardStep(
   step: Step | undefined,
   idea: OpenWizardOptions["idea"] | undefined,
+  templateId: string | undefined,
 ) {
-  if (idea) {
+  if (idea || templateId) {
     return IDEA_LAUNCH_STEP;
   }
 

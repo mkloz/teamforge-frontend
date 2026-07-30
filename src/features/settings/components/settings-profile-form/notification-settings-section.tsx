@@ -1,4 +1,4 @@
-import { BellOff, BellRing, Send } from "lucide-react";
+import { BellDot, BellOff, BellRing, Mail, Send } from "lucide-react";
 import { useId } from "react";
 
 import {
@@ -9,6 +9,11 @@ import type { BooleanSettingsPreferenceKey } from "@/features/settings/component
 import { NOTIFICATION_CHANNEL_ITEMS } from "@/features/settings/components/settings-profile-form/settings-preference-items";
 import { SettingsPreferencesSkeleton } from "@/features/settings/components/settings-section-skeletons";
 import { Button } from "@/shared/components/ui/button";
+import {
+  GroupedMenuAction,
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Label } from "@/shared/components/ui/label";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -34,6 +39,23 @@ interface NotificationSettingsSectionProps {
   ) => Promise<void>;
 }
 
+const NOTIFICATION_DELIVERY_CHANNELS = [
+  {
+    id: "in-app",
+    title: "In app",
+    description: "Keep selected updates inside TeamForge.",
+    icon: BellDot,
+    preferenceKey: "inAppKey",
+  },
+  {
+    id: "email",
+    title: "Email",
+    description: "Send selected updates to your inbox.",
+    icon: Mail,
+    preferenceKey: "emailKey",
+  },
+] as const;
+
 export function NotificationSettingsSection({
   notificationPreferences,
   isLoadingNotificationPreferences,
@@ -43,7 +65,7 @@ export function NotificationSettingsSection({
   onChange,
 }: NotificationSettingsSectionProps) {
   return (
-    <section className="flex flex-col gap-8">
+    <section className="flex flex-col gap-9">
       <PreferenceStatusMessage error={error} />
 
       {!isOnline ? (
@@ -81,37 +103,36 @@ function NotificationDeliveryPreferences({
 }) {
   return (
     <section>
-      <h2 className="font-bold text-ink text-xl">Updates</h2>
+      <div className="px-1">
+        <h2 className="font-bold text-ink text-xl">Choose your channels</h2>
+        <p className="mt-1 text-slate-muted text-sm leading-relaxed">
+          Decide which updates stay in TeamForge and which also reach your
+          inbox.
+        </p>
+      </div>
 
       {isLoading ? (
-        <SettingsPreferencesSkeleton />
+        <div className="mt-5">
+          <SettingsPreferencesSkeleton />
+        </div>
       ) : notificationPreferences ? (
         <fieldset
-          className="mt-4 min-w-0 overflow-hidden border-border border-y"
+          className="mt-5 min-w-0"
           aria-label="Notification delivery channels"
         >
-          <div className="grid grid-cols-[minmax(0,1fr)_3rem_3rem] items-center gap-2 border-border border-b py-3 text-center sm:grid-cols-[minmax(0,1fr)_4.5rem_4.5rem]">
-            <span className="text-left font-semibold text-slate-muted text-xs">
-              Update
-            </span>
-            <span className="font-semibold text-slate-muted text-xs">
-              In app
-            </span>
-            <span className="font-semibold text-slate-muted text-xs">
-              Email
-            </span>
+          <legend className="sr-only">Notification delivery channels</legend>
+          <div className="grid gap-7 lg:grid-cols-2">
+            {NOTIFICATION_DELIVERY_CHANNELS.map((channel) => (
+              <NotificationChannelMenu
+                key={channel.id}
+                channel={channel}
+                notificationPreferences={notificationPreferences}
+                disabled={!isOnline}
+                savingPreferenceKeys={savingPreferenceKeys}
+                onChange={onChange}
+              />
+            ))}
           </div>
-
-          {NOTIFICATION_CHANNEL_ITEMS.map((item) => (
-            <NotificationChannelRow
-              key={item.inAppKey}
-              item={item}
-              notificationPreferences={notificationPreferences}
-              disabled={!isOnline}
-              savingPreferenceKeys={savingPreferenceKeys}
-              onChange={onChange}
-            />
-          ))}
         </fieldset>
       ) : (
         <p className="mt-4 text-slate-muted text-sm">
@@ -122,15 +143,15 @@ function NotificationDeliveryPreferences({
   );
 }
 
-function NotificationChannelRow({
+function NotificationChannelMenu({
+  channel,
   disabled,
-  item,
   notificationPreferences,
   savingPreferenceKeys,
   onChange,
 }: {
+  channel: (typeof NOTIFICATION_DELIVERY_CHANNELS)[number];
   disabled: boolean;
-  item: (typeof NOTIFICATION_CHANNEL_ITEMS)[number];
   notificationPreferences: NotificationPreferences;
   savingPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   onChange: (
@@ -138,48 +159,99 @@ function NotificationChannelRow({
     value: boolean,
   ) => Promise<void>;
 }) {
-  const inAppId = useId();
-  const emailId = useId();
+  const headingId = useId();
+  const ChannelIcon = channel.icon;
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_3rem_3rem] items-center gap-2 border-border border-b py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_4.5rem_4.5rem]">
-      <div className="min-w-0 pr-2">
-        <p className="font-semibold text-ink text-sm">{item.title}</p>
-        <p className="mt-1 text-slate-muted text-xs leading-relaxed">
-          {item.description}
-        </p>
+    <section aria-labelledby={headingId} className="min-w-0">
+      <div className="flex items-center gap-3 px-1">
+        <IconTile icon={ChannelIcon} shape="circle" size="md" tone="teal" />
+        <div className="min-w-0">
+          <h3 id={headingId} className="font-bold text-ink text-sm">
+            {channel.title}
+          </h3>
+          <p className="mt-0.5 text-slate-muted text-xs">
+            {channel.description}
+          </p>
+        </div>
       </div>
 
-      <div className="flex justify-center">
-        <Switch
-          id={inAppId}
-          checked={notificationPreferences[item.inAppKey]}
-          disabled={disabled || savingPreferenceKeys.has(item.inAppKey)}
-          onCheckedChange={() => {
-            void onChange(
-              item.inAppKey,
-              !notificationPreferences[item.inAppKey],
-            );
-          }}
-          aria-label={`${item.title} in-app notifications`}
-        />
-      </div>
+      <GroupedMenuList className="mt-3">
+        {NOTIFICATION_CHANNEL_ITEMS.map((item) => {
+          const preferenceKey = item[channel.preferenceKey];
 
-      <div className="flex justify-center">
-        <Switch
-          id={emailId}
-          checked={notificationPreferences[item.emailKey]}
-          disabled={disabled || savingPreferenceKeys.has(item.emailKey)}
-          onCheckedChange={() => {
-            void onChange(
-              item.emailKey,
-              !notificationPreferences[item.emailKey],
-            );
-          }}
-          aria-label={`${item.title} email notifications`}
-        />
-      </div>
-    </div>
+          return (
+            <GroupedMenuItem key={preferenceKey} className="bg-background/55">
+              <NotificationChannelToggleRow
+                channelTitle={channel.title}
+                checked={notificationPreferences[preferenceKey]}
+                disabled={disabled || savingPreferenceKeys.has(preferenceKey)}
+                item={item}
+                onToggle={() => {
+                  void onChange(
+                    preferenceKey,
+                    !notificationPreferences[preferenceKey],
+                  );
+                }}
+              />
+            </GroupedMenuItem>
+          );
+        })}
+      </GroupedMenuList>
+    </section>
+  );
+}
+
+function NotificationChannelToggleRow({
+  channelTitle,
+  checked,
+  disabled,
+  item,
+  onToggle,
+}: {
+  channelTitle: string;
+  checked: boolean;
+  disabled: boolean;
+  item: (typeof NOTIFICATION_CHANNEL_ITEMS)[number];
+  onToggle: () => void;
+}) {
+  const switchId = useId();
+  const ItemIcon = item.icon;
+
+  return (
+    <GroupedMenuAction
+      selected={checked}
+      className={cn(
+        "min-h-12 gap-3 px-3 py-2 sm:min-h-13 sm:px-4 sm:py-2.5",
+        disabled && "cursor-not-allowed opacity-60",
+      )}
+    >
+      <ItemIcon
+        className={cn(
+          "size-4 shrink-0",
+          checked ? "text-primary" : "text-slate-muted",
+        )}
+        aria-hidden="true"
+      />
+      <Label
+        htmlFor={switchId}
+        className={cn(
+          "min-w-0 flex-1 font-semibold text-ink text-sm",
+          disabled ? "cursor-not-allowed" : "cursor-pointer",
+        )}
+      >
+        {item.title}
+        <span className="sr-only">. {item.description}</span>
+      </Label>
+      <Switch
+        id={switchId}
+        checked={checked}
+        disabled={disabled}
+        onCheckedChange={onToggle}
+        aria-label={`${item.title} ${channelTitle.toLowerCase()} notifications`}
+        className="shrink-0"
+      />
+    </GroupedMenuAction>
   );
 }
 
@@ -199,55 +271,68 @@ function WebPushDevicePreference({ isOnline }: { isOnline: boolean }) {
   }
 
   return (
-    <section
-      className={cn(
-        "flex w-full flex-col gap-4 border-border border-y py-4 text-left transition-colors sm:flex-row sm:items-center sm:justify-between",
-        push.isSubscribed && "border-primary/20",
-        controlState.isDisabled && "opacity-80",
-      )}
-    >
-      <div className="flex min-w-0 gap-3">
-        <IconTile
-          icon={StatusIcon}
-          shape="circle"
-          size="lg"
-          tone={controlState.statusTone}
-          className="mt-0.5"
-          iconClassName="size-4.5"
-        />
-
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Label
-              htmlFor={switchId}
-              className="font-semibold text-ink text-sm"
-            >
-              Push notifications
-            </Label>
-            <StatusPill
-              size="xs"
-              tone={controlState.statusTone}
-              surface="soft"
-              className="font-semibold text-xs"
-            >
-              {controlState.status.label}
-            </StatusPill>
-          </div>
-          <p
-            id={`${switchId}-description`}
-            className="mt-1 text-slate-muted text-xs leading-relaxed"
-          >
-            {controlState.status.description}
-          </p>
-        </div>
+    <section>
+      <div className="px-1">
+        <h2 className="font-bold text-ink text-xl">This device</h2>
+        <p className="mt-1 text-slate-muted text-sm leading-relaxed">
+          Receive time-sensitive updates even when TeamForge is closed.
+        </p>
       </div>
 
-      <WebPushDeviceActions
-        controlState={controlState}
-        push={push}
-        switchId={switchId}
-        onToggle={handleToggle}
-      />
+      <GroupedMenuList aria-label="Push notification delivery" className="mt-4">
+        <GroupedMenuItem>
+          <GroupedMenuAction
+            selected={push.isSubscribed}
+            className={cn(
+              "grid min-h-18 grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-2.5 gap-y-3 p-3 sm:flex sm:min-h-20 sm:items-center sm:gap-4 sm:px-5 sm:py-4",
+              controlState.isDisabled && "opacity-80",
+            )}
+          >
+            <div className="contents sm:flex sm:min-w-0 sm:flex-1 sm:gap-3">
+              <IconTile
+                icon={StatusIcon}
+                shape="circle"
+                size="lg"
+                tone={controlState.statusTone}
+                className="mt-1 size-8 sm:mt-0 sm:size-10"
+                iconClassName="size-4 sm:size-4.5"
+              />
+
+              <div className="min-w-0">
+                <div className="flex flex-nowrap items-center gap-1.5">
+                  <Label
+                    htmlFor={switchId}
+                    className="whitespace-nowrap font-semibold text-ink text-sm"
+                  >
+                    Push notifications
+                  </Label>
+                  <StatusPill
+                    size="2xs"
+                    tone={controlState.statusTone}
+                    surface="soft"
+                    className="font-semibold text-xs"
+                  >
+                    {controlState.status.label}
+                  </StatusPill>
+                </div>
+                <p
+                  id={`${switchId}-description`}
+                  className="mt-1 text-slate-muted text-xs leading-relaxed"
+                >
+                  {controlState.status.description}
+                </p>
+              </div>
+            </div>
+
+            <WebPushDeviceActions
+              controlState={controlState}
+              push={push}
+              switchId={switchId}
+              onToggle={handleToggle}
+            />
+          </GroupedMenuAction>
+        </GroupedMenuItem>
+      </GroupedMenuList>
     </section>
   );
 }
@@ -264,11 +349,12 @@ function WebPushDeviceActions({
   switchId: string;
 }) {
   return (
-    <div className="flex shrink-0 items-center gap-3 self-end sm:self-auto">
+    <div className="contents sm:flex sm:shrink-0 sm:items-center sm:gap-3">
       {push.isSubscribed && (
         <Button
           variant="outline"
           size="sm"
+          className="col-span-2 col-start-2 row-start-2 w-fit justify-self-start sm:col-auto sm:row-auto sm:justify-self-auto"
           loading={push.isSendingTest}
           disabled={controlState.sendTestDisabled}
           onClick={() => {
@@ -289,6 +375,7 @@ function WebPushDeviceActions({
         }}
         aria-describedby={`${switchId}-description`}
         aria-label="Push notifications"
+        className="col-start-3 row-start-1 shrink-0"
       />
     </div>
   );

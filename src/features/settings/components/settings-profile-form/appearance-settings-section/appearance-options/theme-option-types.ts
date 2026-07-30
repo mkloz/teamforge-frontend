@@ -21,15 +21,3 @@ export interface ThemeSavingState {
   isSavingStyle: boolean;
   isSavingColor: boolean;
 }
-
-export interface GridOptionBoundaryState {
-  isFirstColumnOnDesktop: boolean;
-  isLastInGroup: boolean;
-  isLastRowOnDesktop: boolean;
-}
-
-export interface ThemeOptionStatus {
-  selected: boolean;
-  isDefault: boolean;
-  disabled: boolean;
-}

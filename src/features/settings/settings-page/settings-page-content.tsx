@@ -66,7 +66,7 @@ export function SettingsPageContent({
   }, [activeSection, isMobile, isMobileDetailOpen]);
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-3 px-4 py-5 md:px-8 lg:grid-cols-[18rem_minmax(0,56rem)] lg:gap-6 lg:py-10 xl:gap-8">
+    <div className="mx-auto grid w-full max-w-7xl gap-3 px-3 py-5 sm:px-4 md:px-8 lg:grid-cols-[15rem_1px_minmax(0,38rem)] lg:gap-7 lg:py-10 xl:gap-10">
       <SettingsSidebar
         activeSection={activeSection}
         activeSectionLinkRef={activeSectionLinkRef}
@@ -76,9 +76,14 @@ export function SettingsPageContent({
         onSignOut={onSignOut}
       />
 
+      <div
+        aria-hidden="true"
+        className="hidden w-px self-stretch bg-border/70 lg:block"
+      />
+
       <section
         className={cn(
-          "w-full min-w-0 border-border/70 pt-11 lg:block lg:max-w-4xl lg:border-l lg:pt-0 lg:pl-10 xl:pl-12",
+          "w-full min-w-0 pt-11 lg:block lg:max-w-152 lg:pt-0",
           !isMobileDetailOpen && "hidden",
         )}
       >

@@ -97,10 +97,10 @@ export function DropzoneMetaRow({
   }
 
   return (
-    <div className="hidden min-w-0 flex-wrap items-center gap-1.5 sm:flex">
+    <div className="hidden min-w-0 flex-wrap items-center gap-1 sm:flex">
       <StatusPill
         tone="none"
-        size="xs"
+        size="2xs"
         className={viewState.dropHintPillClassName}
       >
         {viewState.dropHint}
@@ -109,7 +109,7 @@ export function DropzoneMetaRow({
       {helper && (
         <StatusPill
           tone="none"
-          size="xs"
+          size="2xs"
           className={viewState.helperPillClassName}
         >
           {helper}

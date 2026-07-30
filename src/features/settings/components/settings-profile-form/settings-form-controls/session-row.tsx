@@ -1,6 +1,8 @@
 import { CalendarClock, Clock3, LogOut, Wifi } from "lucide-react";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
+import { GroupedMenuItem } from "@/shared/components/ui/grouped-menu";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
@@ -39,24 +41,21 @@ export function SessionRow({
   });
 
   return (
-    <div
-      className={cn(
-        "md:main-action-grid grid gap-4 border-border border-b py-5 last:border-b-0 md:items-center",
-        viewState.rowHighlightClassName,
-      )}
-    >
-      <SessionDeviceSummary
-        device={device}
-        session={session}
-        viewState={viewState}
-      />
+    <GroupedMenuItem className={cn(viewState.rowHighlightClassName)}>
+      <div className="lg:main-action-grid grid gap-4 px-3 py-3 sm:px-5 sm:py-4 lg:items-center">
+        <SessionDeviceSummary
+          device={device}
+          session={session}
+          viewState={viewState}
+        />
 
-      <SessionRevokeDialog
-        actionState={actionState}
-        isRevoking={isRevoking}
-        onConfirm={() => onRevoke(session)}
-      />
-    </div>
+        <SessionRevokeDialog
+          actionState={actionState}
+          isRevoking={isRevoking}
+          onConfirm={() => onRevoke(session)}
+        />
+      </div>
+    </GroupedMenuItem>
   );
 }
 
@@ -72,7 +71,7 @@ function SessionDeviceSummary({
   const DeviceIcon = device.icon;
 
   return (
-    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4">
+    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3">
       <IconTile
         icon={DeviceIcon}
         shape="circle"
@@ -83,7 +82,7 @@ function SessionDeviceSummary({
       />
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-semibold text-base text-ink leading-6">
+          <p className="font-semibold text-ink text-sm leading-6">
             {device.label}
           </p>
           {viewState.isCurrentSession && (
@@ -101,7 +100,7 @@ function SessionDeviceSummary({
 
 function SessionTimestampFacts({ session }: { session: AuthSession }) {
   return (
-    <div className="mt-3 grid gap-2 text-slate-muted text-xs sm:grid-cols-3">
+    <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1.5 text-slate-muted text-xs">
       <span className="flex min-w-0 items-center gap-2">
         <CalendarClock size={14} className="shrink-0" />
         <span className="truncate">
@@ -120,11 +119,12 @@ function SessionTimestampFacts({ session }: { session: AuthSession }) {
 
 function SessionTechnicalDetails({ session }: { session: AuthSession }) {
   return (
-    <details className="mt-3 text-xs">
-      <summary className="w-fit cursor-pointer text-slate-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35">
-        Technical details
-      </summary>
-      <dl className="mt-2 grid gap-2 text-slate-muted">
+    <CollapsibleSection
+      className="mt-2 text-xs"
+      summary="Technical details"
+      triggerClassName="text-slate-muted"
+    >
+      <dl className="grid gap-2 text-slate-muted">
         <div className="flex items-start gap-2">
           <Wifi size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
           <div>
@@ -139,7 +139,7 @@ function SessionTechnicalDetails({ session }: { session: AuthSession }) {
           </div>
         ) : null}
       </dl>
-    </details>
+    </CollapsibleSection>
   );
 }
 
@@ -168,7 +168,7 @@ function SessionRevokeDialog({
           type="button"
           variant={actionState.triggerVariant}
           size="sm"
-          className="w-full md:w-auto"
+          className="w-full lg:w-auto"
           disabled={actionState.disabled}
         >
           <LogOut size={14} />

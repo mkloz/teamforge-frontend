@@ -49,12 +49,27 @@ export function AdultEligibilityCorrectionControls({
         </div>
 
         {correction ? (
-          <StatusPill
-            tone={correction.status === "OPEN" ? "amber" : "neutral"}
-            size="sm"
-          >
-            {CORRECTION_STATUS_LABELS[correction.status]}
-          </StatusPill>
+          <div className="flex shrink-0 items-center gap-2">
+            <StatusPill
+              tone={correction.status === "OPEN" ? "amber" : "neutral"}
+              size="sm"
+            >
+              {CORRECTION_STATUS_LABELS[correction.status]}
+            </StatusPill>
+            {correction.canCancel ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                loading={state.isCancelling}
+                disabled={!state.isOnline || state.isCancelling}
+                onClick={() => void state.cancelCorrection()}
+              >
+                <X className="size-3.5" aria-hidden="true" />
+                Cancel request
+              </Button>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
@@ -89,46 +104,36 @@ export function AdultEligibilityCorrectionControls({
 
       {canRequest ? (
         <Form {...state.form}>
-          <form className="mt-5 flex flex-col gap-4" onSubmit={handleSubmit}>
+          <form className="mt-5" onSubmit={handleSubmit}>
             <DateOfBirthField
               control={state.form.control}
               disabled={!state.isOnline || state.isRequesting}
               name="dateOfBirth"
+              action={
+                <Button
+                  type="submit"
+                  variant="outline"
+                  size="compact"
+                  loading={state.isRequesting}
+                  disabled={!state.isOnline || state.isRequesting}
+                  className="px-3 sm:px-4"
+                >
+                  {correction ? (
+                    <RotateCcw className="size-4" aria-hidden="true" />
+                  ) : (
+                    <CalendarClock className="size-4" aria-hidden="true" />
+                  )}
+                  <span className="sm:hidden">
+                    {correction ? "Request again" : "Request review"}
+                  </span>
+                  <span className="hidden sm:inline">
+                    {correction ? "Request another review" : "Request a review"}
+                  </span>
+                </Button>
+              }
             />
-            <div>
-              <Button
-                type="submit"
-                variant="outline"
-                size="compact"
-                loading={state.isRequesting}
-                disabled={!state.isOnline || state.isRequesting}
-              >
-                {correction ? (
-                  <RotateCcw className="size-4" aria-hidden="true" />
-                ) : (
-                  <CalendarClock className="size-4" aria-hidden="true" />
-                )}
-                {correction ? "Request another review" : "Request a review"}
-              </Button>
-            </div>
           </form>
         </Form>
-      ) : null}
-
-      {correction?.canCancel ? (
-        <div className="mt-4">
-          <Button
-            type="button"
-            variant="ghost"
-            size="compact"
-            loading={state.isCancelling}
-            disabled={!state.isOnline || state.isCancelling}
-            onClick={() => void state.cancelCorrection()}
-          >
-            <X className="size-4" aria-hidden="true" />
-            Cancel request
-          </Button>
-        </div>
       ) : null}
     </div>
   );

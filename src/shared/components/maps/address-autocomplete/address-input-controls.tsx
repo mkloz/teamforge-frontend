@@ -1,3 +1,10 @@
+import {
+  AnimatePresence,
+  domAnimation,
+  LazyMotion,
+  m,
+  useReducedMotion,
+} from "framer-motion";
 import { Loader2, LocateFixed, X } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
@@ -117,22 +124,46 @@ function ClearLocationButton({
   AddressInputControlsProps,
   "disabled" | "inputValue" | "isLocating" | "onClearLocation"
 >) {
-  if (!inputValue) {
-    return null;
-  }
+  const shouldReduceMotion = useReducedMotion();
+  const transition = shouldReduceMotion
+    ? { duration: 0 }
+    : { duration: 0.18, ease: "easeOut" as const };
 
   return (
-    <Button
-      type="button"
-      variant="accentGhost"
-      size="icon-xs"
-      onClick={onClearLocation}
-      disabled={disabled || isLocating}
-      className="size-7 rounded-full"
-      aria-label="Clear location"
-    >
-      <X className="size-3.5" strokeWidth={2} />
-    </Button>
+    <LazyMotion features={domAnimation}>
+      <AnimatePresence initial={false}>
+        {inputValue ? (
+          <m.div
+            key="clear-location"
+            initial={{
+              opacity: 0,
+              width: 0,
+              x: shouldReduceMotion ? 0 : 10,
+            }}
+            animate={{ opacity: 1, width: 28, x: 0 }}
+            exit={{
+              opacity: 0,
+              width: 0,
+              x: shouldReduceMotion ? 0 : 10,
+            }}
+            transition={transition}
+            className="shrink-0 overflow-hidden"
+          >
+            <Button
+              type="button"
+              variant="accentGhost"
+              size="icon-xs"
+              onClick={onClearLocation}
+              disabled={disabled || isLocating}
+              className="size-7 rounded-full"
+              aria-label="Clear location"
+            >
+              <X className="size-3.5" strokeWidth={2} />
+            </Button>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
+    </LazyMotion>
   );
 }
 
@@ -154,7 +185,7 @@ export function AddressInputControls({
   const showBusyIndicator = shouldShowBusyIndicator({ isBusy, isLocating });
 
   return (
-    <div className="flex items-center gap-1 pr-1">
+    <div className="flex items-center gap-1 pr-0.5">
       <LocateAreaButton
         disabled={disabled}
         hasCurrentAreaError={hasCurrentAreaError}

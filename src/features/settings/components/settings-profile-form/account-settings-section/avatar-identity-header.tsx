@@ -1,8 +1,10 @@
 import { CheckCircle2 } from "lucide-react";
+import type { ReactNode } from "react";
 import { Avatar } from "@/shared/components/common/avatar";
 import type { User } from "@/shared/schemas";
 
 interface AvatarIdentityHeaderProps {
+  action?: ReactNode;
   currentUser: User | undefined;
   displayedAvatarUrl: string | null | undefined;
 }
@@ -13,34 +15,36 @@ const AVATAR_IDENTITY_FALLBACK = {
 } as const;
 
 export function AvatarIdentityHeader({
+  action,
   currentUser,
   displayedAvatarUrl,
 }: AvatarIdentityHeaderProps) {
   const content = getAvatarIdentityContent(currentUser);
 
   return (
-    <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-      <div className="hidden w-fit flex-col gap-2 sm:flex">
-        <div className="relative">
-          <Avatar
-            src={displayedAvatarUrl}
-            name={currentUser?.name}
-            imageSize={128}
-            className="size-28 border border-border bg-card text-2xl shadow-sm"
-            loading="eager"
-          />
-          <span className="absolute -right-1 -bottom-1 flex size-9 items-center justify-center rounded-full border-4 border-canvas bg-primary text-primary-foreground">
-            <CheckCircle2 size={17} strokeWidth={2} />
-          </span>
-        </div>
+    <div className="flex items-center gap-4">
+      <div className="relative shrink-0">
+        <Avatar
+          src={displayedAvatarUrl}
+          name={currentUser?.name}
+          imageSize={112}
+          className="size-20 bg-input text-xl sm:size-22"
+          loading="eager"
+        />
+        {action ? (
+          <div className="absolute -top-1 -right-1 z-10">{action}</div>
+        ) : null}
+        <span className="absolute -right-1 -bottom-1 flex size-7 items-center justify-center rounded-full border-3 border-card bg-primary text-primary-foreground">
+          <CheckCircle2 size={14} strokeWidth={2.25} />
+        </span>
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-primary text-xs">Public identity</p>
-        <h2 className="mt-2 font-bold text-3xl text-ink leading-tight">
+        <p className="font-medium text-slate-muted text-xs">Profile preview</p>
+        <h2 className="mt-1 font-semibold text-ink text-xl leading-tight">
           {content.name}
         </h2>
-        <p className="wrap-break-word mt-2 max-w-2xl text-slate-muted text-sm leading-relaxed">
+        <p className="wrap-break-word mt-1.5 line-clamp-2 text-slate-muted text-sm leading-relaxed">
           {content.bio}
         </p>
       </div>

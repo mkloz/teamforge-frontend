@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { AccountDataCommands } from "@/features/settings/api/account-data-commands";
 import { SettingsCache } from "@/features/settings/api/settings-cache";
@@ -9,22 +9,36 @@ import {
   getAccountDataErrorCode,
   RECENT_AUTH_REQUIRED_CODE,
 } from "@/features/settings/lib/account-data-error";
+import { reauthenticateCurrentSession } from "@/shared/api/auth-session-commands";
 import { useCurrentSessionSignOut } from "@/shared/hooks/use-current-session-sign-out";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getBrowserDocument } from "@/shared/lib/browser-environment";
 import { scheduleDelay } from "@/shared/lib/browser-scheduling";
+import type { User } from "@/shared/schemas";
 
 interface UseAccountExportOptions {
+  authProvider: User["authProvider"] | undefined;
   enabled: boolean;
   userId: string | undefined;
 }
 
-export function useAccountExport({ enabled, userId }: UseAccountExportOptions) {
+type RecentAuthenticationAction = "request" | "retry" | "download";
+
+export function useAccountExport({
+  authProvider,
+  enabled,
+  userId,
+}: UseAccountExportOptions) {
   const { signOut, isSigningOut } = useCurrentSessionSignOut();
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const [error, setError] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [requiresRecentAuth, setRequiresRecentAuth] = useState(false);
+  const [reauthenticationError, setReauthenticationError] = useState<
+    string | null
+  >(null);
+  const pendingRecentAuthenticationActionRef =
+    useRef<RecentAuthenticationAction | null>(null);
   const query = useQuery({
     ...settingsQueries.accountExport(userId ?? "unknown"),
     enabled: enabled && Boolean(userId),
@@ -39,17 +53,21 @@ export function useAccountExport({ enabled, userId }: UseAccountExportOptions) {
       AccountDataCommands.retryAccountExport(crypto.randomUUID()),
     meta: { errorToast: false },
   });
+  const reauthenticationMutation = useMutation({
+    mutationFn: reauthenticateCurrentSession,
+    meta: { errorToast: false },
+  });
 
-  function handleError(
-    action: "request" | "retry" | "download",
-    cause: unknown,
-  ) {
+  function handleError(action: RecentAuthenticationAction, cause: unknown) {
     if (getAccountDataErrorCode(cause) === RECENT_AUTH_REQUIRED_CODE) {
+      pendingRecentAuthenticationActionRef.current = action;
       setRequiresRecentAuth(true);
+      setReauthenticationError(null);
       setError(null);
       return;
     }
 
+    pendingRecentAuthenticationActionRef.current = null;
     setError(ACCOUNT_DATA_COPY.export[`${action}Error`]);
   }
 
@@ -116,8 +134,39 @@ export function useAccountExport({ enabled, userId }: UseAccountExportOptions) {
     }
   }
 
+  async function confirmRecentAuthentication(password: string) {
+    setReauthenticationError(null);
+
+    try {
+      await reauthenticationMutation.mutateAsync(password);
+    } catch {
+      setReauthenticationError(
+        "That password did not confirm your sign-in. Check it and try again.",
+      );
+      return false;
+    }
+
+    const pendingAction = pendingRecentAuthenticationActionRef.current;
+
+    pendingRecentAuthenticationActionRef.current = null;
+    setRequiresRecentAuth(false);
+
+    if (pendingAction === "download") {
+      await downloadExport();
+    } else if (pendingAction) {
+      await runExportCommand(pendingAction);
+    }
+
+    return true;
+  }
+
+  const canReauthenticateWithPassword = authProvider === "EMAIL";
+
   return {
     accountExport: query.data?.export ?? null,
+    canReauthenticateWithPassword,
+    clearReauthenticationError: () => setReauthenticationError(null),
+    confirmRecentAuthentication,
     createExport: () => runExportCommand("request"),
     downloadExport,
     error:
@@ -131,7 +180,10 @@ export function useAccountExport({ enabled, userId }: UseAccountExportOptions) {
     isLoading: query.isLoading,
     isOnline,
     isRetrying: retryMutation.isPending,
-    isSigningInAgain: isSigningOut,
+    isSigningInAgain: canReauthenticateWithPassword
+      ? reauthenticationMutation.isPending
+      : isSigningOut,
+    reauthenticationError,
     refetch: query.refetch,
     requiresRecentAuth,
     retryExport: () => runExportCommand("retry"),

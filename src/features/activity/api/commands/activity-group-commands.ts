@@ -11,6 +11,10 @@ export const ActivityGroupCommands = {
     return ActivityActions.sendGroupInvite(groupId, inviteeId);
   },
 
+  cancelGroupInvite(inviteId: string) {
+    return ActivityActions.cancelGroupInvite(inviteId);
+  },
+
   updateGroupIdentity(input: {
     groupId: string;
     groupPayload?: UpdateGroupPayload;

@@ -4,8 +4,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Notice } from "@/shared/components/ui/notice";
 import { cn } from "@/shared/lib/utils";
 
-import { SectionCard } from "./section-card";
-import { SectionHeader } from "./section-header";
+import { FieldLabel } from "./field-label";
 
 interface EventTitleSectionProps {
   charCount: number;
@@ -25,32 +24,30 @@ export function EventTitleSection({
   const nameStatus = getPlanNameStatus({ charCount, isNameValid, planName });
 
   return (
-    <SectionCard accent={isNameValid}>
-      <SectionHeader
-        title="Plan name"
-        aside={
+    <div className="flex flex-col gap-2">
+      <div className="flex items-baseline justify-between gap-3">
+        <FieldLabel htmlFor="plan-name">Plan name</FieldLabel>
+        <div className="min-w-0">
           <PlanNameStatusAside isNameValid={isNameValid} status={nameStatus} />
-        }
+        </div>
+      </div>
+
+      <Input
+        id="plan-name"
+        type="text"
+        value={planName}
+        onChange={(event) => onPlanNameChange(event.target.value)}
+        placeholder="e.g. Wednesday Basketball"
+        autoComplete="off"
+        maxLength={60}
+        aria-invalid={isNameError}
+        aria-describedby={isNameError ? "name-error" : undefined}
+        aria-label="Plan name"
+        aria-required="true"
       />
 
-      <div className="flex flex-col gap-2">
-        <Input
-          id="plan-name"
-          type="text"
-          value={planName}
-          onChange={(event) => onPlanNameChange(event.target.value)}
-          placeholder="e.g. Wednesday Basketball"
-          autoComplete="off"
-          maxLength={60}
-          aria-invalid={isNameError}
-          aria-describedby={isNameError ? "name-error" : undefined}
-          aria-label="Plan name"
-          aria-required="true"
-        />
-
-        <PlanNameErrorNotice isNameError={isNameError} />
-      </div>
-    </SectionCard>
+      <PlanNameErrorNotice isNameError={isNameError} />
+    </div>
   );
 }
 

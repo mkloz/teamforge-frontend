@@ -106,11 +106,17 @@ export function NotificationItem({
       onPointerCancel={handlePointerCancel}
       onPointerUp={handlePointerUp}
       className={cn(
-        "group flex w-full touch-pan-y transition-colors duration-200 focus-within:bg-muted/35 hover:bg-muted/35",
+        "group relative flex min-h-20 w-full touch-pan-y transition-colors duration-200 focus-within:bg-foreground/4 hover:bg-foreground/4",
         !item.isRead &&
-          "bg-forge-teal/8 focus-within:bg-forge-teal/10 hover:bg-forge-teal/10",
+          "bg-(--grouped-menu-selected) focus-within:bg-forge-teal/9 hover:bg-forge-teal/9",
       )}
     >
+      {!item.isRead ? (
+        <span
+          className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-forge-teal"
+          aria-hidden="true"
+        />
+      ) : null}
       <NotificationSource
         avatarBadgeTone={config.avatarBadgeTone}
         icon={Icon}
@@ -127,7 +133,7 @@ export function NotificationItem({
         onClick={handleSelect}
         disabled={isBusy}
         aria-label={`Open notification details. ${item.isRead ? "Read" : "Unread"} notification. ${item.title}. ${item.message}`}
-        className="h-auto min-w-0 flex-1 justify-start rounded-none border-none py-4 pr-5 pl-0 text-left focus-visible:ring-inset active:enabled:bg-transparent hover:enabled:bg-transparent"
+        className="h-auto min-w-0 flex-1 justify-start rounded-none border-none py-3.5 pr-4 pl-3 text-left focus-visible:ring-inset active:enabled:bg-transparent hover:enabled:bg-transparent"
       >
         <NotificationItemContent item={item} isPending={isPending} />
       </Button>
@@ -143,9 +149,9 @@ function NotificationItemContent({
   item: Notification;
 }) {
   return (
-    <span className="flex min-w-0 flex-1 flex-col gap-1">
+    <span className="flex min-w-0 flex-1 flex-col gap-1.5">
       <NotificationTitleLine item={item} />
-      <span className="min-w-0 truncate font-normal text-slate-muted text-sm leading-snug">
+      <span className="line-clamp-2 min-w-0 whitespace-normal font-normal text-slate-muted text-sm leading-snug">
         {item.message}
       </span>
       <NotificationPendingState isPending={isPending} />
@@ -164,15 +170,9 @@ function NotificationTitleLine({ item }: { item: Notification }) {
       >
         {item.title}
       </span>
-      {!item.isRead && (
-        <span
-          className="mt-1.5 size-2 shrink-0 rounded-full bg-forge-teal"
-          aria-hidden="true"
-        />
-      )}
       <time
         dateTime={item.createdAt}
-        className="mt-0.5 shrink-0 font-medium text-slate-muted/70 text-xs"
+        className="mt-px shrink-0 font-medium text-[0.6875rem] text-slate-muted/60"
       >
         {relativeTime(item.createdAt)}
       </time>
@@ -275,7 +275,7 @@ function NotificationSource({
   const actionLabel = item.isRead ? "Mark as unread" : "Mark as read";
 
   return (
-    <span className="relative mt-4 mr-3 ml-5 size-11 shrink-0 [@media(pointer:fine)]:size-10">
+    <span className="relative mt-3.5 mr-3 ml-4 size-11 shrink-0 [@media(pointer:fine)]:size-10">
       <span className="flex size-full items-center justify-center transition-opacity duration-150 lg:group-hover:opacity-0 lg:group-focus-within:opacity-0 lg:[@media(pointer:coarse)]:opacity-0">
         <NotificationSourceVisual
           avatarBadgeTone={avatarBadgeTone}

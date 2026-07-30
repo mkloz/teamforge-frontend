@@ -12,7 +12,12 @@ export function getInvitesSentSummary(
     : fw.activeParticipants.length + 1;
 
   return {
+    avatarImage: fw.avatarImage,
+    coverImage: fw.coverImage,
     displayGroupName: fw.groupName.trim() || fw.planName.trim() || "Your group",
+    groupDescription:
+      fw.groupDescription.trim() ||
+      "A shared place to plan, talk, and keep the group moving.",
     inviteCount,
     isManual,
     memberCount,
@@ -26,15 +31,17 @@ export function getStatusFacts({
   memberCount,
   planName,
 }: InvitesSentSummary): StatusFactItem[] {
+  const hasPendingInvitations = isManual && inviteCount > 0;
+
   return [
     {
-      label: isManual ? "Invited" : "Members",
-      value: isManual
+      label: hasPendingInvitations ? "Invited" : "Members",
+      value: hasPendingInvitations
         ? `${inviteCount} friend${inviteCount !== 1 ? "s" : ""}`
-        : `${memberCount} people`,
+        : `${memberCount} ${memberCount === 1 ? "person" : "people"}`,
     },
     {
-      label: "Plan",
+      label: "First plan",
       value: planName,
     },
   ];

@@ -79,6 +79,7 @@ export const realtimePresenceChangedPayloadSchema = z.object({
     id: z.string(),
     name: z.string(),
     avatar: z.string().nullable(),
+    lastSeenAt: z.string().datetime().nullable(),
   }),
 });
 

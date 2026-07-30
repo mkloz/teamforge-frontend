@@ -1,7 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 
 const QUEUE_ITEM_CLASS_NAME =
-  "group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 sm:px-3";
+  "group min-w-0 rounded-2xl bg-card px-3 py-3 transition-colors duration-150 sm:px-4";
 
 interface QueueActionStateInput {
   isAccepting: boolean;
@@ -15,7 +15,9 @@ export function getQueueItemClassName(
 ) {
   return cn(
     QUEUE_ITEM_CLASS_NAME,
-    isFocused ? "bg-forge-teal/8" : hoverClassName,
+    isFocused
+      ? "bg-forge-teal/8 ring-1 ring-forge-teal/30 ring-inset"
+      : hoverClassName,
   );
 }
 

@@ -93,6 +93,24 @@ export const GroupPlanDetailCommands = {
     return result;
   },
 
+  async cancelInvite(groupId: string, planId: string, inviteId: string) {
+    const result = await GroupPlanDetailApi.cancelInvite(inviteId);
+
+    await Promise.all([
+      invalidateGroupPlanDetail(groupId),
+      appQueryClient.invalidateQueries({
+        queryKey: APP_QUERY_KEYS.groupPlanDetail.inviteSuggestions(
+          groupId,
+          planId,
+        ),
+      }),
+      invalidateInvitationSurfaces(),
+      invalidateNotificationSurfaces(),
+    ]);
+
+    return result;
+  },
+
   async createPlanProposal(
     groupId: string,
     planId: string,

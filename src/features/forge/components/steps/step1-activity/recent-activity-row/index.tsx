@@ -1,61 +1,35 @@
 import { useQuery } from "@tanstack/react-query";
 import { History } from "lucide-react";
-import { useState } from "react";
 
 import { forgeRecentActivitiesQueryOptions } from "@/features/forge/api/forge-query-options";
-import { hasMatchingRecentActivity } from "@/features/forge/lib/recent-activity/activity-category";
 import { buildRecentActivityItems } from "@/features/forge/lib/recent-activity/recent-activity-items";
-import { IconTile } from "@/shared/components/ui/icon-tile";
+import { getRecentActivityTemplateId } from "@/features/forge/lib/recent-activity/recent-activity-template-id";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/shared/components/ui/carousel";
 
 import { RecentActivityCard } from "./recent-activity-card";
 import { RecentActivityEmptyState } from "./recent-activity-empty-state";
 import { RecentActivityPagination } from "./recent-activity-pagination";
 import { RecentActivitySkeleton } from "./recent-activity-skeleton";
-import {
-  RECENT_ACTIVITIES_PER_PAGE,
-  type RecentActivityRowProps,
-} from "./types";
+import type { RecentActivityRowProps } from "./types";
+import { useRecentActivityCarousel } from "./use-recent-activity-carousel";
 
 export function RecentActivityRow({
   appliedTemplateId,
   selectedActivity,
   onTemplateToggle,
 }: RecentActivityRowProps) {
-  const [pageState, setPageState] = useState({
-    page: 0,
-    selectedActivity,
-  });
   const { data = [], isLoading } = useQuery(
     forgeRecentActivitiesQueryOptions(),
   );
   const recentActivities = buildRecentActivityItems(data, selectedActivity);
-  const pageCount = Math.max(
-    1,
-    Math.ceil(recentActivities.length / RECENT_ACTIVITIES_PER_PAGE),
-  );
-  const page =
-    pageState.selectedActivity === selectedActivity
-      ? Math.min(pageState.page, pageCount - 1)
-      : 0;
-  const visibleActivities = recentActivities.slice(
-    page * RECENT_ACTIVITIES_PER_PAGE,
-    page * RECENT_ACTIVITIES_PER_PAGE + RECENT_ACTIVITIES_PER_PAGE,
-  );
-  const canPage = pageCount > 1;
-
-  function showPreviousActivities() {
-    setPageState({
-      selectedActivity,
-      page: page === 0 ? pageCount - 1 : page - 1,
-    });
-  }
-
-  function showNextActivities() {
-    setPageState({
-      selectedActivity,
-      page: (page + 1) % pageCount,
-    });
-  }
+  const carousel = useRecentActivityCarousel({
+    itemCount: recentActivities.length,
+  });
+  const canPage = carousel.pageCount > 1;
 
   return (
     <section
@@ -64,23 +38,24 @@ export function RecentActivityRow({
     >
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-center gap-2">
-          <IconTile icon={History} shape="circle" size="sm" tone="neutral" />
-          <div className="min-w-0">
-            <h3
-              id="recent-activity-heading"
-              className="font-semibold text-muted-foreground text-xs leading-none"
-            >
-              Recent activity
-            </h3>
-          </div>
+          <History
+            aria-hidden="true"
+            className="size-4 shrink-0 text-muted-foreground"
+          />
+          <h3
+            id="recent-activity-heading"
+            className="font-semibold text-muted-foreground text-xs leading-none"
+          >
+            Recently used
+          </h3>
         </div>
 
         {canPage && (
           <RecentActivityPagination
-            page={page}
-            pageCount={pageCount}
-            onPrevious={showPreviousActivities}
-            onNext={showNextActivities}
+            page={carousel.page}
+            pageCount={carousel.pageCount}
+            onPrevious={() => carousel.api?.scrollPrev()}
+            onNext={() => carousel.api?.scrollNext()}
           />
         )}
       </div>
@@ -90,24 +65,32 @@ export function RecentActivityRow({
       ) : recentActivities.length === 0 ? (
         <RecentActivityEmptyState />
       ) : (
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {visibleActivities.map((activity) => {
-            const templateId = `recent:${activity.id}`;
+        <Carousel
+          aria-label="Recently used activities"
+          className="min-w-0"
+          key={selectedActivity ?? "all-activities"}
+          opts={carousel.options}
+          setApi={carousel.setApi}
+        >
+          <CarouselContent className="-ml-2.5 pb-1">
+            {recentActivities.map((activity) => {
+              const templateId = getRecentActivityTemplateId(activity.id);
 
-            return (
-              <RecentActivityCard
-                key={activity.id}
-                activity={activity}
-                active={appliedTemplateId === templateId}
-                recommended={hasMatchingRecentActivity(
-                  activity,
-                  selectedActivity,
-                )}
-                onTemplateToggle={onTemplateToggle}
-              />
-            );
-          })}
-        </div>
+              return (
+                <CarouselItem
+                  className="basis-[86%] pl-2.5 sm:basis-1/3"
+                  key={activity.id}
+                >
+                  <RecentActivityCard
+                    activity={activity}
+                    active={appliedTemplateId === templateId}
+                    onTemplateToggle={onTemplateToggle}
+                  />
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+        </Carousel>
       )}
     </section>
   );

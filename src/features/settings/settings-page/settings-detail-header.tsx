@@ -16,6 +16,7 @@ const SETTINGS_DETAIL_HEADER_FALLBACK = {
 } satisfies SettingsDetailHeaderContent;
 
 interface SettingsDetailHeaderContent {
+  description?: string;
   headline: string;
 }
 
@@ -27,8 +28,8 @@ export function SettingsDetailHeader({
   const content = getSettingsDetailHeaderContent(activeSectionMeta);
 
   return (
-    <div className="mb-7 border-border border-b pb-5 lg:mb-9 lg:pb-7">
-      <div className="fixed inset-x-0 top-0 z-50 border-border border-b bg-canvas px-4 py-2 lg:hidden">
+    <div className="mb-7 lg:mb-8">
+      <div className="fixed inset-x-0 top-0 z-50 border-border border-b bg-canvas px-3 py-2 sm:px-4 lg:hidden">
         <Button
           ref={mobileBackButtonRef}
           type="button"
@@ -49,6 +50,11 @@ export function SettingsDetailHeader({
           <h2 className="hidden font-bold text-3xl text-ink leading-tight lg:block">
             {content.headline}
           </h2>
+          {content.description ? (
+            <p className="mt-2 max-w-2xl text-slate-muted text-sm leading-relaxed">
+              {content.description}
+            </p>
+          ) : null}
         </div>
       </div>
     </div>
@@ -63,6 +69,7 @@ function getSettingsDetailHeaderContent(
   }
 
   return {
+    description: activeSectionMeta.description,
     headline: activeSectionMeta.headline,
   };
 }

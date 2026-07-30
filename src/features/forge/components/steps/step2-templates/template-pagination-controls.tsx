@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { ComponentProps } from "react";
 
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -13,6 +14,7 @@ interface TemplatePaginationControlsProps {
   onPrevious: () => void;
   page: number;
   pageCount: number;
+  className?: ComponentProps<"nav">["className"];
 }
 
 export function TemplatePaginationControls({
@@ -21,17 +23,18 @@ export function TemplatePaginationControls({
   onPrevious,
   page,
   pageCount,
+  className,
 }: TemplatePaginationControlsProps) {
   return (
     <nav
       aria-label="Template pages"
-      className="flex shrink-0 items-center gap-1"
+      className={`flex shrink-0 items-center gap-1 ${className ?? ""}`}
     >
       <span
         aria-hidden="true"
-        className="mr-1 font-semibold text-muted-foreground/45 text-xs"
+        className="mr-0.5 whitespace-nowrap font-semibold text-muted-foreground/55 text-xs tabular-nums"
       >
-        {page + 1}/{pageCount}
+        {page + 1} / {pageCount}
       </span>
       <span className="sr-only" aria-live="polite" aria-atomic="true">
         Template page {page + 1} of {pageCount}
@@ -45,7 +48,7 @@ export function TemplatePaginationControls({
             onClick={onPrevious}
             disabled={!canPage}
             aria-label="Previous templates"
-            className="size-11 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35 md:size-8"
+            className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35"
           >
             <ChevronLeft size={15} />
           </Button>
@@ -61,7 +64,7 @@ export function TemplatePaginationControls({
             onClick={onNext}
             disabled={!canPage}
             aria-label="Next templates"
-            className="size-11 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35 md:size-8"
+            className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35"
           >
             <ChevronRight size={15} />
           </Button>

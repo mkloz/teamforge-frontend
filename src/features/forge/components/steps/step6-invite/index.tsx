@@ -22,24 +22,26 @@ export function Step6Invite({
   onCopyLink,
 }: Step6InviteProps) {
   return (
-    <div className="flex flex-col gap-4 pb-10">
-      <GroupSummaryCard
-        activityTitle={activityTitle}
-        avatarImage={avatarImage}
-        coverImage={coverImage}
-        forgeMode={forgeMode}
-        groupDescription={groupDescription}
-        groupName={groupName}
-        participantCount={participantCount}
-        planDate={planDate}
-        planLocation={planLocation}
-        planTitle={planTitle}
-      />
-      <InviteLinkSection
-        groupId={groupId}
-        inviteCopied={inviteCopied}
-        onCopyLink={onCopyLink}
-      />
+    <div className="grid gap-8 pb-10 md:grid-cols-[minmax(0,1fr)_16rem] md:items-start">
+      <div className="min-w-0">
+        <GroupSummaryCard
+          activityTitle={activityTitle}
+          avatarImage={avatarImage}
+          coverImage={coverImage}
+          forgeMode={forgeMode}
+          groupDescription={groupDescription}
+          groupName={groupName}
+          participantCount={participantCount}
+          planDate={planDate}
+          planLocation={planLocation}
+          planTitle={planTitle}
+        />
+        <InviteLinkSection
+          groupId={groupId}
+          inviteCopied={inviteCopied}
+          onCopyLink={onCopyLink}
+        />
+      </div>
       <InviteNote forgeMode={forgeMode} inviteeCount={inviteeCount} />
     </div>
   );

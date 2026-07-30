@@ -48,14 +48,30 @@ export function PersonalityResultActions({
   const isBusy = activeAction !== null;
 
   return (
-    <section className="mt-auto flex flex-col gap-4 border-border/70 border-t pt-6">
-      <div className="grid gap-3">
+    <section className="mt-auto flex flex-col gap-5 border-border/70 border-t pt-6">
+      {isSaved ? (
+        <div className="flex items-center justify-between gap-3">
+          <div
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-semibold text-primary text-sm"
+            role="status"
+          >
+            <Check size={15} strokeWidth={2.25} aria-hidden="true" />
+            Saved to profile
+          </div>
+          <DeleteAssessmentDataAction
+            actionsAvailable={actionsAvailable}
+            activeAction={activeAction}
+            isBusy={isBusy}
+            isOnline={isOnline}
+            onDeleteAll={onDeleteAll}
+          />
+        </div>
+      ) : (
         <Button
           disabled={
             !isOnline ||
             !actionsAvailable ||
             isBusy ||
-            isSaved ||
             isLegacyResult ||
             publishBlocked
           }
@@ -64,18 +80,31 @@ export function PersonalityResultActions({
           onClick={onSave}
         >
           <Check size={16} strokeWidth={2} />
-          {isSaved
-            ? "Saved to profile"
-            : isLegacyResult
-              ? "New assessment required"
-              : "Use this result"}
+          {isLegacyResult ? "New assessment required" : "Use this result"}
+        </Button>
+      )}
+
+      <div className="sm:main-action-grid grid gap-3">
+        <Button disabled={!canContinue || isBusy} onClick={onContinue}>
+          <span className="truncate">{continueLabel}</span>
+          <ArrowRight size={18} className="shrink-0" />
+        </Button>
+        <Button
+          variant="outline"
+          disabled={isBusy || hasDraft || retakeBlocked}
+          title={
+            hasDraft
+              ? "Discard this draft before starting another assessment."
+              : (retakeBlockedReason ?? undefined)
+          }
+          loading={activeAction === "retake"}
+          onClick={onRetake}
+          className="sm:min-w-32"
+        >
+          <RefreshCcw size={16} strokeWidth={2} />
+          Retake
         </Button>
       </div>
-
-      <Button disabled={!canContinue || isBusy} onClick={onContinue}>
-        <span className="truncate">{continueLabel}</span>
-        <ArrowRight size={18} className="shrink-0" />
-      </Button>
 
       {!canContinue ? (
         <p className="text-center text-muted-foreground text-xs leading-relaxed">
@@ -99,67 +128,83 @@ export function PersonalityResultActions({
         </p>
       ) : null}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={isBusy || hasDraft || retakeBlocked}
-          title={
-            hasDraft
-              ? "Discard this draft before starting another assessment."
-              : (retakeBlockedReason ?? undefined)
-          }
-          loading={activeAction === "retake"}
-          onClick={onRetake}
-        >
-          <RefreshCcw size={16} strokeWidth={2} />
-          Retake
-        </Button>
-        {hasDraft ? (
-          <ActionDialog
-            cancelLabel="Keep draft"
-            confirmLabel="Discard draft"
-            description="This removes the draft. Your previous saved result stays unchanged."
-            disabled={!isOnline || !actionsAvailable || isBusy}
-            loading={activeAction === "discard"}
-            onConfirm={onDiscard}
-            title="Discard this draft?"
-            tone="danger"
-            trigger={
-              <Button
-                variant="destructive"
-                size="sm"
-                disabled={!isOnline || !actionsAvailable || isBusy}
-              >
-                <Trash2 size={16} strokeWidth={2} />
-                Discard draft
-              </Button>
-            }
-          />
-        ) : null}
-      </div>
+      {hasDraft || !isSaved ? (
+        <div className="flex flex-col gap-3 border-border/50 border-t pt-4 sm:flex-row sm:items-center">
+          {hasDraft ? (
+            <ActionDialog
+              cancelLabel="Keep draft"
+              confirmLabel="Discard draft"
+              description="This removes the draft. Your previous saved result stays unchanged."
+              disabled={!isOnline || !actionsAvailable || isBusy}
+              loading={activeAction === "discard"}
+              onConfirm={onDiscard}
+              title="Discard this draft?"
+              tone="danger"
+              trigger={
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  disabled={!isOnline || !actionsAvailable || isBusy}
+                >
+                  <Trash2 size={16} strokeWidth={2} />
+                  Discard draft
+                </Button>
+              }
+            />
+          ) : null}
 
-      <ActionDialog
-        cancelLabel="Keep result"
-        confirmLabel="Delete all"
-        description="This removes every saved personality result from your profile and group formation. It does not delete your other account data. You cannot undo this."
-        disabled={!isOnline || !actionsAvailable || isBusy}
-        loading={activeAction === "delete-all"}
-        onConfirm={onDeleteAll}
-        title="Delete all personality data?"
-        tone="danger"
-        trigger={
-          <Button
-            variant="destructive"
-            size="sm"
-            disabled={!isOnline || !actionsAvailable || isBusy}
-            className="self-center"
-          >
-            <Trash2 size={16} strokeWidth={2} />
-            Delete all assessment data
-          </Button>
-        }
-      />
+          {!isSaved ? (
+            <DeleteAssessmentDataAction
+              actionsAvailable={actionsAvailable}
+              activeAction={activeAction}
+              isBusy={isBusy}
+              isOnline={isOnline}
+              onDeleteAll={onDeleteAll}
+              className="w-full sm:ml-auto sm:w-auto"
+            />
+          ) : null}
+        </div>
+      ) : null}
     </section>
+  );
+}
+
+function DeleteAssessmentDataAction({
+  actionsAvailable,
+  activeAction,
+  className,
+  isBusy,
+  isOnline,
+  onDeleteAll,
+}: {
+  actionsAvailable: boolean;
+  activeAction: ResultAction | null;
+  className?: string;
+  isBusy: boolean;
+  isOnline: boolean;
+  onDeleteAll: () => void;
+}) {
+  return (
+    <ActionDialog
+      cancelLabel="Keep result"
+      confirmLabel="Delete all"
+      description="This removes every saved personality result from your profile and group formation. It does not delete your other account data. You cannot undo this."
+      disabled={!isOnline || !actionsAvailable || isBusy}
+      loading={activeAction === "delete-all"}
+      onConfirm={onDeleteAll}
+      title="Delete all personality data?"
+      tone="danger"
+      trigger={
+        <Button
+          variant="destructive"
+          size="sm"
+          disabled={!isOnline || !actionsAvailable || isBusy}
+          className={className}
+        >
+          <Trash2 size={16} strokeWidth={2} />
+          Delete all assessment data
+        </Button>
+      }
+    />
   );
 }

@@ -29,7 +29,7 @@ export function RecommendedGroupAction({
       <Button asChild variant="primary" size="sm" className="shrink-0">
         <Link {...buildActivityGroupHubNavigation(joinedGroupId)}>
           <MessageCircle className="size-3.5" aria-hidden="true" />
-          Open group
+          <span className="sr-only sm:not-sr-only">Open group</span>
         </Link>
       </Button>
     );
@@ -48,11 +48,14 @@ export function RecommendedGroupAction({
       })}
       onClick={() => joinMutation.mutate()}
       title={getRecommendedActionTitle(joinMutation.isOnline)}
-      className={cn("shrink-0", isFull && "opacity-60")}
+      className={cn(
+        "size-9 shrink-0 px-0 sm:h-9 sm:w-auto sm:px-3",
+        isFull && "opacity-60",
+      )}
       contentClassName="whitespace-nowrap"
     >
       <ActionIcon className="size-3.5" aria-hidden="true" />
-      {actionState.label}
+      <span className="sr-only sm:not-sr-only">{actionState.label}</span>
     </Button>
   );
 }

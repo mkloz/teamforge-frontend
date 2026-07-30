@@ -25,7 +25,7 @@ export function BestFirstGroupStrip({
   const supportingIdeas = activityIdeas.slice(1, 3);
 
   return (
-    <section className="border-border/60 border-y py-5">
+    <section className="py-2">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0">
           <h2 className="font-black text-ink text-lg leading-tight md:text-xl">

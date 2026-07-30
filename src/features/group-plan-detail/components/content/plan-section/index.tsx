@@ -1,10 +1,3 @@
-import {
-  Banknote,
-  CalendarClock,
-  type LucideIcon,
-  MapPinned,
-  Wifi,
-} from "lucide-react";
 import type { Ref } from "react";
 import { Section } from "@/features/group-plan-detail/components/section";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
@@ -14,9 +7,9 @@ import {
   formatPlanDateTime,
   formatStatusLabel,
 } from "@/features/group-plan-detail/lib/group-plan-detail-formatters";
-import { PlanFact } from "./plan-fact";
 import { getStatusContext, getTimeUntilEvent } from "./plan-section-helpers";
 import { PlanStatusPill } from "./plan-status-pill";
+import { PlanVisualOverview } from "./plan-visual-overview";
 
 interface PlanSectionProps {
   detail: GroupPlanDetail;
@@ -33,7 +26,6 @@ interface PlanSectionState {
   dateTime: string;
   dateTimeSupporting?: string;
   location: string;
-  locationIcon: LucideIcon;
   locationSupporting: string;
   plan: Plan;
   statusContext?: string;
@@ -52,7 +44,8 @@ export function PlanSection({
 
   return (
     <Section
-      heading="The plan"
+      eyebrow="Current plan"
+      heading="Plan details"
       headingId="plan-section-heading"
       sectionRef={sectionRef}
       isHighlighted={isHighlighted}
@@ -63,12 +56,21 @@ export function PlanSection({
           description={state.plan.description}
           groupDescription={detail.group.description}
         />
-        {state.statusContext ? (
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            {state.statusContext}
-          </p>
-        ) : null}
-        <PlanFactsGrid state={state} />
+        <PlanVisualOverview
+          cost={state.cost}
+          costSupporting={state.costSupporting}
+          dateTime={state.dateTime}
+          dateTimeIso={state.plan.dateTime}
+          dateTimeSupporting={state.dateTimeSupporting}
+          isLocationResolved={state.plan.isLocationResolved}
+          isScheduleResolved={state.plan.isScheduleResolved}
+          location={state.location}
+          locationLat={state.plan.locationLat}
+          locationLng={state.plan.locationLng}
+          locationMode={state.plan.locationMode}
+          locationSupporting={state.locationSupporting}
+          statusContext={state.statusContext}
+        />
       </div>
     </Section>
   );
@@ -89,7 +91,6 @@ function getPlanSectionState(detail: GroupPlanDetail): PlanSectionState | null {
     dateTime: getPlanDateTimeValue(plan, planTime),
     dateTimeSupporting: getPlanDateTimeSupporting(plan),
     location: formatLocation(detail),
-    locationIcon: getLocationIcon(plan),
     locationSupporting: getPlanLocationSupporting(plan),
     plan,
     statusContext: getStatusContext(
@@ -137,10 +138,6 @@ function getPlanLocationSupporting(plan: Plan) {
     : "To be decided";
 }
 
-function getLocationIcon(plan: Plan) {
-  return plan.locationMode === "ONLINE" ? Wifi : MapPinned;
-}
-
 function PlanDescription({
   description,
   groupDescription,
@@ -160,30 +157,5 @@ function PlanDescription({
     <p className="max-w-2xl text-pretty text-foreground text-sm leading-relaxed md:text-base">
       {description}
     </p>
-  );
-}
-
-function PlanFactsGrid({ state }: { state: PlanSectionState }) {
-  return (
-    <div className="grid gap-6 sm:grid-cols-2">
-      <PlanFact
-        icon={CalendarClock}
-        label="Date & time"
-        value={state.dateTime}
-        supporting={state.dateTimeSupporting}
-      />
-      <PlanFact
-        icon={state.locationIcon}
-        label="Location"
-        value={state.location}
-        supporting={state.locationSupporting}
-      />
-      <PlanFact
-        icon={Banknote}
-        label="Cost"
-        value={state.cost}
-        supporting={state.costSupporting}
-      />
-    </div>
   );
 }

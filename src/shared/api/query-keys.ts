@@ -6,6 +6,9 @@ export const APP_QUERY_KEYS = {
     groups: ["activity", "groups"] as const,
     chats: ["activity", "chats"] as const,
     friendships: ["activity", "friendships"] as const,
+    pendingInvitations: ["activity", "pending-invitations"] as const,
+    pendingInvitationsByGroup: (groupId: string) =>
+      ["activity", "pending-invitations", groupId] as const,
     savedMessages: ["activity", "saved-messages"] as const,
     groupSelection: ["activity-selection", "group"] as const,
     groupSelectionById: (groupId: string) =>

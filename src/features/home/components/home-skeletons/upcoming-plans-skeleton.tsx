@@ -4,43 +4,41 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function HomeUpcomingPlansSkeleton() {
   return (
-    <section aria-busy="true" className="flex w-full flex-col gap-4">
+    <section aria-busy="true" className="flex w-full flex-col gap-5">
       <output className="sr-only">Loading upcoming plans</output>
       <HomeSectionHeadingSkeleton actionWidth="w-14" />
-      <ul className="border-border/55 border-y">
-        {UPCOMING_PLAN_ROW_KEYS.map((item, index) => (
-          <li
-            key={item}
-            className="grid min-h-20 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-border/55 border-b py-3.5 pr-1 last:border-b-0 sm:grid-cols-[4rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4"
-          >
-            <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">
+      <div className="grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(19rem,0.95fr)]">
+        <Skeleton
+          shape="square"
+          className="min-h-72 w-full rounded-2xl"
+          tone="teal"
+        />
+        <ul className="grid list-none gap-0.5 overflow-hidden rounded-2xl p-0">
+          {UPCOMING_PLAN_ROW_KEYS.slice(1).map((item, index) => (
+            <li
+              key={item}
+              className="grid min-h-24 grid-cols-[4rem_minmax(0,1fr)_auto] items-center gap-3 bg-card px-3 py-3 first:rounded-t-2xl last:rounded-b-2xl"
+            >
               <Skeleton
-                shape="circle"
-                className="absolute top-1/2 left-4 size-2.5 -translate-x-1/2 -translate-y-1/2"
+                shape="square"
+                className="size-16 rounded-xl"
                 tone={index === 0 ? "teal" : "default"}
               />
-              <Skeleton className="h-2.5 w-8" />
-              <Skeleton className="mt-1 h-6 w-5" />
-              <Skeleton className="mt-1 h-2.5 w-6" />
-            </div>
 
-            <div className="min-w-0">
-              <Skeleton className="h-4 w-44 max-w-full" />
-              <Skeleton className="mt-1.5 h-3 w-36 max-w-full" />
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-3 w-20" tone="teal" />
-                <Skeleton className="h-3 w-14" />
-                <Skeleton className="h-3 w-10" />
+              <div className="min-w-0">
+                <Skeleton className="h-4 w-40 max-w-full" />
+                <Skeleton className="mt-1 h-3 w-28 max-w-full" />
+                <div className="mt-2 flex items-center gap-2">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
               </div>
-            </div>
 
-            <div className="col-start-2 flex items-center justify-end sm:col-start-3">
-              <Skeleton className="h-4 w-14" tone="teal" />
-            </div>
-          </li>
-        ))}
-      </ul>
+              <Skeleton shape="circle" className="size-4" />
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

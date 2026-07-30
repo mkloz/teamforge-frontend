@@ -58,12 +58,12 @@ export function ProfilePortraitSection({
   const visibleDetails = getVisiblePortraitDetails(portrait);
 
   return (
-    <section className="border-border/60 border-t pt-6 sm:pt-8">
+    <section className="pt-2 sm:pt-4">
       <div className="grid gap-5 lg:grid-cols-3 lg:items-stretch">
         <div className="flex min-w-0 flex-col gap-5 lg:col-span-2">
           <div className="flex min-w-0 flex-col gap-4">
             <ProfileSectionHeading>Profile sketch</ProfileSectionHeading>
-            <h3 className="max-w-3xl font-black text-2xl text-ink leading-tight tracking-tight md:text-3xl">
+            <h3 className="max-w-3xl text-balance font-black text-2xl text-ink leading-tight tracking-tight md:text-3xl">
               {portrait.title}
             </h3>
             <p className="max-w-2xl text-pretty font-semibold text-base text-ink/82 leading-relaxed">
@@ -71,7 +71,7 @@ export function ProfilePortraitSection({
             </p>
           </div>
 
-          <div className="grid max-w-3xl border-border/70 border-y md:grid-cols-3">
+          <div className="grid max-w-3xl md:grid-cols-3">
             {visibleDetails.map((detail) => (
               <PortraitDetailRow
                 key={`${detail.label}-${detail.value}`}
@@ -94,7 +94,7 @@ function HowYouShowUpCard({
   candidates: ProfilePortraitInsight["candidates"];
   mode: ProfilePortraitSectionProps["mode"];
 }) {
-  const visibleCandidates = getVisibleShowUpCandidates(candidates);
+  const visibleCandidates = getVisibleProfileSignals(candidates);
   const leaderScore = candidates[0]?.score ?? 0;
 
   if (visibleCandidates.length === 0) {
@@ -104,19 +104,18 @@ function HowYouShowUpCard({
   return (
     <div className="flex h-full min-h-64 flex-col rounded-2xl border border-forge-teal/20 bg-forge-teal/8 p-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-black text-slate-muted text-sm">
-          Other profile signals
-        </p>
+        <p className="font-black text-slate-muted text-sm">Profile signals</p>
         <Radar className="size-4 text-forge-teal" aria-hidden="true" />
       </div>
-      <div className="mt-5 flex flex-1 flex-col justify-between gap-4">
-        {visibleCandidates.map((candidate) => (
+      <div className="mt-4 flex flex-1 flex-col justify-between gap-3">
+        {visibleCandidates.map((candidate, rank) => (
           <ShowUpMeter
             key={candidate.key}
-            rank={visibleCandidates.indexOf(candidate)}
             candidateKey={candidate.key}
+            isSelected={rank === 0}
             leaderScore={leaderScore}
             mode={mode}
+            rank={rank}
             score={candidate.score}
             title={candidate.title}
           />
@@ -128,6 +127,7 @@ function HowYouShowUpCard({
 
 function ShowUpMeter({
   candidateKey,
+  isSelected,
   leaderScore,
   mode,
   rank,
@@ -135,6 +135,7 @@ function ShowUpMeter({
   title,
 }: {
   candidateKey: ProfilePortraitInsight["candidates"][number]["key"];
+  isSelected: boolean;
   leaderScore: number;
   mode: ProfilePortraitSectionProps["mode"];
   rank: number;
@@ -147,9 +148,19 @@ function ShowUpMeter({
   const compactTitle = getCompactShowUpTitle(candidateKey, title, mode);
 
   return (
-    <div className="min-w-0">
+    <div className="min-w-0 px-3 py-1">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-bold text-slate-muted text-xs">{rankLabel}</p>
+        {isSelected ? (
+          <p className="flex items-center gap-1.5 font-bold text-slate-muted text-xs">
+            <BadgeCheck
+              className="size-3.5 text-forge-teal"
+              aria-hidden="true"
+            />
+            Selected profile
+          </p>
+        ) : (
+          <p className="font-bold text-slate-muted text-xs">{rankLabel}</p>
+        )}
         <p className="shrink-0 font-black text-forge-teal text-xs">
           {percent}%
         </p>
@@ -162,7 +173,7 @@ function ShowUpMeter({
         min={0}
         max={100}
         value={percent}
-        aria-label={`${rankLabel}: ${title}, ${percent} percent signal strength`}
+        aria-label={`${isSelected ? "Selected profile" : rankLabel}: ${title}, ${percent} percent signal strength`}
       />
       <div className="mt-2 grid grid-cols-6 gap-1.5" aria-hidden="true">
         {SHOW_UP_SEGMENTS.map((segment) => (
@@ -188,7 +199,7 @@ function PortraitDetailRow({
   const Icon = getDetailIcon(detail.label);
 
   return (
-    <div className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 last:md:pr-0 first:md:border-l-0 first:md:pl-0">
+    <div className="min-w-0 py-3 md:px-4 last:md:pr-0 first:md:pl-0">
       <div className="flex min-w-0 items-center gap-2">
         <IconTile icon={Icon} shape="circle" size="sm" />
         <p className="font-bold text-slate-muted text-sm">{detail.label}</p>
@@ -268,10 +279,10 @@ function getVisiblePortraitDetails(portrait: ProfilePortraitInsight) {
   return portrait.details.slice(0, 3);
 }
 
-function getVisibleShowUpCandidates(
+function getVisibleProfileSignals(
   candidates: ProfilePortraitInsight["candidates"],
 ) {
-  return candidates.slice(1, 3);
+  return candidates.slice(0, 3);
 }
 
 const SHOW_UP_SEGMENTS = [1, 2, 3, 4, 5, 6];

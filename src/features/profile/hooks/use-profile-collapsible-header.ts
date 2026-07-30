@@ -74,7 +74,7 @@ export function useProfileCollapsibleHeader<TElement extends HTMLElement>({
     () => getScrollTop(getHeaderScrollTarget()),
     [getHeaderScrollTarget],
   );
-  const { isCompactVisible: isPinned } = useCollapsibleScrollState({
+  useCollapsibleScrollState({
     applyState: applyHeaderState,
     collapseTrigger: PROFILE_COLLAPSE_TRIGGER,
     compactRevealDelayMs: PROFILE_COMPACT_REVEAL_DELAY_MS,
@@ -83,8 +83,6 @@ export function useProfileCollapsibleHeader<TElement extends HTMLElement>({
     getScrollTarget: getHeaderScrollTarget,
     listenForResize: true,
   });
-
-  return { isPinned };
 }
 
 function getCoverCollapseRange(element: HTMLElement) {

@@ -24,7 +24,6 @@ export function SettingsPage() {
       ? `${activeSectionMeta.label} settings`
       : "Settings",
     description:
-      activeSectionMeta?.summary ??
       "Manage your TeamForge account, privacy, safety, notifications, and display settings.",
   });
 

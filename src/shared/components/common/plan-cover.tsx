@@ -31,6 +31,7 @@ interface PlanCoverProps {
   loadingComponent?: ReactNode;
   noImageComponent?: ReactNode;
   showNoImage?: boolean;
+  showLoadingState?: boolean;
 }
 
 function getMediaCoverSrc(media?: ImageMedia | null) {
@@ -100,6 +101,7 @@ export function PlanCover({
   loadingComponent,
   noImageComponent,
   showNoImage,
+  showLoadingState,
 }: PlanCoverProps) {
   const renderState = getPlanCoverRenderState({ media, value });
 
@@ -130,6 +132,7 @@ export function PlanCover({
       loadingComponent={loadingComponent}
       noImageComponent={noImageComponent}
       showNoImage={showNoImage}
+      showLoadingState={showLoadingState}
     />
   );
 }

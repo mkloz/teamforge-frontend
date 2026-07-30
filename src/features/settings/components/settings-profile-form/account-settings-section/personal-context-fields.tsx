@@ -28,7 +28,7 @@ export function PersonalContextFields({
   form,
 }: PersonalContextFieldsProps) {
   return (
-    <div className="grid gap-5 md:grid-cols-3">
+    <div className="grid gap-5 sm:grid-cols-2">
       <FormField
         control={form.control}
         name="age"

@@ -5,8 +5,11 @@ import {
   ACTIVITIES,
   type ActivityOption,
 } from "@/features/forge/constants/forge.constants";
+import { CATEGORY_TEMPLATES } from "@/features/forge/data/forge-template-seeds";
 import { buildCategoryFitHighlights } from "@/features/forge/lib/forge-template-suggestions";
+import { resolveTemplateCoverPreviewImage } from "@/features/forge/lib/forge-template-suggestions/cover-images";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { PlanCover } from "@/shared/components/common/plan-cover";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 import { ICON_MAP } from "./activity-icon-map";
@@ -33,7 +36,8 @@ function ActivityLabel({ label }: { label: string }) {
 
   return (
     <>
-      {lead} <span className="whitespace-nowrap">&amp; {tail}</span>
+      <span className="block">{lead}</span>
+      <span className="block whitespace-nowrap">&amp; {tail}</span>
     </>
   );
 }
@@ -95,6 +99,8 @@ function ActivityCategoryButton({
     fitRankByCategory,
   );
   const Icon = ICON_MAP[activity.id] || ICON_MAP.fallback;
+  const LeadingIcon = tileState.selected ? Check : Icon;
+  const coverImage = getActivityCategoryCoverImage(activity.id);
 
   return (
     <button
@@ -103,37 +109,41 @@ function ActivityCategoryButton({
       aria-pressed={tileState.selected}
       className={getActivityButtonClassName(tileState)}
     >
-      <div className="flex min-w-0 items-center justify-between gap-2">
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          <IconTile
-            icon={Icon}
-            size="sm"
-            tone={tileState.iconTone}
-            className={getActivityIconTileClassName(tileState)}
+      {coverImage ? (
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-3/5 overflow-hidden">
+          <PlanCover
+            value={coverImage}
+            alt=""
+            className="size-full"
+            imageClassName="size-full object-cover opacity-35 saturate-75 transition duration-500 group-hover:scale-105 group-hover:opacity-50 group-hover:saturate-100"
           />
-          <p
-            className={getActivityLabelClassName(
-              activity.label,
-              tileState.selected,
-            )}
-          >
-            <ActivityLabel label={activity.label} />
-          </p>
         </div>
-
-        {tileState.selected && (
-          <IconTile
-            bordered
-            icon={Check}
-            shape="circle"
-            size="xs"
-            tone="amber"
-            className="bg-spark-amber/15"
-          />
+      ) : null}
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-30% from-card via-65% via-card/90 to-card/35" />
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-0 transition-colors",
+          tileState.selected
+            ? "bg-spark-amber/8"
+            : tileState.personalised
+              ? "bg-forge-teal/4"
+              : "bg-transparent",
         )}
+      />
+
+      <div className="relative z-10 flex min-w-0 items-center gap-2">
+        <IconTile
+          icon={LeadingIcon}
+          size="sm"
+          tone={tileState.iconTone}
+          className={getActivityIconTileClassName(tileState)}
+        />
+        <p className={getActivityLabelClassName(tileState.selected)}>
+          <ActivityLabel label={activity.label} />
+        </p>
       </div>
 
-      <p className="line-clamp-2 min-w-0 text-wrap text-muted-foreground text-xs leading-snug">
+      <p className="relative z-10 line-clamp-2 min-w-0 text-wrap text-muted-foreground text-xs leading-snug">
         {activity.description}
       </p>
     </button>
@@ -169,7 +179,7 @@ function getActivityButtonClassName({
   selected,
 }: ReturnType<typeof getActivityCategoryTileState>) {
   return cn(
-    "group relative flex min-h-20 min-w-0 flex-col gap-2 whitespace-normal rounded-lg border px-3 py-2.5 text-left transition duration-200 active:scale-95",
+    "group relative flex min-h-20 min-w-0 flex-col gap-2 overflow-hidden whitespace-normal rounded-lg border px-3 py-2.5 text-left transition duration-200 active:scale-95",
     selected
       ? "border-spark-amber/65 bg-spark-amber/10 shadow-sm ring-1 ring-spark-amber/20"
       : personalised
@@ -183,7 +193,7 @@ function getActivityIconTileClassName({
   selected,
 }: ReturnType<typeof getActivityCategoryTileState>) {
   return cn(
-    selected && "shadow-sm ring-1 ring-spark-amber/20",
+    selected && "bg-spark-amber/15 shadow-none ring-0",
     personalised && "group-hover:bg-forge-teal/15",
     !selected &&
       !personalised &&
@@ -191,10 +201,36 @@ function getActivityIconTileClassName({
   );
 }
 
-function getActivityLabelClassName(label: string, selected: boolean) {
+function getActivityLabelClassName(selected: boolean) {
   return cn(
-    "min-w-0 text-pretty font-semibold leading-tight",
-    label.length > 18 ? "text-xs" : label.length > 13 ? "text-sm" : "text-sm",
+    "min-w-0 text-pretty font-semibold text-xs leading-tight",
     selected ? "text-spark-amber" : "text-foreground",
   );
 }
+
+function getActivityCategoryCoverImage(
+  categoryId: ActivityOption["id"],
+): string | null {
+  const templates = CATEGORY_TEMPLATES[categoryId] ?? [];
+  const preferredTemplateId = CATEGORY_COVER_TEMPLATE_IDS[categoryId];
+  const seed =
+    templates.find((template) => template.id === preferredTemplateId) ??
+    templates[0];
+
+  return seed ? resolveTemplateCoverPreviewImage(seed) : null;
+}
+
+const CATEGORY_COVER_TEMPLATE_IDS = {
+  SPORTS: "pickup",
+  GAMING: "party",
+  SOCIAL: "coffee",
+  ARTS: "gallery",
+  MUSIC: "gig",
+  OUTDOORS: "walk",
+  LEARNING: "study",
+  FOOD: "brunch",
+  TECH: "build",
+  WELLNESS: "reset",
+  TRAVEL: "mini-adventure",
+  OTHER: "project",
+} satisfies Record<ActivityOption["id"], string>;

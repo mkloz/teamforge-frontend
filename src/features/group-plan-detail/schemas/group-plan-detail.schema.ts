@@ -6,6 +6,8 @@ import {
   groupRoleSchema,
   groupStatusSchema,
   locationModeSchema,
+  onlineStatusSchema,
+  personalityTypeSchema,
   planCategorySchema,
   planNextRequiredActionSchema,
   planScheduleModeSchema,
@@ -66,6 +68,7 @@ export const groupPlanDetailSchema = z.object({
     visibility: activityVisibilitySchema,
     maxMembers: z.number(),
     activeMembersCount: z.number(),
+    pendingInvitationsCount: z.number(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
   }),
@@ -119,9 +122,26 @@ export const groupPlanDetailSchema = z.object({
       name: z.string(),
       avatar: z.string().nullable(),
       avatarMedia: imageMediaSchema.nullable().optional(),
+      personalityType: personalityTypeSchema.nullable(),
+      trustScore: z.number(),
+      compatibilityScore: z.number().nullable(),
       role: groupRoleSchema,
       joinedAt: z.string().datetime().nullable(),
       knownConnection: z.string().nullable().optional(),
+      onlineStatus: onlineStatusSchema.optional(),
+      lastSeenAt: z.string().datetime().nullable(),
+    }),
+  ),
+  pendingInvitations: z.array(
+    z.object({
+      id: z.string(),
+      userId: z.string(),
+      name: z.string(),
+      avatar: z.string().nullable(),
+      avatarMedia: imageMediaSchema.nullable().optional(),
+      personalityType: personalityTypeSchema.nullable(),
+      trustScore: z.number(),
+      createdAt: z.string().datetime(),
     }),
   ),
   viewer: z.object({
@@ -160,4 +180,6 @@ export const groupPlanDetailSchema = z.object({
 
 export type GroupPlanDetail = z.infer<typeof groupPlanDetailSchema>;
 export type GroupPlanDetailMember = GroupPlanDetail["members"][number];
+export type GroupPlanDetailPendingInvitation =
+  GroupPlanDetail["pendingInvitations"][number];
 export type GroupPlanFitSignal = z.infer<typeof groupPlanFitSignalSchema>;

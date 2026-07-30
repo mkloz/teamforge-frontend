@@ -71,6 +71,7 @@ const groupMemberSchema = z.object({
   role: groupRoleSchema,
   joinedAt: z.string(),
   leftAt: z.string().nullable(),
+  compatibilityScore: z.number().nullable(),
   user: activityParticipantSchema.optional(),
 });
 

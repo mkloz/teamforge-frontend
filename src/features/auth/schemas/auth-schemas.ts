@@ -1,7 +1,13 @@
 import { z } from "zod";
 
-import { DateOfBirthValidator } from "@/shared/validators/date-of-birth.validator";
+import {
+  DateOfBirthValidator,
+  getAgeFromDateOfBirth,
+} from "@/shared/validators/date-of-birth.validator";
 import { PasswordValidator } from "@/shared/validators/password.validator";
+
+const REGISTER_MINIMUM_AGE = 16;
+const REGISTER_MAXIMUM_AGE = 99;
 
 export const authTokensSchema = z.object({
   accessToken: z.string().min(1),
@@ -30,11 +36,15 @@ export const registerSchema = z.object({
     .email("Check that email again. It looks a little off."),
   password: PasswordValidator,
   otp: z.string().min(6, "We need all 6 digits to verify."),
-  dateOfBirth: DateOfBirthValidator,
-  age: z
-    .number({ error: "How old are you?" })
-    .min(16, "Enter your age (we support 16 to 99).")
-    .max(99, "Enter your age (we support 16 to 99)."),
+  dateOfBirth: DateOfBirthValidator.refine((value) => {
+    const age = getAgeFromDateOfBirth(value);
+    return (
+      value.length === 0 ||
+      (age !== null &&
+        age >= REGISTER_MINIMUM_AGE &&
+        age <= REGISTER_MAXIMUM_AGE)
+    );
+  }, "Enter a date of birth for someone aged 16 to 99."),
   city: z.string().min(1, "Where are you based?"),
   gender: z.string().min(1, "Tell us your gender."),
 });

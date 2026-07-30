@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { useActivityFriendships } from "@/features/activity/hooks/use-activity-friendships";
@@ -10,6 +11,9 @@ import type {
   MemberRole,
 } from "@/features/activity/lib/activity-contract";
 import { buildMemberProfileChat } from "@/features/activity/lib/activity-projections";
+import { getPendingSentInvites } from "@/shared/api/invite-membership-api";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import type { Invite } from "@/shared/schemas";
 
 interface UseGroupPanelContentOptions {
   group: Group;
@@ -38,7 +42,9 @@ export function useGroupPanelContent({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isPlanEditOpen, setIsPlanEditOpen] = useState(false);
   const {
+    cancelInvitation,
     cancelPlan,
+    cancellingInviteId,
     completePlan,
     confirmPlan,
     currentUserId,
@@ -56,7 +62,17 @@ export function useGroupPanelContent({
     removingMemberId,
   } = useActivityGroupActions(group.id);
   const friendshipsQuery = useActivityFriendships();
+  const sentInvitationsQuery = useQuery({
+    queryKey: APP_QUERY_KEYS.activity.pendingInvitationsByGroup(group.id),
+    queryFn: () => getPendingSentInvites(group.id),
+    staleTime: 60_000,
+  });
   const members = getGroupMembers(group);
+  const pendingInvitations = getPendingGroupInvitations(
+    sentInvitationsQuery.data,
+    group.id,
+    group.maxMembers - members.length,
+  );
   const selectedMember = getSelectedGroupMember(
     members,
     activeSelectedMemberId,
@@ -64,7 +80,11 @@ export function useGroupPanelContent({
   const currentUserRole = getCurrentUserRole(members, currentUserId);
   const memberCount = members.length;
   const memberChat = getSelectedMemberChat(selectedMember, group);
-  const inviteCandidates = getInviteCandidates(friendshipsQuery.data, members);
+  const inviteCandidates = getInviteCandidates(
+    friendshipsQuery.data,
+    members,
+    pendingInvitations,
+  );
 
   function setSelectedMember(member: GroupMember | null) {
     const nextMemberId = member?.userId ?? null;
@@ -78,9 +98,11 @@ export function useGroupPanelContent({
   }
 
   return {
+    cancelInvitation,
     currentUserId,
     currentUserRole,
     cancelPlan,
+    cancellingInviteId,
     completePlan,
     confirmPlan,
     createNextGroupPlan,
@@ -99,6 +121,7 @@ export function useGroupPanelContent({
     memberCount,
     members,
     pendingPlanAction,
+    pendingInvitations,
     removeMember,
     removingMemberId,
     selectedMember,
@@ -142,14 +165,45 @@ function getSelectedMemberChat(
 function getInviteCandidates(
   friendships: ActivityFriendshipsData | undefined,
   members: GroupMember[],
+  pendingInvitations: Invite[],
 ): ActivityParticipant[] {
   const memberIds = new Set(members.map((member) => member.userId));
+  const pendingInviteeIds = new Set(
+    pendingInvitations.map((invite) => invite.inviteeId),
+  );
 
   return (friendships ?? [])
     .filter((friendship) => friendship.status === "ACCEPTED")
     .map((friendship) => friendship.counterpart)
-    .filter((counterpart) => !memberIds.has(counterpart.id))
+    .filter(
+      (counterpart) =>
+        !memberIds.has(counterpart.id) &&
+        !pendingInviteeIds.has(counterpart.id),
+    )
     .map(getInviteCandidate);
+}
+
+function getPendingGroupInvitations(
+  invitations: Invite[] | undefined,
+  groupId: string,
+  availableSlots: number,
+) {
+  const currentTime = Date.now();
+
+  return (invitations ?? [])
+    .filter(
+      (invite) =>
+        invite.groupId === groupId &&
+        invite.status === "PENDING" &&
+        isInvitationUnexpired(invite, currentTime),
+    )
+    .slice(0, Math.max(0, availableSlots));
+}
+
+function isInvitationUnexpired(invite: Invite, currentTime: number) {
+  return (
+    invite.expiresAt === null || Date.parse(invite.expiresAt) > currentTime
+  );
 }
 
 function getInviteCandidate(
@@ -160,6 +214,7 @@ function getInviteCandidate(
     name: counterpart.name,
     avatar: counterpart.avatar,
     city: counterpart.city ?? null,
+    lastSeenAt: counterpart.lastSeenAt,
     onlineStatus: counterpart.onlineStatus,
   };
 }

@@ -85,8 +85,8 @@ function UserGroupSignalCard({
   signal: UserGroupSignal;
 }) {
   return (
-    <div className="flex h-full min-h-52 flex-col rounded-2xl border border-forge-teal/20 bg-forge-teal/8 p-4">
-      <div className="flex flex-1 flex-col justify-end gap-3">
+    <div className="flex h-full min-h-52 flex-col overflow-hidden rounded-2xl bg-background p-0.5">
+      <div className="grid flex-1 content-stretch gap-0.5">
         <SignalRead
           icon={Activity}
           label="Group energy"
@@ -120,7 +120,7 @@ function FitGuidance({
   value: string;
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-3 rounded-2xl border border-border/70 bg-canvas p-4">
+    <div className="flex min-w-0 flex-col gap-3 rounded-2xl bg-card/55 p-4">
       <div className="flex items-center gap-2 font-bold text-slate-muted text-sm">
         <IconTile icon={Icon} shape="circle" size="sm" />
         {label}
@@ -144,7 +144,7 @@ function SignalRead({
   signal: UserGroupSignal[keyof UserGroupSignal];
 }) {
   return (
-    <div className="min-w-0 border-border/70 border-t pt-3 first:border-t-0 first:pt-0">
+    <div className="min-w-0 bg-(--grouped-menu-selected) px-5 py-4">
       <div className="flex min-w-0 items-center gap-2">
         <IconTile
           icon={Icon}

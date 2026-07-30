@@ -3,12 +3,10 @@ import { AttentionQueue } from "@/features/home/components/attention-queue";
 import { AutoForgeRequestStatus } from "@/features/home/components/auto-forge-request-status";
 import { CandidateAvailabilitySection } from "@/features/home/components/candidate-availability-section";
 import { GroupsGrid } from "@/features/home/components/groups-grid";
-import { HomeHero } from "@/features/home/components/home-hero";
 import { HomeOfflineLaunchState } from "@/features/home/components/home-offline-launch-state";
 import {
   HomeInviteSkeleton,
   HomeRecommendedGroupsSkeleton,
-  HomeUpcomingPlansSkeleton,
 } from "@/features/home/components/home-skeletons";
 import { HomePageContent } from "@/features/home/home-page-content";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
@@ -36,12 +34,6 @@ const LazySentInvitationsReview = lazy(() =>
     }),
   ),
 );
-const LazyUpcomingPlans = lazy(() =>
-  import("@/features/home/components/upcoming-plans").then((module) => ({
-    default: module.UpcomingPlans,
-  })),
-);
-
 const HOME_PAGE_METADATA = createTeamForgePageMetadata({
   title: "Home",
   description:
@@ -176,7 +168,6 @@ export function HomePage() {
 
   return (
     <HomePageContent
-      hero={<HomeHero />}
       forgeRequest={<AutoForgeRequestStatus />}
       candidateAvailability={<CandidateAvailabilitySection />}
       sentInvitationsReview={getSentInvitationsReviewSlot({
@@ -187,6 +178,9 @@ export function HomePage() {
       })}
       attentionQueue={
         <AttentionQueue
+          maxVisibleItems={
+            focusedPanel || focusedInviteId || focusedRequestId ? undefined : 5
+          }
           focusedPanel={focusedPanel}
           focusedInviteId={focusedInviteId}
           focusedRequestId={focusedRequestId}
@@ -195,13 +189,6 @@ export function HomePage() {
           onClearInvitationFocus={clearInvitationFocus}
           onClearFriendRequestFocus={clearFriendRequestFocus}
         />
-      }
-      upcomingPlans={
-        <DeferredHomePanel fallback={<HomeUpcomingPlansSkeleton />}>
-          <Suspense fallback={<HomeUpcomingPlansSkeleton />}>
-            <LazyUpcomingPlans />
-          </Suspense>
-        </DeferredHomePanel>
       }
       recommendedGroups={
         <DeferredHomePanel fallback={<HomeRecommendedGroupsSkeleton />}>

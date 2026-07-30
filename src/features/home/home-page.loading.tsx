@@ -1,7 +1,6 @@
 import {
   HomeAttentionQueueSkeleton,
   HomeGroupsSkeleton,
-  HomeHeroSkeleton,
   HomeInviteSkeleton,
   HomeRecommendedGroupsSkeleton,
   HomeUpcomingPlansSkeleton,
@@ -12,24 +11,21 @@ export function HomePageLoading(_props: PageLoadingProps = {}) {
   return (
     <div aria-busy="true">
       <output className="sr-only">Loading home</output>
-      <div className="mx-auto w-full max-w-screen-2xl overflow-x-clip px-4 pt-3 pb-6 sm:px-5 md:pt-6 md:pb-10 lg:px-8">
-        <div className="grid grid-cols-1 gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] lg:gap-12 xl:gap-14">
-          <div className="flex min-w-0 flex-col gap-10 lg:gap-12">
-            <HomeHeroSkeleton />
-            <HomeAttentionQueueSkeleton />
-            <HomeUpcomingPlansSkeleton />
-            <HomeRecommendedGroupsSkeleton />
-          </div>
+      <div className="mx-auto w-full max-w-6xl overflow-x-clip px-4 pt-6 pb-10 sm:px-5 md:pt-10 md:pb-14 lg:px-8">
+        <div className="h-4 w-40 animate-pulse rounded-full bg-muted motion-reduce:animate-none" />
+        <div className="mt-3 h-12 w-full max-w-xl animate-pulse rounded-lg bg-muted motion-reduce:animate-none" />
+        <div className="mt-3 h-5 w-full max-w-2xl animate-pulse rounded-full bg-muted motion-reduce:animate-none" />
 
-          <aside
-            aria-label="Loading active groups and sharing"
-            className="flex min-w-0 flex-col gap-8 border-border/70 lg:border-l lg:pl-8 xl:pl-10"
-          >
-            <div className="flex min-w-0 flex-col gap-8 lg:sticky lg:top-8">
-              <HomeGroupsSkeleton />
-              <HomeInviteSkeleton />
-            </div>
-          </aside>
+        <div className="relative mt-10 grid gap-12 pl-8 sm:pl-24">
+          <div
+            className="absolute top-1 bottom-1 left-2 w-px bg-border/70 sm:left-[5.1rem]"
+            aria-hidden="true"
+          />
+          <HomeAttentionQueueSkeleton />
+          <HomeUpcomingPlansSkeleton />
+          <HomeRecommendedGroupsSkeleton />
+          <HomeGroupsSkeleton />
+          <HomeInviteSkeleton />
         </div>
       </div>
     </div>

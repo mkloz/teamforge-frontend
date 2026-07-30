@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { type LucideIcon, Settings, UserPlus } from "lucide-react";
+import { type LucideIcon, Settings } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { useGroupPlanProposalActions } from "@/features/group-plan-detail/hooks/use-group-plan-proposal-actions";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
@@ -18,20 +18,12 @@ type MemberQuickActionCapabilities = ReturnType<
 
 const QUICK_ACTION_LINKS = [
   {
-    capability: "canInviteMembers",
-    icon: UserPlus,
-    label: "Invite a friend",
-  },
-  {
     capability: "canManageGroup",
     icon: Settings,
     label: "Manage group",
   },
 ] satisfies readonly {
-  capability: keyof Pick<
-    MemberQuickActionCapabilities,
-    "canInviteMembers" | "canManageGroup"
-  >;
+  capability: keyof Pick<MemberQuickActionCapabilities, "canManageGroup">;
   icon: LucideIcon;
   label: string;
 }[];
@@ -62,7 +54,7 @@ export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
       >
         Quick actions
       </h3>
-      <div className="grid gap-1">
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-1 lg:gap-1">
         <PlanChangeQuickAction
           capabilities={capabilities}
           detail={detail}
@@ -90,21 +82,15 @@ function getMemberQuickActionCapabilities(detail: GroupPlanDetail) {
       governance.capabilities.canSuggestPlanChange &&
       Boolean(detail.plan)
     : !isGovernanceUnknown && canViewerSuggestPlanChange(detail);
-  const canInviteMembers = isSystemManaged
-    ? detail.viewer.canInviteMembers && governance.capabilities.canInviteMembers
-    : !isGovernanceUnknown && detail.viewer.canInviteMembers;
   const canManageGroup = isSystemManaged
     ? detail.viewer.canManageGroup &&
       (governance.capabilities.canEditGroupIdentity ||
         governance.capabilities.canUpdatePlanDirectly)
     : !isGovernanceUnknown && detail.viewer.canManageGroup;
   return {
-    canInviteMembers,
     canManageGroup,
     canSuggestPlanChange,
-    hasAnyAction: [canSuggestPlanChange, canInviteMembers, canManageGroup].some(
-      Boolean,
-    ),
+    hasAnyAction: [canSuggestPlanChange, canManageGroup].some(Boolean),
   };
 }
 

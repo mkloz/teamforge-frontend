@@ -24,10 +24,10 @@ export function ActionDialogActions({
   onConfirm?: () => void;
 }) {
   return (
-    <AlertDialogFooter className="bg-transparent px-6 pt-2 pb-6 sm:justify-between">
+    <AlertDialogFooter className="grid grid-cols-2 gap-2 bg-transparent px-5 pt-2 pb-5 sm:px-6 sm:pb-6">
       {onConfirm ? (
         <>
-          <AlertDialogCancel disabled={isBusy} className="rounded-md">
+          <AlertDialogCancel disabled={isBusy} className="w-full rounded-xl">
             {cancelLabel}
           </AlertDialogCancel>
           <Button
@@ -35,14 +35,19 @@ export function ActionDialogActions({
             variant={actionVariant}
             loading={isBusy}
             disabled={disabled || isBusy}
-            className="rounded-md"
+            className="w-full rounded-xl"
             onClick={onConfirm}
           >
             {confirmLabel}
           </Button>
         </>
       ) : (
-        <Button type="button" variant="primary" onClick={onClose}>
+        <Button
+          type="button"
+          variant="primary"
+          className="col-span-2 w-full rounded-xl"
+          onClick={onClose}
+        >
           {closeLabel}
         </Button>
       )}

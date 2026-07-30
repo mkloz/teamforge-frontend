@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
-import { ShieldAlert } from "lucide-react";
+import { Info, ShieldAlert } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import {
   FormProvider,
@@ -235,7 +235,7 @@ export function ReportDialog({
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
-      <DialogContent className="max-h-[94svh] w-[calc(100%-1rem)] max-w-xl overflow-y-auto rounded-2xl bg-canvas p-0 sm:w-full">
+      <DialogContent className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] max-w-2xl flex-col gap-0 overflow-hidden rounded-2xl bg-canvas p-0 sm:max-h-[92dvh] sm:w-full">
         {receipt ? (
           <ReportReceipt
             actionNotices={actionNotices}
@@ -246,7 +246,7 @@ export function ReportDialog({
         ) : (
           <FormProvider {...form}>
             <form
-              className="flex flex-col"
+              className="flex min-h-0 flex-col"
               onSubmit={form.handleSubmit(handleSubmit)}
               noValidate
             >
@@ -294,9 +294,9 @@ function ReportFormContent({
 
   return (
     <>
-      <div className="border-border border-b p-5 pr-14 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>
+      <div className="px-5 pt-5 pr-14 pb-4 sm:px-6 sm:pt-6">
+        <DialogHeader className="gap-1 text-left">
+          <DialogTitle className="font-black text-xl">
             Report {getSelectedTargetLabel(form.watch("targetKey"), targets)}
           </DialogTitle>
           <DialogDescription className="leading-relaxed">
@@ -306,13 +306,13 @@ function ReportFormContent({
         </DialogHeader>
       </div>
 
-      <div className="grid gap-6 p-5 sm:p-6">
+      <div className="grid min-h-0 gap-5 overflow-y-auto px-5 pb-5 sm:px-6 sm:pb-6">
         {targets.length > 1 ? <TargetField targets={targets} /> : null}
         <CategoryField />
         {guidance.length > 0 ? <SafetyGuidance guidance={guidance} /> : null}
         <DescriptionField />
         {evidenceSummary ? (
-          <p className="rounded-xl border border-border bg-card p-3 text-ink text-sm leading-relaxed">
+          <p className="border-primary/35 border-l-2 py-1 pl-3 text-ink text-sm leading-relaxed">
             {evidenceSummary}
           </p>
         ) : null}
@@ -331,15 +331,21 @@ function ReportFormContent({
           </p>
         ) : null}
 
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+        <div className="mt-1 grid grid-cols-2 gap-2">
           <Button
             type="button"
             variant="ghost"
             onClick={() => void onQuickExit()}
+            className="w-full rounded-xl"
           >
             Quick exit
           </Button>
-          <Button type="submit" loading={isSubmitting} disabled={isSubmitting}>
+          <Button
+            type="submit"
+            loading={isSubmitting}
+            disabled={isSubmitting}
+            className="w-full rounded-xl"
+          >
             Send report
           </Button>
         </div>
@@ -359,7 +365,7 @@ function TargetField({ targets }: { targets: readonly ReportTarget[] }) {
       <select
         id="report-target"
         {...register("targetKey")}
-        className="h-11 w-full rounded-lg border border-border bg-input px-3 text-ink text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="h-11 w-full rounded-xl border border-input-border bg-input px-3 text-ink text-sm outline-none focus-visible:border-primary/45 focus-visible:ring-2 focus-visible:ring-primary/20"
       >
         {targets.map((target) => (
           <option key={getTargetKey(target)} value={getTargetKey(target)}>
@@ -381,11 +387,11 @@ function CategoryField() {
       }
     >
       <legend className="font-semibold text-ink text-sm">Primary reason</legend>
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid gap-1 sm:grid-cols-2">
         {REPORT_CATEGORY_OPTIONS.map(([value, label]) => (
           <label
             key={value}
-            className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-border bg-card px-3 py-2 text-ink text-sm has-checked:border-primary has-checked:bg-primary/6"
+            className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-transparent border-l-2 bg-card px-3 py-2 text-ink text-sm transition-colors hover:bg-foreground/5 has-checked:border-primary has-checked:bg-primary/8"
           >
             <input
               {...register("category")}
@@ -512,8 +518,12 @@ function EvidenceNotice({
         : "TeamForge preserves the item you report and the permitted context you could see.";
 
   return (
-    <div className="rounded-xl bg-muted/60 p-3 text-slate-muted text-sm leading-relaxed">
-      {message} A receipt confirms delivery; it is not a decision.
+    <div className="flex items-start gap-2.5 text-slate-muted text-sm leading-relaxed">
+      <Info
+        className="mt-0.5 size-4 shrink-0 text-primary"
+        aria-hidden="true"
+      />
+      <p>{message} A receipt confirms delivery; it is not a decision.</p>
     </div>
   );
 }
@@ -560,7 +570,7 @@ function CheckRow({
   registration: UseFormRegisterReturn;
 }) {
   return (
-    <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-border bg-card px-3 py-2 text-ink text-sm">
+    <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl bg-card px-3 py-2 text-ink text-sm transition-colors hover:bg-foreground/5 has-checked:bg-primary/8">
       <input
         {...registration}
         type="checkbox"

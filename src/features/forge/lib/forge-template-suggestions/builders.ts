@@ -1,4 +1,7 @@
-import type { ActivityOption } from "@/features/forge/constants/forge.constants";
+import {
+  ACTIVITIES,
+  type ActivityOption,
+} from "@/features/forge/constants/forge.constants";
 import type { TemplateSeed } from "@/features/forge/data/forge-template-seed-types";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
 import type { User } from "@/shared/schemas";
@@ -44,6 +47,26 @@ function getSuggestionBadge(
 
 export function buildCategoryFitHighlights(user: User | undefined) {
   return buildPersonalizedCategoryFits(user);
+}
+
+export function buildCrossCategoryTemplateSuggestions(
+  user: User | undefined,
+  limit = 3,
+) {
+  const personalizedCategoryIds = buildPersonalizedCategoryFits(user).map(
+    (fit) => fit.categoryId,
+  );
+  const categoryIds = [
+    ...personalizedCategoryIds,
+    ...ACTIVITIES.map((category) => category.id).filter(
+      (categoryId) => !personalizedCategoryIds.includes(categoryId),
+    ),
+  ].slice(0, Math.max(0, limit));
+
+  return categoryIds.flatMap((categoryId) => {
+    const suggestion = buildTemplateSuggestions(categoryId, user)[0];
+    return suggestion ? [suggestion] : [];
+  });
 }
 
 export function buildTemplateFromSeed(

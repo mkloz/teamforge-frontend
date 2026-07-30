@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type {
   Group,
@@ -8,6 +8,8 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { showAppErrorMessageToast } from "@/shared/lib/app-toast";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import {
   ACTIVITY_GROUP_ACTION_GUARDS,
@@ -31,6 +33,10 @@ export function useActivityGroupActions(groupId: string) {
   const [pendingAction, setPendingAction] =
     useState<PendingActivityGroupAction>(null);
   const [invitingMemberId, setInvitingMemberId] = useState<string | null>(null);
+  const [cancellingInviteId, setCancellingInviteId] = useState<string | null>(
+    null,
+  );
+  const cancelInviteInFlightRef = useRef(false);
   const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
   const clearRouteSelection = useClearActivityRouteSelection();
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
@@ -232,7 +238,35 @@ export function useActivityGroupActions(groupId: string) {
     }
   }
 
+  async function cancelInvitation(inviteId: string) {
+    if (cancelInviteInFlightRef.current) {
+      return;
+    }
+
+    if (guardGroupAction(ACTIVITY_GROUP_ACTION_GUARDS.inviteMember)) {
+      return;
+    }
+
+    cancelInviteInFlightRef.current = true;
+    setCancellingInviteId(inviteId);
+
+    try {
+      await ActivityCommands.cancelGroupInvite(inviteId);
+    } catch (error) {
+      showAppErrorMessageToast(
+        getApiErrorMessage(
+          error,
+          "We couldn't cancel that invitation. Please try again.",
+        ),
+      );
+    } finally {
+      cancelInviteInFlightRef.current = false;
+      setCancellingInviteId(null);
+    }
+  }
+
   return {
+    cancellingInviteId,
     currentUserId: currentUserQuery.data?.id ?? null,
     isOnline,
     pendingPlanAction: pendingAction,
@@ -241,6 +275,7 @@ export function useActivityGroupActions(groupId: string) {
     invitingMemberId,
     removingMemberId,
     cancelPlan,
+    cancelInvitation,
     completePlan,
     confirmPlan,
     createNextGroupPlan,

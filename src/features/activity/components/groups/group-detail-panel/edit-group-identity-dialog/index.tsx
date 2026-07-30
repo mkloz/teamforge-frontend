@@ -115,38 +115,46 @@ function EditPlanDetailsDialogContent({
   });
 
   return (
-    <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-2xl border-border/70 bg-popover px-5 py-0 shadow-none sm:max-w-2xl [&>button]:top-4 [&>button]:right-4 [&>button]:shadow-none">
-      <DialogHeader className="border-border/60 border-b py-5 pr-10">
-        <DialogTitle>Edit plan</DialogTitle>
+    <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-2xl border-border/70 bg-popover p-0 shadow-none sm:max-w-xl [&>button]:top-4 [&>button]:right-4 [&>button]:shadow-none">
+      <DialogHeader className="border-border/60 border-b px-5 py-5 pr-10 text-left">
+        <DialogTitle>Edit plan details</DialogTitle>
         <DialogDescription>
-          Update the activity details, timing, place, cost, and cover.
+          Open a section, make the change, then save the plan.
         </DialogDescription>
       </DialogHeader>
 
-      <div className="min-h-0 overflow-y-auto py-5">
-        <section className="flex flex-col gap-5">
-          <EditPlanDetailsFields editor={editor} />
-          <EditGroupCoverSection
-            editor={editor}
-            group={group}
-            inputRef={coverInputRef}
-          />
-        </section>
+      <div className="min-h-0 overflow-y-auto px-5 py-5">
+        <EditPlanDetailsFields
+          editor={editor}
+          coverSection={
+            <EditGroupCoverSection
+              editor={editor}
+              group={group}
+              inputRef={coverInputRef}
+              showHeading={false}
+            />
+          }
+        />
       </div>
 
       {editor.error && (
-        <p className="border-border/60 border-t py-3 font-medium text-destructive text-sm">
+        <p className="border-border/60 border-t px-5 py-3 font-medium text-destructive text-sm">
           {editor.error}
         </p>
       )}
 
-      <DialogFooter className="border-border/60 border-t py-4">
-        <EditGroupIdentityFooter
-          editor={editor}
-          isSaveDisabled={!editor.canSavePlanDetails}
-          onCancel={() => onOpenChange(false)}
-          saveLabel="Save plan"
-        />
+      <DialogFooter className="flex-col gap-3 border-border/60 border-t px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-left text-muted-foreground text-xs">
+          Saved changes update the current plan.
+        </p>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row">
+          <EditGroupIdentityFooter
+            editor={editor}
+            isSaveDisabled={!editor.canSavePlanDetails}
+            onCancel={() => onOpenChange(false)}
+            saveLabel="Save plan"
+          />
+        </div>
       </DialogFooter>
     </DialogContent>
   );

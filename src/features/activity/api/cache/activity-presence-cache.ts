@@ -17,13 +17,18 @@ import type {
 } from "@/shared/schemas";
 
 interface PresenceUpdate {
+  lastSeenAt: string | null;
   onlineStatus: OnlineStatus;
   userId: string;
 }
 
 export const ActivityPresenceCache = {
-  applyPresenceChanged(userId: string, onlineStatus: OnlineStatus) {
-    const update = { onlineStatus, userId };
+  applyPresenceChanged(
+    userId: string,
+    onlineStatus: OnlineStatus,
+    lastSeenAt: string | null,
+  ) {
+    const update = { lastSeenAt, onlineStatus, userId };
 
     updatePresenceListCaches(update);
     updateGroupSelectionPresenceCaches(update);
@@ -98,7 +103,7 @@ function mapCachedPresenceList<TItem>(
 
 function applyChatPresence(
   chat: ChatApi,
-  { onlineStatus, userId }: PresenceUpdate,
+  { lastSeenAt, onlineStatus, userId }: PresenceUpdate,
 ): ChatApi {
   return {
     ...chat,
@@ -106,12 +111,17 @@ function applyChatPresence(
       chat.counterpart,
       userId,
       onlineStatus,
+      lastSeenAt,
     ),
     participants: chat.participants?.map((participant) =>
       participant.user.id === userId
         ? {
             ...participant,
-            user: updatePresenceUser(participant.user, onlineStatus),
+            user: updatePresenceUser(
+              participant.user,
+              onlineStatus,
+              lastSeenAt,
+            ),
           }
         : participant,
     ),
@@ -120,7 +130,7 @@ function applyChatPresence(
 
 function applyFriendshipPresence(
   friendship: FriendshipApi,
-  { onlineStatus, userId }: PresenceUpdate,
+  { lastSeenAt, onlineStatus, userId }: PresenceUpdate,
 ): FriendshipApi {
   return {
     ...friendship,
@@ -128,23 +138,26 @@ function applyFriendshipPresence(
       friendship.requester,
       userId,
       onlineStatus,
+      lastSeenAt,
     ),
     receiver: updateMatchingPresenceUser(
       friendship.receiver,
       userId,
       onlineStatus,
+      lastSeenAt,
     ),
     counterpart: updateMatchingPresenceUser(
       friendship.counterpart,
       userId,
       onlineStatus,
+      lastSeenAt,
     ),
   };
 }
 
 function applyGroupPresence(
   group: GroupApi,
-  { onlineStatus, userId }: PresenceUpdate,
+  { lastSeenAt, onlineStatus, userId }: PresenceUpdate,
 ): GroupApi {
   return {
     ...group,
@@ -152,7 +165,7 @@ function applyGroupPresence(
       member.user.id === userId
         ? {
             ...member,
-            user: updatePresenceUser(member.user, onlineStatus),
+            user: updatePresenceUser(member.user, onlineStatus, lastSeenAt),
           }
         : member,
     ),
@@ -161,7 +174,7 @@ function applyGroupPresence(
 
 function applyGroupSelectionPresence(
   selection: ActivityGroupSelectionData,
-  { onlineStatus, userId }: PresenceUpdate,
+  { lastSeenAt, onlineStatus, userId }: PresenceUpdate,
 ): ActivityGroupSelectionData {
   if (!selection.group) {
     return selection;
@@ -176,7 +189,7 @@ function applyGroupSelectionPresence(
           member.user?.id === userId
             ? {
                 ...member,
-                user: updatePresenceUser(member.user, onlineStatus),
+                user: updatePresenceUser(member.user, onlineStatus, lastSeenAt),
               }
             : member,
         ) ?? [],
@@ -186,7 +199,7 @@ function applyGroupSelectionPresence(
 
 function applyDirectSelectionPresence(
   selection: ActivityDirectSelectionData,
-  { onlineStatus, userId }: PresenceUpdate,
+  { lastSeenAt, onlineStatus, userId }: PresenceUpdate,
 ): ActivityDirectSelectionData {
   if (!selection.chat) {
     return selection;
@@ -201,7 +214,11 @@ function applyDirectSelectionPresence(
           participant.user?.id === userId
             ? {
                 ...participant,
-                user: updatePresenceUser(participant.user, onlineStatus),
+                user: updatePresenceUser(
+                  participant.user,
+                  onlineStatus,
+                  lastSeenAt,
+                ),
               }
             : participant,
         ) ?? [],
@@ -213,24 +230,32 @@ function updateMatchingPresenceUser<TUser extends { id: string }>(
   user: TUser,
   userId: string,
   onlineStatus: OnlineStatus,
+  lastSeenAt: string | null,
 ) {
-  return user.id === userId ? updatePresenceUser(user, onlineStatus) : user;
+  return user.id === userId
+    ? updatePresenceUser(user, onlineStatus, lastSeenAt)
+    : user;
 }
 
 function updateOptionalPresenceUser<TUser extends { id: string }>(
   user: TUser | null | undefined,
   userId: string,
   onlineStatus: OnlineStatus,
+  lastSeenAt: string | null,
 ) {
-  return user?.id === userId ? updatePresenceUser(user, onlineStatus) : user;
+  return user?.id === userId
+    ? updatePresenceUser(user, onlineStatus, lastSeenAt)
+    : user;
 }
 
 function updatePresenceUser<TUser extends object>(
   user: TUser,
   onlineStatus: OnlineStatus,
+  lastSeenAt: string | null,
 ) {
   return {
     ...user,
+    lastSeenAt,
     onlineStatus,
   };
 }

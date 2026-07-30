@@ -1,20 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
-import { EmptyHomePlansVisual } from "@/features/home/assets/empty-home-plans";
+import { ArrowRight, CalendarDays } from "lucide-react";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeUpcomingPlansSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import { getUpcomingPreview } from "@/features/home/lib/home-insights";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { buildActivityNavigation } from "@/shared/navigation/activity-navigation";
 
 import { PlanCard } from "./plan-card";
 
 function EmptyPlans() {
   return (
-    <div className="flex min-h-36 items-center justify-center gap-3 border-border/70 border-y border-dashed px-3 py-5">
-      <EmptyHomePlansVisual className="h-10 w-auto shrink-0 text-foreground sm:h-11" />
+    <div className="flex min-h-36 items-center justify-center gap-3 rounded-lg border border-border/70 border-dashed px-3 py-5">
+      <IconTile icon={CalendarDays} size="xl" shape="circle" tone="neutral" />
       <div className="min-w-0">
         <p className="font-bold text-foreground text-sm">
           Your calendar is open.

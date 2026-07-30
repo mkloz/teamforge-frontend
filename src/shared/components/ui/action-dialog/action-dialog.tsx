@@ -98,7 +98,7 @@ export function ActionDialog({
         onClick={onContentClick}
         overlayClassName={overlayClassName}
         className={cn(
-          "w-[calc(100%-2rem)] overflow-hidden rounded-md border-border/80 bg-canvas p-0 shadow-none sm:max-w-md [&>button]:top-4 [&>button]:right-4 [&>button]:shadow-none",
+          "w-[calc(100%-1.5rem)] overflow-hidden rounded-2xl border-border/50 bg-canvas p-0 shadow-black/10 shadow-xl sm:max-w-md [&>button]:hidden",
           contentClassName,
         )}
       >

@@ -88,12 +88,7 @@ export function useRegisterForm({
 
     try {
       setRootError(null);
-      const isValid = await form.trigger([
-        "dateOfBirth",
-        "age",
-        "city",
-        "gender",
-      ]);
+      const isValid = await form.trigger(["dateOfBirth", "city", "gender"]);
       if (!isValid) {
         return;
       }

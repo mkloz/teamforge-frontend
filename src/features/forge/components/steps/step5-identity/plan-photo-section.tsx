@@ -1,4 +1,4 @@
-import { Check, Palette, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 import { FileDropzone } from "@/shared/components/common/file-dropzone";
 import { PlanCover } from "@/shared/components/common/plan-cover";
@@ -106,10 +106,10 @@ function getPresetGradient(
 
 function getCoverChoiceButtonClassName(selected: boolean) {
   return cn(
-    "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 font-bold text-foreground text-xs shadow-none transition-all duration-200 active:scale-95",
+    "group relative aspect-4/3 h-auto w-20 shrink-0 overflow-hidden rounded-xl border-2 bg-card p-0 shadow-none transition-all duration-200 active:scale-95 sm:w-22",
     selected
-      ? "border-forge-teal/75 bg-forge-teal/8 text-forge-teal ring-1 ring-forge-teal/20"
-      : "border-border/45 hover:border-forge-teal/35 hover:bg-forge-teal/5",
+      ? "border-forge-teal ring-2 ring-forge-teal/15"
+      : "border-transparent hover:border-forge-teal/45",
   );
 }
 
@@ -132,43 +132,24 @@ function CoverChoiceButton({
       disabled={!isOnline}
       title={getCoverChoiceTitle(isOnline)}
       className={getCoverChoiceButtonClassName(selected)}
+      contentClassName="relative block size-full"
     >
-      <div
-        className="relative flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md ring-1 ring-white/15"
-        aria-hidden="true"
-      >
-        <img
-          src={choice.thumbnailSrc}
-          alt=""
-          className="absolute inset-0 size-full object-cover"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-linear-to-b from-white/15 to-black/20" />
-        <CoverChoiceSelectionIcon selected={selected} />
-      </div>
-      <span className="truncate">{choice.label}</span>
-      <div
-        className={cn(
-          "ml-auto size-1.5 rounded-full transition-colors duration-150",
-          selected ? "bg-forge-teal" : "bg-border/70",
-        )}
+      <img
+        src={choice.thumbnailSrc}
+        alt=""
+        className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105"
+        loading="lazy"
       />
+      <div aria-hidden="true" className="absolute inset-0 bg-black/10" />
+      <span className="absolute inset-x-0 bottom-0 truncate bg-black/55 px-2 py-1 text-left font-bold text-[10px] text-white backdrop-blur-sm">
+        {choice.label}
+      </span>
+      {selected ? (
+        <span className="absolute top-1.5 right-1.5 grid size-5 place-items-center rounded-full bg-forge-teal text-white shadow-sm">
+          <Check size={11} strokeWidth={3} />
+        </span>
+      ) : null}
     </Button>
-  );
-}
-
-function CoverChoiceSelectionIcon({ selected }: { selected: boolean }) {
-  if (selected) {
-    return (
-      <Check size={11} className="relative z-10 text-white" strokeWidth={3} />
-    );
-  }
-
-  return (
-    <Palette
-      size={10}
-      className="relative z-10 text-white/85 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-    />
   );
 }
 
@@ -188,12 +169,10 @@ export function PlanPhotoSection({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <p className="font-semibold text-muted-foreground text-xs">
-          Plan photo
-        </p>
-        <p className="mt-0.5 text-muted-foreground/60 text-xs">
+        <p className="font-semibold text-foreground text-sm">Plan cover</p>
+        <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
           {isOnline
-            ? "This image appears on the plan card visible to all members."
+            ? "Use the current image, upload another, or choose a style."
             : "Reconnect before changing the plan photo."}
         </p>
       </div>
@@ -202,6 +181,7 @@ export function PlanPhotoSection({
         <FileDropzone
           inputRef={coverInputRef}
           variant="cover"
+          dropzoneClassName="min-h-36"
           accept="image/*"
           title={coverImage ? "Change plan photo" : "Upload plan photo"}
           description="Drop a landscape image here or browse from your device."
@@ -234,17 +214,20 @@ export function PlanPhotoSection({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {coverChoices.map((choice) => (
-          <CoverChoiceButton
-            key={choice.key}
-            choice={choice}
-            isOnline={isOnline}
-            selected={coverImage === choice.value}
-            onCoverImageChange={onCoverImageChange}
-          />
-        ))}
-      </div>
+      <fieldset className="-mx-1 min-w-0">
+        <legend className="sr-only">Cover styles</legend>
+        <div className="flex gap-2 overflow-x-auto px-1 pb-2">
+          {coverChoices.map((choice) => (
+            <CoverChoiceButton
+              key={choice.key}
+              choice={choice}
+              isOnline={isOnline}
+              selected={coverImage === choice.value}
+              onCoverImageChange={onCoverImageChange}
+            />
+          ))}
+        </div>
+      </fieldset>
     </div>
   );
 }

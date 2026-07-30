@@ -22,6 +22,7 @@ export function ProfileBasicsPage() {
     form,
     watchedValues,
     progress,
+    requiresDateOfBirth,
     saveError,
     isOnline,
     isSaving,
@@ -44,6 +45,7 @@ export function ProfileBasicsPage() {
       <ProfileBasicsCard
         form={form}
         watchedValues={watchedValues}
+        requiresDateOfBirth={requiresDateOfBirth}
         saveError={saveError}
         isOnline={isOnline}
         isSaving={isSaving}

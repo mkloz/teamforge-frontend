@@ -70,7 +70,7 @@ export function ProfileIdentityFields({
               <FormControl>
                 <Textarea
                   {...field}
-                  rows={5}
+                  rows={4}
                   placeholder="A quick intro people will see on your profile."
                   className="text-ink text-sm"
                 />

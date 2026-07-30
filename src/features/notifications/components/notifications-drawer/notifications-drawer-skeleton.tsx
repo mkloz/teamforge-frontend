@@ -12,13 +12,13 @@ export function NotificationsDrawerSkeleton() {
   return (
     <div>
       <span className="sr-only">Loading notifications</span>
-      <div className="sticky top-0 z-10 border-border/60 border-b bg-canvas px-5 py-3">
+      <div className="sticky top-0 z-10 bg-canvas px-5 pt-4 pb-2">
         <LoadingBlock className="h-3 w-16 rounded-md" />
       </div>
-      <div className="divide-y divide-border/55">
+      <div className="flex flex-col gap-0.5 px-3 pb-4">
         {NOTIFICATION_SKELETON_ROWS.map((row, index) => (
           <div
-            className="flex w-full items-start gap-3 px-5 py-4 text-left"
+            className="flex w-full items-start gap-3 bg-card px-4 py-3.5 text-left first:rounded-t-2xl last:rounded-b-2xl"
             key={row}
           >
             <LoadingBlock

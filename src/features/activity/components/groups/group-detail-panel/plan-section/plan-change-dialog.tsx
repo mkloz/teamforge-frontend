@@ -80,7 +80,7 @@ export function PlanChangeDialog({
           </DialogTrigger>
         ) : null}
 
-        <DialogContent className="max-h-[90svh] overflow-y-auto rounded-3xl bg-popover p-0 sm:max-w-sm [&>button]:hidden">
+        <DialogContent className="max-h-[90svh] overflow-y-auto rounded-2xl bg-popover p-0 sm:max-w-sm [&>button]:hidden">
           <PlanChangeDialogHeader onClose={form.closeForm} />
 
           <ul aria-label="Plan fields" className="border-border/50 border-t">

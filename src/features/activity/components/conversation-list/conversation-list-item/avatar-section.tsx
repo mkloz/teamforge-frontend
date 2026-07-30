@@ -94,6 +94,10 @@ function ConversationAvatar({
         isGroup && "rounded-md",
         viewState.avatarSizeClassName,
       )}
+      fallbackClassName={cn(
+        "font-black",
+        isGroup && !viewState.isCompact && "text-sm",
+      )}
     />
   );
 }

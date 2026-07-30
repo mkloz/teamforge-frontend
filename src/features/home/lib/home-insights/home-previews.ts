@@ -40,7 +40,30 @@ export function getRecommendationPreview(
   recommendations: ExploreFeedItem[],
   limit = 2,
 ) {
-  return recommendations.slice(0, limit);
+  return [...recommendations]
+    .sort(
+      (a, b) => getRecommendationTimestamp(a) - getRecommendationTimestamp(b),
+    )
+    .slice(0, limit);
+}
+
+function getRecommendationTimestamp(recommendation: ExploreFeedItem) {
+  const dateTime = getScheduledRecommendationDateTime(recommendation);
+  const timestamp = dateTime ? Date.parse(dateTime) : Number.NaN;
+
+  return Number.isNaN(timestamp) ? Number.POSITIVE_INFINITY : timestamp;
+}
+
+function getScheduledRecommendationDateTime(recommendation: ExploreFeedItem) {
+  if (recommendation.type === "GROUP") {
+    return recommendation.group.plan?.scheduleMode === "TO_BE_DECIDED"
+      ? null
+      : recommendation.group.plan?.dateTime;
+  }
+
+  return recommendation.opening.schedule.mode === "FIXED"
+    ? recommendation.opening.schedule.dateTime
+    : null;
 }
 
 function getUnreadPriority(

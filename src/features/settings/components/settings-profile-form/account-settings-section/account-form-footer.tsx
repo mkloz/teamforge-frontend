@@ -13,12 +13,15 @@ export function AccountFormFooter({
   isSaving,
 }: AccountFormFooterProps) {
   return (
-    <div className="flex flex-col gap-3 border-border border-t pt-5 md:flex-row md:items-center md:justify-between">
-      <p className="text-slate-muted text-sm">
-        Changes show up across your profile and group surfaces.
-      </p>
+    <div className="flex flex-col gap-3 rounded-3xl bg-card p-3 sm:gap-4 sm:p-5">
+      <div>
+        <p className="font-semibold text-ink text-sm">Ready to update?</p>
+        <p className="mt-1 text-slate-muted text-sm leading-relaxed">
+          Saved changes appear across your profile and group surfaces.
+        </p>
+      </div>
 
-      <div className="responsive-action-grid grid w-full gap-3 md:max-w-92">
+      <div className="responsive-action-grid grid w-full gap-3">
         <Button asChild variant="outline" size="compact" className="min-w-0">
           <Link {...buildProfileNavigation()}>
             <ExternalLink className="size-4" aria-hidden="true" />

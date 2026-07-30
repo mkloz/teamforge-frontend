@@ -5,7 +5,10 @@ import type { ForgeWizardChildProps } from "../types";
 export type InvitesSentScreenProps = ForgeWizardChildProps;
 
 export interface InvitesSentSummary {
+  avatarImage: string | null;
+  coverImage: string | null;
   displayGroupName: string;
+  groupDescription: string;
   inviteCount: number;
   isManual: boolean;
   memberCount: number;
@@ -18,9 +21,7 @@ export interface StatusFactItem {
 }
 
 export interface NextActionItem {
-  active?: boolean;
   icon: LucideIcon;
   text: string;
   title: string;
-  tone?: "teal" | "amber";
 }

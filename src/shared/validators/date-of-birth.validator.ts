@@ -11,9 +11,7 @@ export const DateOfBirthValidator = z
     "Enter a valid date of birth.",
   );
 
-export function getTodayDateOnly() {
-  const today = new Date();
-
+export function getTodayDateOnly(today = new Date()) {
   return [
     String(today.getUTCFullYear()).padStart(4, "0"),
     String(today.getUTCMonth() + 1).padStart(2, "0"),
@@ -21,7 +19,34 @@ export function getTodayDateOnly() {
   ].join("-");
 }
 
-function isValidPastDateOnly(value: string) {
+export function getAgeFromDateOfBirth(
+  value: string,
+  today = new Date(),
+): number | null {
+  if (!isValidPastDateOnly(value, getTodayDateOnly(today))) {
+    return null;
+  }
+
+  const parts = DATE_ONLY_PATTERN.exec(value);
+
+  if (!parts) return null;
+
+  const year = Number(parts[1]);
+  const month = Number(parts[2]);
+  const day = Number(parts[3]);
+  let age = today.getUTCFullYear() - year;
+  const birthdayHasPassed =
+    today.getUTCMonth() + 1 > month ||
+    (today.getUTCMonth() + 1 === month && today.getUTCDate() >= day);
+
+  if (!birthdayHasPassed) {
+    age -= 1;
+  }
+
+  return age;
+}
+
+function isValidPastDateOnly(value: string, today = getTodayDateOnly()) {
   const parts = DATE_ONLY_PATTERN.exec(value);
 
   if (!parts) {
@@ -40,6 +65,6 @@ function isValidPastDateOnly(value: string) {
     date.getUTCFullYear() === year &&
     date.getUTCMonth() === month - 1 &&
     date.getUTCDate() === day &&
-    value <= getTodayDateOnly()
+    value <= today
   );
 }

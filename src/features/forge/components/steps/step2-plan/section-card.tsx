@@ -5,17 +5,23 @@ import { cn } from "@/shared/lib/utils";
 interface SectionCardProps {
   children: ReactNode;
   accent?: boolean;
+  className?: string;
 }
 
-export function SectionCard({ children, accent = false }: SectionCardProps) {
+export function SectionCard({
+  children,
+  accent = false,
+  className,
+}: SectionCardProps) {
   return (
-    <div
+    <section
       className={cn(
-        "relative border-border/25 border-b pb-4 last:border-b-0",
-        accent && "border-forge-teal/25",
+        "relative rounded-2xl border border-border/30 bg-card p-3 sm:p-5",
+        accent && "border-forge-teal/35",
+        className,
       )}
     >
-      <div className="flex flex-col gap-3">{children}</div>
-    </div>
+      <div className="flex h-full flex-col gap-4">{children}</div>
+    </section>
   );
 }

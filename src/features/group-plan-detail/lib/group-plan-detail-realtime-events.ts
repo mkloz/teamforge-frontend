@@ -5,7 +5,9 @@ import { shouldApplyRealtimeEvent } from "@/shared/lib/realtime-event-registry";
 import {
   realtimeGroupUpdatedPayloadSchema,
   realtimePlanUpdatedPayloadSchema,
+  realtimePresenceChangedPayloadSchema,
 } from "@/shared/schemas";
+import type { GroupPlanDetail } from "../schemas/group-plan-detail.schema";
 
 interface GroupPlanDetailRealtimeInput {
   groupId: string;
@@ -58,6 +60,33 @@ function handleGroupUpdated(payload: unknown, groupId: string) {
   invalidateGroupPlanDetail(groupId);
 }
 
+function handlePresenceChanged(payload: unknown, groupId: string) {
+  const parsed = realtimePresenceChangedPayloadSchema.safeParse(payload);
+
+  if (!parsed.success) {
+    return;
+  }
+
+  appQueryClient.setQueryData<GroupPlanDetail>(
+    APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
+    (current) =>
+      current
+        ? {
+            ...current,
+            members: current.members.map((member) =>
+              member.userId === parsed.data.user.id
+                ? {
+                    ...member,
+                    lastSeenAt: parsed.data.user.lastSeenAt,
+                    onlineStatus: parsed.data.onlineStatus,
+                  }
+                : member,
+            ),
+          }
+        : current,
+  );
+}
+
 export function subscribeGroupPlanDetailRealtime({
   groupId,
   planId,
@@ -78,10 +107,17 @@ export function subscribeGroupPlanDetailRealtime({
       handleGroupUpdated(payload, groupId);
     },
   );
+  const unsubscribePresenceChanged = realtimeClient.on(
+    "presence.changed",
+    (payload) => {
+      handlePresenceChanged(payload, groupId);
+    },
+  );
 
   return () => {
     unsubscribeGroupUpdated();
     unsubscribePlanUpdated();
+    unsubscribePresenceChanged();
     if (planId) {
       realtimeClient.emit("plan.unsubscribe", { planId });
     }

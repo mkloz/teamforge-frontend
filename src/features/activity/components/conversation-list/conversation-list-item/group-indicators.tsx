@@ -2,8 +2,8 @@ import { Bookmark, Clock, UserStar, Vote } from "lucide-react";
 import type { ReactNode } from "react";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 
-const counterBadgeClassName = "h-3.5 min-w-3.5 px-1";
-const iconOnlyBadgeClassName = "size-3.5 min-w-0 p-0";
+const counterBadgeClassName = "min-w-4 px-1";
+const iconOnlyBadgeClassName = "size-4 min-w-0 p-0";
 const indicatorIconClassName = "size-2";
 
 interface GroupIndicatorsProps {

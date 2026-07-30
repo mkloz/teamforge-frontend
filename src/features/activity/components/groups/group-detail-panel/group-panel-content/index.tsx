@@ -185,9 +185,11 @@ function GroupPanelContentScrollArea({
           />
 
           <GroupPanelMainSections
+            cancelInvitation={panel.cancelInvitation}
             currentUserId={panel.currentUserId}
             currentUserRole={panel.currentUserRole}
             cancelPlan={panel.cancelPlan}
+            cancellingInviteId={panel.cancellingInviteId}
             completePlan={panel.completePlan}
             confirmPlan={panel.confirmPlan}
             createNextGroupPlan={panel.createNextGroupPlan}
@@ -203,8 +205,10 @@ function GroupPanelContentScrollArea({
             isOnline={panel.isOnline}
             isLeaving={panel.isLeaving}
             leaveGroup={panel.leaveGroup}
+            memberCount={panel.memberCount}
             members={panel.members}
             pendingPlanAction={panel.pendingPlanAction}
+            pendingInvitations={panel.pendingInvitations}
             onEditGroup={() => panel.setIsEditOpen(true)}
             onEditPlan={() => panel.setIsPlanEditOpen(true)}
             removeMember={panel.removeMember}

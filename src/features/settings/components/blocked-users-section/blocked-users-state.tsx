@@ -1,4 +1,10 @@
-import { EmptySettingsBlockedUsersVisual } from "@/features/settings/assets/empty-settings-blocked-users";
+import { ShieldCheck } from "lucide-react";
+import {
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { Notice } from "@/shared/components/ui/notice";
 
 interface BlockedUsersErrorStateProps {
   message: string;
@@ -8,17 +14,26 @@ export function BlockedUsersErrorState({
   message,
 }: BlockedUsersErrorStateProps) {
   return (
-    <div className="flex min-h-32 items-center justify-center py-4 text-center">
-      <p className="text-destructive text-sm">{message}</p>
-    </div>
+    <Notice role="alert" tone="danger" size="md">
+      {message}
+    </Notice>
   );
 }
 
 export function BlockedUsersEmptyState() {
   return (
-    <div className="flex min-h-40 flex-col items-center justify-center gap-3 py-5 text-center sm:flex-row sm:gap-4 sm:text-left">
-      <EmptySettingsBlockedUsersVisual className="h-12 w-auto shrink-0 text-foreground" />
-      <p className="font-semibold text-ink text-sm">No blocked users</p>
-    </div>
+    <GroupedMenuList aria-label="Blocked people">
+      <GroupedMenuItem>
+        <div className="flex min-h-16 items-center gap-3 px-3 py-3 sm:px-5">
+          <IconTile icon={ShieldCheck} shape="circle" size="lg" tone="teal" />
+          <div className="min-w-0">
+            <p className="font-semibold text-ink text-sm">No blocked people</p>
+            <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
+              People you block will appear here.
+            </p>
+          </div>
+        </div>
+      </GroupedMenuItem>
+    </GroupedMenuList>
   );
 }

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ExternalLink, MapPin, MessageSquareText } from "lucide-react";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import { AvatarPreviewDialog } from "@/shared/components/common/avatar-preview-dialog";
+import { PresenceLabel } from "@/shared/components/common/presence-label";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { buildActivityDmNavigation } from "@/shared/navigation/activity-navigation";
@@ -42,6 +43,11 @@ export function ProfilePanelOriginalCard({
           <h3 className="truncate font-bold text-2xl text-foreground leading-tight tracking-tight">
             {participant.name}
           </h3>
+          <PresenceLabel
+            className="mt-1.5"
+            lastSeenAt={participant.lastSeenAt}
+            status={onlineStatus}
+          />
           <ProfileMetaRow participant={participant} />
         </div>
       </div>

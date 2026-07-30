@@ -14,12 +14,19 @@ export function GroupStepPanel({ fw }: ForgeWizardChildProps) {
       visibility={fw.visibility}
       onVisibilityChange={fw.setVisibility}
       groupName={fw.groupName}
-      onGroupNameChange={fw.setGroupName}
       groupDescription={fw.groupDescription}
-      onGroupDescriptionChange={fw.setGroupDescription}
       manualInviteeIds={fw.manualInviteeIds}
       onManualInviteeToggle={fw.toggleManualInvitee}
       selectedActivity={fw.selectedActivity}
+      coverImage={fw.coverImage}
+      forgeScope={fw.forgeScope}
+      locationType={fw.locationType}
+      planDate={fw.planDate}
+      planDescription={fw.planDescription}
+      planLocation={fw.planLocation}
+      planName={fw.planName}
+      planScheduleMode={fw.planScheduleMode}
+      planTime={fw.planTime}
     />
   );
 }

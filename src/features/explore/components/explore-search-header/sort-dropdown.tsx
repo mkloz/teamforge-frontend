@@ -43,12 +43,9 @@ export function SortDropdown() {
           "data-[state=open]:border-primary/35 data-[state=open]:bg-card data-[state=open]:text-ink",
         )}
       >
-        <IconTile
-          icon={ActiveIcon}
-          size="xs"
-          tone="none"
-          className="size-5 bg-primary/10 text-primary transition-colors group-data-[state=open]:bg-primary group-data-[state=open]:text-primary-foreground"
-          iconClassName="size-3"
+        <ActiveIcon
+          className="size-3.5 shrink-0 text-primary"
+          aria-hidden="true"
         />
         <span className="hidden items-center gap-1.5 sm:inline-flex">
           <span className="font-semibold text-slate-muted text-xs">Sort</span>

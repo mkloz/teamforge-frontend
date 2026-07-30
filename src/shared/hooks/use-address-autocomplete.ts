@@ -110,6 +110,16 @@ export function useAddressAutocomplete({
     visibleSuggestions,
   });
 
+  function resetInputDraft() {
+    hasTypedInSessionRef.current = false;
+    skipPredictionsForValueRef.current = null;
+    setDraftInput(null);
+    resetSuggestions();
+    closeSuggestions();
+    clearMessage();
+    setHasCurrentAreaError(false);
+  }
+
   return {
     containerRef,
     inputValue,
@@ -129,6 +139,7 @@ export function useAddressAutocomplete({
     handleInputKeyDown,
     closeSuggestions,
     clearLocation,
+    resetInputDraft,
     selectPrediction,
     useCurrentArea,
   };

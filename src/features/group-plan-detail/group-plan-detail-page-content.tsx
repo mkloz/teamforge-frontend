@@ -1,6 +1,5 @@
 import { lazy, type Ref, Suspense, useRef } from "react";
-import { GroupSection } from "@/features/group-plan-detail/components/content/group-section";
-import { PlanSection } from "@/features/group-plan-detail/components/content/plan-section";
+import { GroupPlanOverviewSection } from "@/features/group-plan-detail/components/content/group-plan-overview-section";
 import { GroupPlanHero } from "@/features/group-plan-detail/components/hero/group-plan-hero";
 import { DecisionRail } from "@/features/group-plan-detail/components/rail/decision-rail";
 import {
@@ -65,7 +64,7 @@ function GroupPlanDetailPageShell({
   return (
     <div
       ref={shellRef}
-      className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-10 [--group-detail-compact-opacity:0] [--group-detail-compact-y:-8px] [--group-detail-cover-collapsed-height:72px] [--group-detail-cover-expanded-height:280px] [--group-detail-cover-image-scale:1] [--group-detail-cover-image-y:0px] [--group-detail-cover-original-delay:0ms] [--group-detail-cover-original-opacity:1] [--group-detail-cover-original-y:0px] [--group-detail-cover-y:0px] sm:px-5 md:pt-6 md:pb-12 lg:px-8 sm:[--group-detail-cover-expanded-height:340px] md:[--group-detail-cover-expanded-height:400px] lg:[--group-detail-cover-expanded-height:440px]"
+      className="mx-auto w-full max-w-6xl overflow-x-clip px-4 pt-3 pb-10 [--group-detail-compact-opacity:0] [--group-detail-compact-y:-8px] [--group-detail-cover-collapsed-height:72px] [--group-detail-cover-expanded-height:300px] [--group-detail-cover-image-scale:1] [--group-detail-cover-image-y:0px] [--group-detail-cover-original-delay:0ms] [--group-detail-cover-original-opacity:1] [--group-detail-cover-original-y:0px] [--group-detail-cover-shell-height:var(--group-detail-cover-expanded-height)] [--group-detail-cover-y:0px] sm:px-5 md:pt-6 md:pb-12 lg:px-8 sm:[--group-detail-cover-expanded-height:380px] md:[--group-detail-cover-expanded-height:450px] lg:[--group-detail-cover-expanded-height:500px]"
     >
       <GroupPlanHero
         detail={detail}
@@ -85,34 +84,22 @@ function GroupPlanDetailGrid({
   focus: GroupPlanSectionFocusProps;
 }) {
   return (
-    <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)]">
-      <div className="min-w-0 border-border/70 lg:col-start-2 lg:row-start-1 lg:border-l lg:pl-8 xl:pl-10">
-        <DecisionRail detail={detail} />
-      </div>
-
-      <div className="min-w-0 lg:col-start-1 lg:row-start-1">
-        <GroupPlanMainSections detail={detail} focus={focus} />
-      </div>
-    </div>
-  );
-}
-
-function GroupPlanMainSections({
-  detail,
-  focus,
-}: {
-  detail: GroupPlanDetail;
-  focus: GroupPlanSectionFocusProps;
-}) {
-  return (
-    <div className="flex min-w-0 flex-col gap-12">
-      <GroupSection detail={detail} />
-      <PlanSection
+    <div className="mt-10">
+      <GroupPlanOverviewSection
         detail={detail}
         isHighlighted={focus.isPlanHighlighted}
         sectionRef={focus.planSectionRef}
       />
-      <DeferredMainSections detail={detail} />
+
+      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)]">
+        <div className="min-w-0 border-border/70 lg:col-start-2 lg:row-start-1 lg:border-l lg:pl-8 xl:pl-10">
+          <DecisionRail detail={detail} />
+        </div>
+
+        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+          <DeferredMainSections detail={detail} />
+        </div>
+      </div>
     </div>
   );
 }

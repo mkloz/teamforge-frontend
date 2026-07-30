@@ -19,8 +19,8 @@ export interface UpdateOnboardingPersonalityDto {
 }
 
 export interface UpdateProfileBasicsDto {
-  dateOfBirth: string;
-  age: number;
+  dateOfBirth?: string;
+  age?: number;
   gender: Gender;
   city: string;
   locationLat: number | null;

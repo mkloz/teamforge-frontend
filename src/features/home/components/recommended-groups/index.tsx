@@ -1,23 +1,16 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
-import { EmptyRecommendationsVisual } from "@/features/home/assets/empty-recommendations";
+import { ArrowRight, Compass } from "lucide-react";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeRecommendedGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { getRecommendationPreview } from "@/features/home/lib/home-insights";
-import { FormationOpeningReportAction } from "@/features/reporting/public/reporting";
-import { FormationOpeningCard } from "@/shared/components/formation-opening-card";
 import { Button } from "@/shared/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/shared/components/ui/carousel";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { useUnexpiredExploreFeedItems } from "@/shared/hooks/use-unexpired-explore-feed-items";
 import { buildExploreNavigation } from "@/shared/navigation";
 import type { ExploreFeedItem } from "@/shared/schemas";
 
-import { RecommendedGroupCard } from "./recommended-group-card";
+import { OpenPlanRow } from "./open-plan-row";
 
 export function RecommendedGroups() {
   const { recommendations, isError, isRecommendationsLoading, refetchAll } =
@@ -53,7 +46,7 @@ function RecommendedGroupsView({
   const currentRecommendations = useUnexpiredExploreFeedItems(recommendations);
   const visibleRecommendations = getRecommendationPreview(
     currentRecommendations,
-    3,
+    5,
   );
 
   if (isRecommendationsLoading && recommendations.length === 0) {
@@ -63,24 +56,27 @@ function RecommendedGroupsView({
   return (
     <section
       aria-labelledby="recommended-groups-heading"
-      className="flex w-full flex-col gap-5"
+      className="flex w-full min-w-0 flex-col gap-5 lg:border-border/60 lg:border-l lg:pl-10"
     >
       <HomeSectionHeading
         id="recommended-groups-heading"
         title="Open plans"
+        description="Opportunities in and around you."
         action={
-          <Button asChild variant="ghost" size="sm">
-            <Link {...buildExploreNavigation()}>
-              View all
-              <ArrowRight className="size-3.5" aria-hidden="true" />
-            </Link>
-          </Button>
+          visibleRecommendations.length > 0 ? (
+            <Button asChild variant="ghost" size="sm">
+              <Link {...buildExploreNavigation()}>
+                View all
+                <ArrowRight className="size-3.5" aria-hidden="true" />
+              </Link>
+            </Button>
+          ) : null
         }
       />
 
       {isRecommendationsError && visibleRecommendations.length === 0 ? (
         <div
-          className="flex min-h-36 items-center justify-between gap-4 border-border/70 border-y border-dashed px-3 py-5 sm:px-4"
+          className="flex min-h-36 items-center justify-between gap-4 rounded-lg border border-border/70 border-dashed px-3 py-5 sm:px-4"
           role="alert"
         >
           <div className="min-w-0">
@@ -96,77 +92,28 @@ function RecommendedGroupsView({
           </Button>
         </div>
       ) : visibleRecommendations.length === 0 ? (
-        <div className="flex min-h-36 items-center justify-center gap-3 border-border/70 border-y border-dashed px-3 py-5 sm:px-4">
-          <EmptyRecommendationsVisual className="h-11 w-auto shrink-0 text-foreground sm:h-12" />
+        <div className="flex items-start gap-3 rounded-2xl border border-border/70 border-dashed p-4">
+          <IconTile icon={Compass} size="md" shape="circle" tone="neutral" />
           <div className="min-w-0">
             <p className="font-bold text-foreground text-sm">
               Nothing open right now.
             </p>
+            <p className="mt-1 font-medium text-muted-foreground text-xs leading-5">
+              New plans with an open place will appear here.
+            </p>
           </div>
         </div>
       ) : (
-        <>
-          <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden md:hidden">
-            <Carousel
-              opts={{
-                align: "start",
-                loop: visibleRecommendations.length > 1,
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="-ml-3 pt-1 pb-2 pl-4 sm:pl-5">
-                {visibleRecommendations.map((recommendation) => (
-                  <CarouselItem
-                    key={getRecommendationKey(recommendation)}
-                    className={
-                      visibleRecommendations.length > 1
-                        ? "min-w-0 basis-[calc(100vw-2.5rem)] pl-3"
-                        : "min-w-0 basis-[calc(100vw-2rem)] pl-3"
-                    }
-                  >
-                    <div className="w-full min-w-0">
-                      <RecommendationCard recommendation={recommendation} />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
-
-          <ul className="responsive-card-grid hidden list-none gap-5 p-0 md:grid">
-            {visibleRecommendations.map((recommendation) => (
-              <li
-                key={getRecommendationKey(recommendation)}
-                className="min-w-0"
-              >
-                <RecommendationCard recommendation={recommendation} />
-              </li>
-            ))}
-          </ul>
-        </>
+        <ul className="list-none p-0">
+          {visibleRecommendations.map((recommendation) => (
+            <OpenPlanRow
+              key={getRecommendationKey(recommendation)}
+              recommendation={recommendation}
+            />
+          ))}
+        </ul>
       )}
     </section>
-  );
-}
-
-function RecommendationCard({
-  recommendation,
-}: {
-  recommendation: ExploreFeedItem;
-}) {
-  return recommendation.type === "GROUP" ? (
-    <RecommendedGroupCard group={recommendation.group} />
-  ) : (
-    <FormationOpeningCard
-      opening={recommendation.opening}
-      safetyAction={
-        <FormationOpeningReportAction
-          activityId={recommendation.opening.activity.id}
-          activityTitle={recommendation.opening.activity.title}
-        />
-      }
-      variant="compact"
-    />
   );
 }
 

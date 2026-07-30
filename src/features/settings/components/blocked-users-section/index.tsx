@@ -12,19 +12,20 @@ export function BlockedUsersSection({
 }: BlockedUsersSectionProps) {
   return (
     <section>
-      <div className="flex max-w-2xl items-start gap-3">
-        <div className="min-w-0">
-          <h2 className="font-bold text-ink text-xl">Blocked users</h2>
-        </div>
+      <div className="px-1">
+        <h2 className="font-bold text-ink text-xl">Blocked people</h2>
+        <p className="mt-1 max-w-2xl text-slate-muted text-sm leading-relaxed">
+          Manage people who cannot contact you or interact with you in groups.
+        </p>
       </div>
 
       {!isOnline ? (
-        <div className="mt-6">
+        <div className="mt-4">
           <OfflineSettingsNotice message="Reconnect before changing your blocked users list." />
         </div>
       ) : null}
 
-      <div className="mt-6 border-border border-t">
+      <div className="mt-5">
         <BlockedUsersList
           blockedUsers={blockedUsers}
           errorMessage={errorMessage}

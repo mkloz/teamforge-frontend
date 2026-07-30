@@ -21,6 +21,8 @@ export function GroupIdentitySection({
   isOnline = true,
   isSystemManaged = false,
   groupId,
+  maxMembers,
+  memberCount,
   name,
   onEditGroup,
   plan,
@@ -69,7 +71,12 @@ export function GroupIdentitySection({
         </p>
       ) : null}
 
-      <GroupFactList activity={activity} createdLabel={createdLabel} />
+      <GroupFactList
+        activity={activity}
+        createdLabel={createdLabel}
+        maxMembers={maxMembers}
+        memberCount={memberCount}
+      />
 
       <GroupIdentityActions
         activityId={activityId}

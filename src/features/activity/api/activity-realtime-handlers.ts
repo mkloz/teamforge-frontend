@@ -1,4 +1,6 @@
 import type { Plan } from "@/features/activity/lib/activity-contract";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type {
   ChatApi,
   FriendshipApi,
@@ -30,8 +32,12 @@ export const ActivityRealtimeHandlers = {
     ActivityRealtime.applyChatRead(ACTIVITY_REALTIME_CONTEXT, chat);
   },
 
-  applyPresenceChanged(userId: string, onlineStatus: OnlineStatus) {
-    ActivityRealtime.applyPresenceChanged(userId, onlineStatus);
+  applyPresenceChanged(
+    userId: string,
+    onlineStatus: OnlineStatus,
+    lastSeenAt: string | null,
+  ) {
+    ActivityRealtime.applyPresenceChanged(userId, onlineStatus, lastSeenAt);
   },
 
   applyFriendshipUpdate(friendship: FriendshipApi) {
@@ -54,6 +60,9 @@ export const ActivityRealtimeHandlers = {
       currentUserId,
       group,
     );
+    void appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.activity.pendingInvitationsByGroup(group.id),
+    });
   },
 
   handlePlanUpdated(groupId: string) {

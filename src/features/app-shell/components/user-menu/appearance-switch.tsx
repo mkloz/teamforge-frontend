@@ -12,20 +12,25 @@ export function AppearanceSwitch() {
     appearance === ThemeAppearance.SYSTEM ? Monitor : isDark ? Moon : Sun;
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center gap-3 rounded-xl px-3 py-2">
+    <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-card px-4 py-3">
       <IconTile
         icon={CurrentIcon}
-        tone="neutral"
+        tone="teal"
         size="md"
-        bordered
+        className="bg-transparent"
         aria-hidden="true"
       />
 
-      <span className="min-w-0 flex-1 font-semibold text-foreground text-sm">
-        Theme
+      <span className="min-w-0 flex-1">
+        <span className="block font-bold text-foreground text-sm">
+          Appearance
+        </span>
+        <span className="mt-0.5 block text-muted-foreground text-xs">
+          {getAppearanceLabel(appearance)}
+        </span>
       </span>
 
-      <div className="grid w-full min-w-0 basis-full grid-cols-3 gap-1 rounded-full border border-border/70 bg-card p-1.5 md:w-52 md:shrink-0 md:basis-auto">
+      <div className="grid shrink-0 grid-cols-3 gap-1 rounded-full bg-background p-1">
         <AppearanceOption
           icon={Monitor}
           isActive={appearance === ThemeAppearance.SYSTEM}
@@ -68,14 +73,23 @@ function AppearanceOption({
       aria-pressed={isActive}
       onClick={onClick}
       className={cn(
-        "flex h-11 items-center justify-center gap-1.5 rounded-full px-2 font-black text-xs transition-all duration-150 [@media(pointer:fine)]:h-7",
+        "flex size-8 items-center justify-center rounded-full font-black text-xs transition-colors",
         isActive
           ? "bg-primary text-primary-foreground shadow-primary/20 shadow-sm"
           : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
       )}
+      title={label}
     >
-      <Icon size={11} aria-hidden="true" />
-      {label}
+      <Icon size={13} aria-hidden="true" />
+      <span className="sr-only">{label}</span>
     </button>
   );
+}
+
+function getAppearanceLabel(appearance: ThemeAppearance) {
+  if (appearance === ThemeAppearance.SYSTEM) {
+    return "Match this device";
+  }
+
+  return appearance === ThemeAppearance.DARK ? "Dark theme" : "Light theme";
 }

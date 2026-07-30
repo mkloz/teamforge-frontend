@@ -13,6 +13,7 @@ export function mapGroupMember(
     role: member.role,
     joinedAt: member.joinedAt,
     leftAt: member.leftAt,
+    compatibilityScore: member.compatibilityScore,
     user: mapGroupMemberParticipant(member),
   };
 }

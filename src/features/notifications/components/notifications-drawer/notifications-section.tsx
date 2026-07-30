@@ -5,7 +5,6 @@ import {
   m,
   useReducedMotion,
 } from "framer-motion";
-import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { Notification } from "@/shared/schemas";
 
 import { NotificationItem } from "./notification-item";
@@ -41,26 +40,19 @@ export function NotificationsSection({
         label === "Today" ? "Today's notifications" : `${label} notifications`
       }
     >
-      <div className="sticky top-0 z-10 border-border/60 border-b bg-canvas px-5 py-3">
-        <div className="flex items-center justify-between gap-3">
-          <p className="font-semibold text-slate-muted text-xs">{label}</p>
-          <StatusPill
-            tone="muted"
-            size="xs"
-            surface="soft"
-            numeric
-            className="font-semibold text-xs"
-          >
-            {items.length}
-          </StatusPill>
-        </div>
+      <div className="sticky top-0 z-10 bg-canvas/92 px-5 pt-4 pb-2 backdrop-blur-md">
+        <p className="font-semibold text-slate-muted text-xs">
+          {label}
+          <span className="ml-1.5 text-slate-muted/55">{items.length}</span>
+        </p>
       </div>
-      <ul className="divide-y divide-border/55">
+      <ul className="flex flex-col gap-0.5 px-3 pb-4">
         <LazyMotion features={domAnimation}>
           <AnimatePresence initial={false}>
             {items.map((item) => (
               <m.li
                 key={item.id}
+                className="relative overflow-hidden bg-card first:rounded-t-2xl last:rounded-b-2xl"
                 initial={
                   shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 4 }
                 }

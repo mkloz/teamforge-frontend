@@ -21,35 +21,29 @@ export function ExploreFeedContent({
   onLoadMore,
   totalItems,
 }: ExploreFeedContentProps) {
-  const featuredItem = items[0] ?? null;
-  const remainingItems = items.slice(1);
-
   return (
-    <div className="flex flex-col gap-4 md:gap-5">
-      {featuredItem ? (
-        <section className="flex flex-col gap-2.5">
-          <FeedSectionLabel
-            title="Best opening right now"
-            detail={`${totalItems} ${totalItems === 1 ? "opening" : "openings"} available`}
-          />
-          <ExploreFeedItemCard item={featuredItem} imagePriority="high" />
-        </section>
-      ) : null}
+    <div className="flex flex-col gap-5">
+      <section>
+        <FeedSectionLabel
+          title="Open plans"
+          detail={`${totalItems} ${totalItems === 1 ? "opening" : "openings"}`}
+        />
 
-      {remainingItems.length > 0 ? (
-        <section className="flex flex-col gap-2.5">
-          <FeedSectionLabel
-            title="More openings"
-            detail={`${remainingItems.length} shown`}
-          />
-          {remainingItems.map((item) => (
-            <ExploreFeedItemCard
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-12">
+          {items.map((item, index) => (
+            <div
               key={getExploreFeedItemKey(item)}
-              item={item}
-            />
+              className={getExploreGridSlotClassName(index)}
+            >
+              <ExploreFeedItemCard
+                item={item}
+                emphasis={index === 0 ? "lead" : "standard"}
+                imagePriority={index === 0 ? "high" : "auto"}
+              />
+            </div>
           ))}
-        </section>
-      ) : null}
+        </div>
+      </section>
 
       <ExploreInfiniteScrollSentinel
         hasNextPage={hasNextPage}
@@ -132,9 +126,16 @@ function FeedSectionLabel({
   title: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 px-1 max-compact:flex-col max-compact:items-start max-compact:gap-1">
-      <h2 className="font-semibold text-muted-foreground text-sm">{title}</h2>
-      <span className="shrink-0 font-bold text-muted-foreground text-sm">
+    <div className="flex items-end justify-between gap-4">
+      <div>
+        <h2 className="font-black text-2xl text-foreground tracking-tight sm:text-3xl">
+          {title}
+        </h2>
+        <p className="mt-1 font-medium text-muted-foreground text-sm">
+          Ranked for your profile, with the strongest fit first.
+        </p>
+      </div>
+      <span className="shrink-0 pb-0.5 font-bold text-muted-foreground text-xs sm:text-sm">
         {detail}
       </span>
     </div>
@@ -142,22 +143,27 @@ function FeedSectionLabel({
 }
 
 function ExploreFeedItemCard({
+  emphasis,
   imagePriority,
   item,
 }: {
+  emphasis: "lead" | "standard";
   imagePriority?: "auto" | "high";
   item: ExploreFeedItem;
 }) {
   return (
-    <div>
+    <div className="size-full">
       {item.type === "GROUP" ? (
         <ExploreGroupPlanCard
           group={item.group}
+          emphasis={emphasis}
           imagePriority={imagePriority}
+          variant="discovery"
         />
       ) : (
         <FormationOpeningCard
           opening={item.opening}
+          variant="compact"
           safetyAction={
             <FormationOpeningReportAction
               activityId={item.opening.activity.id}
@@ -168,6 +174,29 @@ function ExploreFeedItemCard({
       )}
     </div>
   );
+}
+
+function getExploreGridSlotClassName(index: number) {
+  const slot = index % 8;
+
+  switch (slot) {
+    case 0:
+      return "h-[29rem] md:col-span-7";
+    case 1:
+      return "h-[29rem] md:col-span-5";
+    case 2:
+      return "h-[24rem] md:col-span-4";
+    case 3:
+      return "h-[24rem] md:col-span-4";
+    case 4:
+      return "h-[24rem] md:col-span-4";
+    case 5:
+      return "h-[27rem] md:col-span-5";
+    case 6:
+      return "h-[27rem] md:col-span-7";
+    default:
+      return "h-[24rem] md:col-span-12";
+  }
 }
 
 function getExploreFeedItemKey(item: ExploreFeedItem) {

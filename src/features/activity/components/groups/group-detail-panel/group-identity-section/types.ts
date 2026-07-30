@@ -24,6 +24,8 @@ export interface GroupIdentitySectionProps {
   isOnline?: boolean;
   isSystemManaged?: boolean;
   groupId: string;
+  maxMembers: number;
+  memberCount: number;
   name: string;
   onEditGroup: () => void;
   plan?: Group["plan"];

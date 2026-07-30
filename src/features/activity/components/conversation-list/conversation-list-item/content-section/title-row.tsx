@@ -257,7 +257,7 @@ function SavedMessageCountPill({ count }: { count: number | undefined }) {
       tone="teal"
       size="signature"
       surface="soft"
-      className="h-3.5 min-w-3.5 px-1"
+      className="min-w-4 px-1"
       numeric
     >
       {count}

@@ -5,4 +5,7 @@ export {
   getRecommendationPreview,
   getUpcomingPreview,
 } from "./home-previews";
-export { getPlanTimingLabel } from "./plan-timing";
+export {
+  getPlanTimingLabel,
+  sortPlansByUrgency,
+} from "./plan-timing";

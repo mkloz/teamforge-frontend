@@ -9,12 +9,12 @@ interface SeeRestButtonProps {
 
 export function SeeRestButton({ hiddenItemCount }: SeeRestButtonProps) {
   return (
-    <li className="px-1 py-2 sm:px-3">
+    <li className="py-1 lg:col-span-2">
       <Button
         asChild
         variant="ghost"
         size="sm"
-        className="w-full justify-between hover:enabled:text-forge-teal"
+        className="w-auto px-2 hover:enabled:text-forge-teal"
       >
         <Link
           {...buildHomeNavigation({ notifications: true })}

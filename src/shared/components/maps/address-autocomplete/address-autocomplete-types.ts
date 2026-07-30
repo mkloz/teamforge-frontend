@@ -8,6 +8,10 @@ export interface AddressAutocompleteProps {
   disabled?: boolean;
   required?: boolean;
   badge?: string;
+  badgeAction?: {
+    ariaLabel: string;
+    onClick: () => void;
+  };
   hint?: string;
   className?: string;
 }
