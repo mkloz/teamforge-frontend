@@ -1,6 +1,7 @@
 import { ArrowRight, Check, RefreshCcw, Trash2 } from "lucide-react";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 type ResultAction = "publish" | "discard" | "delete-all" | "retake";
 
@@ -50,13 +51,18 @@ export function PersonalityResultActions({
   return (
     <section className="mt-auto flex flex-col gap-5 border-border/70 border-t pt-6">
       {isSaved ? (
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center justify-between gap-2 sm:gap-3">
           <div
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-semibold text-primary text-sm"
+            className="inline-flex min-w-0 items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-semibold text-primary text-sm"
             role="status"
           >
-            <Check size={15} strokeWidth={2.25} aria-hidden="true" />
-            Saved to profile
+            <Check
+              size={15}
+              className="shrink-0"
+              strokeWidth={2.25}
+              aria-hidden="true"
+            />
+            <span className="truncate">Saved to profile</span>
           </div>
           <DeleteAssessmentDataAction
             actionsAvailable={actionsAvailable}
@@ -64,6 +70,7 @@ export function PersonalityResultActions({
             isBusy={isBusy}
             isOnline={isOnline}
             onDeleteAll={onDeleteAll}
+            compactOnMobile
           />
         </div>
       ) : (
@@ -84,7 +91,7 @@ export function PersonalityResultActions({
         </Button>
       )}
 
-      <div className="sm:main-action-grid grid gap-3">
+      <div className="main-action-grid grid gap-3">
         <Button disabled={!canContinue || isBusy} onClick={onContinue}>
           <span className="truncate">{continueLabel}</span>
           <ArrowRight size={18} className="shrink-0" />
@@ -99,7 +106,7 @@ export function PersonalityResultActions({
           }
           loading={activeAction === "retake"}
           onClick={onRetake}
-          className="sm:min-w-32"
+          className="min-w-28 sm:min-w-32"
         >
           <RefreshCcw size={16} strokeWidth={2} />
           Retake
@@ -173,6 +180,7 @@ function DeleteAssessmentDataAction({
   actionsAvailable,
   activeAction,
   className,
+  compactOnMobile = false,
   isBusy,
   isOnline,
   onDeleteAll,
@@ -180,6 +188,7 @@ function DeleteAssessmentDataAction({
   actionsAvailable: boolean;
   activeAction: ResultAction | null;
   className?: string;
+  compactOnMobile?: boolean;
   isBusy: boolean;
   isOnline: boolean;
   onDeleteAll: () => void;
@@ -198,11 +207,17 @@ function DeleteAssessmentDataAction({
         <Button
           variant="destructive"
           size="sm"
+          aria-label="Delete all assessment data"
           disabled={!isOnline || !actionsAvailable || isBusy}
-          className={className}
+          className={cn(
+            compactOnMobile && "size-9 shrink-0 px-0 sm:h-9 sm:w-auto sm:px-4",
+            className,
+          )}
         >
           <Trash2 size={16} strokeWidth={2} />
-          Delete all assessment data
+          <span className={cn(compactOnMobile && "sr-only sm:not-sr-only")}>
+            Delete all assessment data
+          </span>
         </Button>
       }
     />

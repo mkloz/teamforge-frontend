@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import ky, { type Options } from "ky";
 
 import { config } from "@/config/config";
@@ -217,6 +218,7 @@ const rawApiClient = ky.create({
   credentials: "include",
   timeout: 15_000,
   hooks: sharedHooks,
+  fetch: scenarioRuntime.fetch,
 });
 
 export const authApi = {
@@ -244,4 +246,5 @@ export const apiClient = ky.create({
     ...sharedHooks,
     afterResponse: [handleUnauthorizedResponse],
   },
+  fetch: scenarioRuntime.fetch,
 });

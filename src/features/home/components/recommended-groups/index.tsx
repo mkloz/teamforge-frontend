@@ -46,7 +46,7 @@ function RecommendedGroupsView({
   const currentRecommendations = useUnexpiredExploreFeedItems(recommendations);
   const visibleRecommendations = getRecommendationPreview(
     currentRecommendations,
-    5,
+    4,
   );
 
   if (isRecommendationsLoading && recommendations.length === 0) {

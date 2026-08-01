@@ -1,117 +1,158 @@
 import { Link } from "@tanstack/react-router";
+import { RotateCcw, UserMinus } from "lucide-react";
+
 import { Avatar } from "@/shared/components/common/avatar";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 
 import {
   getParticipantInitials,
   getParticipantName,
-  getParticipantRoleLabel,
+  getParticipantScorePercent,
+  getParticipantTrustPercent,
 } from "./participant-utils";
 import type { ParticipantRowProps } from "./types";
 
-type ParticipantViewState = ReturnType<typeof getParticipantViewState>;
-
-export function ParticipantRow({ participant }: ParticipantRowProps) {
-  const viewState = getParticipantViewState({
-    participant,
-  });
+export function ParticipantRow({
+  participant,
+  removed,
+  highlight = false,
+  onRemoveParticipant,
+  onRestoreParticipant,
+}: ParticipantRowProps) {
+  const participantName = getParticipantName(participant);
+  const matchScore = getParticipantScorePercent(participant);
+  const trustScore = getParticipantTrustPercent(participant);
 
   return (
     <div
       className={cn(
-        "group relative flex items-center gap-3 rounded-xl px-2 py-2 transition-colors duration-150",
-        "hover:bg-muted/50",
+        "group relative flex min-h-20 items-center gap-3 px-3 py-3",
+        removed && "opacity-45",
       )}
     >
-      <ParticipantProfileLink viewState={viewState} />
-      <ParticipantAvatar participant={participant} viewState={viewState} />
-      <ParticipantIdentity viewState={viewState} />
-    </div>
-  );
-}
+      <Link
+        {...buildProfileNavigation(participant.userId)}
+        aria-label={`View ${participantName}'s profile`}
+        className="absolute inset-0 z-10 rounded-[inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+      >
+        <span className="sr-only">{`View ${participantName}'s profile`}</span>
+      </Link>
 
-function getParticipantViewState({
-  participant,
-}: {
-  participant: ParticipantRowProps["participant"];
-}) {
-  const participantName = getParticipantName(participant);
-
-  return {
-    avatarClassName: "size-10 ring-1 ring-border/40",
-    avatarFallbackClassName: "font-bold text-foreground/80 text-xs",
-    nameClassName:
-      "truncate font-black text-foreground text-sm leading-tight transition-colors",
-    participantName,
-    participantRole: getParticipantRoleLabel(participant),
-    profileNavigation: buildProfileNavigation(participant.userId),
-  };
-}
-
-function ParticipantProfileLink({
-  viewState,
-}: {
-  viewState: ParticipantViewState;
-}) {
-  return (
-    <Link
-      {...viewState.profileNavigation}
-      aria-label={`View ${viewState.participantName}'s profile`}
-      className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <span className="sr-only">
-        {`View ${viewState.participantName}'s profile`}
-      </span>
-    </Link>
-  );
-}
-
-function ParticipantAvatar({
-  participant,
-  viewState,
-}: {
-  participant: ParticipantRowProps["participant"];
-  viewState: ParticipantViewState;
-}) {
-  return (
-    <div className="relative shrink-0">
       <Avatar
         src={participant.user.avatar}
-        name={viewState.participantName}
+        name={participantName}
         fallback={getParticipantInitials(participant)}
-        className={viewState.avatarClassName}
-        fallbackClassName={viewState.avatarFallbackClassName}
+        className={cn(
+          "size-11 shrink-0 ring-1",
+          removed
+            ? "ring-border/30 grayscale"
+            : highlight
+              ? "ring-2 ring-spark-amber/55"
+              : "ring-border/45",
+        )}
+        fallbackClassName="font-bold text-foreground/80 text-xs"
       />
+
+      <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 items-center gap-2">
+          <p
+            className={cn(
+              "truncate font-black text-sm",
+              removed
+                ? "text-muted-foreground line-through"
+                : "text-foreground",
+            )}
+          >
+            {participantName}
+          </p>
+          {highlight && !removed ? (
+            <span className="shrink-0 font-bold text-[0.6875rem] text-spark-amber">
+              Best match
+            </span>
+          ) : null}
+        </div>
+
+        {removed ? (
+          <p className="mt-1 text-muted-foreground text-xs">
+            Removed from this group
+          </p>
+        ) : (
+          <>
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 text-xs">
+              <ScoreLabel
+                label="Match"
+                value={matchScore}
+                highlight={highlight}
+              />
+              <ScoreLabel label="Trust" value={trustScore} />
+            </div>
+            {matchScore !== null ? (
+              <div className="mt-2 h-1.5 max-w-56 overflow-hidden rounded-full bg-muted/55">
+                <div
+                  className={cn(
+                    "h-full rounded-full",
+                    highlight ? "bg-spark-amber" : "bg-forge-teal",
+                  )}
+                  style={{ width: `${Math.min(matchScore, 100)}%` }}
+                />
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
+
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() =>
+          removed
+            ? onRestoreParticipant(participant.userId)
+            : onRemoveParticipant(participant.userId)
+        }
+        aria-label={`${removed ? "Restore" : "Remove"} ${participantName}`}
+        title={`${removed ? "Restore" : "Remove"} ${participantName}`}
+        className={cn(
+          "relative z-20 size-8 shrink-0 rounded-full",
+          removed
+            ? "text-muted-foreground hover:text-forge-teal"
+            : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
+        )}
+      >
+        {removed ? (
+          <RotateCcw className="size-4" />
+        ) : (
+          <UserMinus className="size-4" />
+        )}
+      </Button>
     </div>
   );
 }
 
-function ParticipantIdentity({
-  viewState,
+function ScoreLabel({
+  label,
+  value,
+  highlight = false,
 }: {
-  viewState: ParticipantViewState;
+  label: string;
+  value: number | null;
+  highlight?: boolean;
 }) {
-  return (
-    <div className="min-w-0 flex-1">
-      <ParticipantNameLine viewState={viewState} />
-      <ParticipantStatus viewState={viewState} />
-    </div>
-  );
-}
+  if (value === null) return null;
 
-function ParticipantNameLine({
-  viewState,
-}: {
-  viewState: ParticipantViewState;
-}) {
-  return <p className={viewState.nameClassName}>{viewState.participantName}</p>;
-}
-
-function ParticipantStatus({ viewState }: { viewState: ParticipantViewState }) {
   return (
-    <p className="mt-0.5 text-muted-foreground text-xs">
-      {viewState.participantRole}
-    </p>
+    <span className="font-semibold text-muted-foreground">
+      {label}{" "}
+      <strong
+        className={cn(
+          "font-black tabular-nums",
+          highlight ? "text-spark-amber" : "text-foreground",
+        )}
+      >
+        {value}%
+      </strong>
+    </span>
   );
 }

@@ -1,5 +1,3 @@
-import type { ForgeMode } from "@/features/forge/lib/forge-contract";
-
 export function getStep1ContinueLabel(hasSelectedActivity: boolean) {
   return hasSelectedActivity ? "Continue to plan" : "Select a category";
 }
@@ -9,13 +7,11 @@ export function getStep6ContinueLabel(hasCoverImage: boolean) {
 }
 
 interface Step7InviteLabelParams {
-  forgeMode: ForgeMode;
   hasManualInvitees: boolean;
   isSendingInvites: boolean;
 }
 
 export function getStep7InviteLabel({
-  forgeMode,
   hasManualInvitees,
   isSendingInvites,
 }: Step7InviteLabelParams) {
@@ -23,7 +19,5 @@ export function getStep7InviteLabel({
     return "Sending...";
   }
 
-  return forgeMode === "AUTO" || !hasManualInvitees
-    ? "Finish group"
-    : "Send invitations";
+  return hasManualInvitees ? "Send invitations" : "Finish group";
 }

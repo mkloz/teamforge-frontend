@@ -23,6 +23,7 @@
   ],
   "entry": [
     "scripts/**/*.{js,mjs}",
+    "src/dev/scenarios/entry.ts",
     "test/audit/**/*.ts",
     "test/setup/**/*.ts",
     "test/unit/**/*.test.{ts,tsx}"

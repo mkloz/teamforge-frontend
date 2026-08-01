@@ -6,18 +6,22 @@ const CONTROL_POINTS = [
   {
     icon: ListChecks,
     title: "Review first",
+    detail: "See the room before you decide.",
   },
   {
     icon: Ban,
     title: "Say no clearly",
+    detail: "Decline a group that does not feel right.",
   },
   {
     icon: DoorOpen,
     title: "Leave when needed",
+    detail: "Step out when the plan no longer works.",
   },
   {
     icon: ShieldCheck,
     title: "Reliability matters",
+    detail: "Showing up as planned helps TeamForge form stronger groups.",
   },
 ] as const;
 
@@ -44,7 +48,13 @@ export function TrustControlSection() {
               You stay in control.
             </h2>
 
-            <p className="mt-8 text-pretty border-forge-teal/45 border-l-2 pl-4 font-black text-base text-white leading-relaxed">
+            <p className="mt-5 text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
+              Review a group before joining, decline it, leave when plans
+              change, or report behavior that breaks the rules. You decide what
+              happens next.
+            </p>
+
+            <p className="mt-6 text-pretty border-forge-teal/45 border-l-2 pl-4 font-black text-base text-white leading-relaxed">
               Group formation considers reliability, not popularity.
             </p>
           </div>

@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import { getBrowserNavigator } from "@/shared/lib/browser-environment";
 
 const SUPPORTED_AUDIO_MIME_TYPES = [
@@ -9,6 +10,7 @@ const SUPPORTED_AUDIO_MIME_TYPES = [
 
 function canRequestAudioStream() {
   return (
+    scenarioRuntime.allows("media") &&
     typeof getBrowserNavigator()?.mediaDevices?.getUserMedia === "function"
   );
 }

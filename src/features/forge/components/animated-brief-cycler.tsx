@@ -67,7 +67,7 @@ export function AnimatedBriefCycler() {
   return (
     <aside
       aria-label="Example activity"
-      className="overflow-hidden rounded-2xl bg-background p-0.5"
+      className="overflow-hidden rounded-2xl bg-transparent p-0.5"
     >
       {/* Header */}
       <div className="flex items-center justify-between gap-4 bg-(--grouped-menu-selected) px-4 py-3">

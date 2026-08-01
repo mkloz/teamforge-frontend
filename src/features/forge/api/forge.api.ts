@@ -7,10 +7,12 @@ import {
   type UpdateAutoForgeRequestInput,
   updateAutoForgeRequestInputSchema,
 } from "@/features/forge/schemas/auto-forge-request.schema";
+import { friendCompatibilityPreviewSchema } from "@/features/forge/schemas/forge.schemas";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import { getFriendsPage as sharedGetFriendsPage } from "@/shared/api/friendship-membership-api";
 import {
   getGroupById as sharedGetGroupById,
+  removeGroupMember as sharedRemoveGroupMember,
   updateGroup as sharedUpdateGroup,
 } from "@/shared/api/group-membership-api";
 import { createInvite as sharedCreateInvite } from "@/shared/api/invite-membership-api";
@@ -145,6 +147,24 @@ export class ForgeApi {
     });
   }
 
+  static async previewFriendCompatibility(input: {
+    candidateIds: string[];
+    groupId?: string | null;
+    groupMemberIds: string[];
+  }) {
+    const response = await apiClient
+      .post("friends/compatibility-preview", {
+        json: {
+          candidateIds: input.candidateIds,
+          groupMemberIds: input.groupMemberIds,
+          ...(input.groupId ? { groupId: input.groupId } : {}),
+        },
+      })
+      .json<unknown>();
+
+    return friendCompatibilityPreviewSchema.parse(response).items;
+  }
+
   static async getRecentActivities() {
     const response = await apiClient
       .get("activities", {
@@ -183,6 +203,10 @@ export class ForgeApi {
 
   static async updateGroup(groupId: string, payload: unknown) {
     return sharedUpdateGroup(groupId, payload);
+  }
+
+  static async removeGroupMember(groupId: string, memberId: string) {
+    return sharedRemoveGroupMember(groupId, memberId);
   }
 
   static async updatePlan(planId: string, payload: unknown) {

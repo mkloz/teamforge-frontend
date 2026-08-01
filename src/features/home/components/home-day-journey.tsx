@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { getGreeting } from "@/features/home/components/home-hero/home-hero-copy";
+import { HomeHeroNotificationButton } from "@/features/home/components/home-hero/home-hero-notification-button";
 import { useHomeViewer } from "@/features/home/hooks/use-home-viewer";
 import { cn } from "@/shared/lib/utils";
 
@@ -75,7 +76,12 @@ function HomeJourneyHeader({ firstName }: { firstName: string }) {
 
   return (
     <header className="max-w-3xl">
-      <p className="font-semibold text-forge-teal text-sm">{currentDate}</p>
+      <div className="flex items-start justify-between gap-4">
+        <p className="font-semibold text-forge-teal text-sm">{currentDate}</p>
+        <div className="shrink-0 md:hidden">
+          <HomeHeroNotificationButton />
+        </div>
+      </div>
       <h1 className="mt-2 max-w-2xl text-balance font-black text-3xl text-foreground leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
         {getGreeting(firstName)}
       </h1>

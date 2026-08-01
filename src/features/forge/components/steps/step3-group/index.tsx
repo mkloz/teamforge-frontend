@@ -1,10 +1,13 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Info } from "lucide-react";
 import { type ReactNode, useDeferredValue, useState } from "react";
 
-import { forgeFriendCandidatesQueryOptions } from "@/features/forge/api/forge-query-options";
+import {
+  forgeFriendCandidatesQueryOptions,
+  forgeFriendCompatibilityQueryOptions,
+} from "@/features/forge/api/forge-query-options";
 
 import { AutoGroupSizeRange } from "./auto-group-size-range";
 import { GroupRequestSummary } from "./group-request-summary";
@@ -52,6 +55,17 @@ export function Step3Group({
   });
   const friends = friendsData?.pages.flatMap((page) => page.items) ?? [];
   const totalFriends = friendsData?.pages[0]?.meta.totalItemsCount ?? 0;
+  const friendIds = friends.map(({ counterpart }) => counterpart.id);
+  const compatibilityQuery = useQuery({
+    ...forgeFriendCompatibilityQueryOptions({
+      candidateIds: friendIds,
+      groupMemberIds: manualInviteeIds,
+    }),
+    enabled: forgeMode === "MANUAL" && friendIds.length > 0,
+  });
+  const compatibilityByUserId = new Map(
+    compatibilityQuery.data?.map((item) => [item.userId, item]),
+  );
 
   return (
     <div className="grid gap-7 pb-6 lg:grid-cols-[minmax(0,1fr)_minmax(15rem,18rem)] lg:items-start">
@@ -65,6 +79,8 @@ export function Step3Group({
 
             <GroupSizeSection title="Choose the group">
               <ManualGroupDetails
+                compatibilityByUserId={compatibilityByUserId}
+                compatibilityPending={compatibilityQuery.isFetching}
                 fixedSize={fixedSize}
                 onFixedSizeChange={onFixedSizeChange}
                 friendSearch={friendSearch}

@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import { getAppBaseUrl } from "@/shared/lib/app-url";
 import {
   getBrowserNavigator,
@@ -21,6 +22,10 @@ export function getCurrentBrowserOrigin(fallback?: string) {
 }
 
 export function canShareBrowserData(shareData: BrowserShareData) {
+  if (!scenarioRuntime.allows("share")) {
+    return true;
+  }
+
   const browserNavigator = getBrowserNavigator();
 
   if (!browserNavigator || typeof browserNavigator.share !== "function") {
@@ -35,6 +40,10 @@ export function canShareBrowserData(shareData: BrowserShareData) {
 export async function shareBrowserData(
   shareData: BrowserShareData,
 ): Promise<BrowserShareResult> {
+  if (!scenarioRuntime.allows("share")) {
+    return "shared";
+  }
+
   if (!canShareBrowserData(shareData)) {
     return "unavailable";
   }
@@ -52,6 +61,10 @@ export async function shareBrowserData(
 }
 
 export async function copyTextToClipboard(value: string) {
+  if (!scenarioRuntime.allows("clipboard")) {
+    return true;
+  }
+
   const browserNavigator = getBrowserNavigator();
 
   if (
@@ -70,5 +83,9 @@ export async function copyTextToClipboard(value: string) {
 }
 
 export function openExternalUrl(url: string) {
+  if (!scenarioRuntime.allows("share")) {
+    return true;
+  }
+
   return openBrowserWindow(url, "_blank", "noopener,noreferrer") !== null;
 }

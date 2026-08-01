@@ -25,6 +25,11 @@ export function ResetPasswordPage() {
   return (
     <AuthSupportShell
       title={success ? "Password updated" : "Choose a new password"}
+      description={
+        success
+          ? "Your new password is ready to use."
+          : "This password will replace the old one for your TeamForge account."
+      }
       backNavigation={buildAuthRouteNavigation("/auth/login", returnTo)}
       backLabel="Back to login"
     >
@@ -32,12 +37,14 @@ export function ResetPasswordPage() {
 
       {success ? (
         <p className="text-center text-slate-muted text-sm" role="status">
+          Your password has been updated.{" "}
           <Link
             {...buildAuthRouteNavigation("/auth/login", returnTo)}
             className="font-medium text-forge-teal hover:underline"
           >
-            Sign in
+            Sign in now
           </Link>
+          .
         </p>
       ) : (
         <ResetPasswordForm

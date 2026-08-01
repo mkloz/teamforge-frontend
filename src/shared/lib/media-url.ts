@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import { config } from "@/config/config";
 import { normalizeBaseUrl } from "@/shared/lib/url-normalization";
 
@@ -15,6 +16,12 @@ function getMediaBaseUrl(path: string) {
 }
 
 export function buildMediaUrl(path: string) {
+  const scenarioMediaUrl = scenarioRuntime.resolveMediaUrl(path);
+
+  if (scenarioMediaUrl) {
+    return scenarioMediaUrl;
+  }
+
   const baseUrl = getMediaBaseUrl(path);
 
   if (!baseUrl) {

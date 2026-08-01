@@ -10,6 +10,7 @@ import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import {
   getGroupById as sharedGetGroupById,
   leaveGroup as sharedLeaveGroup,
+  removeGroupMember as sharedRemoveGroupMember,
   updateGroup as sharedUpdateGroup,
 } from "@/shared/api/group-membership-api";
 import { groupApiSchema } from "@/shared/schemas";
@@ -42,13 +43,7 @@ export async function leaveActivityGroup(groupId: string) {
 }
 
 export async function removeGroupMember(groupId: string, memberId: string) {
-  const response = await apiClient.post(`groups/${groupId}/remove-member`, {
-    json: { memberId },
-  });
-
-  return parseJsonWithRequestId(response, (value) =>
-    groupApiSchema.parse(value),
-  );
+  return sharedRemoveGroupMember(groupId, memberId);
 }
 
 export async function disbandGroup(groupId: string) {

@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import { AppErrorListeners } from "@/app/runtime/app-error-listeners";
 import { AppRealtimeSync } from "@/app/runtime/app-realtime-sync";
 import { AppRoutePreloadRuntime } from "@/app/runtime/app-route-preload-runtime";
@@ -9,11 +10,13 @@ export function AppRuntime() {
   return (
     <>
       <AppErrorListeners />
-      <PwaRuntime />
+      {scenarioRuntime.allows("pwa") ? <PwaRuntime /> : null}
       <AuthSessionRedirect />
       <ThemePreferencesRuntime />
-      <AppRoutePreloadRuntime />
-      <AppRealtimeSync />
+      {scenarioRuntime.allows("route-preload") ? (
+        <AppRoutePreloadRuntime />
+      ) : null}
+      {scenarioRuntime.allows("realtime") ? <AppRealtimeSync /> : null}
     </>
   );
 }

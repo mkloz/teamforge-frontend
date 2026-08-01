@@ -1,7 +1,6 @@
 import { UserPlus } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
-import { IconTile } from "@/shared/components/ui/icon-tile";
 
 interface FailureRecoveryActionsProps {
   onSwitchToManual?: () => void;
@@ -11,21 +10,18 @@ export function FailureRecoveryActions({
   onSwitchToManual,
 }: FailureRecoveryActionsProps) {
   return (
-    <section className="overflow-hidden rounded-lg border border-border/35 bg-card/60">
+    <section className="rounded-xl border border-border/60 border-dashed">
       {onSwitchToManual && (
-        <div className="flex items-start gap-3 p-3.5">
-          <IconTile
-            icon={UserPlus}
-            tone="teal"
-            size="lg"
-            className="size-9 bg-forge-teal/12"
-            iconClassName="size-4"
+        <div className="flex min-h-36 flex-col items-center justify-center px-5 py-6 text-center">
+          <UserPlus
+            className="size-5 text-muted-foreground"
+            aria-hidden="true"
           />
-          <div className="min-w-0 flex-1">
+          <div className="mt-3 min-w-0">
             <p className="font-black text-foreground text-sm leading-tight">
               Invite people manually
             </p>
-            <p className="mt-1 text-muted-foreground text-xs leading-snug">
+            <p className="mx-auto mt-1.5 max-w-md text-muted-foreground text-xs leading-relaxed">
               Keep this plan and switch to invite mode instead of rebuilding it
               from scratch.
             </p>
@@ -33,7 +29,7 @@ export function FailureRecoveryActions({
           <Button
             variant="outline"
             size="xs"
-            className="h-8 shrink-0"
+            className="mt-4 h-9 shrink-0"
             onClick={onSwitchToManual}
           >
             <UserPlus className="size-3.5" aria-hidden="true" />

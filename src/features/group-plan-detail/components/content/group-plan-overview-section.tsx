@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import {
   Banknote,
   CalendarClock,
@@ -483,7 +484,7 @@ function getCalendarParts(value: string | null): CalendarParts | null {
 }
 
 function getGoogleStaticMapUrl(latitude: number, longitude: number) {
-  if (!config.googleMapsApiKey) {
+  if (!scenarioRuntime.allows("maps") || !config.googleMapsApiKey) {
     return null;
   }
 

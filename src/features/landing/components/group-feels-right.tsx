@@ -51,6 +51,11 @@ export function GroupFeelsRightSection() {
           >
             TeamForge considers more than shared interests.
           </h2>
+          <p className="mx-auto mt-5 max-w-3xl text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
+            Shared interests help, but they are not enough. TeamForge also
+            considers social pace, practical fit, and follow-through, so the
+            group has enough common ground to start well.
+          </p>
         </header>
 
         <div className="relative mt-8 mb-6 overflow-hidden border-white/10 border-t md:mt-10">

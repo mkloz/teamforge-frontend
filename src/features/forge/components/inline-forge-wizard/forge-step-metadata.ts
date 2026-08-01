@@ -21,7 +21,7 @@ export function getForgeStepMetadata(fw: ForgeWizardState) {
           ? "Your request is active"
           : fw.forgeResult === "FAILED"
             ? "No group yet"
-            : "We found a group!",
+            : "Group ready",
     },
     6: {
       title: "Group details",

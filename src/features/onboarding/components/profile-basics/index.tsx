@@ -35,7 +35,8 @@ export function ProfileBasicsCard({
           <span className="text-forge-teal">.</span>
         </h1>
         <p className="mt-1 max-w-sm text-center font-sans text-slate-muted text-xs sm:mt-2 sm:text-base">
-          Add the details TeamForge needs to continue.
+          Add the details TeamForge uses to check eligibility, shape nearby
+          groups, and complete your profile.
         </p>
       </div>
 

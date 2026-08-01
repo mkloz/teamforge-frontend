@@ -12,7 +12,7 @@ export function Step4Failed({ forgeMode, onSwitchToManual }: Step4FailedProps) {
 
   return (
     <div className="flex flex-col gap-5 pb-10">
-      <FailureHero description={content.description} />
+      <FailureHero title={content.title} description={content.description} />
       <FailureReasons context={content.context} reasons={content.reasons} />
       <FailureSuggestions suggestions={content.suggestions} />
 
@@ -20,7 +20,7 @@ export function Step4Failed({ forgeMode, onSwitchToManual }: Step4FailedProps) {
         <FailureRecoveryActions onSwitchToManual={onSwitchToManual} />
       )}
 
-      <p className="border-border/30 border-t pt-4 text-center text-muted-foreground text-xs leading-relaxed">
+      <p className="px-2 text-center text-muted-foreground text-xs leading-relaxed">
         Use <span className="font-semibold text-foreground">Try again</span> to
         return to group setup with your plan intact.
       </p>

@@ -12,11 +12,13 @@ function mapGroupMemberToParticipant(
     role: member.role,
     joinedAt: member.joinedAt,
     leftAt: member.leftAt,
+    compatibilityScore: member.compatibilityScore,
     sortOrder: index,
     user: {
       id: member.user.id,
       name: member.user.name,
       avatar: member.user.avatar,
+      trustScore: member.user.trustScore,
     },
   };
 }

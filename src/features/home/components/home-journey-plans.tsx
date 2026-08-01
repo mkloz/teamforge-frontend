@@ -163,24 +163,24 @@ function FeaturedJourneyPlan({ plannedGroup }: { plannedGroup: PlannedGroup }) {
           weekday={cornerDate.weekday}
         />
 
-        <div className="absolute right-4 bottom-19 left-4 min-w-0 sm:right-5 sm:bottom-20 sm:left-5">
-          <h3 className="max-w-[85%] text-balance font-black text-2xl text-white leading-[1.05] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] transition-colors group-hover:text-forge-teal sm:text-3xl">
-            {plan.title}
-          </h3>
-          {groupContext ? (
-            <p className="mt-1 hidden min-w-0 truncate font-semibold text-white/70 text-xs sm:block">
-              {groupContext}
-            </p>
-          ) : null}
-        </div>
+        <div className="absolute inset-x-0 bottom-0 flex min-w-0 flex-col">
+          <div className="min-w-0 px-4 pb-3 sm:px-5">
+            <h3 className="max-w-[85%] text-balance font-black text-2xl text-white leading-[1.05] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] transition-colors group-hover:text-forge-teal sm:text-3xl">
+              {plan.title}
+            </h3>
+            {groupContext ? (
+              <p className="mt-1 hidden min-w-0 truncate font-semibold text-white/70 text-xs sm:block">
+                {groupContext}
+              </p>
+            ) : null}
+          </div>
 
-        <div className="absolute inset-x-0 bottom-0 grid min-h-16 gap-1.5 border-white/20 border-t bg-white/8 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm backdrop-saturate-150 sm:px-5">
-          <PlanFact
-            icon={CalendarDays}
-            inverse
-            label={getFooterScheduleLabel(plan)}
-          />
-          <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5 border-white/20 border-t bg-white/8 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm backdrop-saturate-150 sm:px-5">
+            <PlanFact
+              icon={CalendarDays}
+              inverse
+              label={getFooterScheduleLabel(plan)}
+            />
             <PlanFact
               icon={plan.locationMode === "ONLINE" ? Wifi : Route}
               inverse

@@ -1,42 +1,54 @@
-import { SlidersHorizontal } from "lucide-react";
+import { BadgeAlert, RefreshCcw, Send } from "lucide-react";
 
-import { IconTile } from "@/shared/components/ui/icon-tile";
+import {
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
 
 interface FailureReasonsProps {
   context: string;
   reasons: readonly string[];
 }
 
+const REASON_ICONS = [Send, BadgeAlert, RefreshCcw] as const;
+
 export function FailureReasons({ context, reasons }: FailureReasonsProps) {
   return (
-    <section className="flex flex-col gap-3">
-      <div className="flex items-center gap-2 px-0.5">
-        <IconTile icon={SlidersHorizontal} tone="neutral" size="sm" />
-        <div className="min-w-0">
-          <p className="font-semibold text-muted-foreground text-xs leading-none">
-            What to review
-          </p>
-          <p className="mt-1 text-muted-foreground/55 text-xs leading-none">
-            {context}
-          </p>
-        </div>
+    <section
+      aria-labelledby="failure-reasons-heading"
+      className="flex flex-col gap-3"
+    >
+      <div className="px-1">
+        <h3
+          id="failure-reasons-heading"
+          className="font-black text-foreground text-lg tracking-tight"
+        >
+          What may have happened
+        </h3>
+        <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
+          {context}
+        </p>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
-        {reasons.map((reason, index) => (
-          <div
-            key={reason}
-            className="rounded-lg border border-border/40 bg-card/75 p-3"
-          >
-            <span className="font-black text-spark-amber text-xs tabular-nums">
-              0{index + 1}
-            </span>
-            <p className="mt-2 font-medium text-muted-foreground text-xs leading-snug">
-              {reason}
-            </p>
-          </div>
-        ))}
-      </div>
+      <GroupedMenuList aria-label="Possible reasons">
+        {reasons.map((reason, index) => {
+          const Icon = REASON_ICONS[index] ?? BadgeAlert;
+
+          return (
+            <GroupedMenuItem key={reason}>
+              <div className="flex min-h-14 items-center gap-3 px-3.5 py-3">
+                <Icon
+                  aria-hidden="true"
+                  className="size-4 shrink-0 text-muted-foreground"
+                />
+                <p className="font-semibold text-foreground text-sm leading-snug">
+                  {reason}
+                </p>
+              </div>
+            </GroupedMenuItem>
+          );
+        })}
+      </GroupedMenuList>
     </section>
   );
 }

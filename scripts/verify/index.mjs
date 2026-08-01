@@ -112,6 +112,7 @@ function getTasks(mode) {
       createKnipTask(),
       createAuditTask(),
       createBuildBundleTask(mode),
+      createScenarioBoundaryTask(),
     );
   }
 
@@ -283,6 +284,18 @@ function createBuildBundleTask(mode) {
 }
 
 /**
+ * @returns {TaskSpec} Scenario production-exclusion task.
+ */
+function createScenarioBoundaryTask() {
+  return {
+    deps: ["bundle"],
+    id: "scenario-boundary",
+    label: "Scenario production boundary",
+    spec: resolveNodeScript("scripts/scenario/check-production-boundary.mjs"),
+  };
+}
+
+/**
  * @returns {NodeJS.ProcessEnv} Local-safe Vite env for PR bundle verification.
  */
 function getPrBuildEnv() {
@@ -319,7 +332,7 @@ function createPwaEnvTask() {
  */
 function createPwaQaTask() {
   return {
-    deps: ["bundle"],
+    deps: ["scenario-boundary"],
     id: "pwa-qa",
     label: "PWA QA",
     spec: resolveNodeScript("scripts/pwa/qa.mjs"),

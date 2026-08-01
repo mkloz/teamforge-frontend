@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import type { WebPushSubscriptionPayload } from "@/shared/api/web-push";
 import {
   decodeBrowserBase64,
@@ -92,6 +93,10 @@ class WebPushBrowserError extends Error {
 }
 
 export function getWebPushSupport(): WebPushSupport {
+  if (!scenarioRuntime.allows("push")) {
+    return { isSupported: false, reason: "service-worker-unavailable" };
+  }
+
   const failedCheck = WEB_PUSH_SUPPORT_CHECKS.find((check) =>
     check.isUnavailable(),
   );

@@ -18,6 +18,12 @@ interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
+declare module "virtual:teamforge-scenario-runtime" {
+  import type { ScenarioRuntimeFacade } from "@/shared/runtime/scenario-runtime-contract";
+
+  export const scenarioRuntime: ScenarioRuntimeFacade;
+}
+
 declare module "lucide-react/dist/esm/icons/*.js" {
   import type { LucideIcon } from "lucide-react";
 

@@ -1,4 +1,5 @@
 import type { UseForgeWizardSubmitActionsOptions } from "./types";
+import { useApplyParticipantSelectionAction } from "./use-apply-participant-selection-action";
 import { useEnterForgeGroupHubAction } from "./use-enter-forge-group-hub-action";
 import { useForgeExecutionActions } from "./use-forge-execution-actions";
 import { useSaveForgeIdentityAction } from "./use-save-forge-identity-action";
@@ -23,6 +24,10 @@ export function useForgeWizardSubmitActions({
     syncStep,
     syncTargets,
   });
+  const participantSelectionAction = useApplyParticipantSelectionAction({
+    goNext,
+    state,
+  });
   const identityAction = useSaveForgeIdentityAction({ goNext, state });
   const inviteAction = useSendForgeInvitesAction({ setField, state });
   const handleEnterGroupHub = useEnterForgeGroupHubAction({
@@ -33,6 +38,7 @@ export function useForgeWizardSubmitActions({
 
   return {
     ...forgeExecutionActions,
+    ...participantSelectionAction,
     handleEnterGroupHub,
     ...identityAction,
     ...inviteAction,

@@ -17,6 +17,32 @@ export function forgeFriendCandidatesQueryOptions(search: string) {
   });
 }
 
+export function forgeFriendCompatibilityQueryOptions(input: {
+  candidateIds: string[];
+  groupId?: string | null;
+  groupMemberIds: string[];
+}) {
+  const candidateIds = [...new Set(input.candidateIds)].sort();
+  const groupMemberIds = [...new Set(input.groupMemberIds)].sort();
+
+  return queryOptions({
+    queryKey: [
+      ...APP_QUERY_KEYS.forge.friends,
+      "compatibility",
+      input.groupId ?? null,
+      candidateIds,
+      groupMemberIds,
+    ] as const,
+    queryFn: () =>
+      ForgeApi.previewFriendCompatibility({
+        candidateIds,
+        groupId: input.groupId,
+        groupMemberIds,
+      }),
+    staleTime: 60_000,
+  });
+}
+
 export function forgeRecentActivitiesQueryOptions() {
   return queryOptions({
     queryKey: APP_QUERY_KEYS.forge.recentActivities,

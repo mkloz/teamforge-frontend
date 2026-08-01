@@ -200,6 +200,49 @@ export function useForgeWizard({
 
   function handleRestoreParticipant(id: string) {
     dispatch({ type: "restore-participant", userId: id });
+
+    const targetSize =
+      state.forgeMode === "AUTO" ? state.autoMaxSize : state.fixedSize;
+    const activeParticipantCountAfterRestore = state.participants.filter(
+      (participant) =>
+        participant.userId === id || !state.removedIds.has(participant.userId),
+    ).length;
+    const availableInviteSlots = Math.max(
+      0,
+      targetSize - 1 - activeParticipantCountAfterRestore,
+    );
+
+    if (state.manualInviteeIds.length > availableInviteSlots) {
+      setField(
+        "manualInviteeIds",
+        state.manualInviteeIds.slice(0, availableInviteSlots),
+      );
+    }
+  }
+
+  function handleResultInviteeToggle(inviteeId: string) {
+    const alreadySelected = state.manualInviteeIds.includes(inviteeId);
+    if (alreadySelected) {
+      setField(
+        "manualInviteeIds",
+        state.manualInviteeIds.filter((id) => id !== inviteeId),
+      );
+      return;
+    }
+
+    const targetSize =
+      state.forgeMode === "AUTO" ? state.autoMaxSize : state.fixedSize;
+    const activeParticipantCount = state.participants.filter(
+      (participant) => !state.removedIds.has(participant.userId),
+    ).length;
+    const availableInviteSlots = Math.max(
+      0,
+      targetSize - 1 - activeParticipantCount,
+    );
+
+    if (state.manualInviteeIds.length < availableInviteSlots) {
+      setField("manualInviteeIds", [...state.manualInviteeIds, inviteeId]);
+    }
   }
 
   function handleReforge() {
@@ -251,6 +294,7 @@ export function useForgeWizard({
     close,
     handleRemoveParticipant,
     handleRestoreParticipant,
+    handleResultInviteeToggle,
     handleReforge,
     handleCopyLink,
   };

@@ -10,6 +10,7 @@ import { defineConfig, loadEnv } from "vite";
 import type { ManifestOptions } from "vite-plugin-pwa";
 import { VitePWA } from "vite-plugin-pwa";
 import { changedFileLintPlugin } from "./scripts/lint/vite-changed-file-lint-plugin";
+import { scenarioRuntimePlugin } from "./scripts/vite/scenario-runtime-plugin";
 import { normalizeBaseUrl } from "./src/shared/lib/url-normalization";
 
 const teamForgeManifest = {
@@ -635,13 +636,15 @@ function assertRequiredPublicBuildEnv({
   appUrl,
   command,
   mediaBaseUrl,
+  scenarioMode,
 }: {
   apiUrl: string | null;
   appUrl: string | null;
   command: string;
   mediaBaseUrl: string | null;
+  scenarioMode: boolean;
 }) {
-  if (command !== "build") {
+  if (command !== "build" || scenarioMode) {
     return;
   }
 
@@ -668,6 +671,7 @@ function getReactPluginOptions(command: string) {
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
+  const isScenarioMode = mode === "scenario";
   const env = loadEnv(mode, process.cwd(), "");
   const appUrl = normalizeBaseUrl(env.VITE_APP_URL);
   const apiUrl = normalizeBaseUrl(env.VITE_API_URL);
@@ -676,15 +680,35 @@ export default defineConfig(({ command, mode }) => {
   const shouldUploadSentrySourcemaps =
     getSentrySourcemapUploadConfig() !== null;
 
-  assertRequiredPublicBuildEnv({ apiUrl, appUrl, command, mediaBaseUrl });
+  assertRequiredPublicBuildEnv({
+    apiUrl,
+    appUrl,
+    command,
+    mediaBaseUrl,
+    scenarioMode: isScenarioMode,
+  });
 
   return {
     plugins: [
       react(getReactPluginOptions(command)),
       tailwindcss(),
-      teamForgePublicHostPlugin({ apiUrl, appUrl, mediaBaseUrl, sentryDsn }),
-      teamForgeManifestDevPlugin(),
+      scenarioRuntimePlugin({
+        includeRuntime:
+          (command === "serve" && mode !== "test") || isScenarioMode,
+      }),
+      ...(!isScenarioMode
+        ? [
+            teamForgePublicHostPlugin({
+              apiUrl,
+              appUrl,
+              mediaBaseUrl,
+              sentryDsn,
+            }),
+            teamForgeManifestDevPlugin(),
+          ]
+        : []),
       VitePWA({
+        disable: isScenarioMode,
         registerType: "prompt",
         injectRegister: null,
         includeAssets: [
@@ -756,7 +780,7 @@ export default defineConfig(({ command, mode }) => {
         },
       }),
       changedFileLintPlugin(),
-      ...getSentryBuildPlugins(command),
+      ...(isScenarioMode ? [] : getSentryBuildPlugins(command)),
     ],
     server: {
       port: 3000,
@@ -779,7 +803,8 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     build: {
-      sourcemap: shouldUploadSentrySourcemaps,
+      outDir: isScenarioMode ? "dev-dist/scenario" : "dist",
+      sourcemap: isScenarioMode ? false : shouldUploadSentrySourcemaps,
       rollupOptions: {
         output: {
           manualChunks(id) {

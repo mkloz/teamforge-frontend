@@ -6,14 +6,17 @@ const SECTION_NOTES = [
   {
     icon: MousePointer2,
     title: "Start with the activity",
+    detail: "Start with the thing you would actually show up for.",
   },
   {
     icon: CalendarClock,
     title: "Add the plan details",
+    detail: "Add a date, time, and location.",
   },
   {
     icon: MessageCircle,
     title: "Open one room",
+    detail: "One small group forms around the plan, not another list.",
   },
 ] as const;
 
@@ -40,6 +43,10 @@ export function PlanToGroupSection() {
               One plan. One compatible group.
             </h2>
           </header>
+          <p className="max-w-xl text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg lg:col-span-5 lg:col-start-8">
+            Choose the activity, add the plan details, and let TeamForge handle
+            the group setup. You get one room for one plan.
+          </p>
         </div>
       </div>
 

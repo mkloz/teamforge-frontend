@@ -3,7 +3,9 @@ import type { ForgeMode } from "@/features/forge/lib/forge-contract";
 import type { Step4FailedContent } from "./types";
 
 const AUTO_FAILED_CONTENT = {
-  description: "We couldn't start or confirm this group request.",
+  title: "We couldn't complete the search",
+  description:
+    "No group was changed. Your plan is still here and ready to adjust.",
   context: "Review the activity details, then try the request again.",
   reasons: [
     "The request may not have reached TeamForge.",
@@ -18,7 +20,9 @@ const AUTO_FAILED_CONTENT = {
 } as const satisfies Step4FailedContent;
 
 const MANUAL_FAILED_CONTENT = {
-  description: "We couldn't form the group with the people you selected.",
+  title: "This group needs a different lineup",
+  description:
+    "Nobody was added. Your plan and selected people are still here.",
   context:
     "The selected people and group size determine whether this can work.",
   reasons: [

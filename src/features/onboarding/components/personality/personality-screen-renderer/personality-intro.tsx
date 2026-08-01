@@ -32,6 +32,10 @@ export function PersonalityIntro({
       </h1>
 
       <div className="text-left">
+        <p className="mb-3 text-pretty font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-base">
+          You will answer questions about how you usually think, feel, and act.
+          TeamForge calculates the result after you finish.
+        </p>
         <p className="mb-6 text-pretty font-sans text-muted-foreground text-xs leading-relaxed">
           The questions come from the public-domain International Personality
           Item Pool. The result is an estimate, not a diagnosis.

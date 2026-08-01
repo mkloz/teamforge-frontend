@@ -15,21 +15,14 @@ import {
   hasBrowserWindow,
 } from "@/shared/lib/browser-environment";
 import {
-  cancelDelay,
   cancelIdleTask,
-  scheduleDelay,
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
-import { areDevelopmentToolsEnabled } from "@/shared/lib/development-tools";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import { APP_TOAST_HOST_REQUEST_EVENT } from "@/shared/lib/toast-host-events";
 import { useInitializeTheme, useThemeStore } from "@/shared/store/theme.store";
 
 type ToasterCssProperties = CSSProperties & Record<`--${string}`, string>;
-type ReactQueryDevtoolsProps = {
-  initialIsOpen?: boolean;
-};
-
 const TOASTER_STYLE = {
   "--border-radius": "0.5rem",
   "--error-bg": "color-mix(in srgb, var(--destructive) 8%, var(--card))",
@@ -72,12 +65,6 @@ const TOASTER_PROPS = {
   },
 } satisfies ToasterProps;
 
-async function loadReactQueryDevtoolsComponent() {
-  const { ReactQueryDevtools } = await import("@tanstack/react-query-devtools");
-
-  return ReactQueryDevtools;
-}
-
 async function loadToasterComponent() {
   const { Toaster } = await import("sonner");
   const ToasterComponent: ComponentType<ToasterProps> = Toaster;
@@ -91,73 +78,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={appQueryClient}>
       {children}
-      {areDevelopmentToolsEnabled() ? <DeferredReactQueryDevtools /> : null}
       <DeferredToaster />
     </QueryClientProvider>
   );
-}
-
-function DeferredReactQueryDevtools() {
-  const [DevtoolsComponent, setDevtoolsComponent] =
-    useState<ComponentType<ReactQueryDevtoolsProps> | null>(null);
-
-  useEffect(() => {
-    if (!hasBrowserWindow() || DevtoolsComponent) {
-      return undefined;
-    }
-
-    let cancelled = false;
-    let requested = false;
-    let idleTask: ReturnType<typeof scheduleIdleTask> | undefined;
-
-    async function loadDevtools() {
-      try {
-        const ReactQueryDevtools = await loadReactQueryDevtoolsComponent();
-
-        if (!cancelled) {
-          setDevtoolsComponent(() => ReactQueryDevtools);
-        }
-      } catch (error) {
-        warnInDevelopment("React Query devtools failed to initialize.", error);
-      }
-    }
-
-    function requestDevtools() {
-      if (requested) {
-        return;
-      }
-
-      requested = true;
-      cancelDelay(delayTask);
-      idleTask = scheduleIdleTask(() => {
-        void loadDevtools();
-      });
-    }
-
-    const delayTask = scheduleDelay(requestDevtools, 60_000);
-    const cleanupKeydown = addBrowserWindowEventListener(
-      "keydown",
-      requestDevtools,
-      { once: true },
-    );
-    const cleanupPointerDown = addBrowserWindowEventListener(
-      "pointerdown",
-      requestDevtools,
-      { once: true },
-    );
-
-    return () => {
-      cancelled = true;
-      cancelDelay(delayTask);
-      cleanupKeydown();
-      cleanupPointerDown();
-      if (idleTask) {
-        cancelIdleTask(idleTask);
-      }
-    };
-  }, [DevtoolsComponent]);
-
-  return DevtoolsComponent ? <DevtoolsComponent initialIsOpen={false} /> : null;
 }
 
 function DeferredToaster() {

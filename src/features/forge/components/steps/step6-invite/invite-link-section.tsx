@@ -12,7 +12,10 @@ import {
 import { cn } from "@/shared/lib/utils";
 
 interface InviteLinkSectionProps {
+  className?: string;
+  description?: string;
   groupId: string | null;
+  heading?: string;
   inviteCopied: boolean;
   onCopyLink: () => void;
 }
@@ -22,7 +25,10 @@ interface InviteLinkState {
 }
 
 export function InviteLinkSection({
+  className,
+  description = "Anyone you invite can open the group from this link.",
   groupId,
+  heading = "Share the group",
   inviteCopied,
   onCopyLink,
 }: InviteLinkSectionProps) {
@@ -33,16 +39,19 @@ export function InviteLinkSection({
   };
 
   return (
-    <section aria-labelledby="share-group-heading" className="mt-7">
+    <section
+      aria-labelledby="share-group-heading"
+      className={cn("mt-7", className)}
+    >
       <div>
         <h3
           id="share-group-heading"
           className="font-black text-foreground text-lg tracking-tight"
         >
-          Share the group
+          {heading}
         </h3>
         <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
-          Anyone you invite can open the group from this link.
+          {description}
         </p>
       </div>
 

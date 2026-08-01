@@ -1,11 +1,9 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { App } from "@/app/app";
 import { redirectLocalIpToLocalhost } from "@/shared/lib/local-host-canonical-url";
 import { initializeTelemetry } from "@/shared/lib/telemetry";
 import "./index.css";
-
-void initializeTelemetry();
 
 const BRANDED_BOOT_DURATION_MS = 2_000;
 const FAST_BOOT_DURATION_MS = 0;
@@ -39,7 +37,7 @@ function getBootRenderDelay() {
 }
 
 function getMinimumBootDurationMs() {
-  if (isAuditAuthEnabled()) {
+  if (isAuditAuthEnabled() || scenarioRuntime.isActive()) {
     return FAST_BOOT_DURATION_MS;
   }
 
@@ -61,7 +59,17 @@ function getMinimumBootDurationMs() {
 }
 
 async function renderApp() {
-  if (isAuditAuthEnabled()) {
+  await scenarioRuntime.bootstrap();
+
+  const bootRenderDelay = getBootRenderDelay();
+
+  if (bootRenderDelay > 0) {
+    await new Promise<void>((resolve) => {
+      window.setTimeout(resolve, bootRenderDelay);
+    });
+  }
+
+  if (isAuditAuthEnabled() && !scenarioRuntime.isActive()) {
     const { bootstrapAuditAuthSession } = await import(
       "@/app/runtime/audit-auth-bootstrap"
     );
@@ -69,21 +77,22 @@ async function renderApp() {
     await bootstrapAuditAuthSession();
   }
 
+  if (scenarioRuntime.allows("telemetry")) {
+    await initializeTelemetry();
+  }
+
+  const [{ App }, DevelopmentTools] = await Promise.all([
+    import("@/app/app"),
+    scenarioRuntime.loadDevelopmentTools(),
+  ]);
+
   ReactDOM.createRoot(appRootElement).render(
     <StrictMode>
-      <App />
+      <App DevelopmentTools={DevelopmentTools} />
     </StrictMode>,
   );
 }
 
 if (!isRedirectingToLocalhost) {
-  const bootRenderDelay = getBootRenderDelay();
-
-  if (bootRenderDelay > 0) {
-    window.setTimeout(() => {
-      void renderApp();
-    }, bootRenderDelay);
-  } else {
-    void renderApp();
-  }
+  void renderApp();
 }

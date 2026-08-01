@@ -6,7 +6,10 @@ import type {
   PlanScheduleMode,
 } from "@/shared/schemas/enums";
 
-export type { ForgeParticipant } from "../schemas/forge.schemas";
+export type {
+  ForgeParticipant,
+  FriendCompatibilityPreview,
+} from "../schemas/forge.schemas";
 export type { ForgeMode, PlanCategory, PlanScheduleMode };
 export type Visibility = ActivityVisibility;
 export type LocationType = LocationMode;

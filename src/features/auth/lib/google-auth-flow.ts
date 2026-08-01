@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import {
   getBrowserDocument,
   getBrowserWindow,
@@ -32,6 +33,15 @@ function getGoogleIdentityServices() {
 }
 
 function loadGoogleIdentityScript() {
+  if (!scenarioRuntime.allows("google-auth")) {
+    return Promise.reject(
+      new GoogleAuthFlowError(
+        "Google sign-in is disabled while Scenario Mode is active.",
+        "gsi-load",
+      ),
+    );
+  }
+
   const loadedGoogle = getGoogleIdentityServices();
 
   if (loadedGoogle?.accounts?.oauth2) {

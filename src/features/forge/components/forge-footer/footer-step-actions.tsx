@@ -115,12 +115,20 @@ function getAutoForgeActionLabel(fw: ForgeFooterChildProps["fw"]) {
 }
 
 export function Step5SuccessFooterAction({ fw }: ForgeFooterChildProps) {
+  const participantCount =
+    fw.activeParticipants.length + fw.manualInviteeIds.length + 1;
+
   return (
     <FooterActionMotion motionKey="s5s">
       <PrimaryButton
-        label="Continue to group details"
+        label={
+          fw.isApplyingParticipantSelection
+            ? "Updating group…"
+            : `Continue with ${participantCount} ${participantCount === 1 ? "person" : "people"}`
+        }
         icon={<ChevronRight size={16} />}
-        onClick={fw.goNext}
+        onClick={() => void fw.handleContinueFromSuccess()}
+        disabled={fw.isApplyingParticipantSelection}
       />
     </FooterActionMotion>
   );
@@ -172,7 +180,6 @@ export function Step7FooterAction({ fw }: ForgeFooterChildProps) {
       {!fw.invitesSent ? (
         <PrimaryButton
           label={getStep7InviteLabel({
-            forgeMode: fw.forgeMode,
             hasManualInvitees: fw.manualInviteeIds.length > 0,
             isSendingInvites: fw.isSendingInvites,
           })}

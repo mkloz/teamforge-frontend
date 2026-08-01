@@ -6,6 +6,7 @@ export interface Step4FailedProps {
 }
 
 export interface Step4FailedContent {
+  title: string;
   description: string;
   context: string;
   reasons: readonly string[];

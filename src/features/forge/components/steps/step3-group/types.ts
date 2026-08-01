@@ -2,6 +2,7 @@ import type {
   FixedGroupSize,
   ForgeMode,
   ForgeScope,
+  FriendCompatibilityPreview,
   LocationType,
   PlanScheduleMode,
   Visibility,
@@ -34,6 +35,8 @@ export interface Step3GroupProps {
 }
 
 export interface ManualGroupDetailsProps {
+  compatibilityByUserId: ReadonlyMap<string, FriendCompatibilityPreview>;
+  compatibilityPending: boolean;
   fixedSize: FixedGroupSize;
   friends: FriendshipApi[];
   friendSearch: string;

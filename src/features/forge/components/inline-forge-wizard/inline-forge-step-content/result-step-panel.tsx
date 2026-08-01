@@ -13,7 +13,26 @@ export function ResultStepPanel({ actions, fw }: ResultStepPanelProps) {
 
   if (fw.forgeResult === "SUCCESS") {
     return (
-      <Step4Success planTitle={fw.planName} participants={fw.participants} />
+      <Step4Success
+        groupId={fw.groupId}
+        groupName={fw.groupName}
+        inviteCopied={fw.inviteCopied}
+        manualInviteeIds={fw.manualInviteeIds}
+        locationType={fw.locationType}
+        onCopyLink={fw.handleCopyLink}
+        onManualInviteeToggle={fw.handleResultInviteeToggle}
+        planTitle={fw.planName}
+        planDate={fw.planDate}
+        planLocation={fw.planLocation}
+        planScheduleMode={fw.planScheduleMode}
+        planTime={fw.planTime}
+        participants={fw.participants}
+        removedIds={fw.removedIds}
+        targetSize={fw.forgeMode === "AUTO" ? fw.autoMaxSize : fw.fixedSize}
+        onRemoveParticipant={fw.handleRemoveParticipant}
+        onRestoreParticipant={fw.handleRestoreParticipant}
+        onReforge={fw.handleReforge}
+      />
     );
   }
 

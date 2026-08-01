@@ -82,12 +82,12 @@ function HandoffStepItem({
 }
 
 function getInviteNoteViewState({ forgeMode, inviteeCount }: InviteNoteProps) {
-  const manual = forgeMode === "MANUAL";
+  const hasInvites = inviteeCount > 0;
 
   return {
-    statusText: manual ? getInviteText(inviteeCount) : "Ready",
-    statusTone: manual ? ("amber" as const) : ("teal" as const),
-    steps: getHandoffSteps(manual),
+    statusText: hasInvites ? getInviteText(inviteeCount) : "Ready",
+    statusTone: hasInvites ? ("amber" as const) : ("teal" as const),
+    steps: getHandoffSteps(hasInvites, forgeMode),
   };
 }
 
@@ -95,19 +95,24 @@ function getInviteText(inviteeCount: number) {
   return inviteeCount === 1 ? "1 invite" : `${inviteeCount} invites`;
 }
 
-function getHandoffSteps(manual: boolean): HandoffStep[] {
+function getHandoffSteps(
+  hasInvites: boolean,
+  forgeMode: InviteNoteProps["forgeMode"],
+): HandoffStep[] {
   return [
     {
-      icon: manual ? Send : UsersRound,
-      title: manual ? "Send the invitations" : "Open the group",
-      text: manual
+      icon: hasInvites ? Send : UsersRound,
+      title: hasInvites ? "Send the invitations" : "Open the group",
+      text: hasInvites
         ? "Your selected friends receive the group invitation."
-        : "The matched members already have access.",
+        : forgeMode === "AUTO"
+          ? "The people TeamForge found already have access."
+          : "Your group is ready to open.",
     },
     {
       icon: Bell,
-      title: manual ? "Watch for replies" : "Members are notified",
-      text: manual
+      title: hasInvites ? "Watch for replies" : "Members are notified",
+      text: hasInvites
         ? "Accepted members appear in the group workspace."
         : "Everyone gets the group update.",
     },

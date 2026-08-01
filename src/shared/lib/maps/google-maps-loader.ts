@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import { config } from "@/config/config";
 import {
   getBrowserDocument,
@@ -5,7 +6,7 @@ import {
 } from "@/shared/lib/browser-environment";
 
 export function hasGoogleMapsApiKey() {
-  return Boolean(config.googleMapsApiKey);
+  return scenarioRuntime.allows("maps") && Boolean(config.googleMapsApiKey);
 }
 
 export function isGooglePlacesReady() {
@@ -15,6 +16,12 @@ export function isGooglePlacesReady() {
 }
 
 export function loadGoogleMaps() {
+  if (!scenarioRuntime.allows("maps")) {
+    return Promise.reject(
+      new Error("Google Maps is disabled while Scenario Mode is active."),
+    );
+  }
+
   const apiKey = config.googleMapsApiKey;
 
   if (!apiKey) {

@@ -20,6 +20,8 @@ interface ManualGroupInviteState {
 type ManualFriendship = ManualGroupDetailsProps["friends"][number];
 
 export function ManualGroupDetails({
+  compatibilityByUserId,
+  compatibilityPending,
   fixedSize,
   friendSearch,
   friends,
@@ -55,6 +57,8 @@ export function ManualGroupDetails({
       />
 
       <ManualFriendInviteList
+        compatibilityByUserId={compatibilityByUserId}
+        compatibilityPending={compatibilityPending}
         friendSearch={friendSearch}
         friends={friends}
         hasMoreFriends={hasMoreFriends}
@@ -172,7 +176,8 @@ function ManualInviteIntro({
             Pick who to invite
           </h4>
           <p className="mt-1 min-w-0 text-muted-foreground text-xs leading-relaxed opacity-80">
-            Selected friends receive an invitation after you confirm the group.
+            Fit with you and the projected group update as you choose people.
+            Group fit reflects the weakest connection.
           </p>
         </div>
         <span className="shrink-0 text-muted-foreground text-xs tabular-nums">
@@ -200,6 +205,8 @@ function ManualInviteIntro({
 }
 
 function ManualFriendInviteList({
+  compatibilityByUserId,
+  compatibilityPending,
   friendSearch,
   friends,
   hasMoreFriends,
@@ -214,6 +221,8 @@ function ManualFriendInviteList({
 }: Pick<
   ManualGroupDetailsProps,
   | "friendSearch"
+  | "compatibilityByUserId"
+  | "compatibilityPending"
   | "friends"
   | "hasMoreFriends"
   | "isFriendsError"
@@ -229,6 +238,8 @@ function ManualFriendInviteList({
   return (
     <div className="flex flex-col gap-2">
       <ManualInviteFriendsContent
+        compatibilityByUserId={compatibilityByUserId}
+        compatibilityPending={compatibilityPending}
         friendSearch={friendSearch}
         friends={friends}
         inviteState={inviteState}
@@ -258,6 +269,8 @@ function ManualFriendInviteList({
 }
 
 function ManualInviteFriendsContent({
+  compatibilityByUserId,
+  compatibilityPending,
   friendSearch,
   friends,
   inviteState,
@@ -269,6 +282,8 @@ function ManualInviteFriendsContent({
 }: Pick<
   ManualGroupDetailsProps,
   | "friendSearch"
+  | "compatibilityByUserId"
+  | "compatibilityPending"
   | "friends"
   | "isFriendsError"
   | "isLoadingFriends"
@@ -296,6 +311,8 @@ function ManualInviteFriendsContent({
 
   return (
     <ManualFriendInviteRows
+      compatibilityByUserId={compatibilityByUserId}
+      compatibilityPending={compatibilityPending}
       friends={friends}
       inviteState={inviteState}
       manualInviteeIds={manualInviteeIds}
@@ -321,13 +338,19 @@ function FriendsErrorNotice({ onRetry }: { onRetry: () => void }) {
 }
 
 function ManualFriendInviteRows({
+  compatibilityByUserId,
+  compatibilityPending,
   friends,
   inviteState,
   manualInviteeIds,
   onManualInviteeToggle,
 }: Pick<
   ManualGroupDetailsProps,
-  "friends" | "manualInviteeIds" | "onManualInviteeToggle"
+  | "compatibilityByUserId"
+  | "compatibilityPending"
+  | "friends"
+  | "manualInviteeIds"
+  | "onManualInviteeToggle"
 > & {
   inviteState: ManualGroupInviteState;
 }) {
@@ -336,6 +359,8 @@ function ManualFriendInviteRows({
       {friends.map((friendship) => (
         <GroupedMenuItem key={friendship.counterpart.id}>
           <ManualFriendInviteRow
+            compatibility={compatibilityByUserId.get(friendship.counterpart.id)}
+            compatibilityPending={compatibilityPending}
             friendship={friendship}
             {...getManualFriendInviteRowState(
               friendship,

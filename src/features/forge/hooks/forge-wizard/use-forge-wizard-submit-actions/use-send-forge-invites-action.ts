@@ -13,7 +13,7 @@ type UseSendForgeInvitesActionOptions = Pick<
 type ForgeInviteState = UseForgeWizardSubmitActionsOptions["state"];
 type ManualInviteRequest = Pick<
   ForgeInviteState,
-  "forgeMode" | "manualInviteeIds" | "planName"
+  "manualInviteeIds" | "planName"
 > & {
   groupId: string;
 };
@@ -24,7 +24,7 @@ export function useSendForgeInvitesAction({
 }: UseSendForgeInvitesActionOptions) {
   const [isSendingInvites, setIsSendingInvites] = useState(false);
   const { guardOfflineAction } = useOfflineActionGuard();
-  const { forgeMode, groupId, manualInviteeIds, planName } = state;
+  const { groupId, manualInviteeIds, planName } = state;
 
   async function handleSendInvites() {
     if (!groupId) {
@@ -40,7 +40,6 @@ export function useSendForgeInvitesAction({
 
     try {
       await sendManualInvitesIfNeeded({
-        forgeMode,
         groupId,
         manualInviteeIds,
         planName,
@@ -81,15 +80,10 @@ function shouldBlockForgeInviteSend({
 }
 
 async function sendManualInvitesIfNeeded({
-  forgeMode,
   groupId,
   manualInviteeIds,
   planName,
 }: ManualInviteRequest) {
-  if (forgeMode !== "MANUAL") {
-    return;
-  }
-
   await ForgeCommands.sendManualInvites({
     groupId,
     inviteeIds: manualInviteeIds,

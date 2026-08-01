@@ -1,4 +1,25 @@
+import { ClipboardList, MousePointer2, UsersRound } from "lucide-react";
+import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
+
+const PEOPLE_PROBLEM_POINTS = [
+  {
+    icon: ClipboardList,
+    title: "The activity is already obvious",
+    detail:
+      "Coffee, a walk, study time, or a game night. The idea is usually simple.",
+  },
+  {
+    icon: UsersRound,
+    title: "Finding the group takes the work",
+    detail: "You need people who are free, interested, and easy to talk to.",
+  },
+  {
+    icon: MousePointer2,
+    title: "TeamForge handles the setup",
+    detail: "Start the plan once. TeamForge forms the small group around it.",
+  },
+] as const;
 
 export function PeopleProblemSection() {
   return (
@@ -22,6 +43,15 @@ export function PeopleProblemSection() {
             >
               The plan is easy. Finding people who want the same plan is harder.
             </h2>
+            <p className="mt-5 text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
+              Coffee after class. A weekend walk. Board games. A study session.
+              The work is finding people who are free, interested, and easy to
+              talk to without turning the plan into admin.
+            </p>
+            <p className="mt-6 text-pretty border-forge-teal/45 border-l-2 pl-4 font-semibold text-base text-white leading-relaxed">
+              TeamForge fills the gap between having a plan and knowing who
+              would actually come.
+            </p>
           </header>
 
           <div className="relative lg:col-span-7 lg:-mr-12 xl:-mr-20">
@@ -48,6 +78,12 @@ export function PeopleProblemSection() {
             </picture>
           </div>
         </div>
+
+        <LandingFeaturePointList
+          points={PEOPLE_PROBLEM_POINTS}
+          listClassName="mt-14 grid border-white/10 border-y md:grid-cols-3 lg:mt-16"
+          itemClassName="border-white/10 border-b py-6 last:border-b-0 md:border-r md:border-b-0 md:px-8 md:last:border-r-0 md:last:pr-0 md:first:pl-0"
+        />
       </div>
     </section>
   );

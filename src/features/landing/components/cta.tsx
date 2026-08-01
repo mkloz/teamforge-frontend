@@ -40,10 +40,15 @@ export function CtaSection() {
             viewport={CTA_VIEWPORT}
             transition={getCtaRevealTransition(prefersReducedMotion, 0.1)}
           >
-            <h2 className="mb-12 text-balance font-bold font-sans text-3xl text-white leading-tight sm:text-5xl">
+            <h2 className="mb-6 text-balance font-bold font-sans text-3xl text-white leading-tight sm:text-5xl">
               Stop waiting for the right{" "}
               <span className="text-forge-teal">group</span> to appear.
             </h2>
+            <p className="mx-auto mb-10 max-w-xl text-pretty font-sans text-base text-text-dark-secondary leading-relaxed sm:text-lg">
+              The setup takes a little thought. That is the point. TeamForge
+              uses it to form one small group around something you actually want
+              to do.
+            </p>
           </m.div>
           <m.div
             initial={revealInitial}

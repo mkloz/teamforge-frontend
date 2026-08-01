@@ -85,7 +85,7 @@ function UserGroupSignalCard({
   signal: UserGroupSignal;
 }) {
   return (
-    <div className="flex h-full min-h-52 flex-col overflow-hidden rounded-2xl bg-background p-0.5">
+    <div className="flex h-full min-h-52 flex-col overflow-hidden rounded-2xl bg-transparent p-0.5">
       <div className="grid flex-1 content-stretch gap-0.5">
         <SignalRead
           icon={Activity}

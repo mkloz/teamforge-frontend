@@ -1,20 +1,26 @@
-import { ErrorForgeGroupFailedVisual } from "@/features/forge/assets/error-forge-group-failed";
+import { Notice } from "@/shared/components/ui/notice";
 
 interface FailureHeroProps {
   description: string;
+  title: string;
 }
 
-export function FailureHero({ description }: FailureHeroProps) {
+export function FailureHero({ description, title }: FailureHeroProps) {
   return (
-    <section className="overflow-hidden rounded-xl border border-spark-amber/25 bg-spark-amber/8">
-      <div className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center">
-        <ErrorForgeGroupFailedVisual className="h-14 w-auto shrink-0 text-foreground" />
-        <div className="min-w-0 flex-1">
-          <p className="text-muted-foreground text-sm leading-snug">
-            {description}
-          </p>
-        </div>
-      </div>
-    </section>
+    <Notice
+      role="alert"
+      size="lg"
+      statusIcon
+      tone="warning"
+      className="items-start"
+      contentClassName="leading-snug"
+    >
+      <p>
+        <strong className="font-black text-foreground">{title}</strong>
+        <span className="mt-1 block text-muted-foreground text-sm leading-relaxed">
+          {description}
+        </span>
+      </p>
+    </Notice>
   );
 }

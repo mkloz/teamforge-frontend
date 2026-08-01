@@ -23,7 +23,20 @@ module.exports = {
       from: {},
       to: {
         couldNotResolve: true,
-        pathNot: "^virtual:pwa-register$",
+        pathNot:
+          "^(?:virtual:pwa-register|virtual:teamforge-scenario-runtime)$",
+      },
+    },
+    {
+      name: "no-production-to-development-runtime",
+      severity: "error",
+      comment:
+        "Production source may reach development scenarios only through the virtual runtime facade.",
+      from: {
+        path: "^(?:src/app/|src/features/|src/shared/|src/main[.]tsx$)",
+      },
+      to: {
+        path: "^src/dev/",
       },
     },
     {

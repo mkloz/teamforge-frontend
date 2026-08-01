@@ -38,6 +38,16 @@ export async function leaveGroup(groupId: string) {
   );
 }
 
+export async function removeGroupMember(groupId: string, memberId: string) {
+  const response = await apiClient.post(`groups/${groupId}/remove-member`, {
+    json: { memberId },
+  });
+
+  return parseJsonWithRequestId(response, (value) =>
+    groupApiSchema.parse(value),
+  );
+}
+
 export async function updateGroup(groupId: string, payload: unknown) {
   const response = await apiClient.patch(`groups/${groupId}`, {
     json: updateGroupPayloadSchema.parse(payload),

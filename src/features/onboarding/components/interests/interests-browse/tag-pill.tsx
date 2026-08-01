@@ -83,7 +83,7 @@ function TagPillContent({
       disabled={viewState.isToggleDisabled}
       className={cn(
         "h-auto max-w-full rounded-full px-1.5 py-0.75 text-xs sm:px-2 sm:py-1 [@media(pointer:coarse)]:min-h-11",
-        showRejectAction && "[@media(pointer:coarse)]:pr-11",
+        showRejectAction && "pr-7 sm:pr-8 [@media(pointer:coarse)]:pr-11",
         viewState.surfaceClass,
       )}
     >
@@ -234,10 +234,11 @@ function RejectTagButton({
       size="icon-xs"
       aria-label={`Dismiss ${label}`}
       onClick={onReject}
-      className="group/dismiss absolute top-1/2 right-0 z-10 size-3.5 -translate-y-1/2 rounded-full p-0 hover:bg-slate-muted/10 sm:size-4 [@media(pointer:coarse)]:size-11"
+      className="group/dismiss absolute top-1/2 right-0.5 z-10 size-6 -translate-y-1/2 rounded-full p-0 hover:bg-slate-muted/10 [@media(pointer:coarse)]:right-0 [@media(pointer:coarse)]:size-11"
     >
       <X
-        className="text-slate-muted/60 transition-colors group-hover/dismiss:text-slate-muted"
+        aria-hidden="true"
+        className="size-3 text-slate-muted/60 transition-colors group-hover/dismiss:text-slate-muted"
         strokeWidth={3}
       />
     </Button>

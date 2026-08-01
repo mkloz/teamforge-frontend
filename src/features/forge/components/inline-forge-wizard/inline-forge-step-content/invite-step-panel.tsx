@@ -5,7 +5,6 @@ import type { ForgeWizardChildProps } from "../types";
 export function InviteStepPanel({ fw }: ForgeWizardChildProps) {
   const inviteCounts = getInviteStepCounts({
     activeParticipantCount: fw.activeParticipants.length,
-    isManual: fw.forgeMode === "MANUAL",
     manualInviteeCount: fw.manualInviteeIds.length,
   });
 
@@ -31,19 +30,15 @@ export function InviteStepPanel({ fw }: ForgeWizardChildProps) {
 
 interface InviteStepCountParams {
   activeParticipantCount: number;
-  isManual: boolean;
   manualInviteeCount: number;
 }
 
 function getInviteStepCounts({
   activeParticipantCount,
-  isManual,
   manualInviteeCount,
 }: InviteStepCountParams) {
   return {
-    inviteeCount: isManual ? manualInviteeCount : activeParticipantCount,
-    participantCount: isManual
-      ? manualInviteeCount + 1
-      : activeParticipantCount + 1,
+    inviteeCount: manualInviteeCount,
+    participantCount: activeParticipantCount + manualInviteeCount + 1,
   };
 }

@@ -1,3 +1,4 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import { io, type Socket } from "socket.io-client";
 
 import { config } from "@/config/config";
@@ -8,7 +9,11 @@ type RealtimeConnectHandler = () => void;
 const API_PREFIX_PATTERN = /\/api\/v\d+$/u;
 
 function getApiUrl() {
-  if (!config.apiUrl || import.meta.env.VITE_AUDIT_AUTH_ENABLED === "true") {
+  if (
+    !scenarioRuntime.allows("realtime") ||
+    !config.apiUrl ||
+    import.meta.env.VITE_AUDIT_AUTH_ENABLED === "true"
+  ) {
     return null;
   }
 

@@ -1,12 +1,14 @@
+import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import { type GifsResult, GiphyFetch } from "@giphy/js-fetch-api";
 import { useCallback } from "react";
 
 import { config } from "@/config/config";
 import { GIF_GRID_LIMIT } from "./constants";
 
-const GIPHY_FETCH_CLIENT = config.giphyApiKey
-  ? new GiphyFetch(config.giphyApiKey)
-  : null;
+const GIPHY_FETCH_CLIENT =
+  scenarioRuntime.allows("giphy") && config.giphyApiKey
+    ? new GiphyFetch(config.giphyApiKey)
+    : null;
 
 export function useGifGridFetcher(deferredSearch: string) {
   const fetchGifs = useCallback(

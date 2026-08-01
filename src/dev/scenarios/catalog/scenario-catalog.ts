@@ -1,0 +1,471 @@
+export type ScenarioFeature =
+  | "Activity"
+  | "Admin"
+  | "Authentication"
+  | "Cross-app"
+  | "Explore"
+  | "Forge"
+  | "Groups"
+  | "Home"
+  | "Network"
+  | "Notifications"
+  | "Profile"
+  | "Safety"
+  | "Settings";
+
+export interface ScenarioCatalogEntry {
+  description: string;
+  feature: ScenarioFeature;
+  id: string;
+  overlays?: readonly string[];
+  persona?: string;
+  route: string;
+  title: string;
+}
+
+export const scenarioCatalog = [
+  scenario(
+    "standard",
+    "Standard account",
+    "Cross-app",
+    "/home",
+    "Coherent authenticated baseline.",
+  ),
+  scenario(
+    "empty",
+    "Empty account",
+    "Cross-app",
+    "/home",
+    "Authenticated account with empty product collections.",
+    ["empty"],
+  ),
+  scenario(
+    "dense",
+    "Dense account",
+    "Cross-app",
+    "/home",
+    "High-volume lists and notifications.",
+    ["dense"],
+  ),
+  scenario(
+    "long-copy",
+    "Long content",
+    "Cross-app",
+    "/home",
+    "Long names, titles, and descriptions.",
+    ["long-copy"],
+  ),
+  scenario(
+    "missing-media",
+    "Missing media",
+    "Cross-app",
+    "/home",
+    "All optional images are unavailable.",
+    ["missing-media"],
+  ),
+  scenario(
+    "restricted",
+    "Restricted account",
+    "Cross-app",
+    "/home",
+    "Restricted visibility and unavailable actions.",
+    ["restricted"],
+  ),
+
+  scenario(
+    "signed-out",
+    "Signed out",
+    "Authentication",
+    "/auth/login",
+    "Unauthenticated routing and public surfaces.",
+    [],
+    "signed-out",
+  ),
+  scenario(
+    "onboarding-incomplete",
+    "Onboarding incomplete",
+    "Authentication",
+    "/onboarding/profile",
+    "Profile basics still need to be completed.",
+    ["onboarding-incomplete"],
+  ),
+
+  scenario(
+    "home-standard",
+    "Home · mixed",
+    "Home",
+    "/home",
+    "Attention items, upcoming plans, and active groups.",
+  ),
+  scenario(
+    "home-empty",
+    "Home · empty",
+    "Home",
+    "/home",
+    "No attention items, plans, or groups.",
+    ["empty"],
+  ),
+  scenario(
+    "home-dense",
+    "Home · dense",
+    "Home",
+    "/home",
+    "Dense attention and group collections.",
+    ["dense"],
+  ),
+  scenario(
+    "home-long-copy",
+    "Home · long copy",
+    "Home",
+    "/home",
+    "Stress test for wrapping and truncation.",
+    ["long-copy"],
+  ),
+
+  scenario(
+    "activity-standard",
+    "Activity · standard",
+    "Activity",
+    "/activity",
+    "Groups and conversations available to the viewer.",
+  ),
+  scenario(
+    "activity-empty",
+    "Activity · empty",
+    "Activity",
+    "/activity",
+    "No groups, conversations, or saved messages.",
+    ["activity-empty"],
+  ),
+  scenario(
+    "activity-dense",
+    "Activity · dense",
+    "Activity",
+    "/activity",
+    "A busy conversation list with many active groups.",
+    ["dense"],
+  ),
+  scenario(
+    "activity-long-copy",
+    "Activity · long copy",
+    "Activity",
+    "/activity",
+    "Long group names and activity summaries.",
+    ["long-copy"],
+  ),
+
+  scenario(
+    "notifications-standard",
+    "Notifications · mixed",
+    "Notifications",
+    "/home",
+    "Read and unread notifications in the drawer.",
+  ),
+  scenario(
+    "notifications-empty",
+    "Notifications · empty",
+    "Notifications",
+    "/home",
+    "The notification drawer has no items.",
+    ["notifications-empty"],
+  ),
+  scenario(
+    "notifications-dense",
+    "Notifications · dense",
+    "Notifications",
+    "/home",
+    "A long, grouped notification history.",
+    ["dense"],
+  ),
+  scenario(
+    "notifications-long-copy",
+    "Notifications · long copy",
+    "Notifications",
+    "/home",
+    "Notification titles and descriptions wrap across multiple lines.",
+    ["long-copy"],
+  ),
+
+  scenario(
+    "explore-standard",
+    "Explore · mixed",
+    "Explore",
+    "/explore",
+    "A varied local and online result set.",
+  ),
+  scenario(
+    "explore-empty",
+    "Explore · filtered empty",
+    "Explore",
+    "/explore",
+    "No results after filtering.",
+    ["explore-empty"],
+  ),
+  scenario(
+    "explore-online",
+    "Explore · online only",
+    "Explore",
+    "/explore",
+    "Only online opportunities.",
+    ["online-only"],
+  ),
+  scenario(
+    "explore-unscheduled",
+    "Explore · unscheduled",
+    "Explore",
+    "/explore",
+    "Plans without fixed dates.",
+    ["unscheduled"],
+  ),
+  scenario(
+    "explore-full",
+    "Explore · full group",
+    "Explore",
+    "/explore",
+    "Groups at their capacity boundary.",
+    ["full-groups"],
+  ),
+
+  scenario(
+    "forge-standard",
+    "Forge · start",
+    "Forge",
+    "/forge?open=true&step=1",
+    "The complete manual Forge flow.",
+  ),
+  scenario(
+    "forge-validation",
+    "Forge · validation",
+    "Forge",
+    "/forge?open=true&step=3",
+    "Validation and missing-field states.",
+    ["validation"],
+  ),
+  scenario(
+    "forge-long-copy",
+    "Forge · long content",
+    "Forge",
+    "/forge?open=true&step=3",
+    "Long plan and group names.",
+    ["long-copy"],
+  ),
+  scenario(
+    "forge-no-recent",
+    "Forge · no recent items",
+    "Forge",
+    "/forge?open=true&step=1",
+    "No recent templates or activities.",
+    ["empty-recent"],
+  ),
+  scenario(
+    "forge-success",
+    "Forge · group ready",
+    "Forge",
+    "/forge?open=true&step=5",
+    "Successful group formation with a complete participant roster.",
+  ),
+  scenario(
+    "forge-failed",
+    "Forge · no group yet",
+    "Forge",
+    "/forge?open=true&step=5",
+    "Failed group formation with recovery guidance.",
+  ),
+
+  scenario(
+    "group-member",
+    "Group · member",
+    "Groups",
+    "/groups/scenario-group-basketball",
+    "Member view with a confirmed plan.",
+  ),
+  scenario(
+    "group-visitor",
+    "Group · visitor",
+    "Groups",
+    "/groups/scenario-group-invite",
+    "Public visitor with an invitation.",
+  ),
+  scenario(
+    "group-admin",
+    "Group · admin",
+    "Groups",
+    "/groups/scenario-group-basketball",
+    "Administrative group actions.",
+    ["group-admin"],
+  ),
+  scenario(
+    "group-full",
+    "Group · full",
+    "Groups",
+    "/groups/scenario-group-invite",
+    "No available member slots.",
+    ["full-groups"],
+  ),
+  scenario(
+    "group-no-plan",
+    "Group · no plan",
+    "Groups",
+    "/groups/scenario-group-invite",
+    "Active group without a current plan.",
+  ),
+  scenario(
+    "group-draft",
+    "Group · draft plan",
+    "Groups",
+    "/groups/scenario-group-basketball",
+    "A plan still being decided.",
+    ["draft-plan"],
+  ),
+
+  scenario(
+    "profile-owner",
+    "Profile · owner",
+    "Profile",
+    "/profile",
+    "Full profile and personality data.",
+  ),
+  scenario(
+    "profile-public",
+    "Profile · public",
+    "Profile",
+    "/users/scenario-user-ava",
+    "Another member's public profile.",
+  ),
+  scenario(
+    "profile-private",
+    "Profile · private",
+    "Profile",
+    "/users/scenario-user-ava",
+    "Private optional profile fields.",
+    ["private-profile"],
+  ),
+  scenario(
+    "profile-no-assessment",
+    "Profile · no assessment",
+    "Profile",
+    "/profile",
+    "Profile without personality results.",
+    ["no-assessment"],
+  ),
+
+  scenario(
+    "settings-standard",
+    "Settings · standard",
+    "Settings",
+    "/settings",
+    "Default account settings.",
+  ),
+  scenario(
+    "settings-export-waiting",
+    "Settings · export waiting",
+    "Settings",
+    "/settings?tab=privacy",
+    "Account export is being prepared.",
+    ["export-waiting"],
+  ),
+  scenario(
+    "settings-many-sessions",
+    "Settings · many sessions",
+    "Settings",
+    "/settings?tab=security",
+    "Many active sessions and devices.",
+    ["many-sessions"],
+  ),
+
+  scenario(
+    "safety-active",
+    "Safety · active records",
+    "Safety",
+    "/safety",
+    "Reports, account actions, and temporary restrictions.",
+  ),
+  scenario(
+    "safety-empty",
+    "Safety · empty",
+    "Safety",
+    "/safety",
+    "No reports, account actions, or restrictions.",
+    ["safety-empty"],
+  ),
+
+  scenario(
+    "admin-standard",
+    "Admin · standard",
+    "Admin",
+    "/admin",
+    "Admin surface with recent verification.",
+    [],
+    "admin",
+  ),
+  scenario(
+    "admin-stale-verification",
+    "Admin · stale verification",
+    "Admin",
+    "/admin",
+    "Admin controls require step-up verification.",
+    ["stale-verification"],
+    "admin",
+  ),
+  scenario(
+    "admin-empty-queues",
+    "Admin · empty queues",
+    "Admin",
+    "/admin/moderation",
+    "No cases or reports waiting.",
+    ["admin-empty"],
+    "admin",
+  ),
+  scenario(
+    "admin-worker-degraded",
+    "Admin · degraded worker",
+    "Admin",
+    "/admin/moderation/workers",
+    "Worker health and retry boundaries.",
+    ["worker-degraded"],
+    "admin",
+  ),
+
+  scenario(
+    "network-slow",
+    "Slow network",
+    "Network",
+    "/home",
+    "All handled requests wait two seconds.",
+    ["network-slow"],
+  ),
+  scenario(
+    "network-offline",
+    "Offline",
+    "Network",
+    "/home",
+    "All API requests fail without contacting the backend.",
+    ["network-offline"],
+  ),
+  ...([403, 404, 409, 422, 429, 500] as const).map((status) =>
+    scenario(
+      `network-${status}`,
+      `HTTP ${status}`,
+      "Network",
+      "/home",
+      `All API requests return HTTP ${status}.`,
+      [`network-${status}`],
+    ),
+  ),
+] as const satisfies readonly ScenarioCatalogEntry[];
+
+export function getScenarioCatalogEntry(id: string) {
+  return scenarioCatalog.find((entry) => entry.id === id) ?? null;
+}
+
+function scenario(
+  id: string,
+  title: string,
+  feature: ScenarioFeature,
+  route: string,
+  description: string,
+  overlays: readonly string[] = [],
+  persona?: string,
+): ScenarioCatalogEntry {
+  return { description, feature, id, overlays, persona, route, title };
+}

@@ -19,11 +19,13 @@ const LENGTH_SELECTOR_CONTENT: Record<
 > = {
   adjust: {
     title: "Change assessment length",
-    description: "Your existing answers will be kept.",
+    description:
+      "Choose how much time you want to spend. Your existing answers will be kept.",
   },
   begin: {
     title: "Choose an assessment length",
-    description: "You can change this later.",
+    description:
+      "Choose how much time you want to spend. You can change this later.",
   },
 };
 

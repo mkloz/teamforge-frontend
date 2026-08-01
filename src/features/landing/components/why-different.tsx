@@ -11,18 +11,22 @@ const DIFFERENCE_POINTS = [
   {
     icon: CalendarCheck,
     title: "Plans first",
+    detail: "The activity leads. People fit around it.",
   },
   {
     icon: UsersRound,
     title: "One group, not many",
+    detail: "One room to consider, not a feed to sort through.",
   },
   {
     icon: SearchX,
     title: "Less searching",
+    detail: "No endless lists, cold outreach, or comparing strangers.",
   },
   {
     icon: MessageCircle,
     title: "A clearer first message",
+    detail: "Every group starts with a shared plan.",
   },
 ] as const;
 
@@ -72,6 +76,14 @@ export function WhyDifferentSection() {
             >
               No endless profiles. One group with a plan.
             </h2>
+            <p className="mt-5 text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
+              Most social tools make you browse first and plan later. TeamForge
+              starts with the plan, then brings together one small group around
+              it.
+            </p>
+            <p className="mt-6 text-pretty border-forge-teal/45 border-l-2 pl-4 font-semibold text-base text-white leading-relaxed">
+              A better starting point beats a better search habit.
+            </p>
           </div>
         </div>
 

@@ -1,15 +1,19 @@
 import { RouterProvider } from "@tanstack/react-router";
+import type { ComponentType } from "react";
 import { AppRuntime } from "@/app/runtime/app-runtime";
 import { router } from "@/router";
-import { DevTools } from "@/shared/components/dev/dev-tools";
 import { AppProviders } from "@/shared/providers/app-providers";
 
-export function App() {
+interface AppProps {
+  DevelopmentTools?: ComponentType | null;
+}
+
+export function App({ DevelopmentTools = null }: AppProps = {}) {
   return (
     <AppProviders>
       <AppRuntime />
       <RouterProvider router={router} />
-      <DevTools />
+      {DevelopmentTools ? <DevelopmentTools /> : null}
     </AppProviders>
   );
 }
