@@ -5,6 +5,7 @@ import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { Group } from "@/features/activity/lib/activity-contract";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { getBrowserTimeZone } from "@/shared/lib/plan-schedule";
 import {
   buildGroupIdentityUpdateInput,
   type GroupIdentityFormValues,
@@ -89,6 +90,16 @@ export function useEditGroupIdentity(
   );
   const [planCategory, setPlanCategory] = useState(initialValues.planCategory);
   const [planDateTime, setPlanDateTime] = useState(initialValues.planDateTime);
+  const [planDurationMinutes, setPlanDurationMinutes] = useState(
+    initialValues.planDurationMinutes,
+  );
+  const [planScheduleFold, setPlanScheduleFold] = useState(
+    initialValues.planScheduleFold,
+  );
+  const [planScheduleTouched, setPlanScheduleTouched] = useState(false);
+  const [planTimeZoneId, setPlanTimeZoneId] = useState(
+    initialValues.planTimeZoneId,
+  );
   const [planLocationMode, setPlanLocationMode] = useState(
     initialValues.planLocationMode,
   );
@@ -120,11 +131,15 @@ export function useEditGroupIdentity(
     planCostAmount,
     planCostDetails,
     planDateTime,
+    planDurationMinutes,
     planDescription,
     planLocation,
     planLocationLat,
     planLocationLng,
     planLocationMode,
+    planScheduleFold,
+    planScheduleTouched,
+    planTimeZoneId,
     planTitle,
   };
 
@@ -185,6 +200,34 @@ export function useEditGroupIdentity(
     void mutation.mutateAsync(values);
   }
 
+  function updatePlanDateTime(value: string) {
+    setPlanScheduleTouched(true);
+    setPlanDateTime(value);
+    setPlanScheduleFold(0);
+    if (value && !planTimeZoneId) {
+      setPlanTimeZoneId(getBrowserTimeZone());
+    }
+    if (value && !planDurationMinutes) {
+      setPlanDurationMinutes("90");
+    }
+  }
+
+  function updatePlanTimeZoneId(value: string) {
+    setPlanScheduleTouched(true);
+    setPlanTimeZoneId(value);
+    setPlanScheduleFold(0);
+  }
+
+  function updatePlanDurationMinutes(value: string) {
+    setPlanScheduleTouched(true);
+    setPlanDurationMinutes(value);
+  }
+
+  function updatePlanScheduleFold(value: number) {
+    setPlanScheduleTouched(true);
+    setPlanScheduleFold(value);
+  }
+
   return {
     avatar,
     avatarUploadError: avatarUpload.error,
@@ -212,11 +255,15 @@ export function useEditGroupIdentity(
     planCostAmount,
     planCostDetails,
     planDateTime,
+    planDurationMinutes,
     planDescription,
     planLocation,
     planLocationLat,
     planLocationLng,
     planLocationMode,
+    planScheduleFold,
+    planScheduleTouched,
+    planTimeZoneId,
     planTitle,
     save,
     setAvatar,
@@ -227,12 +274,15 @@ export function useEditGroupIdentity(
     setPlanCost,
     setPlanCostAmount,
     setPlanCostDetails,
-    setPlanDateTime,
+    setPlanDateTime: updatePlanDateTime,
+    setPlanDurationMinutes: updatePlanDurationMinutes,
     setPlanDescription,
     setPlanLocation,
     setPlanLocationLat,
     setPlanLocationLng,
     setPlanLocationMode,
+    setPlanScheduleFold: updatePlanScheduleFold,
+    setPlanTimeZoneId: updatePlanTimeZoneId,
     setPlanTitle,
   };
 }

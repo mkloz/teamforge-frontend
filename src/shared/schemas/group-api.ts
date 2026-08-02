@@ -58,10 +58,17 @@ const groupPlanSummarySchema = z.object({
 });
 
 const groupCurrentPlanSummarySchema = groupPlanSummarySchema.extend({
+  calendarSequence: z.number().int().nonnegative(),
+  durationMinutes: z.number().int().positive().nullable(),
+  endAt: z.string().datetime().nullable(),
   revision: z.number().int().nonnegative(),
   isScheduleResolved: z.boolean(),
   isLocationResolved: z.boolean(),
+  localStartDate: z.string().nullable(),
+  localStartTime: z.string().nullable(),
   nextRequiredAction: planNextRequiredActionSchema.nullable(),
+  scheduleFold: z.number().int().min(0).max(1).nullable(),
+  timeZoneId: z.string().nullable(),
 });
 
 const groupMemberUserSummarySchema = z.object({

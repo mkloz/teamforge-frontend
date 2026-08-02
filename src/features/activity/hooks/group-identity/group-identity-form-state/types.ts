@@ -18,6 +18,10 @@ export interface GroupIdentityFormValues {
   planCostAmount: string;
   planCostDetails: string;
   planDateTime: string;
+  planDurationMinutes: string;
+  planScheduleFold: number;
+  planScheduleTouched: boolean;
+  planTimeZoneId: string;
   planDescription: string;
   planLocation: string;
   planLocationLat: number | null;
@@ -47,6 +51,15 @@ export type GroupPlanInitialValues = Omit<
 export type GroupPlanCostInitialValues = Pick<
   GroupPlanInitialValues,
   "planCost" | "planCostAmount" | "planCostDetails"
+>;
+
+export type GroupPlanScheduleInitialValues = Pick<
+  GroupPlanInitialValues,
+  | "planDateTime"
+  | "planDurationMinutes"
+  | "planScheduleFold"
+  | "planScheduleTouched"
+  | "planTimeZoneId"
 >;
 
 export type GroupPlanLocationInitialValues = Pick<

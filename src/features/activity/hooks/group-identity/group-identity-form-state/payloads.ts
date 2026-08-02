@@ -7,6 +7,7 @@ import {
   normalizeDateTime,
   normalizeLocation,
   normalizeOptionalText,
+  normalizePlanSchedule,
 } from "@/features/activity/hooks/group-identity/group-identity-form-state/normalizers";
 import type {
   GroupIdentityFormValues,
@@ -29,12 +30,14 @@ const PLAN_PAYLOAD_CHANGE_FIELDS = [
   "costDetails",
   "coverImage",
   "dateTime",
+  "durationMinutes",
   "description",
   "location",
   "locationLat",
   "locationLng",
   "locationMode",
   "title",
+  "timeZoneId",
 ] satisfies readonly PlanPayloadComparableField[];
 
 export function hasGroupIdentityChanges(
@@ -110,13 +113,16 @@ function hasGroupPayloadChanges(group: Group, payload: UpdateGroupPayload) {
 }
 
 function buildPlanPayload(values: GroupIdentityFormValues): UpdatePlanPayload {
+  const canonicalSchedule = normalizePlanSchedule(values);
   return {
     category: values.planCategory || undefined,
     cost: values.planCost,
     costAmount: normalizeCostAmount(values),
     costDetails: normalizeOptionalText(values.planCostDetails),
     coverImage: values.coverImage,
-    dateTime: normalizeDateTime(values.planDateTime),
+    dateTime:
+      canonicalSchedule?.dateTime ?? normalizeDateTime(values.planDateTime),
+    durationMinutes: canonicalSchedule?.durationMinutes,
     description: normalizeOptionalText(values.planDescription),
     location: normalizeLocation(values),
     locationLat:
@@ -124,6 +130,10 @@ function buildPlanPayload(values: GroupIdentityFormValues): UpdatePlanPayload {
     locationLng:
       values.planLocationMode === "IN_PERSON" ? values.planLocationLng : null,
     locationMode: values.planLocationMode,
+    localStartDate: canonicalSchedule?.localStartDate,
+    localStartTime: canonicalSchedule?.localStartTime,
+    scheduleFold: canonicalSchedule?.scheduleFold,
+    timeZoneId: canonicalSchedule?.timeZoneId,
     title: values.planTitle.trim(),
   };
 }
@@ -135,7 +145,9 @@ function hasPlanPayloadChanges(group: Group, payload: UpdatePlanPayload) {
     return false;
   }
 
-  return PLAN_PAYLOAD_CHANGE_FIELDS.some(
-    (field) => payload[field] !== plan[field],
-  );
+  return PLAN_PAYLOAD_CHANGE_FIELDS.some((field) => {
+    const nextValue = payload[field];
+    const currentValue = plan[field];
+    return nextValue === undefined ? false : nextValue !== currentValue;
+  });
 }

@@ -26,6 +26,7 @@ import { Avatar } from "@/shared/components/common/avatar";
 import { Image } from "@/shared/components/common/image";
 import { cn } from "@/shared/lib/utils";
 import { isSystemManagedGroupGovernance } from "@/shared/schemas/group-governance";
+import { PlanCalendarActions } from "./plan-calendar-actions";
 
 interface GroupPlanOverviewSectionProps {
   detail: GroupPlanDetail;
@@ -65,7 +66,7 @@ export function GroupPlanOverviewSection({
     >
       <div className="grid gap-2 lg:grid-cols-[minmax(0,1.08fr)_minmax(12rem,0.72fr)_minmax(16rem,1fr)]">
         <GroupStory detail={detail} />
-        <PlanCalendar plan={plan} />
+        <PlanCalendar detail={detail} plan={plan} />
         <PlanPlace detail={detail} plan={plan} />
       </div>
 
@@ -129,7 +130,13 @@ function GroupStory({ detail }: { detail: GroupPlanDetail }) {
   );
 }
 
-function PlanCalendar({ plan }: { plan: Plan | null }) {
+function PlanCalendar({
+  detail,
+  plan,
+}: {
+  detail: GroupPlanDetail;
+  plan: Plan | null;
+}) {
   if (!plan) {
     return <PlanCalendarEmpty />;
   }
@@ -159,6 +166,9 @@ function PlanCalendar({ plan }: { plan: Plan | null }) {
             <CalendarClock className="size-4" aria-hidden="true" />
             <span className="font-bold text-lg">{calendar.time}</span>
           </div>
+          {isCalendarExportAvailable(detail, plan) ? (
+            <PlanCalendarActions planId={plan.id} />
+          ) : null}
         </div>
       ) : (
         <div className="mt-8">
@@ -175,6 +185,13 @@ function PlanCalendar({ plan }: { plan: Plan | null }) {
         </div>
       )}
     </div>
+  );
+}
+
+function isCalendarExportAvailable(detail: GroupPlanDetail, plan: Plan) {
+  return (
+    isGroupPlanMemberRelationship(detail.viewer.relationship) &&
+    Boolean(plan.dateTime && (plan.endAt || plan.durationMinutes))
   );
 }
 

@@ -2,6 +2,7 @@ import {
   normalizeCostAmount,
   normalizeDateTime,
   normalizeOptionalText,
+  normalizePlanSchedule,
 } from "@/features/activity/hooks/group-identity/group-identity-form-state/normalizers";
 import type { GroupIdentityFormValues } from "@/features/activity/hooks/group-identity/group-identity-form-state/types";
 
@@ -14,9 +15,14 @@ export function isGroupPlanValid(values: GroupIdentityFormValues) {
     hasRequiredPlanTitle(values),
     hasRequiredPlanCategory(values),
     hasValidPlanDateTime(values),
+    hasValidCanonicalSchedule(values),
     hasRequiredPlanLocation(values),
     hasRequiredPlanCostAmount(values),
   ].every(Boolean);
+}
+
+function hasValidCanonicalSchedule(values: GroupIdentityFormValues) {
+  return !values.planScheduleTouched || Boolean(normalizePlanSchedule(values));
 }
 
 function hasRequiredPlanTitle(values: GroupIdentityFormValues) {

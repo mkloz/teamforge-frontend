@@ -22,6 +22,12 @@ import {
 } from "@/shared/components/ui/select";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { getPlanCoverPreset } from "@/shared/lib/plan-cover";
+import {
+  getBrowserTimeZone,
+  getSupportedTimeZones,
+  isValidTimeZone,
+  resolveLocalPlanScheduleCandidates,
+} from "@/shared/lib/plan-schedule";
 import type {
   CostType,
   LocationMode,
@@ -51,6 +57,7 @@ const PLAN_CATEGORY_OPTIONS = [
 ] as const satisfies readonly PlanCategory[];
 
 const COST_OPTIONS = ["FREE", "PAID"] as const satisfies readonly CostType[];
+const PLAN_TIME_ZONE_OPTIONS = getSupportedTimeZones();
 
 interface PlanLocationSelection {
   address: string;
@@ -244,20 +251,110 @@ function PlanBasicsFields({ editor }: EditPlanDetailsFieldsProps) {
 }
 
 function PlanScheduleFields({ editor }: EditPlanDetailsFieldsProps) {
+  const candidates =
+    editor.planDateTime && isValidTimeZone(editor.planTimeZoneId)
+      ? resolveLocalPlanScheduleCandidates(
+          editor.planDateTime,
+          editor.planTimeZoneId,
+        )
+      : [];
+  const hasCanonicalSchedule = Boolean(editor.planTimeZoneId);
+
   return (
-    <div className="flex flex-col gap-2">
-      <Label
-        htmlFor="plan-date-time"
-        className="font-semibold text-muted-foreground text-xs"
-      >
-        Date and time
-      </Label>
-      <DateTimeInput
-        value={editor.planDateTime}
-        onValueChange={editor.setPlanDateTime}
-      />
-      <p className="text-muted-foreground text-xs">
-        Members see this in their local time.
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="flex flex-col gap-2 sm:col-span-2">
+        <Label
+          htmlFor="plan-date-time"
+          className="font-semibold text-muted-foreground text-xs"
+        >
+          Date and time
+        </Label>
+        <DateTimeInput
+          value={editor.planDateTime}
+          onValueChange={editor.setPlanDateTime}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label
+          htmlFor="plan-time-zone"
+          className="font-semibold text-muted-foreground text-xs"
+        >
+          Event time zone
+        </Label>
+        <Input
+          id="plan-time-zone"
+          list="plan-time-zone-options"
+          value={editor.planTimeZoneId}
+          placeholder={getBrowserTimeZone()}
+          onChange={(event) => editor.setPlanTimeZoneId(event.target.value)}
+        />
+        <datalist id="plan-time-zone-options">
+          {PLAN_TIME_ZONE_OPTIONS.map((timeZone) => (
+            <option key={timeZone} value={timeZone} />
+          ))}
+        </datalist>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label
+          htmlFor="plan-duration"
+          className="font-semibold text-muted-foreground text-xs"
+        >
+          Duration in minutes
+        </Label>
+        <Input
+          id="plan-duration"
+          inputMode="numeric"
+          min={1}
+          max={1440}
+          type="number"
+          value={editor.planDurationMinutes}
+          onChange={(event) =>
+            editor.setPlanDurationMinutes(event.target.value)
+          }
+        />
+      </div>
+
+      {candidates.length > 1 ? (
+        <div className="flex flex-col gap-2 sm:col-span-2">
+          <Label
+            htmlFor="plan-schedule-fold"
+            className="font-semibold text-muted-foreground text-xs"
+          >
+            Repeated local time
+          </Label>
+          <Select
+            value={String(editor.planScheduleFold)}
+            onValueChange={(value) => editor.setPlanScheduleFold(Number(value))}
+          >
+            <SelectTrigger id="plan-schedule-fold">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">First occurrence</SelectItem>
+              <SelectItem value="1">Second occurrence</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-muted-foreground text-xs">
+            Clocks change during this repeated hour. Choose which occurrence the
+            plan uses.
+          </p>
+        </div>
+      ) : null}
+
+      {hasCanonicalSchedule &&
+      editor.planDateTime &&
+      candidates.length === 0 ? (
+        <p className="text-destructive text-xs sm:col-span-2" role="alert">
+          That local time does not exist in this time zone, or the time zone is
+          invalid. Choose another time.
+        </p>
+      ) : null}
+
+      <p className="text-muted-foreground text-xs sm:col-span-2">
+        The event time zone keeps the plan stable across clock changes. A
+        duration enables calendar export and TeamForge-only conflict warnings.
       </p>
     </div>
   );

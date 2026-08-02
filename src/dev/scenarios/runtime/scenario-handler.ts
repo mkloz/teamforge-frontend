@@ -844,6 +844,42 @@ async function projectResponse(
     );
   }
 
+  const planCalendarConflictsMatch = pathname.match(
+    /^plans\/([^/]+)\/calendar-conflicts$/u,
+  );
+  if (
+    planCalendarConflictsMatch &&
+    request.method === "GET" &&
+    world.viewerId
+  ) {
+    const plan = world.entities.plans[planCalendarConflictsMatch[1]];
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group?.memberIds.includes(world.viewerId)) {
+      return notFound(pathname);
+    }
+
+    return scenarioJson({ conflictCount: 0, hasConflict: false });
+  }
+
+  const planCalendarMatch = pathname.match(/^plans\/([^/]+)\/calendar\.ics$/u);
+  if (planCalendarMatch && request.method === "GET" && world.viewerId) {
+    const plan = world.entities.plans[planCalendarMatch[1]];
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group?.memberIds.includes(world.viewerId)) {
+      return notFound(pathname);
+    }
+
+    return new Response(
+      "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//TeamForge//Scenario//EN\r\nEND:VCALENDAR\r\n",
+      {
+        headers: {
+          "content-type": "text/calendar; charset=utf-8",
+          "x-request-id": "scenario-request",
+        },
+      },
+    );
+  }
+
   const planCommitmentMatch = pathname.match(/^plans\/([^/]+)\/commitment$/u);
   if (planCommitmentMatch && request.method === "PUT" && world.viewerId) {
     const plan = world.entities.plans[planCommitmentMatch[1]];

@@ -7,9 +7,14 @@ import type {
   GroupPlanCostInitialValues,
   GroupPlanInitialValues,
   GroupPlanLocationInitialValues,
+  GroupPlanScheduleInitialValues,
 } from "@/features/activity/hooks/group-identity/group-identity-form-state/types";
 import type { Group } from "@/features/activity/lib/activity-contract";
 import { toDateTimeLocalValue } from "@/shared/lib/date-time-local";
+import {
+  getBrowserTimeZone,
+  toPlanLocalDateTimeValue,
+} from "@/shared/lib/plan-schedule";
 
 export function getInitialGroupIdentityValues(
   group: Group,
@@ -27,11 +32,15 @@ export function getInitialGroupIdentityValues(
     planCostAmount: planValues.planCostAmount,
     planCostDetails: planValues.planCostDetails,
     planDateTime: planValues.planDateTime,
+    planDurationMinutes: planValues.planDurationMinutes,
     planDescription: planValues.planDescription,
     planLocation: planValues.planLocation,
     planLocationLat: planValues.planLocationLat,
     planLocationLng: planValues.planLocationLng,
     planLocationMode: planValues.planLocationMode,
+    planScheduleFold: planValues.planScheduleFold,
+    planScheduleTouched: planValues.planScheduleTouched,
+    planTimeZoneId: planValues.planTimeZoneId,
     planTitle: planValues.planTitle,
   };
 }
@@ -55,7 +64,7 @@ function getInitialPlanValues(plan: GroupPlan): GroupPlanInitialValues {
     coverImage: getInitialPlanCoverImage(plan),
     planCategory: getInitialPlanCategory(plan),
     ...getInitialPlanCostValues(plan),
-    planDateTime: getInitialPlanDateTime(plan),
+    ...getInitialPlanScheduleValues(plan),
     planDescription: getInitialPlanDescription(plan),
     ...getInitialPlanLocationValues(plan),
     planTitle: getInitialPlanTitle(plan),
@@ -84,8 +93,21 @@ function formatInitialCostAmount(costAmount: number | null | undefined) {
   return typeof costAmount === "number" ? String(costAmount) : "";
 }
 
-function getInitialPlanDateTime(plan: ExistingGroupPlan) {
-  return toDateTimeLocalValue(plan.dateTime ?? null);
+function getInitialPlanScheduleValues(
+  plan: ExistingGroupPlan,
+): GroupPlanScheduleInitialValues {
+  return {
+    planDateTime:
+      toPlanLocalDateTimeValue(plan.dateTime, plan.timeZoneId) ??
+      toDateTimeLocalValue(plan.dateTime ?? null),
+    planDurationMinutes:
+      typeof plan.durationMinutes === "number"
+        ? String(plan.durationMinutes)
+        : "",
+    planScheduleFold: plan.scheduleFold ?? 0,
+    planScheduleTouched: false,
+    planTimeZoneId: plan.timeZoneId ?? getBrowserTimeZone(),
+  };
 }
 
 function getInitialPlanDescription(plan: ExistingGroupPlan) {

@@ -1,4 +1,5 @@
 import type { GroupIdentityFormValues } from "@/features/activity/hooks/group-identity/group-identity-form-state/types";
+import { buildCanonicalPlanScheduleInput } from "@/shared/lib/plan-schedule";
 
 export function normalizeCostAmount(values: GroupIdentityFormValues) {
   if (values.planCost !== "PAID") {
@@ -18,6 +19,19 @@ export function normalizeDateTime(value: string) {
 
   const date = new Date(trimmed);
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+export function normalizePlanSchedule(values: GroupIdentityFormValues) {
+  if (!values.planScheduleTouched || !values.planTimeZoneId) {
+    return null;
+  }
+
+  return buildCanonicalPlanScheduleInput({
+    durationMinutes: values.planDurationMinutes,
+    localDateTime: values.planDateTime,
+    scheduleFold: values.planScheduleFold,
+    timeZoneId: values.planTimeZoneId,
+  });
 }
 
 export function normalizeLocation(values: GroupIdentityFormValues) {

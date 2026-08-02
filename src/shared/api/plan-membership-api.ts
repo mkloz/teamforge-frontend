@@ -20,6 +20,11 @@ const votePlanProposalPayloadSchema = z.object({
   vote: z.enum(["APPROVE", "REJECT"]),
 });
 
+const planCalendarConflictSummarySchema = z.object({
+  conflictCount: z.number().int().nonnegative(),
+  hasConflict: z.boolean(),
+});
+
 export type CreatePlanProposalPayload = z.infer<
   typeof createPlanProposalPayloadSchema
 >;
@@ -33,6 +38,20 @@ export async function updatePlan(planId: string, payload: unknown) {
   });
 
   return parseJsonWithRequestId(response, (value) => planSchema.parse(value));
+}
+
+export async function getPlanCalendarConflictSummary(planId: string) {
+  const response = await apiClient.get(`plans/${planId}/calendar-conflicts`);
+
+  return parseJsonWithRequestId(response, (value) =>
+    planCalendarConflictSummarySchema.parse(value),
+  );
+}
+
+export async function downloadPlanCalendar(planId: string) {
+  const response = await apiClient.get(`plans/${planId}/calendar.ics`);
+
+  return response.blob();
 }
 
 export function updatePlanCoverImage(planId: string, payload: unknown) {

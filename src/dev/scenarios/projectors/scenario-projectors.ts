@@ -391,13 +391,19 @@ function getCurrentPlan(world: ScenarioWorld, groupId: string) {
 }
 
 function toHomePlan(plan: ScenarioWorld["entities"]["plans"][string]) {
+  const durationMinutes = plan.dateTime ? 90 : null;
   return {
     calendarSequence: 0,
     category: plan.category,
     cost: plan.cost,
     dateTime: plan.dateTime,
-    durationMinutes: null,
-    endAt: null,
+    durationMinutes,
+    endAt:
+      plan.dateTime && durationMinutes
+        ? new Date(
+            new Date(plan.dateTime).getTime() + durationMinutes * 60_000,
+          ).toISOString()
+        : null,
     id: plan.id,
     isLocationResolved:
       plan.locationMode === "ONLINE" || plan.location !== null,
