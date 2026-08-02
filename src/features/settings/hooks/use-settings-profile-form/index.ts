@@ -82,6 +82,8 @@ export function useSettingsProfileForm({
       preferences.isLoadingNotificationPreferences,
     notificationPreferencesError: preferences.notificationPreferencesError,
     updateNotificationPreference: preferences.updateNotificationPreference,
+    updateNotificationSchedulePreference:
+      preferences.updateNotificationSchedulePreference,
     updateMatchingPreference: preferences.updateMatchingPreference,
     updatePrivacyPreference: preferences.updatePrivacyPreference,
     updateAppearancePreference: preferences.updateAppearancePreference,

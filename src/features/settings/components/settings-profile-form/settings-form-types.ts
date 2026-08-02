@@ -20,7 +20,13 @@ type SettingsCurrentUser = User & {
 
 export type BooleanSettingsPreferenceKey = Exclude<
   keyof NotificationPreferences,
-  "minCompatibilityScore" | "themeAppearance" | "themeStyle" | "themeColor"
+  | "minCompatibilityScore"
+  | "themeAppearance"
+  | "themeStyle"
+  | "themeColor"
+  | "notificationTimeZoneId"
+  | "quietHoursStartMinute"
+  | "quietHoursEndMinute"
 >;
 
 export interface AccountSettingsState {
@@ -83,6 +89,15 @@ export interface NotificationSettingsState extends NotificationPreferenceState {
   onChange: (
     key: BooleanSettingsPreferenceKey,
     value: boolean,
+  ) => Promise<void>;
+  onScheduleChange: (
+    values: Pick<
+      NotificationPreferences,
+      | "notificationHardMute"
+      | "notificationTimeZoneId"
+      | "quietHoursStartMinute"
+      | "quietHoursEndMinute"
+    >,
   ) => Promise<void>;
 }
 

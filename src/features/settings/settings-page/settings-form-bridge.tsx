@@ -102,6 +102,7 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
       notifications={{
         ...notificationPreferenceState,
         onChange: profileFormState.updateNotificationPreference,
+        onScheduleChange: profileFormState.updateNotificationSchedulePreference,
       }}
     />
   );

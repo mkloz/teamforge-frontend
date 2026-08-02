@@ -612,6 +612,20 @@ async function projectResponse(
     });
   }
 
+  if (
+    pathname === "notifications/web-push/public-key" &&
+    request.method === "GET"
+  ) {
+    return scenarioJson({ enabled: false, publicKey: "" });
+  }
+
+  if (
+    pathname === "notifications/web-push/subscriptions" &&
+    request.method === "GET"
+  ) {
+    return scenarioJson([]);
+  }
+
   if (pathname === "reports" && request.method === "GET") {
     return scenarioJson(
       scenarioPage(

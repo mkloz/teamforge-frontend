@@ -253,6 +253,7 @@ function NotificationSettingsPanel({
         error={notifications.error}
         isOnline={notifications.isOnline}
         onChange={notifications.onChange}
+        onScheduleChange={notifications.onScheduleChange}
       />
     </Suspense>
   );

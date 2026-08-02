@@ -26,6 +26,7 @@ import {
   type WebPushControlState,
   type WebPushDeviceState,
 } from "./notification-device-state";
+import { NotificationScheduleControls } from "./notification-schedule-controls";
 
 interface NotificationSettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;
@@ -36,6 +37,15 @@ interface NotificationSettingsSectionProps {
   onChange: (
     key: BooleanSettingsPreferenceKey,
     value: boolean,
+  ) => Promise<void>;
+  onScheduleChange: (
+    values: Pick<
+      NotificationPreferences,
+      | "notificationHardMute"
+      | "notificationTimeZoneId"
+      | "quietHoursStartMinute"
+      | "quietHoursEndMinute"
+    >,
   ) => Promise<void>;
 }
 
@@ -63,6 +73,7 @@ export function NotificationSettingsSection({
   error,
   isOnline,
   onChange,
+  onScheduleChange,
 }: NotificationSettingsSectionProps) {
   return (
     <section className="flex flex-col gap-9">
@@ -73,6 +84,15 @@ export function NotificationSettingsSection({
       ) : null}
 
       <WebPushDevicePreference isOnline={isOnline} />
+
+      {notificationPreferences ? (
+        <NotificationScheduleControls
+          disabled={!isOnline}
+          preferences={notificationPreferences}
+          savingPreferenceKeys={savingNotificationPreferenceKeys}
+          onChange={onScheduleChange}
+        />
+      ) : null}
 
       <NotificationDeliveryPreferences
         notificationPreferences={notificationPreferences}

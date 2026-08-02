@@ -108,6 +108,18 @@ export function useSettingsPreferencesActions({
     await saveSingleNotificationPreference(key, value);
   }
 
+  async function updateNotificationSchedulePreference(
+    values: Pick<
+      NotificationPreferences,
+      | "notificationHardMute"
+      | "notificationTimeZoneId"
+      | "quietHoursStartMinute"
+      | "quietHoursEndMinute"
+    >,
+  ) {
+    await saveNotificationPreferencePatch(values);
+  }
+
   async function updateMatchingPreference(
     values: Pick<NotificationPreferences, "minCompatibilityScore">,
   ) {
@@ -144,6 +156,7 @@ export function useSettingsPreferencesActions({
         ? "We couldn't load your notification preferences right now."
         : null),
     updateNotificationPreference,
+    updateNotificationSchedulePreference,
     updateMatchingPreference,
     updatePrivacyPreference,
     updateAppearancePreference,
