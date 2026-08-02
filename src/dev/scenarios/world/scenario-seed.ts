@@ -567,6 +567,7 @@ function createPlan({
     locationLat,
     locationLng,
     locationMode,
+    materialRevision: 1,
     revision: 1,
     scheduleMode,
     status: "CONFIRMED" as const,

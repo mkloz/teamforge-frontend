@@ -20,6 +20,11 @@ import {
 } from "@/shared/api/plan-membership-api";
 
 import { groupPlanDetailSchema } from "../schemas/group-plan-detail.schema";
+import {
+  type PlanCommitmentResponse,
+  planCommitmentReadinessSchema,
+  planCommitmentSchema,
+} from "../schemas/plan-commitment.schema";
 
 export type CreateGroupPlanProposalPayload = CreatePlanProposalPayload;
 export type VoteGroupPlanProposalPayload = VotePlanProposalPayload;
@@ -39,6 +44,33 @@ export class GroupPlanDetailApi {
       .json<unknown>();
 
     return groupInviteSuggestionsSchema.parse(response);
+  }
+
+  static async getCommitmentReadiness(planId: string) {
+    const response = await apiClient
+      .get(`plans/${planId}/readiness`)
+      .json<unknown>();
+
+    return planCommitmentReadinessSchema.parse(response);
+  }
+
+  static async setCommitment(
+    planId: string,
+    payload: {
+      expectedMaterialRevision: number;
+      response: PlanCommitmentResponse;
+      reason?: string;
+    },
+    idempotencyKey: string,
+  ) {
+    const response = await apiClient
+      .put(`plans/${planId}/commitment`, {
+        headers: { "Idempotency-Key": idempotencyKey },
+        json: payload,
+      })
+      .json<unknown>();
+
+    return planCommitmentSchema.parse(response);
   }
 
   static async inviteSuggestion(groupId: string, suggestionId: string) {

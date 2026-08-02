@@ -9,6 +9,7 @@ import {
   searchStatusSchema,
 } from "./enums";
 import { imageMediaSchema } from "./media";
+import { reputationSummarySchema } from "./reputation";
 
 export const groupBaseFields = {
   id: z.string(),
@@ -46,6 +47,7 @@ export const userCoreFields = {
   onlineStatus: onlineStatusSchema.optional(),
   lastSeenAt: z.string().datetime().nullable().optional(),
   trustScore: z.number(),
+  reputationSummary: reputationSummarySchema.optional(),
   profileComplete: z.boolean(),
   personalitySetupComplete: z.boolean().optional(),
   showFriendsListOnProfile: z.boolean().default(true),

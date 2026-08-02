@@ -186,17 +186,37 @@ function MemberMetric({
 
 function getMemberMetrics(member: GroupPlanDetailMember) {
   return [
-    getMemberMetric({
-      icon: ShieldCheck,
-      label: "Trust",
-      score: member.trustScore,
-    }),
+    getReputationMetric(member),
     getMemberMetric({
       icon: Target,
       label: "Fit",
       score: member.compatibilityScore,
     }),
   ].filter(isMemberMetric);
+}
+
+function getReputationMetric(
+  member: GroupPlanDetailMember,
+): MemberMetricViewModel {
+  const summary = member.reputationSummary;
+  const score = summary?.displayScore;
+
+  if (summary?.evidenceState === "NEW" || score === null) {
+    return {
+      icon: ShieldCheck,
+      label: "Participation reputation",
+      tone: "muted",
+      value: "New",
+    };
+  }
+
+  const percent = formatPercent(score ?? member.trustScore) ?? 0;
+  return {
+    icon: ShieldCheck,
+    label: "Participation reputation",
+    tone: percent >= 80 ? "teal" : "muted",
+    value: `${percent}`,
+  };
 }
 
 function getMemberMetric({

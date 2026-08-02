@@ -13,6 +13,15 @@ export const groupPlanDetailQueries = {
     });
   },
 
+  commitmentReadiness(planId: string, enabled: boolean) {
+    return queryOptions({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.commitmentReadiness(planId),
+      queryFn: () => GroupPlanDetailApi.getCommitmentReadiness(planId),
+      enabled: enabled && planId.length > 0,
+      staleTime: 15_000,
+    });
+  },
+
   inviteSuggestions(groupId: string, planId: string, enabled: boolean) {
     return queryOptions({
       queryKey: APP_QUERY_KEYS.groupPlanDetail.inviteSuggestions(

@@ -11,6 +11,7 @@ import {
   OfflineSettingsNotice,
   PreferenceStatusMessage,
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
+import { ReputationCorrectionSection } from "@/features/settings/components/settings-profile-form/reputation-correction-section";
 import type { useAccountExport } from "@/features/settings/hooks/use-account-export";
 import {
   GroupedMenuAction,
@@ -147,6 +148,8 @@ export function PrivacySettingsSection({
           </p>
         )}
       </section>
+
+      <ReputationCorrectionSection />
 
       <AccountExportSection state={accountExport} />
     </div>

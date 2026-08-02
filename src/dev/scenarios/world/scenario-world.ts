@@ -65,10 +65,20 @@ export interface ScenarioPlanEntity {
   locationLat: number | null;
   locationLng: number | null;
   locationMode: LocationMode;
+  materialRevision: number;
   revision: number;
   scheduleMode: PlanScheduleMode;
   status: PlanStatus;
   title: string;
+  commitments?: Record<
+    string,
+    {
+      acknowledgedMaterialRevision: number;
+      response: "CANNOT_ATTEND" | "GOING" | "UNSURE";
+      rowVersion: number;
+      updatedAt: string;
+    }
+  >;
 }
 
 export interface ScenarioFaultPlan {

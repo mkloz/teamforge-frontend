@@ -11,6 +11,7 @@ import {
   invalidatePlanDecisionSurfaces,
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import type { PlanCommitmentResponse } from "../schemas/plan-commitment.schema";
 
 async function invalidateGroupPlanDetail(groupId: string) {
   await appQueryClient.invalidateQueries({
@@ -19,6 +20,35 @@ async function invalidateGroupPlanDetail(groupId: string) {
 }
 
 export const GroupPlanDetailCommands = {
+  async setCommitment(input: {
+    expectedMaterialRevision: number;
+    groupId: string;
+    planId: string;
+    response: PlanCommitmentResponse;
+    reason?: string;
+  }) {
+    const result = await GroupPlanDetailApi.setCommitment(
+      input.planId,
+      {
+        expectedMaterialRevision: input.expectedMaterialRevision,
+        response: input.response,
+        reason: input.reason,
+      },
+      crypto.randomUUID(),
+    );
+
+    await Promise.all([
+      invalidateGroupPlanDetail(input.groupId),
+      appQueryClient.invalidateQueries({
+        queryKey: APP_QUERY_KEYS.groupPlanDetail.commitmentReadiness(
+          input.planId,
+        ),
+      }),
+    ]);
+
+    return result;
+  },
+
   async inviteSuggestion(
     groupId: string,
     planId: string,

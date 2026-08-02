@@ -403,6 +403,7 @@ function toHomePlan(plan: ScenarioWorld["entities"]["plans"][string]) {
     locationMode: plan.locationMode,
     nextRequiredAction: plan.dateTime ? null : "PROPOSE_TIME",
     revision: plan.revision,
+    materialRevision: plan.materialRevision,
     scheduleMode: plan.scheduleMode,
     status: plan.status,
     title: plan.title,

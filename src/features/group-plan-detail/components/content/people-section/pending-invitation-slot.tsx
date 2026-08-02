@@ -17,7 +17,14 @@ export function PendingInvitationSlot({
   onCancel: (inviteId: string) => Promise<void>;
 }) {
   const elapsed = usePendingInviteElapsedTime(invite.createdAt);
-  const trustPercent = formatPercent(invite.trustScore);
+  const reputationValue =
+    invite.reputationSummary?.evidenceState === "NEW"
+      ? "New"
+      : String(
+          formatPercent(
+            invite.reputationSummary?.displayScore ?? invite.trustScore,
+          ),
+        );
 
   return (
     <article className="group/pending flex min-h-16 items-center gap-3 rounded-xl border border-border/35 border-dashed bg-card/35 px-2 py-2 text-muted-foreground">
@@ -40,8 +47,8 @@ export function PendingInvitationSlot({
           ) : null}
           {invite.personalityType ? <MetricSeparator /> : null}
           <ShieldCheck className="size-3.5" aria-hidden="true" />
-          <span className="sr-only">Trust</span>
-          <span>{trustPercent}%</span>
+          <span className="sr-only">Participation reputation</span>
+          <span>{reputationValue}</span>
         </div>
       </div>
 

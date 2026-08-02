@@ -43,6 +43,8 @@ export const APP_QUERY_KEYS = {
     byId: (groupId: string) => ["group-plan-detail", groupId] as const,
     inviteSuggestions: (groupId: string, planId: string) =>
       ["group-plan-detail", groupId, "invite-suggestions", planId] as const,
+    commitmentReadiness: (planId: string) =>
+      ["group-plan-detail", "commitment-readiness", planId] as const,
   },
   home: {
     all: ["home"] as const,

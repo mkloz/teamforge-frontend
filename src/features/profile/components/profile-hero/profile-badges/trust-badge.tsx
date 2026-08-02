@@ -3,105 +3,137 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
-import { cn } from "@/shared/lib/utils";
+import type { ReputationSummary } from "@/shared/schemas/reputation";
 import { ProfileSignal } from "./profile-signal";
 
-export function TrustBadge({
-  trustScore,
-  trustLabel,
-}: {
-  trustScore: number;
-  trustLabel: string;
-}) {
+export function TrustBadge({ summary }: { summary: ReputationSummary }) {
+  const score =
+    summary.displayScore === null ? null : Math.round(summary.displayScore);
+  const displayValue = score === null ? "New" : `${score}`;
+  const accessibleValue =
+    score === null
+      ? "New — reputation not yet established"
+      : `Participation reputation ${score} out of 100`;
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button
           type="button"
           className="group min-h-11 min-w-11 rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white [@media(pointer:fine)]:min-h-0 [@media(pointer:fine)]:min-w-0"
-          aria-label={`Trust score: ${trustScore} ${trustLabel}. Click for more information.`}
+          aria-label={`${accessibleValue}. Open details.`}
         >
           <ProfileSignal
             accent="text-forge-teal"
-            label="Trust"
-            value={
-              <span className="inline-flex items-center">
-                {trustScore}
-                <span className="hidden whitespace-pre sm:inline">
-                  {" "}
-                  {trustLabel}
-                </span>
-              </span>
-            }
+            label="Participation"
+            value={displayValue}
           />
         </button>
       </PopoverTrigger>
       <PopoverContent
         align="center"
         sideOffset={10}
-        className="w-64 border-white/8 bg-ink p-4"
+        className="w-80 border-white/8 bg-ink p-4"
       >
-        <TrustPopoverContent trustScore={trustScore} trustLabel={trustLabel} />
+        <ReputationPopoverContent summary={summary} />
       </PopoverContent>
     </Popover>
   );
 }
 
-function TrustPopoverContent({
-  trustScore,
-  trustLabel,
-}: {
-  trustScore: number;
-  trustLabel: string;
-}) {
-  const tiers: Array<{ label: string; range: string; active: boolean }> = [
-    { label: "High", range: "80–100", active: trustLabel === "High" },
-    { label: "Medium", range: "50–79", active: trustLabel === "Medium" },
-    { label: "Low", range: "0–49", active: trustLabel === "Low" },
-  ];
+function ReputationPopoverContent({ summary }: { summary: ReputationSummary }) {
+  const score =
+    summary.displayScore === null ? null : Math.round(summary.displayScore);
 
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <p className="font-semibold text-sm text-white">Trust score</p>
+        <p className="font-semibold text-sm text-white">
+          Participation reputation
+        </p>
         <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
-          Built from how groups have gone. Each completed activity and honest
-          review shapes this number.
+          This reflects eligible plan follow-through. It is not a safety check,
+          identity verification, character judgment, or compatibility
+          prediction.
         </p>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        {tiers.map((tier) => (
-          <div
-            key={tier.label}
-            className={cn(
-              "flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition-colors",
-              tier.active
-                ? "bg-forge-teal/12 text-forge-teal"
-                : "text-slate-muted",
-            )}
-          >
-            <span className="font-medium">{tier.label}</span>
-            <span className="tabular-nums opacity-70">{tier.range}</span>
-          </div>
-        ))}
+      <div className="rounded-lg bg-white/5 px-3 py-2.5">
+        <p className="text-slate-muted text-xs">
+          {score === null
+            ? "New — reputation not yet established"
+            : "Current score"}
+        </p>
+        {score !== null ? (
+          <p className="mt-0.5 font-bold text-forge-teal text-lg tabular-nums">
+            {score} / 100
+          </p>
+        ) : null}
       </div>
 
-      <div className="border-white/6 border-t pt-2">
-        <div className="flex items-center justify-between">
-          <span className="text-slate-muted text-xs">Current</span>
-          <span className="font-bold text-forge-teal text-sm tabular-nums">
-            {trustScore}
-          </span>
-        </div>
+      <dl className="grid grid-cols-2 gap-2 text-xs">
+        <ReputationFact
+          label="Evidence"
+          value={formatEvidenceState(summary.evidenceState)}
+        />
+        <ReputationFact
+          label="Eligible plans"
+          value={String(summary.eligiblePlanCount)}
+        />
+        <ReputationFact
+          label="Different people"
+          value={String(summary.distinctCounterpartyCount)}
+        />
+        <ReputationFact
+          label="Updated"
+          value={formatUpdatedAt(summary.updatedAt)}
+        />
+      </dl>
 
-        <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-white/8">
-          <div
-            className="h-full rounded-full bg-forge-teal transition-all duration-500"
-            style={{ width: `${trustScore}%` }}
-          />
-        </div>
+      <div className="border-white/6 border-t pt-3 text-slate-muted text-xs leading-relaxed">
+        <p>Calculation version: {summary.calculationVersion}</p>
+        <a
+          className="mt-2 inline-flex min-h-9 items-center font-semibold text-forge-teal underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal"
+          href="/settings?tab=privacy"
+        >
+          {summary.hasOpenCorrection
+            ? "Correction under review"
+            : "Review or request a correction"}
+        </a>
       </div>
     </div>
   );
+}
+
+function ReputationFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-slate-muted">{label}</dt>
+      <dd className="mt-0.5 font-semibold text-white">{value}</dd>
+    </div>
+  );
+}
+
+function formatEvidenceState(state: ReputationSummary["evidenceState"]) {
+  switch (state) {
+    case "ESTABLISHED":
+      return "Established history";
+    case "LIMITED":
+      return "Limited history";
+    case "NEW":
+      return "Not established";
+  }
+
+  return "Not established";
+}
+
+function formatUpdatedAt(value: string | null) {
+  if (!value) return "Not yet";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Not yet";
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
 }

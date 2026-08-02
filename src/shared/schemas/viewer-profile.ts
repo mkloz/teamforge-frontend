@@ -3,6 +3,7 @@ import { z } from "zod";
 import { genderSchema } from "./enums";
 import { imageMediaSchema } from "./media";
 import { publicPersonalityProfileSchema } from "./public-personality-profile";
+import { reputationSummarySchema } from "./reputation";
 import { interestSchema, userSchema } from "./user";
 
 export const viewerProfileContextSchema = z.enum([
@@ -28,6 +29,7 @@ const viewerProfileResponseSchema = z.object({
   showFriendsListOnProfile: z.boolean(),
   personalityProfile: publicPersonalityProfileSchema.nullable(),
   trustScore: z.number(),
+  reputationSummary: reputationSummarySchema.optional(),
 });
 
 export const viewerProfileSchema = viewerProfileResponseSchema.transform(
@@ -57,6 +59,7 @@ export const viewerProfileSchema = viewerProfileResponseSchema.transform(
       oceanN: personality?.ocean.neuroticism ?? null,
       searchStatus: "IDLE",
       trustScore: profile.trustScore,
+      reputationSummary: profile.reputationSummary,
       profileComplete: personality !== null,
       personalitySetupComplete: personality !== null,
       showFriendsListOnProfile: profile.showFriendsListOnProfile,

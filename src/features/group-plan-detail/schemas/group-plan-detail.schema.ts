@@ -17,6 +17,7 @@ import { exploreInterestSchema } from "@/shared/schemas/explore";
 import { groupGovernanceSchema } from "@/shared/schemas/group-governance";
 import { imageMediaSchema } from "@/shared/schemas/media";
 import { planProposalSchema } from "@/shared/schemas/plan";
+import { reputationSummarySchema } from "@/shared/schemas/reputation";
 
 const groupPlanViewerRelationshipSchema = z.enum([
   "NOT_MEMBER",
@@ -89,6 +90,7 @@ export const groupPlanDetailSchema = z.object({
       status: planStatusSchema,
       scheduleMode: planScheduleModeSchema.nullish(),
       revision: z.number().int().nonnegative(),
+      materialRevision: z.number().int().positive().default(1),
       isScheduleResolved: z.boolean(),
       isLocationResolved: z.boolean(),
       nextRequiredAction: planNextRequiredActionSchema.nullable(),
@@ -124,6 +126,7 @@ export const groupPlanDetailSchema = z.object({
       avatarMedia: imageMediaSchema.nullable().optional(),
       personalityType: personalityTypeSchema.nullable(),
       trustScore: z.number(),
+      reputationSummary: reputationSummarySchema.optional(),
       compatibilityScore: z.number().nullable(),
       role: groupRoleSchema,
       joinedAt: z.string().datetime().nullable(),
@@ -141,6 +144,7 @@ export const groupPlanDetailSchema = z.object({
       avatarMedia: imageMediaSchema.nullable().optional(),
       personalityType: personalityTypeSchema.nullable(),
       trustScore: z.number(),
+      reputationSummary: reputationSummarySchema.optional(),
       createdAt: z.string().datetime(),
     }),
   ),

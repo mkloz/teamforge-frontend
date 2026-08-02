@@ -97,6 +97,36 @@ async function projectResponse(
   }
 
   if (
+    pathname === "users/me/reputation-disputes" &&
+    request.method === "POST" &&
+    viewer
+  ) {
+    const legacyScore = Math.round(
+      viewer.trustScore > 0 && viewer.trustScore <= 1
+        ? viewer.trustScore * 100
+        : viewer.trustScore,
+    );
+    viewer.reputationSummary = {
+      calculationVersion:
+        viewer.reputationSummary?.calculationVersion ?? "legacy-baseline-v1",
+      displayScore: viewer.reputationSummary?.displayScore ?? legacyScore,
+      distinctCounterpartyCount:
+        viewer.reputationSummary?.distinctCounterpartyCount ?? 0,
+      eligiblePlanCount: viewer.reputationSummary?.eligiblePlanCount ?? 0,
+      evidenceState: viewer.reputationSummary?.evidenceState ?? "LIMITED",
+      evidenceThrough: viewer.reputationSummary?.evidenceThrough ?? world.clock,
+      hasOpenCorrection: true,
+      updatedAt: viewer.reputationSummary?.updatedAt ?? world.clock,
+    };
+    return scenarioJson({
+      createdAt: world.clock,
+      id: `scenario-reputation-dispute-${viewer.id}`,
+      inputId: null,
+      status: "OPEN",
+    });
+  }
+
+  if (
     pathname === "users/me/personality-assessment" &&
     request.method === "GET"
   ) {
@@ -801,6 +831,60 @@ async function projectResponse(
     return detail ? scenarioJson(detail) : notFound(pathname);
   }
 
+  const planReadinessMatch = pathname.match(/^plans\/([^/]+)\/readiness$/u);
+  if (planReadinessMatch && request.method === "GET" && world.viewerId) {
+    const plan = world.entities.plans[planReadinessMatch[1]];
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group?.memberIds.includes(world.viewerId)) {
+      return notFound(pathname);
+    }
+
+    return scenarioJson(
+      projectPlanCommitmentReadiness(plan, group.memberIds, world.viewerId),
+    );
+  }
+
+  const planCommitmentMatch = pathname.match(/^plans\/([^/]+)\/commitment$/u);
+  if (planCommitmentMatch && request.method === "PUT" && world.viewerId) {
+    const plan = world.entities.plans[planCommitmentMatch[1]];
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group?.memberIds.includes(world.viewerId)) {
+      return notFound(pathname);
+    }
+
+    const body = await request.json();
+    if (
+      !isScenarioCommitmentBody(body) ||
+      body.expectedMaterialRevision !== plan.materialRevision ||
+      !body.response
+    ) {
+      return scenarioJson(
+        {
+          error: "PLAN_MATERIAL_REVISION_STALE",
+          message: "Review the latest plan.",
+        },
+        { status: 409 },
+      );
+    }
+
+    plan.commitments ??= {};
+    const previous = plan.commitments[world.viewerId];
+    const commitment = {
+      acknowledgedMaterialRevision: plan.materialRevision,
+      response: body.response,
+      rowVersion: (previous?.rowVersion ?? 0) + 1,
+      updatedAt: world.clock,
+    };
+    plan.commitments[world.viewerId] = commitment;
+
+    return scenarioJson({
+      ...commitment,
+      effectiveStatus: commitment.response,
+      planId: plan.id,
+      userId: world.viewerId,
+    });
+  }
+
   const inviteSuggestionsMatch = pathname.match(
     /^groups\/([^/]+)\/invite-suggestions$/u,
   );
@@ -1001,6 +1085,69 @@ async function projectResponse(
     },
     { status: 501 },
   );
+}
+
+function isScenarioCommitmentBody(value: unknown): value is {
+  expectedMaterialRevision: number;
+  response: "CANNOT_ATTEND" | "GOING" | "UNSURE";
+} {
+  if (typeof value !== "object" || value === null) return false;
+  return (
+    "expectedMaterialRevision" in value &&
+    typeof value.expectedMaterialRevision === "number" &&
+    "response" in value &&
+    typeof value.response === "string" &&
+    ["CANNOT_ATTEND", "GOING", "UNSURE"].includes(value.response)
+  );
+}
+
+function projectPlanCommitmentReadiness(
+  plan: import("@/dev/scenarios/world/scenario-world").ScenarioPlanEntity,
+  eligibleUserIds: string[],
+  viewerId: string,
+) {
+  const commitments = Object.entries(plan.commitments ?? {}).filter(
+    ([userId]) => eligibleUserIds.includes(userId),
+  );
+  const projected = commitments.map(([userId, commitment]) => ({
+    ...commitment,
+    effectiveStatus:
+      commitment.response !== "CANNOT_ATTEND" &&
+      commitment.acknowledgedMaterialRevision < plan.materialRevision
+        ? "NEEDS_RECONFIRMATION"
+        : commitment.response,
+    planId: plan.id,
+    userId,
+  }));
+  const count = (status: string) =>
+    projected.filter((commitment) => commitment.effectiveStatus === status)
+      .length;
+  const required =
+    eligibleUserIds.length <= 1
+      ? eligibleUserIds.length
+      : Math.min(
+          eligibleUserIds.length,
+          Math.max(2, Math.ceil(eligibleUserIds.length * 0.6)),
+        );
+  const goingCount = count("GOING");
+
+  return {
+    cannotAttendCount: count("CANNOT_ATTEND"),
+    committedQuorum: {
+      current: goingCount,
+      met: goingCount >= required,
+      required,
+    },
+    currentUserCommitment:
+      projected.find((commitment) => commitment.userId === viewerId) ?? null,
+    eligibleMemberCount: eligibleUserIds.length,
+    goingCount,
+    materialRevision: plan.materialRevision,
+    needsReconfirmationCount: count("NEEDS_RECONFIRMATION"),
+    notRespondedCount: Math.max(0, eligibleUserIds.length - commitments.length),
+    planId: plan.id,
+    unsureCount: count("UNSURE"),
+  };
 }
 
 function getApiPathname(pathname: string) {
