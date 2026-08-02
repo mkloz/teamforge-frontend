@@ -167,7 +167,10 @@ export function buildCreateHistoryTemplatePayload(
   return withHistoryTemplateCost(payload, plan.cost);
 }
 
-export function buildCreateNextPlanPayload(plan: Plan): CreateGroupPlanPayload {
+export function buildCreateNextPlanPayload(
+  plan: Plan,
+  repeat?: Pick<CreateGroupPlanPayload, "repeatInviteeIds" | "repeatMode">,
+): CreateGroupPlanPayload {
   return {
     category: plan.category,
     cost: plan.cost,
@@ -189,7 +192,8 @@ export function buildCreateNextPlanPayload(plan: Plan): CreateGroupPlanPayload {
     locationLat: null,
     locationLng: null,
     locationMode: "TBD",
-    repeatMode: "SAME_GROUP",
+    repeatMode: repeat?.repeatMode ?? "SAME_GROUP",
+    repeatInviteeIds: repeat?.repeatInviteeIds,
     sourcePlanId: plan.id,
     title: plan.title,
   };

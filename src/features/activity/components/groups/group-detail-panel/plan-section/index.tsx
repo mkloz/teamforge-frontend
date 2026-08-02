@@ -5,7 +5,11 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import { PlanFactList } from "./plan-facts";
-import { PlanLifecycleActions } from "./plan-lifecycle-actions";
+import {
+  PlanLifecycleActions,
+  type RepeatCandidate,
+  type RepeatPlanOptions,
+} from "./plan-lifecycle-actions";
 import { PlanCategoryPill, PlanStatusPill } from "./plan-section-pills";
 import { getPlanSectionViewState } from "./plan-section-view-state";
 
@@ -21,9 +25,10 @@ interface PlanSectionProps {
   onCancelPlan?: () => Promise<void> | void;
   onCompletePlan?: () => Promise<void> | void;
   onConfirmPlan?: () => Promise<void> | void;
-  onCreateNextPlan?: () => Promise<void> | void;
+  onCreateNextPlan?: (options?: RepeatPlanOptions) => Promise<void> | void;
   onEditPlan?: () => void;
   pendingAction?: string | null;
+  repeatCandidates?: RepeatCandidate[];
 }
 
 export function PlanSection({
@@ -40,6 +45,7 @@ export function PlanSection({
   onCreateNextPlan,
   onEditPlan,
   pendingAction = null,
+  repeatCandidates,
 }: PlanSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const viewState = getPlanSectionViewState(plan, isReadOnly);
@@ -115,6 +121,7 @@ export function PlanSection({
         onCompletePlan={onCompletePlan}
         onConfirmPlan={onConfirmPlan}
         onCreateNextPlan={onCreateNextPlan}
+        repeatCandidates={repeatCandidates}
         onEditPlan={onEditPlan}
         pendingAction={pendingAction}
         plan={plan}

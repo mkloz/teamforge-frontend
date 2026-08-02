@@ -130,11 +130,14 @@ export function useActivityGroupActions(groupId: string) {
     );
   }
 
-  async function createNextGroupPlan(plan: Plan) {
+  async function createNextGroupPlan(
+    plan: Plan,
+    repeat?: Parameters<typeof buildCreateNextPlanPayload>[1],
+  ) {
     await runPlanAction("create-next-plan", () =>
       ActivityCommands.createNextGroupPlan(
         groupId,
-        buildCreateNextPlanPayload(plan),
+        buildCreateNextPlanPayload(plan, repeat),
       ),
     );
   }

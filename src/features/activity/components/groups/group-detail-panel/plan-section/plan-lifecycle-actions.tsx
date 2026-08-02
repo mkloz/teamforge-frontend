@@ -1,4 +1,5 @@
 import { CheckCircle2, Pencil, PlusCircle, XCircle } from "lucide-react";
+import { useState } from "react";
 import type {
   MemberRole,
   Plan,
@@ -21,10 +22,21 @@ interface PlanLifecycleActionsProps {
   onCancelPlan?: () => Promise<void> | void;
   onCompletePlan?: () => Promise<void> | void;
   onConfirmPlan?: () => Promise<void> | void;
-  onCreateNextPlan?: () => Promise<void> | void;
+  onCreateNextPlan?: (options?: RepeatPlanOptions) => Promise<void> | void;
   onEditPlan?: () => void;
   pendingAction: string | null;
   plan: Plan;
+  repeatCandidates?: RepeatCandidate[];
+}
+
+export interface RepeatPlanOptions {
+  repeatInviteeIds?: string[];
+  repeatMode: "SAME_GROUP" | "SELECT_PEOPLE" | "SAME_ACTIVITY";
+}
+
+export interface RepeatCandidate {
+  name: string;
+  userId: string;
 }
 
 export function PlanLifecycleActions({
@@ -39,6 +51,7 @@ export function PlanLifecycleActions({
   onEditPlan,
   pendingAction,
   plan,
+  repeatCandidates = [],
 }: PlanLifecycleActionsProps) {
   const viewState = getPlanLifecycleViewState({
     currentUserRole,
@@ -78,6 +91,7 @@ export function PlanLifecycleActions({
       <CreateNextPlanAction
         isCompleted={plan.status === "COMPLETED"}
         onCreateNextPlan={onCreateNextPlan}
+        repeatCandidates={repeatCandidates}
         viewState={viewState}
       />
 
@@ -244,16 +258,28 @@ function CancelPlanAction({
 function CreateNextPlanAction({
   isCompleted,
   onCreateNextPlan,
+  repeatCandidates,
   viewState,
 }: {
   isCompleted: boolean;
-  onCreateNextPlan?: () => Promise<void> | void;
+  onCreateNextPlan?: (options?: RepeatPlanOptions) => Promise<void> | void;
+  repeatCandidates: RepeatCandidate[];
   viewState: PlanLifecycleViewState;
 }) {
   const action = viewState.createNext;
 
   if (!viewState.showCreateNextAction) {
     return null;
+  }
+
+  if (isCompleted) {
+    return (
+      <RepeatPlanAction
+        action={action}
+        onCreateNextPlan={onCreateNextPlan}
+        repeatCandidates={repeatCandidates}
+      />
+    );
   }
 
   return (
@@ -264,14 +290,138 @@ function CreateNextPlanAction({
       contentClassName="gap-1.5"
       disabled={action.disabled}
       loading={action.loading}
-      onClick={onCreateNextPlan}
+      onClick={() => onCreateNextPlan?.()}
       title={action.title}
     >
       <PlusCircle className="size-3.5 shrink-0" />
-      {isCompleted ? "Do this again" : "Plan another"}
+      Plan another
     </Button>
   );
 }
+
+function RepeatPlanAction({
+  action,
+  onCreateNextPlan,
+  repeatCandidates,
+}: {
+  action: PlanLifecycleViewState["createNext"];
+  onCreateNextPlan?: (options?: RepeatPlanOptions) => Promise<void> | void;
+  repeatCandidates: RepeatCandidate[];
+}) {
+  const [mode, setMode] =
+    useState<RepeatPlanOptions["repeatMode"]>("SAME_GROUP");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const selectionRequired = mode === "SELECT_PEOPLE";
+
+  return (
+    <ActionDialog
+      title="Do this again"
+      description="Start a fresh plan without copying the old date, venue, chat, attendance, or private requests. Invitations are sent individually."
+      confirmLabel="Create fresh plan"
+      disabled={action.disabled || (selectionRequired && !selectedIds.length)}
+      loading={action.loading}
+      onConfirm={() =>
+        onCreateNextPlan?.({
+          repeatMode: mode,
+          repeatInviteeIds: selectionRequired ? selectedIds : undefined,
+        })
+      }
+      trigger={
+        <Button
+          type="button"
+          size="sm"
+          className="min-w-max grow basis-36"
+          contentClassName="gap-1.5"
+          disabled={action.disabled}
+          loading={action.loading}
+          title={action.title}
+        >
+          <PlusCircle className="size-3.5 shrink-0" />
+          Do this again
+        </Button>
+      }
+    >
+      <div className="space-y-2">
+        {REPEAT_MODE_OPTIONS.map((option) => (
+          <label
+            className="flex cursor-pointer items-start gap-3 rounded-xl border border-border/70 p-3"
+            key={option.value}
+          >
+            <input
+              aria-label={option.label}
+              checked={mode === option.value}
+              className="mt-1 accent-forge-teal"
+              name="repeat-mode"
+              onChange={() => setMode(option.value)}
+              type="radio"
+              value={option.value}
+            />
+            <span>
+              <span className="block font-bold text-sm">{option.label}</span>
+              <span className="block text-muted-foreground text-xs">
+                {option.description}
+              </span>
+            </span>
+          </label>
+        ))}
+      </div>
+      {selectionRequired ? (
+        <div className="mt-3 space-y-2 rounded-xl bg-muted/40 p-3">
+          <p className="font-bold text-xs">Choose people</p>
+          {repeatCandidates.length ? (
+            repeatCandidates.map((candidate) => (
+              <label
+                className="flex items-center gap-2 text-sm"
+                key={candidate.userId}
+              >
+                <input
+                  checked={selectedIds.includes(candidate.userId)}
+                  className="accent-forge-teal"
+                  onChange={() =>
+                    setSelectedIds((current) =>
+                      current.includes(candidate.userId)
+                        ? current.filter((id) => id !== candidate.userId)
+                        : [...current, candidate.userId],
+                    )
+                  }
+                  type="checkbox"
+                />
+                {candidate.name}
+              </label>
+            ))
+          ) : (
+            <p className="text-muted-foreground text-xs">
+              No eligible people are available.
+            </p>
+          )}
+        </div>
+      ) : null}
+    </ActionDialog>
+  );
+}
+
+const REPEAT_MODE_OPTIONS: Array<{
+  description: string;
+  label: string;
+  value: RepeatPlanOptions["repeatMode"];
+}> = [
+  {
+    value: "SAME_GROUP",
+    label: "Same group",
+    description: "Privately invite everyone still eligible in this group.",
+  },
+  {
+    value: "SELECT_PEOPLE",
+    label: "Select people",
+    description: "Choose individual people from the completed plan group.",
+  },
+  {
+    value: "SAME_ACTIVITY",
+    label: "Same activity",
+    description:
+      "Reuse the activity as a fresh draft without reconnecting people.",
+  },
+];
 
 function EditPlanAction({
   onEditPlan,

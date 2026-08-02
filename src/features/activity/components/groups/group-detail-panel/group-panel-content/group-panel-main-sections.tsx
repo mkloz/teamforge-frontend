@@ -18,6 +18,7 @@ import { GroupIdentitySection } from "../group-identity-section";
 import { MembersSection } from "../members-section";
 import { PlanHistorySection } from "../plan-history-section";
 import { PlanSection } from "../plan-section";
+import type { RepeatPlanOptions } from "../plan-section/plan-lifecycle-actions";
 
 interface GroupPanelMainSectionsProps {
   cancelInvitation: (inviteId: string) => Promise<void> | void;
@@ -29,6 +30,7 @@ interface GroupPanelMainSectionsProps {
   confirmPlan: (planId: string) => Promise<void> | void;
   createNextGroupPlan: (
     plan: NonNullable<Group["plan"]>,
+    options?: RepeatPlanOptions,
   ) => Promise<void> | void;
   createPlanFromHistory: (plan: PlanHistoryItem) => Promise<void> | void;
   disbandGroup: () => Promise<void> | void;
@@ -153,6 +155,12 @@ export function GroupPanelMainSections({
         onCompletePlan={completePlan}
         onConfirmPlan={confirmPlan}
         onCreateNextPlan={createNextGroupPlan}
+        repeatCandidates={members
+          .filter((member) => member.userId !== currentUserId && !member.leftAt)
+          .map((member) => ({
+            name: member.user?.name ?? "Member",
+            userId: member.userId,
+          }))}
         onEditPlan={onEditPlan}
         governanceCapabilities={capabilities}
       />
@@ -220,6 +228,7 @@ function CurrentPlanSection({
   onCreateNextPlan,
   onEditPlan,
   governanceCapabilities,
+  repeatCandidates,
 }: {
   currentPlan: Group["plan"];
   currentUserRole: MemberRole;
@@ -232,9 +241,13 @@ function CurrentPlanSection({
   onCancelPlan: (planId: string) => Promise<void> | void;
   onCompletePlan: (planId: string) => Promise<void> | void;
   onConfirmPlan: (planId: string) => Promise<void> | void;
-  onCreateNextPlan: (plan: CurrentGroupPlan) => Promise<void> | void;
+  onCreateNextPlan: (
+    plan: CurrentGroupPlan,
+    options?: RepeatPlanOptions,
+  ) => Promise<void> | void;
   onEditPlan: () => void;
   governanceCapabilities: GroupGovernance["capabilities"] | null;
+  repeatCandidates: Array<{ name: string; userId: string }>;
 }) {
   if (!currentPlan) {
     return null;
@@ -268,8 +281,9 @@ function CurrentPlanSection({
       onCreateNextPlan={
         governanceCapabilities?.canCreateNextPlan === false
           ? undefined
-          : () => onCreateNextPlan(currentPlan)
+          : (options) => onCreateNextPlan(currentPlan, options)
       }
+      repeatCandidates={repeatCandidates}
       onEditPlan={
         governanceCapabilities?.canUpdatePlanDirectly === false
           ? undefined

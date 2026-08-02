@@ -67,6 +67,10 @@ export const createGroupPlanPayloadSchema = updatePlanPayloadBaseSchema
     repeatMode: z
       .enum(["SAME_GROUP", "SELECT_PEOPLE", "SAME_ACTIVITY"])
       .optional(),
+    repeatInviteeIds: z
+      .array(z.string().trim().min(1).max(64))
+      .max(50)
+      .optional(),
   })
   .superRefine(validateUpdatePlanLocationFields);
 
