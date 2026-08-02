@@ -392,20 +392,27 @@ function getCurrentPlan(world: ScenarioWorld, groupId: string) {
 
 function toHomePlan(plan: ScenarioWorld["entities"]["plans"][string]) {
   return {
+    calendarSequence: 0,
     category: plan.category,
     cost: plan.cost,
     dateTime: plan.dateTime,
+    durationMinutes: null,
+    endAt: null,
     id: plan.id,
     isLocationResolved:
       plan.locationMode === "ONLINE" || plan.location !== null,
     isScheduleResolved: plan.dateTime !== null,
+    localStartDate: null,
+    localStartTime: null,
     location: plan.location,
     locationMode: plan.locationMode,
     nextRequiredAction: plan.dateTime ? null : "PROPOSE_TIME",
     revision: plan.revision,
     materialRevision: plan.materialRevision,
+    scheduleFold: null,
     scheduleMode: plan.scheduleMode,
     status: plan.status,
+    timeZoneId: null,
     title: plan.title,
   };
 }

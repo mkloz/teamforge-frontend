@@ -13,6 +13,14 @@ const updatePlanPayloadBaseSchema = z.object({
   category: planCategorySchema.optional(),
   coverImage: managedAssetReferenceSchema.nullable().optional(),
   dateTime: z.string().datetime().nullable().optional(),
+  timeZoneId: z.string().trim().min(1).max(64).optional(),
+  localStartDate: z.iso.date().optional(),
+  localStartTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/u)
+    .optional(),
+  scheduleFold: z.number().int().min(0).max(1).optional(),
+  durationMinutes: z.number().int().min(1).max(10_080).optional(),
   locationMode: locationModeSchema.optional(),
   location: z.string().trim().max(200).nullable().optional(),
   locationLat: z.number().finite().min(-90).max(90).nullable().optional(),
