@@ -91,6 +91,7 @@ export function PlanLifecycleActions({
       <CreateNextPlanAction
         isCompleted={plan.status === "COMPLETED"}
         onCreateNextPlan={onCreateNextPlan}
+        repeatExperimentVariant={plan.repeatExperimentVariant}
         repeatCandidates={repeatCandidates}
         viewState={viewState}
       />
@@ -258,11 +259,13 @@ function CancelPlanAction({
 function CreateNextPlanAction({
   isCompleted,
   onCreateNextPlan,
+  repeatExperimentVariant,
   repeatCandidates,
   viewState,
 }: {
   isCompleted: boolean;
   onCreateNextPlan?: (options?: RepeatPlanOptions) => Promise<void> | void;
+  repeatExperimentVariant: Plan["repeatExperimentVariant"];
   repeatCandidates: RepeatCandidate[];
   viewState: PlanLifecycleViewState;
 }) {
@@ -272,7 +275,7 @@ function CreateNextPlanAction({
     return null;
   }
 
-  if (isCompleted) {
+  if (isCompleted && repeatExperimentVariant === "DO_THIS_AGAIN") {
     return (
       <RepeatPlanAction
         action={action}

@@ -60,6 +60,8 @@ function mapSelectionPlan(
     coverImage: plan.coverImage,
     coverImageMedia: plan.coverImageMedia,
     status: plan.status,
+    repeatExperimentVariant:
+      plan.repeatExperimentVariant ?? basePlan?.repeatExperimentVariant ?? null,
     scheduleMode: plan.scheduleMode,
     revision: plan.revision,
     isScheduleResolved: plan.isScheduleResolved,

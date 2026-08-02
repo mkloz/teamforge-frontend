@@ -61,6 +61,10 @@ export const planShape = z.object({
   category: planCategorySchema,
   coverImage: z.string().nullable(),
   status: planStatusSchema,
+  repeatExperimentVariant: z
+    .enum(["CONTROL_CONTINUATION", "DO_THIS_AGAIN"])
+    .nullable()
+    .default(null),
   scheduleMode: planScheduleModeSchema.nullish(),
   revision: z.number().int().nonnegative(),
   isScheduleResolved: z.boolean(),

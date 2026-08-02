@@ -89,6 +89,7 @@ function mapGroupPlan(
     coverImage: plan.coverImage ?? null,
     coverImageMedia: plan.coverImageMedia ?? null,
     status: plan.status,
+    repeatExperimentVariant: plan.repeatExperimentVariant,
     scheduleMode: plan.scheduleMode,
     revision: plan.revision,
     isScheduleResolved: plan.isScheduleResolved,

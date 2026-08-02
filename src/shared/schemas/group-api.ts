@@ -58,6 +58,10 @@ const groupPlanSummarySchema = z.object({
 });
 
 const groupCurrentPlanSummarySchema = groupPlanSummarySchema.extend({
+  repeatExperimentVariant: z
+    .enum(["CONTROL_CONTINUATION", "DO_THIS_AGAIN"])
+    .nullable()
+    .default(null),
   calendarSequence: z.number().int().nonnegative(),
   durationMinutes: z.number().int().positive().nullable(),
   endAt: z.string().datetime().nullable(),
