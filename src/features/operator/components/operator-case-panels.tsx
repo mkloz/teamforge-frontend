@@ -75,7 +75,7 @@ export function CaseOverview({ item }: { item: OperatorCaseDetail }) {
           </div>
         </div>
 
-        <dl className="grid gap-0.5 bg-background sm:grid-cols-3 [&>*]:bg-card">
+        <dl className="grouped-surface grid sm:grid-cols-3 [&>*]:bg-card">
           <OverviewFact label="Status" value={humanizeCode(item.status)} />
           <OverviewFact
             label="Evidence"
@@ -112,7 +112,7 @@ export function DecisionChronology({ item }: { item: OperatorCaseDetail }) {
   return (
     <OperatorPanel title="Decision chronology">
       {item.decisions.length ? (
-        <ol className="grid gap-0.5 overflow-hidden rounded-xl bg-background">
+        <ol className="grouped-surface grid overflow-hidden rounded-xl">
           {item.decisions.map((decision) => (
             <li key={decision.id} className="grid gap-1 bg-card px-4 py-3">
               <div className="flex flex-wrap justify-between gap-2">

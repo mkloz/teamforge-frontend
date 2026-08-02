@@ -347,7 +347,7 @@ function RequestCreationMetric({
     >
       {metric.byPoolState ? (
         <MetricDisclosure label="Member availability breakdown">
-          <dl className="grid gap-0.5 overflow-hidden rounded-xl bg-background">
+          <dl className="grouped-surface grid overflow-hidden rounded-xl">
             {metric.byPoolState.map((bucket) => (
               <MetricValueRow
                 key={bucket.poolState}
@@ -476,7 +476,7 @@ function RecoveryLifecycleMetric({
     >
       {metric.completedOpeningCount !== null ? (
         <MetricDisclosure label="Opening outcomes">
-          <dl className="grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2">
+          <dl className="grouped-surface grid overflow-hidden rounded-xl sm:grid-cols-2">
             <MetricValueRow
               label="Applications received"
               value={formatCount(metric.applicationCount)}
@@ -692,7 +692,7 @@ function NonresponseMetric({
     >
       {metric.byExposureOrdinal ? (
         <MetricDisclosure label="Invitation number breakdown">
-          <dl className="grid gap-0.5 overflow-hidden rounded-xl bg-background">
+          <dl className="grouped-surface grid overflow-hidden rounded-xl">
             {metric.byExposureOrdinal.map((bucket) => (
               <MetricValueRow
                 key={bucket.bucket}
@@ -897,7 +897,7 @@ function MetricBlock({
       ) : null}
 
       {rows.length > 0 ? (
-        <dl className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-3">
+        <dl className="grouped-surface mt-4 grid overflow-hidden rounded-xl sm:grid-cols-3">
           {rows.map((item) => (
             <MetricValueRow
               key={item.label}
@@ -971,7 +971,7 @@ export function MetricDefinitionDetails({
       className={className ?? "mt-4"}
       summary="How this measure works"
     >
-      <dl className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
+      <dl className="grouped-surface mt-3 grid overflow-hidden rounded-xl">
         {rows.map(([label, value]) => (
           <div
             key={label}
@@ -998,7 +998,7 @@ function DistributionList({
   return (
     <div>
       <h5 className="font-semibold text-ink text-xs">{label}</h5>
-      <dl className="mt-2 grid gap-0.5 overflow-hidden rounded-xl bg-background">
+      <dl className="grouped-surface mt-2 grid overflow-hidden rounded-xl">
         {rows.length > 0 ? (
           rows.map((item) => (
             <MetricValueRow

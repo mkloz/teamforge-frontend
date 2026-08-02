@@ -97,7 +97,7 @@ export function ModerationConfigurationEditor({
         </p>
       </div>
 
-      <div className="grid gap-0.5 overflow-hidden rounded-2xl bg-background">
+      <div className="grouped-surface grid overflow-hidden rounded-2xl">
         <fieldset className="grid gap-4 rounded-xl bg-card p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-4">
           <legend className="mb-1">
             <span className="flex items-center gap-2 font-semibold text-ink text-sm">

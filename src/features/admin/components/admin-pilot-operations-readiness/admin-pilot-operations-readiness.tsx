@@ -245,7 +245,7 @@ function ActionReadiness({ readiness }: { readiness: Readiness }) {
         id="pilot-actions-heading"
         title="Pilot actions"
       />
-      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-2xl bg-background md:grid-cols-3">
+      <div className="grouped-surface mt-4 grid overflow-hidden rounded-2xl md:grid-cols-3">
         {ACTION_KEYS.map((key, index) => {
           const action = readiness.actions[key];
           const copy = PILOT_OPERATIONS_ACTION_COPY[key];

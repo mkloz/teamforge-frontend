@@ -435,7 +435,7 @@ function ConfigurationDiff({
           );
         })}
       </div>
-      <ul className="grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2">
+      <ul className="grouped-surface grid overflow-hidden rounded-xl sm:grid-cols-2">
         {CONFIGURATION_DIFF_GROUPS.map((group) => {
           const changed = changedGroups.includes(group);
           return (
@@ -489,7 +489,7 @@ function ConfigurationStateSummary({
         </p>
       </div>
 
-      <div className="grid gap-0.5 overflow-hidden rounded-2xl bg-background">
+      <div className="grouped-surface grid overflow-hidden rounded-2xl">
         <div className="grid gap-6 rounded-xl bg-card p-5 sm:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] sm:p-6">
           <div>
             <p className="font-semibold text-slate-muted text-xs">
@@ -545,7 +545,7 @@ function ConfigurationStateSummary({
           </div>
         </div>
 
-        <dl className="grid gap-0.5 bg-background sm:grid-cols-2">
+        <dl className="grouped-surface grid sm:grid-cols-2">
           <ConfigurationStateFact
             label="Policy definition"
             value={active?.policyVersion ?? "Not configured"}
@@ -607,7 +607,7 @@ function ConfigurationDetail({
           {formatStatus(configuration.status)}
         </StatusPill>
       </div>
-      <dl className="grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2 lg:grid-cols-3">
+      <dl className="grouped-surface grid overflow-hidden rounded-xl sm:grid-cols-2 lg:grid-cols-3">
         <ConfigurationFact
           label="Rollout"
           value={formatRollout(configuration.rolloutMode)}

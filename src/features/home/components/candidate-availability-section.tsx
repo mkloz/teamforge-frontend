@@ -58,7 +58,7 @@ function CandidateAvailabilityLoading() {
       role="status"
     >
       <Skeleton className="h-5 w-32" />
-      <div className="grid gap-0.5 overflow-hidden rounded-2xl">
+      <div className="grouped-surface grid overflow-hidden rounded-2xl">
         <Skeleton className="h-16 rounded-b-none" />
         <Skeleton className="h-16 rounded-t-none" />
       </div>

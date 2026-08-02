@@ -62,6 +62,16 @@
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
 }
 
+/*
+ * Shared gutter for grouped cards, menu rows, facts, and form sections.
+ * The container never paints the separator: the owning page/surface shows
+ * through the narrow, consistent gap instead.
+ */
+@utility grouped-surface {
+  gap: var(--grouped-surface-gap);
+  background-color: transparent;
+}
+
 @utility landing-story-scroll {
   height: 300vh;
 }

@@ -91,13 +91,7 @@
     },
     {
       "description": "Group Vite, TypeScript, PWA, and build tooling.",
-      "matchPackageNames": [
-        "typescript",
-        "vite",
-        "vite-plugin-pwa",
-        "sharp",
-        "repomix"
-      ],
+      "matchPackageNames": ["typescript", "vite", "vite-plugin-pwa", "sharp"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "build tooling"
     },

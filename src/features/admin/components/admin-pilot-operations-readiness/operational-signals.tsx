@@ -42,7 +42,7 @@ function ReadinessSignals({ rows }: { rows: SignalRow[] }) {
         title="Readiness signals"
       />
 
-      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-2xl bg-background">
+      <div className="grouped-surface mt-4 grid overflow-hidden rounded-2xl">
         <div className="grid gap-6 bg-card p-5 sm:p-6">
           <div className="flex items-baseline justify-between gap-4">
             <p className="font-semibold text-ink text-sm">
@@ -75,7 +75,7 @@ function ReadinessSignals({ rows }: { rows: SignalRow[] }) {
           </div>
         </div>
 
-        <dl className="grid gap-0.5 bg-background sm:grid-cols-2">
+        <dl className="grouped-surface grid sm:grid-cols-2">
           {rows.map((row) => (
             <div key={row.label} className="grid gap-1 bg-card p-5 sm:px-6">
               <div className="flex items-baseline justify-between gap-3">
@@ -118,7 +118,7 @@ function SafetyQueueSignals({ rows }: { rows: SignalRow[] }) {
         title="Urgent safety queues"
       />
 
-      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-2xl bg-background sm:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)]">
+      <div className="grouped-surface mt-4 grid overflow-hidden rounded-2xl sm:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)]">
         <div className="grid content-center gap-1 bg-card p-5 sm:p-6">
           <p
             className={cn(
@@ -192,7 +192,7 @@ function WorkerSignals({ workers }: { workers: Readiness["workers"] }) {
           <span>Dead</span>
           <span>Heartbeat</span>
         </div>
-        <div className="grid gap-0.5 bg-background">
+        <div className="grouped-surface grid">
           {workers.map((worker) => (
             <div
               key={worker.kind}

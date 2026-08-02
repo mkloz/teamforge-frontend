@@ -86,9 +86,8 @@ counted as a broken navigation link.
 
 ```
 teamforge-frontend/
-├── docs/                        # Brand and design documentation
+├── docs/                        # Architecture, contract, and design documentation
 │   ├── architecture-guide.md    # Frontend architecture and backend contract notes
-│   ├── brand-overview.md        # Mission, brand voice, logo usage rules
 │   ├── open-api.yaml            # Copied/generated backend OpenAPI contract
 │   └── visual-style-guide.md    # Color system, typography, spacing, components
 ├── public/                      # Static assets served at root
@@ -226,9 +225,6 @@ Check commands:
 Script reports:
 Human-readable script reports are flat files in `reports/`, one stable file per script such as `reports/verify.md`, `reports/quality-intelligence.md`, `reports/react-doctor.md`, `reports/gitleaks.md`, and `reports/pwa-qa.md`. Each report includes a generated timestamp. Machine-readable payloads, browser audit artifacts, screenshots, and one-off command output belong in `temp/`.
 
-Agent context commands:
-`npm run agent:health` prints compact repo health for agents, including explicit oversized-file analysis for tracked source/script files. `npm run agent:pack` generates scoped Repomix context under `temp/repomix/`; pass `-- --skip-health` for context-only output.
-
 Release commands:
 `npm run pwa:release` runs the production PWA env preflight, build, and QA gate.
 
@@ -238,27 +234,19 @@ Browser audit commands:
 Direct security wrapper:
 `node scripts/security/gitleaks.mjs` runs the same Gitleaks secret scan used by PR, release, scheduled, and Cloudflare deploy gates. It uses a local `gitleaks` binary when available, otherwise Docker.
 The `.gitleaks.toml` config extends the default rules and only allowlists
-documented placeholder values plus the Playwright mock verification-token
-example under `.agents/skills/`.
+documented placeholder and test-fixture values.
 
 Pre-commit hooks (via Husky + lint-staged) automatically run React Compiler tracking, Biome safe fixes, and Oxlint on staged files before every commit. Use `npm run check:changed` for a local changed-file pass while iterating.
 
 ---
 
-## Agentic Lead Development
+## Agent guidance
 
-Agent-driven work in this repo is led by one accountable editor. Parallel agents can research, review, propose patches, or handle isolated slices, but their output is reviewed before it becomes the final diff.
-
-Use this flow for broad refactors, quality sweeps, multi-feature changes, or agent team mode:
-
-1. Read `AGENTS.md` first; it is the authoritative rulebook for agents.
-2. Run `npm run agent:health` for a compact repo health summary, and `npm run agent:pack` when a worker needs scoped repo context.
-3. Use `node scripts/quality/intelligence.mjs` to combine Fallow and React Doctor signals. Treat the report as triage input, not an automatic fix list.
-4. Split work by non-overlapping ownership: feature folder, script family, runtime/PWA, API contract, docs/config, or review-only lane.
-5. Apply only changes that preserve current behavior and visual appearance unless the task explicitly asks otherwise.
-6. Verify with the smallest useful command, usually `npm run check:changed`; escalate to `check:local`, `check:pr`, `check:release`, or `pwa:release` only when the change scope justifies it.
-
-OpenCode and Oh My OpenAgent configuration is user-level, not repo-level. Keep provider secrets and local model routing out of committed files.
+Read [`AGENTS.md`](AGENTS.md) before agent-assisted work. It contains the
+current architecture, UI, Scenario Mode, verification, rule, and skill map.
+Repository guidance intentionally avoids provider-specific model routing and
+generated context packs; use source files, targeted search, and the narrowest
+relevant check instead.
 
 ---
 
@@ -283,7 +271,7 @@ Realtime connects to the backend Socket.IO `/realtime` namespace after an auth s
 
 ## Design System
 
-TeamForge design guidance lives in [`docs/visual-style-guide.md`](docs/visual-style-guide.md) and [`docs/brand-overview.md`](docs/brand-overview.md). The app uses Inter, Lucide React, Tailwind CSS v4 tokens, shadcn/ui, and Radix primitives.
+TeamForge design guidance lives in [`docs/visual-style-guide.md`](docs/visual-style-guide.md). Product-language decisions live in [`.agents/rules/teamforge/copy-guardrails.md`](.agents/rules/teamforge/copy-guardrails.md). The app uses Inter, Lucide React, Tailwind CSS v4 tokens, shadcn/ui, and Radix primitives.
 
 The color system is intentionally small: forge teal, spark amber, canvas, ink, and slate muted. New UI should use those tokens and opacity modifiers rather than introducing additional hex colors.
 

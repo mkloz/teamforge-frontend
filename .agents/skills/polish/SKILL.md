@@ -1,14 +1,11 @@
 ---
 name: polish
 description: Performs a final quality pass fixing alignment, spacing, consistency, and micro-detail issues before shipping. Use when the user mentions polish, finishing touches, pre-launch review, something looks off, or wants to go from good to great.
-version: 2.1.1
-user-invocable: true
-argument-hint: "[target]"
 ---
 
 ## MANDATORY PREPARATION
 
-Invoke /impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run /impeccable teach first. Additionally gather: quality bar (MVP vs flagship).
+Read the repository's visual guidance and inspect the current implementation at every relevant breakpoint before editing. Establish the expected quality bar and preserve deliberate product-specific choices.
 
 ---
 

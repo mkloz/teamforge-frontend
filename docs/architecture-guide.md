@@ -188,23 +188,6 @@ The blocking feature seam scanner can be run with:
 npm run lint:feature-seams
 ```
 
-The advisory API contract inventory can be run with:
-
-```bash
-npm run api:contracts
-```
-
-It scans frontend `apiClient` calls against `docs/open-api.yaml`, reports
-missing operations, duplicate endpoint families, dynamic calls, and shared API
-seam coverage, then writes `reports/api-contract-inventory.md` and
-`temp/api-contract-inventory.json`. Use this report to guide API cleanup, but
-review each item against product behavior before changing code. Use strict mode
-only when the API surface needs to block on unresolved gaps:
-
-```bash
-npm run api:contracts -- --strict
-```
-
 ### Current Frontend Notes
 
 - Routes are still declared manually in `src/router.tsx`; the repo is not using TanStack file-based routing.
@@ -608,4 +591,4 @@ and runs the PWA QA pass against `dist/`.
 
 ---
 
-_For product vision, see `product-vision.md`. For feature specifications, see `feature-specifications.md`._
+For the current document map, see [`README.md`](README.md).

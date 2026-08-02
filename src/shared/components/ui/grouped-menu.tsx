@@ -49,7 +49,7 @@ export function GroupedMenuList({
   return (
     <ul
       className={cn(
-        "flex flex-col gap-0.5 overflow-hidden rounded-2xl bg-transparent",
+        "grouped-surface flex flex-col overflow-hidden rounded-2xl",
         className,
       )}
       {...props}

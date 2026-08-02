@@ -1,6 +1,6 @@
 ---
 name: frontend-product-ui-engineer
-description: Use automatically for React, Next.js, Vite, Tailwind, ShadCN, component architecture, forms, React Hook Form, Zod, client/server state, Zustand, React Query, routing, dashboards, calendars, event apps, UI polish, accessibility, loading/error/empty states, responsive layouts, and frontend integration with APIs. Especially relevant when turning rough UI ideas into production-ready product interfaces.
+description: Implement, redesign, or polish TeamForge React product UI using the existing feature architecture and design language. Use for pages, forms, grouped menus, drawers, modals, responsive layouts, states, API integration, or visual fixes where production-ready behavior and rendered quality both matter.
 ---
 
 # Frontend Product UI Engineer
@@ -9,11 +9,13 @@ description: Use automatically for React, Next.js, Vite, Tailwind, ShadCN, compo
 
 Build frontend features that are usable, maintainable, accessible, and consistent with the existing design system. This skill balances engineering structure with product polish.
 
+Read `AGENTS.md`, `docs/visual-style-guide.md`, and the narrow TeamForge rule for the feature before editing. Inspect the rendered surface at mobile and desktop widths when browser access is available.
+
 ## Activation conditions
 
 Use this skill when the task involves:
 
-- React/Next/Vite components.
+- React/Vite components and TanStack Router screens.
 - UI layouts, pages, dashboards, calendars, forms, modals, tables, cards, search, filters, or navigation.
 - Tailwind or ShadCN component work.
 - React Query, Zustand, Context, URL state, or local component state.
@@ -23,6 +25,18 @@ Use this skill when the task involves:
 - Connecting frontend to backend APIs.
 
 Do not use it for backend-only work unless frontend contract/state implications matter.
+
+## TeamForge visual decisions
+
+- Prefer compact hierarchy and meaningful whitespace over generic enclosing cards, nested boxes, or repeated separators.
+- Reuse grouped-menu, collapsible, notice, input, button, modal, drawer, and activity-mosaic primitives. Grouped items use the established narrow gap separator; dividers must not stop arbitrarily inside a visual group.
+- Unboxed icons inherit text colour. Accent icons only for status or an intentional icon background.
+- Dark surfaces should remain dark; selection uses subtle state contrast rather than a bright card.
+- Remove duplicated labels and metadata. Let typography, layout, imagery, maps, calendars, and progress cues present information when they communicate it better than database-like rows.
+- Design mobile behavior deliberately, including text wrapping, touch targets, swipe affordances, sticky/drawer behavior, and safe-area spacing.
+- Cover empty, loading, error, success, restricted, missing-media, dense, long-copy, and pagination states without custom decorative SVGs by default.
+- Keep headings and navigation labels in sentence case unless content semantics require uppercase. Do not use uppercase merely as visual styling.
+- Avoid blur transitions. Use restrained glass treatment only when real imagery or color behind the surface makes the material legible.
 
 ## Product-first rules
 
@@ -36,6 +50,8 @@ Do not use it for backend-only work unless frontend contract/state implications 
 8. Use existing design primitives before creating new ones.
 9. Accessibility is not optional polish; it is part of correctness.
 10. Do not add visual noise that does not serve hierarchy or usability.
+11. Preserve working behavior while redesigning presentation; do not silently remove data, states, or controls.
+12. Prefer one coherent reusable pattern over several one-off variants that only differ cosmetically.
 
 ## Frontend workflow
 
@@ -64,6 +80,8 @@ Inspect nearby examples:
 - Spacing, border radius, typography, icon style.
 
 Match the project. Do not introduce a new mini-design-system unless asked.
+
+When the user provides a screenshot, identify the structural issue first: hierarchy, grouping, density, alignment, wrapping, responsive behavior, or state feedback. Reproduce the intended relationship rather than copying incidental pixel values.
 
 ### 3. Component architecture
 
@@ -117,6 +135,8 @@ Handle:
 - Optimistic updates only when rollback is clear.
 - Cache invalidation after mutation.
 
+When Scenario Mode is active, exercise the same API adapters, schemas, query keys, and mutations. Do not add component branches solely to make a synthetic state render.
+
 ### 6. Form quality checklist
 
 For every form:
@@ -158,30 +178,17 @@ Review:
 - Loading state does not cause layout jumps when avoidable.
 - Table/card actions remain usable on small screens.
 
-## Output contract
+## Visual iteration contract
 
-When implementing/reviewing frontend work:
+For meaningful visual work:
 
-```md
-## UI behaviour
-- Primary flow:
-- States handled:
-- Responsive behaviour:
+1. Inspect the current rendered state before editing when browser access is available.
+2. Verify at representative mobile and desktop widths; add tablet when the composition changes there.
+3. Exercise wrapping, empty, dense, and relevant permission/error states through Scenario Mode or real interactions.
+4. Check the console and network for errors introduced by the change.
+5. Compare the result with the user's latest direction, not an older screenshot that has since been superseded.
 
-## Components changed
-- `path`: purpose
-
-## State/data decisions
-- Local state:
-- Server state:
-- URL/global state:
-
-## Accessibility checks
-- ...
-
-## Verification
-- Typecheck/lint/build/tests/manual states reviewed:
-```
+Report the outcome first, then the important behavior/state decisions and the checks performed. Do not emit a large templated report unless the user asks for one.
 
 ## Red flags
 

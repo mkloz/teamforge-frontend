@@ -46,7 +46,7 @@ export function NotificationsSection({
           <span className="ml-1.5 text-slate-muted/55">{items.length}</span>
         </p>
       </div>
-      <ul className="flex flex-col gap-0.5 px-3 pb-4">
+      <ul className="grouped-surface flex flex-col px-3 pb-4">
         <LazyMotion features={domAnimation}>
           <AnimatePresence initial={false}>
             {items.map((item) => (

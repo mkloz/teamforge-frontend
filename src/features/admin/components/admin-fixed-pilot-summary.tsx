@@ -266,7 +266,7 @@ function FixedWindowOverview({
         </div>
       </div>
 
-      <dl className="grid gap-0.5 bg-background sm:grid-cols-3 [&>*]:bg-card">
+      <dl className="grouped-surface grid sm:grid-cols-3 [&>*]:bg-card">
         <WindowFact label="Cohort" value={cohort.code} />
         <WindowFact
           label="Members"
@@ -367,7 +367,7 @@ function SummaryHistory({
       <h3 className="font-semibold text-ink text-sm">
         Earlier summaries ({NUMBER_FORMATTER.format(artifacts.length)})
       </h3>
-      <div className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
+      <div className="grouped-surface mt-3 grid overflow-hidden rounded-xl">
         {artifacts.map((artifact) => (
           <CollapsibleSection
             key={artifact.id}
@@ -401,7 +401,7 @@ function ArtifactMeasureList({
   return (
     <div className={className}>
       <h4 className="font-semibold text-ink text-sm">Fixed measures</h4>
-      <dl className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
+      <dl className="grouped-surface mt-3 grid overflow-hidden rounded-xl">
         {MEASURE_ROWS.map(([key, label]) => (
           <MeasureRow
             key={key}

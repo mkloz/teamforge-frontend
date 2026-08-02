@@ -18,8 +18,7 @@
     "@doist/react-compiler-tracker",
     "babel-plugin-react-compiler",
     "fallow",
-    "react-doctor",
-    "repomix"
+    "react-doctor"
   ],
   "entry": [
     "scripts/**/*.{js,mjs}",

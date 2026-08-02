@@ -199,7 +199,7 @@ export function OperatorWorkspacePage() {
 
       <section className="grid min-w-0 content-start gap-4">
         {query.data.data.length ? (
-          <div className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:bg-card">
+          <div className="grouped-surface grid overflow-hidden rounded-2xl [&>*]:bg-card">
             {query.data.data.map((item) => (
               <OperatorCaseCard key={item.id} item={item} />
             ))}

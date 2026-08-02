@@ -1,16 +1,13 @@
 ---
 name: critique
 description: Evaluate design from a UX perspective, assessing visual hierarchy, information architecture, emotional resonance, cognitive load, and overall quality with quantitative scoring, persona-based testing, automated anti-pattern detection, and actionable feedback. Use when the user asks to review, critique, evaluate, or give feedback on a design or component.
-version: 2.1.1
-user-invocable: true
-argument-hint: "[area (feature, page, component...)]"
 ---
 
 ## STEPS
 
 ### Step 1: Preparation
 
-Invoke /impeccable, which contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding. If no design context exists yet, you MUST run /impeccable teach first. Additionally gather: what the interface is trying to accomplish.
+Read the repository's product and design guidance, inspect the relevant source, and establish what the interface is trying to accomplish. Treat the existing product language, visual system, accessibility requirements, and user-provided references as the design context.
 
 ### Step 2: Gather Assessments
 
@@ -30,7 +27,7 @@ document.title = '[LLM] ' + document.title;
 ```
 Think like a design director. Evaluate:
 
-**AI Slop Detection (CRITICAL)**: Does this look like every other AI-generated interface? Review against ALL **DON'T** guidelines in the impeccable skill. Check for AI color palette, gradient text, dark glows, glassmorphism, hero metric layouts, identical card grids, generic fonts, and all other tells. **The test**: If someone said "AI made this," would you believe them immediately?
+**Generic-pattern detection (CRITICAL)**: Does this look like every other generated interface? Check for unmotivated gradients, dark glows, decorative glassmorphism, hero-metric layouts, identical card grids, generic typography, excessive pills, nested boxes, and visual effects that do not support the product. **The test**: If someone said "AI made this," would you believe them immediately?
 
 **Holistic Design Review**: visual hierarchy (eye flow, primary action clarity), information architecture (structure, grouping, cognitive load), emotional resonance (does it match brand and audience?), discoverability (are interactive elements obvious?), composition (balance, whitespace, rhythm), typography (hierarchy, readability, font choices), color (purposeful use, cohesion, accessibility), states & edge cases (empty, loading, error, success), microcopy (clarity, tone, helpfulness).
 
@@ -144,12 +141,12 @@ For each issue, tag with **P0-P3 severity** (consult [heuristics-scoring](refere
 - **[P?] What**: Name the problem clearly
 - **Why it matters**: How this hurts users or undermines goals
 - **Fix**: What to do about it (be concrete)
-- **Suggested command**: Which command could address this (from: /animate, /quieter, /shape, /optimize, /adapt, /clarify, /layout, /distill, /delight, /audit, /harden, /polish, /bolder, /typeset, /critique, /colorize, /overdrive)
+- **Suggested skill**: Which retained skill could address this (from: `adapt`, `clarify`, `layout`, `polish`, `typeset`, or `critique`)
 
 #### Persona Red Flags
 > *Consult [personas](reference/personas.md)*
 
-Auto-select 2-3 personas most relevant to this interface type (use the selection table in the reference). If `.github/copilot-instructions.md` contains a `## Design Context` section from `impeccable teach`, also generate 1-2 project-specific personas from the audience/brand info.
+Auto-select 2-3 personas most relevant to this interface type (use the selection table in the reference). If repository product or design guidance describes the audience and brand, also generate 1-2 project-specific personas from that context.
 
 For each selected persona, walk through the primary user action and list specific red flags found:
 
@@ -209,7 +206,7 @@ List recommended commands in priority order, based on the user's answers:
 ...
 
 **Rules for recommendations**:
-- Only recommend commands from: /animate, /quieter, /shape, /optimize, /adapt, /clarify, /layout, /distill, /delight, /audit, /harden, /polish, /bolder, /typeset, /critique, /colorize, /overdrive
+- Only recommend retained skills: `adapt`, `clarify`, `layout`, `polish`, `typeset`, and `critique`
 - Order by the user's stated priorities first, then by impact
 - Each item's description should carry enough context that the command knows what to focus on
 - Map each Priority Issue to the appropriate command

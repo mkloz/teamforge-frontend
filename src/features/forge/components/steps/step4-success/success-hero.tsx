@@ -75,7 +75,7 @@ export function SuccessHero({
         </div>
       </div>
 
-      <dl className="grid gap-0.5 bg-background/55 sm:grid-cols-3">
+      <dl className="grouped-surface grid sm:grid-cols-3">
         <SummaryFact
           icon={UsersRound}
           label="Group"

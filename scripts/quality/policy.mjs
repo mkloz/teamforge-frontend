@@ -73,7 +73,7 @@ export const REACT_DOCTOR_FALSE_POSITIVES = [
     packageName: "knip",
     plugin: "deslop",
     reason:
-      "Resolved by scripts/lint/knip.mjs and invoked from scripts/verify/index.mjs and scripts/context/health.mjs.",
+      "Resolved by scripts/lint/knip.mjs and invoked from scripts/verify/index.mjs.",
     rule: "unused-dev-dependency",
   },
   {
@@ -114,16 +114,6 @@ export const REACT_DOCTOR_FALSE_POSITIVES = [
     plugin: "deslop",
     reason:
       "Resolved by scripts/quality/react-doctor.mjs and consumed by scripts/quality/intelligence.mjs plus agent health reports.",
-    rule: "unused-dev-dependency",
-  },
-  {
-    column: 0,
-    filePath: "package.json",
-    line: 0,
-    packageName: "repomix",
-    plugin: "deslop",
-    reason:
-      "Resolved by scripts/context/pack.mjs for npm run agent:pack context bundles under temp/repomix/.",
     rule: "unused-dev-dependency",
   },
   {

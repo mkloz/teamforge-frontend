@@ -231,7 +231,7 @@ function StatusSection({
         id={id}
         title={title}
       />
-      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-2xl bg-background md:grid-cols-2 xl:grid-cols-4">
+      <div className="grouped-surface mt-4 grid overflow-hidden rounded-2xl md:grid-cols-2 xl:grid-cols-4">
         {GATE_STAGES.map((stage) => {
           const stageRows = rows.slice(stage.start, stage.end);
           const enabledCount = stageRows.filter(
@@ -352,7 +352,7 @@ function AdminPilotStatusLoading() {
               <Skeleton className="h-4 w-full max-w-lg" />
             </div>
           </div>
-          <div className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2">
+          <div className="grouped-surface mt-4 grid overflow-hidden rounded-xl sm:grid-cols-2">
             {[0, 1, 2, 3].map((row) => (
               <div
                 key={row}

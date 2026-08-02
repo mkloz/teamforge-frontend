@@ -7,7 +7,7 @@ description: "Use for TeamForge frontend UI implementation, visual review, acces
 
 Use this for frontend UI implementation, visual review, accessibility review, polish, responsive layout checks, loading/error/empty states, and final rendered verification.
 
-This rule adapts `frontend-product-ui-engineer`, `accessibility-a11y`, and `polish` for TeamForge.
+This rule adapts `frontend-product-ui-engineer` and `accessibility-a11y` for TeamForge.
 
 ## Source Of Truth
 
@@ -34,7 +34,11 @@ Generic design skills are inspiration only. They do not override TeamForge token
 - Keep teal and amber restrained; do not create one-note teal/amber screens.
 - No gradient blobs, abstract decorative SVG fills, or unrelated background ornaments.
 - Use Lucide icons, not emoji icons.
-- Cards use `rounded-2xl`; pills/avatars use `rounded-full`; avoid `rounded-none` on user-facing controls.
+- Use the radius already established by the component family. Grouped menus
+  round their outer items, while pills and avatars use `rounded-full`.
+- Do not turn every content block into a bordered card. Prefer an unboxed
+  section, grouped menu, editorial layout, or gap-separated surface when that
+  makes the hierarchy clearer.
 - Use `gap-*` for spacing; avoid mixing margins with gap for the same layout relationship.
 - Avoid inline styles and arbitrary values when the 4px scale works.
 - Text must fit at mobile and desktop sizes without overlapping, clipping awkwardly, or pushing controls into unusable states.

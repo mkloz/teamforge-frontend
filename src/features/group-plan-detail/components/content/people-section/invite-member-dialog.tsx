@@ -196,7 +196,10 @@ function InviteSuggestionRow({
 
 function InviteDialogLoading() {
   return (
-    <div className="grid gap-0.5 px-5 pt-2 pb-5 sm:px-6 sm:pb-6" role="status">
+    <div
+      className="grouped-surface grid px-5 pt-2 pb-5 sm:px-6 sm:pb-6"
+      role="status"
+    >
       {["first", "second", "third"].map((item) => (
         <div
           key={item}

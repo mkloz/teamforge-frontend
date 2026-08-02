@@ -7,7 +7,7 @@ description: "Use for TeamForge bugs, failing checks, runtime errors, broken bui
 
 Use this for bugs, failing checks, runtime errors, broken builds, environment issues, deployment problems, auth/session failures, realtime/PWA issues, performance regressions, or "make this production-ready" requests.
 
-This rule adapts `production-quality-debugger` for TeamForge's frontend architecture.
+This is the repository's authoritative debugging workflow for TeamForge's frontend architecture.
 
 ## Debugging Rules
 

@@ -64,7 +64,7 @@ export function HomeJourneyPlans() {
         <div className="grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(19rem,0.95fr)]">
           <FeaturedJourneyPlan plannedGroup={visiblePlans[0]} />
           {visiblePlans.length > 1 ? (
-            <ul className="grid min-w-0 list-none gap-0.5 overflow-hidden rounded-2xl p-0">
+            <ul className="grouped-surface grid min-w-0 list-none overflow-hidden rounded-2xl p-0">
               {visiblePlans.slice(1).map((plannedGroup) => (
                 <CompactJourneyPlan
                   key={plannedGroup.plan.id}

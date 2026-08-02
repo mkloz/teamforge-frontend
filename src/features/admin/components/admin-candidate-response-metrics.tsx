@@ -133,7 +133,7 @@ function CandidateResponseDetails({
   values: CandidateResponseValues;
 }) {
   return (
-    <dl className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2 lg:grid-cols-3">
+    <dl className="grouped-surface mt-4 grid overflow-hidden rounded-xl sm:grid-cols-2 lg:grid-cols-3">
       <CandidateMetricDetail
         label="Invitations measured"
         value={formatCount(values.eligibleExposureCount)}
@@ -226,7 +226,7 @@ function CandidateActivityScopeBreakdown({
           No activity response totals are available yet.
         </p>
       ) : (
-        <ul className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
+        <ul className="grouped-surface mt-3 grid overflow-hidden rounded-xl">
           {visibleRows.map((row) => (
             <CandidateActivityScopeRow
               key={`${row.activityCategory}-${row.scope}`}
@@ -291,7 +291,7 @@ function CandidateDeclineReasonBreakdown({
           No decline reasons have been recorded.
         </p>
       ) : (
-        <dl className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
+        <dl className="grouped-surface mt-3 grid overflow-hidden rounded-xl">
           {recordedReasons.map(({ count, reason }) => (
             <CandidateMetricDetail
               key={reason}

@@ -264,7 +264,7 @@ function RetentionSourceStatus({
           <span>Cutoff</span>
           <span>Removed</span>
         </div>
-        <div className="grid gap-0.5 bg-background">
+        <div className="grouped-surface grid">
           {sources.map((source) => (
             <RetentionSourceRow key={source.source} source={source} />
           ))}
@@ -342,7 +342,7 @@ function AdminPilotRetentionLoading() {
     >
       <RetentionHeading />
       <div
-        className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2"
+        className="grouped-surface mt-4 grid overflow-hidden rounded-xl sm:grid-cols-2"
         aria-hidden="true"
       >
         {[0, 1, 2, 3].map((row) => (

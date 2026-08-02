@@ -1,6 +1,0 @@
-interface:
-  display_name: "Impeccable"
-  short_description: "Explicit craft, teach, and extract design"
-  default_prompt: "Use $impeccable craft to explore a bold visual direction while respecting TeamForge constraints."
-policy:
-  allow_implicit_invocation: false

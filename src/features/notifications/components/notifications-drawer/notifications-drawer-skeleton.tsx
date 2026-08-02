@@ -15,7 +15,7 @@ export function NotificationsDrawerSkeleton() {
       <div className="sticky top-0 z-10 bg-canvas px-5 pt-4 pb-2">
         <LoadingBlock className="h-3 w-16 rounded-md" />
       </div>
-      <div className="flex flex-col gap-0.5 px-3 pb-4">
+      <div className="grouped-surface flex flex-col px-3 pb-4">
         {NOTIFICATION_SKELETON_ROWS.map((row, index) => (
           <div
             className="flex w-full items-start gap-3 bg-card px-4 py-3.5 text-left first:rounded-t-2xl last:rounded-b-2xl"

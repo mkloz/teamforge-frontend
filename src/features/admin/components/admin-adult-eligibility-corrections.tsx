@@ -192,7 +192,7 @@ function CorrectionsContent({
   }
 
   return (
-    <ul className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:rounded-xl [&>*]:bg-card">
+    <ul className="grouped-surface grid overflow-hidden rounded-2xl [&>*]:rounded-xl [&>*]:bg-card">
       {corrections.map((correction) => (
         <li key={correction.id}>
           <CorrectionRow correction={correction} />
@@ -206,7 +206,7 @@ function CorrectionsSkeleton() {
   return (
     <div
       aria-label="Loading adult eligibility corrections"
-      className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:rounded-xl [&>*]:bg-card"
+      className="grouped-surface grid overflow-hidden rounded-2xl [&>*]:rounded-xl [&>*]:bg-card"
       role="status"
     >
       {["first", "second"].map((key) => (

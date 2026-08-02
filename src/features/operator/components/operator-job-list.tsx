@@ -149,7 +149,7 @@ export function OperatorJobList({
         />
       ) : query.data.data.length ? (
         <>
-          <ul className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:bg-card">
+          <ul className="grouped-surface grid overflow-hidden rounded-2xl [&>*]:bg-card">
             {query.data.data.map((job) => (
               <WorkerJobCard
                 key={job.id}

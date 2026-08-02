@@ -300,7 +300,7 @@ function ActivityActivationMetricSection({
         <RetentionPurgedNotice />
       ) : (
         <>
-          <dl className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-3">
+          <dl className="grouped-surface mt-4 grid overflow-hidden rounded-xl sm:grid-cols-3">
             <MetricsDetail
               label="Requesting members"
               value={formatOutcomeCount(activation.requestingMemberCount)}
@@ -363,7 +363,7 @@ function ActivityScopeSection({
         statusLabel={statusLabel}
         statusTone={statusTone}
       />
-      <dl className="mt-3 grid gap-0.5 overflow-hidden rounded-xl bg-background">
+      <dl className="grouped-surface mt-3 grid overflow-hidden rounded-xl">
         <MetricsDetail
           label="Requesting members"
           value={formatOutcomeCount(scope.requestingMemberCount)}
@@ -521,7 +521,7 @@ function AdminPilotMetricsLoading() {
           <Skeleton className="h-4 w-full max-w-xl" />
         </div>
       </div>
-      <div className="mt-4 grid gap-0.5 overflow-hidden rounded-xl bg-background sm:grid-cols-2">
+      <div className="grouped-surface mt-4 grid overflow-hidden rounded-xl sm:grid-cols-2">
         {[0, 1, 2, 3, 4, 5, 6, 7].map((row) => (
           <div
             key={row}

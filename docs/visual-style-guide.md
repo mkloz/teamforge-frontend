@@ -1,336 +1,263 @@
-# TeamForge — Visual Style Guide
+# TeamForge visual style guide
 
-**Version 1.0 | For Design, Marketing & Development Teams**
+This guide records the durable product UI decisions used across TeamForge. The
+semantic tokens and shared components in `src/` remain the implementation
+source of truth. Update this guide when a repeated product-wide decision
+changes; do not add one-off page instructions here.
 
----
+## Design character
 
-## 1. Color System
+TeamForge is compact, calm, social, and image-aware. It should feel crafted for
+forming real groups, not like a generic dashboard, database viewer, or a stack
+of generated cards.
 
-The palette has two layers:
+- Lead with content and user actions.
+- Use hierarchy, imagery, and composition before adding containers.
+- Prefer a few meaningful surfaces over nested boxes.
+- Keep density comfortable but purposeful; large empty gaps are not luxury.
+- Make mobile a composed layout, not a collapsed desktop afterthought.
+- Use color and icons as signals, not decoration.
 
-1. **Core identity colors**: Forge Teal, Spark Amber, Ink, and near-white/near-black neutrals.
-2. **Semantic surface tokens**: background, canvas, card, input, border, muted, and sidebar values tuned for light and dark mode.
+## Color and surfaces
 
-Do not introduce new hue families without explicit approval. When a new surface value is needed, add it as a semantic token instead of hard-coding component colors.
+Use semantic theme tokens. TeamForge supports multiple palettes and surface
+styles; components must not hard-code the default Forge palette.
 
-### Primary Palette
-
-| Role | Name | Light | Dark | CSS Token | Usage |
-| --- | --- | --- | --- | --- | --- |
-| Brand primary | Forge Teal | `#0D9488` | `#0D9488` | `--color-forge-teal` | Active states, icons, progress, selected states, teal tints |
-| Solid action teal | Deep Teal | `#0F766E` | `#0D9488` | `--primary` | Solid semantic primary surfaces where text contrast matters |
-| Accent | Spark Amber | `#F59E0B` | `#FBBF24` | `--accent`, `--color-spark-amber` | Notification badges, trust score value, group-formed flash, highlights |
-| Primary text | Ink | `#1C1F1D` | `#F2F5F1` | `--color-ink`, `--foreground` | Headings and body text |
-| Secondary text | Slate | `#68756F` | `#A4B2AC` | `--color-slate-muted`, `--muted-foreground` | Captions, timestamps, secondary labels, placeholder text |
-
-### Surface Palette
-
-| Role | Light | Dark | CSS Token | Usage |
-| --- | --- | --- | --- | --- |
-| App background | `#F1F4F1` | `#0B0F0E` | `--background` | Body background and floating nav bases |
-| Canvas | `#F7F8F4` | `#111716` | `--canvas`, `--color-canvas` | Main page and long-session reading surfaces |
-| Card / popover | `#FFFEFA` | `#131615` | `--card`, `--popover` | Cards, overlays, menus, elevated panels |
-| Input | `#EEF2ED` | `#171B1A` | `--input` | Text fields, selects, radios, OTP slots, tactile controls |
-| Input border | `12% Ink` | `7% Ink` | `--input-border` | Low-contrast form-control outlines |
-| Muted | `#E7EBE6` | `#202725` | `--muted` | Skeletons, inactive pills, hover surfaces |
-| Border | `rgba(29, 38, 35, 0.11)` | `rgba(229, 239, 234, 0.11)` | `--border` | Dividers, card outlines, rail separation |
-
-### Palette Rules
-
-- Teal and Amber occupy a maximum of 15% of any screen surface. The remaining 85% is semantic neutrals.
-- Amber is **never** used on large surfaces, backgrounds, or text blocks.
-- Do not invent one-off teal or amber values in components. Use `--color-forge-teal`, `--primary`, `--accent`, or opacity modifiers.
-- Avoid pure `#FFFFFF` or `#000000` for broad surfaces. Use the semantic surface tokens.
-
-### Color Emotion Reference
-
-| Color | Association | Why it works for TeamForge |
+| Role | Token | Default dark intent |
 | --- | --- | --- |
-| Forge Teal | Trust, clarity | Primary brand color for active and selected states |
-| Spark Amber | Attention, warmth | Marks notifications, highlights, and the group-formed state |
-| Canvas | Porcelain, approachability, calm | Cleaner than cream; keeps long app sessions warm without turning beige |
-| Ink | Authority, readability | Green-black charcoal reads more naturally than pure black on Canvas |
-| Slate | Neutrality, hierarchy | Recedes behind Teal and Amber; creates text hierarchy without a new hue |
-
----
-
-## 2. Typography
-
-Use Inter throughout the product so type remains consistent across screens.
-
-### Font Family
-
-**Inter** is the product font for headings, body copy, labels, and controls.
-
-```css
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400 900;
-  font-display: swap;
-  src: url("/fonts/inter-latin-var.woff2") format("woff2");
-}
-```
-
-CSS token: `--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;`
-
-### Type Scale
-
-| Role              | Size                       | Weight          | Color         | Line Height | Class Pattern                                     |
-| ----------------- | -------------------------- | --------------- | ------------- | ----------- | ------------------------------------------------- |
-| Page / hero title | `clamp(2rem, 5vw, 3.5rem)` | 800 (ExtraBold) | Ink or White  | 1.1         | `font-extrabold leading-tight`                    |
-| Section heading   | 32px / 2rem                | 700 (Bold)      | Ink           | 1.2         | `text-3xl font-bold`                              |
-| Card title        | 20px / 1.25rem             | 600 (SemiBold)  | Ink           | 1.3         | `text-xl font-semibold`                           |
-| Body text         | 16px / 1rem                | 400 (Regular)   | Ink or Slate  | 1.6         | `text-base font-normal leading-relaxed`           |
-| Secondary body    | 14px / 0.875rem            | 400 (Regular)   | Slate         | 1.5         | `text-sm leading-relaxed`                         |
-| Overline / label  | 11px / 0.6875rem           | 600 (SemiBold)  | Teal or Slate | 1.0         | `text-xs font-semibold uppercase tracking-widest` |
-| Caption           | 12px / 0.75rem             | 500 (Medium)    | Slate         | 1.4         | `text-xs font-medium`                             |
-| Button            | 14–16px                    | 600 (SemiBold)  | White or Teal | 1.0         | `text-sm font-semibold`                           |
-
-### Typography Rules
-
-- Use `text-balance` on all headlines to prevent orphaned words.
-- Use `text-pretty` on body copy blocks longer than 2 lines.
-- Never use type smaller than 12px in any UI context.
-- Line-height for body copy must always be between 1.4 and 1.6.
-- Do not add custom letter-spacing to body text. Only overlines use `tracking-widest`.
-
----
-
-## 3. Spacing & Layout
-
-### Base Grid
-
-All spacing uses a **4px base unit**. Prefer Tailwind's built-in scale; avoid arbitrary values.
-
-| Token   | Value | Usage                                 |
-| ------- | ----- | ------------------------------------- |
-| `p-4`   | 16px  | Standard card internal padding        |
-| `p-6`   | 24px  | Large card / section internal padding |
-| `gap-3` | 12px  | Between cards in a row                |
-| `gap-6` | 24px  | Between sections within a page        |
-| `py-24` | 96px  | Section vertical padding (desktop)    |
-| `py-16` | 64px  | Section vertical padding (mobile)     |
-
-### Container Width
-
-```
-max-w-6xl mx-auto px-6
-```
-
-This applies to all section content. Never break this to `max-w-none` for text content — only full-bleed backgrounds use `w-full`.
-
-### Layout Priority
-
-1. **Flexbox** for most layouts — rows, columns, centering, alignment.
-2. **CSS Grid** for 2D bento layouts (features, about bento).
-3. **Never use floats** or absolute positioning for layout structure.
-
-### Responsive Breakpoints
-
-| Breakpoint       | Prefix | Width    |
-| ---------------- | ------ | -------- |
-| Mobile (default) | —      | < 768px  |
-| Tablet           | `md:`  | ≥ 768px  |
-| Desktop          | `lg:`  | ≥ 1024px |
-| Wide             | `xl:`  | ≥ 1280px |
-
----
-
-## 4. Border Radius
-
-Consistent rounding is part of the "Structured Warmth" visual style.
-
-| Context                    | Radius | Tailwind class |
-| -------------------------- | ------ | -------------- |
-| Page cards / section cards | 16px   | `rounded-2xl`  |
-| Input fields               | 10px   | `rounded-xl`   |
-| Tag pills / badges         | Full   | `rounded-full` |
-| Avatar images              | Full   | `rounded-full` |
-| Modal / large overlay      | 20px   | `rounded-3xl`  |
-
-**Never use sharp corners** (i.e., `rounded-none`) on user-facing cards, buttons, or inputs. Fully circular containers (`rounded-full`) are reserved for avatars and pill badges only.
-
----
-
-## 5. Shadows & Elevation
-
-| Level                   | CSS Value                          | Usage                           |
-| ----------------------- | ---------------------------------- | ------------------------------- |
-| Resting card            | `0 1px 3px rgba(0,0,0,0.06)`       | Default card on white           |
-| Hover card              | `0 4px 12px rgba(13,148,136,0.10)` | Card on hover (teal-tinted)     |
-| Floating element        | `0 20px 40px rgba(0,0,0,0.12)`     | Glass cards, modals, dropdowns  |
-| Teal glow (CTA buttons) | `0 0 20px rgba(13,148,136,0.30)`   | Primary button on dark surfaces |
-| Teal glow pulse         | `0 0 32px rgba(13,148,136,0.55)`   | Animated max state              |
-
----
-
-## 6. Glass Card Style
-
-Used exclusively on dark backgrounds (hero, algorithm, CTA sections).
-
-```css
-background: rgba(255, 255, 255, 0.06);
-border: 1px solid rgba(255, 255, 255, 0.1);
-backdrop-filter: blur(12px);
-border-radius: 16px;
-```
-
-**Do not use glassmorphism on light/cream backgrounds.** Glass only works when there is visible motion or color behind it to reveal through the blur.
-
----
-
-## 7. Iconography
-
-- **Library:** Lucide React (primary). React Icons as fallback for icons not available in Lucide.
-- **Size:** 16px (inline), 20px (card), 24px (section header), 32px (large feature card).
-- **Stroke weight:** `strokeWidth={1.5}` for 20–24px, `strokeWidth={2}` for 16px.
-- **Color:** Forge Teal for primary icons; Spark Amber for accent/notification icons; Slate for inactive/secondary icons.
-- **Never use emojis as icons** in any UI context.
-
----
-
-## 8. Page-Level Visual Rhythm
-
-The landing page follows a deliberate dark-light alternation that creates scroll momentum:
-
-| Section | Background | Purpose |
-| --- | --- | --- |
-| Navbar | Transparent → `#090909` | Keeps navigation readable while scrolling |
-| Hero | `#090909` + animated nodes | Introduces the product and primary action |
-| How It Works | Canvas `#F7F8F4` | Explains the group-forming flow |
-| Features | Card `#FFFEFA` | Summarizes core product capabilities |
-| How groups form | `#090909` + interactive viz | Explains the factors used to form a group |
-| About | Canvas `#F7F8F4` + Card surfaces | Explains the product purpose |
-| CTA | `#090909` + spotlight | Repeats the primary action |
-| Footer | `#090909` | Provides navigation and legal links |
-
-On public pages, alternate light and dark sections unless a reviewed design calls for a different sequence.
-
----
-
-## 9. Animation Principles
-
-### Motion Philosophy
-
-Animations explain state changes and guide attention. Remove motion that has no interaction or status purpose.
-
-### Entrance Animations
-
-All scroll-triggered entrances use **fade-up** (`opacity: 0 → 1`, `translateY: 24px → 0`):
-
-```css
-@keyframes fade-up {
-    from {
-        opacity: 0;
-        transform: translateY(24px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-```
-
-- Duration: 0.6s
-- Easing: `ease-out`
-- Stagger between sibling elements: 100–150ms
-
-### Interaction Animations
-
-| Interaction      | Animation                                             |
-| ---------------- | ----------------------------------------------------- |
-| Button hover     | Scale 1.02, shadow intensify, 150ms ease              |
-| Card hover       | Border color → Teal, shadow → teal-tinted, 200ms ease |
-| Tag/pill select  | Scale 0.95 then 1.0, background → Teal, 150ms ease    |
-| Navigation hover | Underline slide-in from left, Teal, 200ms ease        |
-
-### Background Animations
-
-| Element              | Animation                                       | Notes                 |
-| -------------------- | ----------------------------------------------- | --------------------- |
-| Hero node canvas     | 64 nodes, sinusoidal drift, pulsing connections | canvas-based, low CPU |
-| Orb ring             | `rotate 20s linear infinite`                    | CSS only              |
-| Orb glow pulse       | `scale + opacity, 4s ease-in-out infinite`      | CSS only              |
-| Floating glass cards | Independent sine-wave float, 3.5–5s cycles      | CSS only              |
-
-### Accessibility
-
-All animations must respect the `prefers-reduced-motion` media query:
-
-```css
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-```
-
----
-
-## 10. Component Patterns
-
-```
-
-### Tag / Interest Pill
-
-```
-
-Resting: Slate/8% background, Slate text, rounded-full
-Selected: Forge Teal background, white text, rounded-full
-Height: 28–32px, Padding: 0 12px
-Font: 12px / Medium
-
-```
-
-### MBTI Badge
-
-```
-
-Forge Teal background
-White text, 11px / Bold / Uppercase
-Rounded-full
-Padding: 2px 8px
-
-```
-
-### Trust Score Ring
-
-```
-
-Outer ring track: Slate at 20% opacity
-Fill ring: Forge Teal
-Center value: Spark Amber text, font-bold
-Ring size: 48–64px
-SVG stroke-linecap: round
-
-```
-
----
-
-## 11. Imagery & Illustration
-
-- **Photography:** Avoid generic stock photos. If photos are used, they must show real groups of 3–5 people doing activities. Warm, natural light. No posed corporate imagery.
-- **In-app spot illustrations:** Empty states, error states, 404 visuals, Forge success art, and home hero-right visuals follow `docs/ui-visual-assets-reference-for-chat.md`. Use the approved TeamForge dark 2D outline style there, including its exact prompt examples.
-- **Landing/decorative illustrations:** Use sparse, geometric, low-detail illustrations aligned with the node-graph motif. Teal and amber only.
-- **Generated images:** May be used for brand mockups and presentation materials. Must match the Canvas/Teal/Amber palette.
-- **Backgrounds:** Only the node-canvas animation is used as a background element. No gradient blobs, no abstract shapes, no decorative geometric fills.
-
----
-
-## 12. Copy-Level Style Rules
-
-- Avoid "AI", "machine learning", or any ML terminology — the algorithm does not use ML.
-- Avoid dating-app language: "match", "swipe", "like", "heart".
-- Avoid game mechanics language: "level up", "achievement", "leaderboard".
-- Avoid jargon facing the user: "k-NN", "greedy matching", "cosine similarity", "Euclidean distance", "exponential smoothing".
-- Use active, second-person copy: "your group", "your people", "you're an ENTJ".
-- Numbers and stats must be real or clearly hypothetical. Never display placeholder stats as if live.
-
----
-
-_For brand concept, mission, values, and logo usage rules — see `brand-overview.md`._
-```
+| Page | `--background` | Deepest application surface |
+| Reading canvas | `--canvas` | Long-session content surface |
+| Card/popover | `--card`, `--popover` | Dark contained surface; default dark-surface value `#131615` |
+| Input | `--input` | Slightly differentiated, low-contrast control surface |
+| Border | `--border`, `--input-border` | Quiet structural edge |
+| Primary | `--primary`, `--color-forge-teal` | Selection, progress, primary action |
+| Accent | `--accent`, `--color-spark-amber` | Warnings and limited emphasis |
+| Text | `--foreground`, `--muted-foreground` | Primary and secondary hierarchy |
+
+Rules:
+
+- Use neutrals for most of the screen. Teal, amber, and theme accents identify
+  state or action.
+- Do not invent component-specific shades when a semantic token exists.
+- Dark-mode cards should not become brighter than the content hierarchy needs.
+- Selection normally uses a restrained tinted background and clear state icon,
+  not bright text plus border plus glow at the same time.
+- Use destructive red only for destructive state and actions.
+- Never rely on color alone to communicate status.
+
+## Typography
+
+Use the configured Inter stack for product UI. Establish hierarchy through
+size, weight, measure, and spacing rather than uppercase labels or many similar
+headings.
+
+| Role | Typical treatment |
+| --- | --- |
+| Page title | `clamp(2rem, 5vw, 3.5rem)`, 800, tight line-height |
+| Section title | 1.5–2rem, 700 |
+| Item title | 1–1.25rem, 600–700 |
+| Body | 1rem, 400, 1.45–1.6 line-height |
+| Secondary | 0.875rem, muted, 1.4–1.5 line-height |
+| Caption/status | 0.75rem minimum, 500–600 |
+
+- Use sentence case by default, including settings section labels.
+- Keep headings visually distinct from field labels and item titles.
+- Avoid headings that wrap into narrow vertical towers. Adjust measure and size
+  together.
+- Use `text-balance` selectively on short headings and `text-pretty` on longer
+  supporting copy.
+- Do not add letter spacing to body text.
+- Never render product text below 12px.
+- Clamp only when the omitted content remains available or nonessential.
+
+## Spacing and page width
+
+Use the 4px Tailwind scale and shared layout primitives. Choose spacing from the
+relationship between elements rather than applying one global section gap.
+
+| Relationship | Typical range |
+| --- | --- |
+| Icon to label | 8–12px |
+| Rows inside a compact group | 2–8px visual gap, owned by the shared component |
+| Related controls/fields | 12–20px |
+| Section heading to content | 16–24px |
+| Product sections | 32–56px depending on hierarchy |
+| Marketing chapters | 64–96px only when the composition benefits |
+
+- Avoid blanket `py-16`/`py-24` product sections.
+- Reduce outer and inner padding when a boxed child sits inside a boxed parent,
+  especially on mobile.
+- Constrain forms and settings content so fields do not stretch across wide
+  screens. Use the remaining width for previews, maps, context, or intentional
+  whitespace.
+- Let editorial and bento surfaces use wider containers when their composition
+  needs it; long text still needs a readable measure.
+- Use gaps for sibling separation. Do not combine margin and gap for the same
+  relationship.
+
+## Grouping and separators
+
+Use the shared grouped-menu pattern for related rows.
+
+- Separate rows with the component's narrow background gap instead of a bright
+  border.
+- Use the shared `grouped-surface` utility for these gutters. It owns the
+  canonical 2px width and remains transparent so the parent surface—not an
+  arbitrary black fill—shows between items.
+- Round the first row at the top and the last row at the bottom. Middle rows do
+  not receive independent outer rounding.
+- A single row receives the full group radius.
+- Do not let dividers or background gaps stop midway through a component unless
+  the indentation communicates a real nested hierarchy.
+- Keep the item's content aligned across rows; descriptions should not inherit
+  icon indentation when the icon is meant to read inline.
+
+Prefer an unboxed section, grouped menu, timeline, editorial split, or image
+mosaic when cards would create box-in-box repetition.
+
+## Radius and borders
+
+Radius belongs to the component family, not to every child.
+
+| Context | Typical radius |
+| --- | --- |
+| Product surface/group | 12–16px |
+| Input/control | 10–14px |
+| Modal/drawer panel | 16–20px |
+| Avatar/pill/compact status | Full |
+
+- Borders are quiet structural aids, not the default way to separate every
+  region.
+- Empty states may use a complete low-contrast dashed border with a modest
+  radius; never show only horizontal dashed lines.
+- Selected or profile-ranked visual emphasis may use a stronger 2px semantic
+  border when it must remain visible over imagery.
+- Avoid multiple borders around nested surfaces.
+
+## Icons
+
+Use Lucide React unless an existing domain asset is more specific.
+
+- Inline icon: 16px. Row icon: 18–20px. Section icon: 20–24px.
+- Align inline icons to the text baseline so they read like another character.
+- Unboxed icons inherit adjacent text color.
+- Accent-colored icons require semantic meaning or an intentional icon
+  background. Do not color every icon teal.
+- Do not add an icon background to ordinary toolbar, filter, or inline actions.
+- Keep icon backgrounds when they are part of a repeated identity/status block;
+  match the block's height and alignment.
+- Prefer a specific icon over repeating shield, sparkles, or generic group
+  symbols everywhere.
+- Use a checkmark in the usual icon position for selected visual choices when
+  the source icon would otherwise duplicate the selection marker.
+- Do not use emoji as product icons.
+
+## Components and data presentation
+
+### Inputs
+
+- Use a dark, subdued input surface and low-contrast border in dark mode.
+- Keep right-side controls optically balanced with field radius.
+- Animate search and clear controls spatially; do not let them pop in and shift
+  text abruptly.
+- Keep validation close to the field without collapsing the space needed for
+  helper text.
+
+### Buttons
+
+- One clear primary action per decision area.
+- Secondary actions use the established secondary button, not improvised pills.
+- Icon-only actions need tooltips and accessible names.
+- Destructive actions should be nearby but visually separate from the primary
+  continuation path.
+- Avoid full-width desktop buttons when the action does not need that emphasis.
+
+### Notices and states
+
+- Use the shared notice with a generic semantic icon for error, warning, and
+  success unless a specific symbol materially improves comprehension.
+- Do not place the notice icon inside an extra box.
+- Empty states explain what is absent and, when useful, the next action. Avoid
+  decorative custom SVGs that become illegible at their rendered size.
+- Design loading, empty, error, success, disabled, restricted, missing-media,
+  dense, long-copy, and pagination states as first-class states.
+
+### Data-rich surfaces
+
+- Avoid database-like rows when time, place, capacity, or progress can be shown
+  more naturally through a calendar tile, map image, countdown, segmented
+  capacity track, timeline, or member slots.
+- Remove duplicate labels when icon, value, and context are already clear.
+- Preserve important values such as match/trust scores and member availability
+  during visual refactors.
+- Use the reusable bento/activity mosaic for image-rich recommendations where
+  varied sizes improve discovery. The grid must close cleanly at its edge.
+
+## Imagery and material
+
+- Prefer relevant photography showing real people doing the activity. Avoid
+  posed corporate stock imagery.
+- Use consistent crop logic and focal points across a repeated component.
+- Add explicit online markers when location imagery could imply an in-person
+  activity.
+- Missing and failed images need intentional fallbacks.
+- Use a restrained scrim or localized glass surface for text over images. Avoid
+  black gradients that erase most of the image.
+- Glass requires visible content behind it, readable contrast, modest blur, and
+  a clear purpose. Do not apply it as a universal card style.
+- Do not use blur as a transition.
+
+## Motion and interaction
+
+Motion explains where content came from and what changed.
+
+- Animate shared collapsibles, drawers, carousels, selection, and reordering
+  through the shared primitives.
+- Prefer transform and opacity. Avoid `transition: all` and layout-jank
+  properties.
+- Category collapses animate the whole category, not only its inner rows.
+- Swipeable mobile content needs visual feedback such as a real adjacent-page
+  preview and continuous sliding animation.
+- Respect reduced motion and avoid automatically opening large drawers. A
+  one-time contextual peek may signal readiness without stealing control.
+- Keep hover-only destructive actions accessible by another method on touch.
+
+## Responsive behavior
+
+- Verify small mobile, tablet when composition changes, normal desktop, and
+  wide desktop for responsive layout work.
+- Give the active step width priority in compact steppers; completed and future
+  steps may shrink without cropping the active label.
+- Prevent sticky previews and action drawers from covering content or mobile
+  safe areas.
+- Prefer swipe gestures on mobile carousels, while retaining compact controls as
+  discoverability and keyboard fallbacks.
+- Recompose multi-column layouts on mobile; do not preserve empty desktop rails.
+- Test long names, translated copy, large text, and no-date/no-location states.
+
+## Visual verification
+
+For meaningful UI changes:
+
+1. Inspect the current rendered screen before editing.
+2. Exercise relevant Scenario Mode worlds and overlays.
+3. Capture or inspect representative mobile and desktop states.
+4. Check focus, keyboard, touch targets, wrapping, overflow, and reduced motion.
+5. Check browser console and network errors.
+6. Compare against the latest user direction and nearby shared patterns.
+
+Store generated screenshots and visual reports only in ignored `temp/` or
+`reports/` paths.
+
+## Product language
+
+- Explain outcomes in plain language; keep implementation jargon out of product
+  copy.
+- Do not frame TeamForge like a dating app. `Match score` is acceptable where
+  it describes group compatibility, but avoid swipe/like/heart language.
+- Use sentence case and active, direct copy.
+- Do not show placeholder statistics as live data.
+- Preserve helpful onboarding and landing-page explanation; removing duplicate
+  UI labels does not justify stripping essential instructional copy.
+
+See `.agents/rules/teamforge/copy-guardrails.md` for product language and voice decisions.

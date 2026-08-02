@@ -84,7 +84,7 @@ export function OperatorWorkerHealthList({
         </p>
       </header>
 
-      <div className="grid gap-0.5 overflow-hidden rounded-2xl bg-background [&>*]:bg-card">
+      <div className="grouped-surface grid overflow-hidden rounded-2xl [&>*]:bg-card">
         {workers.map((worker) => (
           <WorkerRow
             key={worker.kind}

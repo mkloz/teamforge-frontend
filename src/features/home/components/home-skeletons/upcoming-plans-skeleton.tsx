@@ -13,7 +13,7 @@ export function HomeUpcomingPlansSkeleton() {
           className="min-h-72 w-full rounded-2xl"
           tone="teal"
         />
-        <ul className="grid list-none gap-0.5 overflow-hidden rounded-2xl p-0">
+        <ul className="grouped-surface grid list-none overflow-hidden rounded-2xl p-0">
           {UPCOMING_PLAN_ROW_KEYS.slice(1).map((item, index) => (
             <li
               key={item}

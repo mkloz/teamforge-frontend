@@ -103,7 +103,7 @@ export function AddressSuggestionsPanel({
       <div className="relative overflow-hidden rounded-lg">
         <div
           ref={listRef}
-          className="scrollbar-hide -mr-5 flex max-h-(--location-panel-list-height) flex-col gap-0.5 overflow-y-auto py-0 pr-5"
+          className="grouped-surface scrollbar-hide -mr-5 flex max-h-(--location-panel-list-height) flex-col overflow-y-auto py-0 pr-5"
           onScroll={onScroll}
         >
           {suggestions.map((suggestion, index) => (

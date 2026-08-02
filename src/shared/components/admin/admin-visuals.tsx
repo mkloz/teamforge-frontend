@@ -40,7 +40,7 @@ export function AdminSummaryStrip({
   return (
     <dl
       className={cn(
-        "grid gap-0.5 overflow-hidden rounded-2xl bg-background sm:grid-cols-2 2xl:grid-cols-4",
+        "grouped-surface grid overflow-hidden rounded-2xl sm:grid-cols-2 2xl:grid-cols-4",
         className,
       )}
     >

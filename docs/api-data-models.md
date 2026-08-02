@@ -1091,4 +1091,4 @@ disbanded
 
 ---
 
-_For product vision, see `product-vision.md`. For feature specifications, see `feature-specifications.md`._
+For the current document map, see [`README.md`](README.md).
