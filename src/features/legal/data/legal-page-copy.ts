@@ -29,7 +29,7 @@ export const legalPageCopy: Record<LegalPageKind, LegalPageCopy> = {
         body: "TeamForge collects the information needed to create an account, describe a person accurately, form groups, operate chats, and keep the platform trustworthy.",
         bullets: [
           "Account data: name, email, password credentials, authentication provider, account status, verification state, and session metadata.",
-          "Profile data: avatar, bio, age, gender, city, personality type, OCEAN scores, interests, trust score, and profile visibility choices.",
+          "Profile data: avatar, bio, age, gender, city, personality type, OCEAN scores, interests, participation reputation, and profile visibility choices.",
           "Group and plan data: groups, members, roles, invites, join requests, plans, proposals, votes, ratings, attendance context, and participation signals.",
           "Chat data: messages, replies, forwarded messages, attachments, reactions, pinned messages, saved messages, read state, link previews, blocks, and reports.",
           "Technical data: device, browser, IP-derived region, logs, performance data, error details, security events, and approximate usage patterns.",
@@ -41,7 +41,7 @@ export const legalPageCopy: Record<LegalPageKind, LegalPageCopy> = {
         body: "Some TeamForge signals can feel personal even when they are used only to make the app easier and safer to use.",
         bullets: [
           "Personality answers are used to infer a personality type and OCEAN profile.",
-          "Interest, social graph, and trust signals may be used to infer likely compatibility with groups or people.",
+          "Interests, availability, activity choices, and disclosed profile preferences may be used to estimate likely compatibility with groups or people. Participation reputation is not used for this purpose.",
           "Location is used at city or plan level unless a precise meeting place is needed for a confirmed plan.",
           "TeamForge does not require government ID, financial data, health data, or exact live location for core account use.",
         ],
@@ -181,7 +181,7 @@ export const legalPageCopy: Record<LegalPageKind, LegalPageCopy> = {
         heading: "5. Groups, plans, and invitations",
         body: "TeamForge helps form and coordinate groups, but each person remains responsible for their decisions and conduct.",
         bullets: [
-          "TeamForge may suggest or form groups using profile, interest, activity, and trust signals.",
+          "TeamForge may suggest or form groups using disclosed profile, interest, activity, and availability signals. Participation reputation is excluded.",
           "A group suggestion does not guarantee friendship, attendance, compatibility, availability, or safety.",
           "Users are responsible for deciding whether to join, invite, attend, or continue with a plan.",
           "Group hosts and members must keep plans clear, lawful, respectful, and realistic.",
@@ -222,13 +222,13 @@ export const legalPageCopy: Record<LegalPageKind, LegalPageCopy> = {
       },
       {
         id: "ratings",
-        heading: "9. Ratings and trust signals",
-        body: "Trust features help TeamForge keep groups reliable, but they are not perfect measures of a person.",
+        heading: "9. Ratings and participation reputation",
+        body: "Participation reputation summarizes limited eligible plan evidence. It is not a safety check, identity verification, character judgment, or compatibility prediction.",
         bullets: [
           "Ratings must be honest, respectful, and based on actual group participation.",
           "Do not manipulate ratings, retaliate, coordinate fake reports, or pressure people for positive feedback.",
-          "Trust signals may affect future recommendations, invites, group formation, or safety review.",
-          "TeamForge may hide, adjust, or remove ratings that look abusive or unreliable.",
+          "Participation reputation does not affect recommendations, invites, group formation, access, pricing, verification, or safety decisions.",
+          "Users can request correction, and TeamForge may freeze, adjust, or remove evidence that is incorrect, abusive, or unreliable.",
         ],
       },
       {

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Handshake, type LucideIcon, ShieldCheck, Target } from "lucide-react";
+import { Handshake, History, type LucideIcon, Target } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { AdminCrownBadge } from "@/shared/components/common/admin-crown-badge";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
@@ -201,21 +201,25 @@ function getReputationMetric(
   const summary = member.reputationSummary;
   const score = summary?.displayScore;
 
-  if (summary?.evidenceState === "NEW" || score === null) {
+  if (
+    !summary ||
+    summary.evidenceState === "NEW" ||
+    typeof score !== "number"
+  ) {
     return {
-      icon: ShieldCheck,
+      icon: History,
       label: "Participation reputation",
       tone: "muted",
       value: "New",
     };
   }
 
-  const percent = formatPercent(score ?? member.trustScore) ?? 0;
+  const percent = Math.round(score);
   return {
-    icon: ShieldCheck,
+    icon: History,
     label: "Participation reputation",
-    tone: percent >= 80 ? "teal" : "muted",
-    value: `${percent}`,
+    tone: "muted",
+    value: `${percent}/100`,
   };
 }
 

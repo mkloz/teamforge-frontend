@@ -13,7 +13,7 @@ export interface MemberCardProps {
 
 export interface MemberMetricItem {
   icon: LucideIcon;
-  key: "fit" | "trust";
+  key: "fit";
   label: string;
   tone: "muted" | "teal";
   value: string;

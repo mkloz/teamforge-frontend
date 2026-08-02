@@ -9,6 +9,13 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Notice } from "@/shared/components/ui/notice";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
 import { Textarea } from "@/shared/components/ui/textarea";
 
 export function ReputationCorrectionSection() {
@@ -42,6 +49,49 @@ export function ReputationCorrectionSection() {
           >
             <FormField
               control={correction.form.control}
+              name="inputId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Evidence to review</FormLabel>
+                  <Select
+                    disabled={
+                      correction.isSubmitting || correction.isLoadingEvidence
+                    }
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={
+                            correction.isLoadingEvidence
+                              ? "Loading evidence…"
+                              : "Choose a plan or history entry"
+                          }
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {correction.evidence
+                        .filter((item) => item.status === "VALID")
+                        .map((item) => (
+                          <SelectItem key={item.id} value={item.id}>
+                            {formatEvidenceLabel(item)}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-slate-muted text-xs leading-relaxed">
+                    Entries are delayed and do not identify who contributed them
+                    or reveal their private response.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={correction.form.control}
               name="reason"
               render={({ field }) => (
                 <FormItem>
@@ -67,7 +117,10 @@ export function ReputationCorrectionSection() {
 
             <div className="mt-4 flex justify-end">
               <Button
-                disabled={!correction.isOnline}
+                disabled={
+                  !correction.isOnline ||
+                  !correction.evidence.some((item) => item.status === "VALID")
+                }
                 loading={correction.isSubmitting}
                 type="submit"
                 variant="outline"
@@ -78,6 +131,44 @@ export function ReputationCorrectionSection() {
           </form>
         </Form>
       )}
+
+      {correction.latestResolvedDispute ? (
+        <Notice className="mt-4" role="status" tone="neutral" statusIcon>
+          <p className="font-semibold">
+            Latest correction:{" "}
+            {correction.latestResolvedDispute.status.toLowerCase()}
+          </p>
+          {correction.latestResolvedDispute.decision ? (
+            <p className="mt-1">{correction.latestResolvedDispute.decision}</p>
+          ) : null}
+        </Notice>
+      ) : null}
     </section>
   );
+}
+
+function formatEvidenceLabel(item: {
+  evidenceType:
+    | "FOLLOW_THROUGH"
+    | "ATTENDANCE"
+    | "ADJUSTMENT"
+    | "LEGACY_BASELINE";
+  occurredAt: string;
+  planTitle: string | null;
+}) {
+  if (item.planTitle)
+    return `${item.planTitle} · ${formatDate(item.occurredAt)}`;
+  if (item.evidenceType === "LEGACY_BASELINE")
+    return "Earlier participation history";
+  return `Participation history · ${formatDate(item.occurredAt)}`;
+}
+
+function formatDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
 }

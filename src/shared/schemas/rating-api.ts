@@ -34,9 +34,13 @@ export const createRatingPayloadSchema = z.object({
   rateeId: z.string().min(1),
   score: z.number().int().min(1).max(5),
   comment: z.string().trim().max(500).optional(),
+  followThrough: z.enum(["YES", "PARTIAL", "NO", "UNSURE"]).optional(),
 });
 
 export type CreateRatingPayload = z.infer<typeof createRatingPayloadSchema>;
+export type ReputationFollowThroughResponse = NonNullable<
+  CreateRatingPayload["followThrough"]
+>;
 
 const reviewDeferralReasonSchema = z.enum(["NOT_PRESENT", "NEED_MORE_TIME"]);
 

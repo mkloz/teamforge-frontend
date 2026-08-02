@@ -13,14 +13,6 @@ export function getParticipantScorePercent(participant: ForgeParticipant) {
   return Math.round(normalizePercent(participant.compatibilityScore));
 }
 
-export function getParticipantTrustPercent(participant: ForgeParticipant) {
-  if (typeof participant.user.trustScore !== "number") {
-    return null;
-  }
-
-  return Math.round(normalizePercent(participant.user.trustScore));
-}
-
 export function getParticipantName(participant: ForgeParticipant) {
   return participant.user.name.trim() || "Group member";
 }

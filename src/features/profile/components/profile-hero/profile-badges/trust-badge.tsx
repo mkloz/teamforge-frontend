@@ -6,7 +6,13 @@ import {
 import type { ReputationSummary } from "@/shared/schemas/reputation";
 import { ProfileSignal } from "./profile-signal";
 
-export function TrustBadge({ summary }: { summary: ReputationSummary }) {
+export function TrustBadge({
+  isSelf,
+  summary,
+}: {
+  isSelf: boolean;
+  summary: ReputationSummary;
+}) {
   const score =
     summary.displayScore === null ? null : Math.round(summary.displayScore);
   const displayValue = score === null ? "New" : `${score}`;
@@ -35,13 +41,19 @@ export function TrustBadge({ summary }: { summary: ReputationSummary }) {
         sideOffset={10}
         className="w-80 border-white/8 bg-ink p-4"
       >
-        <ReputationPopoverContent summary={summary} />
+        <ReputationPopoverContent isSelf={isSelf} summary={summary} />
       </PopoverContent>
     </Popover>
   );
 }
 
-function ReputationPopoverContent({ summary }: { summary: ReputationSummary }) {
+function ReputationPopoverContent({
+  isSelf,
+  summary,
+}: {
+  isSelf: boolean;
+  summary: ReputationSummary;
+}) {
   const score =
     summary.displayScore === null ? null : Math.round(summary.displayScore);
 
@@ -92,14 +104,21 @@ function ReputationPopoverContent({ summary }: { summary: ReputationSummary }) {
 
       <div className="border-white/6 border-t pt-3 text-slate-muted text-xs leading-relaxed">
         <p>Calculation version: {summary.calculationVersion}</p>
-        <a
-          className="mt-2 inline-flex min-h-9 items-center font-semibold text-forge-teal underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal"
-          href="/settings?tab=privacy"
-        >
-          {summary.hasOpenCorrection
-            ? "Correction under review"
-            : "Review or request a correction"}
-        </a>
+        {isSelf ? (
+          <a
+            className="mt-2 inline-flex min-h-9 items-center font-semibold text-forge-teal underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal"
+            href="/settings?tab=privacy"
+          >
+            {summary.hasOpenCorrection
+              ? "Correction under review"
+              : "Review or request a correction"}
+          </a>
+        ) : (
+          <p className="mt-2">
+            Scores update only after enough eligible plans and different people
+            contribute delayed evidence.
+          </p>
+        )}
       </div>
     </div>
   );

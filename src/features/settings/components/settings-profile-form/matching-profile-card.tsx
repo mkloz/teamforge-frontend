@@ -5,12 +5,10 @@ import {
   BrainCircuit,
   type LucideIcon,
   RefreshCcw,
-  ShieldCheck,
   Tags,
 } from "lucide-react";
 import { useState } from "react";
 
-import { normalizeTrustScore } from "@/features/settings/components/settings-profile-form/settings-formatters";
 import { personalityAssessmentQueryOptions } from "@/shared/api/personality-assessment-query";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -57,13 +55,8 @@ export function MatchingProfileCard({
         </p>
       </div>
 
-      <dl className="mt-4 grid grid-cols-3 gap-2 sm:mt-5">
+      <dl className="mt-4 grid grid-cols-2 gap-2 sm:mt-5">
         <ProfileSignal icon={Brain} label="Personality" value={personality} />
-        <ProfileSignal
-          icon={ShieldCheck}
-          label="Trust"
-          value={getTrustScoreLabel(currentUser)}
-        />
         <ProfileSignal icon={Tags} label="Interests" value={interests.length} />
       </dl>
 
@@ -224,8 +217,4 @@ function getPersonalityValue(query: {
   }
 
   return "—";
-}
-
-function getTrustScoreLabel(currentUser: User | undefined) {
-  return currentUser ? `${normalizeTrustScore(currentUser.trustScore)}%` : "0%";
 }

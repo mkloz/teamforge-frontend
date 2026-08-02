@@ -1,4 +1,4 @@
-import { Clock3, type LucideIcon, MapPin, ShieldCheck } from "lucide-react";
+import { Clock3, type LucideIcon, MapPin } from "lucide-react";
 
 import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 
@@ -38,7 +38,7 @@ export function getFriendRequestQueueItemRenderState({
   request,
   state,
 }: FriendRequestQueueItemRenderStateInput) {
-  const [cityLabel, trustLabel, sentLabel] = getFriendRequestMeta(request);
+  const [cityLabel, sentLabel] = getFriendRequestMeta(request);
   const isActionDisabled = getQueueActionDisabled({
     isAccepting: state.isAccepting,
     isDeclining: state.isDeclining,
@@ -58,7 +58,6 @@ export function getFriendRequestQueueItemRenderState({
     profileNavigation: buildProfileNavigation(request.counterpart.id),
     requestMeta: [
       { icon: MapPin, label: cityLabel },
-      { icon: ShieldCheck, label: trustLabel },
       { icon: Clock3, label: sentLabel },
     ].filter(hasQueueMetaLabel),
     rowClassName: getQueueItemClassName(

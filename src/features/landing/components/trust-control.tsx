@@ -21,7 +21,7 @@ const CONTROL_POINTS = [
   {
     icon: ShieldCheck,
     title: "Reliability matters",
-    detail: "Showing up as planned helps TeamForge form stronger groups.",
+    detail: "Keeping plans updated helps everyone make an informed choice.",
   },
 ] as const;
 
@@ -55,7 +55,8 @@ export function TrustControlSection() {
             </p>
 
             <p className="mt-6 text-pretty border-forge-teal/45 border-l-2 pl-4 font-black text-base text-white leading-relaxed">
-              Group formation considers reliability, not popularity.
+              Group formation uses disclosed fit signals—not popularity or
+              reputation.
             </p>
           </div>
 

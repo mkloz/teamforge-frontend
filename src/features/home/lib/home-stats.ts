@@ -1,10 +1,8 @@
 import type { UserStats } from "@/features/home/lib/home-contract";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
-import { normalizeDisplayScore } from "@/shared/lib/user-psychometrics";
 import type { User } from "@/shared/schemas";
 
 export const EMPTY_HOME_STATS: UserStats = {
-  trustScore: 0,
   groupsJoined: 0,
   activitiesDone: 0,
   connections: 0,
@@ -40,7 +38,6 @@ function countUniqueConnections(groups: HomeGroup[], currentUserId: string) {
 
 export function buildHomeStats(user: User, groups: HomeGroup[]): UserStats {
   return {
-    trustScore: normalizeDisplayScore(user.trustScore),
     groupsJoined: groups.length,
     activitiesDone: groups.filter((group) => group.status === "COMPLETED")
       .length,

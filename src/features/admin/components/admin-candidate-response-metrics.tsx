@@ -283,7 +283,7 @@ function CandidateDeclineReasonBreakdown({
       </h4>
       <p className="mt-1 max-w-2xl text-pretty text-slate-muted text-xs leading-relaxed">
         Candidates can skip this question. This screen shows internal totals
-        only, and the reasons do not affect trust scores.
+        only, and the reasons do not affect participation reputation.
       </p>
 
       {recordedReasons.length === 0 ? (

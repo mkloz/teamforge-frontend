@@ -1,11 +1,4 @@
-import {
-  Clock3,
-  LoaderCircle,
-  Plus,
-  ShieldCheck,
-  Trash2,
-  UserPlus,
-} from "lucide-react";
+import { Clock3, LoaderCircle, Plus, Trash2, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import type {
   ActivityParticipant,
@@ -18,7 +11,6 @@ import type { Invite } from "@/shared/schemas";
 
 import { InviteMembersDialog } from "./invite-members-dialog";
 import { MemberCard } from "./member-card";
-import { formatMemberPercent } from "./member-card-view-state";
 
 interface MembersSectionProps {
   canInviteMembers?: boolean;
@@ -392,7 +384,6 @@ function PendingInvitationSlot({
   invite: Invite;
   onCancel?: MembersSectionProps["onCancelInvitation"];
 }) {
-  const trustPercent = formatMemberPercent(invite.invitee.trustScore);
   const elapsed = usePendingInviteElapsedTime(invite.createdAt);
 
   return (
@@ -414,19 +405,6 @@ function PendingInvitationSlot({
             <span className="shrink-0 font-semibold">
               {invite.invitee.personalityType}
             </span>
-          ) : null}
-          {trustPercent !== null ? (
-            <>
-              {invite.invitee.personalityType ? (
-                <span
-                  className="size-1 shrink-0 rounded-full bg-muted-foreground/30"
-                  aria-hidden="true"
-                />
-              ) : null}
-              <ShieldCheck className="size-3" aria-hidden="true" />
-              <span className="sr-only">Trust</span>
-              <span>{trustPercent}%</span>
-            </>
           ) : null}
         </div>
       </div>

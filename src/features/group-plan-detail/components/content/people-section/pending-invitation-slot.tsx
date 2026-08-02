@@ -1,4 +1,4 @@
-import { Clock3, LoaderCircle, ShieldCheck, Trash2 } from "lucide-react";
+import { Clock3, LoaderCircle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { GroupPlanDetailPendingInvitation } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Avatar } from "@/shared/components/common/avatar";
@@ -17,15 +17,6 @@ export function PendingInvitationSlot({
   onCancel: (inviteId: string) => Promise<void>;
 }) {
   const elapsed = usePendingInviteElapsedTime(invite.createdAt);
-  const reputationValue =
-    invite.reputationSummary?.evidenceState === "NEW"
-      ? "New"
-      : String(
-          formatPercent(
-            invite.reputationSummary?.displayScore ?? invite.trustScore,
-          ),
-        );
-
   return (
     <article className="group/pending flex min-h-16 items-center gap-3 rounded-xl border border-border/35 border-dashed bg-card/35 px-2 py-2 text-muted-foreground">
       <Avatar
@@ -45,10 +36,7 @@ export function PendingInvitationSlot({
           {invite.personalityType ? (
             <span className="font-semibold">{invite.personalityType}</span>
           ) : null}
-          {invite.personalityType ? <MetricSeparator /> : null}
-          <ShieldCheck className="size-3.5" aria-hidden="true" />
-          <span className="sr-only">Participation reputation</span>
-          <span>{reputationValue}</span>
+          {invite.personalityType ? null : <span>Invitation pending</span>}
         </div>
       </div>
 
@@ -105,15 +93,6 @@ export function AnonymousPendingInvitationSlot({
   );
 }
 
-function MetricSeparator() {
-  return (
-    <span
-      className="size-1 shrink-0 rounded-full bg-muted-foreground/30"
-      aria-hidden="true"
-    />
-  );
-}
-
 function usePendingInviteElapsedTime(createdAt: string) {
   const [now, setNow] = useState(() => Date.now());
 
@@ -136,8 +115,4 @@ function usePendingInviteElapsedTime(createdAt: string) {
   return elapsedHours < 48
     ? `${elapsedHours}h`
     : `${Math.floor(elapsedHours / 24)}d`;
-}
-
-function formatPercent(score: number) {
-  return Math.round(score > 0 && score <= 1 ? score * 100 : score);
 }

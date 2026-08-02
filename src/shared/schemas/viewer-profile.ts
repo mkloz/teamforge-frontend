@@ -9,6 +9,7 @@ import { interestSchema, userSchema } from "./user";
 export const viewerProfileContextSchema = z.enum([
   "SELF",
   "CURRENT_GROUP",
+  "FORMER_GROUP",
   "ACCEPTED_FRIEND",
   "MINIMAL",
 ]);
@@ -28,7 +29,7 @@ const viewerProfileResponseSchema = z.object({
   interests: z.array(interestSchema),
   showFriendsListOnProfile: z.boolean(),
   personalityProfile: publicPersonalityProfileSchema.nullable(),
-  trustScore: z.number(),
+  trustScore: z.number().optional(),
   reputationSummary: reputationSummarySchema.optional(),
 });
 
@@ -58,7 +59,10 @@ export const viewerProfileSchema = viewerProfileResponseSchema.transform(
       oceanA: personality?.ocean.agreeableness ?? null,
       oceanN: personality?.ocean.neuroticism ?? null,
       searchStatus: "IDLE",
-      trustScore: profile.trustScore,
+      trustScore:
+        typeof profile.reputationSummary?.displayScore === "number"
+          ? profile.reputationSummary.displayScore / 100
+          : 0,
       reputationSummary: profile.reputationSummary,
       profileComplete: personality !== null,
       personalitySetupComplete: personality !== null,

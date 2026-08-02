@@ -22,7 +22,6 @@ import { Notice } from "@/shared/components/ui/notice";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { cn } from "@/shared/lib/utils";
 import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
-import { formatMemberPercent } from "./member-card-view-state";
 
 interface InviteMembersDialogProps {
   candidates: ActivityParticipant[];
@@ -213,8 +212,6 @@ function InviteCandidateRow({
   isInviting,
   onInvite,
 }: InviteCandidateRowProps) {
-  const trustPercent = formatMemberPercent(candidate.trustScore);
-
   return (
     <div className="group/row flex min-h-18 items-center gap-3 px-3 py-2.5 transition-colors hover:bg-foreground/5">
       <Link
@@ -253,13 +250,6 @@ function InviteCandidateRow({
             {candidate.personalityType ? (
               <span>{candidate.personalityType}</span>
             ) : null}
-            {candidate.personalityType && trustPercent !== null ? (
-              <span
-                className="size-1 rounded-full bg-muted-foreground/35"
-                aria-hidden="true"
-              />
-            ) : null}
-            {trustPercent !== null ? <span>Trust {trustPercent}%</span> : null}
           </span>
         </span>
       </Link>

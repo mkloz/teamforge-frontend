@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ReputationCorrectionApi } from "@/features/settings/api/reputation-correction.api";
@@ -16,17 +16,30 @@ import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 export function useReputationCorrection() {
   const currentUser = useCurrentUserQuery();
   const invalidateCurrentUser = useInvalidateCurrentUser();
+  const queryClient = useQueryClient();
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm<ReputationCorrectionFormValues>({
-    defaultValues: { reason: "" },
+    defaultValues: { inputId: "", reason: "" },
     resolver: zodResolver(reputationCorrectionFormSchema),
   });
   const mutation = useMutation({
     mutationKey: ["settings", "reputation-correction"],
     mutationFn: (values: ReputationCorrectionFormValues) =>
-      ReputationCorrectionApi.create(values.reason, crypto.randomUUID()),
+      ReputationCorrectionApi.create(
+        values.inputId,
+        values.reason,
+        crypto.randomUUID(),
+      ),
+  });
+  const evidenceQuery = useQuery({
+    queryKey: ["settings", "reputation-evidence"],
+    queryFn: () => ReputationCorrectionApi.listEvidence(),
+  });
+  const disputesQuery = useQuery({
+    queryKey: ["settings", "reputation-disputes"],
+    queryFn: () => ReputationCorrectionApi.listDisputes(),
   });
 
   const hasOpenCorrection = Boolean(
@@ -35,6 +48,12 @@ export function useReputationCorrection() {
 
   return {
     form,
+    evidence: evidenceQuery.data ?? [],
+    isLoadingEvidence: evidenceQuery.isPending,
+    latestResolvedDispute: disputesQuery.data?.find(
+      (dispute) =>
+        dispute.status === "ACCEPTED" || dispute.status === "REJECTED",
+    ),
     hasOpenCorrection,
     isOnline,
     isSubmitting: mutation.isPending,
@@ -57,7 +76,15 @@ export function useReputationCorrection() {
         await mutation.mutateAsync(values);
         setSubmitted(true);
         form.reset();
-        await invalidateCurrentUser();
+        await Promise.all([
+          invalidateCurrentUser(),
+          queryClient.invalidateQueries({
+            queryKey: ["settings", "reputation-evidence"],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ["settings", "reputation-disputes"],
+          }),
+        ]);
       } catch {
         setSubmitError("We couldn’t send your correction request. Try again.");
       }

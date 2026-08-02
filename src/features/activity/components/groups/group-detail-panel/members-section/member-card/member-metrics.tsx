@@ -1,4 +1,4 @@
-import { type LucideIcon, ShieldCheck, Target } from "lucide-react";
+import { type LucideIcon, Target } from "lucide-react";
 
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
@@ -38,13 +38,6 @@ function getMemberMetricItems(
   viewState: MemberCardViewState,
 ): MemberMetricItem[] {
   return [
-    getMemberMetricItem({
-      icon: ShieldCheck,
-      isHighlighted: viewState.isHighTrust,
-      key: "trust",
-      label: "Trust",
-      score: viewState.trustPercent,
-    }),
     getMemberMetricItem({
       icon: Target,
       isHighlighted: viewState.isHighCompatibility,

@@ -59,6 +59,7 @@ export function ProfileHero({
                 <ProfileIdentity
                   user={user}
                   archetype={archetype}
+                  isSelf={isSelf}
                   actions={<ProfileActionsSlot />}
                   showMissingDetailsAction={showMissingDetailsAction}
                   onOpenFriends={setFriendsTab}

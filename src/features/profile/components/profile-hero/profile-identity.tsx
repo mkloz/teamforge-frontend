@@ -10,6 +10,7 @@ import { ProfileBadges } from "./profile-badges";
 interface ProfileIdentityProps {
   user: User;
   archetype: string;
+  isSelf?: boolean;
   actions?: ReactNode;
   showMissingDetailsAction?: boolean;
   onOpenFriends?: (tab: "friends" | "requests" | "public_friends") => void;
@@ -18,6 +19,7 @@ interface ProfileIdentityProps {
 export function ProfileIdentity({
   user,
   archetype,
+  isSelf = false,
   actions,
   showMissingDetailsAction = true,
   onOpenFriends,
@@ -42,6 +44,7 @@ export function ProfileIdentity({
         <ProfileBadges
           user={user}
           archetype={archetype}
+          isSelf={isSelf}
           onOpenFriends={onOpenFriends}
         />
         <div className="hidden lg:flex">{profileActions}</div>

@@ -11,16 +11,19 @@ import { warnInDevelopment } from "@/shared/lib/development-warning";
 import type {
   CreateRatingPayload,
   GroupParticipationStatus,
+  ReputationFollowThroughResponse,
   ReviewDeferralReason,
 } from "@/shared/schemas";
 
 interface ReviewDraft {
   comment: string;
+  followThrough: ReputationFollowThroughResponse;
   score: number;
 }
 
 const emptyReviewDraft: ReviewDraft = {
   comment: "",
+  followThrough: "UNSURE",
   score: 0,
 };
 
@@ -108,6 +111,19 @@ export function useCompletedGroupRating(group: Group) {
     setReviewDrafts((current) => ({
       ...current,
       [activeUserId]: getUpdatedReviewDraft(current[activeUserId], { comment }),
+    }));
+  };
+
+  const setFollowThrough = (followThrough: ReputationFollowThroughResponse) => {
+    if (!activeUserId) {
+      return;
+    }
+
+    setReviewDrafts((current) => ({
+      ...current,
+      [activeUserId]: getUpdatedReviewDraft(current[activeUserId], {
+        followThrough,
+      }),
     }));
   };
 
@@ -205,6 +221,7 @@ export function useCompletedGroupRating(group: Group) {
     allRated,
     canRecordParticipation,
     comment: activeDraft.comment,
+    followThrough: activeDraft.followThrough,
     deferActiveReview,
     isError,
     isDeferring,
@@ -223,6 +240,7 @@ export function useCompletedGroupRating(group: Group) {
     selectMember,
     selectedMember,
     setComment,
+    setFollowThrough,
     setScore,
     submitParticipation,
     submitActiveRating,
@@ -348,6 +366,7 @@ function getActiveRatingPayload({
     rateeId: activeUserId,
     score: activeDraft.score,
     comment: activeDraft.comment.trim() || undefined,
+    followThrough: activeDraft.followThrough,
   };
 }
 

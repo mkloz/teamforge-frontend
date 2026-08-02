@@ -2,7 +2,6 @@ import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import type { User } from "@/shared/schemas";
 
 export interface UserStats {
-  trustScore: number;
   groupsJoined: number;
   activitiesDone: number;
   connections: number;

@@ -8,19 +8,16 @@ export interface MemberCardViewState {
   hasMetrics: boolean;
   isAdmin: boolean;
   isHighCompatibility: boolean;
-  isHighTrust: boolean;
   lastSeenAt: MemberUser["lastSeenAt"] | undefined;
   memberName: string;
   onlineStatus: MemberUser["onlineStatus"] | undefined;
   personalityType: MemberUser["personalityType"] | undefined;
-  trustPercent: number | null;
 }
 
 export function getMemberCardViewState(
   member: GroupMember,
   showFit: boolean,
 ): MemberCardViewState {
-  const trustPercent = formatMemberPercent(member.user?.trustScore ?? null);
   const fitScore =
     showFit && typeof member.compatibilityScore === "number"
       ? formatMemberPercent(member.compatibilityScore)
@@ -29,17 +26,13 @@ export function getMemberCardViewState(
 
   return {
     fitScore,
-    hasMetrics:
-      Boolean(personalityType) ||
-      [trustPercent, fitScore].some((score) => typeof score === "number"),
+    hasMetrics: Boolean(personalityType) || typeof fitScore === "number",
     isAdmin: member.role === "ADMIN",
     isHighCompatibility: isHighMemberScore(fitScore),
-    isHighTrust: isHighMemberScore(trustPercent),
     lastSeenAt: member.user?.lastSeenAt,
     memberName: getMemberName(member),
     onlineStatus: member.user?.onlineStatus,
     personalityType,
-    trustPercent,
   };
 }
 

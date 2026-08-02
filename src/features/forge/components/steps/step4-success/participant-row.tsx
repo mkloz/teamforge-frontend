@@ -10,7 +10,6 @@ import {
   getParticipantInitials,
   getParticipantName,
   getParticipantScorePercent,
-  getParticipantTrustPercent,
 } from "./participant-utils";
 import type { ParticipantRowProps } from "./types";
 
@@ -23,7 +22,6 @@ export function ParticipantRow({
 }: ParticipantRowProps) {
   const participantName = getParticipantName(participant);
   const matchScore = getParticipantScorePercent(participant);
-  const trustScore = getParticipantTrustPercent(participant);
 
   return (
     <div
@@ -86,7 +84,6 @@ export function ParticipantRow({
                 value={matchScore}
                 highlight={highlight}
               />
-              <ScoreLabel label="Trust" value={trustScore} />
             </div>
             {matchScore !== null ? (
               <div className="mt-2 h-1.5 max-w-56 overflow-hidden rounded-full bg-muted/55">
