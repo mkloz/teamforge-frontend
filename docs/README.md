@@ -11,6 +11,8 @@ Use this index instead of treating every old planning note as authoritative.
 - [`visual-style-guide.md`](visual-style-guide.md) — design tokens, component
   hierarchy, grouped surfaces, responsive behavior, imagery, motion, states,
   and rendered verification.
+- [`research-workflow.md`](research-workflow.md) — local-only Firecrawl,
+  `last30days` routing, and evidence-backed Consensus Mode.
 - [`adr/`](adr/) — durable architectural decisions.
 
 Historical roadmaps, speculative feature specifications, one-off redesign

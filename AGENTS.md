@@ -91,6 +91,25 @@ It must not depend on backend demo population seeds.
 - Local UI states such as open drawers or focused validation errors should be
   reached through interaction recipes when practical.
 
+## Research and decision analysis
+
+Read `docs/research-workflow.md` before current web research, market or
+literature research, or evidence-heavy product analysis.
+
+- Firecrawl is local-only at `http://localhost:3002`. Run it exclusively through
+  `node scripts/research/firecrawl-local.mjs <command>`. Never authenticate,
+  call the hosted Firecrawl API, spend Firecrawl credits, or fall back to a
+  hosted Firecrawl MCP, REST, or research-agent path. If the local service
+  fails, report the coverage gap and stop that collection lane.
+- Use the repository-local `last30days` skill for questions that depend on the
+  latest 30 days of news, social discussion, adoption, or sentiment. Combine it
+  with local Firecrawl primary-source collection when both current community
+  signal and factual verification matter.
+- For exhaustive or materially consequential research and for explicit deep or
+  consensus analysis, use Consensus Mode: spawn three independent reviewer
+  agents with distinct lenses, synthesize against a shared evidence pack, and
+  resolve blockers by evidence rather than majority vote.
+
 ## Commands
 
 Use the narrowest command that matches the change:
@@ -106,6 +125,8 @@ Use the narrowest command that matches the change:
   matrices.
 - `npm run pwa:release` — production PWA preflight, build, and QA.
 - `npm run audit:release` / `audit:nightly` — browser quality audits.
+- `node scripts/research/firecrawl-local.mjs <command>` — fail-closed local
+  Firecrawl CLI.
 
 Do not add tests mechanically. Add or update them for risky behavior,
 regressions, contracts, state machines, and logic that is cheaper to prove than
@@ -148,6 +169,10 @@ generic advice in a skill.
 - Verification and platform concerns: `playwright-best-practices`,
   `pwa-development`, `seo-audit`, `fallow`,
   `improve-codebase-architecture`, and `system-design-api-data-architect`.
+- Research: `firecrawl` for workflow selection, always executed through the
+  local-only repository wrapper; `last30days` for recent community and news
+  signals. Follow `docs/research-workflow.md`, including Consensus Mode for deep
+  or high-consequence analysis.
 
 Do not combine multiple broad design skills for one ordinary UI edit. Start
 with the TeamForge skill and add a specialist only when it contributes a
