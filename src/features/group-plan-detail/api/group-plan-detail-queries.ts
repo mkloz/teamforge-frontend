@@ -22,6 +22,15 @@ export const groupPlanDetailQueries = {
     });
   },
 
+  accommodationRequests(planId: string, enabled: boolean) {
+    return queryOptions({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.accommodationRequests(planId),
+      queryFn: () => GroupPlanDetailApi.getAccommodationRequests(planId),
+      enabled: enabled && planId.length > 0,
+      staleTime: 10_000,
+    });
+  },
+
   inviteSuggestions(groupId: string, planId: string, enabled: boolean) {
     return queryOptions({
       queryKey: APP_QUERY_KEYS.groupPlanDetail.inviteSuggestions(
