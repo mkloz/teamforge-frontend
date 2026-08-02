@@ -62,8 +62,25 @@ export function formatCost(plan: GroupPlanDetail["plan"]) {
 }
 
 function formatPaidCost(plan: NonNullable<GroupPlanDetail["plan"]>) {
+  if (plan.costAmountDecimal && plan.costCurrency) {
+    const amount = Number(plan.costAmountDecimal);
+    if (Number.isFinite(amount)) {
+      const formatted = new Intl.NumberFormat("en-GB", {
+        style: "currency",
+        currency: plan.costCurrency,
+      }).format(amount);
+      const prefix = plan.costAccuracy === "ESTIMATE" ? "About " : "";
+      const basis = plan.costBasis === "PER_PERSON" ? " per person" : "";
+      return `${prefix}${formatted}${basis}`;
+    }
+  }
+
+  if (plan.costLegacyUnknown) {
+    return "Paid · details incomplete";
+  }
+
   return typeof plan.costAmount === "number"
-    ? `About £${plan.costAmount.toFixed(0)}`
+    ? `Paid · ${plan.costAmount.toFixed(2)} (currency unknown)`
     : (plan.costDetails ?? "Paid");
 }
 

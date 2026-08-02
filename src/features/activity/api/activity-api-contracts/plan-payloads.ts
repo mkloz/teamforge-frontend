@@ -28,6 +28,31 @@ const updatePlanPayloadBaseSchema = z.object({
   cost: costTypeSchema.optional(),
   costAmount: z.number().nonnegative().nullable().optional(),
   costDetails: z.string().trim().max(500).nullable().optional(),
+  costAmountDecimal: z
+    .string()
+    .regex(/^\d{1,10}(?:\.\d{1,2})?$/u)
+    .nullable()
+    .optional(),
+  costCurrency: z
+    .string()
+    .trim()
+    .length(3)
+    .transform((value) => value.toUpperCase())
+    .nullable()
+    .optional(),
+  costAccuracy: z.enum(["UNKNOWN", "ESTIMATE", "EXACT"]).optional(),
+  costBasis: z.enum(["UNKNOWN", "TOTAL", "PER_PERSON"]).optional(),
+  depositAmountDecimal: z
+    .string()
+    .regex(/^\d{1,10}(?:\.\d{1,2})?$/u)
+    .nullable()
+    .optional(),
+  refundPolicy: z.string().trim().max(500).nullable().optional(),
+  purchaseResponsibility: z
+    .enum(["UNKNOWN", "INDIVIDUAL", "ORGANIZER", "SHARED"])
+    .optional(),
+  costCheckedAt: z.string().datetime().nullable().optional(),
+  costLegacyUnknown: z.boolean().optional(),
 });
 
 type UpdatePlanPayloadInput = z.infer<typeof updatePlanPayloadBaseSchema>;

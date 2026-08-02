@@ -60,6 +60,17 @@ const planSchema = z.object({
   cost: costTypeSchema,
   costAmount: z.number().nullable(),
   costDetails: z.string().nullable(),
+  costAmountDecimal: z.string().nullable().default(null),
+  costCurrency: z.string().length(3).nullable().default(null),
+  costAccuracy: z.enum(["UNKNOWN", "ESTIMATE", "EXACT"]).default("UNKNOWN"),
+  costBasis: z.enum(["UNKNOWN", "TOTAL", "PER_PERSON"]).default("UNKNOWN"),
+  depositAmountDecimal: z.string().nullable().default(null),
+  refundPolicy: z.string().nullable().default(null),
+  purchaseResponsibility: z
+    .enum(["UNKNOWN", "INDIVIDUAL", "ORGANIZER", "SHARED"])
+    .default("UNKNOWN"),
+  costCheckedAt: z.string().datetime().nullable().default(null),
+  costLegacyUnknown: z.boolean().default(true),
   completedAt: z.string().nullable(),
   cancelledAt: z.string().nullable(),
   createdAt: z.string(),

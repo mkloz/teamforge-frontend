@@ -1,5 +1,6 @@
 import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
 import {
+  Accessibility,
   Banknote,
   CalendarClock,
   Globe2,
@@ -72,6 +73,7 @@ export function GroupPlanOverviewSection({
 
       {plan ? <PlanNote detail={detail} plan={plan} /> : null}
       <OverviewFooter detail={detail} plan={plan} />
+      {plan?.accessFacts.length ? <PlanAccessFacts plan={plan} /> : null}
 
       {isReadOnly ? (
         <p className="mt-2 rounded-xl bg-card px-5 py-3 text-muted-foreground text-xs leading-relaxed sm:px-6 lg:px-7">
@@ -81,6 +83,76 @@ export function GroupPlanOverviewSection({
       ) : null}
     </section>
   );
+}
+
+function PlanAccessFacts({ plan }: { plan: Plan }) {
+  return (
+    <section
+      aria-labelledby="plan-access-facts-heading"
+      className="mt-2 rounded-xl bg-card px-5 py-4 sm:px-6 lg:px-7"
+    >
+      <div className="flex items-start gap-3">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-forge-teal">
+          <Accessibility className="size-4" aria-hidden="true" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h3
+            className="font-extrabold text-foreground text-sm"
+            id="plan-access-facts-heading"
+          >
+            Access facts
+          </h3>
+          <p className="mt-0.5 text-muted-foreground text-xs">
+            Individual facts, not an overall accessibility rating. Check the
+            source and date before relying on them.
+          </p>
+        </div>
+      </div>
+      <dl className="mt-4 grid gap-2 sm:grid-cols-2">
+        {plan.accessFacts.map((fact) => (
+          <div
+            className="rounded-lg border border-border/60 px-3 py-2.5"
+            key={fact.factKey}
+          >
+            <dt className="font-bold text-foreground text-xs">
+              {formatAccessFactLabel(fact.factKey)}
+            </dt>
+            <dd className="mt-1 text-sm">
+              <span className="font-extrabold">
+                {formatAccessFactValue(fact.value)}
+              </span>
+              <span className="text-muted-foreground">
+                {` · ${fact.source} · checked ${formatAccessCheckedDate(
+                  fact.checkedAt,
+                )}`}
+              </span>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+function formatAccessFactLabel(factKey: string) {
+  return factKey
+    .split("_")
+    .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
+    .join(" ");
+}
+
+function formatAccessFactValue(value: Plan["accessFacts"][number]["value"]) {
+  if (value === "YES") return "Yes";
+  if (value === "NO") return "No";
+  return "Unknown";
+}
+
+function formatAccessCheckedDate(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
 }
 
 function GroupStory({ detail }: { detail: GroupPlanDetail }) {
@@ -434,13 +506,19 @@ function OverviewFooter({
         icon={Banknote}
         label="Cost"
         value={formatCost(plan)}
-        supporting={
-          plan?.costDetails ??
-          (plan?.cost === "FREE" ? "No payment needed" : undefined)
-        }
+        supporting={formatCostSupporting(plan)}
       />
     </div>
   );
+}
+
+function formatCostSupporting(plan: Plan | null) {
+  if (!plan) return undefined;
+  if (plan.cost === "FREE") return "No payment needed";
+  if (plan.depositAmountDecimal && plan.costCurrency) {
+    return `Deposit ${plan.costCurrency} ${plan.depositAmountDecimal}`;
+  }
+  return plan.refundPolicy ?? plan.costDetails ?? undefined;
 }
 
 function OverviewFact({
