@@ -31,6 +31,15 @@ export const groupPlanDetailQueries = {
     });
   },
 
+  seatRecovery(planId: string, enabled: boolean) {
+    return queryOptions({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.seatRecovery(planId),
+      queryFn: () => GroupPlanDetailApi.getSeatRecovery(planId),
+      enabled: enabled && planId.length > 0,
+      staleTime: 10_000,
+    });
+  },
+
   inviteSuggestions(groupId: string, planId: string, enabled: boolean) {
     return queryOptions({
       queryKey: APP_QUERY_KEYS.groupPlanDetail.inviteSuggestions(

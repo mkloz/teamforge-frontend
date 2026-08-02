@@ -30,6 +30,10 @@ import {
   planCommitmentReadinessSchema,
   planCommitmentSchema,
 } from "../schemas/plan-commitment.schema";
+import {
+  planSeatViewerStateSchema,
+  seatOfferResponseSchema,
+} from "../schemas/plan-seat-recovery.schema";
 
 export type CreateGroupPlanProposalPayload = CreatePlanProposalPayload;
 export type VoteGroupPlanProposalPayload = VotePlanProposalPayload;
@@ -83,6 +87,49 @@ export class GroupPlanDetailApi {
       .get(`plans/${planId}/accommodation-requests`)
       .json<unknown>();
     return planAccommodationRequestsSchema.parse(response);
+  }
+
+  static async getSeatRecovery(planId: string) {
+    const response = await apiClient
+      .get(`plans/${planId}/seat-recovery`)
+      .json<unknown>();
+    return planSeatViewerStateSchema.parse(response);
+  }
+
+  static async joinSeatWaitlist(planId: string) {
+    const response = await apiClient
+      .post(`plans/${planId}/seat-recovery/waitlist`)
+      .json<unknown>();
+    return seatOfferResponseSchema.parse(response);
+  }
+
+  static async acceptSeatOffer(
+    planId: string,
+    offerId: string,
+    expectedMaterialRevision: number,
+  ) {
+    const response = await apiClient
+      .post(`plans/${planId}/seat-offers/${offerId}/accept`, {
+        json: {
+          acknowledgeGroupMembership: true,
+          expectedMaterialRevision,
+        },
+      })
+      .json<unknown>();
+    return seatOfferResponseSchema.parse(response);
+  }
+
+  static async declineSeatOffer(
+    planId: string,
+    offerId: string,
+    doNotOfferAgain: boolean,
+  ) {
+    const response = await apiClient
+      .post(`plans/${planId}/seat-offers/${offerId}/decline`, {
+        json: { doNotOfferAgain },
+      })
+      .json<unknown>();
+    return seatOfferResponseSchema.parse(response);
   }
 
   static async createAccommodationRequest(

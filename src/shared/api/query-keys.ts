@@ -47,6 +47,8 @@ export const APP_QUERY_KEYS = {
       ["group-plan-detail", "commitment-readiness", planId] as const,
     accommodationRequests: (planId: string) =>
       ["group-plan-detail", "private-accommodation", planId] as const,
+    seatRecovery: (planId: string) =>
+      ["group-plan-detail", "seat-recovery", planId] as const,
   },
   home: {
     all: ["home"] as const,

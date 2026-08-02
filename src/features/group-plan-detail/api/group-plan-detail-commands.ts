@@ -26,7 +26,52 @@ async function invalidateAccommodationRequests(planId: string) {
   });
 }
 
+async function invalidateSeatRecovery(planId: string) {
+  await appQueryClient.invalidateQueries({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.seatRecovery(planId),
+  });
+}
+
 export const GroupPlanDetailCommands = {
+  async joinSeatWaitlist(planId: string) {
+    const result = await GroupPlanDetailApi.joinSeatWaitlist(planId);
+    await invalidateSeatRecovery(planId);
+    return result;
+  },
+
+  async acceptSeatOffer(input: {
+    expectedMaterialRevision: number;
+    offerId: string;
+    planId: string;
+  }) {
+    const result = await GroupPlanDetailApi.acceptSeatOffer(
+      input.planId,
+      input.offerId,
+      input.expectedMaterialRevision,
+    );
+    await Promise.all([
+      invalidateSeatRecovery(input.planId),
+      appQueryClient.invalidateQueries({
+        queryKey: APP_QUERY_KEYS.groupPlanDetail.all,
+      }),
+    ]);
+    return result;
+  },
+
+  async declineSeatOffer(input: {
+    doNotOfferAgain: boolean;
+    offerId: string;
+    planId: string;
+  }) {
+    const result = await GroupPlanDetailApi.declineSeatOffer(
+      input.planId,
+      input.offerId,
+      input.doNotOfferAgain,
+    );
+    await invalidateSeatRecovery(input.planId);
+    return result;
+  },
+
   async createAccommodationRequest(input: {
     escalationResponderId?: string;
     functionalRequirement: string;
