@@ -1,10 +1,10 @@
 import {
   type CreateGroupPlanPayload,
+  createGroupPlanPayloadSchema,
   DEFAULT_ACTIVITY_API_LIMIT,
   type GroupMutationResult,
   paginatedGroupsSchema,
   type UpdateGroupPayload,
-  updatePlanPayloadSchema,
 } from "@/features/activity/api/activity-api-contracts";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import {
@@ -59,7 +59,7 @@ export async function createNextGroupPlan(
   payload: CreateGroupPlanPayload,
 ) {
   const response = await apiClient.post(`groups/${groupId}/plans`, {
-    json: updatePlanPayloadSchema.parse(payload),
+    json: createGroupPlanPayloadSchema.parse(payload),
   });
 
   return parseJsonWithRequestId(response, (value) =>

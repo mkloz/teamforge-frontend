@@ -36,6 +36,15 @@ export const updatePlanPayloadSchema = updatePlanPayloadBaseSchema.superRefine(
   validateUpdatePlanLocationFields,
 );
 
+export const createGroupPlanPayloadSchema = updatePlanPayloadBaseSchema
+  .extend({
+    sourcePlanId: z.string().trim().min(1).max(64).optional(),
+    repeatMode: z
+      .enum(["SAME_GROUP", "SELECT_PEOPLE", "SAME_ACTIVITY"])
+      .optional(),
+  })
+  .superRefine(validateUpdatePlanLocationFields);
+
 function validateUpdatePlanLocationFields(
   input: UpdatePlanPayloadInput,
   context: z.RefinementCtx,
@@ -153,7 +162,9 @@ export interface VotePlanProposalDto {
 }
 
 export type UpdatePlanPayload = z.infer<typeof updatePlanPayloadSchema>;
-export type CreateGroupPlanPayload = z.infer<typeof updatePlanPayloadSchema>;
+export type CreateGroupPlanPayload = z.infer<
+  typeof createGroupPlanPayloadSchema
+>;
 export type CreatePlanProposalDto = z.infer<
   typeof createPlanProposalPayloadSchema
 >;

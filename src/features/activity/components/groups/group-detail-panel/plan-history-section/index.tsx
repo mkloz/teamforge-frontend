@@ -171,7 +171,7 @@ export function PlanHistorySection({
 
     try {
       await onUseAsTemplate(item);
-      showAppSuccessToast("Plan copied into a new draft.", {
+      showAppSuccessToast("Plan copied without its old date or venue.", {
         id: "plan-template-copied",
       });
     } catch (error) {

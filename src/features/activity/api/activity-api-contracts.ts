@@ -39,6 +39,7 @@ export type {
   VotePlanProposalDto,
 } from "./activity-api-contracts/plan-payloads";
 export {
+  createGroupPlanPayloadSchema,
   createPlanProposalPayloadSchema,
   updatePlanPayloadSchema,
 } from "./activity-api-contracts/plan-payloads";

@@ -76,6 +76,7 @@ export function PlanLifecycleActions({
       <CancelPlanAction onCancelPlan={onCancelPlan} viewState={viewState} />
 
       <CreateNextPlanAction
+        isCompleted={plan.status === "COMPLETED"}
         onCreateNextPlan={onCreateNextPlan}
         viewState={viewState}
       />
@@ -241,9 +242,11 @@ function CancelPlanAction({
 }
 
 function CreateNextPlanAction({
+  isCompleted,
   onCreateNextPlan,
   viewState,
 }: {
+  isCompleted: boolean;
   onCreateNextPlan?: () => Promise<void> | void;
   viewState: PlanLifecycleViewState;
 }) {
@@ -265,7 +268,7 @@ function CreateNextPlanAction({
       title={action.title}
     >
       <PlusCircle className="size-3.5 shrink-0" />
-      Plan another
+      {isCompleted ? "Do this again" : "Plan another"}
     </Button>
   );
 }

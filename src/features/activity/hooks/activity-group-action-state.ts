@@ -151,15 +151,16 @@ export function trackActivityGroupMutation(
 export function buildCreateHistoryTemplatePayload(
   plan: PlanHistoryItem,
 ): CreateGroupPlanPayload {
-  const location = resolveHistoryTemplateLocation(plan);
   const payload: CreateGroupPlanPayload = {
     category: plan.category,
     coverImage: plan.coverImage,
     dateTime: null,
-    location,
-    locationLat: resolveInPersonCoordinate(plan.locationMode, plan.locationLat),
-    locationLng: resolveInPersonCoordinate(plan.locationMode, plan.locationLng),
-    locationMode: resolveLocationModeForPayload(location, plan.locationMode),
+    location: null,
+    locationLat: null,
+    locationLng: null,
+    locationMode: "TBD",
+    repeatMode: "SAME_GROUP",
+    sourcePlanId: plan.id,
     title: plan.title,
   };
 
@@ -167,8 +168,6 @@ export function buildCreateHistoryTemplatePayload(
 }
 
 export function buildCreateNextPlanPayload(plan: Plan): CreateGroupPlanPayload {
-  const locationMode = resolveNextPlanLocationMode(plan);
-
   return {
     category: plan.category,
     cost: plan.cost,
@@ -177,10 +176,12 @@ export function buildCreateNextPlanPayload(plan: Plan): CreateGroupPlanPayload {
     coverImage: plan.coverImage,
     dateTime: null,
     description: plan.description,
-    location: resolveLocationForPayload(locationMode, plan.location),
-    locationLat: resolveInPersonCoordinate(locationMode, plan.locationLat),
-    locationLng: resolveInPersonCoordinate(locationMode, plan.locationLng),
-    locationMode,
+    location: null,
+    locationLat: null,
+    locationLng: null,
+    locationMode: "TBD",
+    repeatMode: "SAME_GROUP",
+    sourcePlanId: plan.id,
     title: plan.title,
   };
 }
@@ -201,32 +202,6 @@ function resolvePlanCompletedAt(
   return status === "COMPLETED" ? now : plan.completedAt;
 }
 
-function resolveHistoryTemplateLocation(plan: PlanHistoryItem) {
-  if (plan.locationMode === "TBD") {
-    return null;
-  }
-
-  return plan.location?.trim() || null;
-}
-
-function resolveLocationModeForPayload(
-  location: string | null,
-  locationMode: Plan["locationMode"],
-) {
-  return location ? locationMode : "TBD";
-}
-
-function resolveInPersonCoordinate(
-  locationMode: Plan["locationMode"],
-  coordinate: number | null,
-) {
-  if (locationMode !== "IN_PERSON") {
-    return null;
-  }
-
-  return coordinate;
-}
-
 function withHistoryTemplateCost(
   payload: CreateGroupPlanPayload,
   cost: PlanHistoryItem["cost"],
@@ -234,19 +209,8 @@ function withHistoryTemplateCost(
   return cost === "FREE" ? { ...payload, cost: "FREE" as const } : payload;
 }
 
-function resolveNextPlanLocationMode(plan: Plan) {
-  return plan.location?.trim() ? plan.locationMode : "TBD";
-}
-
 function resolvePaidCostAmount(plan: Plan) {
   return plan.cost === "PAID" ? plan.costAmount : null;
-}
-
-function resolveLocationForPayload(
-  locationMode: Plan["locationMode"],
-  location: string | null,
-) {
-  return locationMode === "TBD" ? null : location;
 }
 
 function touchGroup(group: Group, now = new Date().toISOString()): Group {
