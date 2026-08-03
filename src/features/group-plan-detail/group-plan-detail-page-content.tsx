@@ -2,7 +2,6 @@ import { lazy, type Ref, Suspense, useRef } from "react";
 import { GroupPlanOverviewSection } from "@/features/group-plan-detail/components/content/group-plan-overview-section";
 import { PlanCommitmentSection } from "@/features/group-plan-detail/components/content/plan-commitment-section";
 import { PlanSeatRecoverySection } from "@/features/group-plan-detail/components/content/plan-seat-recovery-section";
-import { PrivateAccommodationDialog } from "@/features/group-plan-detail/components/content/private-accommodation-dialog";
 import { GroupPlanHero } from "@/features/group-plan-detail/components/hero/group-plan-hero";
 import { DecisionRail } from "@/features/group-plan-detail/components/rail/decision-rail";
 import {
@@ -95,7 +94,6 @@ function GroupPlanDetailGrid({
       />
       <PlanCommitmentSection detail={detail} />
       <PlanSeatRecoverySection detail={detail} />
-      <PrivateAccommodationDialog detail={detail} />
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)]">
         <div className="min-w-0 border-border/70 lg:col-start-2 lg:row-start-1 lg:border-l lg:pl-8 xl:pl-10">

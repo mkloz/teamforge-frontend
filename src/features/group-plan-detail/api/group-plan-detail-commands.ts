@@ -11,18 +11,11 @@ import {
   invalidatePlanDecisionSurfaces,
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import type { PlanAccommodationStatus } from "../schemas/plan-accommodation.schema";
 import type { PlanCommitmentResponse } from "../schemas/plan-commitment.schema";
 
 async function invalidateGroupPlanDetail(groupId: string) {
   await appQueryClient.invalidateQueries({
     queryKey: APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
-  });
-}
-
-async function invalidateAccommodationRequests(planId: string) {
-  await appQueryClient.invalidateQueries({
-    queryKey: APP_QUERY_KEYS.groupPlanDetail.accommodationRequests(planId),
   });
 }
 
@@ -69,64 +62,6 @@ export const GroupPlanDetailCommands = {
       input.doNotOfferAgain,
     );
     await invalidateSeatRecovery(input.planId);
-    return result;
-  },
-
-  async createAccommodationRequest(input: {
-    escalationResponderId?: string;
-    functionalRequirement: string;
-    planId: string;
-    responderId: string;
-    responseDueAt: string;
-  }) {
-    const result = await GroupPlanDetailApi.createAccommodationRequest(
-      input.planId,
-      input,
-    );
-    await invalidateAccommodationRequests(input.planId);
-    return result;
-  },
-
-  async respondAccommodationRequest(input: {
-    planId: string;
-    requestId: string;
-    responseMessage?: string;
-    status: PlanAccommodationStatus;
-  }) {
-    const result = await GroupPlanDetailApi.respondAccommodationRequest(
-      input.planId,
-      input.requestId,
-      input,
-    );
-    await invalidateAccommodationRequests(input.planId);
-    return result;
-  },
-
-  async clarifyAccommodationRequest(input: {
-    functionalRequirement: string;
-    planId: string;
-    requestId: string;
-  }) {
-    const result = await GroupPlanDetailApi.clarifyAccommodationRequest(
-      input.planId,
-      input.requestId,
-      input.functionalRequirement,
-    );
-    await invalidateAccommodationRequests(input.planId);
-    return result;
-  },
-
-  async runAccommodationAction(input: {
-    action: "cancel" | "escalate";
-    planId: string;
-    requestId: string;
-  }) {
-    const result = await GroupPlanDetailApi.runAccommodationAction(
-      input.planId,
-      input.requestId,
-      input.action,
-    );
-    await invalidateAccommodationRequests(input.planId);
     return result;
   },
 

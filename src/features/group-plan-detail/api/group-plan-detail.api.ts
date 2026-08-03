@@ -21,11 +21,6 @@ import {
 
 import { groupPlanDetailSchema } from "../schemas/group-plan-detail.schema";
 import {
-  type PlanAccommodationStatus,
-  planAccommodationRequestSchema,
-  planAccommodationRequestsSchema,
-} from "../schemas/plan-accommodation.schema";
-import {
   type PlanCommitmentResponse,
   planCommitmentReadinessSchema,
   planCommitmentSchema,
@@ -82,13 +77,6 @@ export class GroupPlanDetailApi {
     return planCommitmentSchema.parse(response);
   }
 
-  static async getAccommodationRequests(planId: string) {
-    const response = await apiClient
-      .get(`plans/${planId}/accommodation-requests`)
-      .json<unknown>();
-    return planAccommodationRequestsSchema.parse(response);
-  }
-
   static async getSeatRecovery(planId: string) {
     const response = await apiClient
       .get(`plans/${planId}/seat-recovery`)
@@ -130,59 +118,6 @@ export class GroupPlanDetailApi {
       })
       .json<unknown>();
     return seatOfferResponseSchema.parse(response);
-  }
-
-  static async createAccommodationRequest(
-    planId: string,
-    payload: {
-      escalationResponderId?: string;
-      functionalRequirement: string;
-      responderId: string;
-      responseDueAt: string;
-    },
-  ) {
-    const response = await apiClient
-      .post(`plans/${planId}/accommodation-requests`, { json: payload })
-      .json<unknown>();
-    return planAccommodationRequestSchema.parse(response);
-  }
-
-  static async respondAccommodationRequest(
-    planId: string,
-    requestId: string,
-    payload: { responseMessage?: string; status: PlanAccommodationStatus },
-  ) {
-    const response = await apiClient
-      .post(`plans/${planId}/accommodation-requests/${requestId}/response`, {
-        json: payload,
-      })
-      .json<unknown>();
-    return planAccommodationRequestSchema.parse(response);
-  }
-
-  static async clarifyAccommodationRequest(
-    planId: string,
-    requestId: string,
-    functionalRequirement: string,
-  ) {
-    const response = await apiClient
-      .post(
-        `plans/${planId}/accommodation-requests/${requestId}/clarification`,
-        { json: { functionalRequirement } },
-      )
-      .json<unknown>();
-    return planAccommodationRequestSchema.parse(response);
-  }
-
-  static async runAccommodationAction(
-    planId: string,
-    requestId: string,
-    action: "cancel" | "escalate",
-  ) {
-    const response = await apiClient
-      .post(`plans/${planId}/accommodation-requests/${requestId}/${action}`)
-      .json<unknown>();
-    return planAccommodationRequestSchema.parse(response);
   }
 
   static async inviteSuggestion(groupId: string, suggestionId: string) {
