@@ -96,16 +96,16 @@ function GroupPlanDetailGrid({
       />
       <PlanCommitmentSection detail={detail} />
       <PlanSeatRecoverySection detail={detail} />
-      <PlanParticipantManagementSection detail={detail} />
-      <OwnershipTransferSection detail={detail} />
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)]">
-        <div className="min-w-0 border-border/70 lg:col-start-2 lg:row-start-1 lg:border-l lg:pl-8 xl:pl-10">
+      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)] xl:gap-14">
+        <div className="min-w-0 lg:col-start-2 lg:row-start-1">
           <DecisionRail detail={detail} />
         </div>
 
         <div className="min-w-0 lg:col-start-1 lg:row-start-1">
           <DeferredMainSections detail={detail} />
+          <PlanParticipantManagementSection detail={detail} />
+          <OwnershipTransferSection detail={detail} />
         </div>
       </div>
     </div>
@@ -114,6 +114,7 @@ function GroupPlanDetailGrid({
 
 function DeferredMainSections({ detail }: { detail: GroupPlanDetail }) {
   const { sentinelRef, shouldRender } = useDeferredRender({
+    delayMs: 400,
     rootMargin: "240px 0px",
   });
 

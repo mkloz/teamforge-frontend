@@ -275,7 +275,10 @@ function DeferredHomePanel({
   fallback: ReactNode;
   rootMargin?: string;
 }) {
-  const { sentinelRef, shouldRender } = useDeferredRender({ rootMargin });
+  const { sentinelRef, shouldRender } = useDeferredRender({
+    delayMs: 400,
+    rootMargin,
+  });
 
   return <div ref={sentinelRef}>{shouldRender ? children : fallback}</div>;
 }

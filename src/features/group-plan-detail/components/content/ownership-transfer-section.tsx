@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { KeyRound } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-plan-detail-commands";
 import { groupPlanDetailQueries } from "@/features/group-plan-detail/api/group-plan-detail-queries";
@@ -8,7 +8,23 @@ import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-pla
 import { reauthenticateCurrentSession } from "@/shared/api/auth-session-commands";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import {
+  GroupedMenuAction,
+  GroupedMenuItem,
+  GroupedMenuList,
+} from "@/shared/components/ui/grouped-menu";
 import { Input } from "@/shared/components/ui/input";
+import { Notice } from "@/shared/components/ui/notice";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+
+import { PlanManagementSection } from "./plan-management-section";
 
 export function OwnershipTransferSection({
   detail,
@@ -16,6 +32,9 @@ export function OwnershipTransferSection({
   detail: GroupPlanDetail;
 }) {
   const isMember = detail.viewer.role !== null;
+  const eligibleMembers = detail.members.filter(
+    ({ userId }) => userId !== detail.viewer.userId,
+  );
   const transfer = useQuery(
     groupPlanDetailQueries.ownershipTransfer(
       detail.group.id,
@@ -23,8 +42,7 @@ export function OwnershipTransferSection({
     ),
   );
   const [recipientId, setRecipientId] = useState(
-    detail.members.find(({ userId }) => userId !== detail.viewer.userId)
-      ?.userId ?? "",
+    eligibleMembers.at(0)?.userId ?? "",
   );
   const [password, setPassword] = useState("");
   const create = useMutation({
@@ -36,6 +54,10 @@ export function OwnershipTransferSection({
       );
     },
     onSuccess: () => setPassword(""),
+    meta: {
+      errorToastMessage: "We couldn't send the ownership transfer.",
+      telemetryName: "group_ownership_transfer_create",
+    },
   });
   const respond = useMutation({
     mutationFn: async (response: "accept" | "decline" | "cancel") => {
@@ -49,35 +71,55 @@ export function OwnershipTransferSection({
       );
     },
     onSuccess: () => setPassword(""),
+    meta: {
+      errorToastMessage: "We couldn't update the ownership transfer.",
+      telemetryName: "group_ownership_transfer_respond",
+    },
   });
 
+  useEffect(() => {
+    if (!eligibleMembers.some(({ userId }) => userId === recipientId)) {
+      setRecipientId(eligibleMembers.at(0)?.userId ?? "");
+    }
+  }, [eligibleMembers, recipientId]);
+
   if (detail.governance || !isMember) return null;
+  if (transfer.isSuccess && !transfer.data && detail.viewer.role !== "ADMIN") {
+    return null;
+  }
+
   const current = transfer.data;
   const recipient = current
     ? detail.members.find(({ userId }) => userId === current.recipientId)
     : null;
 
   return (
-    <section className="mt-5 rounded-2xl border border-border/70 bg-card px-5 py-4">
-      <div className="flex items-start gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-ink">
-          <KeyRound className="size-4" aria-hidden />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h2 className="font-bold text-ink text-sm">Group ownership</h2>
-          <p className="mt-1 text-muted-foreground text-xs">
-            Ownership changes only after the named member accepts it.
-          </p>
-          {current ? (
-            <div className="mt-3 rounded-xl bg-muted/55 p-3">
-              <p className="text-ink text-sm">
-                Waiting for{" "}
-                <strong>{recipient?.name ?? "the selected member"}</strong>
-                {current.recipientId === detail.viewer.userId
-                  ? " to respond."
-                  : " to accept ownership."}
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
+    <PlanManagementSection
+      description="The current owner chooses a member, and that member must accept before anything changes."
+      icon={KeyRound}
+      title="Group ownership"
+    >
+      {transfer.isLoading ? (
+        <Skeleton className="h-20 w-full" shape="card" />
+      ) : null}
+      {transfer.isError ? (
+        <Notice role="alert" size="sm" tone="warning" statusIcon>
+          We couldn&apos;t load the current ownership status.
+        </Notice>
+      ) : null}
+      {current ? (
+        <GroupedMenuList>
+          <GroupedMenuItem>
+            <GroupedMenuAction className="min-h-20 flex-col items-start gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-semibold text-ink text-sm">
+                  Waiting for {recipient?.name ?? "the selected member"}
+                </p>
+                <p className="mt-0.5 text-muted-foreground text-xs">
+                  Ownership stays unchanged until this request is accepted.
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-2">
                 {current.recipientId === detail.viewer.userId ? (
                   <>
                     <ActionDialog
@@ -97,6 +139,7 @@ export function OwnershipTransferSection({
                       />
                     </ActionDialog>
                     <Button
+                      disabled={respond.isPending}
                       onClick={() => respond.mutate("decline")}
                       size="sm"
                       variant="outline"
@@ -107,6 +150,7 @@ export function OwnershipTransferSection({
                 ) : null}
                 {current.initiatorId === detail.viewer.userId ? (
                   <Button
+                    disabled={respond.isPending}
                     onClick={() => respond.mutate("cancel")}
                     size="sm"
                     variant="outline"
@@ -115,26 +159,38 @@ export function OwnershipTransferSection({
                   </Button>
                 ) : null}
               </div>
-            </div>
-          ) : detail.viewer.role === "ADMIN" && detail.members.length > 1 ? (
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <label className="sr-only" htmlFor="ownership-recipient">
-                New owner
-              </label>
-              <select
-                className="h-9 min-w-44 rounded-lg border border-input-border bg-input px-3 text-ink text-sm"
-                id="ownership-recipient"
-                onChange={(event) => setRecipientId(event.target.value)}
-                value={recipientId}
-              >
-                {detail.members
-                  .filter(({ userId }) => userId !== detail.viewer.userId)
-                  .map((member) => (
-                    <option key={member.userId} value={member.userId}>
-                      {member.name}
-                    </option>
-                  ))}
-              </select>
+            </GroupedMenuAction>
+          </GroupedMenuItem>
+        </GroupedMenuList>
+      ) : null}
+      {!current &&
+      !transfer.isLoading &&
+      !transfer.isError &&
+      detail.viewer.role === "ADMIN" &&
+      eligibleMembers.length > 0 ? (
+        <GroupedMenuList>
+          <GroupedMenuItem>
+            <GroupedMenuAction className="min-h-16 flex-col items-stretch gap-3 px-3 py-3 sm:flex-row sm:items-center sm:px-4">
+              <div className="min-w-0 flex-1">
+                <label
+                  className="mb-1.5 block font-semibold text-ink text-xs"
+                  htmlFor="ownership-recipient"
+                >
+                  New owner
+                </label>
+                <Select onValueChange={setRecipientId} value={recipientId}>
+                  <SelectTrigger id="ownership-recipient" size="sm">
+                    <SelectValue placeholder="Choose a member" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {eligibleMembers.map((member) => (
+                      <SelectItem key={member.userId} value={member.userId}>
+                        {member.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <ActionDialog
                 confirmLabel="Send transfer"
                 description="The selected member must accept before ownership changes."
@@ -142,7 +198,7 @@ export function OwnershipTransferSection({
                 onConfirm={() => create.mutateAsync()}
                 title="Transfer group ownership?"
                 trigger={
-                  <Button size="sm" variant="outline">
+                  <Button className="sm:self-end" size="sm" variant="outline">
                     Transfer ownership
                   </Button>
                 }
@@ -155,10 +211,10 @@ export function OwnershipTransferSection({
                   value={password}
                 />
               </ActionDialog>
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </section>
+            </GroupedMenuAction>
+          </GroupedMenuItem>
+        </GroupedMenuList>
+      ) : null}
+    </PlanManagementSection>
   );
 }

@@ -92,6 +92,71 @@ export interface ScenarioFaultPlan {
   status?: number;
 }
 
+export interface ScenarioExternalInviteState {
+  claimCount: number;
+  createdAt: string;
+  expiresAt: string;
+  id: string;
+  planId: string;
+  status: "ACTIVE" | "EXHAUSTED" | "EXPIRED" | "REVOKED";
+  useCap: number;
+}
+
+export interface ScenarioGuestMembershipProposalState {
+  approvalCount: number;
+  expiresAt: string;
+  groupId: string;
+  guest: {
+    avatar: string | null;
+    id: string;
+    name: string;
+    planId: string;
+    userId: string;
+  };
+  guestAcceptedAt: string | null;
+  id: string;
+  proposerId: string;
+  rejectionCount: number;
+  requiredApprovals: number;
+  resolvedAt: string | null;
+  status:
+    | "PENDING_GUEST"
+    | "PENDING_VOTE"
+    | "ACCEPTED"
+    | "DECLINED"
+    | "REJECTED"
+    | "EXPIRED"
+    | "CANCELLED";
+  viewerVote: "APPROVE" | "REJECT" | null;
+}
+
+export interface ScenarioOwnershipTransferState {
+  createdAt: string;
+  expiresAt: string;
+  groupId: string;
+  id: string;
+  initiatorId: string;
+  recipientId: string;
+  respondedAt: string | null;
+  status: "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED" | "CANCELLED";
+}
+
+export interface ScenarioSeatOfferState {
+  candidateId: string;
+  consequenceVersion: string;
+  expiresAt: string | null;
+  id: string;
+  materialRevision: number;
+  planId: string;
+  status:
+    | "WAITING"
+    | "OFFERED"
+    | "ACCEPTED"
+    | "DECLINED"
+    | "EXPIRED"
+    | "CANCELLED";
+}
+
 export interface ScenarioWorld {
   account: {
     authenticated: boolean;
@@ -117,6 +182,16 @@ export interface ScenarioWorld {
   faults: ScenarioFaultPlan[];
   forge: {
     activeRequestId: string | null;
+  };
+  participation: {
+    externalInvites: Record<string, ScenarioExternalInviteState[]>;
+    guestMembershipProposals: Record<
+      string,
+      ScenarioGuestMembershipProposalState[]
+    >;
+    ownershipTransfers: Record<string, ScenarioOwnershipTransferState | null>;
+    seatOffers: Record<string, ScenarioSeatOfferState | null>;
+    withdrawnGuestPlanIds: string[];
   };
   settings: NotificationPreferences;
   safety: {

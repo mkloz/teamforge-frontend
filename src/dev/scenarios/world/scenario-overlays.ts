@@ -74,6 +74,12 @@ export function applyScenarioOverlays(
       ];
     }
   }
+  if (values.has("plan-guest") && world.viewerId) {
+    const group = world.entities.groups["scenario-group-basketball"];
+    if (group) {
+      group.memberIds = group.memberIds.filter((id) => id !== world.viewerId);
+    }
+  }
   if (values.has("draft-plan")) {
     for (const plan of Object.values(world.entities.plans)) {
       plan.dateTime = null;

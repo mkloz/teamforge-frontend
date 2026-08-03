@@ -109,6 +109,13 @@ export function buildScenarioWorld({
     },
     faults,
     forge: { activeRequestId: null },
+    participation: {
+      externalInvites: {},
+      guestMembershipProposals: {},
+      ownershipTransfers: {},
+      seatOffers: {},
+      withdrawnGuestPlanIds: [],
+    },
     settings: defaultSettings,
     safety: { containments: {}, enforcementNotices: {} },
     traits: [...new Set(effectiveOverlays)],

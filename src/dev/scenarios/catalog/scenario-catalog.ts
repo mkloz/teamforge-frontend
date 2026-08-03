@@ -381,6 +381,22 @@ export const scenarioCatalog = [
     "/groups/scenario-group-basketball",
     "The group detail request remains pending.",
   ),
+  scenario(
+    "plan-guest",
+    "Plan · guest",
+    "Groups",
+    "/plans/scenario-plan-basketball/guest",
+    "A guest place with intentionally limited access to the group.",
+    ["plan-guest"],
+  ),
+  scenario(
+    "external-invite",
+    "Plan · external invitation",
+    "Groups",
+    "/invite",
+    "A privacy-limited preview for a single-use plan invitation.",
+    ["plan-guest"],
+  ),
 
   scenario(
     "profile-owner",

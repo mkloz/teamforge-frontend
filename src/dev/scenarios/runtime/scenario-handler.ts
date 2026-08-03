@@ -909,7 +909,374 @@ async function projectResponse(
   );
   if (ownershipTransferMatch && request.method === "GET") {
     const group = world.entities.groups[ownershipTransferMatch[1]];
-    return group ? scenarioJson(null) : notFound(pathname);
+    return group
+      ? scenarioJson(world.participation.ownershipTransfers[group.id] ?? null)
+      : notFound(pathname);
+  }
+
+  if (ownershipTransferMatch && request.method === "POST" && world.viewerId) {
+    const group = world.entities.groups[ownershipTransferMatch[1]];
+    if (!group) return notFound(pathname);
+    const payload = await readJsonObject(request);
+    const recipientId = String(payload.recipientId ?? "");
+    if (!group.memberIds.includes(recipientId)) {
+      return scenarioJson(
+        { error: "INVALID_RECIPIENT", message: "Choose a current member." },
+        { status: 422 },
+      );
+    }
+    const transfer = {
+      createdAt: world.clock,
+      expiresAt: new Date(
+        new Date(world.clock).getTime() + 7 * 24 * 60 * 60 * 1000,
+      ).toISOString(),
+      groupId: group.id,
+      id: `scenario-ownership-transfer-${group.id}`,
+      initiatorId: world.viewerId,
+      recipientId,
+      respondedAt: null,
+      status: "PENDING" as const,
+    };
+    world.participation.ownershipTransfers[group.id] = transfer;
+    return scenarioJson(transfer);
+  }
+
+  const planGuestsMatch = pathname.match(/^plans\/([^/]+)\/guests$/u);
+  if (planGuestsMatch && request.method === "GET") {
+    const plan = world.entities.plans[planGuestsMatch[1]];
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group) return notFound(pathname);
+    const guest = Object.values(world.entities.users).find(
+      ({ id }) => !group.memberIds.includes(id),
+    );
+    return scenarioJson(
+      guest
+        ? [
+            {
+              acceptedAt: world.clock,
+              avatar: guest.avatar,
+              id: `scenario-plan-guest-${guest.id}`,
+              name: guest.name,
+              userId: guest.id,
+            },
+          ]
+        : [],
+    );
+  }
+
+  const guestProposalsMatch = pathname.match(
+    /^groups\/([^/]+)\/guest-membership-proposals$/u,
+  );
+  if (guestProposalsMatch && request.method === "GET") {
+    const group = world.entities.groups[guestProposalsMatch[1]];
+    return group
+      ? scenarioJson(
+          world.participation.guestMembershipProposals[group.id] ?? [],
+        )
+      : notFound(pathname);
+  }
+
+  if (guestProposalsMatch && request.method === "POST" && world.viewerId) {
+    const group = world.entities.groups[guestProposalsMatch[1]];
+    if (!group) return notFound(pathname);
+    const payload = await readJsonObject(request);
+    const planGuestId = String(payload.planGuestId ?? "");
+    const userId = planGuestId.replace("scenario-plan-guest-", "");
+    const guest = world.entities.users[userId];
+    const planId = group.planIds.at(0);
+    if (!guest || !planId) return notFound(pathname);
+    const proposal = {
+      approvalCount: 0,
+      expiresAt: new Date(
+        new Date(world.clock).getTime() + 7 * 24 * 60 * 60 * 1000,
+      ).toISOString(),
+      groupId: group.id,
+      guest: {
+        avatar: guest.avatar,
+        id: planGuestId,
+        name: guest.name,
+        planId,
+        userId: guest.id,
+      },
+      guestAcceptedAt: null,
+      id: `scenario-membership-proposal-${group.id}`,
+      proposerId: world.viewerId,
+      rejectionCount: 0,
+      requiredApprovals: group.memberIds.length,
+      resolvedAt: null,
+      status: "PENDING_GUEST" as const,
+      viewerVote: null,
+    };
+    world.participation.guestMembershipProposals[group.id] = [proposal];
+    return scenarioJson(proposal);
+  }
+
+  const externalInvitesMatch = pathname.match(
+    /^plans\/([^/]+)\/external-invites$/u,
+  );
+  if (externalInvitesMatch && request.method === "GET") {
+    const plan = world.entities.plans[externalInvitesMatch[1]];
+    return plan
+      ? scenarioJson(world.participation.externalInvites[plan.id] ?? [])
+      : notFound(pathname);
+  }
+
+  if (externalInvitesMatch && request.method === "POST") {
+    const plan = world.entities.plans[externalInvitesMatch[1]];
+    if (!plan) return notFound(pathname);
+    const expiresAt = new Date(
+      new Date(world.clock).getTime() + 72 * 60 * 60 * 1000,
+    ).toISOString();
+    const invite = {
+      claimCount: 0,
+      createdAt: world.clock,
+      expiresAt,
+      id: `scenario-external-invite-${plan.id}`,
+      planId: plan.id,
+      status: "ACTIVE" as const,
+      useCap: 1,
+    };
+    world.participation.externalInvites[plan.id] = [invite];
+    const referringOrigin = getReferringOrigin(request, url.origin);
+    return scenarioJson({
+      expiresAt,
+      id: invite.id,
+      planId: plan.id,
+      shareUrl: `${referringOrigin}/invite?token=scenario-${plan.id}`,
+    });
+  }
+
+  const revokeExternalInviteMatch = pathname.match(
+    /^external-invites\/([^/]+)\/revoke$/u,
+  );
+  if (revokeExternalInviteMatch && request.method === "POST") {
+    for (const invites of Object.values(world.participation.externalInvites)) {
+      const invite = invites.find(
+        ({ id }) => id === revokeExternalInviteMatch[1],
+      );
+      if (invite) invite.status = "REVOKED";
+    }
+    return new Response(null, { status: 204 });
+  }
+
+  const seatRecoveryMatch = pathname.match(/^plans\/([^/]+)\/seat-recovery$/u);
+  if (seatRecoveryMatch && request.method === "GET" && world.viewerId) {
+    const plan = world.entities.plans[seatRecoveryMatch[1]];
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group) return notFound(pathname);
+    return scenarioJson({
+      assignmentStatus: group.memberIds.includes(world.viewerId)
+        ? "OCCUPIED"
+        : null,
+      consequenceVersion: "scenario-v1",
+      materialRevision: plan.materialRevision,
+      offer: world.participation.seatOffers[plan.id] ?? null,
+      participantScope: group.memberIds.includes(world.viewerId)
+        ? "GROUP_MEMBER"
+        : "NONE",
+      seatCounts: {
+        HELD: 0,
+        OCCUPIED: group.memberIds.length,
+        OPEN: Math.max(0, group.maxMembers - group.memberIds.length),
+      },
+    });
+  }
+
+  const seatWaitlistMatch = pathname.match(
+    /^plans\/([^/]+)\/seat-recovery\/waitlist$/u,
+  );
+  if (seatWaitlistMatch && request.method === "POST" && world.viewerId) {
+    const plan = world.entities.plans[seatWaitlistMatch[1]];
+    if (!plan) return notFound(pathname);
+    const offer = {
+      candidateId: world.viewerId,
+      consequenceVersion: "scenario-v1",
+      expiresAt: null,
+      id: `scenario-seat-offer-${plan.id}`,
+      materialRevision: plan.materialRevision,
+      planId: plan.id,
+      status: "WAITING" as const,
+    };
+    world.participation.seatOffers[plan.id] = offer;
+    return scenarioJson(offer);
+  }
+
+  const seatOfferMatch = pathname.match(
+    /^plans\/([^/]+)\/seat-offers\/([^/]+)\/(accept|decline)$/u,
+  );
+  if (seatOfferMatch && request.method === "POST") {
+    const plan = world.entities.plans[seatOfferMatch[1]];
+    const offer = plan ? world.participation.seatOffers[plan.id] : null;
+    if (!plan || !offer || offer.id !== seatOfferMatch[2]) {
+      return notFound(pathname);
+    }
+    offer.status = seatOfferMatch[3] === "accept" ? "ACCEPTED" : "DECLINED";
+    return scenarioJson(offer);
+  }
+
+  const guestAccessMatch = pathname.match(/^plans\/([^/]+)\/guest-access$/u);
+  if (guestAccessMatch && request.method === "GET" && world.viewerId) {
+    const plan = world.entities.plans[guestAccessMatch[1]];
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group) return notFound(pathname);
+    const withdrawn = world.participation.withdrawnGuestPlanIds.includes(
+      plan.id,
+    );
+    return scenarioJson({
+      accessFacts: [],
+      canUseGroupSpaces: group.memberIds.includes(world.viewerId),
+      groupId: group.id,
+      groupName: group.name,
+      guestStatus: group.memberIds.includes(world.viewerId)
+        ? null
+        : withdrawn
+          ? "WITHDRAWN"
+          : "ACTIVE",
+      offer: null,
+      participantScope: group.memberIds.includes(world.viewerId)
+        ? "GROUP_MEMBER"
+        : withdrawn
+          ? "NONE"
+          : "PLAN_GUEST",
+      plan: {
+        category: plan.category,
+        dateTime: plan.dateTime,
+        description: plan.description,
+        durationMinutes: plan.dateTime ? 90 : null,
+        endAt: plan.dateTime
+          ? new Date(
+              new Date(plan.dateTime).getTime() + 90 * 60_000,
+            ).toISOString()
+          : null,
+        id: plan.id,
+        location: plan.location,
+        locationMode: plan.locationMode,
+        materialRevision: plan.materialRevision,
+        status: plan.status,
+        title: plan.title,
+      },
+      seat: withdrawn
+        ? null
+        : {
+            assignmentStatus: "OCCUPIED",
+            ordinal: 1,
+          },
+    });
+  }
+
+  const withdrawGuestMatch = pathname.match(
+    /^plans\/([^/]+)\/guest-access\/withdraw$/u,
+  );
+  if (withdrawGuestMatch && request.method === "POST") {
+    const plan = world.entities.plans[withdrawGuestMatch[1]];
+    if (!plan) return notFound(pathname);
+    if (!world.participation.withdrawnGuestPlanIds.includes(plan.id)) {
+      world.participation.withdrawnGuestPlanIds.push(plan.id);
+    }
+    return new Response(null, { status: 204 });
+  }
+
+  const proposalForPlanMatch = pathname.match(
+    /^groups\/guest-membership-proposals\/for-plan\/([^/]+)$/u,
+  );
+  if (proposalForPlanMatch && request.method === "GET") {
+    const plan = world.entities.plans[proposalForPlanMatch[1]];
+    const proposals = plan
+      ? world.participation.guestMembershipProposals[plan.groupId]
+      : null;
+    return plan ? scenarioJson(proposals?.at(0) ?? null) : notFound(pathname);
+  }
+
+  const respondGuestProposalMatch = pathname.match(
+    /^groups\/guest-membership-proposals\/([^/]+)\/(respond|vote)$/u,
+  );
+  if (respondGuestProposalMatch && request.method === "POST") {
+    const proposal = Object.values(world.participation.guestMembershipProposals)
+      .flat()
+      .find(({ id }) => id === respondGuestProposalMatch[1]);
+    if (!proposal) return notFound(pathname);
+    const payload = await readJsonObject(request);
+    if (respondGuestProposalMatch[2] === "respond") {
+      const accept = payload.accept === true;
+      proposal.guestAcceptedAt = accept ? world.clock : null;
+      proposal.status = accept ? "PENDING_VOTE" : "DECLINED";
+      proposal.resolvedAt = accept ? null : world.clock;
+    } else {
+      const approve = payload.approve === true;
+      proposal.viewerVote = approve ? "APPROVE" : "REJECT";
+      proposal.approvalCount = approve ? 1 : 0;
+      proposal.rejectionCount = approve ? 0 : 1;
+    }
+    return scenarioJson(proposal);
+  }
+
+  const respondOwnershipMatch = pathname.match(
+    /^groups\/ownership-transfers\/([^/]+)\/(accept|decline|cancel)$/u,
+  );
+  if (respondOwnershipMatch && request.method === "POST") {
+    const transfer = Object.values(world.participation.ownershipTransfers).find(
+      (candidate) => candidate?.id === respondOwnershipMatch[1],
+    );
+    if (!transfer) return notFound(pathname);
+    const response = respondOwnershipMatch[2];
+    transfer.status =
+      response === "accept"
+        ? "ACCEPTED"
+        : response === "decline"
+          ? "DECLINED"
+          : "CANCELLED";
+    transfer.respondedAt = world.clock;
+    return scenarioJson(transfer);
+  }
+
+  if (pathname === "external-invites/preview" && request.method === "GET") {
+    const plan = Object.values(world.entities.plans).at(0);
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group) return notFound(pathname);
+    return scenarioJson({
+      category: plan.category,
+      dateTime: plan.dateTime,
+      expiresAt: new Date(
+        new Date(world.clock).getTime() + 72 * 60 * 60 * 1000,
+      ).toISOString(),
+      groupName: group.name,
+      locationMode: plan.locationMode,
+      planTitle: plan.title,
+      requiresAuthentication: true,
+    });
+  }
+
+  if (pathname === "external-invites/exchange" && request.method === "POST") {
+    const plan = Object.values(world.entities.plans).at(0);
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group) return notFound(pathname);
+    return scenarioJson({
+      category: plan.category,
+      dateTime: plan.dateTime,
+      expiresAt: new Date(
+        new Date(world.clock).getTime() + 72 * 60 * 60 * 1000,
+      ).toISOString(),
+      groupName: group.name,
+      locationMode: plan.locationMode,
+      planTitle: plan.title,
+      requiresAuthentication: true,
+    });
+  }
+
+  if (pathname === "external-invites/claim" && request.method === "POST") {
+    const plan = Object.values(world.entities.plans).at(0);
+    if (!plan) return notFound(pathname);
+    return scenarioJson({
+      claimId: `scenario-claim-${plan.id}`,
+      groupId: plan.groupId,
+      participantScope: "PLAN_GUEST",
+      planId: plan.id,
+      redirectPath: `/plans/${plan.id}/guest`,
+    });
+  }
+
+  if (pathname === "external-invites/suppress" && request.method === "POST") {
+    return new Response(null, { status: 204 });
   }
 
   const planReadinessMatch = pathname.match(/^plans\/([^/]+)\/readiness$/u);
@@ -1654,6 +2021,16 @@ function toScenarioInviteUser(user: CurrentUser) {
     personalityType: user.personalityType ?? null,
     trustScore: user.trustScore ?? undefined,
   };
+}
+
+function getReferringOrigin(request: Request, fallback: string) {
+  const referer = request.headers.get("referer");
+  if (!referer) return fallback;
+  try {
+    return new URL(referer).origin;
+  } catch {
+    return fallback;
+  }
 }
 
 function projectPersonalityAssessmentCapabilities() {

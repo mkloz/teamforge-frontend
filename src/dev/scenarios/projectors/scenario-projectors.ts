@@ -311,7 +311,13 @@ export function projectGroupDetail(world: ScenarioWorld, groupId: string) {
         trustScore: invitation.invitee.trustScore ?? 0,
         userId: invitation.invitee.id,
       })),
-    plan: plan ? toDetailPlan(plan) : null,
+    plan: plan
+      ? {
+          ...toDetailPlan(plan),
+          externalInvitesEnabled: isAdmin,
+          seatRecoveryEnabled: isAdmin,
+        }
+      : null,
     planHistory: [],
     planning: {
       pendingProposalCount: 0,
