@@ -114,6 +114,9 @@ export function ScenarioModePanel({
   const networkErrorCount = requestRecords.filter(
     (request) => request.status === 0,
   ).length;
+  const pendingRequestCount = requestRecords.filter(
+    (request) => request.status === 102,
+  ).length;
   const unmatchedRequests = [
     ...new Map(
       requestRecords
@@ -141,6 +144,7 @@ export function ScenarioModePanel({
       className="relative text-sm"
       data-scenario-id={controller?.descriptor.id}
       data-scenario-network-error-count={networkErrorCount}
+      data-scenario-pending-request-count={pendingRequestCount}
       data-scenario-request-count={requestCount}
       data-scenario-request-statuses={requestRecords
         .map((request) => request.status)

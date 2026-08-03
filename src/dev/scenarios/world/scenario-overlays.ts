@@ -30,6 +30,9 @@ export function applyScenarioOverlays(
   if (values.has("dense")) {
     addDenseCollections(world);
   }
+  if (values.has("pagination")) {
+    addPaginationCollections(world);
+  }
   if (values.has("long-copy")) {
     applyLongCopy(world);
   }
@@ -154,6 +157,34 @@ function addDenseCollections(world: ScenarioWorld) {
       groupId,
       id: planId,
       title: `Scenario plan ${index}`,
+    };
+  }
+}
+
+function addPaginationCollections(world: ScenarioWorld) {
+  const sourceGroup = Object.values(world.entities.groups)[0];
+  const sourcePlan = sourceGroup?.planIds.at(0)
+    ? world.entities.plans[sourceGroup.planIds[0]]
+    : null;
+  if (!sourceGroup || !sourcePlan) {
+    return;
+  }
+
+  for (let index = 1; index <= 24; index += 1) {
+    const groupId = `scenario-group-page-${index}`;
+    const planId = `scenario-plan-page-${index}`;
+    world.entities.groups[groupId] = {
+      ...structuredClone(sourceGroup),
+      id: groupId,
+      name: `Pagination group ${index}`,
+      pendingInvitationIds: [],
+      planIds: [planId],
+    };
+    world.entities.plans[planId] = {
+      ...structuredClone(sourcePlan),
+      groupId,
+      id: planId,
+      title: `Pagination plan ${index}`,
     };
   }
 }

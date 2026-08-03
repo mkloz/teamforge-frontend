@@ -83,9 +83,12 @@ export interface ScenarioPlanEntity {
 
 export interface ScenarioFaultPlan {
   delayMs?: number;
+  hold?: boolean;
   method?: string;
   networkError?: boolean;
   pathname?: string;
+  remainingMatches?: number;
+  searchParams?: Readonly<Record<string, string>>;
   status?: number;
 }
 

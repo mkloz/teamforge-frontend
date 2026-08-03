@@ -24,8 +24,8 @@ import {
   paginatedReportsSchema,
 } from "@/shared/schemas/safety";
 
-function createController(id = "standard") {
-  return new ScenarioController({ id, overlays: [], persona: null });
+function createController(id = "standard", overlays: readonly string[] = []) {
+  return new ScenarioController({ id, overlays, persona: null });
 }
 
 function apiRequest(path: string, init?: RequestInit) {
@@ -33,6 +33,87 @@ function apiRequest(path: string, init?: RequestInit) {
 }
 
 describe("scenario runtime", () => {
+  it("holds a scoped loading request until the fault is released", async () => {
+    const controller = createController("explore-loading");
+    const pendingResponse = handleScenarioRequest(
+      controller,
+      apiRequest("explore/feed?page=1&limit=24"),
+    );
+
+    await Promise.resolve();
+    expect(controller.requests).toEqual([
+      { method: "GET", pathname: "explore/feed", status: 102 },
+    ]);
+
+    expect(
+      controller.releaseFaults({ method: "GET", pathname: "explore/feed" }),
+    ).toEqual({ releasedFaultCount: 1, releasedRequestCount: 1 });
+    const response = await pendingResponse;
+
+    expect(response.status).toBe(200);
+    expect(controller.requests).toEqual([
+      { method: "GET", pathname: "explore/feed", status: 200 },
+    ]);
+  });
+
+  it("scopes faults by pathname and query parameters", async () => {
+    const controller = createController("explore-pagination-loading");
+    const firstPage = await handleScenarioRequest(
+      controller,
+      apiRequest("explore/feed?page=1&limit=24"),
+    );
+    const pendingSecondPage = handleScenarioRequest(
+      controller,
+      apiRequest("explore/feed?page=2&limit=24"),
+    );
+
+    expect((await firstPage.json()).meta).toMatchObject({
+      currentPage: 1,
+      totalPages: 2,
+    });
+    await Promise.resolve();
+    expect(controller.requests.at(-1)).toEqual({
+      method: "GET",
+      pathname: "explore/feed",
+      status: 102,
+    });
+
+    controller.releaseFaults({ method: "GET", pathname: "explore/feed" });
+    const secondPage = await pendingSecondPage;
+    expect((await secondPage.json()).meta).toMatchObject({
+      currentPage: 2,
+      totalPages: 2,
+    });
+  });
+
+  it("keeps a partial fault isolated from unrelated requests", async () => {
+    const controller = createController("home-recommendations-error");
+    const [viewerResponse, exploreResponse] = await Promise.all([
+      handleScenarioRequest(controller, apiRequest("users/me")),
+      handleScenarioRequest(controller, apiRequest("explore/feed?limit=24")),
+    ]);
+
+    expect(viewerResponse.status).toBe(200);
+    expect(exploreResponse.status).toBe(403);
+  });
+
+  it("can release a scoped failure before a successful retry", async () => {
+    const controller = createController("home-recommendations-recovery");
+    const failedResponse = await handleScenarioRequest(
+      controller,
+      apiRequest("explore/feed?limit=24"),
+    );
+
+    expect(failedResponse.status).toBe(403);
+    controller.releaseFaults({ method: "GET", pathname: "explore/feed" });
+
+    const recoveredResponse = await handleScenarioRequest(
+      controller,
+      apiRequest("explore/feed?limit=24"),
+    );
+    expect(recoveredResponse.status).toBe(200);
+  });
+
   it("projects onboarding personality state and capabilities", async () => {
     const controller = createController("onboarding-incomplete");
     const [stateResponse, capabilitiesResponse] = await Promise.all([

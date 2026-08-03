@@ -5,15 +5,25 @@ import {
 
 export type ScenarioAuditProfile = "full" | "smoke";
 
-export type ScenarioAuditRecipe = "notifications-drawer";
+export type ScenarioAuditRecipe =
+  | "explore-join-pending"
+  | "explore-join-rollback"
+  | "explore-pagination-loading"
+  | "home-recommendations-error"
+  | "home-recommendations-recovery"
+  | "notifications-drawer";
 
 const smokeScenarioIds = new Set([
   "standard",
   "empty",
   "home-dense",
+  "home-recommendations-error",
   "activity-standard",
   "notifications-dense",
   "explore-standard",
+  "explore-loading",
+  "explore-pagination-loading",
+  "explore-join-pending",
   "forge-standard",
   "group-member",
   "profile-owner",
@@ -24,6 +34,11 @@ const smokeScenarioIds = new Set([
 ]);
 
 const recipeByScenarioId: Readonly<Record<string, ScenarioAuditRecipe>> = {
+  "explore-join-pending": "explore-join-pending",
+  "explore-join-rollback": "explore-join-rollback",
+  "explore-pagination-loading": "explore-pagination-loading",
+  "home-recommendations-error": "home-recommendations-error",
+  "home-recommendations-recovery": "home-recommendations-recovery",
   "notifications-dense": "notifications-drawer",
   "notifications-empty": "notifications-drawer",
   "notifications-long-copy": "notifications-drawer",

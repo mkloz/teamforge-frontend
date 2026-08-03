@@ -8,7 +8,19 @@ export interface ScenarioRequestRecord {
   status: number;
 }
 
+export interface ScenarioRequestMatcher {
+  method?: string;
+  pathname?: string;
+}
+
+interface HeldScenarioRequest {
+  method: string;
+  pathname: string;
+  resolve: () => void;
+}
+
 export class ScenarioController {
+  private readonly heldRequests: HeldScenarioRequest[] = [];
   private readonly listeners = new Set<() => void>();
   private requestSnapshot: readonly ScenarioRequestRecord[] = [];
   readonly descriptor: ScenarioDescriptor;
@@ -27,6 +39,7 @@ export class ScenarioController {
   }
 
   reset() {
+    this.releaseHeldRequests();
     this.requests.length = 0;
     this.requestSnapshot = [];
     this.world = buildScenarioWorld(this.descriptor);
@@ -35,6 +48,47 @@ export class ScenarioController {
 
   getRequestSnapshot() {
     return this.requestSnapshot;
+  }
+
+  waitForFaultRelease({ method, pathname }: Required<ScenarioRequestMatcher>) {
+    return new Promise<void>((resolve) => {
+      this.heldRequests.push({ method, pathname, resolve });
+    });
+  }
+
+  clearPendingRequest({ method, pathname }: Required<ScenarioRequestMatcher>) {
+    let index = -1;
+    for (
+      let candidateIndex = this.requests.length - 1;
+      candidateIndex >= 0;
+      candidateIndex -= 1
+    ) {
+      const request = this.requests[candidateIndex];
+      if (
+        request.method === method &&
+        request.pathname === pathname &&
+        request.status === 102
+      ) {
+        index = candidateIndex;
+        break;
+      }
+    }
+    if (index >= 0) {
+      this.requests.splice(index, 1);
+      this.requestSnapshot = [...this.requests];
+      this.emitChange();
+    }
+  }
+
+  releaseFaults(matcher: ScenarioRequestMatcher = {}) {
+    const retainedFaults = this.world.faults.filter(
+      (fault) => !matchesRequest(matcher, fault),
+    );
+    const releasedFaultCount = this.world.faults.length - retainedFaults.length;
+    this.world.faults.splice(0, this.world.faults.length, ...retainedFaults);
+    const releasedRequestCount = this.releaseHeldRequests(matcher);
+
+    return { releasedFaultCount, releasedRequestCount };
   }
 
   subscribe(listener: () => void) {
@@ -50,4 +104,28 @@ export class ScenarioController {
       listener();
     }
   }
+
+  private releaseHeldRequests(matcher: ScenarioRequestMatcher = {}) {
+    let released = 0;
+    for (let index = this.heldRequests.length - 1; index >= 0; index -= 1) {
+      const request = this.heldRequests[index];
+      if (!matchesRequest(matcher, request)) {
+        continue;
+      }
+      this.heldRequests.splice(index, 1);
+      request.resolve();
+      released += 1;
+    }
+    return released;
+  }
+}
+
+function matchesRequest(
+  matcher: ScenarioRequestMatcher,
+  candidate: ScenarioRequestMatcher,
+) {
+  return (
+    (!matcher.method || matcher.method === candidate.method) &&
+    (!matcher.pathname || matcher.pathname === candidate.pathname)
+  );
 }

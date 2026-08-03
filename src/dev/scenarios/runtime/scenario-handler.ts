@@ -38,11 +38,26 @@ export async function handleScenarioRequest(
 ): Promise<Response> {
   const url = new URL(request.url);
   const pathname = getApiPathname(url.pathname);
-  const fault = controller.world.faults.find(
-    (candidate) =>
-      (!candidate.method || candidate.method === request.method) &&
-      (!candidate.pathname || candidate.pathname === pathname),
+  const fault = controller.world.faults.find((candidate) =>
+    matchesFault(candidate, request, pathname, url),
   );
+
+  if (fault) {
+    consumeFiniteFault(controller, fault);
+  }
+
+  if (fault?.hold) {
+    controller.recordRequest({
+      method: request.method,
+      pathname,
+      status: 102,
+    });
+    await controller.waitForFaultRelease({
+      method: request.method,
+      pathname,
+    });
+    controller.clearPendingRequest({ method: request.method, pathname });
+  }
 
   if (fault?.delayMs) {
     await delay(fault.delayMs);
@@ -76,6 +91,48 @@ export async function handleScenarioRequest(
   const response = await projectResponse(controller, request, pathname, url);
 
   return record(controller, request, pathname, response);
+}
+
+function matchesFault(
+  fault: ScenarioController["world"]["faults"][number],
+  request: Request,
+  pathname: string,
+  url: URL,
+) {
+  if (fault.remainingMatches !== undefined && fault.remainingMatches <= 0) {
+    return false;
+  }
+
+  if (fault.method && fault.method !== request.method) {
+    return false;
+  }
+
+  if (fault.pathname && fault.pathname !== pathname) {
+    return false;
+  }
+
+  return Object.entries(fault.searchParams ?? {}).every(
+    ([key, value]) => url.searchParams.get(key) === value,
+  );
+}
+
+function consumeFiniteFault(
+  controller: ScenarioController,
+  fault: ScenarioController["world"]["faults"][number],
+) {
+  if (fault.remainingMatches === undefined) {
+    return;
+  }
+
+  fault.remainingMatches -= 1;
+  if (fault.remainingMatches > 0) {
+    return;
+  }
+
+  const index = controller.world.faults.indexOf(fault);
+  if (index >= 0) {
+    controller.world.faults.splice(index, 1);
+  }
 }
 
 async function projectResponse(
@@ -812,6 +869,7 @@ async function projectResponse(
       ...scenarioPage(
         projectExploreFeed(world),
         Number(url.searchParams.get("limit") ?? 24),
+        Number(url.searchParams.get("page") ?? 1),
       ),
       insight: {
         bullets: [
@@ -828,6 +886,7 @@ async function projectResponse(
       ...scenarioPage(
         projectExploreGroups(world),
         Number(url.searchParams.get("limit") ?? 24),
+        Number(url.searchParams.get("page") ?? 1),
       ),
       insight: {
         bullets: [

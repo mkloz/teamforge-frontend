@@ -16,6 +16,7 @@ import type {
 } from "@/shared/runtime/scenario-runtime-contract";
 
 const SCENARIO_RUNTIME_SENTINEL = "__TEAMFORGE_SCENARIO_RUNTIME__";
+const SCENARIO_RELEASE_FAULTS_EVENT = "teamforge:scenario-release-faults";
 const blockedEffects = new Set<ScenarioExternalEffect>([
   "audio",
   "clipboard",
@@ -37,6 +38,14 @@ let descriptor = readScenarioDescriptor(window.location);
 let controller = descriptor ? new ScenarioController(descriptor) : null;
 let restoreScenarioNavigation: (() => void) | null = null;
 setScenarioController(controller);
+
+window.addEventListener(SCENARIO_RELEASE_FAULTS_EVENT, (event) => {
+  const detail =
+    event instanceof CustomEvent && isScenarioRequestMatcher(event.detail)
+      ? event.detail
+      : {};
+  controller?.releaseFaults(detail);
+});
 
 const scenarioFetch: typeof globalThis.fetch = (...args) => {
   if (!descriptor) {
@@ -117,3 +126,17 @@ export const scenarioRuntime: ScenarioRuntimeFacade = Object.freeze({
     return descriptor ? resolveScenarioMediaUrl(path) : null;
   },
 });
+
+function isScenarioRequestMatcher(
+  value: unknown,
+): value is { method?: string; pathname?: string } {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const matcher = value as { method?: unknown; pathname?: unknown };
+  return (
+    (matcher.method === undefined || typeof matcher.method === "string") &&
+    (matcher.pathname === undefined || typeof matcher.pathname === "string")
+  );
+}

@@ -121,6 +121,27 @@ export const scenarioCatalog = [
     "Stress test for wrapping and truncation.",
     ["long-copy"],
   ),
+  scenario(
+    "home-loading",
+    "Home · loading groups",
+    "Home",
+    "/home",
+    "The group summary remains pending while independent home data resolves.",
+  ),
+  scenario(
+    "home-recommendations-error",
+    "Home · recommendations error",
+    "Home",
+    "/home",
+    "The recommendations panel fails while the rest of Home remains available.",
+  ),
+  scenario(
+    "home-recommendations-recovery",
+    "Home · recommendations recover",
+    "Home",
+    "/home",
+    "The recommendations panel recovers after an explicit retry.",
+  ),
 
   scenario(
     "activity-standard",
@@ -152,6 +173,13 @@ export const scenarioCatalog = [
     "/activity",
     "Long group names and activity summaries.",
     ["long-copy"],
+  ),
+  scenario(
+    "activity-loading",
+    "Activity · loading conversations",
+    "Activity",
+    "/activity",
+    "The activity group collection remains pending.",
   ),
 
   scenario(
@@ -224,6 +252,35 @@ export const scenarioCatalog = [
     "/explore",
     "Groups at their capacity boundary.",
     ["full-groups"],
+  ),
+  scenario(
+    "explore-loading",
+    "Explore · initial loading",
+    "Explore",
+    "/explore",
+    "The first page of openings remains pending.",
+  ),
+  scenario(
+    "explore-pagination-loading",
+    "Explore · loading more",
+    "Explore",
+    "/explore",
+    "The first page is visible while the next page remains pending.",
+    ["pagination"],
+  ),
+  scenario(
+    "explore-join-pending",
+    "Explore · joining",
+    "Explore",
+    "/explore",
+    "A join mutation remains pending after the action is selected.",
+  ),
+  scenario(
+    "explore-join-rollback",
+    "Explore · join conflict",
+    "Explore",
+    "/explore",
+    "A join mutation conflicts and returns the action to its retryable state.",
   ),
 
   scenario(
@@ -317,6 +374,13 @@ export const scenarioCatalog = [
     "A plan still being decided.",
     ["draft-plan"],
   ),
+  scenario(
+    "group-loading",
+    "Group · loading details",
+    "Groups",
+    "/groups/scenario-group-basketball",
+    "The group detail request remains pending.",
+  ),
 
   scenario(
     "profile-owner",
@@ -348,6 +412,13 @@ export const scenarioCatalog = [
     "Profile without personality results.",
     ["no-assessment"],
   ),
+  scenario(
+    "profile-loading",
+    "Profile · loading",
+    "Profile",
+    "/users/scenario-user-ava",
+    "The public profile request remains pending.",
+  ),
 
   scenario(
     "settings-standard",
@@ -371,6 +442,13 @@ export const scenarioCatalog = [
     "/settings?tab=security",
     "Many active sessions and devices.",
     ["many-sessions"],
+  ),
+  scenario(
+    "settings-loading",
+    "Settings · loading preferences",
+    "Settings",
+    "/settings?tab=notifications",
+    "Profile settings remain usable while notification preferences are pending.",
   ),
 
   scenario(

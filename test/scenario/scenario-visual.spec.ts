@@ -13,6 +13,15 @@ const profile = getAuditProfile(process.env.SCENARIO_AUDIT_PROFILE);
 const outputRoot =
   process.env.SCENARIO_SCREENSHOT_OUTPUT ??
   path.join(process.cwd(), "temp", "scenario-screenshots", profile);
+const heldRequestScenarioIds = new Set([
+  "activity-loading",
+  "explore-loading",
+  "explore-pagination-loading",
+  "group-loading",
+  "home-loading",
+  "profile-loading",
+  "settings-loading",
+]);
 
 test.describe.configure({ mode: "serial" });
 
@@ -65,11 +74,24 @@ for (const scenario of getScenarioAuditEntries(profile)) {
     );
 
     await page.evaluate(async () => {
+      const step = Math.max(320, Math.round(window.innerHeight * 0.72));
+      const positions = Array.from(
+        { length: Math.ceil(document.body.scrollHeight / step) },
+        (_, index) => index * step,
+      );
+      await positions.reduce(async (previous, position) => {
+        await previous;
+        window.scrollTo(0, position);
+        await new Promise((resolve) => window.setTimeout(resolve, 90));
+      }, Promise.resolve());
       window.scrollTo(0, document.body.scrollHeight);
       await new Promise((resolve) => window.setTimeout(resolve, 250));
       window.scrollTo(0, 0);
     });
-    await page.waitForTimeout(350);
+    if (!heldRequestScenarioIds.has(scenario.id)) {
+      await page.waitForLoadState("networkidle");
+    }
+    await page.waitForTimeout(650);
 
     await page.locator("[data-development-tools]").evaluate((element) => {
       element.setAttribute("hidden", "");
@@ -106,6 +128,39 @@ async function assertScenarioFaultState(
   scenarioPanel: import("@playwright/test").Locator,
   consoleErrors: readonly string[],
 ) {
+  if (
+    heldRequestScenarioIds.has(scenarioId) ||
+    scenarioId === "explore-join-pending"
+  ) {
+    await expect(
+      scenarioPanel,
+      `${scenarioId} should hold at least one matching request`,
+    ).not.toHaveAttribute("data-scenario-pending-request-count", "0");
+    expect(consoleErrors, "browser console errors").toEqual([]);
+    return;
+  }
+
+  const scopedStatusByScenario: Readonly<Record<string, string>> = {
+    "explore-join-rollback": "409",
+    "home-recommendations-error": "403",
+    "home-recommendations-recovery": "403",
+  };
+  const scopedStatus = scopedStatusByScenario[scenarioId];
+  if (scopedStatus) {
+    await expect(
+      scenarioPanel,
+      `${scenarioId} should exercise its scoped fault`,
+    ).toHaveAttribute(
+      "data-scenario-request-statuses",
+      new RegExp(`(?:^|,)${scopedStatus}(?:,|$)`, "u"),
+    );
+    expect(
+      consoleErrors.filter((message) => !message.includes(scopedStatus)),
+      `unexpected browser console errors for ${scenarioId}`,
+    ).toEqual([]);
+    return;
+  }
+
   const statusMatch = /^network-(403|404|409|422|429|500)$/u.exec(scenarioId);
   if (statusMatch) {
     const expectedStatus = statusMatch[1];
@@ -155,14 +210,120 @@ async function runScenarioRecipe(
   page: import("@playwright/test").Page,
   recipe: import("./scenario-manifest").ScenarioAuditRecipe | null,
 ) {
-  if (recipe !== "notifications-drawer") {
-    return;
-  }
+  switch (recipe) {
+    case "explore-join-pending": {
+      const joinButton = page
+        .getByRole("button", { name: "Join", exact: true })
+        .first();
+      await joinButton.click();
+      await expect(
+        page.getByRole("button", { name: "Joining...", exact: true }).first(),
+      ).toBeDisabled();
+      return;
+    }
+    case "explore-join-rollback": {
+      const joinButton = page
+        .getByRole("button", { name: "Join", exact: true })
+        .first();
+      await joinButton.click();
+      await expect(joinButton).toBeEnabled();
+      return;
+    }
+    case "explore-pagination-loading": {
+      const scenarioPanel = page.locator("[data-scenario-id]");
+      await expect
+        .poll(
+          async () => {
+            const pendingRequestCount = await scenarioPanel.getAttribute(
+              "data-scenario-pending-request-count",
+            );
+            if (pendingRequestCount !== "0") {
+              return pendingRequestCount;
+            }
 
-  await page
-    .getByRole("button", { name: /(?:unread )?notifications/iu })
-    .click();
-  await expect(
-    page.getByRole("dialog", { name: "Notifications", exact: true }),
-  ).toBeVisible();
+            await page.evaluate(() => {
+              const loadMoreButton = [
+                ...document.querySelectorAll("button"),
+              ].find((button) => button.textContent?.trim() === "Load more");
+              if (loadMoreButton instanceof HTMLButtonElement) {
+                loadMoreButton.click();
+              }
+            });
+            return scenarioPanel.getAttribute(
+              "data-scenario-pending-request-count",
+            );
+          },
+          {
+            message: "pagination should hold its page-two request",
+            timeout: 12_000,
+          },
+        )
+        .not.toBe("0");
+      await expect(
+        page.getByRole("button", {
+          name: "Loading more...",
+          exact: true,
+        }),
+      ).toBeDisabled();
+      return;
+    }
+    case "home-recommendations-error":
+      await revealDeferredHomePanels(page);
+      await expect(
+        page.getByRole("alert").filter({
+          hasText: "We couldn't load open plans.",
+        }),
+      ).toBeVisible();
+      return;
+    case "home-recommendations-recovery": {
+      await revealDeferredHomePanels(page);
+      const recommendationsError = page.getByRole("alert").filter({
+        hasText: "We couldn't load open plans.",
+      });
+      await expect(recommendationsError).toBeVisible();
+      await page.evaluate(() => {
+        window.dispatchEvent(
+          new CustomEvent("teamforge:scenario-release-faults", {
+            detail: { method: "GET", pathname: "explore/feed" },
+          }),
+        );
+      });
+      await page
+        .getByRole("button", { name: "Try again", exact: true })
+        .click();
+      await expect(recommendationsError).toBeHidden();
+      await expect(
+        page
+          .getByRole("region", { name: "Open plans" })
+          .getByRole("link", { name: "View all" }),
+      ).toBeVisible();
+      return;
+    }
+    case "notifications-drawer":
+      await page
+        .getByRole("button", { name: /(?:unread )?notifications/iu })
+        .click();
+      await expect(
+        page.getByRole("dialog", { name: "Notifications", exact: true }),
+      ).toBeVisible();
+      return;
+    default:
+      return;
+  }
+}
+
+async function revealDeferredHomePanels(page: import("@playwright/test").Page) {
+  await page.evaluate(async () => {
+    const step = Math.max(240, Math.round(window.innerHeight * 0.55));
+    const positions = Array.from(
+      { length: Math.ceil(document.body.scrollHeight / step) + 1 },
+      (_, index) => index * step,
+    );
+    await positions.reduce(async (previous, position) => {
+      await previous;
+      window.scrollTo(0, position);
+      await new Promise((resolve) => window.setTimeout(resolve, 110));
+    }, Promise.resolve());
+    window.scrollTo(0, 0);
+  });
 }

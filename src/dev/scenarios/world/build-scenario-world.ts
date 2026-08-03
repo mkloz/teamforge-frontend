@@ -132,7 +132,7 @@ export function buildScenarioWorld({
 
 function buildFaults(id: string, overlays: readonly string[]) {
   const values = new Set([id, ...overlays]);
-  const faults: ScenarioFaultPlan[] = [];
+  const faults: ScenarioFaultPlan[] = [...buildLifecycleFaults(id)];
 
   if (values.has("network-slow")) {
     faults.push({ delayMs: 2_000 });
@@ -149,4 +149,60 @@ function buildFaults(id: string, overlays: readonly string[]) {
   }
 
   return faults;
+}
+
+function buildLifecycleFaults(id: string): ScenarioFaultPlan[] {
+  switch (id) {
+    case "home-loading":
+      return [holdGet("groups/home-summary")];
+    case "activity-loading":
+      return [holdGet("groups/activity-feed")];
+    case "explore-loading":
+      return [holdGet("explore/feed")];
+    case "explore-pagination-loading":
+      return [
+        {
+          ...holdGet("explore/feed"),
+          searchParams: { page: "2" },
+        },
+      ];
+    case "home-recommendations-error":
+      return [{ method: "GET", pathname: "explore/feed", status: 403 }];
+    case "home-recommendations-recovery":
+      return [
+        {
+          method: "GET",
+          pathname: "explore/feed",
+          status: 403,
+        },
+      ];
+    case "explore-join-pending":
+      return [
+        {
+          hold: true,
+          method: "POST",
+          pathname: "explore/groups/scenario-group-basketball/join",
+        },
+      ];
+    case "explore-join-rollback":
+      return [
+        {
+          method: "POST",
+          pathname: "explore/groups/scenario-group-basketball/join",
+          status: 409,
+        },
+      ];
+    case "group-loading":
+      return [holdGet("groups/scenario-group-basketball/detail")];
+    case "profile-loading":
+      return [holdGet("users/scenario-user-ava")];
+    case "settings-loading":
+      return [holdGet("settings/me")];
+    default:
+      return [];
+  }
+}
+
+function holdGet(pathname: string): ScenarioFaultPlan {
+  return { hold: true, method: "GET", pathname };
 }
