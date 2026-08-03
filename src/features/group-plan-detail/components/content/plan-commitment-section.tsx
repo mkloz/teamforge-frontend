@@ -11,6 +11,7 @@ import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-pla
 import { Button } from "@/shared/components/ui/button";
 import { Notice } from "@/shared/components/ui/notice";
 import { cn } from "@/shared/lib/utils";
+import type { PlanOperationalState } from "@/shared/schemas/plan-operational-state";
 
 const RESPONSE_OPTIONS = [
   { icon: CircleCheck, label: "Going", value: "GOING" },
@@ -18,17 +19,27 @@ const RESPONSE_OPTIONS = [
   { icon: XCircle, label: "Can’t attend", value: "CANNOT_ATTEND" },
 ] as const;
 
-export function PlanCommitmentSection({ detail }: { detail: GroupPlanDetail }) {
-  const commitment = usePlanCommitment(detail);
+export function PlanCommitmentSection({
+  detail,
+  operationalState,
+}: {
+  detail: GroupPlanDetail;
+  operationalState?: PlanOperationalState;
+}) {
+  const commitment = usePlanCommitment(detail, operationalState);
   if (!commitment.canRespond || !detail.plan) return null;
 
   const readiness = commitment.query.data;
-  const effectiveStatus = readiness?.currentUserCommitment?.effectiveStatus;
+  const effectiveStatus = operationalState
+    ? operationalState.viewer.commitmentIsCurrent
+      ? operationalState.viewer.commitmentState
+      : "NEEDS_RECONFIRMATION"
+    : readiness?.currentUserCommitment?.effectiveStatus;
   const isReconfirmation = effectiveStatus === "NEEDS_RECONFIRMATION";
 
   return (
     <PlanManagementSection
-      description={`Your answer applies to plan version ${readiness?.materialRevision ?? detail.plan.materialRevision}. You can change it while the plan is open.`}
+      description={`Your answer applies to plan version ${operationalState?.materialRevision ?? readiness?.materialRevision ?? detail.plan.materialRevision}. You can change it while the plan is open.`}
       icon={CalendarCheck}
       title="Can you make it?"
     >
@@ -50,6 +61,18 @@ export function PlanCommitmentSection({ detail }: { detail: GroupPlanDetail }) {
           <p>
             We couldn’t load the group’s responses. Try again before answering.
           </p>
+        </Notice>
+      ) : null}
+
+      {commitment.mutationOutcome ? (
+        <Notice
+          className="mt-3"
+          role="alert"
+          tone={commitment.mutationOutcome.tone}
+          statusIcon
+        >
+          <p className="font-semibold">{commitment.mutationOutcome.title}</p>
+          <p>{commitment.mutationOutcome.detail}</p>
         </Notice>
       ) : null}
 

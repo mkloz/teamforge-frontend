@@ -13,6 +13,7 @@ import {
   MY_NOTES_SUBTITLE,
   MY_NOTES_TITLE,
 } from "@/features/activity/lib/my-notes-identity";
+import { getProjectedPresenceText } from "@/shared/lib/presence-formatters";
 import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 
 export type ConversationDetailsNavigation = ReturnType<
@@ -179,9 +180,12 @@ function getDirectHeaderProps(
 }
 
 function getDirectPresenceText(participant: DirectConversationParticipant) {
-  return getStatusText(
-    participant.onlineStatus || "OFFLINE",
-    participant.lastSeenAt ?? undefined,
+  return (
+    getProjectedPresenceText(participant.presenceLabel) ??
+    getStatusText(
+      participant.onlineStatus || "OFFLINE",
+      participant.lastSeenAt ?? undefined,
+    )
   );
 }
 

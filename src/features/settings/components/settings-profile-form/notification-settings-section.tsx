@@ -39,12 +39,15 @@ interface NotificationSettingsSectionProps {
     value: boolean,
   ) => Promise<void>;
   onScheduleChange: (
-    values: Pick<
-      NotificationPreferences,
-      | "notificationHardMute"
-      | "notificationTimeZoneId"
-      | "quietHoursStartMinute"
-      | "quietHoursEndMinute"
+    values: Partial<
+      Pick<
+        NotificationPreferences,
+        | "notificationHardMute"
+        | "notificationTimeZoneId"
+        | "quietHoursStartMinute"
+        | "quietHoursEndMinute"
+        | "planReminderLeadMinutes"
+      >
     >,
   ) => Promise<void>;
 }
@@ -247,10 +250,7 @@ function NotificationChannelToggleRow({
       )}
     >
       <ItemIcon
-        className={cn(
-          "size-4 shrink-0",
-          checked ? "text-primary" : "text-slate-muted",
-        )}
+        className="size-4 shrink-0 text-slate-muted"
         aria-hidden="true"
       />
       <Label

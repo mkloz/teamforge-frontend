@@ -35,6 +35,7 @@ export interface ScenarioActivityEntity {
 }
 
 export interface ScenarioGroupEntity {
+  archivedAt?: string | null;
   access: ActivityAccess;
   activityId: string;
   avatar: string | null;
@@ -47,6 +48,7 @@ export interface ScenarioGroupEntity {
   pendingInvitationIds: string[];
   planIds: string[];
   status: GroupStatus;
+  revision?: number;
   updatedAt: string;
   visibility: ActivityVisibility;
 }

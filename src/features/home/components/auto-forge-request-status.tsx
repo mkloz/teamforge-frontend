@@ -16,10 +16,12 @@ import { HomeSectionHeading } from "@/features/home/components/home-section-head
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import { presentPlanReadinessSummary } from "@/shared/lib/lifecycle-presenters";
 import {
   buildForgeLaunchNavigation,
   buildForgeNavigation,
   buildForgeProposalNavigation,
+  buildGroupPlanDetailNavigation,
 } from "@/shared/navigation";
 
 type CurrentForgeProposalQuery = UseQueryResult<CurrentForgeProposalResponse>;
@@ -123,6 +125,12 @@ function RequestStatusCard({
   const view = getRequestView(request);
   const actionDisabled =
     !state.isOnline || state.isStateError || state.activeAction !== null;
+  const readiness = request.operationalState
+    ? presentPlanReadinessSummary({
+        overall: request.operationalState.overall,
+        requiredAction: request.operationalState.requiredAction,
+      })
+    : null;
 
   return (
     <section className="grid gap-4" aria-labelledby="forge-request-heading">
@@ -156,6 +164,17 @@ function RequestStatusCard({
         </div>
 
         <RequestTiming request={request} />
+
+        {readiness ? (
+          <div className="rounded-xl border border-border/70 bg-muted/35 p-3">
+            <p className="font-bold text-foreground text-sm">
+              {readiness.title}
+            </p>
+            <p className="mt-1 text-muted-foreground text-sm leading-relaxed">
+              {readiness.detail}
+            </p>
+          </div>
+        ) : null}
 
         {state.error ? (
           <div className="flex flex-wrap items-center gap-3" role="alert">
@@ -341,6 +360,22 @@ function RequestActions({
         proposalQuery={proposalQuery}
         requestId={request.id}
       />
+    );
+  }
+
+  if (request.lifecycle === "FORMED" && request.resultGroupId) {
+    return (
+      <Button asChild className="w-fit">
+        <Link
+          {...buildGroupPlanDetailNavigation(request.resultGroupId, {
+            source: "home",
+            plan: request.resultPlanId ?? undefined,
+          })}
+        >
+          Open group plan
+          <ArrowRight className="size-4" aria-hidden="true" />
+        </Link>
+      </Button>
     );
   }
 

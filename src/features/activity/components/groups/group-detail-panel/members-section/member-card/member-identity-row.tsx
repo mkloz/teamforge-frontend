@@ -7,11 +7,19 @@ export function MemberIdentityRow({
   lastSeenAt,
   memberName,
   onlineStatus,
+  presenceLabel,
 }: {
   isViewer: boolean;
   lastSeenAt?: string | null;
   memberName: string;
   onlineStatus?: OnlineStatus;
+  presenceLabel?:
+    | "HIDDEN"
+    | "LONG_AGO"
+    | "ONLINE"
+    | "RECENTLY"
+    | "THIS_WEEK"
+    | "TODAY";
 }) {
   return (
     <div className="mb-0.5 flex min-w-0 items-center gap-1.5">
@@ -28,7 +36,11 @@ export function MemberIdentityRow({
           You
         </StatusPill>
       ) : null}
-      <PresenceLabel lastSeenAt={lastSeenAt} status={onlineStatus} />
+      <PresenceLabel
+        lastSeenAt={lastSeenAt}
+        presenceLabel={presenceLabel}
+        status={onlineStatus}
+      />
     </div>
   );
 }

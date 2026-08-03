@@ -55,6 +55,9 @@ export function invalidatePlanDecisionSurfaces({
     groupId
       ? APP_QUERY_KEYS.groupPlanDetail.byId(groupId)
       : APP_QUERY_KEYS.groupPlanDetail.all,
+    ...(planId
+      ? [APP_QUERY_KEYS.groupPlanDetail.operationalState(planId)]
+      : []),
     APP_QUERY_KEYS.home.groups,
     APP_QUERY_KEYS.home.plans,
   ]);

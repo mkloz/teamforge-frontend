@@ -40,6 +40,7 @@ export const groupStatusSchema = z.enum([
   "ACTIVE",
   "PLANNING",
   "COMPLETED",
+  "ARCHIVED",
   "DISBANDED",
 ]);
 export type GroupStatus = z.infer<typeof groupStatusSchema>;

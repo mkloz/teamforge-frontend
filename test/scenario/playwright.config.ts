@@ -12,6 +12,10 @@ export default defineConfig({
   outputDir: path.join(outputRoot, "artifacts"),
   projects: [
     {
+      name: "small-mobile",
+      use: { viewport: { height: 800, width: 360 } },
+    },
+    {
       name: "mobile",
       use: { viewport: { height: 844, width: 390 } },
     },
@@ -20,8 +24,33 @@ export default defineConfig({
       use: { viewport: { height: 1180, width: 820 } },
     },
     {
+      name: "tablet-landscape",
+      use: { viewport: { height: 768, width: 1024 } },
+    },
+    {
       name: "desktop",
       use: { viewport: { height: 1000, width: 1440 } },
+    },
+    {
+      name: "light-mobile",
+      use: {
+        colorScheme: "light",
+        viewport: { height: 844, width: 390 },
+      },
+    },
+    {
+      name: "light-tablet",
+      use: {
+        colorScheme: "light",
+        viewport: { height: 1180, width: 820 },
+      },
+    },
+    {
+      name: "light-desktop",
+      use: {
+        colorScheme: "light",
+        viewport: { height: 1000, width: 1440 },
+      },
     },
   ],
   reporter: [["line"]],

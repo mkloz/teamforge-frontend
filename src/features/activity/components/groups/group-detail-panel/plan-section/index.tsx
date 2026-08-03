@@ -3,6 +3,7 @@ import type {
   MemberRole,
   Plan,
 } from "@/features/activity/lib/activity-contract";
+import { presentPlanReadinessSummary } from "@/shared/lib/lifecycle-presenters";
 import { cn } from "@/shared/lib/utils";
 import { PlanFactList } from "./plan-facts";
 import {
@@ -52,6 +53,12 @@ export function PlanSection({
   const repeatsGroupName =
     groupName?.trim().toLocaleLowerCase() ===
     viewState.displayTitle.trim().toLocaleLowerCase();
+  const readiness = plan.operationalState
+    ? presentPlanReadinessSummary({
+        overall: plan.operationalState.overall,
+        requiredAction: plan.operationalState.requiredAction,
+      })
+    : null;
 
   useEffect(() => {
     if (!isFocused) {
@@ -102,6 +109,15 @@ export function PlanSection({
         <p className="mt-2 line-clamp-2 text-ink/70 text-sm leading-relaxed">
           {plan.description}
         </p>
+      ) : null}
+
+      {readiness ? (
+        <div className="mt-3 rounded-xl border border-border/70 bg-muted/35 px-3 py-2.5">
+          <p className="font-bold text-ink text-sm">{readiness.title}</p>
+          <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
+            {readiness.detail}
+          </p>
+        </div>
       ) : null}
 
       <PlanFactList

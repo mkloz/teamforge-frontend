@@ -3,6 +3,7 @@ import {
   costTypeSchema,
   locationModeSchema,
   planCategorySchema,
+  planOperationalSummarySchema,
   planScheduleModeSchema,
 } from "@/shared/schemas";
 
@@ -174,6 +175,9 @@ const autoForgeRequestWireSchema = z.object({
   attemptCount: z.number().int().nonnegative(),
   consecutiveFailureCount: z.number().int().nonnegative(),
   policyVersion: z.string().min(1),
+  resultGroupId: z.string().nullable().default(null),
+  resultPlanId: z.string().nullable().default(null),
+  operationalState: planOperationalSummarySchema.nullable().default(null),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });

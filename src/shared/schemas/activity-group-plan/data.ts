@@ -14,6 +14,7 @@ import {
   planStatusSchema,
 } from "@/shared/schemas/enums";
 import { groupGovernanceSchema } from "@/shared/schemas/group-governance";
+import { planOperationalSummarySchema } from "@/shared/schemas/plan-operational-state";
 
 export const activityData = {
   id: z.string(),
@@ -70,6 +71,7 @@ export const planShape = z.object({
   isScheduleResolved: z.boolean(),
   isLocationResolved: z.boolean(),
   nextRequiredAction: planNextRequiredActionSchema.nullable(),
+  operationalState: planOperationalSummarySchema.nullable().default(null),
   dateTime: z.string().datetime().nullable(),
   timeZoneId: z.string().nullable(),
   localStartDate: z.string().nullable(),

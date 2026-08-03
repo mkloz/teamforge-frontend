@@ -23,9 +23,14 @@ const defaultSettings = {
   notifyGroupInvites: true,
   notifyMessages: true,
   notificationHardMute: false,
+  presencePrecision: "APPROXIMATE" as const,
+  presenceFriendsVisible: true,
+  presenceGroupsVisible: true,
+  presencePlanGuestsVisible: false,
   notificationTimeZoneId: "Europe/London",
   quietHoursStartMinute: 1320,
   quietHoursEndMinute: 420,
+  planReminderLeadMinutes: 60 as const,
   showAgeOnProfile: true,
   showCityOnProfile: true,
   showFriendsListOnProfile: true,
@@ -149,7 +154,7 @@ function buildFaults(id: string, overlays: readonly string[]) {
     faults.push({ networkError: true });
   }
 
-  for (const status of [403, 404, 409, 422, 429, 500] as const) {
+  for (const status of [403, 404, 409, 410, 422, 429, 500] as const) {
     if (values.has(`network-${status}`)) {
       faults.push({ status });
     }

@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { scheduleDelay } from "@/shared/lib/browser-scheduling";
+import { presentPlanReadinessSummary } from "@/shared/lib/lifecycle-presenters";
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
 import { getTypeConfig, relativeTime } from "./notification-display";
@@ -148,12 +149,23 @@ function NotificationItemContent({
   isPending: boolean;
   item: Notification;
 }) {
+  const readiness = item.operationalState
+    ? presentPlanReadinessSummary({
+        overall: item.operationalState.overall,
+        requiredAction: item.operationalState.requiredAction,
+      })
+    : null;
   return (
     <span className="flex min-w-0 flex-1 flex-col gap-1.5">
       <NotificationTitleLine item={item} />
       <span className="line-clamp-2 min-w-0 whitespace-normal font-normal text-slate-muted text-sm leading-snug">
         {item.message}
       </span>
+      {readiness ? (
+        <span className="font-semibold text-forge-teal text-xs">
+          {readiness.title}
+        </span>
+      ) : null}
       <NotificationPendingState isPending={isPending} />
     </span>
   );

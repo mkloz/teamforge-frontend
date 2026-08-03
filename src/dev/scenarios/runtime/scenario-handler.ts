@@ -18,6 +18,7 @@ import {
   scenarioInterestLeavesById,
   scenarioInterestTree,
 } from "@/dev/scenarios/world/scenario-interest-catalog";
+import type { ScenarioWorld } from "@/dev/scenarios/world/scenario-world";
 import {
   type CurrentUser,
   chatApiSchema,
@@ -29,6 +30,7 @@ import {
   personalityAssessmentCapabilitiesSchema,
   personalityAssessmentStateSchema,
 } from "@/shared/schemas/personality-assessment";
+import type { PlanParticipantPlace } from "@/shared/schemas/plan-operational-state";
 
 const API_VERSION_MARKER = "/api/v1/";
 
@@ -153,6 +155,29 @@ async function projectResponse(
         );
   }
 
+  if (pathname === "users/me/reputation-evidence" && request.method === "GET") {
+    const firstPlan = Object.values(world.entities.plans).at(0);
+
+    return scenarioJson(
+      firstPlan
+        ? [
+            {
+              evidenceType: "FOLLOW_THROUGH",
+              id: `scenario-reputation-evidence-${firstPlan.id}`,
+              occurredAt: firstPlan.dateTime ?? world.clock,
+              planId: firstPlan.id,
+              planTitle: firstPlan.title,
+              status: "VALID",
+            },
+          ]
+        : [],
+    );
+  }
+
+  if (pathname === "users/me/reputation-disputes" && request.method === "GET") {
+    return scenarioJson([]);
+  }
+
   if (
     pathname === "users/me/reputation-disputes" &&
     request.method === "POST" &&
@@ -266,6 +291,54 @@ async function projectResponse(
       stepUpExpiresAt: world.admin.recentVerification
         ? "2026-08-01T10:00:00.000Z"
         : null,
+    });
+  }
+
+  if (
+    pathname === "admin/moderation/lifecycle-queue" &&
+    request.method === "GET"
+  ) {
+    const plan = world.entities.plans["scenario-plan-basketball"];
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    const items =
+      world.traits.includes("worker-degraded") &&
+      !world.traits.includes("lifecycle-reconciled") &&
+      plan &&
+      group
+        ? [
+            {
+              detectedAt: world.clock,
+              groupId: group.id,
+              id: `scenario-stuck-offer-${plan.id}`,
+              planId: plan.id,
+              reason: "Expired offer still active",
+              suggestedAction: "RUN_SEAT_RECONCILIATION",
+              type: "SEAT_OFFER_STUCK",
+            },
+          ]
+        : [];
+    return scenarioJson({ generatedAt: world.clock, items });
+  }
+
+  if (
+    pathname === "admin/moderation/lifecycle-queue/reconcile" &&
+    request.method === "POST"
+  ) {
+    const payload = await readJsonObject(request);
+    const action = String(payload.action ?? "");
+    const resourceId = String(payload.resourceId ?? "");
+    if (!action || !resourceId) {
+      return scenarioJson(
+        { code: "INVALID_RECONCILIATION", message: "Action is required." },
+        { status: 422 },
+      );
+    }
+    world.traits.push("lifecycle-reconciled");
+    return scenarioJson({
+      action,
+      affected: 1,
+      resourceId,
+      status: "RECONCILED",
     });
   }
 
@@ -403,6 +476,41 @@ async function projectResponse(
     const payload = await readJsonObject(request);
     world.settings = { ...world.settings, ...payload };
     return scenarioJson(world.settings);
+  }
+
+  if (pathname === "users/me/activity-history" && request.method === "GET") {
+    const completedPlans = Object.values(world.entities.plans)
+      .filter((plan) => plan.status === "COMPLETED")
+      .sort((left, right) => right.id.localeCompare(left.id));
+    const items = completedPlans.flatMap((plan) => {
+      const group = world.entities.groups[plan.groupId];
+      const activity = group
+        ? world.entities.activities[group.activityId]
+        : null;
+      if (!group || !activity || !world.viewerId) return [];
+      return [
+        {
+          activityTitle: activity.title,
+          attendance: "ATTENDED" as const,
+          completedAt: plan.dateTime ?? world.clock,
+          coverImage: plan.coverImage,
+          groupId: group.id,
+          groupName: group.name,
+          id: `scenario-history-${plan.id}`,
+          participantScope: group.memberIds.includes(world.viewerId)
+            ? ("MEMBER" as const)
+            : ("GUEST" as const),
+          planCategory: plan.category,
+          planTitle: plan.title,
+          repeatSourcePlanId:
+            group.status === "ARCHIVED" || group.status === "DISBANDED"
+              ? null
+              : plan.id,
+          verificationState: "ORGANIZER_REPORTED" as const,
+        },
+      ];
+    });
+    return scenarioJson({ items, nextCursor: null });
   }
 
   if (pathname === "auth/sessions" && request.method === "GET") {
@@ -904,6 +1012,49 @@ async function projectResponse(
     return detail ? scenarioJson(detail) : notFound(pathname);
   }
 
+  const groupLifecycleMatch = pathname.match(
+    /^groups\/([^/]+)\/(lifecycle|archive|restore)$/u,
+  );
+  if (groupLifecycleMatch && world.viewerId) {
+    const group = world.entities.groups[groupLifecycleMatch[1]];
+    if (!group) return notFound(pathname);
+    const action = groupLifecycleMatch[2];
+    if (action === "archive" && request.method === "POST") {
+      group.status = "ARCHIVED";
+      group.archivedAt = world.clock;
+      group.revision = (group.revision ?? 1) + 1;
+    } else if (action === "restore" && request.method === "POST") {
+      group.status = "ACTIVE";
+      group.archivedAt = null;
+      group.revision = (group.revision ?? 1) + 1;
+    } else if (!(action === "lifecycle" && request.method === "GET")) {
+      return notFound(pathname);
+    }
+    const isArchived = group.status === "ARCHIVED";
+    const isOwner = group.memberIds[0] === world.viewerId;
+    const activePlanBlocksArchive = group.planIds.some((planId) =>
+      ["CONFIRMED", "IN_PROGRESS"].includes(
+        world.entities.plans[planId]?.status ?? "",
+      ),
+    );
+    return scenarioJson({
+      activePlanBlocksArchive,
+      archiveReason: null,
+      archivedAt: group.archivedAt ?? null,
+      capabilities: {
+        canArchive: isOwner && !isArchived && !activePlanBlocksArchive,
+        canRestore: isOwner && isArchived,
+        canTransferOwnership: isOwner && !isArchived,
+      },
+      groupId: group.id,
+      isDormant: world.traits.includes("dormant-group") && !isArchived,
+      isReadOnly: isArchived,
+      lastMeaningfulActivityAt: group.updatedAt,
+      revision: group.revision ?? 1,
+      status: group.status,
+    });
+  }
+
   const ownershipTransferMatch = pathname.match(
     /^groups\/([^/]+)\/ownership-transfer$/u,
   );
@@ -1080,6 +1231,36 @@ async function projectResponse(
         OPEN: Math.max(0, group.maxMembers - group.memberIds.length),
       },
     });
+  }
+
+  const operationalStateMatch = pathname.match(
+    /^plans\/([^/]+)\/operational-state$/u,
+  );
+  if (operationalStateMatch && request.method === "GET" && world.viewerId) {
+    const plan = world.entities.plans[operationalStateMatch[1]];
+    const group = plan ? world.entities.groups[plan.groupId] : null;
+    if (!plan || !group) return notFound(pathname);
+    return scenarioJson(projectPlanOperationalState(world, plan, group));
+  }
+
+  if (
+    pathname === "plans/operational-state/query" &&
+    request.method === "POST" &&
+    world.viewerId
+  ) {
+    const body = await readJsonObject(request);
+    const planIds = Array.isArray(body.planIds)
+      ? body.planIds.filter((id): id is string => typeof id === "string")
+      : [];
+    return scenarioJson(
+      planIds.flatMap((planId) => {
+        const plan = world.entities.plans[planId];
+        const group = plan ? world.entities.groups[plan.groupId] : null;
+        return plan && group
+          ? [projectPlanOperationalState(world, plan, group)]
+          : [];
+      }),
+    );
   }
 
   const seatWaitlistMatch = pathname.match(
@@ -1596,7 +1777,6 @@ function projectPlanCommitmentReadiness(
   const projected = commitments.map(([userId, commitment]) => ({
     ...commitment,
     effectiveStatus:
-      commitment.response !== "CANNOT_ATTEND" &&
       commitment.acknowledgedMaterialRevision < plan.materialRevision
         ? "NEEDS_RECONFIRMATION"
         : commitment.response,
@@ -1625,12 +1805,213 @@ function projectPlanCommitmentReadiness(
     currentUserCommitment:
       projected.find((commitment) => commitment.userId === viewerId) ?? null,
     eligibleMemberCount: eligibleUserIds.length,
+    eligibleParticipantCount: eligibleUserIds.length,
     goingCount,
     materialRevision: plan.materialRevision,
     needsReconfirmationCount: count("NEEDS_RECONFIRMATION"),
     notRespondedCount: Math.max(0, eligibleUserIds.length - commitments.length),
     planId: plan.id,
     unsureCount: count("UNSURE"),
+  };
+}
+
+function projectPlanOperationalState(
+  world: ScenarioWorld,
+  plan: import("@/dev/scenarios/world/scenario-world").ScenarioPlanEntity,
+  group: import("@/dev/scenarios/world/scenario-world").ScenarioGroupEntity,
+) {
+  const viewerId = world.viewerId ?? "";
+  const memberIndex = group.memberIds.indexOf(viewerId);
+  const offer = world.participation.seatOffers[plan.id] ?? null;
+  const withdrawn = world.participation.withdrawnGuestPlanIds.includes(plan.id);
+  const participantScope =
+    memberIndex === 0
+      ? "OWNER"
+      : memberIndex > 0
+        ? "MEMBER"
+        : offer && ["WAITING", "OFFERED"].includes(offer.status)
+          ? "INVITEE"
+          : withdrawn
+            ? "NONE"
+            : "GUEST";
+  const commitment = plan.commitments?.[viewerId];
+  const commitmentIsCurrent = Boolean(
+    commitment &&
+      commitment.acknowledgedMaterialRevision >= plan.materialRevision,
+  );
+  const hasSchedule = Boolean(plan.dateTime);
+  const hasLocation = plan.locationMode === "ONLINE" || Boolean(plan.location);
+  const requiredAction =
+    offer?.status === "OFFERED"
+      ? "RESPOND_TO_SEAT_OFFER"
+      : !hasSchedule
+        ? "SET_SCHEDULE"
+        : !hasLocation
+          ? "SET_LOCATION"
+          : !commitment || !commitmentIsCurrent
+            ? commitment
+              ? "RECONFIRM_COMMITMENT"
+              : "SET_COMMITMENT"
+            : null;
+  const places = group.memberIds.map<PlanParticipantPlace>((userId, index) => ({
+    assignmentStatus: "OCCUPIED",
+    capabilities: {},
+    id: `scenario-place-${plan.id}-${index + 1}`,
+    offerExpiresAt: null,
+    offerId: null,
+    ordinal: index + 1,
+    participantId: userId,
+    participantName: world.entities.users[userId]?.name ?? "Group member",
+    participantScope: index === 0 ? "OWNER" : "MEMBER",
+    state: "OCCUPIED",
+  }));
+  for (let index = places.length; index < group.maxMembers; index += 1) {
+    places.push({
+      assignmentStatus: null,
+      capabilities: {},
+      id: `scenario-place-${plan.id}-${index + 1}`,
+      offerExpiresAt: null,
+      offerId: null,
+      ordinal: index + 1,
+      participantId: null,
+      participantName: null,
+      participantScope: null,
+      state: "OPEN",
+    });
+  }
+  if (offer && ["WAITING", "OFFERED"].includes(offer.status)) {
+    places.push({
+      assignmentStatus: offer.status === "OFFERED" ? "HELD" : null,
+      capabilities: { respondToOffer: offer.candidateId === viewerId },
+      id: `scenario-offer-place-${offer.id}`,
+      offerExpiresAt: offer.expiresAt,
+      offerId: offer.candidateId === viewerId ? offer.id : null,
+      ordinal: null,
+      participantId: offer.candidateId === viewerId ? viewerId : null,
+      participantName: null,
+      participantScope: "INVITEE",
+      state: offer.status === "OFFERED" ? "HELD" : "WAITLISTED",
+    });
+  }
+  const activeParticipant = ["OWNER", "MEMBER", "GUEST"].includes(
+    participantScope,
+  );
+  const closed = ["CANCELLED", "COMPLETED"].includes(plan.status);
+
+  return {
+    attendance: {
+      detail: null,
+      label:
+        plan.status === "COMPLETED"
+          ? "Attendance can be recorded"
+          : "Attendance opens after the plan",
+      requiredAction: null,
+      state: plan.status === "COMPLETED" ? "OPEN" : "NOT_OPEN",
+    },
+    capacity: {
+      detail: `${group.memberIds.length} occupied, ${Math.max(0, group.maxMembers - group.memberIds.length)} available`,
+      label:
+        group.memberIds.length < group.maxMembers
+          ? "Places available"
+          : "All places accounted for",
+      requiredAction: null,
+      state: group.memberIds.length < group.maxMembers ? "AVAILABLE" : "FULL",
+    },
+    commitment: {
+      detail: commitmentIsCurrent
+        ? "Your response matches the latest plan details"
+        : "A current response is needed",
+      label: commitment?.response ?? "Waiting for your response",
+      requiredAction:
+        commitment && !commitmentIsCurrent
+          ? "RECONFIRM_COMMITMENT"
+          : commitment
+            ? null
+            : "SET_COMMITMENT",
+      state: commitmentIsCurrent
+        ? "CURRENT"
+        : commitment
+          ? "STALE"
+          : "NOT_RESPONDED",
+    },
+    location: {
+      detail: activeParticipant
+        ? plan.locationMode === "ONLINE"
+          ? "Online"
+          : plan.location
+        : "Shared after you have a place",
+      label: hasLocation ? "Location agreed" : "Location still being decided",
+      requiredAction: hasLocation ? null : "SET_LOCATION",
+      state: hasLocation
+        ? activeParticipant
+          ? "RESOLVED"
+          : "REDACTED"
+        : "PENDING",
+    },
+    logistics: {
+      detail: "Scenario logistics",
+      label: "Logistics recorded",
+      requiredAction: null,
+      state: "RESOLVED",
+    },
+    materialRevision: plan.materialRevision,
+    overall:
+      plan.status === "COMPLETED"
+        ? "COMPLETE"
+        : plan.status === "CANCELLED"
+          ? "BLOCKED"
+          : requiredAction
+            ? "ACTION_REQUIRED"
+            : "READY",
+    places,
+    planId: plan.id,
+    planRevision: plan.revision,
+    recovery: {
+      detail: offer
+        ? "Your current place recovery status"
+        : "Released places can be offered safely",
+      label:
+        offer?.status === "OFFERED"
+          ? "Place offered"
+          : offer?.status === "WAITING"
+            ? "On the waitlist"
+            : "Seat recovery available",
+      requiredAction:
+        offer?.status === "OFFERED" ? "RESPOND_TO_SEAT_OFFER" : null,
+      state: offer?.status ?? "AVAILABLE",
+    },
+    schedule: {
+      detail: plan.dateTime,
+      label: hasSchedule ? "Schedule agreed" : "Schedule still being decided",
+      requiredAction: hasSchedule ? null : "SET_SCHEDULE",
+      state: hasSchedule ? "RESOLVED" : "PENDING",
+    },
+    stateVersion: `scenario-${plan.revision}-${plan.materialRevision}-${commitment?.rowVersion ?? 0}-${offer?.status ?? "none"}`,
+    viewer: {
+      capabilities: {
+        acceptSeatOffer: offer?.status === "OFFERED",
+        createExternalInvite: participantScope === "OWNER" && !closed,
+        declineSeatOffer: Boolean(
+          offer && ["WAITING", "OFFERED"].includes(offer.status),
+        ),
+        joinWaitlist: participantScope === "INVITEE" && !offer && !closed,
+        manageParticipants: participantScope === "OWNER",
+        managePlan: participantScope === "OWNER" && !closed,
+        recordAttendance: plan.status === "COMPLETED" && activeParticipant,
+        requestAttendanceCorrection:
+          plan.status === "COMPLETED" && activeParticipant,
+        setCommitment: activeParticipant && !closed,
+        viewChat: ["OWNER", "MEMBER"].includes(participantScope),
+        viewExactLocation: activeParticipant,
+        viewRoster: ["OWNER", "MEMBER"].includes(participantScope),
+        withdrawGuest: participantScope === "GUEST" && !closed,
+      },
+      commitmentIsCurrent,
+      commitmentState: commitment?.response ?? null,
+      participantScope,
+      requiredAction,
+      seatState: activeParticipant ? "OCCUPIED" : null,
+    },
   };
 }
 

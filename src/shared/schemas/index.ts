@@ -13,6 +13,7 @@ export * from "./notification";
 export * from "./notification-preferences";
 export * from "./pagination";
 export * from "./plan";
+export * from "./plan-operational-state";
 export * from "./rating-api";
 export * from "./realtime";
 export * from "./user";

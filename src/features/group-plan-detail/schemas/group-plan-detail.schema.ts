@@ -34,6 +34,7 @@ const groupPlanJoinDisabledReasonSchema = z
   .enum([
     "FULL",
     "DISBANDED",
+    "ARCHIVED",
     "COMPLETED",
     "PRIVATE",
     "ALREADY_MEMBER",
@@ -164,6 +165,17 @@ export const groupPlanDetailSchema = z.object({
       knownConnection: z.string().nullable().optional(),
       onlineStatus: onlineStatusSchema.optional(),
       lastSeenAt: z.string().datetime().nullable(),
+      presenceLabel: z
+        .enum([
+          "HIDDEN",
+          "LONG_AGO",
+          "ONLINE",
+          "RECENTLY",
+          "THIS_WEEK",
+          "TODAY",
+        ])
+        .optional(),
+      presencePrecision: z.enum(["HIDDEN", "APPROXIMATE", "EXACT"]).optional(),
     }),
   ),
   pendingInvitations: z.array(
@@ -198,6 +210,12 @@ export const groupPlanDetailSchema = z.object({
   fit: z
     .object({
       totalScore: z.number().nullable(),
+      explanation: z.object({
+        score: z.number().int().min(0).max(100).nullable(),
+        formulaVersion: z.string(),
+        evidenceLevel: z.enum(["NEW", "LIMITED", "ESTABLISHED"]),
+        reasonCodes: z.array(z.string()),
+      }),
       summary: z.string(),
       signals: z.array(groupPlanFitSignalSchema),
     })

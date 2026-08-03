@@ -4,6 +4,11 @@ import {
   ADMIN_QUERY_KEY,
   clearAdminCache,
 } from "@/features/admin/api/admin-cache";
+import {
+  type AdminLifecycleReconciliationAction,
+  adminLifecycleQueueSchema,
+  adminLifecycleReconciliationResultSchema,
+} from "@/features/admin/schemas/admin-lifecycle-operations.schema";
 import { adminPilotMetricsSchema } from "@/features/admin/schemas/admin-pilot-metrics.schema";
 import { adminPilotRetentionStatusSchema } from "@/features/admin/schemas/admin-pilot-retention.schema";
 import { adminPilotStatusSchema } from "@/features/admin/schemas/admin-pilot-status.schema";
@@ -21,6 +26,11 @@ export const ADMIN_PILOT_RETENTION_QUERY_KEY = [
   ...ADMIN_QUERY_KEY,
   "pilot",
   "retention",
+] as const;
+
+export const ADMIN_LIFECYCLE_QUEUE_QUERY_KEY = [
+  ...ADMIN_QUERY_KEY,
+  "lifecycle-queue",
 ] as const;
 
 export const AdminApi = {
@@ -41,6 +51,28 @@ export const AdminApi = {
 
       throw error;
     }
+  },
+  async getLifecycleQueue() {
+    const response = await apiClient.get("admin/moderation/lifecycle-queue", {
+      cache: "no-store",
+    });
+    return adminLifecycleQueueSchema.parse(await response.json<unknown>());
+  },
+  async reconcileLifecycleIssue(input: {
+    action: AdminLifecycleReconciliationAction;
+    resourceId: string;
+  }) {
+    const response = await apiClient.post(
+      "admin/moderation/lifecycle-queue/reconcile",
+      {
+        cache: "no-store",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        json: input,
+      },
+    );
+    return adminLifecycleReconciliationResultSchema.parse(
+      await response.json<unknown>(),
+    );
   },
   async getPilotStatus() {
     try {
@@ -144,6 +176,16 @@ export function adminSessionQueryOptions() {
   return queryOptions({
     queryKey: [...ADMIN_QUERY_KEY, "session"],
     queryFn: () => AdminApi.getSession(),
+    gcTime: 0,
+    retry: false,
+    staleTime: 0,
+  });
+}
+
+export function adminLifecycleQueueQueryOptions() {
+  return queryOptions({
+    queryKey: ADMIN_LIFECYCLE_QUEUE_QUERY_KEY,
+    queryFn: () => AdminApi.getLifecycleQueue(),
     gcTime: 0,
     retry: false,
     staleTime: 0,

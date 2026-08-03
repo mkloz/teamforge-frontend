@@ -34,7 +34,7 @@ export function projectHomeGroups(world: ScenarioWorld) {
         members: group.memberIds.map((userId) => ({ userId })),
         name: group.name,
         pendingParticipationPlan: null,
-        plan: plan ? toHomePlan(plan) : null,
+        plan: plan ? toHomePlan(world, group, plan) : null,
         status: group.status,
         updatedAt: group.updatedAt,
         version: Date.parse(group.updatedAt),
@@ -203,7 +203,7 @@ function projectActivityGroupEntity(world: ScenarioWorld, groupId: string) {
     name: group.name,
     plan: plan
       ? {
-          ...toDetailPlan(plan),
+          ...toDetailPlan(world, group, plan),
           governance: null,
         }
       : null,
@@ -245,6 +245,12 @@ export function projectGroupDetail(world: ScenarioWorld, groupId: string) {
     fit: isMember
       ? null
       : {
+          explanation: {
+            evidenceLevel: "ESTABLISHED",
+            formulaVersion: "public-group-fit-v2",
+            reasonCodes: ["SHARED_INTERESTS", "LOCATION"],
+            score: 88,
+          },
           signals: [
             {
               detail: "Several interests overlap with this group.",
@@ -313,7 +319,7 @@ export function projectGroupDetail(world: ScenarioWorld, groupId: string) {
       })),
     plan: plan
       ? {
-          ...toDetailPlan(plan),
+          ...toDetailPlan(world, group, plan),
           externalInvitesEnabled: isAdmin,
           seatRecoveryEnabled: isAdmin,
         }
@@ -396,8 +402,37 @@ function getCurrentPlan(world: ScenarioWorld, groupId: string) {
   return planId ? world.entities.plans[planId] : null;
 }
 
-function toHomePlan(plan: ScenarioWorld["entities"]["plans"][string]) {
+function toHomePlan(
+  world: ScenarioWorld,
+  group: ScenarioWorld["entities"]["groups"][string],
+  plan: ScenarioWorld["entities"]["plans"][string],
+) {
   const durationMinutes = plan.dateTime ? 90 : null;
+  const viewerId = world.viewerId ?? "";
+  const commitment = plan.commitments?.[viewerId];
+  const commitmentIsCurrent = Boolean(
+    commitment &&
+      commitment.acknowledgedMaterialRevision >= plan.materialRevision,
+  );
+  const memberIndex = group.memberIds.indexOf(viewerId);
+  const participantScope =
+    memberIndex === 0 ? "OWNER" : memberIndex > 0 ? "MEMBER" : "GUEST";
+  const requiredAction = !plan.dateTime
+    ? "SET_SCHEDULE"
+    : plan.locationMode !== "ONLINE" && !plan.location
+      ? "SET_LOCATION"
+      : !commitmentIsCurrent
+        ? commitment
+          ? "RECONFIRM_COMMITMENT"
+          : "SET_COMMITMENT"
+        : null;
+  const unresolvedFactLabels = [
+    !plan.dateTime ? "Schedule still being decided" : null,
+    plan.locationMode !== "ONLINE" && !plan.location
+      ? "Location still being decided"
+      : null,
+    !commitmentIsCurrent ? "Waiting for your response" : null,
+  ].filter((label): label is string => Boolean(label));
   return {
     calendarSequence: 0,
     category: plan.category,
@@ -419,6 +454,21 @@ function toHomePlan(plan: ScenarioWorld["entities"]["plans"][string]) {
     location: plan.location,
     locationMode: plan.locationMode,
     nextRequiredAction: plan.dateTime ? null : "PROPOSE_TIME",
+    operationalState: {
+      materialRevision: plan.materialRevision,
+      overall:
+        plan.status === "COMPLETED"
+          ? "COMPLETE"
+          : plan.status === "CANCELLED"
+            ? "BLOCKED"
+            : requiredAction
+              ? "ACTION_REQUIRED"
+              : "READY",
+      participantScope,
+      requiredAction,
+      stateVersion: `scenario-${plan.revision}-${plan.materialRevision}-${commitment?.rowVersion ?? 0}`,
+      unresolvedFactLabels,
+    },
     revision: plan.revision,
     materialRevision: plan.materialRevision,
     scheduleFold: null,
@@ -429,9 +479,13 @@ function toHomePlan(plan: ScenarioWorld["entities"]["plans"][string]) {
   };
 }
 
-function toDetailPlan(plan: ScenarioWorld["entities"]["plans"][string]) {
+function toDetailPlan(
+  world: ScenarioWorld,
+  group: ScenarioWorld["entities"]["groups"][string],
+  plan: ScenarioWorld["entities"]["plans"][string],
+) {
   return {
-    ...toHomePlan(plan),
+    ...toHomePlan(world, group, plan),
     costAmount: plan.costAmount,
     costDetails: plan.costDetails,
     coverImage: plan.coverImage,

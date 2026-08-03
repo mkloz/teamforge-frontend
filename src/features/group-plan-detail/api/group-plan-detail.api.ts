@@ -18,7 +18,8 @@ import {
   withdrawPlanProposal as sharedWithdrawPlanProposal,
   type VotePlanProposalPayload,
 } from "@/shared/api/plan-membership-api";
-
+import { planOperationalStateSchema } from "@/shared/schemas/plan-operational-state";
+import { groupLifecycleSchema } from "../schemas/group-lifecycle.schema";
 import { groupPlanDetailSchema } from "../schemas/group-plan-detail.schema";
 import {
   type PlanCommitmentResponse,
@@ -44,6 +45,33 @@ export type CreateGroupPlanProposalPayload = CreatePlanProposalPayload;
 export type VoteGroupPlanProposalPayload = VotePlanProposalPayload;
 
 export class GroupPlanDetailApi {
+  static async getLifecycle(groupId: string) {
+    const response = await apiClient
+      .get(`groups/${groupId}/lifecycle`)
+      .json<unknown>();
+    return groupLifecycleSchema.parse(response);
+  }
+
+  static async archiveGroup(groupId: string, expectedRevision: number) {
+    const response = await apiClient
+      .post(`groups/${groupId}/archive`, {
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        json: { expectedRevision },
+      })
+      .json<unknown>();
+    return groupLifecycleSchema.parse(response);
+  }
+
+  static async restoreGroup(groupId: string, expectedRevision: number) {
+    const response = await apiClient
+      .post(`groups/${groupId}/restore`, {
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        json: { expectedRevision },
+      })
+      .json<unknown>();
+    return groupLifecycleSchema.parse(response);
+  }
+
   static async getDetail(groupId: string) {
     const response = await apiClient
       .get(`groups/${groupId}/detail`)
@@ -66,6 +94,14 @@ export class GroupPlanDetailApi {
       .json<unknown>();
 
     return planCommitmentReadinessSchema.parse(response);
+  }
+
+  static async getOperationalState(planId: string) {
+    const response = await apiClient
+      .get(`plans/${planId}/operational-state`)
+      .json<unknown>();
+
+    return planOperationalStateSchema.parse(response);
   }
 
   static async setCommitment(
@@ -261,6 +297,7 @@ export class GroupPlanDetailApi {
   static async createOwnershipTransfer(groupId: string, recipientId: string) {
     const response = await apiClient
       .post(`groups/${groupId}/ownership-transfer`, {
+        headers: { "Idempotency-Key": crypto.randomUUID() },
         json: { recipientId },
       })
       .json<unknown>();
@@ -272,7 +309,9 @@ export class GroupPlanDetailApi {
     response: "accept" | "decline" | "cancel",
   ) {
     const payload = await apiClient
-      .post(`groups/ownership-transfers/${transferId}/${response}`)
+      .post(`groups/ownership-transfers/${transferId}/${response}`, {
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+      })
       .json<unknown>();
     return ownershipTransferSchema.unwrap().parse(payload);
   }

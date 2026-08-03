@@ -18,6 +18,8 @@ type ParticipantUserSummary = {
   personalityType?: ActivityParticipant["personalityType"];
   onlineStatus?: ActivityParticipant["onlineStatus"];
   lastSeenAt?: ActivityParticipant["lastSeenAt"];
+  presenceLabel?: ActivityParticipant["presenceLabel"];
+  presencePrecision?: ActivityParticipant["presencePrecision"];
   trustScore?: number;
 };
 
@@ -37,6 +39,8 @@ export function mapParticipantUserSummary(
     ...mapParticipantProfileFields(user),
     lastSeenAt: user.lastSeenAt,
     onlineStatus: user.onlineStatus,
+    presenceLabel: user.presenceLabel,
+    presencePrecision: user.presencePrecision,
     trustScore: user.trustScore,
   };
 

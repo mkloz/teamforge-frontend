@@ -18,6 +18,7 @@ const JOIN_DISABLED_REASON_SUMMARIES: Partial<
   ALREADY_MEMBER: "You are already part of this group.",
   COMPLETED: "This plan has already wrapped.",
   DISBANDED: "This group has disbanded.",
+  ARCHIVED: "This group is archived and read-only.",
   FULL: "The group is full right now.",
 };
 

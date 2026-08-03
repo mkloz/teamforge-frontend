@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { BadgeCheck, Compass, Eye, Radar, TriangleAlert } from "lucide-react";
 import { IconTile } from "@/shared/components/ui/icon-tile";
+import { cn } from "@/shared/lib/utils";
 import type { ProfilePortraitInsight } from "../lib/profile-insights";
 import { ProfileSectionHeading } from "./profile-section-heading";
 
@@ -71,7 +72,7 @@ export function ProfilePortraitSection({
             </p>
           </div>
 
-          <div className="grid max-w-3xl md:grid-cols-3">
+          <div className="grouped-surface grid max-w-3xl overflow-hidden rounded-2xl md:grid-cols-3">
             {visibleDetails.map((detail) => (
               <PortraitDetailRow
                 key={`${detail.label}-${detail.value}`}
@@ -199,7 +200,12 @@ function PortraitDetailRow({
   const Icon = getDetailIcon(detail.label);
 
   return (
-    <div className="min-w-0 py-3 md:px-4 last:md:pr-0 first:md:pl-0">
+    <div
+      className={cn(
+        "min-w-0 bg-card px-4 py-4 sm:px-5",
+        getPortraitDetailTone(detail.label),
+      )}
+    >
       <div className="flex min-w-0 items-center gap-2">
         <IconTile icon={Icon} shape="circle" size="sm" />
         <p className="font-bold text-slate-muted text-sm">{detail.label}</p>
@@ -209,6 +215,20 @@ function PortraitDetailRow({
       </p>{" "}
     </div>
   );
+}
+
+function getPortraitDetailTone(label: string) {
+  const normalizedLabel = label.toLowerCase();
+
+  if (normalizedLabel.includes("setting")) {
+    return "bg-(--grouped-menu-selected)";
+  }
+
+  if (normalizedLabel.includes("watch") || normalizedLabel.includes("avoid")) {
+    return "bg-spark-amber/6";
+  }
+
+  return undefined;
 }
 
 function getCompactLead(value: string) {

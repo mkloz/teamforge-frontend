@@ -4,6 +4,15 @@ import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { GroupPlanDetailApi } from "./group-plan-detail.api";
 
 export const groupPlanDetailQueries = {
+  lifecycle(groupId: string) {
+    return queryOptions({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.lifecycle(groupId),
+      queryFn: () => GroupPlanDetailApi.getLifecycle(groupId),
+      enabled: groupId.length > 0,
+      staleTime: 30_000,
+    });
+  },
+
   detail(groupId: string) {
     return queryOptions({
       queryKey: APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
@@ -19,6 +28,15 @@ export const groupPlanDetailQueries = {
       queryFn: () => GroupPlanDetailApi.getCommitmentReadiness(planId),
       enabled: enabled && planId.length > 0,
       staleTime: 15_000,
+    });
+  },
+
+  operationalState(planId: string, enabled = true) {
+    return queryOptions({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.operationalState(planId),
+      queryFn: () => GroupPlanDetailApi.getOperationalState(planId),
+      enabled: enabled && planId.length > 0,
+      staleTime: 10_000,
     });
   },
 

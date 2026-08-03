@@ -22,11 +22,22 @@ const heldRequestScenarioIds = new Set([
   "profile-loading",
   "settings-loading",
 ]);
+const lightSmokeScenarioByProject: Readonly<Record<string, string>> = {
+  "light-desktop": "settings-standard",
+  "light-mobile": "home-dense",
+  "light-tablet": "group-admin",
+};
 
 test.describe.configure({ mode: "serial" });
 
 for (const scenario of getScenarioAuditEntries(profile)) {
   test(`${scenario.feature} / ${scenario.id}`, async ({ page }, testInfo) => {
+    const lightSmokeScenario =
+      lightSmokeScenarioByProject[testInfo.project.name];
+    test.skip(
+      Boolean(lightSmokeScenario && lightSmokeScenario !== scenario.id),
+      "Light mode uses one representative scenario per device class.",
+    );
     const consoleErrors: string[] = [];
     const pageErrors: string[] = [];
     const escapedRequests: string[] = [];
@@ -62,7 +73,16 @@ for (const scenario of getScenarioAuditEntries(profile)) {
     });
 
     await page.clock.setFixedTime(SCENARIO_CLOCK);
-    await page.goto(getScenarioAuditUrl(scenario), {
+    const auditUrl = new URL(getScenarioAuditUrl(scenario), baseUrl);
+    if (lightSmokeScenario) {
+      const overlays = new Set(
+        auditUrl.searchParams.get("__overlays")?.split(",").filter(Boolean) ??
+          [],
+      );
+      overlays.add("theme-light");
+      auditUrl.searchParams.set("__overlays", [...overlays].sort().join(","));
+    }
+    await page.goto(`${auditUrl.pathname}${auditUrl.search}`, {
       waitUntil: "domcontentloaded",
     });
 
@@ -161,7 +181,9 @@ async function assertScenarioFaultState(
     return;
   }
 
-  const statusMatch = /^network-(403|404|409|422|429|500)$/u.exec(scenarioId);
+  const statusMatch = /^network-(403|404|409|410|422|429|500)$/u.exec(
+    scenarioId,
+  );
   if (statusMatch) {
     const expectedStatus = statusMatch[1];
     await expect(

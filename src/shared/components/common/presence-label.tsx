@@ -1,4 +1,7 @@
-import { getPresenceText } from "@/shared/lib/presence-formatters";
+import {
+  getPresenceText,
+  getProjectedPresenceText,
+} from "@/shared/lib/presence-formatters";
 import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
 
@@ -17,30 +20,42 @@ const PRESENCE_DOTS: Record<OnlineStatus, string> = {
 export function PresenceLabel({
   className,
   lastSeenAt,
+  presenceLabel,
   status,
 }: {
   className?: string;
   lastSeenAt?: string | null;
+  presenceLabel?:
+    | "HIDDEN"
+    | "LONG_AGO"
+    | "ONLINE"
+    | "RECENTLY"
+    | "THIS_WEEK"
+    | "TODAY";
   status?: OnlineStatus;
 }) {
-  if (!status) {
+  if (!status && !presenceLabel) {
     return null;
   }
 
-  const label = getPresenceText(status, lastSeenAt);
+  const label =
+    getProjectedPresenceText(presenceLabel) ??
+    getPresenceText(status ?? "OFFLINE", lastSeenAt);
+  const toneStatus =
+    presenceLabel === "ONLINE" ? "ONLINE" : (status ?? "OFFLINE");
 
   return (
     <span
       className={cn(
         "flex min-w-0 items-center gap-1 font-medium text-[0.6875rem] leading-none",
-        PRESENCE_TONES[status],
+        PRESENCE_TONES[toneStatus],
         className,
       )}
       title={label}
     >
       <span
         aria-hidden="true"
-        className={cn("size-1.5 rounded-full", PRESENCE_DOTS[status])}
+        className={cn("size-1.5 rounded-full", PRESENCE_DOTS[toneStatus])}
       />
       <span className="truncate">{label}</span>
     </span>

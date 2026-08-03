@@ -87,6 +87,79 @@ export function applyScenarioOverlays(
       plan.status = "DRAFT";
     }
   }
+  if (values.has("group-archived")) {
+    const group = world.entities.groups["scenario-group-basketball"];
+    if (group) {
+      group.status = "ARCHIVED";
+      group.archivedAt = world.clock;
+      group.revision = (group.revision ?? 1) + 1;
+      for (const planId of group.planIds) {
+        const plan = world.entities.plans[planId];
+        if (plan && ["CONFIRMED", "IN_PROGRESS"].includes(plan.status)) {
+          plan.status = "COMPLETED";
+        }
+      }
+    }
+  }
+  if (values.has("stale-commitment") && world.viewerId) {
+    const plan = world.entities.plans["scenario-plan-basketball"];
+    if (plan) {
+      plan.materialRevision = Math.max(2, plan.materialRevision + 1);
+      plan.commitments ??= {};
+      plan.commitments[world.viewerId] = {
+        acknowledgedMaterialRevision: plan.materialRevision - 1,
+        response: "GOING",
+        rowVersion: 1,
+        updatedAt: world.clock,
+      };
+    }
+  }
+  if (values.has("seat-waitlisted")) {
+    setViewerSeatOffer(world, "WAITING", null);
+  }
+  if (values.has("seat-offered")) {
+    setViewerSeatOffer(
+      world,
+      "OFFERED",
+      new Date(new Date(world.clock).getTime() + 60 * 60_000).toISOString(),
+    );
+  }
+  if (values.has("ownership-pending") && world.viewerId) {
+    const group = world.entities.groups["scenario-group-basketball"];
+    const recipientId = group?.memberIds.find((id) => id !== world.viewerId);
+    if (group && recipientId) {
+      world.participation.ownershipTransfers[group.id] = {
+        createdAt: world.clock,
+        expiresAt: new Date(
+          new Date(world.clock).getTime() + 48 * 60 * 60_000,
+        ).toISOString(),
+        groupId: group.id,
+        id: `scenario-ownership-transfer-${group.id}`,
+        initiatorId: world.viewerId,
+        recipientId,
+        respondedAt: null,
+        status: "PENDING",
+      };
+    }
+  }
+  if (values.has("guest-promotion-pending") && world.viewerId) {
+    setGuestPromotionProposal(world);
+  }
+  if (values.has("presence-hidden")) {
+    world.settings.presencePrecision = "HIDDEN";
+    world.settings.presenceFriendsVisible = false;
+    world.settings.presenceGroupsVisible = false;
+    world.settings.presencePlanGuestsVisible = false;
+  }
+  if (values.has("presence-exact")) {
+    world.settings.presencePrecision = "EXACT";
+    world.settings.presenceFriendsVisible = true;
+    world.settings.presenceGroupsVisible = true;
+    world.settings.presencePlanGuestsVisible = true;
+  }
+  if (values.has("theme-light")) {
+    world.settings.themeAppearance = "light";
+  }
   if (values.has("private-profile")) {
     for (const user of Object.values(world.entities.users)) {
       if (user.id !== world.viewerId) {
@@ -107,6 +180,63 @@ export function applyScenarioOverlays(
     viewer.personalitySetupComplete = false;
     viewer.personalityType = null;
   }
+}
+
+function setViewerSeatOffer(
+  world: ScenarioWorld,
+  status: "OFFERED" | "WAITING",
+  expiresAt: string | null,
+) {
+  if (!world.viewerId) return;
+  const plan = world.entities.plans["scenario-plan-basketball"];
+  const group = plan ? world.entities.groups[plan.groupId] : null;
+  if (!plan || !group) return;
+  group.memberIds = group.memberIds.filter((id) => id !== world.viewerId);
+  world.participation.seatOffers[plan.id] = {
+    candidateId: world.viewerId,
+    consequenceVersion: "scenario-v1",
+    expiresAt,
+    id: `scenario-seat-offer-${plan.id}`,
+    materialRevision: plan.materialRevision,
+    planId: plan.id,
+    status,
+  };
+}
+
+function setGuestPromotionProposal(world: ScenarioWorld) {
+  if (!world.viewerId) return;
+  const group = world.entities.groups["scenario-group-basketball"];
+  const planId = group?.planIds.at(0);
+  const guest = group
+    ? Object.values(world.entities.users).find(
+        ({ id }) => !group.memberIds.includes(id),
+      )
+    : null;
+  if (!group || !planId || !guest) return;
+  world.participation.guestMembershipProposals[group.id] = [
+    {
+      approvalCount: 1,
+      expiresAt: new Date(
+        new Date(world.clock).getTime() + 72 * 60 * 60_000,
+      ).toISOString(),
+      groupId: group.id,
+      guest: {
+        avatar: guest.avatar,
+        id: `scenario-plan-guest-${guest.id}`,
+        name: guest.name,
+        planId,
+        userId: guest.id,
+      },
+      guestAcceptedAt: world.clock,
+      id: `scenario-membership-proposal-${group.id}`,
+      proposerId: world.viewerId,
+      rejectionCount: 0,
+      requiredApprovals: group.memberIds.length,
+      resolvedAt: null,
+      status: "PENDING_VOTE",
+      viewerVote: "APPROVE",
+    },
+  ];
 }
 
 function clearProductCollections(world: ScenarioWorld) {

@@ -82,6 +82,11 @@ function FitSignalsSection({
         state.percent !== null ? <FitScore percent={state.percent} /> : null
       }
     >
+      <p className="mb-3 text-muted-foreground text-xs leading-relaxed">
+        {state.fit.explanation.evidenceLevel === "LIMITED"
+          ? "Limited evidence · this is a fit index, not a probability, safety score, reputation score or attendance prediction."
+          : "This is a fit index, not a probability, safety score, reputation score or attendance prediction."}
+      </p>
       <div className="grid gap-1 sm:grid-cols-2">
         {state.sortedSignals.map((signal) => (
           <SignalRow key={signal.key} signal={signal} />

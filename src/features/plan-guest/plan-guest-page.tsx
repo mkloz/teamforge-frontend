@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
 import {
+  CalendarCheck,
   CalendarDays,
   Check,
   HelpCircle,
@@ -9,8 +10,10 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
-
-import { PlanParticipantApi } from "@/features/group-plan-detail/public/plan-participant-api";
+import {
+  type PlanCommitmentResponse,
+  PlanParticipantApi,
+} from "@/features/group-plan-detail/public/plan-participant-api";
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
@@ -22,6 +25,7 @@ import {
 } from "@/shared/components/ui/grouped-menu";
 import { Notice } from "@/shared/components/ui/notice";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import type { PlanOperationalState } from "@/shared/schemas/plan-operational-state";
 
 export function PlanGuestPage() {
   const { planId = "" } = useParams({ strict: false }) as { planId?: string };
@@ -34,6 +38,12 @@ export function PlanGuestPage() {
     queryKey: APP_QUERY_KEYS.planGuest.membershipProposal(planId),
     queryFn: () => PlanParticipantApi.getGuestMembershipProposal(planId),
     enabled: planId.length > 0,
+  });
+  const operational = useQuery({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.operationalState(planId),
+    queryFn: () => PlanParticipantApi.getOperationalState(planId),
+    enabled: planId.length > 0,
+    staleTime: 10_000,
   });
   const respond = useMutation({
     mutationFn: ({ id, accept }: { accept: boolean; id: string }) =>
@@ -140,6 +150,10 @@ export function PlanGuestPage() {
             ) : null}
           </GroupedMenuList>
 
+          {operational.data?.viewer.capabilities.setCommitment ? (
+            <GuestCommitmentSection planId={planId} state={operational.data} />
+          ) : null}
+
           {data.accessFacts.length > 0 ? (
             <section className="mt-8" aria-labelledby="access-heading">
               <h2 id="access-heading" className="font-bold text-ink text-lg">
@@ -245,6 +259,81 @@ export function PlanGuestPage() {
         </aside>
       </div>
     </main>
+  );
+}
+
+function GuestCommitmentSection({
+  planId,
+  state,
+}: {
+  planId: string;
+  state: PlanOperationalState;
+}) {
+  const mutation = useMutation({
+    mutationFn: (response: PlanCommitmentResponse) =>
+      PlanParticipantApi.setCommitment(
+        planId,
+        { expectedMaterialRevision: state.materialRevision, response },
+        crypto.randomUUID(),
+      ),
+    onSuccess: async () => {
+      await Promise.all([
+        appQueryClient.invalidateQueries({
+          queryKey: APP_QUERY_KEYS.groupPlanDetail.operationalState(planId),
+        }),
+        appQueryClient.invalidateQueries({
+          queryKey: APP_QUERY_KEYS.planGuest.access(planId),
+        }),
+      ]);
+    },
+    meta: {
+      errorToastMessage: "We couldn't save your plan response.",
+      telemetryName: "plan_guest_commitment_set",
+    },
+  });
+  const options: Array<{ label: string; value: PlanCommitmentResponse }> = [
+    { label: "Going", value: "GOING" },
+    { label: "Unsure", value: "UNSURE" },
+    { label: "Can’t attend", value: "CANNOT_ATTEND" },
+  ];
+
+  return (
+    <section className="mt-8" aria-labelledby="guest-commitment-heading">
+      <h2
+        id="guest-commitment-heading"
+        className="flex items-center gap-2 font-bold text-ink text-lg"
+      >
+        <CalendarCheck className="size-4" aria-hidden />
+        Can you make it?
+      </h2>
+      {!state.viewer.commitmentIsCurrent && state.viewer.commitmentState ? (
+        <Notice className="mt-3" role="status" size="sm" tone="warning">
+          The plan changed. Review it and answer again.
+        </Notice>
+      ) : null}
+      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        {options.map((option) => (
+          <Button
+            aria-pressed={
+              state.viewer.commitmentIsCurrent &&
+              state.viewer.commitmentState === option.value
+            }
+            disabled={mutation.isPending}
+            key={option.value}
+            onClick={() => mutation.mutate(option.value)}
+            size="sm"
+            variant={
+              state.viewer.commitmentIsCurrent &&
+              state.viewer.commitmentState === option.value
+                ? "primary"
+                : "outline"
+            }
+          >
+            {option.label}
+          </Button>
+        ))}
+      </div>
+    </section>
   );
 }
 

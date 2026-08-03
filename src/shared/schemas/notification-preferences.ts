@@ -8,6 +8,11 @@ import {
 const themeAppearanceSchema = z.enum(themeAppearanceValues);
 const themeStyleSchema = z.enum(themeStyleValues);
 const themeColorSchema = z.enum(themeColorValues);
+export const presencePrecisionSchema = z.enum([
+  "HIDDEN",
+  "APPROXIMATE",
+  "EXACT",
+]);
 
 export const notificationPreferencesSchema = z.object({
   notifyFriendRequests: z.boolean(),
@@ -19,6 +24,12 @@ export const notificationPreferencesSchema = z.object({
   notificationTimeZoneId: z.string().nullable(),
   quietHoursStartMinute: z.number().int().min(0).max(1439).nullable(),
   quietHoursEndMinute: z.number().int().min(0).max(1439).nullable(),
+  planReminderLeadMinutes: z.union([
+    z.literal(30),
+    z.literal(60),
+    z.literal(180),
+    z.literal(1440),
+  ]),
   emailFriendRequests: z.boolean(),
   emailGroupInvites: z.boolean(),
   emailGroupActivity: z.boolean(),
@@ -33,6 +44,10 @@ export const notificationPreferencesSchema = z.object({
   showGenderOnProfile: z.boolean(),
   showCityOnProfile: z.boolean(),
   showFriendsListOnProfile: z.boolean(),
+  presencePrecision: presencePrecisionSchema,
+  presenceFriendsVisible: z.boolean(),
+  presenceGroupsVisible: z.boolean(),
+  presencePlanGuestsVisible: z.boolean(),
 });
 
 export type NotificationPreferences = z.infer<

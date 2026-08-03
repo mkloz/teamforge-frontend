@@ -60,12 +60,12 @@ export function GroupPlanOverviewSection({
       ref={sectionRef}
       aria-labelledby="group-section-heading plan-section-heading"
       className={cn(
-        "scroll-mt-24 overflow-hidden rounded-2xl bg-background p-2 transition-colors duration-500",
+        "grouped-surface flex scroll-mt-24 flex-col overflow-hidden rounded-2xl bg-transparent transition-colors duration-500",
         isHighlighted &&
           "ring-2 ring-forge-teal/30 ring-offset-4 ring-offset-background",
       )}
     >
-      <div className="grid gap-2 lg:grid-cols-[minmax(0,1.08fr)_minmax(12rem,0.72fr)_minmax(16rem,1fr)]">
+      <div className="grouped-surface grid lg:grid-cols-[minmax(0,1.08fr)_minmax(12rem,0.72fr)_minmax(16rem,1fr)]">
         <GroupStory detail={detail} />
         <PlanCalendar detail={detail} plan={plan} />
         <PlanPlace detail={detail} plan={plan} />
@@ -76,7 +76,7 @@ export function GroupPlanOverviewSection({
       {plan?.accessFacts.length ? <PlanAccessFacts plan={plan} /> : null}
 
       {isReadOnly ? (
-        <p className="mt-2 rounded-xl bg-card px-5 py-3 text-muted-foreground text-xs leading-relaxed sm:px-6 lg:px-7">
+        <p className="rounded-xl bg-card px-5 py-3 text-muted-foreground text-xs leading-relaxed sm:px-6 lg:px-7">
           This group is read-only right now. You can still review the plan,
           report a concern, or leave if that option is available.
         </p>
@@ -89,7 +89,7 @@ function PlanAccessFacts({ plan }: { plan: Plan }) {
   return (
     <section
       aria-labelledby="plan-access-facts-heading"
-      className="mt-2 rounded-xl bg-card px-5 py-4 sm:px-6 lg:px-7"
+      className="rounded-xl bg-card px-5 py-4 sm:px-6 lg:px-7"
     >
       <div className="flex items-start gap-3">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-forge-teal">
@@ -455,7 +455,7 @@ function PlanNote({ detail, plan }: { detail: GroupPlanDetail; plan: Plan }) {
   }
 
   return (
-    <div className="mt-2 rounded-xl bg-card px-5 py-4 sm:px-6 lg:px-7">
+    <div className="rounded-xl bg-card px-5 py-4 sm:px-6 lg:px-7">
       <p className="font-bold text-muted-foreground text-xs">Plan note</p>
       <p className="mt-1 max-w-4xl text-pretty text-foreground/90 text-sm leading-relaxed">
         {plan.description}
@@ -489,7 +489,7 @@ function OverviewFooter({
       : "Group is full";
 
   return (
-    <div className="mt-2 grid gap-2 sm:grid-cols-3">
+    <div className="grouped-surface grid sm:grid-cols-3">
       <OverviewFact
         icon={detail.group.access === "OPEN" ? Globe2 : LockKeyhole}
         label="Access"

@@ -46,6 +46,10 @@ export const userCoreFields = {
   searchStatus: searchStatusSchema,
   onlineStatus: onlineStatusSchema.optional(),
   lastSeenAt: z.string().datetime().nullable().optional(),
+  presenceLabel: z
+    .enum(["HIDDEN", "LONG_AGO", "ONLINE", "RECENTLY", "THIS_WEEK", "TODAY"])
+    .optional(),
+  presencePrecision: z.enum(["HIDDEN", "APPROXIMATE", "EXACT"]).optional(),
   trustScore: z.number(),
   reputationSummary: reputationSummarySchema.optional(),
   profileComplete: z.boolean(),
@@ -93,4 +97,6 @@ export const userOptionalTrustScoreField = {
 export const userPresenceFields = {
   onlineStatus: userCoreFields.onlineStatus,
   lastSeenAt: userCoreFields.lastSeenAt,
+  presenceLabel: userCoreFields.presenceLabel,
+  presencePrecision: userCoreFields.presencePrecision,
 };

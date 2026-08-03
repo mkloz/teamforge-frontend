@@ -28,8 +28,10 @@ export function ExternalInviteTokenPage() {
 
   useEffect(() => {
     if (!params.token || attempted) return;
+    const token = params.token;
     setAttempted(true);
-    exchangeInvite(params.token, {
+    window.history.replaceState(window.history.state, "", "/invite");
+    exchangeInvite(token, {
       onSuccess: () => void navigate({ to: "/invite", replace: true }),
     });
   }, [attempted, exchangeInvite, navigate, params.token]);

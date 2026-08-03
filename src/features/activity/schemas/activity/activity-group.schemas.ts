@@ -17,6 +17,7 @@ import {
 import { groupGovernanceSchema } from "@/shared/schemas/group-governance";
 import { imageMediaSchema } from "@/shared/schemas/media";
 import { planProposalSchema } from "@/shared/schemas/plan";
+import { planOperationalSummarySchema } from "@/shared/schemas/plan-operational-state";
 
 import { activityMutualGroupSchema } from "./activity-conversation.schemas";
 import { unifiedMessageSchema } from "./activity-message.schemas";
@@ -49,6 +50,7 @@ const planSchema = z.object({
   isScheduleResolved: z.boolean(),
   isLocationResolved: z.boolean(),
   nextRequiredAction: planNextRequiredActionSchema.nullable(),
+  operationalState: planOperationalSummarySchema.nullable().default(null),
   dateTime: z.string().datetime().nullable(),
   timeZoneId: z.string().nullable(),
   localStartDate: z.string().nullable(),

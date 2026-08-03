@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { entityTypeSchema, notificationTypeSchema } from "./enums";
+import { planOperationalSummarySchema } from "./plan-operational-state";
 
 export const notificationSchema = z
   .object({
@@ -16,6 +17,7 @@ export const notificationSchema = z
     entityType: entityTypeSchema.nullable(),
     entityId: z.string().nullable(),
     receiverId: z.string(),
+    operationalState: planOperationalSummarySchema.nullable().default(null),
   })
   .transform((notification) => {
     const updatedAt = notification.updatedAt ?? notification.createdAt;

@@ -1,4 +1,5 @@
 import { type ReactNode, useRef } from "react";
+import { PersonalActivityHistorySection } from "@/features/profile/components/personal-activity-history-section";
 import { ProfileHero } from "@/features/profile/components/profile-hero";
 import { ProfilePortraitSection } from "@/features/profile/components/profile-portrait-section";
 import { DeferredProfileInsights } from "@/features/profile/profile-page/profile-page-content/deferred-profile-insights";
@@ -84,6 +85,8 @@ export function ProfilePageContent({
         ) : (
           <ProfileDeferredInsightsFallback />
         )}
+
+        {mode === "self" ? <PersonalActivityHistorySection /> : null}
       </div>
     </div>
   );

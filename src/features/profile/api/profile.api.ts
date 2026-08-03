@@ -1,3 +1,4 @@
+import { personalActivityHistoryPageSchema } from "@/features/profile/schemas/personal-activity-history.schema";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import {
   getFriends as sharedGetFriends,
@@ -26,6 +27,16 @@ function findFriendshipWithUser(friendships: FriendshipApi[], userId: string) {
 }
 
 export class ProfileApi {
+  static async getMyActivityHistory(cursor?: string) {
+    const response = await apiClient
+      .get("users/me/activity-history", {
+        searchParams: cursor ? { cursor, limit: "20" } : { limit: "20" },
+      })
+      .json<unknown>();
+
+    return personalActivityHistoryPageSchema.parse(response);
+  }
+
   static async getUserProfile(userId: string) {
     return getViewerProfileById(userId);
   }

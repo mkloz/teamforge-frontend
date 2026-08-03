@@ -45,6 +45,8 @@ export const APP_QUERY_KEYS = {
       ["group-plan-detail", groupId, "invite-suggestions", planId] as const,
     commitmentReadiness: (planId: string) =>
       ["group-plan-detail", "commitment-readiness", planId] as const,
+    operationalState: (planId: string) =>
+      ["group-plan-detail", "operational-state", planId] as const,
     seatRecovery: (planId: string) =>
       ["group-plan-detail", "seat-recovery", planId] as const,
     externalInvites: (planId: string) =>
@@ -55,6 +57,8 @@ export const APP_QUERY_KEYS = {
       ["group-plan-detail", groupId, "guest-membership-proposals"] as const,
     ownershipTransfer: (groupId: string) =>
       ["group-plan-detail", groupId, "ownership-transfer"] as const,
+    lifecycle: (groupId: string) =>
+      ["group-plan-detail", groupId, "lifecycle"] as const,
   },
   planGuest: {
     access: (planId: string) => ["plan-guest", planId, "access"] as const,
@@ -114,6 +118,7 @@ export const APP_QUERY_KEYS = {
     interestTree: ["onboarding", "interests", "tree"] as const,
   },
   profile: {
+    activityHistory: ["profile", "activity-history", "me"] as const,
     viewerProfiles: ["profile", "viewer"] as const,
     byId: (userId: string) => ["profile", "viewer", userId] as const,
     friendshipWith: (userId: string) =>

@@ -95,6 +95,7 @@ function mapGroupPlan(
     isScheduleResolved: plan.isScheduleResolved,
     isLocationResolved: plan.isLocationResolved,
     nextRequiredAction: plan.nextRequiredAction,
+    operationalState: plan.operationalState,
     dateTime: plan.dateTime,
     timeZoneId: plan.timeZoneId,
     localStartDate: plan.localStartDate,

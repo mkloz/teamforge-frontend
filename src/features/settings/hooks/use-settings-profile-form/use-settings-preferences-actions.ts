@@ -109,12 +109,15 @@ export function useSettingsPreferencesActions({
   }
 
   async function updateNotificationSchedulePreference(
-    values: Pick<
-      NotificationPreferences,
-      | "notificationHardMute"
-      | "notificationTimeZoneId"
-      | "quietHoursStartMinute"
-      | "quietHoursEndMinute"
+    values: Partial<
+      Pick<
+        NotificationPreferences,
+        | "notificationHardMute"
+        | "notificationTimeZoneId"
+        | "quietHoursStartMinute"
+        | "quietHoursEndMinute"
+        | "planReminderLeadMinutes"
+      >
     >,
   ) {
     await saveNotificationPreferencePatch(values);
@@ -127,12 +130,18 @@ export function useSettingsPreferencesActions({
   }
 
   async function updatePrivacyPreference(
-    values: Pick<
-      NotificationPreferences,
-      | "showAgeOnProfile"
-      | "showGenderOnProfile"
-      | "showCityOnProfile"
-      | "showFriendsListOnProfile"
+    values: Partial<
+      Pick<
+        NotificationPreferences,
+        | "showAgeOnProfile"
+        | "showGenderOnProfile"
+        | "showCityOnProfile"
+        | "showFriendsListOnProfile"
+        | "presencePrecision"
+        | "presenceFriendsVisible"
+        | "presenceGroupsVisible"
+        | "presencePlanGuestsVisible"
+      >
     >,
   ) {
     await saveNotificationPreferencePatch(values);

@@ -1,4 +1,8 @@
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
+import {
+  type PlanReadinessSummary,
+  presentPlanReadinessSummary,
+} from "@/shared/lib/lifecycle-presenters";
 
 const PLAN_CATEGORY_LABELS: Record<PlannedGroup["plan"]["category"], string> = {
   TECH: "Tech",
@@ -41,4 +45,14 @@ export function getHomePlanCategoryLabel(plan: PlannedGroup["plan"]) {
 
 export function getHomePlanCostLabel(plan: PlannedGroup["plan"]) {
   return plan.cost === "FREE" ? "Free" : "Paid";
+}
+
+export function getHomePlanReadiness(
+  plan: PlannedGroup["plan"],
+): PlanReadinessSummary | null {
+  if (!plan.operationalState) return null;
+  return presentPlanReadinessSummary({
+    overall: plan.operationalState.overall,
+    requiredAction: plan.operationalState.requiredAction,
+  });
 }

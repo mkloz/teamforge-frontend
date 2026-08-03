@@ -28,6 +28,7 @@ import {
 import { exploreInterestSchema } from "./explore";
 import { groupGovernanceSchema } from "./group-governance";
 import { imageMediaSchema } from "./media";
+import { planOperationalSummarySchema } from "./plan-operational-state";
 
 const groupActivitySummarySchema = z.object({
   id: z.string(),
@@ -71,6 +72,7 @@ const groupCurrentPlanSummarySchema = groupPlanSummarySchema.extend({
   localStartDate: z.string().nullable(),
   localStartTime: z.string().nullable(),
   nextRequiredAction: planNextRequiredActionSchema.nullable(),
+  operationalState: planOperationalSummarySchema.nullable().default(null),
   scheduleFold: z.number().int().min(0).max(1).nullable(),
   timeZoneId: z.string().nullable(),
 });

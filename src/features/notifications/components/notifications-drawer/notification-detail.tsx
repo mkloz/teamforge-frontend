@@ -11,6 +11,7 @@ import {
 } from "@/shared/components/common/avatar-with-badge";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile, type IconTileTone } from "@/shared/components/ui/icon-tile";
+import { presentPlanReadinessSummary } from "@/shared/lib/lifecycle-presenters";
 import type { Notification } from "@/shared/schemas";
 import {
   formatNotificationDate,
@@ -51,6 +52,12 @@ export function NotificationDetail({
     isReadActionDisabled,
   });
   const ReadStateIcon = readAction.icon;
+  const readiness = item.operationalState
+    ? presentPlanReadinessSummary({
+        overall: item.operationalState.overall,
+        requiredAction: item.operationalState.requiredAction,
+      })
+    : null;
 
   return (
     <article className="flex min-h-full flex-col">
@@ -96,6 +103,15 @@ export function NotificationDetail({
         <p className="mt-6 max-w-md whitespace-pre-wrap text-base text-ink/85 leading-7">
           {item.message}
         </p>
+
+        {readiness ? (
+          <div className="mt-5 rounded-xl border border-border/70 bg-muted/35 p-3">
+            <p className="font-bold text-ink text-sm">{readiness.title}</p>
+            <p className="mt-1 text-slate-muted text-sm leading-relaxed">
+              {readiness.detail}
+            </p>
+          </div>
+        ) : null}
 
         <p className="mt-8 border-border/60 border-t pt-4 font-medium text-slate-muted text-xs">
           Received {formatNotificationDate(item.createdAt)}

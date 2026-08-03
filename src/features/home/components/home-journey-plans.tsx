@@ -20,6 +20,7 @@ import {
 import {
   getHomePlanCostLabel,
   getHomePlanLocationLabel,
+  getHomePlanReadiness,
 } from "@/features/home/lib/home-plan-presenters";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
@@ -135,6 +136,7 @@ function FeaturedJourneyPlan({ plannedGroup }: { plannedGroup: PlannedGroup }) {
   const { plan } = plannedGroup;
   const groupContext = getGroupContext(plannedGroup);
   const cornerDate = getCornerDate(plan);
+  const readiness = getHomePlanReadiness(plan);
 
   return (
     <Link
@@ -165,6 +167,13 @@ function FeaturedJourneyPlan({ plannedGroup }: { plannedGroup: PlannedGroup }) {
 
         <div className="absolute inset-x-0 bottom-0 flex min-w-0 flex-col">
           <div className="min-w-0 px-4 pb-3 sm:px-5">
+            {readiness ? (
+              <PlanReadinessBadge
+                inverse
+                title={readiness.title}
+                tone={readiness.tone}
+              />
+            ) : null}
             <h3 className="max-w-[85%] text-balance font-black text-2xl text-white leading-[1.05] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] transition-colors group-hover:text-forge-teal sm:text-3xl">
               {plan.title}
             </h3>
@@ -280,6 +289,7 @@ function CompactJourneyPlan({ plannedGroup }: { plannedGroup: PlannedGroup }) {
     plan: plan.id,
   });
   const LocationIcon = plan.locationMode === "ONLINE" ? Wifi : MapPinned;
+  const readiness = getHomePlanReadiness(plan);
 
   return (
     <li className="group min-w-0 bg-card first:rounded-t-2xl last:rounded-b-2xl">
@@ -313,6 +323,9 @@ function CompactJourneyPlan({ plannedGroup }: { plannedGroup: PlannedGroup }) {
               label={getHomePlanLocationLabel(plan)}
             />
           </div>
+          {readiness ? (
+            <PlanReadinessBadge title={readiness.title} tone={readiness.tone} />
+          ) : null}
         </div>
 
         <ArrowUpRight
@@ -321,6 +334,31 @@ function CompactJourneyPlan({ plannedGroup }: { plannedGroup: PlannedGroup }) {
         />
       </Link>
     </li>
+  );
+}
+
+function PlanReadinessBadge({
+  inverse = false,
+  title,
+  tone,
+}: {
+  inverse?: boolean;
+  title: string;
+  tone: "danger" | "neutral" | "success" | "warning";
+}) {
+  return (
+    <span
+      className={cn(
+        "mt-2 inline-flex rounded-full px-2 py-0.5 font-bold text-[0.6875rem]",
+        inverse && "bg-black/35 text-white backdrop-blur-sm",
+        !inverse && tone === "success" && "bg-success/10 text-success",
+        !inverse && tone === "warning" && "bg-warning/10 text-warning",
+        !inverse && tone === "danger" && "bg-destructive/10 text-destructive",
+        !inverse && tone === "neutral" && "bg-muted text-muted-foreground",
+      )}
+    >
+      {title}
+    </span>
   );
 }
 

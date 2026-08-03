@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { HTTPError } from "ky";
 import { RefreshCw, ServerCrash, ShieldOff } from "lucide-react";
 import { useEffect, useState } from "react";
+import { AdminLifecycleQueue } from "@/features/admin/public/admin-lifecycle-queue";
 import { getOperatorControlErrorKind } from "@/features/operator/api/operator-control-errors";
 import {
   OPERATOR_QUERY_KEYS,
@@ -182,6 +183,8 @@ export function OperatorWorkerOperationsPage() {
         onSelect={setSelectedKind}
         onCommandError={handleCommandError}
       />
+
+      <AdminLifecycleQueue />
 
       <section className="grid gap-4">
         <AdminSectionHeader

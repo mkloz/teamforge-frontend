@@ -22,6 +22,7 @@ export function MemberSummary({
           lastSeenAt={viewState.lastSeenAt}
           memberName={viewState.memberName}
           onlineStatus={viewState.onlineStatus}
+          presenceLabel={viewState.presenceLabel}
         />
         <MemberMetrics viewState={viewState} />
       </div>

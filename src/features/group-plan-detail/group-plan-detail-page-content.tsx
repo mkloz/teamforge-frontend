@@ -1,7 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
 import { lazy, type Ref, Suspense, useRef } from "react";
+import { groupPlanDetailQueries } from "@/features/group-plan-detail/api/group-plan-detail-queries";
+import { GroupLifecycleSection } from "@/features/group-plan-detail/components/content/group-lifecycle-section";
 import { GroupPlanOverviewSection } from "@/features/group-plan-detail/components/content/group-plan-overview-section";
 import { OwnershipTransferSection } from "@/features/group-plan-detail/components/content/ownership-transfer-section";
 import { PlanCommitmentSection } from "@/features/group-plan-detail/components/content/plan-commitment-section";
+import { PlanOperationalSummary } from "@/features/group-plan-detail/components/content/plan-operational-summary";
 import { PlanParticipantManagementSection } from "@/features/group-plan-detail/components/content/plan-participant-management-section";
 import { PlanSeatRecoverySection } from "@/features/group-plan-detail/components/content/plan-seat-recovery-section";
 import { GroupPlanHero } from "@/features/group-plan-detail/components/hero/group-plan-hero";
@@ -87,6 +91,13 @@ function GroupPlanDetailGrid({
   detail: GroupPlanDetail;
   focus: GroupPlanSectionFocusProps;
 }) {
+  const operationalState = useQuery(
+    groupPlanDetailQueries.operationalState(
+      detail.plan?.id ?? "",
+      Boolean(detail.plan),
+    ),
+  );
+
   return (
     <div className="mt-10">
       <GroupPlanOverviewSection
@@ -94,8 +105,21 @@ function GroupPlanDetailGrid({
         isHighlighted={focus.isPlanHighlighted}
         sectionRef={focus.planSectionRef}
       />
-      <PlanCommitmentSection detail={detail} />
-      <PlanSeatRecoverySection detail={detail} />
+      {detail.plan ? (
+        <PlanOperationalSummary
+          isError={operationalState.isError}
+          isLoading={operationalState.isLoading}
+          state={operationalState.data}
+        />
+      ) : null}
+      <PlanCommitmentSection
+        detail={detail}
+        operationalState={operationalState.data}
+      />
+      <PlanSeatRecoverySection
+        detail={detail}
+        operationalState={operationalState.data}
+      />
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)] xl:gap-14">
         <div className="min-w-0 lg:col-start-2 lg:row-start-1">
@@ -106,6 +130,7 @@ function GroupPlanDetailGrid({
           <DeferredMainSections detail={detail} />
           <PlanParticipantManagementSection detail={detail} />
           <OwnershipTransferSection detail={detail} />
+          <GroupLifecycleSection groupId={detail.group.id} />
         </div>
       </div>
     </div>

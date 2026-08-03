@@ -2,6 +2,7 @@ import {
   type UseQueryResult,
   useMutation,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { Armchair, Clock3 } from "lucide-react";
 import { useState } from "react";
@@ -10,6 +11,7 @@ import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-
 import { groupPlanDetailQueries } from "@/features/group-plan-detail/api/group-plan-detail-queries";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import type { PlanSeatViewerState } from "@/features/group-plan-detail/schemas/plan-seat-recovery.schema";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -19,19 +21,33 @@ import {
 } from "@/shared/components/ui/grouped-menu";
 import { Notice } from "@/shared/components/ui/notice";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
+import {
+  getMutationOutcomeCode,
+  presentMutationOutcome,
+} from "@/shared/lib/lifecycle-presenters";
 import { cn } from "@/shared/lib/utils";
+import type { PlanOperationalState } from "@/shared/schemas/plan-operational-state";
 
 import { PlanManagementSection } from "./plan-management-section";
 
 export function PlanSeatRecoverySection({
   detail,
+  operationalState,
 }: {
   detail: GroupPlanDetail;
+  operationalState?: PlanOperationalState;
 }) {
   const plan = detail.plan;
-  const enabled = Boolean(plan?.seatRecoveryEnabled);
+  const enabled = Boolean(
+    plan?.seatRecoveryEnabled ||
+      (operationalState && operationalState.recovery.state !== "NONE"),
+  );
   const query = useQuery(
-    groupPlanDetailQueries.seatRecovery(plan?.id ?? "", enabled),
+    groupPlanDetailQueries.seatRecovery(
+      plan?.id ?? "",
+      enabled && !operationalState,
+    ),
   );
 
   if (!plan || !enabled) return null;
@@ -42,23 +58,29 @@ export function PlanSeatRecoverySection({
       icon={Armchair}
       title="Plan places"
     >
-      <SeatRecoveryBody detail={detail} query={query} />
+      <SeatRecoveryBody
+        detail={detail}
+        operationalState={operationalState}
+        query={query}
+      />
     </PlanManagementSection>
   );
 }
 
 function SeatRecoveryBody({
   detail,
+  operationalState,
   query,
 }: {
   detail: GroupPlanDetail;
+  operationalState?: PlanOperationalState;
   query: UseQueryResult<PlanSeatViewerState>;
 }) {
   const plan = detail.plan;
-  if (!plan || query.isLoading) {
+  if (!plan || (!operationalState && query.isLoading)) {
     return <Skeleton className="h-20 w-full" shape="card" />;
   }
-  if (query.isError || !query.data) {
+  if (!operationalState && (query.isError || !query.data)) {
     return (
       <Notice role="alert" size="sm" tone="warning" statusIcon>
         We couldn&apos;t load the current place status.
@@ -66,7 +88,10 @@ function SeatRecoveryBody({
     );
   }
 
-  const state = query.data;
+  const state = operationalState
+    ? projectOperationalSeatState(operationalState)
+    : query.data;
+  if (!state) return null;
   const offer = state.offer;
 
   if (offer?.status === "OFFERED") {
@@ -93,13 +118,52 @@ function SeatRecoveryBody({
     return <SeatAvailability counts={state.seatCounts} />;
   }
 
-  return <JoinWaitlistAction planId={plan.id} />;
+  return operationalState?.viewer.capabilities.joinWaitlist ||
+    !operationalState ? (
+    <JoinWaitlistAction planId={plan.id} />
+  ) : (
+    <Notice size="sm">No plan place action is available right now.</Notice>
+  );
+}
+
+function projectOperationalSeatState(
+  state: PlanOperationalState,
+): PlanSeatViewerState {
+  const viewerPlace = state.places.find(
+    (place) => place.offerId && place.participantId !== null,
+  );
+  const seatCounts = state.places
+    .filter((place) => place.ordinal !== null)
+    .reduce<Record<string, number>>((counts, place) => {
+      counts[place.state] = (counts[place.state] ?? 0) + 1;
+      return counts;
+    }, {});
+
+  return {
+    assignmentStatus: viewerPlace?.assignmentStatus ?? null,
+    consequenceVersion: "operational-state.v1",
+    materialRevision: state.materialRevision,
+    offer: viewerPlace?.offerId
+      ? {
+          expiresAt: viewerPlace.offerExpiresAt,
+          id: viewerPlace.offerId,
+          status: viewerPlace.state === "WAITLISTED" ? "WAITING" : "OFFERED",
+        }
+      : null,
+    participantScope:
+      state.viewer.participantScope === "GUEST"
+        ? "PLAN_GUEST"
+        : ["MEMBER", "OWNER"].includes(state.viewer.participantScope)
+          ? "GROUP_MEMBER"
+          : "NONE",
+    seatCounts: Object.keys(seatCounts).length > 0 ? seatCounts : null,
+  };
 }
 
 function SeatAvailability({ counts }: { counts: Record<string, number> }) {
   const assigned = counts.OCCUPIED ?? 0;
-  const held = counts.HELD ?? 0;
-  const open = counts.OPEN ?? 0;
+  const held = (counts.HELD ?? 0) + (counts.PENDING_INVITE ?? 0);
+  const open = (counts.OPEN ?? 0) + (counts.RELEASED ?? 0);
   const total = Math.max(1, assigned + held + open);
   const segments = Array.from({ length: total }, (_, position) => ({
     id: `plan-place-${position + 1}`,
@@ -147,6 +211,8 @@ function SeatAvailability({ counts }: { counts: Record<string, number> }) {
 }
 
 function JoinWaitlistAction({ planId }: { planId: string }) {
+  const queryClient = useQueryClient();
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const mutation = useMutation({
     mutationFn: () => GroupPlanDetailCommands.joinSeatWaitlist(planId),
     meta: {
@@ -154,16 +220,30 @@ function JoinWaitlistAction({ planId }: { planId: string }) {
         "You aren't currently eligible for this plan waitlist.",
       telemetryName: "plan_seat_waitlist_join",
     },
+    onError: () => refreshSeatState(queryClient, planId),
   });
   return (
-    <Button
-      disabled={mutation.isPending}
-      onClick={() => mutation.mutate()}
-      size="sm"
-      variant="outline"
-    >
-      {mutation.isPending ? "Joining…" : "Join the place waitlist"}
-    </Button>
+    <div>
+      <Button
+        disabled={mutation.isPending || !isOnline}
+        onClick={() => {
+          if (
+            guardOfflineAction({
+              description: "Reconnect before joining the plan waitlist.",
+              id: "plan-seat-waitlist-offline",
+            })
+          ) {
+            return;
+          }
+          mutation.mutate();
+        }}
+        size="sm"
+        variant="outline"
+      >
+        {mutation.isPending ? "Joining…" : "Join the place waitlist"}
+      </Button>
+      <MutationOutcomeNotice error={mutation.error} />
+    </div>
   );
 }
 
@@ -176,6 +256,8 @@ function OfferedSeatActions({
 }) {
   const [acknowledged, setAcknowledged] = useState(false);
   const [doNotOfferAgain, setDoNotOfferAgain] = useState(false);
+  const queryClient = useQueryClient();
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const offer = state.offer;
   const accept = useMutation({
     mutationFn: () => {
@@ -191,6 +273,7 @@ function OfferedSeatActions({
         "This place is no longer available. Refresh and try again.",
       telemetryName: "plan_seat_offer_accept",
     },
+    onError: () => refreshSeatState(queryClient, planId),
   });
   const decline = useMutation({
     mutationFn: () => {
@@ -205,6 +288,7 @@ function OfferedSeatActions({
       errorToastMessage: "We couldn't decline this place.",
       telemetryName: "plan_seat_offer_decline",
     },
+    onError: () => refreshSeatState(queryClient, planId),
   });
 
   if (!offer) return null;
@@ -225,9 +309,19 @@ function OfferedSeatActions({
             <ActionDialog
               confirmLabel="Accept plan place"
               description="This accepts attendance for this plan only. It does not add you to the group or its chat."
-              disabled={!acknowledged}
+              disabled={!acknowledged || !isOnline}
               loading={accept.isPending}
-              onConfirm={() => accept.mutate()}
+              onConfirm={() => {
+                if (
+                  guardOfflineAction({
+                    description: "Reconnect before accepting this place.",
+                    id: "plan-seat-accept-offline",
+                  })
+                ) {
+                  return;
+                }
+                accept.mutate();
+              }}
               title="Accept this plan place?"
               trigger={<Button size="sm">Review and accept</Button>}
             >
@@ -245,7 +339,17 @@ function OfferedSeatActions({
               confirmLabel="Decline place"
               description="The place will be released immediately for the next eligible person."
               loading={decline.isPending}
-              onConfirm={() => decline.mutate()}
+              onConfirm={() => {
+                if (
+                  guardOfflineAction({
+                    description: "Reconnect before declining this place.",
+                    id: "plan-seat-decline-offline",
+                  })
+                ) {
+                  return;
+                }
+                decline.mutate();
+              }}
               title="Decline this place?"
               tone="danger"
               trigger={
@@ -265,10 +369,36 @@ function OfferedSeatActions({
               </label>
             </ActionDialog>
           </div>
+          <MutationOutcomeNotice error={accept.error ?? decline.error} />
         </GroupedMenuAction>
       </GroupedMenuItem>
     </GroupedMenuList>
   );
+}
+
+function MutationOutcomeNotice({ error }: { error: unknown }) {
+  if (!error) return null;
+  const outcome = presentMutationOutcome(getMutationOutcomeCode(error));
+  return (
+    <Notice className="mt-3 w-full" role="alert" tone={outcome.tone} statusIcon>
+      <p className="font-semibold">{outcome.title}</p>
+      <p>{outcome.detail}</p>
+    </Notice>
+  );
+}
+
+function refreshSeatState(
+  queryClient: ReturnType<typeof useQueryClient>,
+  planId: string,
+) {
+  return Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.seatRecovery(planId),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.operationalState(planId),
+    }),
+  ]);
 }
 
 function formatDateTime(value: string | null) {

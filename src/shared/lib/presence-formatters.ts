@@ -19,6 +19,20 @@ export function getPresenceText(
   return formatLastSeen(lastSeenAt, now);
 }
 
+export function getProjectedPresenceText(
+  label?: "HIDDEN" | "LONG_AGO" | "ONLINE" | "RECENTLY" | "THIS_WEEK" | "TODAY",
+) {
+  if (!label) return null;
+  return {
+    HIDDEN: "Last seen hidden",
+    LONG_AGO: "Last seen a while ago",
+    ONLINE: "Online",
+    RECENTLY: "Seen recently",
+    THIS_WEEK: "Seen this week",
+    TODAY: "Seen today",
+  }[label];
+}
+
 export function formatLastSeen(lastSeenAt?: string | null, now = new Date()) {
   if (!lastSeenAt) {
     return "Offline";

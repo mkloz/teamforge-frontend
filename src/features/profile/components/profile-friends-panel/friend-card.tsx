@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import { Avatar } from "@/shared/components/common/avatar";
+import { PresenceLabel } from "@/shared/components/common/presence-label";
 import { cn } from "@/shared/lib/utils";
 import { buildProfileNavigation } from "@/shared/navigation/profile-navigation";
 import type { OnlineStatus } from "@/shared/schemas/enums";
@@ -12,6 +13,14 @@ interface FriendCardUser {
   avatar: string | null;
   city?: string | null;
   onlineStatus?: OnlineStatus;
+  lastSeenAt?: string | null;
+  presenceLabel?:
+    | "HIDDEN"
+    | "LONG_AGO"
+    | "ONLINE"
+    | "RECENTLY"
+    | "THIS_WEEK"
+    | "TODAY";
 }
 
 interface FriendCardProps {
@@ -142,6 +151,11 @@ function FriendSecondaryLine({
         <span className="text-muted-foreground text-xs">{subtitle}</span>
       ) : (
         <>
+          <PresenceLabel
+            lastSeenAt={user.lastSeenAt}
+            presenceLabel={user.presenceLabel}
+            status={user.onlineStatus}
+          />
           <FriendCity city={user.city} />
           <FriendsSinceLabel friendsSince={friendsSince} />
         </>

@@ -1,9 +1,11 @@
+import { z } from "zod";
 import { apiClient } from "@/shared/api/api";
 import { getUnreadNotificationCount } from "@/shared/api/notification-count-api";
 import {
   createPaginatedSchema,
   notificationSchema,
   notificationUnreadCountSchema,
+  planOperationalStateSchema,
 } from "@/shared/schemas";
 
 const paginatedNotificationsSchema = createPaginatedSchema(notificationSchema);
@@ -27,7 +29,57 @@ export class NotificationsApi {
       })
       .json<unknown>();
 
-    return paginatedNotificationsSchema.parse(response).items;
+    const notifications = paginatedNotificationsSchema.parse(response).items;
+    const planIds = [
+      ...new Set(
+        notifications.flatMap((notification) =>
+          notification.entityType === "PLAN" && notification.entityId
+            ? [notification.entityId]
+            : [],
+        ),
+      ),
+    ];
+    if (planIds.length === 0) return notifications;
+
+    try {
+      const stateResponse = await apiClient
+        .post("plans/operational-state/query", { json: { planIds } })
+        .json<unknown>();
+      const states = z.array(planOperationalStateSchema).parse(stateResponse);
+      const byPlanId = new Map(states.map((state) => [state.planId, state]));
+      return notifications.map((notification) => {
+        const state = notification.entityId
+          ? byPlanId.get(notification.entityId)
+          : undefined;
+        return {
+          ...notification,
+          operationalState: state
+            ? {
+                materialRevision: state.materialRevision,
+                overall: state.overall,
+                participantScope: state.viewer.participantScope,
+                requiredAction: state.viewer.requiredAction,
+                stateVersion: state.stateVersion,
+                unresolvedFactLabels: [
+                  state.schedule,
+                  state.location,
+                  state.logistics,
+                  state.commitment,
+                  state.capacity,
+                  state.recovery,
+                ]
+                  .filter(
+                    (fact) =>
+                      fact.state !== "RESOLVED" && fact.state !== "REDACTED",
+                  )
+                  .map((fact) => fact.label),
+              }
+            : null,
+        };
+      });
+    } catch {
+      return notifications;
+    }
   }
 
   static async getUnreadCount() {

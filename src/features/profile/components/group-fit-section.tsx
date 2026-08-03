@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { EmptyGroupFitVisual } from "@/features/profile/assets/empty-group-fit";
 import { IconTile } from "@/shared/components/ui/icon-tile";
+import { cn } from "@/shared/lib/utils";
 
 import type { GroupFitInsight, UserGroupSignal } from "../lib/profile-insights";
 import { ProfileSectionHeading } from "./profile-section-heading";
@@ -60,18 +61,25 @@ export function GroupFitSection({ insight, mode }: GroupFitSectionProps) {
         <UserGroupSignalCard signal={insight.userSignal} mode={mode} />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grouped-surface grid overflow-hidden rounded-2xl sm:grid-cols-3">
         <FitGuidance
           icon={Handshake}
           label="Best with"
+          tone="positive"
           value={insight.bestWith}
         />
         <FitGuidance
           icon={Route}
           label="Opening move"
+          tone="neutral"
           value={insight.openingMove}
         />
-        <FitGuidance icon={ShieldAlert} label="Avoid" value={insight.avoid} />
+        <FitGuidance
+          icon={ShieldAlert}
+          label="Avoid"
+          tone="caution"
+          value={insight.avoid}
+        />
       </div>
     </section>
   );
@@ -85,27 +93,25 @@ function UserGroupSignalCard({
   signal: UserGroupSignal;
 }) {
   return (
-    <div className="flex h-full min-h-52 flex-col overflow-hidden rounded-2xl bg-transparent p-0.5">
-      <div className="grid flex-1 content-stretch gap-0.5">
-        <SignalRead
-          icon={Activity}
-          label="Group energy"
-          mode={mode}
-          signal={signal.groupEnergy}
-        />
-        <SignalRead
-          icon={MessageCircle}
-          label="Connection style"
-          mode={mode}
-          signal={signal.connectionStyle}
-        />
-        <SignalRead
-          icon={UsersRound}
-          label="Social rhythm"
-          mode={mode}
-          signal={signal.socialRhythm}
-        />
-      </div>
+    <div className="grouped-surface grid h-full min-h-52 overflow-hidden rounded-2xl">
+      <SignalRead
+        icon={Activity}
+        label="Group energy"
+        mode={mode}
+        signal={signal.groupEnergy}
+      />
+      <SignalRead
+        icon={MessageCircle}
+        label="Connection style"
+        mode={mode}
+        signal={signal.connectionStyle}
+      />
+      <SignalRead
+        icon={UsersRound}
+        label="Social rhythm"
+        mode={mode}
+        signal={signal.socialRhythm}
+      />
     </div>
   );
 }
@@ -113,14 +119,22 @@ function UserGroupSignalCard({
 function FitGuidance({
   icon: Icon,
   label,
+  tone,
   value,
 }: {
   icon: LucideIcon;
   label: string;
+  tone: "caution" | "neutral" | "positive";
   value: string;
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-3 rounded-2xl bg-card/55 p-4">
+    <div
+      className={cn(
+        "flex min-w-0 flex-col gap-3 bg-card px-4 py-4 sm:px-5",
+        tone === "positive" && "bg-(--grouped-menu-selected)",
+        tone === "caution" && "bg-spark-amber/6",
+      )}
+    >
       <div className="flex items-center gap-2 font-bold text-slate-muted text-sm">
         <IconTile icon={Icon} shape="circle" size="sm" />
         {label}

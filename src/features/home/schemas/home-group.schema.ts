@@ -9,6 +9,7 @@ import {
   planStatusSchema,
 } from "@/shared/schemas/enums";
 import { imageMediaSchema } from "@/shared/schemas/media";
+import { planOperationalSummarySchema } from "@/shared/schemas/plan-operational-state";
 
 const homeGroupInterestSchema = z.object({
   id: z.string(),
@@ -32,6 +33,7 @@ const homeGroupPlanSchema = z.object({
   isScheduleResolved: z.boolean(),
   isLocationResolved: z.boolean(),
   nextRequiredAction: planNextRequiredActionSchema.nullable(),
+  operationalState: planOperationalSummarySchema.nullable(),
   dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
   location: z.string().nullable(),

@@ -20,12 +20,39 @@ async function invalidateGroupPlanDetail(groupId: string) {
 }
 
 async function invalidateSeatRecovery(planId: string) {
-  await appQueryClient.invalidateQueries({
-    queryKey: APP_QUERY_KEYS.groupPlanDetail.seatRecovery(planId),
+  await Promise.all([
+    appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.seatRecovery(planId),
+    }),
+    invalidateOperationalState(planId),
+  ]);
+}
+
+function invalidateOperationalState(planId: string) {
+  return appQueryClient.invalidateQueries({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.operationalState(planId),
   });
 }
 
 export const GroupPlanDetailCommands = {
+  async archiveGroup(groupId: string, expectedRevision: number) {
+    const result = await GroupPlanDetailApi.archiveGroup(
+      groupId,
+      expectedRevision,
+    );
+    await invalidateGroupLifecycleSurfaces(groupId);
+    return result;
+  },
+
+  async restoreGroup(groupId: string, expectedRevision: number) {
+    const result = await GroupPlanDetailApi.restoreGroup(
+      groupId,
+      expectedRevision,
+    );
+    await invalidateGroupLifecycleSurfaces(groupId);
+    return result;
+  },
+
   async createExternalInvite(planId: string) {
     const result = await GroupPlanDetailApi.createExternalInvite(planId);
     await invalidateExternalInvites(planId);
@@ -151,6 +178,7 @@ export const GroupPlanDetailCommands = {
           input.planId,
         ),
       }),
+      invalidateOperationalState(input.planId),
     ]);
 
     return result;
@@ -304,6 +332,17 @@ export const GroupPlanDetailCommands = {
     return result;
   },
 };
+
+function invalidateGroupLifecycleSurfaces(groupId: string) {
+  return Promise.all([
+    invalidateGroupPlanDetail(groupId),
+    appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.lifecycle(groupId),
+    }),
+    invalidateGroupMembershipSurfaces(),
+    invalidateNotificationSurfaces(),
+  ]);
+}
 
 function invalidateExternalInvites(planId: string) {
   return appQueryClient.invalidateQueries({

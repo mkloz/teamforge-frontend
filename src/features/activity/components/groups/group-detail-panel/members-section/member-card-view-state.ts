@@ -11,6 +11,7 @@ export interface MemberCardViewState {
   lastSeenAt: MemberUser["lastSeenAt"] | undefined;
   memberName: string;
   onlineStatus: MemberUser["onlineStatus"] | undefined;
+  presenceLabel: MemberUser["presenceLabel"] | undefined;
   personalityType: MemberUser["personalityType"] | undefined;
 }
 
@@ -32,6 +33,7 @@ export function getMemberCardViewState(
     lastSeenAt: member.user?.lastSeenAt,
     memberName: getMemberName(member),
     onlineStatus: member.user?.onlineStatus,
+    presenceLabel: member.user?.presenceLabel,
     personalityType,
   };
 }

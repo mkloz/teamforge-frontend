@@ -112,6 +112,7 @@ function MemberIdentity({
       ) : null}
       <PresenceLabel
         lastSeenAt={member.lastSeenAt}
+        presenceLabel={member.presenceLabel}
         status={member.onlineStatus}
       />
     </div>

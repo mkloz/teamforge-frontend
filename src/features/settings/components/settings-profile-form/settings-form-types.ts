@@ -27,6 +27,8 @@ export type BooleanSettingsPreferenceKey = Exclude<
   | "notificationTimeZoneId"
   | "quietHoursStartMinute"
   | "quietHoursEndMinute"
+  | "planReminderLeadMinutes"
+  | "presencePrecision"
 >;
 
 export interface AccountSettingsState {
@@ -66,12 +68,18 @@ export interface MatchingSettingsState extends NotificationPreferenceState {
 export interface PrivacySettingsState extends NotificationPreferenceState {
   accountExport: ReturnType<typeof useAccountExport>;
   onChange: (
-    values: Pick<
-      NotificationPreferences,
-      | "showAgeOnProfile"
-      | "showGenderOnProfile"
-      | "showCityOnProfile"
-      | "showFriendsListOnProfile"
+    values: Partial<
+      Pick<
+        NotificationPreferences,
+        | "showAgeOnProfile"
+        | "showGenderOnProfile"
+        | "showCityOnProfile"
+        | "showFriendsListOnProfile"
+        | "presencePrecision"
+        | "presenceFriendsVisible"
+        | "presenceGroupsVisible"
+        | "presencePlanGuestsVisible"
+      >
     >,
   ) => Promise<void>;
 }
@@ -91,12 +99,15 @@ export interface NotificationSettingsState extends NotificationPreferenceState {
     value: boolean,
   ) => Promise<void>;
   onScheduleChange: (
-    values: Pick<
-      NotificationPreferences,
-      | "notificationHardMute"
-      | "notificationTimeZoneId"
-      | "quietHoursStartMinute"
-      | "quietHoursEndMinute"
+    values: Partial<
+      Pick<
+        NotificationPreferences,
+        | "notificationHardMute"
+        | "notificationTimeZoneId"
+        | "quietHoursStartMinute"
+        | "quietHoursEndMinute"
+        | "planReminderLeadMinutes"
+      >
     >,
   ) => Promise<void>;
 }
