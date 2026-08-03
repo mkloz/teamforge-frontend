@@ -4,6 +4,8 @@ import {
 } from "@/app/router/public-routes/auth-routes";
 import {
   downloadRoute,
+  externalInviteRoute,
+  externalInviteTokenRoute,
   landingRoute,
   legalPublicRoutes,
 } from "@/app/router/public-routes/marketing-routes";
@@ -11,6 +13,8 @@ import {
 export const publicRoutes = [
   landingRoute,
   downloadRoute,
+  externalInviteRoute,
+  externalInviteTokenRoute,
   ...legalPublicRoutes,
   authRedirectRoute,
   ...authPublicRoutes,

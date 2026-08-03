@@ -845,6 +845,14 @@ async function projectResponse(
     return detail ? scenarioJson(detail) : notFound(pathname);
   }
 
+  const ownershipTransferMatch = pathname.match(
+    /^groups\/([^/]+)\/ownership-transfer$/u,
+  );
+  if (ownershipTransferMatch && request.method === "GET") {
+    const group = world.entities.groups[ownershipTransferMatch[1]];
+    return group ? scenarioJson(null) : notFound(pathname);
+  }
+
   const planReadinessMatch = pathname.match(/^plans\/([^/]+)\/readiness$/u);
   if (planReadinessMatch && request.method === "GET" && world.viewerId) {
     const plan = world.entities.plans[planReadinessMatch[1]];

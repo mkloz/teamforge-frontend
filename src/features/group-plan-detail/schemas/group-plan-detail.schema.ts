@@ -92,6 +92,7 @@ export const groupPlanDetailSchema = z.object({
       revision: z.number().int().nonnegative(),
       materialRevision: z.number().int().positive().default(1),
       seatRecoveryEnabled: z.boolean().default(false),
+      externalInvitesEnabled: z.boolean().default(false),
       isScheduleResolved: z.boolean(),
       isLocationResolved: z.boolean(),
       nextRequiredAction: planNextRequiredActionSchema.nullable(),

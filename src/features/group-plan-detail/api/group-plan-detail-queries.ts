@@ -31,6 +31,43 @@ export const groupPlanDetailQueries = {
     });
   },
 
+  externalInvites(planId: string, enabled: boolean) {
+    return queryOptions({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.externalInvites(planId),
+      queryFn: () => GroupPlanDetailApi.listExternalInvites(planId),
+      enabled: enabled && planId.length > 0,
+      staleTime: 10_000,
+    });
+  },
+
+  planGuests(planId: string, enabled: boolean) {
+    return queryOptions({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.planGuests(planId),
+      queryFn: () => GroupPlanDetailApi.listPlanGuests(planId),
+      enabled: enabled && planId.length > 0,
+      staleTime: 10_000,
+    });
+  },
+
+  guestMembershipProposals(groupId: string, enabled: boolean) {
+    return queryOptions({
+      queryKey:
+        APP_QUERY_KEYS.groupPlanDetail.guestMembershipProposals(groupId),
+      queryFn: () => GroupPlanDetailApi.listGuestMembershipProposals(groupId),
+      enabled: enabled && groupId.length > 0,
+      staleTime: 10_000,
+    });
+  },
+
+  ownershipTransfer(groupId: string, enabled: boolean) {
+    return queryOptions({
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.ownershipTransfer(groupId),
+      queryFn: () => GroupPlanDetailApi.getOwnershipTransfer(groupId),
+      enabled: enabled && groupId.length > 0,
+      staleTime: 10_000,
+    });
+  },
+
   inviteSuggestions(groupId: string, planId: string, enabled: boolean) {
     return queryOptions({
       queryKey: APP_QUERY_KEYS.groupPlanDetail.inviteSuggestions(

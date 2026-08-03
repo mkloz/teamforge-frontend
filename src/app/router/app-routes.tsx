@@ -7,6 +7,7 @@ import {
   forgeRouteOptions,
   groupPlanDetailRouteOptions,
   homeRouteOptions,
+  planGuestRouteOptions,
   profileRouteOptions,
   restrictionDetailRouteOptions,
   safetyReportDetailRouteOptions,
@@ -54,6 +55,11 @@ const exploreRoute = createRoute({
 const groupPlanDetailRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
   ...groupPlanDetailRouteOptions,
+});
+
+const planGuestRoute = createRoute({
+  getParentRoute: () => appShellBaseRoute,
+  ...planGuestRouteOptions,
 });
 
 const activityRoute = createRoute({
@@ -110,6 +116,7 @@ const appRoutes = [
   homeRoute,
   exploreRoute,
   groupPlanDetailRoute,
+  planGuestRoute,
   activityRoute,
   profileRoute,
   userDetailRoute,

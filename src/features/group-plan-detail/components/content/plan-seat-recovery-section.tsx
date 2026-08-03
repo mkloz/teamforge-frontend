@@ -171,8 +171,8 @@ function OfferedSeatActions({
       </p>
       <div className="flex flex-wrap gap-2">
         <ActionDialog
-          confirmLabel="Accept and join group"
-          description="Accepting adds or restores you as a group member. You will gain the group chat and reporting/history access that membership provides."
+          confirmLabel="Accept plan place"
+          description="This accepts attendance for this plan only. It does not add you to the group or its chat. If you belonged to the group before, your membership will be restored instead."
           disabled={!acknowledged}
           loading={accept.isPending}
           onConfirm={() => accept.mutate()}
@@ -187,8 +187,8 @@ function OfferedSeatActions({
               type="checkbox"
             />
             <span>
-              I understand that accepting also joins or restores my group
-              membership.
+              I understand this is plan-only access unless a former membership
+              can be restored.
             </span>
           </label>
         </ActionDialog>

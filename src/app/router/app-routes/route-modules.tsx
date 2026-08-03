@@ -141,6 +141,12 @@ export const groupPlanDetailPageModule = createLazyRouteModule(() =>
   })),
 );
 
+export const planGuestPageModule = createLazyRouteModule(() =>
+  import("@/features/plan-guest/plan-guest-page").then((m) => ({
+    default: m.PlanGuestPage,
+  })),
+);
+
 export const GroupPlanDetailRouteLoading = createLazyRouteLoading(
   () =>
     import("@/features/group-plan-detail/group-plan-detail-page.loading").then(

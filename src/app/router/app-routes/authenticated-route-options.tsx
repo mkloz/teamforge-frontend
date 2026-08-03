@@ -14,6 +14,7 @@ import {
   HomeRouteLoading,
   homePageModule,
   ProfileRouteLoading,
+  planGuestPageModule,
   profilePageModule,
   restrictionDetailPageModule,
   SafetyDetailRouteLoading,
@@ -104,6 +105,20 @@ export const groupPlanDetailRouteOptions = {
     description: "The group and plan details did not load.",
     fallbackTo: "/explore",
     fallbackLabel: "Back to explore",
+  }),
+};
+
+export const planGuestRouteOptions = {
+  path: "/plans/$planId/guest" as const,
+  loader: createRouteModuleLoader(planGuestPageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  component: createLazyPageRoute(planGuestPageModule.Component),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.groupPlanDetail,
+    title: "Plan place could not load",
+    description: "Your plan-only details did not load.",
+    fallbackTo: "/home",
+    fallbackLabel: "Back to home",
   }),
 };
 

@@ -8,6 +8,7 @@ const returnTargetLabels: Record<OnboardingReturnTarget, string> = {
   "/explore": "explore",
   "/forge": "forge",
   "/home": "home",
+  "/invite": "your invitation",
   "/profile": "profile",
   "/settings": "settings",
 };

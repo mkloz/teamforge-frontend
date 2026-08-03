@@ -26,6 +26,68 @@ async function invalidateSeatRecovery(planId: string) {
 }
 
 export const GroupPlanDetailCommands = {
+  async createExternalInvite(planId: string) {
+    const result = await GroupPlanDetailApi.createExternalInvite(planId);
+    await invalidateExternalInvites(planId);
+    return result;
+  },
+
+  async revokeExternalInvite(planId: string, inviteId: string) {
+    await GroupPlanDetailApi.revokeExternalInvite(inviteId);
+    await invalidateExternalInvites(planId);
+  },
+
+  async createGuestMembershipProposal(groupId: string, planGuestId: string) {
+    const result = await GroupPlanDetailApi.createGuestMembershipProposal(
+      groupId,
+      planGuestId,
+    );
+    await invalidateGuestMembership(groupId);
+    return result;
+  },
+
+  async voteGuestMembershipProposal(
+    groupId: string,
+    proposalId: string,
+    approve: boolean,
+  ) {
+    const result = await GroupPlanDetailApi.voteGuestMembershipProposal(
+      proposalId,
+      approve,
+    );
+    await Promise.all([
+      invalidateGuestMembership(groupId),
+      invalidateGroupPlanDetail(groupId),
+    ]);
+    return result;
+  },
+
+  async createOwnershipTransfer(groupId: string, recipientId: string) {
+    const result = await GroupPlanDetailApi.createOwnershipTransfer(
+      groupId,
+      recipientId,
+    );
+    await invalidateOwnershipTransfer(groupId);
+    return result;
+  },
+
+  async respondOwnershipTransfer(
+    groupId: string,
+    transferId: string,
+    response: "accept" | "decline" | "cancel",
+  ) {
+    const result = await GroupPlanDetailApi.respondOwnershipTransfer(
+      transferId,
+      response,
+    );
+    await Promise.all([
+      invalidateOwnershipTransfer(groupId),
+      invalidateGroupPlanDetail(groupId),
+      invalidateGroupMembershipSurfaces(),
+    ]);
+    return result;
+  },
+
   async joinSeatWaitlist(planId: string) {
     const result = await GroupPlanDetailApi.joinSeatWaitlist(planId);
     await invalidateSeatRecovery(planId);
@@ -242,3 +304,21 @@ export const GroupPlanDetailCommands = {
     return result;
   },
 };
+
+function invalidateExternalInvites(planId: string) {
+  return appQueryClient.invalidateQueries({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.externalInvites(planId),
+  });
+}
+
+function invalidateGuestMembership(groupId: string) {
+  return appQueryClient.invalidateQueries({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.guestMembershipProposals(groupId),
+  });
+}
+
+function invalidateOwnershipTransfer(groupId: string) {
+  return appQueryClient.invalidateQueries({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.ownershipTransfer(groupId),
+  });
+}

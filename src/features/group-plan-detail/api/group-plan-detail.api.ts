@@ -26,6 +26,16 @@ import {
   planCommitmentSchema,
 } from "../schemas/plan-commitment.schema";
 import {
+  createdExternalInviteSchema,
+  externalInviteClaimSchema,
+  externalInviteListItemSchema,
+  externalInvitePreviewSchema,
+  guestMembershipProposalSchema,
+  ownershipTransferSchema,
+  planGuestAccessSchema,
+  planGuestSummarySchema,
+} from "../schemas/plan-participant-management.schema";
+import {
   planSeatViewerStateSchema,
   seatOfferResponseSchema,
 } from "../schemas/plan-seat-recovery.schema";
@@ -99,7 +109,7 @@ export class GroupPlanDetailApi {
     const response = await apiClient
       .post(`plans/${planId}/seat-offers/${offerId}/accept`, {
         json: {
-          acknowledgeGroupMembership: true,
+          acknowledgePlanParticipation: true,
           expectedMaterialRevision,
         },
       })
@@ -118,6 +128,153 @@ export class GroupPlanDetailApi {
       })
       .json<unknown>();
     return seatOfferResponseSchema.parse(response);
+  }
+
+  static async exchangeExternalInvite(token: string) {
+    const response = await apiClient
+      .post("external-invites/exchange", {
+        context: { auth: "none", retryOnUnauthorized: false },
+        json: { token },
+      })
+      .json<unknown>();
+    return externalInvitePreviewSchema.parse(response);
+  }
+
+  static async getExternalInvitePreview() {
+    const response = await apiClient
+      .get("external-invites/preview", {
+        context: { auth: "none", retryOnUnauthorized: false },
+      })
+      .json<unknown>();
+    return externalInvitePreviewSchema.parse(response);
+  }
+
+  static async claimExternalInvite() {
+    const response = await apiClient
+      .post("external-invites/claim")
+      .json<unknown>();
+    return externalInviteClaimSchema.parse(response);
+  }
+
+  static async suppressExternalInvite(report: boolean) {
+    await apiClient.post("external-invites/suppress", {
+      context: { auth: "none", retryOnUnauthorized: false },
+      json: { report },
+    });
+  }
+
+  static async createExternalInvite(planId: string) {
+    const response = await apiClient
+      .post(`plans/${planId}/external-invites`, {
+        json: { expiresInHours: 72 },
+      })
+      .json<unknown>();
+    return createdExternalInviteSchema.parse(response);
+  }
+
+  static async listExternalInvites(planId: string) {
+    const response = await apiClient
+      .get(`plans/${planId}/external-invites`)
+      .json<unknown>();
+    return externalInviteListItemSchema.array().parse(response);
+  }
+
+  static async revokeExternalInvite(inviteId: string) {
+    await apiClient.post(`external-invites/${inviteId}/revoke`);
+  }
+
+  static async getPlanGuestAccess(planId: string) {
+    const response = await apiClient
+      .get(`plans/${planId}/guest-access`)
+      .json<unknown>();
+    return planGuestAccessSchema.parse(response);
+  }
+
+  static async withdrawPlanGuest(planId: string) {
+    await apiClient.post(`plans/${planId}/guest-access/withdraw`);
+  }
+
+  static async listPlanGuests(planId: string) {
+    const response = await apiClient
+      .get(`plans/${planId}/guests`)
+      .json<unknown>();
+    return planGuestSummarySchema.array().parse(response);
+  }
+
+  static async listGuestMembershipProposals(groupId: string) {
+    const response = await apiClient
+      .get(`groups/${groupId}/guest-membership-proposals`)
+      .json<unknown>();
+    return guestMembershipProposalSchema.array().parse(response);
+  }
+
+  static async getGuestMembershipProposal(planId: string) {
+    const response = await apiClient
+      .get(`groups/guest-membership-proposals/for-plan/${planId}`)
+      .json<unknown>();
+    return guestMembershipProposalSchema.nullable().parse(response);
+  }
+
+  static async createGuestMembershipProposal(
+    groupId: string,
+    planGuestId: string,
+  ) {
+    const response = await apiClient
+      .post(`groups/${groupId}/guest-membership-proposals`, {
+        json: { planGuestId },
+      })
+      .json<unknown>();
+    return guestMembershipProposalSchema.parse(response);
+  }
+
+  static async respondGuestMembershipProposal(
+    proposalId: string,
+    accept: boolean,
+  ) {
+    const response = await apiClient
+      .post(`groups/guest-membership-proposals/${proposalId}/respond`, {
+        json: { accept },
+      })
+      .json<unknown>();
+    return guestMembershipProposalSchema.parse(response);
+  }
+
+  static async voteGuestMembershipProposal(
+    proposalId: string,
+    approve: boolean,
+  ) {
+    const response = await apiClient
+      .post(`groups/guest-membership-proposals/${proposalId}/vote`, {
+        json: { approve },
+      })
+      .json<unknown>();
+    return guestMembershipProposalSchema.parse(response);
+  }
+
+  static async getOwnershipTransfer(groupId: string) {
+    const response = await apiClient
+      .get(`groups/${groupId}/ownership-transfer`)
+      .json<unknown>();
+    return ownershipTransferSchema.parse(response);
+  }
+
+  static async createOwnershipTransfer(groupId: string, recipientId: string) {
+    const response = await apiClient
+      .post(`groups/${groupId}/ownership-transfer`, {
+        json: { recipientId },
+      })
+      .json<unknown>();
+    return ownershipTransferSchema.unwrap().parse(response);
+  }
+
+  static async respondOwnershipTransfer(
+    transferId: string,
+    response: "accept" | "decline" | "cancel",
+  ) {
+    const payload = await apiClient
+      .post(`groups/ownership-transfers/${transferId}/${response}`)
+      .json<unknown>();
+    return ownershipTransferSchema.unwrap().parse(payload);
   }
 
   static async inviteSuggestion(groupId: string, suggestionId: string) {

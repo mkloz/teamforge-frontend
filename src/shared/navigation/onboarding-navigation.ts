@@ -18,6 +18,7 @@ export const onboardingReturnTargets = [
   "/profile",
   "/settings",
   "/forge",
+  "/invite",
 ] as const;
 
 type OnboardingRoutePath = (typeof onboardingRoutePaths)[number];

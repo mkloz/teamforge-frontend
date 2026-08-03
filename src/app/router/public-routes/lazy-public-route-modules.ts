@@ -24,6 +24,18 @@ export const downloadPageModule = createLazyRouteModule(() =>
   })),
 );
 
+export const externalInviteTokenPageModule = createLazyRouteModule(() =>
+  import("@/features/external-invite/external-invite-page").then((m) => ({
+    default: m.ExternalInviteTokenPage,
+  })),
+);
+
+export const externalInvitePageModule = createLazyRouteModule(() =>
+  import("@/features/external-invite/external-invite-page").then((m) => ({
+    default: m.ExternalInvitePage,
+  })),
+);
+
 export const privacyPageModule = createLazyRouteModule(() =>
   import("@/features/legal/legal-page").then((m) => ({
     default: function PrivacyPageRoute() {

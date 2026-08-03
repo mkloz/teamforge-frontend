@@ -22,6 +22,7 @@ export const planSeatViewerStateSchema = z.object({
       status: seatOfferStatusSchema,
     })
     .nullable(),
+  participantScope: z.enum(["GROUP_MEMBER", "PLAN_GUEST", "NONE"]),
   seatCounts: z.record(z.string(), z.number().int().nonnegative()).nullable(),
 });
 

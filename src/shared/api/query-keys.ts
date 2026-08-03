@@ -47,6 +47,19 @@ export const APP_QUERY_KEYS = {
       ["group-plan-detail", "commitment-readiness", planId] as const,
     seatRecovery: (planId: string) =>
       ["group-plan-detail", "seat-recovery", planId] as const,
+    externalInvites: (planId: string) =>
+      ["group-plan-detail", "external-invites", planId] as const,
+    planGuests: (planId: string) =>
+      ["group-plan-detail", "plan-guests", planId] as const,
+    guestMembershipProposals: (groupId: string) =>
+      ["group-plan-detail", groupId, "guest-membership-proposals"] as const,
+    ownershipTransfer: (groupId: string) =>
+      ["group-plan-detail", groupId, "ownership-transfer"] as const,
+  },
+  planGuest: {
+    access: (planId: string) => ["plan-guest", planId, "access"] as const,
+    membershipProposal: (planId: string) =>
+      ["plan-guest", planId, "membership-proposal"] as const,
   },
   home: {
     all: ["home"] as const,

@@ -4,6 +4,8 @@ import { createElement } from "react";
 import { createLazyPageRoute } from "@/app/router/lazy-page-route";
 import {
   downloadPageModule,
+  externalInvitePageModule,
+  externalInviteTokenPageModule,
   LandingRouteLoading,
   landingPageModule,
   PrivacyRouteLoading,
@@ -44,6 +46,18 @@ export const downloadRoute = createRoute({
     fallbackTo: "/",
     fallbackLabel: "Back home",
   }),
+});
+
+export const externalInviteTokenRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/invite/$token",
+  component: createLazyPageRoute(externalInviteTokenPageModule.Component),
+});
+
+export const externalInviteRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/invite",
+  component: createLazyPageRoute(externalInvitePageModule.Component),
 });
 
 const privacyRoute = createRoute({
