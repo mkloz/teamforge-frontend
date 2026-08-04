@@ -1,16 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  AlertTriangle,
-  Gauge,
-  RefreshCw,
-  ShieldOff,
-  Workflow,
-} from "lucide-react";
-import { useState } from "react";
+import { AlertTriangle, Gauge, RefreshCw, Workflow } from "lucide-react";
 
 import { adminPilotOperationsReadinessQueryOptions } from "@/features/admin/api/admin-pilot-operations.api";
-import { AdminPilotCoverageControls } from "@/features/admin/components/admin-pilot-coverage-controls/admin-pilot-coverage-controls";
-import { coverageErrorMessage } from "@/features/admin/components/admin-pilot-coverage-controls/coverage-declaration-form";
 import { OperationalSignals } from "@/features/admin/components/admin-pilot-operations-readiness/operational-signals";
 import { ReadinessSectionHeading } from "@/features/admin/components/admin-pilot-operations-readiness/readiness-section-heading";
 import {
@@ -18,18 +9,12 @@ import {
   pilotOperationsReasonCopy,
 } from "@/features/admin/lib/pilot-operations-language";
 import type { AdminPilotOperationsReadiness as Readiness } from "@/features/admin/schemas/admin-pilot-operations.schema";
-import { getOperatorControlErrorKind } from "@/features/operator/public/operator-governance";
-import {
-  OperatorReauthenticationDialog,
-  useOperatorSessionStepUp,
-} from "@/features/operator/public/use-operator-session-step-up";
 import {
   AdminSummaryMetric,
   AdminSummaryStrip,
 } from "@/shared/components/admin/admin-visuals";
 import { Button } from "@/shared/components/ui/button";
 import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
-import { Notice } from "@/shared/components/ui/notice";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
 
@@ -45,10 +30,6 @@ const ACTION_KEYS = [
 
 export function AdminPilotOperationsReadiness() {
   const readinessQuery = useQuery(adminPilotOperationsReadinessQueryOptions());
-  const { reauthenticationDialogProps, rejectCurrentStepUp, sessionQuery } =
-    useOperatorSessionStepUp();
-  const [announcement, setAnnouncement] = useState("");
-  const [commandError, setCommandError] = useState<string | null>(null);
 
   if (readinessQuery.isPending) return <ReadinessLoading />;
   if (readinessQuery.isError) {
@@ -56,19 +37,6 @@ export function AdminPilotOperationsReadiness() {
   }
 
   const readiness = readinessQuery.data;
-  const ownsControls = Boolean(
-    sessionQuery.data?.roles.includes("OWNER_ADMIN") &&
-      !sessionQuery.data.breakGlass,
-  );
-  const commandsEnabled = ownsControls;
-  const handleCommandError = (error: unknown) => {
-    setAnnouncement("");
-    setCommandError(coverageErrorMessage(error));
-    const errorKind = getOperatorControlErrorKind(error);
-    if (errorKind === "STALE_SESSION") rejectCurrentStepUp();
-    if (errorKind === "STALE_VERSION") void readinessQuery.refetch();
-  };
-
   return (
     <div className="grid gap-8">
       <ReadinessSummary readiness={readiness} />
@@ -86,32 +54,6 @@ export function AdminPilotOperationsReadiness() {
       >
         <OperationalSignals readiness={readiness} />
       </CollapsibleSection>
-      <CoverageCommandAccess
-        ownsControls={ownsControls}
-        sessionQuery={sessionQuery}
-      />
-      {commandError ? (
-        <CoverageCommandError
-          message={commandError}
-          onDismiss={() => setCommandError(null)}
-        />
-      ) : null}
-      {announcement ? (
-        <Notice role="status" size="sm" statusIcon tone="success">
-          <p>{announcement}</p>
-        </Notice>
-      ) : null}
-      <AdminPilotCoverageControls
-        commandsEnabled={commandsEnabled}
-        coverage={readiness.coverage}
-        eligibleOperators={readiness.eligibleOperators}
-        onCommandError={handleCommandError}
-        onUpdated={(message) => {
-          setCommandError(null);
-          setAnnouncement(message);
-        }}
-      />
-      <OperatorReauthenticationDialog {...reauthenticationDialogProps} />
     </div>
   );
 }
@@ -136,8 +78,8 @@ function ReadinessSummary({ readiness }: { readiness: Readiness }) {
             Operational readiness
           </h2>
           <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
-            The server evaluates pilot gates, coverage, moderation safeguards,
-            worker health, and urgent queues together.
+            The server evaluates rollout gates, moderation safeguards, worker
+            health, and urgent queues together.
           </p>
         </div>
         <p
@@ -162,7 +104,7 @@ function ReadinessSummary({ readiness }: { readiness: Readiness }) {
           label="Current decision"
           value={ready ? "Proceed" : "Hold"}
           tone={ready ? "success" : "danger"}
-          detail={ready ? "All required checks pass" : "Pilot activity blocked"}
+          detail={ready ? "All required checks pass" : "Beta activity blocked"}
         />
         <AdminSummaryMetric
           label="Actions open"
@@ -183,10 +125,14 @@ function ReadinessSummary({ readiness }: { readiness: Readiness }) {
           detail="Across every dependency"
         />
         <AdminSummaryMetric
-          label="Coverage"
-          value={readiness.coverage.status.toLowerCase().replace("_", " ")}
-          tone={readiness.coverage.status === "ACTIVE" ? "success" : "warning"}
-          detail="Operator declaration"
+          label="Workers healthy"
+          value={`${readiness.workers.filter((worker) => worker.state === "HEALTHY").length}/${readiness.workers.length}`}
+          tone={
+            readiness.workers.every((worker) => worker.state === "HEALTHY")
+              ? "success"
+              : "warning"
+          }
+          detail="Required background services"
         />
       </AdminSummaryStrip>
 
@@ -195,7 +141,7 @@ function ReadinessSummary({ readiness }: { readiness: Readiness }) {
           <div>
             <p className="text-slate-muted text-xs">Decision rationale</p>
             <p className="mt-1 font-semibold text-ink text-xl">
-              {ready ? "Pilot can proceed" : "Hold pilot activity"}
+              {ready ? "Beta can proceed" : "Hold beta activity"}
             </p>
           </div>
           <p className="shrink-0 font-semibold text-slate-muted text-xs">
@@ -240,10 +186,10 @@ function ActionReadiness({ readiness }: { readiness: Readiness }) {
   return (
     <section aria-labelledby="pilot-actions-heading" className="pt-2">
       <ReadinessSectionHeading
-        description="Each pilot action is allowed only when its complete server-owned check passes."
+        description="Each rollout action is allowed only when its complete server-owned check passes."
         icon={Workflow}
         id="pilot-actions-heading"
-        title="Pilot actions"
+        title="Rollout actions"
       />
       <div className="grouped-surface mt-4 grid overflow-hidden rounded-2xl md:grid-cols-3">
         {ACTION_KEYS.map((key, index) => {
@@ -289,96 +235,6 @@ function ActionReadiness({ readiness }: { readiness: Readiness }) {
   );
 }
 
-function CoverageCommandAccess({
-  ownsControls,
-  sessionQuery,
-}: {
-  ownsControls: boolean;
-  sessionQuery: ReturnType<typeof useOperatorSessionStepUp>["sessionQuery"];
-}) {
-  if (sessionQuery.isPending) {
-    return (
-      <Notice
-        icon={<RefreshCw className="size-4 animate-spin" aria-hidden="true" />}
-        role="status"
-        size="lg"
-        tone="neutral"
-      >
-        <p>Checking coverage permissions</p>
-      </Notice>
-    );
-  }
-
-  if (sessionQuery.isError) {
-    return (
-      <Notice
-        action={
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => void sessionQuery.refetch()}
-          >
-            <RefreshCw className="size-4" aria-hidden="true" />
-            Try again
-          </Button>
-        }
-        role="alert"
-        size="lg"
-        statusIcon
-        tone="warning"
-      >
-        <p className="text-slate-muted text-sm">
-          Coverage permissions could not be checked. Changes remain disabled.
-        </p>
-      </Notice>
-    );
-  }
-
-  if (!ownsControls) {
-    return (
-      <Notice
-        icon={<ShieldOff className="size-4" aria-hidden="true" />}
-        size="lg"
-        tone="neutral"
-      >
-        <p>
-          <strong>Read-only access</strong>
-          <span className="mt-1 block font-normal text-slate-muted">
-            Coverage changes require a standard owner administrator session.
-          </span>
-        </p>
-      </Notice>
-    );
-  }
-
-  return null;
-}
-
-function CoverageCommandError({
-  message,
-  onDismiss,
-}: {
-  message: string;
-  onDismiss: () => void;
-}) {
-  return (
-    <Notice
-      action={
-        <Button type="button" variant="outline" size="sm" onClick={onDismiss}>
-          Dismiss
-        </Button>
-      }
-      role="alert"
-      size="lg"
-      statusIcon
-      tone="danger"
-    >
-      <p className="max-w-2xl text-destructive text-sm">{message}</p>
-    </Notice>
-  );
-}
-
 function ReadinessLoading() {
   return (
     <div
@@ -408,8 +264,8 @@ function ReadinessLoadError({ onRetry }: { onRetry: () => void }) {
         Operational readiness is unavailable
       </h2>
       <p className="mt-1 max-w-xl text-slate-muted text-sm leading-relaxed">
-        TeamForge could not load the server's readiness checks or coverage
-        options. No readiness state is shown until the server can be checked.
+        TeamForge could not load the server's readiness checks. No readiness
+        state is shown until the server can be checked.
       </p>
       <Button
         type="button"

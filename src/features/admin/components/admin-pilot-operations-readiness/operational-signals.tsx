@@ -112,7 +112,7 @@ function SafetyQueueSignals({ rows }: { rows: SignalRow[] }) {
   return (
     <section aria-labelledby="pilot-safety-queues" className="pt-2">
       <ReadinessSectionHeading
-        description="Open safety work that must be cleared before pilot operations are ready."
+        description="Open safety work that must be cleared before beta operations are ready."
         icon={Siren}
         id="pilot-safety-queues"
         title="Urgent safety queues"
@@ -133,7 +133,7 @@ function SafetyQueueSignals({ rows }: { rows: SignalRow[] }) {
           </p>
           <p className="mt-1 text-pretty text-slate-muted text-xs leading-relaxed">
             {total === 0
-              ? "No urgent work is currently holding pilot activity."
+              ? "No urgent work is currently holding beta activity."
               : "Open items are grouped by the deadline or assignment failure that triggered them."}
           </p>
         </div>

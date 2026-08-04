@@ -15,18 +15,6 @@ const READINESS_REASON_COPY = {
   PROPOSAL_ALLOCATION_DISABLED: "Proposal allocation is disabled.",
   PROPOSAL_MATERIALIZATION_DISABLED: "Group formation is disabled.",
   FIRST_STRANGER_CHAT_DISABLED: "First group conversations are disabled.",
-  COVERAGE_DECLARATION_MISSING:
-    "No operations coverage window has been declared.",
-  COVERAGE_DECLARATION_NOT_ACTIVE:
-    "The declared operations coverage window has not started.",
-  COVERAGE_DECLARATION_EXPIRED:
-    "The declared operations coverage window has ended.",
-  COVERAGE_REQUIRED_SCOPE_MISSING:
-    "The coverage declaration does not include every required responsibility.",
-  COVERAGE_PRIMARY_OPERATOR_UNAVAILABLE:
-    "The primary coverage operator is no longer available for duty.",
-  COVERAGE_BACKUP_OPERATOR_UNAVAILABLE:
-    "The backup coverage operator is no longer available for duty.",
   ACTIVE_MODERATION_CONFIGURATION_MISSING:
     "No active moderation policy configuration is available.",
   EVALUATION_APPROVAL_MISSING_OR_STALE:

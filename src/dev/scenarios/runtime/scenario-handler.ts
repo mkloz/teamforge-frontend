@@ -255,8 +255,6 @@ async function projectResponse(
         decideCases: true,
         manageAccountRights: true,
         manageConfiguration: true,
-        managePilotRetention: true,
-        manageSponsorArtifacts: true,
         manageWorkers: true,
         revealEvidence: true,
         reverseActions: true,
@@ -2206,40 +2204,6 @@ function scenarioOperationsReadiness(world: ScenarioController["world"]) {
       newProposalExposure: action,
       proposalMaterialization: action,
     },
-    coverage: {
-      backupOperator: {
-        displayName: "Scenario Backup",
-        id: "scenario-operator-backup",
-      },
-      backupOperatorReady: true,
-      declarationId: "scenario-coverage-declaration",
-      endsAt: "2026-08-01T20:00:00.000Z",
-      primaryOperator: {
-        displayName: "Quinn Hart",
-        id: "scenario-operator-account",
-      },
-      primaryOperatorReady: true,
-      rowVersion: 1,
-      scopes: [
-        "SAFETY_CASEWORK",
-        "APPEALS_AND_REVIEWS",
-        "OPERATIONS_INCIDENT_RESPONSE",
-      ],
-      startsAt: "2026-08-01T08:00:00.000Z",
-      status: "ACTIVE",
-    },
-    eligibleOperators: [
-      {
-        displayName: "Quinn Hart",
-        id: "scenario-operator-account",
-        roles: ["OWNER_ADMIN"],
-      },
-      {
-        displayName: "Scenario Backup",
-        id: "scenario-operator-backup",
-        roles: ["MODERATOR"],
-      },
-    ],
     evaluatedAt: world.clock,
     moderation: {
       activeConfigurationPresent: true,

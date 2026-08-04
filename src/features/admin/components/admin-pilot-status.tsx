@@ -57,11 +57,11 @@ function AdminPilotStatusContent({ status }: { status: AdminPilotStatusData }) {
     <div className="grid gap-8">
       <CohortSection status={status} />
       <StatusSection
-        description="Server-owned switches that control which pilot paths are open."
+        description="Server-owned switches that control which beta paths are open."
         icon={SlidersHorizontal}
         id="pilot-gates"
         rows={buildGateRows(status)}
-        title="Pilot gates"
+        title="Rollout controls"
       />
       <p className="text-slate-muted text-xs leading-relaxed">
         Evaluated <AdminDateTime value={status.evaluatedAt} />
@@ -76,10 +76,10 @@ function CohortSection({ status }: { status: AdminPilotStatusData }) {
   return (
     <section aria-labelledby="pilot-cohort-heading">
       <AdminStatusSectionHeading
-        description="The cohort currently covered by the controlled pilot."
+        description="The cohort currently included in the controlled beta."
         icon={UsersRound}
         id="pilot-cohort-heading"
-        title="Pilot cohort"
+        title="Beta cohort"
       />
 
       {cohort ? (
@@ -170,7 +170,7 @@ function CohortVisual({ status }: { status: AdminPilotStatusData }) {
           />
           <CohortMilestone
             align="center"
-            label="Pilot ends"
+            label="Beta ends"
             value={cohort.endsAt}
           />
           <CohortMilestone
