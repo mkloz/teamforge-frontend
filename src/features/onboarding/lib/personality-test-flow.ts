@@ -11,6 +11,7 @@ interface GetNextQuestionStepParams {
   isReviewMode: boolean;
   testLength: TestLength;
   totalPages: number;
+  starterCheckpointEnabled?: boolean;
 }
 
 interface GetIntermissionContinuationParams {
@@ -46,6 +47,7 @@ export function getNextQuestionStep({
   isReviewMode,
   testLength,
   totalPages,
+  starterCheckpointEnabled = false,
 }: GetNextQuestionStepParams) {
   const isFinalPage = currentPage === totalPages;
 
@@ -53,11 +55,17 @@ export function getNextQuestionStep({
     shouldShowIntermissionStep({
       currentPage,
       isReviewMode,
+      starterCheckpointEnabled,
       testLength,
       totalPages,
     })
   ) {
-    return getQuestionIntermissionStep(currentPage, isFinalPage, testLength);
+    return getQuestionIntermissionStep(
+      currentPage,
+      isFinalPage,
+      testLength,
+      starterCheckpointEnabled,
+    );
   }
 
   if (currentPage < totalPages) {
@@ -72,10 +80,12 @@ function shouldShowIntermissionStep({
   isReviewMode,
   testLength,
   totalPages,
+  starterCheckpointEnabled = false,
 }: GetNextQuestionStepParams) {
   return (
     !isReviewMode &&
-    (shouldTriggerIntermission(currentPage, testLength, totalPages) ||
+    ((starterCheckpointEnabled && testLength === 30 && currentPage === 2) ||
+      shouldTriggerIntermission(currentPage, testLength, totalPages) ||
       shouldShowFinalIntermission(currentPage, testLength, totalPages))
   );
 }
@@ -92,13 +102,17 @@ function getQuestionIntermissionStep(
   currentPage: number,
   isFinalPage: boolean,
   testLength: TestLength,
+  starterCheckpointEnabled: boolean,
 ) {
   return {
     screen: {
       id: "intermission",
-      type: isFinalPage
-        ? 99
-        : currentPage / getIntermissionInterval(testLength),
+      type:
+        starterCheckpointEnabled && testLength === 30 && currentPage === 2
+          ? 0
+          : isFinalPage
+            ? 99
+            : currentPage / getIntermissionInterval(testLength),
       nextPageIndex: currentPage + 1,
     },
     type: "intermission",

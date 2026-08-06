@@ -1,6 +1,5 @@
 import { Clapperboard, type LucideIcon, Smile } from "lucide-react";
 import {
-  type KeyboardEvent,
   lazy,
   Suspense,
   startTransition,
@@ -17,17 +16,17 @@ import {
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/shared/components/ui/tabs";
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
-import { getBrowserElementById } from "@/shared/lib/browser-environment";
-import {
-  cancelDelay,
-  scheduleAnimationFrame,
-  scheduleDelay,
-} from "@/shared/lib/browser-scheduling";
-import { cn } from "@/shared/lib/utils";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 
 const LazyChatEmojiPickerPanel = lazy(() =>
   import("../emoji-picker-panel").then((module) => ({
@@ -110,20 +109,6 @@ export function ExpressionPicker({
     setRenderEmojiPanel(false);
     setMode(nextMode);
   };
-  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
-      return;
-    }
-
-    event.preventDefault();
-    const nextMode = mode === "emoji" ? "gif" : "emoji";
-    const nextTabId = nextMode === "emoji" ? emojiTabId : gifTabId;
-
-    handleModeChange(nextMode);
-    scheduleAnimationFrame(() => {
-      getBrowserElementById(nextTabId)?.focus();
-    });
-  };
   const panelContent =
     activeMode === "emoji" ? (
       renderEmojiPanel ? (
@@ -181,42 +166,44 @@ export function ExpressionPicker({
         )}
       >
         {allowGif ? (
-          <div className="border-border/55 border-b px-1.5 py-1.5">
-            <div
-              className="grid grid-cols-2 gap-1"
-              role="tablist"
-              aria-label="Message expression picker"
-            >
-              <ExpressionTab
-                active={mode === "emoji"}
-                controlsId={emojiPanelId}
-                icon={Smile}
-                id={emojiTabId}
-                label="Emoji"
-                onKeyDown={handleTabKeyDown}
-                onClick={() => handleModeChange("emoji")}
-              />
-              <ExpressionTab
-                active={mode === "gif"}
-                controlsId={gifPanelId}
-                icon={Clapperboard}
-                id={gifTabId}
-                label="GIF"
-                onKeyDown={handleTabKeyDown}
-                onClick={() => handleModeChange("gif")}
-              />
-            </div>
-          </div>
-        ) : null}
-
-        {allowGif ? (
-          <div
-            id={activeMode === "emoji" ? emojiPanelId : gifPanelId}
-            role="tabpanel"
-            aria-labelledby={activeMode === "emoji" ? emojiTabId : gifTabId}
+          <Tabs
+            className="gap-0"
+            value={activeMode}
+            onValueChange={(value) => {
+              if (value === "emoji" || value === "gif") {
+                handleModeChange(value);
+              }
+            }}
           >
-            {panelContent}
-          </div>
+            <div className="border-border/55 border-b px-1.5 py-1.5">
+              <TabsList
+                aria-label="Message expression picker"
+                className="grid h-auto w-full grid-cols-2 gap-1 bg-transparent p-0"
+              >
+                <ExpressionTab
+                  controlsId={emojiPanelId}
+                  icon={Smile}
+                  id={emojiTabId}
+                  label="Emoji"
+                  value="emoji"
+                />
+                <ExpressionTab
+                  controlsId={gifPanelId}
+                  icon={Clapperboard}
+                  id={gifTabId}
+                  label="GIF"
+                  value="gif"
+                />
+              </TabsList>
+            </div>
+            <TabsContent
+              aria-labelledby={activeMode === "emoji" ? emojiTabId : gifTabId}
+              id={activeMode === "emoji" ? emojiPanelId : gifPanelId}
+              value={activeMode}
+            >
+              {panelContent}
+            </TabsContent>
+          </Tabs>
         ) : (
           <div id={emojiPanelId}>{panelContent}</div>
         )}
@@ -226,42 +213,28 @@ export function ExpressionPicker({
 }
 
 function ExpressionTab({
-  active,
   controlsId,
   id,
   icon: Icon,
   label,
-  onKeyDown,
-  onClick,
+  value,
 }: {
-  active: boolean;
   controlsId: string;
   id: string;
   icon: LucideIcon;
   label: string;
-  onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
-  onClick: () => void;
+  value: ExpressionMode;
 }) {
   return (
-    <button
+    <TabsTrigger
       id={id}
-      type="button"
-      role="tab"
-      aria-selected={active}
       aria-controls={controlsId}
-      tabIndex={active ? 0 : -1}
-      className={cn(
-        "inline-flex h-11 items-center justify-center gap-2 rounded-full font-black text-xs transition-colors [@media(pointer:fine)]:h-9",
-        active
-          ? "bg-primary/10 text-ink ring-1 ring-primary/20"
-          : "text-muted-foreground hover:bg-background/45 hover:text-ink",
-      )}
-      onKeyDown={onKeyDown}
-      onClick={onClick}
+      className="h-9 rounded-full font-black text-muted-foreground text-xs shadow-none hover:bg-background/45 hover:text-ink data-[state=active]:bg-primary/10 data-[state=active]:text-ink data-[state=active]:ring-1 data-[state=active]:ring-primary/20"
+      value={value}
     >
       <Icon className="size-3.5" />
       <span>{label}</span>
-    </button>
+    </TabsTrigger>
   );
 }
 

@@ -15,6 +15,7 @@ import type {
   RevealedMediaEvidence,
 } from "@/features/operator/schemas/operator.schemas";
 import { Button } from "@/shared/components/ui/button";
+import { Field, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
@@ -201,11 +202,13 @@ function EvidenceItem({
         </p>
       ) : (
         <div className="sm:main-action-grid grid gap-2 sm:items-end">
-          <label
-            htmlFor={`reveal-reason-${evidence.id}`}
-            className="grid gap-1.5 font-semibold text-ink text-sm"
-          >
-            Audit reason code
+          <Field className="gap-1.5">
+            <FieldLabel
+              htmlFor={`reveal-reason-${evidence.id}`}
+              className="font-semibold text-ink"
+            >
+              Audit reason code
+            </FieldLabel>
             <Input
               id={`reveal-reason-${evidence.id}`}
               disabled={!commandsEnabled || mutation.isPending}
@@ -216,7 +219,7 @@ function EvidenceItem({
                 setReasonCode(event.target.value.toUpperCase())
               }
             />
-          </label>
+          </Field>
           <Button
             ref={revealButtonRef}
             variant="outline"

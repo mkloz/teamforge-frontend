@@ -7,7 +7,6 @@
   Permissions-Policy: camera=(), microphone=(), payment=(), usb=(), geolocation=(self)
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   Cross-Origin-Resource-Policy: same-origin
-  Cache-Control: public, max-age=0, must-revalidate
 
 /manifest.webmanifest
   Content-Type: application/manifest+json; charset=utf-8
@@ -31,3 +30,105 @@
 
 /download/*
   Cache-Control: public, max-age=0, must-revalidate
+
+/home
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/home/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/explore
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/explore/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/groups
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/groups/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/plans
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/plans/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/activity
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/activity/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/profile
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/profile/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/users
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/users/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/settings
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/settings/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/safety
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/safety/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/forge
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/forge/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/onboarding
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/onboarding/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/admin
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/operator
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/operator/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/auth
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/auth/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/invite
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/invite/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+  Cache-Control: private, no-store
+  Referrer-Policy: no-referrer
+
+/auth/reset-password/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+  Cache-Control: private, no-store
+  Referrer-Policy: no-referrer
+
+/auth/activate/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+  Cache-Control: private, no-store
+  Referrer-Policy: no-referrer

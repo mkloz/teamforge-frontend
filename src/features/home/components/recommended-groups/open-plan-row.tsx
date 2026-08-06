@@ -1,4 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import {
+  ArrowRight,
   CalendarClock,
   Check,
   Cpu,
@@ -34,11 +36,13 @@ import {
   getExploreGroupDisplayTitle,
   isExploreGroupFull,
 } from "@/shared/lib/explore-group-presenters";
+import { getPlanCategoryPresentation } from "@/shared/lib/plan-category-presentation";
 import { cn } from "@/shared/lib/utils";
 import type {
   ExploreFeedItem,
   ExploreFormationOpening,
   ExploreGroup,
+  IntroductoryExploreGroup,
 } from "@/shared/schemas";
 import type { PlanCategory } from "@/shared/schemas/enums";
 import {
@@ -51,10 +55,59 @@ interface OpenPlanRowProps {
 }
 
 export function OpenPlanRow({ recommendation }: OpenPlanRowProps) {
-  return recommendation.type === "GROUP" ? (
-    <OpenGroupPlanRow group={recommendation.group} />
-  ) : (
-    <FormationOpeningRow opening={recommendation.opening} />
+  if (recommendation.type === "GROUP") {
+    return <OpenGroupPlanRow group={recommendation.group} />;
+  }
+
+  if (recommendation.type === "INTRODUCTORY_GROUP") {
+    return <IntroductoryGroupPlanRow group={recommendation.group} />;
+  }
+
+  return <FormationOpeningRow opening={recommendation.opening} />;
+}
+
+function IntroductoryGroupPlanRow({
+  group,
+}: {
+  group: IntroductoryExploreGroup;
+}) {
+  const category = getPlanCategoryPresentation(group.plan?.category);
+  const CategoryIcon = category.icon;
+  const primaryInterest = group.activity.interests[0]?.name ?? category.label;
+  const date = getPlanDateParts(null);
+  const location =
+    group.plan?.locationMode === "ONLINE"
+      ? "Online"
+      : group.plan?.locationMode === "IN_PERSON"
+        ? "Meeting area shared later"
+        : "Place decided together";
+
+  return (
+    <OpenPlanRowFrame
+      action={
+        <Button asChild size="sm" aria-label="Continue matching setup">
+          <Link to="/onboarding/personality">
+            <ArrowRight className="size-3.5" aria-hidden="true" />
+            <span className="sr-only sm:not-sr-only">Continue setup</span>
+          </Link>
+        </Button>
+      }
+      date={date}
+      image={
+        <div
+          className={cn(
+            "grid size-16 place-items-center rounded-xl bg-linear-to-br text-white ring-1 ring-border/55 sm:size-20 sm:rounded-2xl",
+            category.gradient,
+          )}
+        >
+          <CategoryIcon className="size-6" aria-hidden="true" />
+        </div>
+      }
+      location={location}
+      spots={`${group.activeMembersCount} of ${group.maxMembers} members`}
+      subtitle={`${group.interestFitPercentage}% shared-interest fit`}
+      title={`${primaryInterest} group`}
+    />
   );
 }
 

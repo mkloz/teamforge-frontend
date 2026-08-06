@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { SafetyApi } from "@/features/safety/api/safety.api";
 import { SAFETY_QUERY_KEYS } from "@/features/safety/api/safety-queries";
 import { Button } from "@/shared/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
@@ -98,6 +99,8 @@ function SafetyRequestForm({
         },
       )
     : null;
+  const reasonId = `${mutationKey.join("-")}-reason`;
+  const reasonErrorId = `${reasonId}-error`;
 
   return (
     <form
@@ -112,24 +115,32 @@ function SafetyRequestForm({
         </p>
       </div>
 
-      <label
-        htmlFor={`${mutationKey.join("-")}-reason`}
-        className="grid gap-2 font-semibold text-ink text-sm"
+      <Field
+        className="gap-2"
+        data-invalid={Boolean(form.formState.errors.reason)}
       >
-        {copy.fieldLabel}
+        <FieldLabel
+          htmlFor={reasonId}
+          className="font-semibold text-ink text-sm"
+        >
+          {copy.fieldLabel}
+        </FieldLabel>
         <Textarea
-          id={`${mutationKey.join("-")}-reason`}
+          id={reasonId}
           {...form.register("reason")}
           rows={5}
           maxLength={2000}
           aria-invalid={Boolean(form.formState.errors.reason)}
+          aria-describedby={
+            form.formState.errors.reason ? reasonErrorId : undefined
+          }
         />
         {form.formState.errors.reason ? (
-          <span className="font-normal text-destructive text-sm">
+          <FieldError id={reasonErrorId}>
             {form.formState.errors.reason.message}
-          </span>
+          </FieldError>
         ) : null}
-      </label>
+      </Field>
 
       {!isOnline ? (
         <p className="text-accent text-sm" role="status">
@@ -234,24 +245,34 @@ export function InformationResponseForm({
       noValidate
       onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
     >
-      <label
-        htmlFor="report-information-response"
-        className="grid gap-2 font-semibold text-ink text-sm"
+      <Field
+        className="gap-2"
+        data-invalid={Boolean(form.formState.errors.response)}
       >
-        Your response
+        <FieldLabel
+          htmlFor="report-information-response"
+          className="font-semibold text-ink text-sm"
+        >
+          Your response
+        </FieldLabel>
         <Textarea
           id="report-information-response"
           {...form.register("response")}
           rows={5}
           maxLength={2000}
           aria-invalid={Boolean(form.formState.errors.response)}
+          aria-describedby={
+            form.formState.errors.response
+              ? "report-information-response-error"
+              : undefined
+          }
         />
         {form.formState.errors.response ? (
-          <span className="font-normal text-destructive text-sm">
+          <FieldError id="report-information-response-error">
             {form.formState.errors.response.message}
-          </span>
+          </FieldError>
         ) : null}
-      </label>
+      </Field>
       {!isOnline ? (
         <p className="text-accent text-sm">
           Reconnect before sending information.

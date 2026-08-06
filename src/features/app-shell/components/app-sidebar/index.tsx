@@ -103,7 +103,11 @@ export function AppSidebar({
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              <Link {...forgeItem.navigation} aria-label="Forge my group">
+              <Link
+                {...forgeItem.navigation}
+                data-onboarding-tour="nav-forge"
+                aria-label="Forge my group"
+              >
                 {/* Active indicator */}
                 {isForgeActive && (
                   <span

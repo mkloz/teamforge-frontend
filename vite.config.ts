@@ -1,6 +1,6 @@
 /// <reference types="vitest/config" />
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
@@ -11,6 +11,14 @@ import type { ManifestOptions } from "vite-plugin-pwa";
 import { VitePWA } from "vite-plugin-pwa";
 import { changedFileLintPlugin } from "./scripts/lint/vite-changed-file-lint-plugin";
 import { scenarioRuntimePlugin } from "./scripts/vite/scenario-runtime-plugin";
+import {
+  createTeamForgeStructuredData,
+  PROTECTED_ROUTE_HEADER_PATHS,
+  PUBLIC_SEO_ROUTES,
+  type PublicSeoRoute,
+  SENSITIVE_NAVIGATION_PATTERN,
+  TOKEN_ROUTE_HEADER_PATHS,
+} from "./src/shared/lib/seo/public-seo-routes";
 import { normalizeBaseUrl } from "./src/shared/lib/url-normalization";
 
 const teamForgeManifest = {
@@ -91,13 +99,8 @@ const teamForgeManifest = {
 } satisfies Partial<ManifestOptions>;
 
 const APP_URL_PLACEHOLDER = "__TEAMFORGE_APP_URL__";
-const PUBLIC_ROUTE_LASTMOD = "2026-06-04";
-const PUBLIC_ROUTES = [
-  { changefreq: "weekly", path: "/", priority: "1.0" },
-  { changefreq: "monthly", path: "/download", priority: "0.7" },
-  { changefreq: "yearly", path: "/privacy", priority: "0.4" },
-  { changefreq: "yearly", path: "/terms", priority: "0.4" },
-] as const;
+const SEO_HEAD_START = "<!-- teamforge:seo:start -->";
+const SEO_HEAD_END = "<!-- teamforge:seo:end -->";
 const INLINE_BOOT_SCRIPT_HASH =
   "'sha256-Kz8UUC2j01g+EoplSxH6vyCDPpV2Ix8kySI75UjgdEM='";
 
@@ -298,6 +301,90 @@ function replaceAppUrlPlaceholder(source: string, appUrl: string) {
   return source.replaceAll(APP_URL_PLACEHOLDER, appUrl);
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function renderPublicSeoHead(route: PublicSeoRoute, appUrl: string) {
+  const canonicalUrl = `${appUrl}${route.path === "/" ? "/" : route.path}`;
+  const socialImage = "socialImage" in route ? route.socialImage : null;
+  const tags = [
+    `<link rel="canonical" href="${escapeHtml(canonicalUrl)}" />`,
+    `<title>${escapeHtml(route.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(route.description)}" />`,
+    '<meta name="robots" content="index, follow" />',
+    '<meta property="og:type" content="website" />',
+    '<meta property="og:site_name" content="TeamForge" />',
+    `<meta property="og:url" content="${escapeHtml(canonicalUrl)}" />`,
+    `<meta property="og:title" content="${escapeHtml(route.title)}" />`,
+    `<meta property="og:description" content="${escapeHtml(route.description)}" />`,
+    `<meta name="twitter:card" content="${socialImage ? "summary_large_image" : "summary"}" />`,
+    `<meta name="twitter:title" content="${escapeHtml(route.title)}" />`,
+    `<meta name="twitter:description" content="${escapeHtml(route.description)}" />`,
+  ];
+
+  if (socialImage) {
+    const imageUrl = `${appUrl}${socialImage.path}`;
+    tags.push(
+      `<meta property="og:image" content="${escapeHtml(imageUrl)}" />`,
+      `<meta property="og:image:alt" content="${escapeHtml(socialImage.alt)}" />`,
+      '<meta property="og:image:type" content="image/png" />',
+      `<meta property="og:image:width" content="${socialImage.width}" />`,
+      `<meta property="og:image:height" content="${socialImage.height}" />`,
+      `<meta name="twitter:image" content="${escapeHtml(imageUrl)}" />`,
+    );
+  }
+
+  if (route.path === "/") {
+    const structuredData = createTeamForgeStructuredData({
+      homepageUrl: canonicalUrl,
+      logoUrl: `${appUrl}/icons/pwa-512x512.png`,
+    });
+    tags.push(
+      `<script type="application/ld+json" data-teamforge-json-ld="public-site">${JSON.stringify(structuredData).replaceAll("<", "\\u003c")}</script>`,
+    );
+  }
+
+  return `${SEO_HEAD_START}\n    ${tags.join("\n    ")}\n    ${SEO_HEAD_END}`;
+}
+
+function replacePublicSeoHead(
+  html: string,
+  route: PublicSeoRoute,
+  appUrl: string,
+) {
+  const start = html.indexOf(SEO_HEAD_START);
+  const end = html.indexOf(SEO_HEAD_END, start);
+
+  if (start < 0 || end < 0) {
+    throw new Error(
+      "The TeamForge SEO head markers are missing from index.html.",
+    );
+  }
+
+  return `${html.slice(0, start)}${renderPublicSeoHead(route, appUrl)}${html.slice(end + SEO_HEAD_END.length)}`;
+}
+
+async function writePublicRouteHtmlFiles(outDir: string, appUrl: string) {
+  const baseHtml = await readFile(path.join(outDir, "index.html"), "utf8");
+
+  await Promise.all(
+    PUBLIC_SEO_ROUTES.map(async (route) => {
+      const routeHtml = replacePublicSeoHead(baseHtml, route, appUrl);
+      const outputPath =
+        route.path === "/"
+          ? path.join(outDir, "index.html")
+          : path.join(outDir, `${route.path.slice(1)}.html`);
+
+      await writeFile(outputPath, routeHtml);
+    }),
+  );
+}
+
 function getUrlOrigin(value: string) {
   return new URL(value).origin;
 }
@@ -394,6 +481,20 @@ function renderHeadersFile({
   sentryDsn: string | null;
 }) {
   const csp = renderContentSecurityPolicy({ apiUrl, mediaBaseUrl, sentryDsn });
+  const tokenRouteSet = new Set<string>(TOKEN_ROUTE_HEADER_PATHS);
+  const crawlerContainedRoutePaths = [
+    ...new Set([...PROTECTED_ROUTE_HEADER_PATHS, ...TOKEN_ROUTE_HEADER_PATHS]),
+  ];
+  const protectedRouteHeaders = crawlerContainedRoutePaths
+    .map(
+      (routePath) => `${routePath}
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex${
+    tokenRouteSet.has(routePath)
+      ? "\n  Cache-Control: private, no-store\n  Referrer-Policy: no-referrer"
+      : ""
+  }`,
+    )
+    .join("\n\n");
 
   return `/*
   Content-Security-Policy: ${csp};
@@ -404,7 +505,6 @@ function renderHeadersFile({
   Permissions-Policy: camera=(), microphone=(), payment=(), usb=(), geolocation=(self)
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   Cross-Origin-Resource-Policy: same-origin
-  Cache-Control: public, max-age=0, must-revalidate
 
 /manifest.webmanifest
   Content-Type: application/manifest+json; charset=utf-8
@@ -428,6 +528,8 @@ function renderHeadersFile({
 
 /download/*
   Cache-Control: public, max-age=0, must-revalidate
+
+${protectedRouteHeaders}
 `;
 }
 
@@ -435,17 +537,27 @@ function renderRobotsTxt(appUrl: string) {
   return `User-agent: *
 Allow: /
 
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
 Sitemap: ${appUrl}/sitemap.xml
 `;
 }
 
 function renderSitemapXml(appUrl: string) {
-  const entries = PUBLIC_ROUTES.map(
+  const entries = PUBLIC_SEO_ROUTES.map(
     (route) => `  <url>
     <loc>${appUrl}${route.path === "/" ? "/" : route.path}</loc>
-    <lastmod>${PUBLIC_ROUTE_LASTMOD}</lastmod>
-    <changefreq>${route.changefreq}</changefreq>
-    <priority>${route.priority}</priority>
+    <lastmod>${route.lastModified}</lastmod>
   </url>`,
   ).join("\n");
 
@@ -453,6 +565,28 @@ function renderSitemapXml(appUrl: string) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries}
 </urlset>
+`;
+}
+
+function renderLlmsTxt(appUrl: string) {
+  return `# TeamForge
+
+> TeamForge forms small, compatible groups around shared real-world activities using personality, interests, and social context.
+
+TeamForge is an installable web application for people who want help finding a small group and an activity plan. Public information is intentionally separated from member, community, message, profile, safety, and administration data.
+
+## Public pages
+
+- [TeamForge](${appUrl}/): Product overview, how group formation works, and privacy controls.
+- [Install TeamForge](${appUrl}/download): Installation instructions for iPhone, iPad, Android, and desktop browsers.
+- [Privacy Policy](${appUrl}/privacy): How TeamForge handles and protects personal data.
+- [Terms of Service](${appUrl}/terms): Rules and requirements for using TeamForge.
+
+## Access boundaries
+
+- Authenticated application routes are private and are not part of the public discovery corpus.
+- Invitations, account activation, and password-reset URLs may contain secrets and must not be collected or shared.
+- Do not infer facts about members, groups, plans, messages, or moderation activity from the public pages.
 `;
 }
 
@@ -487,7 +621,11 @@ function teamForgePublicHostPlugin({
       server.middlewares.use((request, response, next) => {
         const pathname = request.url?.split("?")[0];
 
-        if (pathname !== "/robots.txt" && pathname !== "/sitemap.xml") {
+        if (
+          pathname !== "/robots.txt" &&
+          pathname !== "/sitemap.xml" &&
+          pathname !== "/llms.txt"
+        ) {
           next();
           return;
         }
@@ -507,6 +645,12 @@ function teamForgePublicHostPlugin({
           return;
         }
 
+        if (pathname === "/llms.txt") {
+          response.setHeader("Content-Type", "text/plain; charset=utf-8");
+          response.end(renderLlmsTxt(requestAppUrl));
+          return;
+        }
+
         response.setHeader("Content-Type", "application/xml; charset=utf-8");
         response.end(renderSitemapXml(requestAppUrl));
       });
@@ -520,12 +664,14 @@ function teamForgePublicHostPlugin({
 
       await mkdir(outDir, { recursive: true });
       await Promise.all([
+        writePublicRouteHtmlFiles(outDir, appUrl),
         writeFile(
           path.join(outDir, "_headers"),
           renderHeadersFile({ apiUrl, mediaBaseUrl, sentryDsn }),
         ),
         writeFile(path.join(outDir, "robots.txt"), renderRobotsTxt(appUrl)),
         writeFile(path.join(outDir, "sitemap.xml"), renderSitemapXml(appUrl)),
+        writeFile(path.join(outDir, "llms.txt"), renderLlmsTxt(appUrl)),
       ]);
     },
   };
@@ -741,7 +887,11 @@ export default defineConfig(({ command, mode }) => {
           ],
           importScripts: ["sw-push.js"],
           navigateFallback: "/index.html",
-          navigateFallbackDenylist: [/^\/api\//, /^\/admin(?:\/|$)/],
+          navigateFallbackDenylist: [
+            /^\/api(?:\/|$)/,
+            /^\/admin(?:\/|$)/,
+            SENSITIVE_NAVIGATION_PATTERN,
+          ],
           runtimeCaching: [
             {
               urlPattern: ({ request, url }) =>
@@ -793,6 +943,9 @@ export default defineConfig(({ command, mode }) => {
         ],
       },
     },
+    optimizeDeps: {
+      include: ["@hookform/resolvers/zod", "react-hook-form"],
+    },
     test: {
       environment: "node",
       setupFiles: ["./test/setup/vitest.setup.ts"],
@@ -818,6 +971,7 @@ export default defineConfig(({ command, mode }) => {
         "@": path.resolve(__dirname, "./src"),
         "@test": path.resolve(__dirname, "./test"),
       },
+      dedupe: ["react", "react-dom"],
     },
   };
 });

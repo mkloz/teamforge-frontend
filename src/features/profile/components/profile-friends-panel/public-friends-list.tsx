@@ -1,5 +1,5 @@
-import { Loader2 } from "lucide-react";
 import { useProfilePublicFriends } from "@/features/profile/hooks/use-profile-public-friends";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { FriendCard } from "./friend-card";
 import { FriendsListEmptyState } from "./friendship-list-helpers";
 
@@ -17,10 +17,7 @@ export function PublicFriendsList({ userId }: PublicFriendsListProps) {
         role="status"
         aria-live="polite"
       >
-        <Loader2
-          aria-hidden="true"
-          className="size-6 animate-spin text-muted-foreground motion-reduce:animate-none"
-        />
+        <Spinner aria-hidden="true" className="size-6 text-muted-foreground" />
         <span className="sr-only">Loading friends.</span>
       </div>
     );

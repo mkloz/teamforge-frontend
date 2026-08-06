@@ -3,7 +3,7 @@ import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { GroupedMenuItem } from "@/shared/components/ui/grouped-menu";
 import { IconTile } from "@/shared/components/ui/icon-tile";
-import { StatusPill } from "@/shared/components/ui/status-pill";
+import { getUserSignInMethods } from "@/shared/lib/user-sign-in-methods";
 import type { User } from "@/shared/schemas";
 
 interface PasswordRecoverySectionProps {
@@ -15,7 +15,7 @@ interface PasswordRecoverySectionProps {
 
 interface PasswordRecoveryViewState {
   description: string;
-  isEmailAccount: boolean;
+  hasPassword: boolean;
   resetButtonDisabled: boolean;
   resetButtonLabel: string;
   resetConfirmLabel: string;
@@ -24,10 +24,10 @@ interface PasswordRecoveryViewState {
 
 type PasswordResetProgress = "idle" | "pending";
 
-const GOOGLE_PASSWORD_RECOVERY_DESCRIPTION =
-  "Google manages password recovery for this account.";
 const EMAIL_PASSWORD_RECOVERY_DESCRIPTION =
   "Get a password reset link by email.";
+const PASSWORD_SETUP_DESCRIPTION =
+  "Add a password so you can also sign in with your email.";
 
 const PASSWORD_RESET_BUTTON_LABELS = {
   idle: "Send reset link",
@@ -36,6 +36,16 @@ const PASSWORD_RESET_BUTTON_LABELS = {
 
 const PASSWORD_RESET_CONFIRM_LABELS = {
   idle: "Send reset link",
+  pending: "Sending...",
+} as const satisfies Record<PasswordResetProgress, string>;
+
+const PASSWORD_SETUP_BUTTON_LABELS = {
+  idle: "Set up password",
+  pending: "Sending link...",
+} as const satisfies Record<PasswordResetProgress, string>;
+
+const PASSWORD_SETUP_CONFIRM_LABELS = {
+  idle: "Send setup link",
   pending: "Sending...",
 } as const satisfies Record<PasswordResetProgress, string>;
 
@@ -56,44 +66,18 @@ export function PasswordRecoverySection({
       <div className="flex min-h-16 flex-wrap items-center gap-3 px-3 py-3 sm:flex-nowrap sm:px-5">
         <IconTile icon={KeyRound} shape="circle" size="lg" tone="neutral" />
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-ink text-sm">Password recovery</p>
+          <p className="font-semibold text-ink text-sm">Email and password</p>
           <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
             {viewState.description}
           </p>
         </div>
-        <PasswordRecoveryAction
+        <PasswordResetAction
           isSendingPasswordResetLink={isSendingPasswordResetLink}
           onSendPasswordResetLink={onSendPasswordResetLink}
           viewState={viewState}
         />
       </div>
     </GroupedMenuItem>
-  );
-}
-
-function PasswordRecoveryAction({
-  isSendingPasswordResetLink,
-  onSendPasswordResetLink,
-  viewState,
-}: {
-  isSendingPasswordResetLink: boolean;
-  onSendPasswordResetLink: () => Promise<unknown>;
-  viewState: PasswordRecoveryViewState;
-}) {
-  if (!viewState.isEmailAccount) {
-    return (
-      <StatusPill size="xs" surface="soft" tone="neutral">
-        Managed by Google
-      </StatusPill>
-    );
-  }
-
-  return (
-    <PasswordResetAction
-      isSendingPasswordResetLink={isSendingPasswordResetLink}
-      onSendPasswordResetLink={onSendPasswordResetLink}
-      viewState={viewState}
-    />
   );
 }
 
@@ -112,13 +96,17 @@ function PasswordResetAction({
       confirmLabel={viewState.resetConfirmLabel}
       description={viewState.resetDescription}
       details={[
-        "Your current password stays active until you change it.",
+        viewState.hasPassword
+          ? "Your current password stays active until you change it."
+          : "The secure link lets you choose your first password.",
         "You can ignore the email if you did not mean to request it.",
       ]}
       disabled={viewState.resetButtonDisabled}
       loading={isSendingPasswordResetLink}
       onConfirm={onSendPasswordResetLink}
-      title="Send a reset link?"
+      title={
+        viewState.hasPassword ? "Send a reset link?" : "Set up a password?"
+      }
       tone="info"
       trigger={
         <Button
@@ -145,16 +133,21 @@ function getPasswordRecoveryViewState({
   "currentUser" | "isOnline" | "isSendingPasswordResetLink"
 >): PasswordRecoveryViewState {
   const progress = getPasswordResetProgress(isSendingPasswordResetLink);
+  const userHasPassword = hasPassword(currentUser);
 
   return {
     description: getPasswordRecoveryDescription(currentUser),
-    isEmailAccount: isEmailAccount(currentUser),
+    hasPassword: userHasPassword,
     resetButtonDisabled: isPasswordResetDisabled({
       isOnline,
       isSendingPasswordResetLink,
     }),
-    resetButtonLabel: PASSWORD_RESET_BUTTON_LABELS[progress],
-    resetConfirmLabel: PASSWORD_RESET_CONFIRM_LABELS[progress],
+    resetButtonLabel: userHasPassword
+      ? PASSWORD_RESET_BUTTON_LABELS[progress]
+      : PASSWORD_SETUP_BUTTON_LABELS[progress],
+    resetConfirmLabel: userHasPassword
+      ? PASSWORD_RESET_CONFIRM_LABELS[progress]
+      : PASSWORD_SETUP_CONFIRM_LABELS[progress],
     resetDescription: getPasswordResetDescription(currentUser),
   };
 }
@@ -166,17 +159,13 @@ function getPasswordResetProgress(
 }
 
 function getPasswordRecoveryDescription(currentUser: User | undefined) {
-  return isGoogleAccount(currentUser)
-    ? GOOGLE_PASSWORD_RECOVERY_DESCRIPTION
-    : EMAIL_PASSWORD_RECOVERY_DESCRIPTION;
+  return hasPassword(currentUser)
+    ? EMAIL_PASSWORD_RECOVERY_DESCRIPTION
+    : PASSWORD_SETUP_DESCRIPTION;
 }
 
-function isGoogleAccount(currentUser: User | undefined) {
-  return currentUser?.authProvider === "GOOGLE";
-}
-
-function isEmailAccount(currentUser: User | undefined) {
-  return currentUser?.authProvider === "EMAIL";
+function hasPassword(currentUser: User | undefined) {
+  return getUserSignInMethods(currentUser).password;
 }
 
 function isPasswordResetDisabled({
@@ -190,5 +179,9 @@ function isPasswordResetDisabled({
 }
 
 function getPasswordResetDescription(currentUser: User | undefined) {
-  return `We'll email a password reset link to ${currentUser?.email ?? ""}.`;
+  const linkPurpose = hasPassword(currentUser)
+    ? "password reset"
+    : "password setup";
+
+  return `We'll email a secure ${linkPurpose} link to ${currentUser?.email ?? ""}.`;
 }

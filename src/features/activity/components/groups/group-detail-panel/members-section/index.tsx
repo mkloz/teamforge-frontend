@@ -1,4 +1,4 @@
-import { Clock3, LoaderCircle, Plus, Trash2, UserPlus } from "lucide-react";
+import { Clock3, Plus, Trash2, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import type {
   ActivityParticipant,
@@ -6,6 +6,7 @@ import type {
   MemberRole,
 } from "@/features/activity/lib/activity-contract";
 import { Avatar } from "@/shared/components/common/avatar";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { cn } from "@/shared/lib/utils";
 import type { Invite } from "@/shared/schemas";
 
@@ -424,10 +425,7 @@ function PendingInvitationSlot({
             title={`Cancel invitation for ${invite.invitee.name}`}
           >
             {cancelling ? (
-              <LoaderCircle
-                className="size-3.5 animate-spin"
-                aria-hidden="true"
-              />
+              <Spinner className="size-3.5" aria-hidden="true" />
             ) : (
               <Trash2 className="size-3.5" aria-hidden="true" />
             )}

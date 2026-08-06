@@ -38,7 +38,7 @@ function ProfileSocialBadge({
         <button
           type="button"
           onClick={() => onOpenFriends?.(badge.tab)}
-          className="group min-h-11 min-w-11 rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white [@media(pointer:fine)]:min-h-0 [@media(pointer:fine)]:min-w-0"
+          className="group rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           <ProfileSignal
             accent={badge.accent}

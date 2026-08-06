@@ -2,6 +2,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { type ComponentPropsWithoutRef, isValidElement, type Ref } from "react";
 import { cn } from "@/shared/lib/utils";
 import { type ButtonVariants, buttonVariants } from "./button-variants";
+import { Spinner } from "./spinner";
 
 export interface ButtonV2Props
   extends Omit<ComponentPropsWithoutRef<"button">, "disabled">,
@@ -169,12 +170,9 @@ function Button({
           {/* Layer 2: Loading Overlay */}
           {loading && (
             <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[inherit]">
-              <span
+              <Spinner
                 aria-hidden="true"
-                className={cn(
-                  "block animate-spin rounded-full border-2 border-current border-t-transparent",
-                  getLoaderSizeClass(size),
-                )}
+                className={getLoaderSizeClass(size)}
               />
               <span className="sr-only">Loading...</span>
             </div>

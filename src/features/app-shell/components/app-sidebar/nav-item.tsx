@@ -70,6 +70,7 @@ export function NavItem({ item, pathname }: NavItemProps) {
       <TooltipTrigger asChild>
         <Link
           {...item.navigation}
+          data-onboarding-tour={`nav-${item.id}`}
           aria-current={active ? "page" : undefined}
           aria-label={ariaLabel}
           className={getNavLinkClassName(active)}

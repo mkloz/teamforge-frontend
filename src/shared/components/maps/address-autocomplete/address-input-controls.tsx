@@ -5,9 +5,10 @@ import {
   m,
   useReducedMotion,
 } from "framer-motion";
-import { Loader2, LocateFixed, X } from "lucide-react";
+import { LocateFixed, X } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { cn } from "@/shared/lib/utils";
 
 interface AddressInputControlsProps {
@@ -107,12 +108,7 @@ function BusyIndicator({ showBusyIndicator }: { showBusyIndicator: boolean }) {
     return null;
   }
 
-  return (
-    <Loader2
-      className="size-3.5 animate-spin text-slate-muted"
-      aria-hidden="true"
-    />
-  );
+  return <Spinner className="size-3.5 text-slate-muted" aria-hidden="true" />;
 }
 
 function ClearLocationButton({

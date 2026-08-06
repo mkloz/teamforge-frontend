@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { HTTPError } from "ky";
 import { RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import {
   OPERATOR_QUERY_KEYS,
   operatorQueries,
@@ -18,6 +18,11 @@ import type {
   OperatorAssessmentHistory,
 } from "@/features/operator/schemas/operator.schemas";
 import { Button } from "@/shared/components/ui/button";
+import { Field, FieldLabel } from "@/shared/components/ui/field";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/shared/components/ui/native-select";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 const OUTCOME_LABELS: Record<OperatorAssessment["operatorOutcome"], string> = {
@@ -243,21 +248,26 @@ function AssessmentSelect({
   onChange: (value: string) => void;
   value: string;
 }) {
+  const id = useId();
+
   return (
-    <label className="grid gap-1.5 font-semibold text-ink text-xs">
-      {label}
-      <select
+    <Field className="gap-1.5">
+      <FieldLabel htmlFor={id} className="font-semibold text-ink text-xs">
+        {label}
+      </FieldLabel>
+      <NativeSelect
+        id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-11 w-full rounded-xl border border-border bg-input px-3 text-ink text-sm"
+        className="rounded-xl"
       >
         {assessments.map((assessment) => (
-          <option key={assessment.id} value={assessment.id}>
+          <NativeSelectOption key={assessment.id} value={assessment.id}>
             {formatOperatorDate(assessment.createdAt)}
-          </option>
+          </NativeSelectOption>
         ))}
-      </select>
-    </label>
+      </NativeSelect>
+    </Field>
   );
 }
 

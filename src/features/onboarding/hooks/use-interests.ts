@@ -4,6 +4,7 @@ import { onboardingInterestTreeQueryOptions } from "@/features/onboarding/api/on
 import type { InterestsScreen } from "@/features/onboarding/data/interests-data";
 import {
   MAX_INTERESTS,
+  MIN_INTEREST_CATEGORIES,
   MIN_INTERESTS,
 } from "@/features/onboarding/data/interests-data";
 import { buildLeafInterestMap } from "@/features/onboarding/lib/interest-catalog";
@@ -13,6 +14,7 @@ import {
 } from "@/features/onboarding/lib/interest-selection-sync";
 import { useInterestsStore } from "@/features/onboarding/store/interests-store";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import { useOnboardingProductStateQuery } from "@/shared/api/onboarding-product-state-query";
 import type { PersonalityType } from "@/shared/schemas/enums";
 import { useInterestBrowserExpansion } from "./use-interest-browser-expansion";
 import { useInterestSuggestions } from "./use-interest-suggestions";
@@ -33,6 +35,7 @@ export function useInterests({
 }: UseInterestsOptions) {
   const store = useInterestsStore();
   const { data: currentUser } = useCurrentUserQuery();
+  const { data: productState } = useOnboardingProductStateQuery();
 
   const {
     data: categories = [],
@@ -91,7 +94,28 @@ export function useInterests({
     selectedIds: store.selectedIds,
   });
 
-  const canContinue = store.selectedIds.length >= MIN_INTERESTS;
+  const selectedCategoryCount = useMemo(() => {
+    const selectedIds = new Set(store.selectedIds);
+
+    return categories.filter((category) =>
+      (category.children ?? []).some((subcategory) =>
+        (subcategory.children ?? []).some((interest) =>
+          selectedIds.has(interest.id),
+        ),
+      ),
+    ).length;
+  }, [categories, store.selectedIds]);
+  const minimumInterestCount =
+    productState?.requirements.minimumInterestCount ?? MIN_INTERESTS;
+  const minimumInterestCategoryCount =
+    productState?.requirements.minimumInterestCategoryCount ??
+    MIN_INTEREST_CATEGORIES;
+  const canContinue = canContinueInterests(
+    store.selectedIds.length,
+    selectedCategoryCount,
+    minimumInterestCount,
+    minimumInterestCategoryCount,
+  );
   const isAtMax = store.selectedIds.length >= MAX_INTERESTS;
   const { finalize, isOnline, isSaving, saveErrorMessage } = useSaveInterests({
     blockedSaveMessage,
@@ -116,6 +140,9 @@ export function useInterests({
     expandedSubcategories: browserExpansion.expandedSubcategories,
     selectedIds: suggestions.selectedSet,
     selectedCount: store.selectedIds.length,
+    selectedCategoryCount,
+    minimumInterestCount,
+    minimumInterestCategoryCount,
     canContinue,
     isAtMax,
     suggestedTags: suggestions.suggestedTags,
@@ -143,4 +170,16 @@ export function useInterests({
     isPending: browserExpansion.isPending,
     reset: store.reset,
   };
+}
+
+export function canContinueInterests(
+  selectedCount: number,
+  selectedCategoryCount: number,
+  minimumInterestCount = MIN_INTERESTS,
+  minimumInterestCategoryCount = MIN_INTEREST_CATEGORIES,
+) {
+  return (
+    selectedCount >= minimumInterestCount &&
+    selectedCategoryCount >= minimumInterestCategoryCount
+  );
 }

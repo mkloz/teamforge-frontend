@@ -5,6 +5,7 @@ import type { GoogleAuthIntent } from "@/features/auth/api/auth.types";
 import { AuthCommands } from "@/features/auth/api/auth-commands";
 import type { GoogleAuthPhase } from "@/features/auth/lib/google-auth-flow";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -115,6 +116,13 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
         intent,
         requestId: result.requestId,
       });
+      if (intent === "register" && !result.data.isNewUser) {
+        showAppSuccessToast("Welcome back.", {
+          description:
+            "We found your existing TeamForge account and signed you in with Google.",
+          id: "auth-google-existing-account",
+        });
+      }
       await runOptionalSuccessCallback(onSuccess);
       setLoading(false);
     } catch (error) {

@@ -1,5 +1,6 @@
 import {
   Bell,
+  Compass,
   Eye,
   LockKeyhole,
   Shield,
@@ -7,6 +8,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import { useOnboardingProductStateQuery } from "@/shared/api/onboarding-product-state-query";
 import {
   GroupedMenuList,
   GroupedMenuSection,
@@ -25,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { buildAdminNavigation } from "@/shared/navigation/admin-navigation";
+import { buildOnboardingPracticeNavigation } from "@/shared/navigation/onboarding-practice-navigation";
 import { buildSafetyNavigation } from "@/shared/navigation/safety-navigation";
 import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
@@ -41,6 +44,9 @@ interface UserMenuProps {
 
 export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
   const { data: currentUser } = useCurrentUserQuery();
+  const { data: productState } = useOnboardingProductStateQuery();
+  const practiceAllowed =
+    productState?.capabilities.USE_ONBOARDING_PRACTICE.allowed === true;
 
   return (
     <Sheet>
@@ -114,6 +120,19 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
                 />
               </GroupedMenuList>
             </GroupedMenuSection>
+
+            {practiceAllowed ? (
+              <GroupedMenuSection label="Help and learning">
+                <GroupedMenuList>
+                  <MenuLinkItem
+                    description="Replay three short contextual hints"
+                    icon={Compass}
+                    label="Replay navigation hints"
+                    navigation={buildOnboardingPracticeNavigation("/home")}
+                  />
+                </GroupedMenuList>
+              </GroupedMenuSection>
+            ) : null}
 
             {currentUser?.role === "ADMIN" ? (
               <GroupedMenuSection label="TeamForge management">

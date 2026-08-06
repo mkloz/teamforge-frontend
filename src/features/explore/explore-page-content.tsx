@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 interface ExplorePageContentProps {
+  educationNudge?: ReactNode;
   feed: ReactNode;
   forgeCta: ReactNode;
   quickFilters: ReactNode;
@@ -8,6 +9,7 @@ interface ExplorePageContentProps {
 }
 
 export function ExplorePageContent({
+  educationNudge,
   feed,
   forgeCta,
   quickFilters,
@@ -26,7 +28,11 @@ export function ExplorePageContent({
           </p>
         </header>
 
-        <div className="mt-7 md:mt-9">{searchHeader}</div>
+        {educationNudge ? <div className="mt-6">{educationNudge}</div> : null}
+
+        <div className="mt-7 md:mt-9" data-onboarding-tour="explore-discovery">
+          {searchHeader}
+        </div>
 
         <div className="mb-7 border-border/65 border-b pb-4 md:mb-9">
           {quickFilters}

@@ -1,4 +1,4 @@
-import { Check, Loader2, type LucideIcon, Mail } from "lucide-react";
+import { Check, type LucideIcon, Mail } from "lucide-react";
 import { type MutableRefObject, type PointerEvent, useRef } from "react";
 import {
   type AvatarBadgeTone,
@@ -6,6 +6,7 @@ import {
 } from "@/shared/components/common/avatar-with-badge";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile, type IconTileTone } from "@/shared/components/ui/icon-tile";
+import { Spinner } from "@/shared/components/ui/spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -200,7 +201,7 @@ function NotificationPendingState({ isPending }: { isPending: boolean }) {
   return (
     <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
       <span className="inline-flex items-center gap-1 font-semibold text-forge-teal text-xs">
-        <Loader2 className="size-3 shrink-0 animate-spin" aria-hidden="true" />
+        <Spinner className="size-3 shrink-0" aria-hidden="true" />
         Opening
       </span>
     </span>

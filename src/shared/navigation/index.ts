@@ -5,6 +5,7 @@ export * from "./forge-navigation";
 export * from "./group-navigation";
 export * from "./home-navigation";
 export * from "./onboarding-navigation";
+export * from "./onboarding-practice-navigation";
 export * from "./profile-navigation";
 export * from "./safety-navigation";
 export * from "./search-record";

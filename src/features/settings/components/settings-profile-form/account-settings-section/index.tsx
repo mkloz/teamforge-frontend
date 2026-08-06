@@ -33,6 +33,11 @@ export function AccountSettingsSection({
 
     form.resetField("age", { defaultValue: savedValues.age });
     form.resetField("gender", { defaultValue: savedValues.gender });
+    form.setValue("gender", savedValues.gender, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
     form.resetField("city", { defaultValue: savedValues.city });
     form.resetField("locationLat", {
       defaultValue: savedValues.locationLat,

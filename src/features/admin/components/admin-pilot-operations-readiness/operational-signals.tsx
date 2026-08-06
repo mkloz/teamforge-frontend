@@ -4,6 +4,14 @@ import type { ReactNode } from "react";
 import { ReadinessSectionHeading } from "@/features/admin/components/admin-pilot-operations-readiness/readiness-section-heading";
 import { PILOT_OPERATIONS_WORKER_LABELS } from "@/features/admin/lib/pilot-operations-language";
 import type { AdminPilotOperationsReadiness as Readiness } from "@/features/admin/schemas/admin-pilot-operations.schema";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
 import { cn } from "@/shared/lib/utils";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
@@ -185,69 +193,71 @@ function WorkerSignals({ workers }: { workers: Readiness["workers"] }) {
       />
 
       <div className="mt-4 overflow-hidden rounded-2xl bg-background">
-        <div className="hidden grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(4rem,0.5fr))_minmax(8rem,1fr)] gap-4 bg-card px-5 py-3 text-slate-muted text-xs sm:grid">
-          <span>Worker</span>
-          <span>Queue</span>
-          <span>Failed</span>
-          <span>Dead</span>
-          <span>Heartbeat</span>
-        </div>
-        <div className="grouped-surface grid">
-          {workers.map((worker) => (
-            <div
-              key={worker.kind}
-              className="grid gap-4 bg-card px-5 py-4 sm:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(4rem,0.5fr))_minmax(8rem,1fr)] sm:items-center"
-            >
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={cn(
-                      "size-2 shrink-0 rounded-full",
-                      worker.state === "HEALTHY"
-                        ? "bg-primary"
-                        : worker.state === "PAUSED"
-                          ? "bg-accent"
-                          : "bg-danger",
-                    )}
-                    aria-hidden="true"
-                  />
-                  <h3 className="truncate font-semibold text-ink text-sm">
-                    {PILOT_OPERATIONS_WORKER_LABELS[worker.kind]}
-                  </h3>
-                </div>
-                <p className="mt-1 text-slate-muted text-xs">
-                  {workerState(worker.state)}
-                  {!worker.enabled
-                    ? " · disabled"
-                    : worker.paused
-                      ? " · paused"
-                      : ""}
-                </p>
-              </div>
+        <Table>
+          <TableHeader className="hidden bg-card text-slate-muted text-xs sm:table-header-group">
+            <TableRow className="hover:bg-card">
+              <TableHead className="w-[32%] px-5">Worker</TableHead>
+              <TableHead>Queue</TableHead>
+              <TableHead>Failed</TableHead>
+              <TableHead>Dead</TableHead>
+              <TableHead className="w-[25%]">Heartbeat</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="grouped-surface">
+            {workers.map((worker) => (
+              <TableRow
+                key={worker.kind}
+                className="grid grid-cols-3 gap-4 bg-card px-5 py-4 sm:table-row"
+              >
+                <TableCell className="col-span-3 min-w-0 whitespace-normal p-0 sm:table-cell sm:px-5 sm:py-4">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={cn(
+                        "size-2 shrink-0 rounded-full",
+                        worker.state === "HEALTHY"
+                          ? "bg-primary"
+                          : worker.state === "PAUSED"
+                            ? "bg-accent"
+                            : "bg-danger",
+                      )}
+                      aria-hidden="true"
+                    />
+                    <h3 className="truncate font-semibold text-ink text-sm">
+                      {PILOT_OPERATIONS_WORKER_LABELS[worker.kind]}
+                    </h3>
+                  </div>
+                  <p className="mt-1 text-slate-muted text-xs">
+                    {workerState(worker.state)}
+                    {!worker.enabled
+                      ? " · disabled"
+                      : worker.paused
+                        ? " · paused"
+                        : ""}
+                  </p>
+                </TableCell>
 
-              <div className="grid grid-cols-3 gap-4 sm:contents">
                 <WorkerMetric label="Queue" value={worker.queueDepth} />
                 <WorkerMetric label="Failed" value={worker.failedJobs} />
                 <WorkerMetric label="Dead" value={worker.deadJobs} />
-              </div>
 
-              <p className="text-slate-muted text-xs leading-relaxed">
-                <span className="sm:hidden">Heartbeat · </span>
-                {worker.heartbeatAt ? (
-                  <AdminDateTime value={worker.heartbeatAt} />
-                ) : (
-                  "Not reported"
-                )}
-                {worker.oldestPendingAt ? (
-                  <>
-                    <br />
-                    Oldest <AdminDateTime value={worker.oldestPendingAt} />
-                  </>
-                ) : null}
-              </p>
-            </div>
-          ))}
-        </div>
+                <TableCell className="col-span-3 whitespace-normal p-0 text-slate-muted text-xs leading-relaxed sm:table-cell sm:p-2">
+                  <span className="sm:hidden">Heartbeat · </span>
+                  {worker.heartbeatAt ? (
+                    <AdminDateTime value={worker.heartbeatAt} />
+                  ) : (
+                    "Not reported"
+                  )}
+                  {worker.oldestPendingAt ? (
+                    <>
+                      <br />
+                      Oldest <AdminDateTime value={worker.oldestPendingAt} />
+                    </>
+                  ) : null}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </section>
   );
@@ -255,12 +265,12 @@ function WorkerSignals({ workers }: { workers: Readiness["workers"] }) {
 
 function WorkerMetric({ label, value }: { label: string; value: number }) {
   return (
-    <p className="grid gap-1 text-sm sm:block">
+    <TableCell className="grid gap-1 p-0 text-sm sm:table-cell sm:p-2">
       <span className="text-slate-muted text-xs sm:hidden">{label}</span>
       <span className="font-semibold text-ink tabular-nums">
         {NUMBER_FORMATTER.format(value)}
       </span>
-    </p>
+    </TableCell>
   );
 }
 

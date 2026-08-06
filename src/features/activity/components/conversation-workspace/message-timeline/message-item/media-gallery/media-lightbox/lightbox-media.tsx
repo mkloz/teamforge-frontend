@@ -1,4 +1,3 @@
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { ErrorMediaImageUnavailableVisual } from "@/features/activity/assets/error-media-image-unavailable";
 import { ErrorMediaVideoUnavailableVisual } from "@/features/activity/assets/error-media-video-unavailable";
@@ -6,6 +5,7 @@ import type { UnifiedAttachment } from "@/features/activity/lib/activity-contrac
 import { isGifAttachment } from "@/features/activity/lib/gif-attachments";
 import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 import { Image } from "@/shared/components/common/image";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { useImageState } from "@/shared/hooks/use-image-state";
 import { cn } from "@/shared/lib/utils";
 
@@ -149,10 +149,7 @@ function LightboxLoadingIndicator({ isVisible }: { isVisible: boolean }) {
 
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <Loader2
-        strokeWidth={1.5}
-        className="size-9 animate-spin text-white/40"
-      />
+      <Spinner strokeWidth={1.5} className="size-9 text-white/40" />
     </div>
   );
 }

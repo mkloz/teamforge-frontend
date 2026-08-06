@@ -28,7 +28,7 @@ export function SuggestionsSection({
       count={suggestedTags.length}
       icon={ListChecks}
       iconClassName="text-spark-amber"
-      title="A few starting points"
+      title="Based on your profile"
       titleClassName="text-slate-muted group-hover:text-spark-amber"
       dotClassName="bg-slate-muted/30"
       countClassName="text-slate-muted/70"
@@ -48,7 +48,8 @@ export function SuggestionsSection({
     >
       <div className="px-2.5 pt-1 pb-3 sm:px-4 sm:pb-4">
         <p className="mb-3 font-medium font-sans text-slate-muted/70 text-xs leading-snug">
-          From your profile. Keep only the ones you would actually choose.
+          Suggested from your starting personality answers. Keep only what you
+          would actually choose.
         </p>
         <div className="flex flex-wrap gap-1 p-1 sm:gap-1.5 sm:p-1.5">
           <InterestTagPillList

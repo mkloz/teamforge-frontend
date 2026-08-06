@@ -1,4 +1,5 @@
 import { lazy, type ReactNode, Suspense, useEffect, useRef } from "react";
+import { AccountReadinessSection } from "@/features/home/components/account-readiness-section";
 import { AttentionQueue } from "@/features/home/components/attention-queue";
 import { AutoForgeRequestStatus } from "@/features/home/components/auto-forge-request-status";
 import { CandidateAvailabilitySection } from "@/features/home/components/candidate-availability-section";
@@ -168,6 +169,7 @@ export function HomePage() {
 
   return (
     <HomePageContent
+      accountReadiness={<AccountReadinessSection />}
       forgeRequest={<AutoForgeRequestStatus />}
       candidateAvailability={<CandidateAvailabilitySection />}
       sentInvitationsReview={getSentInvitationsReviewSlot({

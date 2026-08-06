@@ -13,6 +13,7 @@ import {
   groupPlanDetailPageModule,
   HomeRouteLoading,
   homePageModule,
+  onboardingPracticePageModule,
   ProfileRouteLoading,
   planGuestPageModule,
   profilePageModule,
@@ -42,6 +43,7 @@ import { validateExploreRouteSearch } from "@/shared/navigation";
 import { validateActivityRouteSearch } from "@/shared/navigation/activity-navigation";
 import { validateForgeRouteSearch } from "@/shared/navigation/forge-navigation";
 import { validateHomeRouteSearch } from "@/shared/navigation/home-navigation";
+import { validateOnboardingPracticeSearch } from "@/shared/navigation/onboarding-practice-navigation";
 import {
   buildSafetyNavigation,
   validateSafetySearch,
@@ -83,6 +85,21 @@ export const exploreRouteOptions = {
     description: "People, requests, and group options did not load.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
+  }),
+};
+
+export const onboardingPracticeRouteOptions = {
+  path: "/practice" as const,
+  validateSearch: validateOnboardingPracticeSearch,
+  loader: createRouteModuleLoader(onboardingPracticePageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  component: createLazyPageRoute(onboardingPracticePageModule.Component),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.onboardingPractice,
+    title: "Practice could not load",
+    description: "The local TeamForge practice did not load.",
+    fallbackTo: "/explore",
+    fallbackLabel: "Back to explore",
   }),
 };
 

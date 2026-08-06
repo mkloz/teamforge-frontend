@@ -8,6 +8,7 @@ import type { ScreenState } from "@/features/onboarding/store/personality-test-s
 import { CompatibilityInputLockState } from "./compatibility-input-lock-state";
 import { DynamicQuestionPage } from "./dynamic-question-page";
 import { PersonalityIntro } from "./personality-intro";
+import { PersonalityRecovery } from "./personality-recovery";
 import { usePersonalityScreenNavigation } from "./use-personality-screen-navigation";
 
 const Theory101 = lazy(() =>
@@ -57,14 +58,19 @@ type PersonalityScreenId = ScreenState["id"];
 interface PersonalityScreenRenderContext {
   backLabel: string;
   assessment: PersonalityAssessmentFlow;
+  canChooseAssessmentLength: boolean;
   continueLabel: string;
   dynamic: DynamicAssessmentFlow;
   isOnline: boolean;
   navigation: PersonalityScreenNavigation;
   onContinue: () => void;
+  onExploreAfterStarter: () => void;
+  onRecoveryDiscard: () => void;
+  onRecoveryResume: () => void;
   onSelectionChange: (length: TestLength) => void;
   onRetrySubmission: () => void;
   submissionError: string | null;
+  starter: { error: string | null; isCompleting: boolean };
   state: PersonalityTestState;
 }
 
@@ -76,34 +82,47 @@ type PersonalityScreenRendererMap = Record<
 interface PersonalityScreenRendererProps {
   backLabel: string;
   assessment: PersonalityAssessmentFlow;
+  canChooseAssessmentLength: boolean;
   continueLabel: string;
   dynamic: DynamicAssessmentFlow;
   isOnline: boolean;
   onBack: () => void;
   onContinue: () => void;
+  onExploreAfterStarter: () => void;
+  onRecoveryDiscard: () => void;
+  onRecoveryResume: () => void;
   onSelectionChange: (length: TestLength) => void;
   onRetrySubmission: () => void;
   questionsPerPage: number;
   state: PersonalityTestState;
   submissionError: string | null;
+  starter: { error: string | null; isCompleting: boolean };
 }
 
 export function PersonalityScreenRenderer({
   backLabel,
   assessment,
+  canChooseAssessmentLength,
   continueLabel,
   dynamic,
   isOnline,
   onBack,
   onContinue,
+  onExploreAfterStarter,
   onSelectionChange,
   onRetrySubmission,
+  onRecoveryDiscard,
+  onRecoveryResume,
   questionsPerPage,
   state,
   submissionError,
+  starter,
 }: PersonalityScreenRendererProps) {
   const navigation = usePersonalityScreenNavigation({
+    canChooseAssessmentLength,
     onBack,
+    onRecoveryDiscard,
+    onRecoveryResume,
     questionsPerPage,
     state,
   });
@@ -112,15 +131,20 @@ export function PersonalityScreenRenderer({
   const renderedScreen = renderPersonalityScreen({
     backLabel,
     assessment,
+    canChooseAssessmentLength,
     continueLabel,
     dynamic,
     isOnline,
     navigation,
     onContinue,
+    onExploreAfterStarter,
+    onRecoveryDiscard,
+    onRecoveryResume,
     onSelectionChange,
     onRetrySubmission,
     state,
     submissionError,
+    starter,
   });
 
   return (
@@ -157,6 +181,7 @@ const PERSONALITY_SCREEN_RENDERERS: PersonalityScreenRendererMap = {
   intro: renderIntroScreen,
   length: renderLengthScreen,
   questions: renderQuestionsScreen,
+  recovery: renderRecoveryScreen,
   results: renderResultsScreen,
   submitting: renderSubmittingScreen,
   theory: renderTheoryScreen,
@@ -252,22 +277,44 @@ function renderQuestionsScreen({
     pageStart,
     pageQuestions,
   } = state;
+  const isStarterWindow = state.starterCheckpointEnabled && currentPage <= 2;
 
   return (
     <QuestionPage
+      finalActionLabel={isStarterWindow ? "See your starting point" : undefined}
       pageQuestions={pageQuestions}
       startIndex={pageStart + 1}
       pageNumber={currentPage}
-      totalPages={totalPages}
-      totalQuestions={questions.length}
+      totalPages={isStarterWindow ? 2 : totalPages}
+      totalQuestions={isStarterWindow ? 10 : questions.length}
       answers={answers}
       {...navigation.questions}
     />
   );
 }
 
-function renderIntermissionScreen({
+function renderRecoveryScreen({
+  backLabel,
   navigation,
+  state,
+}: PersonalityScreenRenderContext) {
+  return (
+    <PersonalityRecovery
+      answeredCount={state.answeredInPoolCount}
+      backLabel={backLabel}
+      onBack={navigation.recovery.onBack}
+      onDiscard={navigation.recovery.onDiscard}
+      onResume={navigation.recovery.onResume}
+      totalQuestions={state.questions.length}
+    />
+  );
+}
+
+function renderIntermissionScreen({
+  canChooseAssessmentLength,
+  navigation,
+  onExploreAfterStarter,
+  starter,
   state,
 }: PersonalityScreenRenderContext) {
   const milestoneIndex = getIntermissionMilestoneIndex(state.screen);
@@ -278,9 +325,14 @@ function renderIntermissionScreen({
 
   return (
     <IntermissionPage
+      allowLengthChanges={canChooseAssessmentLength}
       milestoneIndex={milestoneIndex}
-      answeredCount={state.answeredInPoolCount}
-      totalQuestions={state.questions.length}
+      answeredCount={milestoneIndex === 0 ? 10 : state.answeredInPoolCount}
+      totalQuestions={milestoneIndex === 0 ? 10 : state.questions.length}
+      isStarterMilestone={milestoneIndex === 0}
+      onExploreAfterStarter={onExploreAfterStarter}
+      starterError={starter.error}
+      isCompletingStarter={starter.isCompleting}
       {...navigation.intermission}
     />
   );

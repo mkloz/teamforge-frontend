@@ -1,10 +1,13 @@
-import { Eye, LoaderCircle, Lock, RefreshCcw } from "lucide-react";
+import { Eye, Lock, RefreshCcw } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   OnboardingIntroActions,
   OnboardingIntroBenefitList,
 } from "@/features/onboarding/components/onboarding-intro-parts";
 import type { PersonalityAssessmentQueryStatus } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import { Button } from "@/shared/components/ui/button";
+import { Spinner } from "@/shared/components/ui/spinner";
+import { canUseBrowserSessionStorage } from "@/shared/lib/browser-environment/session-storage";
 import { PersonalityScreenShell } from "./personality-screen-layout";
 
 interface PersonalityIntroProps {
@@ -22,7 +25,9 @@ export function PersonalityIntro({
   onStart,
   stateStatus,
 }: PersonalityIntroProps) {
-  const benefits = getAssessmentBenefits();
+  const [storageAvailable, setStorageAvailable] = useState(false);
+  useEffect(() => setStorageAvailable(canUseBrowserSessionStorage()), []);
+  const benefits = getAssessmentBenefits(storageAvailable);
   const stateReady = stateStatus === "ready";
 
   return (
@@ -62,7 +67,7 @@ export function PersonalityIntro({
   );
 }
 
-function getAssessmentBenefits() {
+function getAssessmentBenefits(storageAvailable: boolean) {
   return [
     {
       icon: Lock,
@@ -78,7 +83,9 @@ function getAssessmentBenefits() {
     },
     {
       icon: RefreshCcw,
-      text: "Reloading, signing out, closing this tab, or replacing the session before submission loses your answers.",
+      text: storageAvailable
+        ? "Unfinished answers can be recovered only in this tab and signed-in session. Signing out, closing the tab, or waiting 12 hours clears them."
+        : "This browser blocked temporary draft storage. Keep this page open: reloading or leaving will lose unfinished answers.",
     },
   ];
 }
@@ -114,10 +121,7 @@ function AssessmentStateNotice({
       className="flex items-center justify-center gap-2 text-muted-foreground text-sm"
       role="status"
     >
-      <LoaderCircle
-        className="size-4 animate-spin motion-reduce:animate-none"
-        aria-hidden="true"
-      />
+      <Spinner className="size-4" aria-hidden="true" />
       Checking your saved personality status
     </p>
   );

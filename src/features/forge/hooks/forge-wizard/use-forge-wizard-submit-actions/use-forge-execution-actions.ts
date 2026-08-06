@@ -7,6 +7,7 @@ import {
   MissingForgeInterestSignalsError,
 } from "@/features/forge/api/forge-commands";
 import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
+import { getForgeDraftOperationKey } from "@/features/forge/store/forge-wizard-session-storage";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -29,6 +30,7 @@ function executeForgeCommand(
   state: UseForgeWizardSubmitActionsOptions["state"],
   input: AutoForgeExecutionInput | null,
   autoRequestKeys: AutoRequestKeys | null,
+  manualOperationKey: string | null,
 ) {
   if (!input) {
     throw new Error("Forge execution input was not validated.");
@@ -47,7 +49,14 @@ function executeForgeCommand(
     );
   }
 
-  return ForgeCommands.executeManualForge(input);
+  if (!manualOperationKey) {
+    throw new Error("The manual Forge request key was not prepared.");
+  }
+  return ForgeCommands.executeManualForge(
+    input,
+    manualOperationKey,
+    state.activityId,
+  );
 }
 
 interface UseForgeExecutionActionsOptions
@@ -73,6 +82,7 @@ interface ForgeExecutionErrorContext
 interface ForgeAnimationExecutionContext extends ForgeExecutionErrorContext {
   mode: ForgeExecutionMode;
   autoRequestKeys: AutoRequestKeys | null;
+  manualOperationKey: string | null;
   validation: ForgeExecutionValidation | null;
 }
 
@@ -124,12 +134,20 @@ export function useForgeExecutionActions({
       mode === "AUTO" && validation?.input
         ? getAutoRequestKeys(autoOperationRef, validation.input, state)
         : null;
+    const manualOperationKey =
+      mode === "MANUAL" && validation?.input
+        ? getForgeDraftOperationKey(
+            "manual-forge",
+            JSON.stringify(validation.input),
+          )
+        : null;
 
     runForgeAnimation(async () => {
       await runForgeExecution({
         dispatch,
         mode,
         autoRequestKeys,
+        manualOperationKey,
         mutationName,
         state,
         setField,
@@ -227,6 +245,7 @@ async function runForgeExecution(context: ForgeAnimationExecutionContext) {
     context.state,
     context.validation?.input ?? null,
     context.autoRequestKeys,
+    context.manualOperationKey,
   ).catch((error) => handleForgeExecutionError(error, context));
 
   if (!result) {
@@ -273,8 +292,8 @@ function getAutoRequestKeys(
   }
 
   const idempotencyKeys = {
-    request: crypto.randomUUID(),
-    resume: crypto.randomUUID(),
+    request: getForgeDraftOperationKey("auto-request", fingerprint),
+    resume: getForgeDraftOperationKey("auto-resume", fingerprint),
   };
   operationRef.current = { fingerprint, idempotencyKeys };
   return idempotencyKeys;

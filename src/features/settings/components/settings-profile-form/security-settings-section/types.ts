@@ -5,6 +5,7 @@ export type SecuritySettingsStatus = Pick<
   | "isOnline"
   | "isLoadingSessions"
   | "isSendingPasswordResetLink"
+  | "isConnectingGoogle"
   | "isRevokingOtherSessions"
 >;
 
@@ -19,6 +20,8 @@ export type SecuritySettingsSectionProps = Pick<
   | "sessions"
   | "revokingSessionId"
   | "onSendPasswordResetLink"
+  | "onConnectGoogle"
+  | "onGoogleConnectionIntent"
   | "onRevokeSession"
   | "onRevokeOtherSessions"
   | "accountLifecycle"

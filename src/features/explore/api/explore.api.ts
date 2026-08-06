@@ -6,10 +6,11 @@ import {
   exploreFeedItemSchema,
   exploreGroupSchema,
   exploreViewInsightSchema,
+  introductoryExploreGroupSchema,
 } from "@/shared/schemas";
 
 const paginatedExploreGroupsSchema = createPaginatedSchema(
-  exploreGroupSchema,
+  exploreGroupSchema.or(introductoryExploreGroupSchema),
 ).extend({
   insight: exploreViewInsightSchema,
 });

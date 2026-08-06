@@ -2,18 +2,14 @@ import { m } from "framer-motion";
 import { Fingerprint } from "lucide-react";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 
-import type { PersonalityType } from "@/shared/schemas/enums";
-
 import { completionFadeUp } from "./completion-blueprint-motion";
 
 interface CompletionBlueprintCardProps {
-  personalityType: PersonalityType | null;
   nickname: string;
   interestCount: number;
 }
 
 export function CompletionBlueprintCard({
-  personalityType,
   nickname,
   interestCount,
 }: CompletionBlueprintCardProps) {
@@ -22,7 +18,7 @@ export function CompletionBlueprintCard({
       variants={completionFadeUp}
       className="perspective-1000 relative w-full"
     >
-      <div className="relative flex w-full flex-col overflow-hidden rounded-xl border border-border/85 bg-card/70 shadow-2xl backdrop-blur-lg">
+      <div className="relative flex w-full flex-col overflow-hidden rounded-xl border border-white/12 bg-black/55 shadow-2xl backdrop-blur-sm backdrop-saturate-150">
         <div className="absolute top-1/2 right-4 left-4 h-px border-border/90 border-t border-dashed" />
         <div className="absolute top-1/2 -left-3 size-6 -translate-y-1/2 rounded-full border border-border/85 bg-hero-bg/30" />
         <div className="absolute top-1/2 -right-3 size-6 -translate-y-1/2 rounded-full border border-border/85 bg-hero-bg/30" />
@@ -30,7 +26,7 @@ export function CompletionBlueprintCard({
         <div className="flex flex-col gap-1 p-8 pb-4">
           <div className="mb-2 flex items-center justify-between">
             <span className="font-bold font-sans text-muted-foreground text-xs">
-              Your profile
+              Your setup
             </span>
             <Fingerprint
               size={16}
@@ -39,7 +35,7 @@ export function CompletionBlueprintCard({
             />
           </div>
           <h2 className="font-black font-sans text-5xl text-foreground tracking-tight">
-            {personalityType || "????"}
+            Ready
           </h2>
           <p className="font-medium font-sans text-lg text-spark-amber">
             {nickname}
@@ -50,18 +46,18 @@ export function CompletionBlueprintCard({
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <p className="font-bold font-sans text-muted-foreground text-xs">
-                Interests
+                Starter answers
               </p>
               <p className="font-bold font-sans text-2xl text-foreground">
-                {interestCount}{" "}
+                10{" "}
                 <span className="font-normal text-muted-foreground text-xs">
-                  picks
+                  saved
                 </span>
               </p>
             </div>
             <div className="flex flex-col gap-1">
               <p className="font-bold font-sans text-muted-foreground text-xs">
-                Status
+                Interests
               </p>
               <StatusPill
                 size="sm"
@@ -72,7 +68,7 @@ export function CompletionBlueprintCard({
                   className="size-1.5 rounded-full bg-forge-teal shadow-teal-glow"
                   aria-hidden="true"
                 />
-                Ready to enter
+                {interestCount} selected
               </StatusPill>
             </div>
           </div>

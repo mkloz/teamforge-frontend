@@ -1,5 +1,6 @@
 import { createInterest } from "@test/support/factories/user";
 import { describe, expect, it } from "vitest";
+import { canContinueInterests } from "@/features/onboarding/hooks/use-interests";
 import {
   getCorrelatedSuggestions,
   getMbtiSuggestions,
@@ -389,5 +390,13 @@ describe("getShouldShowBalanceNudge", () => {
         [category],
       ),
     ).toBe(false);
+  });
+});
+
+describe("starter interest threshold", () => {
+  it("keeps nine interests blocked and allows exactly ten across two categories", () => {
+    expect(canContinueInterests(9, 2)).toBe(false);
+    expect(canContinueInterests(10, 1)).toBe(false);
+    expect(canContinueInterests(10, 2)).toBe(true);
   });
 });

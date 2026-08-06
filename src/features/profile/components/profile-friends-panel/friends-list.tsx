@@ -1,7 +1,8 @@
-import { Loader2, UserMinus } from "lucide-react";
+import { UserMinus } from "lucide-react";
 import { useProfileFriends } from "@/features/profile/hooks/use-profile-friends";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { FriendCard } from "./friend-card";
 import { FriendMessageAction } from "./friend-message-action";
 import { FriendsListEmptyState } from "./friendship-list-helpers";
@@ -28,10 +29,7 @@ export function FriendsList() {
         role="status"
         aria-live="polite"
       >
-        <Loader2
-          aria-hidden="true"
-          className="size-6 animate-spin text-muted-foreground motion-reduce:animate-none"
-        />
+        <Spinner aria-hidden="true" className="size-6 text-muted-foreground" />
         <span className="sr-only">Loading friends.</span>
       </div>
     );
@@ -154,7 +152,7 @@ function FriendListActions({
             className="size-11 text-muted-foreground hover:text-destructive [@media(pointer:fine)]:size-8"
           >
             {isRemovingThisUser ? (
-              <Loader2 className="size-4 animate-spin" />
+              <Spinner aria-hidden="true" className="size-4" />
             ) : (
               <UserMinus className="size-4" />
             )}

@@ -8,6 +8,7 @@ import { IconTile } from "@/shared/components/ui/icon-tile";
 import { SheetClose } from "@/shared/components/ui/sheet";
 import { cn } from "@/shared/lib/utils";
 import type { buildAdminNavigation } from "@/shared/navigation/admin-navigation";
+import type { buildOnboardingPracticeNavigation } from "@/shared/navigation/onboarding-practice-navigation";
 import type { buildSafetyNavigation } from "@/shared/navigation/safety-navigation";
 import type { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
@@ -17,6 +18,7 @@ interface MenuLinkItemProps {
   label: string;
   navigation:
     | ReturnType<typeof buildAdminNavigation>
+    | ReturnType<typeof buildOnboardingPracticeNavigation>
     | ReturnType<typeof buildSafetyNavigation>
     | ReturnType<typeof buildSettingsNavigation>;
   tone?: "default" | "destructive";

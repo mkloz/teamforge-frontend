@@ -7,5 +7,7 @@ export const HOME_INVITATIONS_QUERY_KEY = APP_QUERY_KEYS.home.invitations;
 export const HOME_SENT_INVITATIONS_QUERY_KEY =
   APP_QUERY_KEYS.home.sentInvitations;
 
-export const HOME_RECOMMENDATIONS_QUERY_KEY =
-  APP_QUERY_KEYS.home.recommendations;
+export const getHomeRecommendationsQueryKey = (
+  sessionScope: string,
+  projectionScope: string,
+) => APP_QUERY_KEYS.home.recommendationsForScope(sessionScope, projectionScope);

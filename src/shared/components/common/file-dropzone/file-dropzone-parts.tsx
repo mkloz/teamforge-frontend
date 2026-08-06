@@ -1,4 +1,4 @@
-import { Loader2, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import type {
   DropzoneActionPillProps,
   DropzoneIconProps,
@@ -7,6 +7,7 @@ import type {
   DropzoneTextProps,
 } from "@/shared/components/common/file-dropzone/file-dropzone.types";
 import { IconTile } from "@/shared/components/ui/icon-tile";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 
 export function DropzonePreviewLayers({
@@ -33,7 +34,7 @@ export function DropzoneIcon({ isUploading, viewState }: DropzoneIconProps) {
       className={viewState.iconTileClassName}
     >
       {isUploading ? (
-        <Loader2 className="size-4 animate-spin" strokeWidth={2} />
+        <Spinner aria-hidden="true" className="size-4" strokeWidth={2} />
       ) : (
         <Upload className={viewState.uploadIconClassName} strokeWidth={2} />
       )}

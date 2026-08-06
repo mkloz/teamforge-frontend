@@ -27,6 +27,11 @@ import {
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/shared/components/ui/pagination";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
 
@@ -160,33 +165,37 @@ export function OperatorJobList({
               />
             ))}
           </ul>
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <Pagination className="mx-0 flex-wrap justify-between gap-3 pt-2">
             <p className="text-slate-muted text-xs" role="status">
               Page {page} of {totalPages} · {query.data.total} jobs
             </p>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((current) => Math.max(1, current - 1))}
-              >
-                Previous
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() =>
-                  setPage((current) => Math.min(totalPages, current + 1))
-                }
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+            <PaginationContent className="gap-2">
+              <PaginationItem>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={page <= 1}
+                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                >
+                  Previous
+                </Button>
+              </PaginationItem>
+              <PaginationItem>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={page >= totalPages}
+                  onClick={() =>
+                    setPage((current) => Math.min(totalPages, current + 1))
+                  }
+                >
+                  Next
+                </Button>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </>
       ) : (
         <div className="grid min-h-32 place-items-center rounded-xl border border-border border-dashed p-5 text-center">

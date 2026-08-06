@@ -42,7 +42,7 @@ export function CategoryFilter() {
             label={cat.label}
             selected={active}
             className={cn(
-              "h-11 border px-2.5 text-xs transition-colors hover:border-border/90 hover:bg-muted/35 hover:text-foreground active:translate-y-0 lg:h-7",
+              "h-7 border px-2.5 text-xs transition-colors hover:border-border/90 hover:bg-muted/35 hover:text-foreground active:translate-y-0",
               active &&
                 "border-forge-teal/35 bg-forge-teal/9 text-forge-teal hover:border-forge-teal/45 hover:bg-forge-teal/12 dark:text-secondary-foreground",
             )}
@@ -53,14 +53,14 @@ export function CategoryFilter() {
       {!expanded && hiddenCategoryCount > 0 ? (
         <CategoryFilterChip
           label={`+${hiddenCategoryCount} more`}
-          className="h-11 px-2.5 lg:h-7"
+          className="h-7 px-2.5"
           onClick={() => setExpanded(true)}
         />
       ) : null}
       {expanded ? (
         <CategoryFilterChip
           label="Show less"
-          className="h-11 px-2.5 lg:h-7"
+          className="h-7 px-2.5"
           onClick={() => setExpanded(false)}
         />
       ) : null}

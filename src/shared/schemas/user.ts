@@ -29,6 +29,11 @@ export const interestSchema: z.ZodSchema<Interest> = z.lazy(() =>
 
 export type User = z.infer<z.ZodObject<typeof userCoreFields>> & {
   interests?: Interest[];
+  onboardingIntent?:
+    | "BRING_A_PLAN"
+    | "EXPLORE_AND_JOIN"
+    | "BOTH_OR_UNSURE"
+    | null;
 };
 
 export const userSchema: z.ZodSchema<User> = z.lazy(() =>

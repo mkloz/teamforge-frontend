@@ -10,6 +10,7 @@ import type {
   AccountExportResponse,
   AdultEligibilityCorrectionResponse,
 } from "@/features/settings/schemas/account-data.schema";
+import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-cache";
 import { appQueryClient } from "@/shared/api/query-client";
 import { invalidateUserBlockSurfaces } from "@/shared/api/query-invalidation";
 import type {
@@ -33,6 +34,12 @@ function removeBlockedUser(
 }
 
 export const SettingsCache = {
+  invalidateCurrentUser() {
+    return appQueryClient.invalidateQueries({
+      queryKey: CURRENT_USER_QUERY_KEY,
+    });
+  },
+
   setAdultEligibilityCorrection(
     userId: string,
     correction: AdultEligibilityCorrectionResponse,

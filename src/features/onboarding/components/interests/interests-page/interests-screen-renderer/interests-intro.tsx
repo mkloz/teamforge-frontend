@@ -43,9 +43,9 @@ export function InterestsIntro({
         <p className="mb-6 text-pretty font-sans text-slate-muted/80 text-sm leading-relaxed">
           Choose at least{" "}
           <span className="border-forge-teal/30 border-b font-bold text-ink">
-            15 interests
+            10 interests to start
           </span>
-          . There are no wrong answers—only honest ones.
+          . Add more now or refine them later—there are no wrong answers.
         </p>
       </div>
 

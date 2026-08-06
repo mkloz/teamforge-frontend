@@ -1,6 +1,7 @@
-import { Database, LoaderCircle } from "lucide-react";
+import { Database } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { DevToolIconButton } from "@/dev/tools/dev-tool-icon-button";
+import { Spinner } from "@/shared/components/ui/spinner";
 
 const LazyReactQueryDevtoolsPanel = lazy(async () => {
   const { ReactQueryDevtoolsPanel } = await import(
@@ -29,10 +30,7 @@ export function QueryDevtoolsPanel({
           <Suspense
             fallback={
               <div className="flex h-48 items-center justify-center gap-2 text-muted-foreground text-sm md:h-full">
-                <LoaderCircle
-                  aria-hidden="true"
-                  className="size-4 animate-spin motion-reduce:animate-none"
-                />
+                <Spinner aria-hidden="true" className="size-4" />
                 Loading query inspector
               </div>
             }

@@ -10,6 +10,7 @@ import {
 interface KeepInMindProps {
   onBack: () => void;
   onNext: () => void;
+  nextLabel?: string;
 }
 
 const GUIDELINES = [
@@ -35,7 +36,11 @@ const GUIDELINES = [
   },
 ];
 
-export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
+export function KeepInMind({
+  onBack,
+  onNext,
+  nextLabel = "Choose test length",
+}: KeepInMindProps) {
   return (
     <PersonalityScreenShell className="max-w-md">
       <m.p
@@ -89,7 +94,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
         backLabel="Back to theory"
         onBack={onBack}
         onNext={onNext}
-        nextLabel="Choose test length"
+        nextLabel={nextLabel}
         backClassName="w-auto shrink-0 px-4"
       />
     </PersonalityScreenShell>

@@ -1,9 +1,10 @@
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/shared/components/ui/spinner";
 
 export function FriendRequestsLoadingState() {
   return (
-    <div className="flex justify-center py-12">
-      <Loader2 className="size-6 animate-spin text-muted-foreground" />
+    <div className="flex justify-center py-12" role="status" aria-live="polite">
+      <Spinner aria-hidden="true" className="size-6 text-muted-foreground" />
+      <span className="sr-only">Loading friend requests</span>
     </div>
   );
 }

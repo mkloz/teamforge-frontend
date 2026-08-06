@@ -19,6 +19,12 @@ export const explorePageModule = createLazyRouteModule(() =>
   })),
 );
 
+export const onboardingPracticePageModule = createLazyRouteModule(() =>
+  import("@/features/onboarding/onboarding-practice-page").then((m) => ({
+    default: m.OnboardingPracticePage,
+  })),
+);
+
 export const ExploreRouteLoading = createLazyRouteLoading(
   () =>
     import("@/features/explore/explore-page.loading").then((m) => ({

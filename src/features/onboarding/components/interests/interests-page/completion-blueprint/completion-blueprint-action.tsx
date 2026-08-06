@@ -6,10 +6,12 @@ import { completionFadeUp } from "./completion-blueprint-motion";
 
 interface CompletionBlueprintActionProps {
   onEnter: () => void;
+  onBack: () => void;
 }
 
 export function CompletionBlueprintAction({
   onEnter,
+  onBack,
 }: CompletionBlueprintActionProps) {
   return (
     <m.div
@@ -29,8 +31,12 @@ export function CompletionBlueprintAction({
         />
       </Button>
 
+      <Button variant="ghost" size="sm" className="mt-2" onClick={onBack}>
+        Back to interests
+      </Button>
+
       <p className="mt-6 max-w-50 text-center font-bold font-sans text-muted-foreground text-xs leading-relaxed drop-shadow-sm">
-        Built from your personality and interests.
+        This starter profile is not your full compatibility profile.
       </p>
     </m.div>
   );

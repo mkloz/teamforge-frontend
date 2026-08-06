@@ -10,6 +10,7 @@ interface PersonalityFlowSearchParams {
   returnTo: OnboardingReturnTarget | null;
   returnSearch: string | null;
   returnSection: SettingsSection | null;
+  returnGroupId: string | null;
 }
 
 interface PersonalityNextSearchParams extends PersonalityFlowSearchParams {
@@ -20,8 +21,14 @@ export function buildPersonalityPreviousSearch({
   returnTo,
   returnSearch,
   returnSection,
+  returnGroupId,
 }: PersonalityFlowSearchParams) {
-  return buildOnboardingReturnSearch({ returnTo, returnSearch, returnSection });
+  return buildOnboardingReturnSearch({
+    returnTo,
+    returnSearch,
+    returnSection,
+    returnGroupId,
+  });
 }
 
 export function buildPersonalityNextSearch({
@@ -29,6 +36,7 @@ export function buildPersonalityNextSearch({
   returnTo,
   returnSearch,
   returnSection,
+  returnGroupId,
 }: PersonalityNextSearchParams) {
   return {
     ...(mbti ? { mbti } : {}),
@@ -36,6 +44,7 @@ export function buildPersonalityNextSearch({
       returnTo,
       returnSearch,
       returnSection,
+      returnGroupId,
     }),
   };
 }
@@ -48,5 +57,6 @@ export function resolvePersonalityExitNavigation(
     flowSearch.returnSearch,
     flowSearch.returnSection,
     "settings",
+    flowSearch.returnGroupId,
   );
 }

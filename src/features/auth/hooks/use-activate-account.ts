@@ -2,10 +2,16 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { AuthCommands } from "@/features/auth/api/auth-commands";
+import {
+  activateAccountFromEmail,
+  releaseAccountActivationRequest,
+} from "@/features/auth/lib/account-activation-request";
 import { ensureCurrentUser } from "@/shared/api/current-user-query";
+import { ensureOnboardingProductState } from "@/shared/api/onboarding-product-state-query";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
-import { buildPostAuthRedirectNavigation } from "@/shared/lib/auth-route";
+import { buildPostAuthRedirectNavigationForDestination } from "@/shared/lib/auth-route";
+import { getProductStateRedirectPath } from "@/shared/lib/post-auth-route";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -34,8 +40,9 @@ export function useActivateAccount(returnTo?: string | null) {
       }
 
       try {
-        const activationResult = await AuthCommands.activateAccount(token);
-        const user = await ensureCurrentUser();
+        const activationResult = await activateAccountFromEmail(token);
+        await ensureCurrentUser();
+        const productState = await ensureOnboardingProductState();
 
         if (!active) {
           return;
@@ -53,7 +60,13 @@ export function useActivateAccount(returnTo?: string | null) {
           description: "Taking you back into TeamForge now.",
           id: "auth-activate-account",
         });
-        await navigate(buildPostAuthRedirectNavigation(user, returnTo));
+        await navigate(
+          buildPostAuthRedirectNavigationForDestination(
+            getProductStateRedirectPath(productState),
+            returnTo,
+          ),
+        );
+        releaseAccountActivationRequest(token);
       } catch (error) {
         if (!active) {
           return;

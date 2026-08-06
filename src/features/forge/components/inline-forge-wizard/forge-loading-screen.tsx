@@ -1,6 +1,7 @@
 import { domAnimation, LazyMotion, m } from "framer-motion";
 
 import { ForgeLoadingAnvil } from "@/features/forge/components/loading/forge-loading-anvil";
+import { Progress } from "@/shared/components/ui/progress";
 
 interface ForgeLoadingScreenProps {
   progress: number;
@@ -24,23 +25,12 @@ export function ForgeLoadingScreen({
         >
           <ForgeLoadingAnvil size={190} strikeCount={strikeCount} />
 
-          <progress
+          <Progress
             aria-label="Forge progress"
-            className="sr-only"
-            max={100}
-            value={Math.round(boundedProgress)}
+            className="h-1.5 w-52 border border-border/60 bg-input"
+            indicatorClassName="bg-forge-teal-readable"
+            value={boundedProgress}
           />
-          <div
-            aria-hidden="true"
-            className="h-1.5 w-52 overflow-hidden rounded-full border border-border/60 bg-input"
-          >
-            <m.div
-              animate={{ scaleX: boundedProgress / 100 }}
-              className="h-full origin-left rounded-full bg-forge-teal-readable"
-              initial={{ scaleX: 0.08 }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </div>
         </m.div>
       </LazyMotion>
     </div>

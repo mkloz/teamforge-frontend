@@ -5,6 +5,7 @@ import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import { canExtendIntermission, getIntermissionContent } from "./constants";
 
 interface UseIntermissionPageParams {
+  allowLengthChanges: boolean;
   answeredCount: number;
   milestoneIndex: number;
   onContinue: () => void;
@@ -13,6 +14,7 @@ interface UseIntermissionPageParams {
 }
 
 export function useIntermissionPage({
+  allowLengthChanges,
   answeredCount,
   milestoneIndex,
   onContinue,
@@ -24,7 +26,8 @@ export function useIntermissionPage({
   );
   const content = getIntermissionContent(milestoneIndex);
   const isDone = answeredCount >= totalQuestions;
-  const shouldShowExtension = isDone && canExtendIntermission(totalQuestions);
+  const shouldShowExtension =
+    isDone && canExtendIntermission(totalQuestions, allowLengthChanges);
 
   function handleContinue() {
     if (selectedUpgrade) {

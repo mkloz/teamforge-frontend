@@ -1,11 +1,11 @@
 import {
   HOME_GROUPS_QUERY_KEY,
   HOME_INVITATIONS_QUERY_KEY,
-  HOME_RECOMMENDATIONS_QUERY_KEY,
 } from "@/features/home/api/home-query-keys";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import { applyHomeInvitationUpdate } from "@/shared/api/query-cache-updaters";
 import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { ExploreFeedItem, Invite } from "@/shared/schemas";
 
 export const HomeCache = {
@@ -36,8 +36,8 @@ export const HomeCache = {
   },
 
   removeRecommendedGroup(groupId: string) {
-    appQueryClient.setQueryData<ExploreFeedItem[] | undefined>(
-      HOME_RECOMMENDATIONS_QUERY_KEY,
+    appQueryClient.setQueriesData<ExploreFeedItem[] | undefined>(
+      { queryKey: APP_QUERY_KEYS.home.recommendations },
       (items) =>
         items?.filter(
           (item) => item.type !== "GROUP" || item.group.id !== groupId,
@@ -47,21 +47,24 @@ export const HomeCache = {
 
   cancelRecommendations() {
     return appQueryClient.cancelQueries({
-      queryKey: HOME_RECOMMENDATIONS_QUERY_KEY,
+      queryKey: APP_QUERY_KEYS.home.recommendations,
     });
   },
 
   getRecommendationsSnapshot() {
-    return appQueryClient.getQueryData<ExploreFeedItem[]>(
-      HOME_RECOMMENDATIONS_QUERY_KEY,
-    );
+    return appQueryClient.getQueriesData<ExploreFeedItem[]>({
+      queryKey: APP_QUERY_KEYS.home.recommendations,
+    });
   },
 
-  restoreRecommendations(recommendations: ExploreFeedItem[] | undefined) {
-    appQueryClient.setQueryData(
-      HOME_RECOMMENDATIONS_QUERY_KEY,
-      recommendations,
-    );
+  restoreRecommendations(
+    recommendations:
+      | Array<[readonly unknown[], ExploreFeedItem[] | undefined]>
+      | undefined,
+  ) {
+    recommendations?.forEach(([queryKey, items]) => {
+      appQueryClient.setQueryData(queryKey, items);
+    });
   },
 
   clearPendingParticipationPlan(groupId: string, planId: string) {

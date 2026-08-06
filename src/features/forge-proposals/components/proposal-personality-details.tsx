@@ -12,6 +12,10 @@ const traitSegments = [1, 2, 3, 4, 5] as const;
 export function ProposalPersonalityDetails({
   seat,
 }: ProposalPersonalityDetailsProps) {
+  if (Object.values(seat.profile.ocean).some((value) => value === null)) {
+    return null;
+  }
+
   return (
     <CollapsibleSection
       className="mt-4"
@@ -21,6 +25,7 @@ export function ProposalPersonalityDetails({
       <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
         {proposalTraitLabels.map(([key, label]) => {
           const value = seat.profile.ocean[key];
+          if (value === null) return null;
 
           return (
             <div key={key}>

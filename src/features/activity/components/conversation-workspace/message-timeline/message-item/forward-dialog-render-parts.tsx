@@ -1,5 +1,4 @@
 import {
-  LoaderCircle,
   MessageCircle,
   Search,
   SendHorizontal,
@@ -16,6 +15,7 @@ import {
   GroupedMenuItem,
   GroupedMenuList,
 } from "@/shared/components/ui/grouped-menu";
+import { Spinner } from "@/shared/components/ui/spinner";
 import type {
   ForwardDialogModel,
   ForwardDialogStateProps,
@@ -188,10 +188,7 @@ function ForwardTargetButton({
             </span>
           </span>
           {isPending ? (
-            <LoaderCircle
-              className="size-4 animate-spin text-primary"
-              aria-label="Forwarding"
-            />
+            <Spinner className="size-4 text-primary" aria-label="Forwarding" />
           ) : (
             <SendHorizontal
               className="size-4 text-slate-muted transition-colors group-hover:text-primary"

@@ -1,4 +1,5 @@
 import { getScenarioCatalogEntry } from "@/dev/scenarios/catalog/scenario-catalog";
+import { scenarioInterestLeavesById } from "@/dev/scenarios/world/scenario-interest-catalog";
 import { applyScenarioOverlays } from "@/dev/scenarios/world/scenario-overlays";
 import { populateStandardWorld } from "@/dev/scenarios/world/scenario-seed";
 import type {
@@ -89,11 +90,17 @@ export function buildScenarioWorld({
     id.startsWith("admin-") || effectivePersona === "admin" ? "ADMIN" : "USER",
   );
   const faults = buildFaults(id, effectiveOverlays);
+  const hasPartialOnboarding =
+    id === "onboarding-incomplete" ||
+    id === "onboarding-intent-prompt" ||
+    id === "onboarding-introductory" ||
+    id === "onboarding-practice" ||
+    id.startsWith("onboarding-intent-");
 
   const world: ScenarioWorld = {
     account: {
       authenticated: !isSignedOut,
-      onboardingComplete: id !== "onboarding-incomplete",
+      onboardingComplete: !hasPartialOnboarding,
     },
     admin: {
       recentVerification: id !== "admin-stale-verification",
@@ -114,6 +121,10 @@ export function buildScenarioWorld({
     },
     faults,
     forge: { activeRequestId: null },
+    onboarding: {
+      intentStepComplete:
+        id !== "onboarding-incomplete" && id !== "onboarding-intent-prompt",
+    },
     participation: {
       externalInvites: {},
       guestMembershipProposals: {},
@@ -135,7 +146,62 @@ export function buildScenarioWorld({
 
   if (id === "onboarding-incomplete" && world.viewerId) {
     const onboardingViewer = world.entities.users[world.viewerId];
+    onboardingViewer.age = null;
+    onboardingViewer.city = null;
+    onboardingViewer.gender = null;
+    onboardingViewer.interests = [];
+    onboardingViewer.oceanA = null;
+    onboardingViewer.oceanC = null;
+    onboardingViewer.oceanE = null;
+    onboardingViewer.oceanN = null;
+    onboardingViewer.oceanO = null;
+    onboardingViewer.personalityType = null;
     onboardingViewer.profileComplete = false;
+    onboardingViewer.personalitySetupComplete = false;
+  }
+
+  if (id === "onboarding-intent-prompt" && world.viewerId) {
+    const onboardingViewer = world.entities.users[world.viewerId];
+    onboardingViewer.oceanA = null;
+    onboardingViewer.oceanC = null;
+    onboardingViewer.oceanE = null;
+    onboardingViewer.oceanN = null;
+    onboardingViewer.oceanO = null;
+    onboardingViewer.personalityType = null;
+    onboardingViewer.personalitySetupComplete = false;
+  }
+
+  if (
+    (id === "onboarding-introductory" ||
+      id === "onboarding-practice" ||
+      id.startsWith("onboarding-intent-")) &&
+    world.viewerId
+  ) {
+    const onboardingViewer = world.entities.users[world.viewerId];
+    const previewInterestIds = new Set([
+      "basketball",
+      "reading",
+      "career_growth",
+      "local_community",
+      "food_markets",
+      "board_games",
+    ]);
+    onboardingViewer.interests = [
+      scenarioInterestLeavesById.basketball,
+      scenarioInterestLeavesById.reading,
+      ...Object.values(scenarioInterestLeavesById).filter(
+        (interest) => !previewInterestIds.has(interest.id),
+      ),
+    ].slice(0, 10);
+    if (onboardingViewer.interests.length !== 10) {
+      throw new Error("Introductory scenario requires ten seeded interests");
+    }
+    onboardingViewer.oceanA = null;
+    onboardingViewer.oceanC = null;
+    onboardingViewer.oceanE = null;
+    onboardingViewer.oceanN = null;
+    onboardingViewer.oceanO = null;
+    onboardingViewer.personalityType = null;
     onboardingViewer.personalitySetupComplete = false;
   }
 

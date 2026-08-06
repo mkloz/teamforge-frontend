@@ -5,6 +5,7 @@ import { useHomeViewer } from "@/features/home/hooks/use-home-viewer";
 import { cn } from "@/shared/lib/utils";
 
 interface HomeDayJourneyProps {
+  accountReadiness?: ReactNode;
   attention: ReactNode;
   availability?: ReactNode;
   forgeRequest?: ReactNode;
@@ -16,6 +17,7 @@ interface HomeDayJourneyProps {
 }
 
 export function HomeDayJourney({
+  accountReadiness,
   attention,
   availability,
   forgeRequest,
@@ -30,6 +32,7 @@ export function HomeDayJourney({
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pt-6 pb-app-bottom-nav sm:px-5 md:pt-10 md:pb-14 lg:px-8">
       <HomeJourneyHeader firstName={viewer.firstName} />
+      {accountReadiness}
 
       <div className="relative mt-10 min-w-0">
         <div
@@ -75,7 +78,7 @@ function HomeJourneyHeader({ firstName }: { firstName: string }) {
   }).format(new Date());
 
   return (
-    <header className="max-w-3xl">
+    <header className="max-w-3xl" data-onboarding-tour="home-overview">
       <div className="flex items-start justify-between gap-4">
         <p className="font-semibold text-forge-teal text-sm">{currentDate}</p>
         <div className="shrink-0 md:hidden">

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/scenario/check-production-boundary.mjs",
+    "build": "tsc -b && vite build && node scripts/seo/verify-build.mjs && node scripts/scenario/check-production-boundary.mjs",
     "preview": "vite preview",
     "scenario:dev": "vite --mode scenario --host 127.0.0.1",
     "scenario:build": "tsc -b && vite build --mode scenario",
@@ -13,6 +13,7 @@
     "scenario:audit": "node scripts/scenario/run-visual-audit.mjs smoke",
     "scenario:audit:full": "node scripts/scenario/run-visual-audit.mjs full",
     "scenario:check-production": "node scripts/scenario/check-production-boundary.mjs",
+    "seo:verify": "node scripts/seo/verify-build.mjs",
     "test": "vitest run test/unit",
     "lint": "node scripts/lint/full.mjs",
     "lint:feature-seams": "node scripts/lint/feature-import-seams.mjs --strict",
@@ -113,6 +114,7 @@
   "overrides": {
     "@hono/node-server": "^2.0.5",
     "esbuild": "^0.28.1",
+    "fast-uri": "3.1.5",
     "js-cookie": "^3.0.8",
     "uuid": "^11.1.1",
     "workbox-build": {

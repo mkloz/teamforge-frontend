@@ -1,7 +1,8 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 import { lazy, Suspense } from "react";
-
+import { CapabilityDenialNotice } from "@/app/router/capability-denial-notice";
+import { RouteCrawlerBoundary } from "@/app/router/route-crawler-boundary";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
@@ -14,6 +15,8 @@ const NotFoundRouteState = lazy(() =>
 export const rootRoute = createRootRoute({
   component: () => (
     <NuqsAdapter>
+      <RouteCrawlerBoundary />
+      <CapabilityDenialNotice />
       <Outlet />
     </NuqsAdapter>
   ),

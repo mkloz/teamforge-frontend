@@ -1,7 +1,6 @@
-import { LoaderCircle } from "lucide-react";
-
 import type { CompatibilityInputLockStatus } from "@/features/forge-proposals/public/proposal-review";
 import { Button } from "@/shared/components/ui/button";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { PersonalityScreenShell } from "./personality-screen-layout";
 
 interface CompatibilityInputLockStateProps {
@@ -25,8 +24,8 @@ export function CompatibilityInputLockState({
   return (
     <PersonalityScreenShell className="max-w-md justify-center text-center">
       {isChecking ? (
-        <LoaderCircle
-          className="mx-auto mb-4 size-6 animate-spin text-primary motion-reduce:animate-none"
+        <Spinner
+          className="mx-auto mb-4 size-6 text-primary"
           aria-hidden="true"
         />
       ) : null}

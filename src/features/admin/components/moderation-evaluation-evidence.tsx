@@ -13,6 +13,7 @@ import {
 } from "@/features/operator/public/operator-governance";
 import { Button } from "@/shared/components/ui/button";
 import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
+import { Field, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { StatusPill } from "@/shared/components/ui/status-pill";
@@ -185,11 +186,13 @@ export function ModerationEvaluationEvidence({
         contentClassName="px-5 pb-5"
       >
         <div className="mt-4 grid gap-4">
-          <label
-            htmlFor="moderation-evaluation-completed-at"
-            className="grid max-w-sm gap-1.5 font-semibold text-ink text-sm"
-          >
-            Completed at
+          <Field className="max-w-sm gap-1.5">
+            <FieldLabel
+              htmlFor="moderation-evaluation-completed-at"
+              className="font-semibold text-ink"
+            >
+              Completed at
+            </FieldLabel>
             <Input
               id="moderation-evaluation-completed-at"
               readOnly={!commandsEnabled || recordRun.isPending}
@@ -202,12 +205,14 @@ export function ModerationEvaluationEvidence({
                 recordRun.reset();
               }}
             />
-          </label>
-          <label
-            htmlFor="moderation-evaluation-result"
-            className="grid gap-1.5 font-semibold text-ink text-sm"
-          >
-            Saved result JSON
+          </Field>
+          <Field className="gap-1.5">
+            <FieldLabel
+              htmlFor="moderation-evaluation-result"
+              className="font-semibold text-ink"
+            >
+              Saved result JSON
+            </FieldLabel>
             <Textarea
               id="moderation-evaluation-result"
               className="min-h-64 font-mono text-xs leading-relaxed"
@@ -222,7 +227,7 @@ export function ModerationEvaluationEvidence({
               }}
               placeholder="Paste the completed full-pipeline result"
             />
-          </label>
+          </Field>
           {runError ? (
             <p className="text-destructive text-sm" role="alert">
               {runError}
@@ -260,11 +265,13 @@ export function ModerationEvaluationEvidence({
               Use the ID returned after recording, or an existing saved run ID.
             </p>
           </div>
-          <label
-            htmlFor="moderation-evaluation-run-id"
-            className="grid gap-1.5 font-semibold text-ink text-sm"
-          >
-            Evaluation run ID
+          <Field className="gap-1.5">
+            <FieldLabel
+              htmlFor="moderation-evaluation-run-id"
+              className="font-semibold text-ink"
+            >
+              Evaluation run ID
+            </FieldLabel>
             <Input
               id="moderation-evaluation-run-id"
               readOnly={!commandsEnabled || approveRun.isPending}
@@ -274,13 +281,15 @@ export function ModerationEvaluationEvidence({
                 approvalKey.current = null;
               }}
             />
-          </label>
-          <label
-            htmlFor="moderation-approval-expiry"
-            className="grid gap-1.5 font-semibold text-ink text-sm"
-          >
-            Approval expiry{" "}
-            <span className="font-normal text-slate-muted">Optional</span>
+          </Field>
+          <Field className="gap-1.5">
+            <FieldLabel
+              htmlFor="moderation-approval-expiry"
+              className="font-semibold text-ink"
+            >
+              Approval expiry
+              <span className="font-normal text-slate-muted">Optional</span>
+            </FieldLabel>
             <Input
               id="moderation-approval-expiry"
               readOnly={!commandsEnabled || approveRun.isPending}
@@ -291,7 +300,7 @@ export function ModerationEvaluationEvidence({
                 approvalKey.current = null;
               }}
             />
-          </label>
+          </Field>
           <ModerationControlConfirmation
             actionLabel="Approve exact run"
             description="Approval is bound to this run's configuration, corpus, provider models, prompt, policy, schema, thresholds, and result hashes. A mismatch is rejected."

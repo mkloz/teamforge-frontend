@@ -8,21 +8,31 @@ import { InsightSection } from "./insight-section";
 import { useIntermissionPage } from "./use-intermission-page";
 
 interface IntermissionPageProps {
+  allowLengthChanges: boolean;
   milestoneIndex: number;
   answeredCount: number;
   totalQuestions: number;
   onAdjustLength: () => void;
   onExtend: (length: TestLength) => void;
   onContinue: () => void;
+  isStarterMilestone?: boolean;
+  onExploreAfterStarter?: () => void;
+  starterError?: string | null;
+  isCompletingStarter?: boolean;
 }
 
 export function IntermissionPage({
+  allowLengthChanges,
   milestoneIndex,
   answeredCount,
   totalQuestions,
   onAdjustLength,
   onExtend,
   onContinue,
+  isStarterMilestone = false,
+  onExploreAfterStarter,
+  starterError = null,
+  isCompletingStarter = false,
 }: IntermissionPageProps) {
   const {
     content,
@@ -32,6 +42,7 @@ export function IntermissionPage({
     setSelectedUpgrade,
     shouldShowExtension,
   } = useIntermissionPage({
+    allowLengthChanges,
     answeredCount,
     milestoneIndex,
     onContinue,
@@ -70,10 +81,15 @@ export function IntermissionPage({
       </div>
 
       <ActionSection
+        allowLengthChanges={allowLengthChanges}
         isDone={isDone}
         selectedUpgrade={selectedUpgrade}
         onContinue={handleContinue}
         onAdjustLength={onAdjustLength}
+        isStarterMilestone={isStarterMilestone}
+        onExploreAfterStarter={onExploreAfterStarter}
+        starterError={starterError}
+        isCompletingStarter={isCompletingStarter}
       />
     </m.div>
   );

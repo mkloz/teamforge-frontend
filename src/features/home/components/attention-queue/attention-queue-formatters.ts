@@ -1,7 +1,4 @@
-import type {
-  HomeViewer,
-  PlannedGroup,
-} from "@/features/home/lib/home-contract";
+import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
 import {
   getHomePlanCategoryLabel,
@@ -82,16 +79,6 @@ const PLAN_ATTENTION_KIND_BY_ACTION = {
   VOTE_LOCATION: "vote-location",
   VOTE_TIME: "vote-time",
 } as const;
-
-const PROFILE_STEP_META_BY_KIND = {
-  account: ["Profile setup"],
-  interests: ["Group fit", "Interest signal"],
-  personality: ["Group fit", "Personality signal"],
-  security: ["Account safety"],
-} satisfies Record<
-  NonNullable<HomeViewer["nextStep"]>["kind"],
-  readonly string[]
->;
 
 export function formatQueueCount(count: number, singular: string) {
   if (count === 0) {
@@ -190,10 +177,4 @@ export function getPlanMeta(group: PlannedGroup) {
     getHomePlanCategoryLabel(group.plan),
     getHomePlanCostLabel(group.plan),
   ];
-}
-
-export function getProfileStepMeta(
-  nextStep: NonNullable<HomeViewer["nextStep"]>,
-) {
-  return [...PROFILE_STEP_META_BY_KIND[nextStep.kind]];
 }

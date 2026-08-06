@@ -9,7 +9,7 @@ import {
 } from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
-type OnboardingLoadingStep = "interests" | "personality" | "profile";
+type OnboardingLoadingStep = "intent" | "interests" | "personality" | "profile";
 
 interface OnboardingPageLoadingProps extends PageLoadingProps {
   step: OnboardingLoadingStep;
@@ -17,6 +17,7 @@ interface OnboardingPageLoadingProps extends PageLoadingProps {
 
 const ONBOARDING_LOADING_NAMES = {
   interests: "onboarding.interests-page",
+  intent: "onboarding.intent-page",
   personality: "onboarding.personality-page",
   profile: "onboarding.profile-page",
 } satisfies Record<OnboardingLoadingStep, string>;
@@ -29,7 +30,7 @@ export function OnboardingPageLoading({ step }: OnboardingPageLoadingProps) {
 function OnboardingPageLoadingFixture({
   step,
 }: Pick<OnboardingPageLoadingProps, "step">) {
-  if (step === "profile") {
+  if (step === "profile" || step === "intent") {
     return <ProfileBasicsLoadingFixture />;
   }
 

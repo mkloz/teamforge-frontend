@@ -24,7 +24,7 @@ const QUICK_REACTION_EMOJIS = [
 const REACTION_DOCK_CLASS = "mb-1.5 w-full text-ink";
 
 const REACTION_DOCK_CLOUD_CLASS = getActivityPopupPanelClass(
-  "flex flex-wrap items-center gap-0.5 rounded-2xl p-1 [@media(pointer:fine)]:rounded-full",
+  "flex flex-wrap items-center gap-0.5 rounded-full p-1",
 );
 
 const REACTION_DOCK_PICKER_CLASS = getActivityPopupPanelClass(
@@ -32,7 +32,7 @@ const REACTION_DOCK_PICKER_CLASS = getActivityPopupPanelClass(
 );
 
 const EMOJI_ITEM_CLASS =
-  "flex size-11 min-h-11 justify-center rounded-full p-0 text-base leading-none focus:bg-accent/12 data-[highlighted]:bg-accent/12 data-[state=open]:bg-accent/12 [@media(pointer:fine)]:size-8 [@media(pointer:fine)]:min-h-8";
+  "flex size-8 min-h-8 justify-center rounded-full p-0 text-base leading-none focus:bg-accent/12 data-[highlighted]:bg-accent/12 data-[state=open]:bg-accent/12";
 
 interface MessageReactionPickerProps {
   canReact: boolean;
@@ -91,7 +91,7 @@ export function MessageReactionPicker({
           })}
           <ContextMenuItem
             aria-label="More reactions"
-            className="flex size-11 min-h-11 justify-center rounded-full border border-accent/35 bg-accent/12 p-0 text-accent text-base leading-none shadow-[0_0_0_2px_color-mix(in_srgb,var(--accent)_14%,transparent)] transition hover:bg-accent/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 [@media(pointer:fine)]:size-8 [@media(pointer:fine)]:min-h-8"
+            className="flex size-8 min-h-8 justify-center rounded-full border border-accent/35 bg-accent/12 p-0 text-accent text-base leading-none shadow-[0_0_0_2px_color-mix(in_srgb,var(--accent)_14%,transparent)] transition hover:bg-accent/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35"
             onMouseDown={(event) => {
               event.preventDefault();
               event.stopPropagation();

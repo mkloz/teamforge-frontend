@@ -5,13 +5,11 @@ import {
   Handshake,
   type LucideIcon,
   MessageCircleQuestion,
-  ShieldCheck,
   UserPlus,
   UserRoundPlus,
   UsersRound,
 } from "lucide-react";
 
-import type { HomeViewer } from "@/features/home/lib/home-contract";
 import type {
   AttentionQueueContinuation,
   AttentionQueueFriendRequest,
@@ -48,7 +46,6 @@ interface AttentionQueueUrgencyCountInput {
   continuationCheckIns: AttentionQueueContinuation[];
   pendingParticipations: AttentionQueueParticipation[];
   proposedPlans: AttentionQueuePlan[];
-  viewer: HomeViewer;
   visibleInvitations: AttentionQueueInvitation[];
   visibleRequests: AttentionQueueFriendRequest[];
 }
@@ -81,23 +78,16 @@ export function getAttentionQueueCompactModel(
     return getPlanCompactModel(item.group, currentTime);
   }
 
-  return {
-    batchable: false,
-    contextLabel: "Profile setup",
-    icon: ShieldCheck,
-    iconTone: "teal",
-    key: "profile-step",
-    subtitle: item.nextStep.body,
-    title: item.nextStep.title,
-    urgency: "later",
-  };
+  const exhaustiveItem: never = item;
+  throw new Error("Unsupported attention queue item", {
+    cause: exhaustiveItem,
+  });
 }
 
 export function getAttentionQueueUrgencyCounts({
   continuationCheckIns,
   pendingParticipations,
   proposedPlans,
-  viewer,
   visibleInvitations,
   visibleRequests,
 }: AttentionQueueUrgencyCountInput) {
@@ -126,10 +116,6 @@ export function getAttentionQueueUrgencyCounts({
 
   for (const group of proposedPlans) {
     counts[getPlanUrgency(group, currentTime)] += 1;
-  }
-
-  if (viewer.nextStep) {
-    counts.later += 1;
   }
 
   return counts;

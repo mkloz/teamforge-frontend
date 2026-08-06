@@ -13,12 +13,19 @@ export const groupPlanDetailQueries = {
     });
   },
 
-  detail(groupId: string) {
+  detail(groupId: string, sessionScope: string, authorizationScope: string) {
     return queryOptions({
-      queryKey: APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.detail(
+        groupId,
+        sessionScope,
+        authorizationScope,
+      ),
       queryFn: () => GroupPlanDetailApi.getDetail(groupId),
       enabled: groupId.length > 0,
-      staleTime: 30_000,
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnMount: "always",
+      refetchOnWindowFocus: true,
     });
   },
 

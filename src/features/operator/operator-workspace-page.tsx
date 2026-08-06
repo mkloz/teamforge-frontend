@@ -1,8 +1,9 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { ArrowRight, Clock3 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { operatorQueries } from "@/features/operator/api/operator-queries";
+import { OperatorCaseFilters } from "@/features/operator/components/operator-case-filters";
 import {
   OperatorAccessState,
   OperatorLoading,
@@ -15,8 +16,12 @@ import {
   SEVERITY_LABELS,
 } from "@/features/operator/lib/operator-language";
 import {
+  hasOperatorFilters,
+  type OperatorModerationSearch,
+  toOperatorListInput,
+} from "@/features/operator/lib/operator-route";
+import {
   type OperatorCaseSummary,
-  type OperatorQueue,
   operatorQueueSchema,
 } from "@/features/operator/schemas/operator.schemas";
 import {
@@ -24,6 +29,20 @@ import {
   AdminSummaryStrip,
 } from "@/shared/components/admin/admin-visuals";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/shared/components/ui/pagination";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
 import { cn } from "@/shared/lib/utils";
 
 const CASES_PER_PAGE = 50;
@@ -35,15 +54,14 @@ export function OperatorWorkspacePage() {
     operatorQueueSchema.safeParse(search.queue).data ?? "CRITICAL_NOW";
   const page = search.page ?? 1;
   const query = useQuery(
-    operatorQueries.cases({ queue, page, limit: CASES_PER_PAGE }),
+    operatorQueries.cases({
+      ...toOperatorListInput(search, CASES_PER_PAGE),
+      queue,
+    }),
   );
-  const queueCountQueries = useQueries({
-    queries: OPERATOR_QUEUES.map((queueId) =>
-      operatorQueries.cases({ queue: queueId, page: 1, limit: 1 }),
-    ),
-  });
+  const queueSummaryQuery = useQuery(operatorQueries.queueSummary());
   const pageHeadingRef = useRef<HTMLHeadingElement>(null);
-  const listLocation = `${queue}:${page}`;
+  const listLocation = JSON.stringify(search);
   const previousListLocationRef = useRef(listLocation);
   const activeQueue = OPERATOR_QUEUE_COPY[queue];
   const totalPages = query.data
@@ -56,11 +74,11 @@ export function OperatorWorkspacePage() {
     void navigate({
       replace: true,
       search: {
-        queue,
+        ...search,
         page: totalPages === 1 ? undefined : totalPages,
       },
     });
-  }, [navigate, page, query.data, queue, totalPages]);
+  }, [navigate, page, query.data, search, totalPages]);
 
   useEffect(() => {
     if (
@@ -86,20 +104,8 @@ export function OperatorWorkspacePage() {
     );
   }
 
-  const now = Date.now();
-  const overdueCases = query.data.data.filter(
-    (item) => item.dueAt && new Date(item.dueAt).getTime() < now,
-  ).length;
-  const highSeverityCases = query.data.data.filter(
-    (item) => item.severity === "P0" || item.severity === "P1",
-  ).length;
-  const oldestCreatedAt = query.data.data.reduce<string | null>(
-    (oldest, item) =>
-      !oldest || new Date(item.createdAt) < new Date(oldest)
-        ? item.createdAt
-        : oldest,
-    null,
-  );
+  const summary = query.data.summary;
+  const generatedAt = new Date(summary.generatedAt).getTime();
 
   return (
     <div className="mx-auto grid w-full max-w-7xl content-start gap-10 px-4 py-6 md:px-8 md:py-10">
@@ -131,30 +137,33 @@ export function OperatorWorkspacePage() {
         />
         <AdminSummaryMetric
           label="High severity"
-          value={highSeverityCases}
-          tone={highSeverityCases > 0 ? "danger" : "success"}
-          detail="P0 or P1 on this page"
+          value={summary.highSeverity}
+          tone={summary.highSeverity > 0 ? "danger" : "success"}
+          detail="P0 or P1 in filtered results"
         />
         <AdminSummaryMetric
           label="Overdue"
-          value={overdueCases}
-          tone={overdueCases > 0 ? "danger" : "success"}
-          detail="Past the decision target"
+          value={summary.overdue}
+          tone={summary.overdue > 0 ? "danger" : "success"}
+          detail={`${summary.dueSoon} due in 24h · ${summary.missingDeadline} without target`}
         />
         <AdminSummaryMetric
-          label="Oldest visible"
+          label="Oldest case"
           value={
-            oldestCreatedAt
-              ? formatQueueAge(now - new Date(oldestCreatedAt).getTime())
+            summary.oldestCreatedAt
+              ? formatQueueAge(
+                  generatedAt - new Date(summary.oldestCreatedAt).getTime(),
+                )
               : "—"
           }
           tone={
-            oldestCreatedAt &&
-            now - new Date(oldestCreatedAt).getTime() > 24 * 60 * 60_000
+            summary.oldestCreatedAt &&
+            generatedAt - new Date(summary.oldestCreatedAt).getTime() >
+              24 * 60 * 60_000
               ? "warning"
               : "muted"
           }
-          detail="Current page"
+          detail="Full filtered result"
         />
       </AdminSummaryStrip>
 
@@ -163,14 +172,16 @@ export function OperatorWorkspacePage() {
           aria-label="Review queues"
           className="scrollbar-none grid auto-cols-max grid-flow-col gap-1 overflow-x-auto p-1.5 pr-10 md:pr-1.5"
         >
-          {OPERATOR_QUEUES.map((queueId, index) => {
+          {OPERATOR_QUEUES.map((queueId) => {
             const item = OPERATOR_QUEUE_COPY[queueId];
-            const count = queueCountQueries[index]?.data?.total;
+            const count = queueSummaryQuery.data?.counts.find(
+              (entry) => entry.queue === queueId,
+            )?.count;
             return (
               <Link
                 key={queueId}
                 to="/admin/moderation"
-                search={{ queue: queueId, page: undefined }}
+                search={{ ...search, queue: queueId, page: undefined }}
                 className={cn(
                   "inline-flex min-h-10 items-center rounded-xl px-4 font-semibold text-sm transition-colors",
                   queueId === queue
@@ -197,26 +208,114 @@ export function OperatorWorkspacePage() {
         />
       </div>
 
+      <OperatorCaseFilters
+        search={search}
+        onChange={(patch) =>
+          void navigate({ search: { ...search, ...patch, page: undefined } })
+        }
+        onClear={() => void navigate({ search: { queue, sort: search.sort } })}
+      />
+
       <section className="grid min-w-0 content-start gap-4">
+        <p className="sr-only" aria-live="polite">
+          {query.isFetching ? "Updating case results" : "Case results updated"}
+        </p>
         {query.data.data.length ? (
-          <div className="grouped-surface grid overflow-hidden rounded-2xl [&>*]:bg-card">
-            {query.data.data.map((item) => (
-              <OperatorCaseCard key={item.id} item={item} />
-            ))}
+          <div
+            className={cn(
+              "overflow-hidden rounded-2xl bg-card shadow-sm transition-opacity",
+              query.isFetching && "opacity-65",
+            )}
+          >
+            <Table>
+              <TableCaption className="sr-only">
+                {activeQueue.label} cases, page {page} of {totalPages}
+              </TableCaption>
+              <TableHeader className="hidden bg-card text-slate-muted text-xs lg:table-header-group">
+                <TableRow className="hover:bg-card">
+                  <TableHead
+                    className="w-[28%] px-5"
+                    aria-sort={
+                      search.sort === "SEVERITY_DECISION_TARGET"
+                        ? "ascending"
+                        : "none"
+                    }
+                  >
+                    <button
+                      type="button"
+                      className="rounded-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      onClick={() =>
+                        void navigate({
+                          search: {
+                            ...search,
+                            page: undefined,
+                            sort: "SEVERITY_DECISION_TARGET",
+                          },
+                        })
+                      }
+                    >
+                      Case and severity
+                    </button>
+                  </TableHead>
+                  <TableHead>Evidence</TableHead>
+                  <TableHead>Uncertainty</TableHead>
+                  <TableHead>Reports</TableHead>
+                  <TableHead
+                    aria-sort={
+                      !search.sort || search.sort === "DECISION_TARGET_ASC"
+                        ? "ascending"
+                        : "none"
+                    }
+                  >
+                    <button
+                      type="button"
+                      className="rounded-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      onClick={() =>
+                        void navigate({
+                          search: {
+                            ...search,
+                            page: undefined,
+                            sort: "DECISION_TARGET_ASC",
+                          },
+                        })
+                      }
+                    >
+                      Decision target
+                    </button>
+                  </TableHead>
+                  <TableHead className="w-28">
+                    <span className="sr-only">Action</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="grouped-surface">
+                {query.data.data.map((item) => (
+                  <OperatorCaseRow
+                    key={item.id}
+                    item={item}
+                    returnSearch={search}
+                  />
+                ))}
+              </TableBody>
+            </Table>
           </div>
         ) : (
           <div className="grid min-h-44 place-items-center rounded-xl border border-border border-dashed px-5 py-8 text-center">
             <div className="grid max-w-md justify-items-center gap-2">
               <h2 className="font-semibold text-base text-ink">
-                {activeQueue.label} is clear
+                {hasOperatorFilters(search)
+                  ? "No cases match these filters"
+                  : `${activeQueue.label} is clear`}
               </h2>
               <p className="text-pretty text-slate-muted text-sm leading-relaxed">
-                No cases are waiting in this review path.
+                {hasOperatorFilters(search)
+                  ? "Adjust or clear the filters to see other assigned cases."
+                  : "No cases are waiting in this review path."}
               </p>
             </div>
           </div>
         )}
-        <QueuePagination page={page} queue={queue} totalPages={totalPages} />
+        <QueuePagination page={page} search={search} totalPages={totalPages} />
       </section>
     </div>
   );
@@ -231,71 +330,85 @@ function formatQueueAge(milliseconds: number) {
 
 function QueuePagination({
   page,
-  queue,
+  search,
   totalPages,
 }: {
   page: number;
-  queue: OperatorQueue;
+  search: OperatorModerationSearch;
   totalPages: number;
 }) {
   if (totalPages <= 1) return null;
 
   return (
-    <nav
+    <Pagination
       aria-label="Case queue pagination"
-      className="flex flex-wrap items-center justify-between gap-3 pt-2"
+      className="mx-0 flex-wrap justify-between gap-3 pt-2"
     >
       <p className="font-medium text-slate-muted text-sm" aria-live="polite">
         Page {page} of {totalPages}
       </p>
-      <div className="flex items-center gap-2">
+      <PaginationContent className="gap-2">
         {page > 1 ? (
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/admin/moderation"
-              search={{
-                queue,
-                page: page === 2 ? undefined : page - 1,
-              }}
-              rel="prev"
-            >
-              Previous
-            </Link>
-          </Button>
+          <PaginationItem>
+            <Button asChild variant="outline" size="sm">
+              <Link
+                to="/admin/moderation"
+                search={{
+                  ...search,
+                  page: page === 2 ? undefined : page - 1,
+                }}
+                rel="prev"
+              >
+                Previous
+              </Link>
+            </Button>
+          </PaginationItem>
         ) : (
-          <Button variant="outline" size="sm" disabled>
-            Previous
-          </Button>
+          <PaginationItem>
+            <Button variant="outline" size="sm" disabled>
+              Previous
+            </Button>
+          </PaginationItem>
         )}
         {page < totalPages ? (
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/admin/moderation"
-              search={{ queue, page: page + 1 }}
-              rel="next"
-            >
-              Next
-            </Link>
-          </Button>
+          <PaginationItem>
+            <Button asChild variant="outline" size="sm">
+              <Link
+                to="/admin/moderation"
+                search={{ ...search, page: page + 1 }}
+                rel="next"
+              >
+                Next
+              </Link>
+            </Button>
+          </PaginationItem>
         ) : (
-          <Button variant="outline" size="sm" disabled>
-            Next
-          </Button>
+          <PaginationItem>
+            <Button variant="outline" size="sm" disabled>
+              Next
+            </Button>
+          </PaginationItem>
         )}
-      </div>
-    </nav>
+      </PaginationContent>
+    </Pagination>
   );
 }
 
-function OperatorCaseCard({ item }: { item: OperatorCaseSummary }) {
+function OperatorCaseRow({
+  item,
+  returnSearch,
+}: {
+  item: OperatorCaseSummary;
+  returnSearch: OperatorModerationSearch;
+}) {
   const dueAt = item.dueAt ? new Date(item.dueAt) : null;
   const isOverdue = dueAt ? dueAt.getTime() < Date.now() : false;
 
   return (
-    <article className="grid gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[minmax(14rem,1fr)_minmax(15rem,0.9fr)_minmax(11rem,0.65fr)_auto] lg:items-center">
-      <div className="grid min-w-0 gap-1.5">
+    <TableRow className="grid grid-cols-2 gap-x-5 gap-y-4 bg-card px-5 py-5 sm:px-6 lg:table-row lg:px-0 lg:py-0">
+      <TableCell className="col-span-2 min-w-0 whitespace-normal p-0 lg:table-cell lg:px-5 lg:py-4">
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
-          <h2 className="truncate font-semibold text-ink">{item.reference}</h2>
+          <p className="truncate font-semibold text-ink">{item.reference}</p>
           <span
             className={cn(
               "font-semibold text-xs",
@@ -320,21 +433,29 @@ function OperatorCaseCard({ item }: { item: OperatorCaseSummary }) {
             {humanizeCode(item.status)}
           </p>
         )}
-      </div>
+      </TableCell>
 
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-        <CaseFact
-          label="Evidence"
-          value={humanizeCode(item.evidenceCompleteness)}
-        />
-        <CaseFact label="Uncertainty" value={humanizeCode(item.uncertainty)} />
-      </dl>
+      <CaseAttributeCell
+        label="Evidence"
+        value={humanizeCode(item.evidenceCompleteness)}
+      />
+      <CaseAttributeCell
+        label="Uncertainty"
+        value={humanizeCode(item.uncertainty)}
+      />
 
-      <div className="grid gap-1.5">
-        <p className="font-medium text-ink text-sm">
+      <TableCell className="grid gap-1 whitespace-normal p-0 lg:table-cell lg:p-2">
+        <span className="text-slate-muted text-xs lg:hidden">Reports</span>
+        <span className="font-medium text-ink text-sm tabular-nums">
           {item.reportCount} {item.reportCount === 1 ? "report" : "reports"}
-        </p>
-        <p
+        </span>
+      </TableCell>
+
+      <TableCell className="grid gap-1 whitespace-normal p-0 lg:table-cell lg:p-2">
+        <span className="text-slate-muted text-xs lg:hidden">
+          Decision target
+        </span>
+        <span
           className={cn(
             "flex items-center gap-1.5 text-xs",
             isOverdue ? "font-medium text-danger" : "text-slate-muted",
@@ -342,26 +463,29 @@ function OperatorCaseCard({ item }: { item: OperatorCaseSummary }) {
         >
           <Clock3 className="size-3.5" aria-hidden="true" />
           {dueAt ? `Due ${formatOperatorDate(item.dueAt)}` : "No due date"}
-        </p>
-      </div>
+        </span>
+      </TableCell>
 
-      <Link
-        to="/admin/moderation/cases/$caseId"
-        params={{ caseId: item.id }}
-        className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm lg:justify-self-end"
-      >
-        Open case
-        <ArrowRight className="size-4" aria-hidden="true" />
-      </Link>
-    </article>
+      <TableCell className="col-span-2 whitespace-normal p-0 lg:table-cell lg:p-2 lg:pr-5 lg:text-right">
+        <Link
+          to="/admin/moderation/cases/$caseId"
+          params={{ caseId: item.id }}
+          search={{ ...returnSearch, source: "assigned" }}
+          className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm"
+        >
+          Open case
+          <ArrowRight className="size-4" aria-hidden="true" />
+        </Link>
+      </TableCell>
+    </TableRow>
   );
 }
 
-function CaseFact({ label, value }: { label: string; value: string }) {
+function CaseAttributeCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid gap-0.5">
-      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
-      <dd className="text-ink">{value}</dd>
-    </div>
+    <TableCell className="grid gap-1 whitespace-normal p-0 text-sm lg:table-cell lg:p-2">
+      <span className="text-slate-muted text-xs lg:hidden">{label}</span>
+      <span className="text-ink">{value}</span>
+    </TableCell>
   );
 }

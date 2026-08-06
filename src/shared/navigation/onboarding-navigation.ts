@@ -1,10 +1,15 @@
 import {
+  buildGroupPlanDetailNavigation,
+  validateGroupPlanDetailSearch,
+} from "@/shared/navigation/group-navigation";
+import {
   buildSettingsNavigation,
   type SettingsSection,
 } from "@/shared/navigation/settings-navigation";
 
 const onboardingRoutePaths = [
   "/onboarding/profile",
+  "/onboarding/intent",
   "/onboarding/personality",
   "/onboarding/interests",
 ] as const;
@@ -19,6 +24,7 @@ export const onboardingReturnTargets = [
   "/settings",
   "/forge",
   "/invite",
+  "/groups/$groupId",
 ] as const;
 
 type OnboardingRoutePath = (typeof onboardingRoutePaths)[number];
@@ -28,6 +34,7 @@ export interface OnboardingEditOptions {
   returnTo: OnboardingReturnTarget;
   returnSearch?: string | null;
   returnSection?: SettingsSection | null;
+  returnGroupId?: string | null;
   mbti?: string | null;
 }
 
@@ -35,6 +42,7 @@ function buildOnboardingEditSearch({
   returnTo,
   returnSearch,
   returnSection,
+  returnGroupId,
   mbti,
 }: OnboardingEditOptions) {
   return {
@@ -42,6 +50,9 @@ function buildOnboardingEditSearch({
     returnTo,
     ...(returnSearch ? { returnSearch } : {}),
     ...(returnTo === "/settings" && returnSection ? { returnSection } : {}),
+    ...(returnTo === "/groups/$groupId" && returnGroupId
+      ? { returnGroupId }
+      : {}),
     ...(mbti ? { mbti } : {}),
   };
 }
@@ -54,6 +65,29 @@ function buildOnboardingEditNavigation(
     to,
     search: buildOnboardingEditSearch(options),
   } as const;
+}
+
+export function buildProfileBasicsContinuationNavigation(
+  options: Omit<OnboardingEditOptions, "mbti">,
+) {
+  return {
+    to: "/onboarding/profile" as const,
+    search: buildOnboardingEditSearch(options),
+  };
+}
+
+export function buildInterestsContinuationNavigation(
+  options: OnboardingEditOptions,
+) {
+  const { mode: _mode, ...search } = buildOnboardingEditSearch(options);
+  return { to: "/onboarding/interests" as const, search };
+}
+
+export function buildPersonalityContinuationNavigation(
+  options: Omit<OnboardingEditOptions, "mbti">,
+) {
+  const { mode: _mode, ...search } = buildOnboardingEditSearch(options);
+  return { to: "/onboarding/personality" as const, search };
 }
 
 export function buildPersonalityEditNavigation(
@@ -70,6 +104,7 @@ function buildOnboardingReturnNavigation(
   returnTo: OnboardingReturnTarget | null,
   returnSearch: string | null,
   returnSection: SettingsSection | null,
+  returnGroupId: string | null,
 ) {
   if (!returnTo) {
     return null;
@@ -80,6 +115,17 @@ function buildOnboardingReturnNavigation(
     returnSection,
     returnTo,
   });
+
+  if (returnTo === "/groups/$groupId") {
+    return returnGroupId
+      ? buildGroupPlanDetailNavigation(
+          returnGroupId,
+          validateGroupPlanDetailSearch(
+            getOnboardingReturnSearchObject(normalizedSearch) ?? {},
+          ),
+        )
+      : null;
+  }
 
   return {
     to: returnTo,
@@ -119,10 +165,15 @@ export function resolveOnboardingExitNavigation(
   returnSearch: string | null,
   returnSection: SettingsSection | null,
   fallback: "home" | "settings",
+  returnGroupId: string | null = null,
 ) {
   return (
-    buildOnboardingReturnNavigation(returnTo, returnSearch, returnSection) ??
-    getOnboardingFallbackNavigation(fallback, returnSection)
+    buildOnboardingReturnNavigation(
+      returnTo,
+      returnSearch,
+      returnSection,
+      returnGroupId,
+    ) ?? getOnboardingFallbackNavigation(fallback, returnSection)
   );
 }
 

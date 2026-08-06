@@ -1,4 +1,8 @@
-import { buildQuestionList, type TestLength } from "../data/ipip-questions";
+import {
+  buildQuestionList,
+  buildStarterFirstQuestionList,
+  type TestLength,
+} from "../data/ipip-questions";
 import {
   calculatePersonalityProgress,
   countAnsweredQuestions,
@@ -15,10 +19,12 @@ import {
 
 interface UsePersonalityTestProps {
   questionsPerPage: number;
+  starterCheckpointEnabled?: boolean;
 }
 
 export function usePersonalityTest({
   questionsPerPage,
+  starterCheckpointEnabled = false,
 }: UsePersonalityTestProps) {
   const store = usePersonalityTestStore();
   const { screen, testLength, questionIds, answers } = store;
@@ -35,7 +41,9 @@ export function usePersonalityTest({
   }
 
   function handleBegin(length: TestLength) {
-    const qs = buildQuestionList(length);
+    const qs = starterCheckpointEnabled
+      ? buildStarterFirstQuestionList(length)
+      : buildQuestionList(length);
     store.beginTest(
       length,
       qs.map((q) => q.id),
@@ -50,6 +58,7 @@ export function usePersonalityTest({
       isReviewMode: store.isReviewMode,
       testLength,
       totalPages,
+      starterCheckpointEnabled,
     });
 
     if (nextStep.type !== "complete") {
@@ -104,7 +113,9 @@ export function usePersonalityTest({
     handleContinueFromIntermission,
     handleRetake,
     clearSubmittedAnswers: store.clearSubmittedAnswers,
+    discardRecoveredDraft: store.discardRecoveredDraft,
     reset: store.reset,
+    resumeRecoveredDraft: store.resumeRecoveredDraft,
   };
 
   const currentPage = screen.id === "questions" ? screen.currentPage : 1;
@@ -123,6 +134,7 @@ export function usePersonalityTest({
   );
 
   return {
+    starterCheckpointEnabled,
     screen,
     testLength,
     questions,

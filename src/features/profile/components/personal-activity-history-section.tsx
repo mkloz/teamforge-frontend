@@ -6,6 +6,7 @@ import { ProfileApi } from "@/features/profile/api/profile.api";
 import type { PersonalActivityHistoryItem } from "@/features/profile/schemas/personal-activity-history.schema";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { Button } from "@/shared/components/ui/button";
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import { buildActivityGroupHubNavigation } from "@/shared/navigation/activity-navigation";
 
 export function PersonalActivityHistorySection() {
@@ -29,11 +30,10 @@ export function PersonalActivityHistorySection() {
             id="private-activity-history-heading"
             className="font-bold text-ink text-xl"
           >
-            Your activity history
+            Activity history
           </h2>
           <p className="mt-1 text-slate-muted text-sm">
-            A private record of completed plans you took part in. Nobody else
-            can see this section.
+            Completed plans, visible only to you.
           </p>
         </div>
       </div>
@@ -58,9 +58,11 @@ export function PersonalActivityHistorySection() {
           </Button>
         </div>
       ) : items.length === 0 ? (
-        <p className="rounded-2xl bg-card px-4 py-5 text-slate-muted text-sm">
-          Completed activities will appear here after attendance is recorded.
-        </p>
+        <EmptyState
+          icon={CalendarCheck2}
+          title="No completed activities yet"
+          description="They'll appear here once attendance is recorded."
+        />
       ) : (
         <div className="grid gap-3">
           {items.map((item) => (

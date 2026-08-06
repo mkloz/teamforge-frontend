@@ -7,7 +7,10 @@ import {
   realtimePlanUpdatedPayloadSchema,
   realtimePresenceChangedPayloadSchema,
 } from "@/shared/schemas";
-import type { GroupPlanDetail } from "../schemas/group-plan-detail.schema";
+import {
+  type GroupPlanDetailResponse,
+  isRichGroupPlanDetail,
+} from "../schemas/group-plan-detail.schema";
 
 interface GroupPlanDetailRealtimeInput {
   groupId: string;
@@ -67,10 +70,12 @@ function handlePresenceChanged(payload: unknown, groupId: string) {
     return;
   }
 
-  appQueryClient.setQueryData<GroupPlanDetail>(
-    APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
+  appQueryClient.setQueriesData<GroupPlanDetailResponse>(
+    {
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.detailAllScopes(groupId),
+    },
     (current) =>
-      current
+      isRichGroupPlanDetail(current)
         ? {
             ...current,
             members: current.members.map((member) =>

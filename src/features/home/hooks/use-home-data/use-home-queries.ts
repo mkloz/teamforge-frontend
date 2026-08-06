@@ -1,8 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { homeQueries } from "@/features/home/api/home-queries";
 import type { IncludedHomeData } from "@/features/home/hooks/use-home-data/home-types";
+import {
+  getOnboardingProjectionScope,
+  useOnboardingProductStateQuery,
+} from "@/shared/api/onboarding-product-state-query";
+import { getHttpErrorStatus } from "@/shared/lib/api-error-message";
 
 export function useHomeQueries(include: IncludedHomeData) {
+  const productStateQuery = useOnboardingProductStateQuery();
+  const projectionScope = productStateQuery.data
+    ? getOnboardingProjectionScope(productStateQuery.data)
+    : "product-state-pending";
   const statsQuery = useQuery({
     ...homeQueries.stats(),
     enabled: include.stats,
@@ -24,15 +33,23 @@ export function useHomeQueries(include: IncludedHomeData) {
     enabled: include.sentInvitations,
   });
   const recommendationsQuery = useQuery({
-    ...homeQueries.recommendations(),
-    enabled: include.recommendations,
+    ...homeQueries.recommendations(projectionScope),
+    enabled: include.recommendations && productStateQuery.isSuccess,
   });
+  const recommendationStatus = getHttpErrorStatus(recommendationsQuery.error);
+  const recommendationsAccessEnded =
+    recommendationStatus === 401 || recommendationStatus === 403;
 
   return {
     groups: groupsQuery,
     invitations: invitationsQuery,
     plans: plansQuery,
-    recommendations: recommendationsQuery,
+    recommendations: {
+      data: recommendationsAccessEnded ? undefined : recommendationsQuery.data,
+      error: recommendationsQuery.error,
+      isError: recommendationsQuery.isError,
+      isLoading: recommendationsQuery.isLoading,
+    },
     sentInvitations: sentInvitationsQuery,
     stats: statsQuery,
   };

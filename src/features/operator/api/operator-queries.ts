@@ -1,7 +1,7 @@
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { OperatorApi } from "@/features/operator/api/operator.api";
+import type { OperatorCaseListInput } from "@/features/operator/lib/operator-route";
 import type {
-  ModerationCaseStatus,
   OperatorQueue,
   OperatorWorkerJobStatus,
   OperatorWorkerKind,
@@ -10,14 +10,11 @@ import type {
 export const OPERATOR_QUERY_KEYS = {
   all: ["admin", "operator", "moderation"] as const,
   session: ["admin", "operator", "moderation", "session"] as const,
-  intake: (input: { page: number; limit: number }) =>
+  intake: (input: OperatorCaseListInput) =>
     ["admin", "operator", "moderation", "intake", input] as const,
-  cases: (input: {
-    queue: OperatorQueue;
-    status?: ModerationCaseStatus;
-    page: number;
-    limit: number;
-  }) => ["admin", "operator", "moderation", "cases", input] as const,
+  cases: (input: OperatorCaseListInput & { queue: OperatorQueue }) =>
+    ["admin", "operator", "moderation", "cases", input] as const,
+  queueSummary: ["admin", "operator", "moderation", "queue-summary"] as const,
   case: (caseId: string) =>
     ["admin", "operator", "moderation", "cases", caseId] as const,
   evidence: (caseId: string) =>
@@ -114,22 +111,26 @@ export const operatorQueries = {
       staleTime: 30_000,
       retry: false,
     }),
-  intake: (input: { page: number; limit: number }) =>
+  intake: (input: OperatorCaseListInput) =>
     queryOptions({
       queryKey: OPERATOR_QUERY_KEYS.intake(input),
       queryFn: () => OperatorApi.getIntake(input),
       staleTime: 15_000,
       retry: false,
+      placeholderData: keepPreviousData,
     }),
-  cases: (input: {
-    queue: OperatorQueue;
-    status?: ModerationCaseStatus;
-    page: number;
-    limit: number;
-  }) =>
+  cases: (input: OperatorCaseListInput & { queue: OperatorQueue }) =>
     queryOptions({
       queryKey: OPERATOR_QUERY_KEYS.cases(input),
       queryFn: () => OperatorApi.getCases(input),
+      staleTime: 15_000,
+      retry: false,
+      placeholderData: keepPreviousData,
+    }),
+  queueSummary: () =>
+    queryOptions({
+      queryKey: OPERATOR_QUERY_KEYS.queueSummary,
+      queryFn: () => OperatorApi.getQueueSummary(),
       staleTime: 15_000,
       retry: false,
     }),

@@ -30,6 +30,7 @@ import {
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { Field, FieldLabel } from "@/shared/components/ui/field";
 import { Notice } from "@/shared/components/ui/notice";
 import {
   Select,
@@ -428,13 +429,13 @@ function CorrectionRow({
                 decision.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <div className="grid gap-2">
-              <label
+            <Field className="gap-2">
+              <FieldLabel
                 className="font-semibold text-ink text-sm"
                 htmlFor={`correction-rejection-reason-${correction.id}`}
               >
                 Rejection reason
-              </label>
+              </FieldLabel>
               <Select
                 value={rejectionReason}
                 onValueChange={(value) => {
@@ -462,7 +463,7 @@ function CorrectionRow({
                   )}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
             <DecisionSummary
               correction={correction}
               reason={rejectionReasonLabels[rejectionReason]}

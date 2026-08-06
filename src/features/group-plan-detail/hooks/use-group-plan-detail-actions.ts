@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-plan-detail-commands";
 import type { GroupPlanViewerRelationship } from "@/features/group-plan-detail/lib/group-plan-access";
-import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import {
+  type GroupPlanDetailResponse,
+  isRichGroupPlanDetail,
+} from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import {
   getOptimisticJoinRelationship,
   updateOptimisticViewerRelationship,
@@ -15,12 +18,13 @@ import {
 } from "@/shared/lib/telemetry-contract";
 
 interface GroupPlanDetailMutationContext {
-  previousDetail: GroupPlanDetail | undefined;
+  previousDetails: [readonly unknown[], GroupPlanDetailResponse | undefined][];
 }
 
 export function useGroupPlanDetailActions(groupId: string) {
   const queryClient = useQueryClient();
-  const detailQueryKey = APP_QUERY_KEYS.groupPlanDetail.byId(groupId);
+  const detailQueryKey =
+    APP_QUERY_KEYS.groupPlanDetail.detailAllScopes(groupId);
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   function guardGroupAction(id: string, description: string) {
@@ -32,20 +36,27 @@ export function useGroupPlanDetailActions(groupId: string) {
   ) {
     await queryClient.cancelQueries({ queryKey: detailQueryKey });
 
-    const previousDetail =
-      queryClient.getQueryData<GroupPlanDetail>(detailQueryKey);
-
-    queryClient.setQueryData<GroupPlanDetail>(detailQueryKey, (current) =>
-      current
-        ? updateOptimisticViewerRelationship(current, relationship)
-        : current,
+    const previousDetails = queryClient.getQueriesData<GroupPlanDetailResponse>(
+      {
+        queryKey: detailQueryKey,
+      },
     );
 
-    return { previousDetail } satisfies GroupPlanDetailMutationContext;
+    queryClient.setQueriesData<GroupPlanDetailResponse>(
+      { queryKey: detailQueryKey },
+      (current) =>
+        isRichGroupPlanDetail(current)
+          ? updateOptimisticViewerRelationship(current, relationship)
+          : current,
+    );
+
+    return { previousDetails } satisfies GroupPlanDetailMutationContext;
   }
 
   function restoreDetail(context: GroupPlanDetailMutationContext | undefined) {
-    queryClient.setQueryData(detailQueryKey, context?.previousDetail);
+    context?.previousDetails.forEach(([queryKey, previousDetail]) => {
+      queryClient.setQueryData(queryKey, previousDetail);
+    });
   }
 
   function runGuardedGroupAction(
@@ -79,7 +90,12 @@ export function useGroupPlanDetailActions(groupId: string) {
     mutationKey: ["group-plan-detail", "join", groupId],
     mutationFn: () => GroupPlanDetailCommands.joinGroup(groupId),
     onMutate: async () => {
-      const detail = queryClient.getQueryData<GroupPlanDetail>(detailQueryKey);
+      const candidate = queryClient
+        .getQueriesData<GroupPlanDetailResponse>({
+          queryKey: detailQueryKey,
+        })
+        .find(([, current]) => isRichGroupPlanDetail(current))?.[1];
+      const detail = isRichGroupPlanDetail(candidate) ? candidate : undefined;
       return optimisticallySetRelationship(
         getOptimisticJoinRelationship(detail),
       );

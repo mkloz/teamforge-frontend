@@ -21,15 +21,13 @@ import type { LazyRouteLoadingComponent } from "@/app/router/lazy-route-loading"
 import type { LazyRouteModule } from "@/app/router/lazy-route-module";
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import {
+  ensureOnboardingProductState,
+  getOnboardingProjectionScope,
+} from "@/shared/api/onboarding-product-state-query";
 import { appQueryClient } from "@/shared/api/query-client";
 import { getBrowserDocument } from "@/shared/lib/browser-environment";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
-
-interface PreloadableGroupPlanDetail {
-  plan?: { coverImage?: string | null } | null;
-  group: { avatar?: string | null };
-  members: { avatar?: string | null }[];
-}
 
 interface AppRouteModulePreloader {
   matches: (pathname: string) => boolean;
@@ -82,9 +80,8 @@ export function createGroupPlanDetailRouteLoader(
   module: LazyRouteModule,
   loading?: LazyRouteLoadingComponent,
 ) {
-  return async ({ params }: { params: { groupId: string } }) => {
+  return async () => {
     startRouteLoadingPreload(loading);
-    startRouteDataPreload(() => preloadGroupPlanDetail(params.groupId));
 
     await module.preload();
   };
@@ -199,9 +196,14 @@ async function preloadDefaultExploreFeed() {
   const { exploreQueries } = await import(
     "@/features/explore/api/explore-queries"
   );
+  const productState = await ensureOnboardingProductState();
 
   const data = await appQueryClient.fetchInfiniteQuery(
-    exploreQueries.feed(DEFAULT_FILTERS, ""),
+    exploreQueries.feed(
+      DEFAULT_FILTERS,
+      "",
+      getOnboardingProjectionScope(productState),
+    ),
   );
   const firstGroupAvatar = data.pages[0]?.items.find(
     (item) => item.type === "GROUP",
@@ -229,13 +231,15 @@ async function preloadActivityFeed() {
 
 async function preloadHomeRouteData() {
   const { homeQueries } = await import("@/features/home/api/home-queries");
+  const productState = await ensureOnboardingProductState();
+  const projectionScope = getOnboardingProjectionScope(productState);
 
   await Promise.allSettled([
     appQueryClient.prefetchQuery(homeQueries.groups()),
     appQueryClient.prefetchQuery(homeQueries.invitations()),
     appQueryClient.prefetchQuery(homeQueries.plans()),
     appQueryClient.prefetchQuery(homeQueries.stats()),
-    appQueryClient.prefetchQuery(homeQueries.recommendations()),
+    appQueryClient.prefetchQuery(homeQueries.recommendations(projectionScope)),
   ]);
 }
 
@@ -273,19 +277,6 @@ async function preloadForgeProposal(proposalId: string) {
   );
 
   await appQueryClient.prefetchQuery(forgeProposalQueries.detail(proposalId));
-}
-
-async function preloadGroupPlanDetail(groupId: string) {
-  const { groupPlanDetailQueries } = await import(
-    "@/features/group-plan-detail/api/group-plan-detail-queries"
-  );
-
-  const detail = await appQueryClient.fetchQuery(
-    groupPlanDetailQueries.detail(groupId),
-  );
-  const coverSrc = getPreferredGroupPlanCoverSrc(detail);
-
-  preloadRouteImage(getSizedImageUrl(coverSrc, 800) ?? coverSrc);
 }
 
 async function preloadUserDetail(userId: string) {
@@ -371,16 +362,6 @@ function createActivitySessionRestoredPreload(pathname: string) {
   return undefined;
 }
 
-function createGroupSessionRestoredPreload(pathname: string) {
-  const groupId = getGroupPlanIdFromPathname(pathname);
-
-  return groupId
-    ? async () => {
-        await preloadGroupPlanDetail(groupId);
-      }
-    : undefined;
-}
-
 function createForgeProposalSessionRestoredPreload(pathname: string) {
   const proposalId = getForgeProposalIdFromPathname(pathname);
 
@@ -401,31 +382,6 @@ function createUserSessionRestoredPreload(pathname: string) {
     : undefined;
 }
 
-function getPreferredGroupPlanCoverSrc(detail: PreloadableGroupPlanDetail) {
-  return (
-    detail.plan?.coverImage ??
-    detail.group.avatar ??
-    getFirstMemberAvatar(detail.members)
-  );
-}
-
-function getFirstMemberAvatar(members: PreloadableGroupPlanDetail["members"]) {
-  return members.find(hasAvatar)?.avatar ?? null;
-}
-
-function hasAvatar(member: { avatar?: string | null }): member is {
-  avatar: string;
-} {
-  return Boolean(member.avatar);
-}
-
-function getGroupPlanIdFromPathname(pathname: string) {
-  const match = /^\/groups\/([^/?#]+)/.exec(pathname);
-  const groupId = match?.[1];
-
-  return groupId ? decodeURIComponent(groupId) : null;
-}
-
 function getUserIdFromPathname(pathname: string) {
   const match = /^\/users\/([^/?#]+)/.exec(pathname);
   const userId = match?.[1];
@@ -444,7 +400,6 @@ const SESSION_RESTORED_PRELOAD_RESOLVERS: SessionRestoredPreloadResolver[] = [
   createExploreSessionRestoredPreload,
   createActivitySessionRestoredPreload,
   createForgeProposalSessionRestoredPreload,
-  createGroupSessionRestoredPreload,
   createUserSessionRestoredPreload,
 ];
 
@@ -523,10 +478,5 @@ const APP_ROUTE_MODULE_PRELOADERS = [
     matches: (pathname: string) => pathname.startsWith("/groups/"),
     module: groupPlanDetailPageModule,
     loading: GroupPlanDetailRouteLoading,
-    preloadData: (pathname: string) => {
-      const groupId = getGroupPlanIdFromPathname(pathname);
-
-      return groupId ? preloadGroupPlanDetail(groupId) : Promise.resolve();
-    },
   },
 ] satisfies readonly AppRouteModulePreloader[];

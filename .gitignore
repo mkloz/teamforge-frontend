@@ -8,6 +8,7 @@ npmpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.wrangler/
 dist
 dist-operator
 dev-dist

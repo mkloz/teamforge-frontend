@@ -11,6 +11,7 @@ import {
 } from "@/features/operator/public/operator-governance";
 import { Button } from "@/shared/components/ui/button";
 import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
+import { Field, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { cn } from "@/shared/lib/utils";
@@ -373,15 +374,17 @@ function TextField({
   }
 
   return (
-    <label htmlFor={id} className="grid gap-1.5 font-semibold text-ink text-sm">
-      {label}
+    <Field className="gap-1.5">
+      <FieldLabel htmlFor={id} className="font-semibold text-ink">
+        {label}
+      </FieldLabel>
       <Input
         id={id}
         readOnly={readOnly}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
-    </label>
+    </Field>
   );
 }
 
@@ -398,8 +401,10 @@ function JsonField({
 }) {
   const id = useId();
   return (
-    <label htmlFor={id} className="grid gap-1.5 font-semibold text-ink text-sm">
-      {label}
+    <Field className="gap-1.5">
+      <FieldLabel htmlFor={id} className="font-semibold text-ink">
+        {label}
+      </FieldLabel>
       <Textarea
         id={id}
         className="min-h-48 font-mono text-xs leading-relaxed"
@@ -408,7 +413,7 @@ function JsonField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
-    </label>
+    </Field>
   );
 }
 

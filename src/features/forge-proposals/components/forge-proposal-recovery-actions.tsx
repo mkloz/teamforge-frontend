@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 
 import { useForgeProposalRecovery } from "@/features/forge-proposals/hooks/use-forge-proposal-recovery";
 import type { ForgeProposal } from "@/features/forge-proposals/lib/forge-proposal-contract";
-import type { FormationOpeningOrganizerApplication } from "@/shared/api/formation-opening-api";
+import type {
+  FormationOpeningOrganizerApplication,
+  FormationOpeningOrganizerDetail,
+} from "@/shared/api/formation-opening-api";
 import { Avatar } from "@/shared/components/common/avatar";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
@@ -36,7 +39,7 @@ export function ForgeProposalRecoveryActions({
     });
   }, [navigate, recovery.successorProposalId]);
 
-  if (!summary || summary.viewerStatus !== "ORGANIZER_ACTION") {
+  if (summary?.viewerStatus !== "ORGANIZER_ACTION") {
     return null;
   }
 
@@ -146,10 +149,7 @@ interface RecoveryManagerProps {
     applicationVersion: number;
     openingVersion: number;
   }) => Promise<boolean>;
-  opening: Extract<
-    NonNullable<ReturnType<typeof useForgeProposalRecovery>["opening"]>,
-    { viewerRole: "ORGANIZER" }
-  >;
+  opening: FormationOpeningOrganizerDetail;
 }
 
 function RecoveryManager({

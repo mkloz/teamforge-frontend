@@ -82,8 +82,8 @@ function TagPillContent({
       asChild
       disabled={viewState.isToggleDisabled}
       className={cn(
-        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-xs sm:px-2 sm:py-1 [@media(pointer:coarse)]:min-h-11",
-        showRejectAction && "pr-7 sm:pr-8 [@media(pointer:coarse)]:pr-11",
+        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-xs after:hidden hover:translate-y-0! hover:shadow-none! sm:py-1",
+        showRejectAction ? "pr-7 sm:pl-2" : "sm:px-2",
         viewState.surfaceClass,
       )}
     >
@@ -104,12 +104,7 @@ function TagPillContent({
   );
 
   return (
-    <div
-      className={cn(
-        "relative inline-flex max-w-full items-center",
-        showRejectAction && "[@media(pointer:coarse)]:min-h-11",
-      )}
-    >
+    <div className="relative inline-flex max-w-full items-center">
       {viewState.hasAliases ? (
         <Tooltip>
           <TooltipTrigger asChild>{toggleAction}</TooltipTrigger>
@@ -234,7 +229,7 @@ function RejectTagButton({
       size="icon-xs"
       aria-label={`Dismiss ${label}`}
       onClick={onReject}
-      className="group/dismiss absolute top-1/2 right-0.5 z-10 size-6 -translate-y-1/2 rounded-full p-0 hover:bg-slate-muted/10 [@media(pointer:coarse)]:right-0 [@media(pointer:coarse)]:size-11"
+      className="group/dismiss absolute top-1/2 right-0.5 z-10 size-6 -translate-y-1/2 rounded-full p-0 hover:bg-slate-muted/10"
     >
       <X
         aria-hidden="true"

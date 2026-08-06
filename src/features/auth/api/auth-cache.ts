@@ -1,13 +1,13 @@
+import { clearAccountSessionCache } from "@/shared/api/account-session-cache";
 import { type AuthTokens, authSession } from "@/shared/api/auth-session";
-import { clearCurrentUserCache } from "@/shared/api/current-user-query";
 
 export class AuthCache {
   static clearCurrentUserCache() {
-    clearCurrentUserCache();
+    clearAccountSessionCache();
   }
 
   static startAuthenticatedSession(tokens: AuthTokens) {
-    authSession.setTokens(tokens);
     AuthCache.clearCurrentUserCache();
+    authSession.setTokens(tokens);
   }
 }

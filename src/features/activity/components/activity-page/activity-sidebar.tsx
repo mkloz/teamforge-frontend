@@ -17,6 +17,7 @@ export function ActivitySidebar({
 
   return (
     <aside
+      data-onboarding-tour="activity-workspace"
       className={cn(
         "flex h-full min-h-0 shrink-0 flex-col border-border border-r bg-canvas transition-colors duration-300",
         "w-full md:w-72 lg:w-80",

@@ -49,6 +49,7 @@ export function RegisterForm({
   onStepChange,
 }: RegisterFormProps) {
   const {
+    accountRecovery,
     form,
     isOnline,
     step,
@@ -88,9 +89,11 @@ export function RegisterForm({
             <div key={step} className="w-full animate-auth-step-enter">
               {step === 1 && (
                 <StepCredentials
+                  accountRecovery={accountRecovery}
                   onNext={goToStep2}
                   onGoogleSuccess={onSuccess}
                   onNextIntent={loadStepProfile}
+                  onSwitchToLogin={onSwitchToLogin}
                 />
               )}
               {step === 2 && (

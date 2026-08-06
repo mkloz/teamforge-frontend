@@ -94,6 +94,15 @@ export type FormationOpeningOrganizerApplication = z.infer<
   typeof formationOpeningOrganizerApplicationSchema
 >;
 
+export type FormationOpeningDetail = z.infer<
+  typeof formationOpeningDetailSchema
+>;
+
+export type FormationOpeningOrganizerDetail = Extract<
+  FormationOpeningDetail,
+  { viewerRole: "ORGANIZER" }
+>;
+
 export async function getFormationOpening(openingId: string) {
   const response = await apiClient
     .get(`forge-proposal-openings/${openingId}`)

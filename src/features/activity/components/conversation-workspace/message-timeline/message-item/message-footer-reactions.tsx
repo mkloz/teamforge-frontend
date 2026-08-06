@@ -44,7 +44,7 @@ function ReactionPlaceholders({
           key={emoji}
           type="button"
           aria-label={`React with ${emoji}`}
-          className="group/reaction flex size-11 items-center justify-center rounded-full text-xs leading-none transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 active:scale-95 [@media(pointer:fine)]:size-5"
+          className="group/reaction flex size-5 items-center justify-center rounded-full text-xs leading-none transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 active:scale-95"
           onClick={() => onToggleReaction?.(emoji)}
         >
           <span

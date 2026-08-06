@@ -10,6 +10,7 @@ export type ScreenState =
   | { id: "dynamic-questions" }
   | { id: "intermission"; type: number; nextPageIndex: number }
   | { id: "submitting" }
+  | { id: "recovery" }
   | { id: "results" };
 
 export interface PersonalityTestSnapshot {
@@ -19,12 +20,16 @@ export interface PersonalityTestSnapshot {
   answers: RawAnswers;
   previousScreen: ScreenState | null;
   isReviewMode: boolean;
+  recoveryScreen: ScreenState | null;
 }
 
 export interface PersonalityTestState extends PersonalityTestSnapshot {
   beginTest: (length: TestLength, questionIds: number[]) => void;
   clearSubmittedAnswers: () => void;
+  discardRecoveredDraft: () => void;
   reset: () => void;
+  resumeRecoveredDraft: () => void;
+  showRecoveryChoice: () => void;
   setAnswer: (questionId: number, val: 1 | 2 | 3 | 4 | 5) => void;
   setIsReviewMode: (isReviewMode: boolean) => void;
   setScreen: (screen: ScreenState) => void;

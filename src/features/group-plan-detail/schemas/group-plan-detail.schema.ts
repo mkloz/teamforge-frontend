@@ -231,7 +231,59 @@ export const groupPlanDetailSchema = z.object({
   }),
 });
 
+export const introductoryGroupPlanDetailSchema = z
+  .object({
+    type: z.literal("INTRODUCTORY_GROUP_DETAIL"),
+    group: z
+      .object({
+        id: z.string(),
+        activeMembersCount: z.number().int().nonnegative(),
+        maxMembers: z.number().int().positive(),
+      })
+      .strict(),
+    activity: z
+      .object({
+        interests: z.array(
+          z
+            .object({
+              name: z.string(),
+              slug: z.string(),
+            })
+            .strict(),
+        ),
+      })
+      .strict(),
+    plan: z
+      .object({
+        category: planCategorySchema,
+        cost: costTypeSchema,
+        locationMode: locationModeSchema,
+        scheduleMode: planScheduleModeSchema.nullable(),
+      })
+      .strict()
+      .nullable(),
+    interestFitPercentage: z.number().int().min(0).max(100),
+  })
+  .strict();
+
+export const groupPlanDetailResponseSchema = z.union([
+  introductoryGroupPlanDetailSchema,
+  groupPlanDetailSchema,
+]);
+
 export type GroupPlanDetail = z.infer<typeof groupPlanDetailSchema>;
+export type IntroductoryGroupPlanDetail = z.infer<
+  typeof introductoryGroupPlanDetailSchema
+>;
+export type GroupPlanDetailResponse = z.infer<
+  typeof groupPlanDetailResponseSchema
+>;
+
+export function isRichGroupPlanDetail(
+  detail: GroupPlanDetailResponse | undefined,
+): detail is GroupPlanDetail {
+  return detail !== undefined && !("type" in detail);
+}
 export type GroupPlanDetailMember = GroupPlanDetail["members"][number];
 export type GroupPlanDetailPendingInvitation =
   GroupPlanDetail["pendingInvitations"][number];

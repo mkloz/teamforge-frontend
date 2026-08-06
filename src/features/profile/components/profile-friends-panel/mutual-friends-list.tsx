@@ -1,6 +1,7 @@
-import { Loader2, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
 import { Button } from "@/shared/components/ui/button";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { FriendCard } from "./friend-card";
 import { FriendMessageAction } from "./friend-message-action";
 
@@ -23,10 +24,7 @@ export function MutualFriendsList({ userId }: MutualFriendsListProps) {
         role="status"
         aria-live="polite"
       >
-        <Loader2
-          aria-hidden="true"
-          className="size-6 animate-spin text-muted-foreground motion-reduce:animate-none"
-        />
+        <Spinner aria-hidden="true" className="size-6 text-muted-foreground" />
         <span className="sr-only">Loading mutual friends.</span>
       </div>
     );

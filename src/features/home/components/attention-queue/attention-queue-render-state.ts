@@ -1,4 +1,3 @@
-import type { HomeViewer } from "@/features/home/lib/home-contract";
 import type {
   AttentionQueueContinuation,
   AttentionQueueFriendRequest,
@@ -16,7 +15,6 @@ interface AttentionQueueRenderStateInput {
   proposedPlans: AttentionQueuePlan[];
   queueSize: number;
   shouldShowSkeleton: boolean;
-  viewer: HomeViewer;
   visibleInvitations: AttentionQueueInvitation[];
   visibleRequests: AttentionQueueFriendRequest[];
   maxVisibleItems?: number;
@@ -44,10 +42,6 @@ export type AttentionQueueRenderItem =
       kind: "continuation";
     }
   | {
-      kind: "profile";
-      nextStep: NonNullable<HomeViewer["nextStep"]>;
-    }
-  | {
       hiddenItemCount: number;
       kind: "see-rest";
     };
@@ -58,7 +52,6 @@ export function getAttentionQueueRenderState({
   proposedPlans,
   queueSize,
   shouldShowSkeleton,
-  viewer,
   visibleInvitations,
   visibleRequests,
   maxVisibleItems,
@@ -73,7 +66,6 @@ export function getAttentionQueueRenderState({
     continuationCheckIns,
     pendingParticipations,
     proposedPlans,
-    viewer,
     visibleInvitations,
     visibleRequests,
   });
@@ -88,7 +80,6 @@ export function getAttentionQueueRenderState({
         renderedParticipations,
         renderedPlans,
         renderedRequests,
-        viewer,
       });
 
   return {
@@ -97,7 +88,6 @@ export function getAttentionQueueRenderState({
       continuationCheckIns,
       pendingParticipations,
       proposedPlans,
-      viewer,
       visibleInvitations,
       visibleRequests,
     }),
@@ -172,7 +162,6 @@ function getCollapsedQueueSize({
   continuationCheckIns,
   pendingParticipations,
   proposedPlans,
-  viewer,
   visibleInvitations,
   visibleRequests,
 }: Omit<AttentionQueueRenderStateInput, "queueSize" | "shouldShowSkeleton">) {
@@ -181,8 +170,7 @@ function getCollapsedQueueSize({
     getCollapsedItemCount(visibleRequests) +
     getCollapsedItemCount(pendingParticipations) +
     getCollapsedItemCount(continuationCheckIns) +
-    getCollapsedItemCount(proposedPlans) +
-    (viewer.nextStep ? 1 : 0)
+    getCollapsedItemCount(proposedPlans)
   );
 }
 
@@ -201,7 +189,6 @@ function getQueueItems({
   renderedParticipations,
   renderedPlans,
   renderedRequests,
-  viewer,
 }: {
   hiddenItemCount: number;
   renderedContinuationCheckIns: AttentionQueueContinuation[];
@@ -209,7 +196,6 @@ function getQueueItems({
   renderedParticipations: AttentionQueueParticipation[];
   renderedPlans: AttentionQueuePlan[];
   renderedRequests: AttentionQueueFriendRequest[];
-  viewer: HomeViewer;
 }): AttentionQueueRenderItem[] {
   return [
     ...renderedInvitations.map((invite) => ({
@@ -232,14 +218,6 @@ function getQueueItems({
       group,
       kind: "plan" as const,
     })),
-    ...(viewer.nextStep
-      ? [
-          {
-            kind: "profile" as const,
-            nextStep: viewer.nextStep,
-          },
-        ]
-      : []),
     ...(hiddenItemCount > 0
       ? [
           {
@@ -255,7 +233,6 @@ function getQueueSummary({
   continuationCheckIns,
   pendingParticipations,
   proposedPlans,
-  viewer,
   visibleInvitations,
   visibleRequests,
 }: Omit<AttentionQueueRenderStateInput, "queueSize" | "shouldShowSkeleton">) {
@@ -267,7 +244,6 @@ function getQueueSummary({
       "check-in",
     ),
     formatQueueCount(proposedPlans.length, "plan"),
-    viewer.nextStep ? "1 setup" : null,
   ].filter(isQueueSummaryItem);
 }
 

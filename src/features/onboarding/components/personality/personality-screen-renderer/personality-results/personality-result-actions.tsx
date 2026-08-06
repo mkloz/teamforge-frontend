@@ -1,9 +1,20 @@
-import { ArrowRight, Check, RefreshCcw, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  LockKeyhole,
+  RefreshCcw,
+  Trash2,
+} from "lucide-react";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
-type ResultAction = "publish" | "discard" | "delete-all" | "retake";
+type ResultAction =
+  | "publish"
+  | "keep-private"
+  | "discard"
+  | "delete-all"
+  | "retake";
 
 interface PersonalityResultActionsProps {
   actionsAvailable: boolean;
@@ -12,12 +23,14 @@ interface PersonalityResultActionsProps {
   continueLabel: string;
   error: string | null;
   hasDraft: boolean;
+  isAcceptedPrivately: boolean;
   isOnline: boolean;
   isLegacyResult: boolean;
   isSaved: boolean;
   onContinue: () => void;
   onDiscard: () => void;
   onDeleteAll: () => void;
+  onKeepPrivate: () => void;
   onSave: () => void;
   onRetake: () => void;
   publishBlocked: boolean;
@@ -33,12 +46,14 @@ export function PersonalityResultActions({
   continueLabel,
   error,
   hasDraft,
+  isAcceptedPrivately,
   isOnline,
   isLegacyResult,
   isSaved,
   onContinue,
   onDiscard,
   onDeleteAll,
+  onKeepPrivate,
   onSave,
   onRetake,
   publishBlocked,
@@ -73,22 +88,65 @@ export function PersonalityResultActions({
             compactOnMobile
           />
         </div>
+      ) : isAcceptedPrivately ? (
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
+          <div
+            className="inline-flex min-w-0 items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-semibold text-primary text-sm"
+            role="status"
+          >
+            <LockKeyhole className="size-3.5 shrink-0" aria-hidden="true" />
+            <span className="truncate">Used privately</span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={
+              !isOnline ||
+              !actionsAvailable ||
+              isBusy ||
+              isLegacyResult ||
+              publishBlocked
+            }
+            title={publishBlockedReason ?? undefined}
+            loading={activeAction === "publish"}
+            onClick={onSave}
+          >
+            Add to profile
+          </Button>
+        </div>
       ) : (
-        <Button
-          disabled={
-            !isOnline ||
-            !actionsAvailable ||
-            isBusy ||
-            isLegacyResult ||
-            publishBlocked
-          }
-          title={publishBlockedReason ?? undefined}
-          loading={activeAction === "publish"}
-          onClick={onSave}
-        >
-          <Check size={16} strokeWidth={2} />
-          {isLegacyResult ? "New assessment required" : "Use this result"}
-        </Button>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Button
+            disabled={
+              !isOnline ||
+              !actionsAvailable ||
+              isBusy ||
+              isLegacyResult ||
+              publishBlocked
+            }
+            title={publishBlockedReason ?? undefined}
+            loading={activeAction === "keep-private"}
+            onClick={onKeepPrivate}
+          >
+            <LockKeyhole size={16} strokeWidth={2} />
+            {isLegacyResult ? "New assessment required" : "Use privately"}
+          </Button>
+          <Button
+            variant="outline"
+            disabled={
+              !isOnline ||
+              !actionsAvailable ||
+              isBusy ||
+              isLegacyResult ||
+              publishBlocked
+            }
+            title={publishBlockedReason ?? undefined}
+            loading={activeAction === "publish"}
+            onClick={onSave}
+          >
+            Add to profile
+          </Button>
+        </div>
       )}
 
       <div className="main-action-grid grid gap-3">
@@ -115,7 +173,7 @@ export function PersonalityResultActions({
 
       {!canContinue ? (
         <p className="text-center text-muted-foreground text-xs leading-relaxed">
-          Save this result before continuing.
+          Choose how to use this result before continuing.
         </p>
       ) : null}
 

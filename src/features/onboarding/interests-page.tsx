@@ -81,9 +81,9 @@ export function InterestsPage() {
         isDone ? (
           <Suspense fallback={null}>
             <CompletionBlueprint
-              personalityType={state.personalityType}
               interestCount={state.selectedCount}
               onEnter={enterApp}
+              onBack={goBack}
             />
           </Suspense>
         ) : null

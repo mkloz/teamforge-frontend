@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 
 import { router } from "@/router";
+import { clearAccountSessionCache } from "@/shared/api/account-session-cache";
+import { installAccountSessionStoragePurgeListener } from "@/shared/api/account-session-storage";
 import { authSession } from "@/shared/api/auth-session";
-import { clearCurrentUserCache } from "@/shared/api/current-user-cache";
 import {
   buildAuthRouteNavigation,
   buildRouteLocationHref,
@@ -10,14 +11,20 @@ import {
 
 export function AuthSessionRedirect() {
   useEffect(() => {
-    return authSession.setUnauthorizedHandler(() => {
-      clearCurrentUserCache();
+    const removePurgeListener = installAccountSessionStoragePurgeListener();
+    const removeUnauthorizedHandler = authSession.setUnauthorizedHandler(() => {
+      clearAccountSessionCache();
       const currentHref = buildRouteLocationHref(router.state.location);
 
       void router.navigate(
         buildAuthRouteNavigation("/auth/login", currentHref),
       );
     });
+
+    return () => {
+      removePurgeListener();
+      removeUnauthorizedHandler();
+    };
   }, []);
 
   return null;

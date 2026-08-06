@@ -20,7 +20,7 @@ import {
 } from "@/shared/api/plan-membership-api";
 import { planOperationalStateSchema } from "@/shared/schemas/plan-operational-state";
 import { groupLifecycleSchema } from "../schemas/group-lifecycle.schema";
-import { groupPlanDetailSchema } from "../schemas/group-plan-detail.schema";
+import { groupPlanDetailResponseSchema } from "../schemas/group-plan-detail.schema";
 import {
   type PlanCommitmentResponse,
   planCommitmentReadinessSchema,
@@ -77,7 +77,7 @@ export class GroupPlanDetailApi {
       .get(`groups/${groupId}/detail`)
       .json<unknown>();
 
-    return groupPlanDetailSchema.parse(response);
+    return groupPlanDetailResponseSchema.parse(response);
   }
 
   static async getInviteSuggestions(groupId: string) {
@@ -192,11 +192,13 @@ export class GroupPlanDetailApi {
     return externalInviteClaimSchema.parse(response);
   }
 
-  static async suppressExternalInvite(report: boolean) {
-    await apiClient.post("external-invites/suppress", {
-      context: { auth: "none", retryOnUnauthorized: false },
-      json: { report },
-    });
+  static suppressExternalInvite(report: boolean) {
+    return apiClient
+      .post("external-invites/suppress", {
+        context: { auth: "none", retryOnUnauthorized: false },
+        json: { report },
+      })
+      .then(() => undefined);
   }
 
   static async createExternalInvite(planId: string) {
@@ -215,8 +217,10 @@ export class GroupPlanDetailApi {
     return externalInviteListItemSchema.array().parse(response);
   }
 
-  static async revokeExternalInvite(inviteId: string) {
-    await apiClient.post(`external-invites/${inviteId}/revoke`);
+  static revokeExternalInvite(inviteId: string) {
+    return apiClient
+      .post(`external-invites/${inviteId}/revoke`)
+      .then(() => undefined);
   }
 
   static async getPlanGuestAccess(planId: string) {
@@ -226,8 +230,10 @@ export class GroupPlanDetailApi {
     return planGuestAccessSchema.parse(response);
   }
 
-  static async withdrawPlanGuest(planId: string) {
-    await apiClient.post(`plans/${planId}/guest-access/withdraw`);
+  static withdrawPlanGuest(planId: string) {
+    return apiClient
+      .post(`plans/${planId}/guest-access/withdraw`)
+      .then(() => undefined);
   }
 
   static async listPlanGuests(planId: string) {

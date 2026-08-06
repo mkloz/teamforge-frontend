@@ -144,10 +144,8 @@ function getReactionControlClassName(
   isInteractive = true,
 ) {
   return cn(
-    "flex h-11 min-w-11 items-center justify-center rounded-full bg-transparent p-0 transition [@media(pointer:fine)]:h-5",
-    hasVisibleCount
-      ? "[@media(pointer:fine)]:w-auto [@media(pointer:fine)]:min-w-7"
-      : "[@media(pointer:fine)]:size-5 [@media(pointer:fine)]:min-w-5",
+    "flex h-5 items-center justify-center rounded-full bg-transparent p-0 transition",
+    hasVisibleCount ? "w-auto min-w-7" : "size-5 min-w-5",
     isInteractive &&
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 active:scale-95",
   );

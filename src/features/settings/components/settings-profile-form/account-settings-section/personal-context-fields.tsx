@@ -23,6 +23,14 @@ interface PersonalContextFieldsProps {
   form: UseFormReturn<SettingsProfileValues>;
 }
 
+function getGenderLabel(value: SettingsProfileValues["gender"]) {
+  if (value === unspecifiedGenderValue) {
+    return "Prefer not to say";
+  }
+
+  return GENDER_OPTIONS.find((option) => option.value === value)?.label;
+}
+
 export function PersonalContextFields({
   compatibilityInputsDisabled,
   form,
@@ -63,7 +71,9 @@ export function PersonalContextFields({
             >
               <FormControl>
                 <SelectTrigger className="data-[placeholder]:text-slate-muted">
-                  <SelectValue placeholder="Select gender" />
+                  <SelectValue placeholder="Select gender">
+                    {getGenderLabel(field.value)}
+                  </SelectValue>
                 </SelectTrigger>
               </FormControl>
               <SelectContent>

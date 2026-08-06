@@ -1,6 +1,6 @@
+import { clearAccountSessionCache } from "@/shared/api/account-session-cache";
 import { apiClient, getResponseRequestId } from "@/shared/api/api";
 import { authSession } from "@/shared/api/auth-session";
-import { clearCurrentUserCache } from "@/shared/api/current-user-query";
 
 export async function sendResetPasswordLink(email: string) {
   const response = await apiClient.post("auth/send-reset-password-link", {
@@ -19,24 +19,28 @@ export async function sendResetPasswordLink(email: string) {
 
 export async function logoutCurrentSession() {
   try {
-    await apiClient.post("auth/logout", {
-      context: {
-        auth: "refresh",
-        retryOnUnauthorized: false,
-      },
-    });
+    await Promise.resolve(
+      apiClient.post("auth/logout", {
+        context: {
+          auth: "refresh",
+          retryOnUnauthorized: false,
+        },
+      }),
+    );
   } finally {
-    clearCurrentUserCache();
+    clearAccountSessionCache();
     authSession.clear();
   }
 }
 
 export async function reauthenticateCurrentSession(password: string) {
-  await apiClient.post("auth/reauthenticate", {
-    json: { password },
-    context: {
-      auth: "access",
-      retryOnUnauthorized: false,
-    },
-  });
+  await Promise.resolve(
+    apiClient.post("auth/reauthenticate", {
+      json: { password },
+      context: {
+        auth: "access",
+        retryOnUnauthorized: false,
+      },
+    }),
+  );
 }

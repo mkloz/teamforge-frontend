@@ -4,7 +4,10 @@ import type {
   VoteGroupPlanProposalPayload,
 } from "@/features/group-plan-detail/api/group-plan-detail.api";
 import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-plan-detail-commands";
-import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import {
+  type GroupPlanDetailResponse,
+  isRichGroupPlanDetail,
+} from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
@@ -23,7 +26,7 @@ interface ProposalVoteInput {
 }
 
 interface ProposalMutationContext {
-  previousDetail: GroupPlanDetail | undefined;
+  previousDetails: [readonly unknown[], GroupPlanDetailResponse | undefined][];
 }
 
 type ProposalUpdater = (proposal: PlanProposal) => PlanProposal;
@@ -111,10 +114,10 @@ function getOptimisticProposalTimestamp() {
 }
 
 function getDetailWithUpdatedProposals(
-  current: GroupPlanDetail | undefined,
+  current: GroupPlanDetailResponse | undefined,
   updater: ProposalUpdater,
 ) {
-  if (!current) {
+  if (!isRichGroupPlanDetail(current)) {
     return current;
   }
 
@@ -198,24 +201,31 @@ export function useGroupPlanProposalActions({
 }: UseGroupPlanProposalActionsOptions) {
   const queryClient = useQueryClient();
   const currentUserQuery = useCurrentUserQuery();
-  const detailQueryKey = APP_QUERY_KEYS.groupPlanDetail.byId(groupId);
+  const detailQueryKey =
+    APP_QUERY_KEYS.groupPlanDetail.detailAllScopes(groupId);
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   async function optimisticallyUpdateProposal(updater: ProposalUpdater) {
     await queryClient.cancelQueries({ queryKey: detailQueryKey });
 
-    const previousDetail =
-      queryClient.getQueryData<GroupPlanDetail>(detailQueryKey);
-
-    queryClient.setQueryData<GroupPlanDetail>(detailQueryKey, (current) =>
-      getDetailWithUpdatedProposals(current, updater),
+    const previousDetails = queryClient.getQueriesData<GroupPlanDetailResponse>(
+      {
+        queryKey: detailQueryKey,
+      },
     );
 
-    return { previousDetail } satisfies ProposalMutationContext;
+    queryClient.setQueriesData<GroupPlanDetailResponse>(
+      { queryKey: detailQueryKey },
+      (current) => getDetailWithUpdatedProposals(current, updater),
+    );
+
+    return { previousDetails } satisfies ProposalMutationContext;
   }
 
   function restoreDetail(context: ProposalMutationContext | undefined) {
-    queryClient.setQueryData(detailQueryKey, context?.previousDetail);
+    context?.previousDetails.forEach(([queryKey, previousDetail]) => {
+      queryClient.setQueryData(queryKey, previousDetail);
+    });
   }
 
   const createMutation = useMutation({

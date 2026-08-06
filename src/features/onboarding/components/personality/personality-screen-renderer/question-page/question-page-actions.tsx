@@ -4,6 +4,7 @@ import { Button } from "@/shared/components/ui/button";
 
 interface QuestionPageActionsProps {
   allAnswered: boolean;
+  finalActionLabel?: string;
   isFinalPage: boolean;
   onNext: () => void;
   onReview: () => void;
@@ -11,6 +12,7 @@ interface QuestionPageActionsProps {
 
 export function QuestionPageActions({
   allAnswered,
+  finalActionLabel = "See results",
   isFinalPage,
   onNext,
   onReview,
@@ -34,7 +36,7 @@ export function QuestionPageActions({
         className="min-w-0 flex-1"
       >
         <span className="truncate">
-          {isFinalPage ? "See results" : "Next page"}
+          {isFinalPage ? finalActionLabel : "Next page"}
         </span>
         <ArrowRight size={18} />
       </Button>

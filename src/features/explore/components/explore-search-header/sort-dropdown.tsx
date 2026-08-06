@@ -38,7 +38,7 @@ export function SortDropdown() {
       <DropdownMenuTrigger
         aria-label={`Sort groups, ${activeLabel}`}
         className={cn(
-          "group inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-input px-2 text-muted-foreground shadow-xs outline-hidden transition-all duration-150 sm:h-9",
+          "group inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-input px-2 text-muted-foreground shadow-xs outline-hidden transition-all duration-150",
           "hover:border-primary/35 hover:bg-muted hover:text-ink focus-visible:ring-2 focus-visible:ring-primary/35",
           "data-[state=open]:border-primary/35 data-[state=open]:bg-card data-[state=open]:text-ink",
         )}

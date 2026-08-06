@@ -9,6 +9,13 @@ export { IPIP_QUESTIONS };
 
 export type TestLength = 30 | 50 | 150;
 
+export const STARTER_QUESTION_IDS = [
+  1, 31, 61, 91, 121, 3, 33, 63, 93, 122,
+] as const;
+export const STARTER_MANIFEST_VERSION = "TF_STARTER_10_V1" as const;
+export const STARTER_MANIFEST_HASH =
+  "c97863821ba78e46b64a8ccf85789a53cff66ef0bf595c148472e0a2d8ea3d32" as const;
+
 export const TEST_LENGTH_CONFIG: Record<
   TestLength,
   {
@@ -26,6 +33,7 @@ export const TEST_LENGTH_CONFIG: Record<
     estimatedMinutes: 2,
     itemsPerDimension: 6,
     questionsPerPage: 5,
+    recommended: true,
   },
   50: {
     label: "Standard",
@@ -33,7 +41,6 @@ export const TEST_LENGTH_CONFIG: Record<
     estimatedMinutes: 5,
     itemsPerDimension: 10,
     questionsPerPage: 5,
-    recommended: true,
   },
   150: {
     label: "Detailed",
@@ -81,4 +88,23 @@ export function buildQuestionList(length: TestLength): IpipQuestion[] {
     }
   }
   return result;
+}
+
+export function buildStarterFirstQuestionList(
+  length: TestLength,
+): IpipQuestion[] {
+  const questions = buildQuestionList(length);
+
+  if (length !== 30) return questions;
+
+  const byId = new Map(questions.map((question) => [question.id, question]));
+  const starter = STARTER_QUESTION_IDS.map((id) => byId.get(id)).filter(
+    (question): question is IpipQuestion => question !== undefined,
+  );
+  const starterIds = new Set<number>(STARTER_QUESTION_IDS);
+
+  return [
+    ...starter,
+    ...questions.filter((question) => !starterIds.has(question.id)),
+  ];
 }

@@ -11,6 +11,7 @@ import {
 import { type AuthTokens, authSession } from "@/shared/api/auth-session";
 import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-cache";
 import { appQueryClient } from "@/shared/api/query-client";
+import { ONBOARDING_AUTHORIZATION_POLICY_VERSION } from "@/shared/schemas/onboarding-product-state";
 import { fullUserResponseSchema } from "@/shared/schemas/user-response";
 
 export {
@@ -195,6 +196,11 @@ const sharedHooks = {
   beforeRequest: [
     async (request: Request, options: Options) => {
       const { auth } = readApiRequestContext(options);
+
+      request.headers.set(
+        "x-teamforge-onboarding-policy-version",
+        ONBOARDING_AUTHORIZATION_POLICY_VERSION,
+      );
 
       if (isAuthRefreshRequest(request)) {
         applyAuthorizationHeader(request, "refresh");

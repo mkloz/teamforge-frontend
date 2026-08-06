@@ -21,6 +21,7 @@ const authReturnTargets = [
   "/admin/moderation/operations",
   "/admin/moderation/settings",
   "/onboarding/profile",
+  "/onboarding/intent",
   "/onboarding/personality",
   "/onboarding/interests",
 ] as const;
@@ -295,9 +296,31 @@ export function buildPostAuthRedirectNavigation(
   returnTo: string | null | undefined,
 ) {
   const canonicalDestination = getPostAuthRedirectPath(user);
+  return buildPostAuthRedirectNavigationForDestination(
+    canonicalDestination,
+    returnTo,
+  );
+}
+
+export function buildPostAuthRedirectNavigationForDestination(
+  canonicalDestination:
+    | "/auth/login"
+    | "/home"
+    | "/explore"
+    | "/forge"
+    | "/onboarding/profile"
+    | "/onboarding/intent"
+    | "/onboarding/personality"
+    | "/onboarding/interests",
+  returnTo: string | null | undefined,
+) {
   const returnLocation = resolveAuthReturnLocation(returnTo);
 
-  if (canonicalDestination === "/home") {
+  if (
+    canonicalDestination === "/home" ||
+    canonicalDestination === "/explore" ||
+    canonicalDestination === "/forge"
+  ) {
     return (
       buildAuthenticatedReturnNavigation(returnLocation) ??
       ({

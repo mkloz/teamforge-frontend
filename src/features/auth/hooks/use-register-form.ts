@@ -5,6 +5,10 @@ import { AuthCommands } from "@/features/auth/api/auth-commands";
 import { calculateRegisterProgress } from "@/features/auth/lib/auth-form-progress";
 import { getEmailDomain } from "@/features/auth/lib/auth-telemetry";
 import {
+  getRegistrationAccountRecovery,
+  type RegistrationAccountRecovery,
+} from "@/features/auth/lib/registration-account-recovery";
+import {
   type RegisterValues,
   registerSchema,
 } from "@/features/auth/schemas/auth-schemas";
@@ -39,6 +43,8 @@ export function useRegisterForm({
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
+  const [accountRecovery, setAccountRecovery] =
+    useState<RegistrationAccountRecovery | null>(null);
   const [otpMessage, setOtpMessage] = useState<string | null>(null);
   const registrationRequestPendingRef = useRef(false);
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
@@ -71,6 +77,7 @@ export function useRegisterForm({
 
   async function goToStep2() {
     setRootError(null);
+    setAccountRecovery(null);
     const isValid = await form.trigger(["name", "email", "password"]);
     if (isValid) {
       setDirection(1);
@@ -108,7 +115,6 @@ export function useRegisterForm({
       try {
         const email = form.getValues("email");
         const result = await AuthCommands.registerWithEmail(form.getValues());
-        form.resetField("dateOfBirth", { defaultValue: "" });
         trackMutationOutcome(
           trackedMutationNames.authRegisterEmail,
           "success",
@@ -128,6 +134,16 @@ export function useRegisterForm({
           emailDomain: getEmailDomain(form.getValues("email")),
         });
         trackMutationOutcome(trackedMutationNames.authRegisterEmail, "error");
+        const recovery = getRegistrationAccountRecovery(error);
+
+        if (recovery) {
+          setRootError(null);
+          setAccountRecovery(recovery);
+          setDirection(-1);
+          changeStep(1);
+          return;
+        }
+
         setRootError(
           AuthCommands.getAuthErrorMessage(
             error,
@@ -175,7 +191,6 @@ export function useRegisterForm({
         requestId: result.requestId,
       });
       await runOptionalSuccessCallback(onSuccess);
-      setLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authVerifyEmailOtp, error);
       trackMutationOutcome(trackedMutationNames.authVerifyEmailOtp, "error");
@@ -185,6 +200,7 @@ export function useRegisterForm({
           "We couldn't verify that code. Please try again.",
         ),
       );
+    } finally {
       setLoading(false);
     }
   }
@@ -236,6 +252,7 @@ export function useRegisterForm({
   }
 
   return {
+    accountRecovery,
     form,
     step,
     direction,

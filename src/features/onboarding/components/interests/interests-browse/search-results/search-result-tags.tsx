@@ -23,6 +23,8 @@ export function SearchResultTags({
     return null;
   }
 
+  const duplicateNames = getDuplicateTagNames(results.tags);
+
   return (
     <div>
       {results.subcategories.length > 0 && (
@@ -31,10 +33,15 @@ export function SearchResultTags({
         </p>
       )}
       <div className="flex flex-wrap gap-2">
-        {results.tags.map(({ tag, matchedAlias }) => (
+        {results.tags.map(({ category, tag, matchedAlias }) => (
           <TagPill
             key={tag.id}
-            label={formatSearchResultTagLabel(tag.name, matchedAlias)}
+            label={formatTagLabel({
+              categoryName: category.name,
+              duplicateNames,
+              matchedAlias,
+              tagName: tag.name,
+            })}
             selected={selectedIds.has(tag.id)}
             disabled={isAtMax}
             onToggle={() => onToggle(tag.id)}
@@ -48,4 +55,41 @@ export function SearchResultTags({
       </div>
     </div>
   );
+}
+
+function getDuplicateTagNames(results: InterestSearchResults["tags"]) {
+  const counts = new Map<string, number>();
+
+  for (const { tag } of results) {
+    const normalizedName = tag.name.trim().toLocaleLowerCase();
+    counts.set(normalizedName, (counts.get(normalizedName) ?? 0) + 1);
+  }
+
+  return new Set(
+    [...counts.entries()]
+      .filter(([, count]) => count > 1)
+      .map(([name]) => name),
+  );
+}
+
+function formatTagLabel({
+  categoryName,
+  duplicateNames,
+  matchedAlias,
+  tagName,
+}: {
+  categoryName: string;
+  duplicateNames: Set<string>;
+  matchedAlias?: string;
+  tagName: string;
+}) {
+  const label = formatSearchResultTagLabel(tagName, matchedAlias);
+
+  return duplicateNames.has(tagName.trim().toLocaleLowerCase())
+    ? `${label} · ${getCategoryContext(categoryName)}`
+    : label;
+}
+
+function getCategoryContext(categoryName: string) {
+  return categoryName.split(/[&,]/, 1)[0]?.trim() || categoryName;
 }

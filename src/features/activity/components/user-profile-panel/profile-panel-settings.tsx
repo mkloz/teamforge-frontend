@@ -1,4 +1,4 @@
-import { Ban, Bell, BellOff, Flag, Loader2 } from "lucide-react";
+import { Ban, Bell, BellOff, Flag } from "lucide-react";
 import type { ReactNode } from "react";
 import {
   blockReportedUser,
@@ -6,6 +6,7 @@ import {
 } from "@/features/reporting/public/reporting";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button, type ButtonV2Props } from "@/shared/components/ui/button";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { cn } from "@/shared/lib/utils";
 
 interface ProfilePanelSettingsProps {
@@ -237,7 +238,7 @@ function ActionIcon({
 }) {
   return (
     <span className="shrink-0">
-      {isPending ? <Loader2 className="size-4 animate-spin" /> : icon}
+      {isPending ? <Spinner aria-hidden="true" className="size-4" /> : icon}
     </span>
   );
 }

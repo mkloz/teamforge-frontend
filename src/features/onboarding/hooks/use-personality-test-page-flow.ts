@@ -1,8 +1,25 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useBlocker, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { OnboardingCommands } from "@/features/onboarding/api/onboarding-commands";
+import {
+  onboardingObservationEventNames,
+  recordOnboardingExposure,
+  recordOnboardingObservation,
+} from "@/features/onboarding/api/onboarding-observations";
+import { authSession } from "@/shared/api/auth-session";
 import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
+import {
+  useInvalidateOnboardingProductState,
+  useOnboardingProductStateQuery,
+} from "@/shared/api/onboarding-product-state-query";
 import { PersonalityAssessmentApi } from "@/shared/api/personality-assessment-api";
 import {
   PERSONALITY_ASSESSMENT_QUERY_KEY,
@@ -18,7 +35,13 @@ import type {
 } from "@/shared/schemas/personality-assessment";
 import type { PublicPersonalityProfile } from "@/shared/schemas/public-personality-profile";
 
-import { buildQuestionList, type TestLength } from "../data/ipip-questions";
+import {
+  buildQuestionList,
+  STARTER_MANIFEST_HASH,
+  STARTER_MANIFEST_VERSION,
+  STARTER_QUESTION_IDS,
+  type TestLength,
+} from "../data/ipip-questions";
 import {
   DYNAMIC_ASSESSMENT_MANIFEST_HASH,
   DYNAMIC_ASSESSMENT_PACKAGE_ID,
@@ -38,10 +61,21 @@ import {
   resolvePersonalityExitNavigation,
 } from "../lib/personality-test-page-flow";
 import { useDynamicPersonalityTestStore } from "../store/dynamic-personality-test-store";
+import {
+  configurePersonalityDraftRecovery,
+  getPersonalityDraftStorageStatus,
+  installPersonalityDraftOwnershipListener,
+  subscribePersonalityDraftStorageStatus,
+} from "../store/personality-draft-storage";
 import { usePersonalityTestStore } from "../store/personality-test-store";
 import { usePersonalityTest } from "./use-personality-test";
 
-type AssessmentResultAction = "publish" | "discard" | "delete-all" | "retake";
+type AssessmentResultAction =
+  | "publish"
+  | "keep-private"
+  | "discard"
+  | "delete-all"
+  | "retake";
 
 export type PersonalityAssessmentQueryStatus =
   | "error"
@@ -78,15 +112,22 @@ export function usePersonalityTestPageFlow() {
   const submissionPairRef = useRef<SubmissionPair | null>(null);
   const submissionInFlightRef = useRef(false);
   const autoSubmissionStartedRef = useRef(false);
+  const recoveryAvailableRecordedRef = useRef(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { isEditMode, returnTo, returnSearch, returnSection } =
+  const { isEditMode, returnTo, returnSearch, returnSection, returnGroupId } =
     useOnboardingFlowState();
   const compatibilityInputLock = useCompatibilityInputLock({
     enabled: isEditMode,
   });
   const queryClient = useQueryClient();
   const invalidateCurrentUser = useInvalidateCurrentUser();
+  const invalidateOnboardingProductState =
+    useInvalidateOnboardingProductState();
+  const productStateQuery = useOnboardingProductStateQuery();
+  const starterCheckpointEnabled =
+    productStateQuery.data?.rollout.starter === "starter-v1" &&
+    !productStateQuery.data.milestones.starterSatisfied;
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const assessmentQuery = useQuery(personalityAssessmentQueryOptions());
   const capabilitiesQuery = useQuery(
@@ -94,46 +135,100 @@ export function usePersonalityTestPageFlow() {
   );
   const testState = usePersonalityTest({
     questionsPerPage: QUESTIONS_PER_PAGE,
+    starterCheckpointEnabled,
   });
+  const [isCompletingStarter, setIsCompletingStarter] = useState(false);
+  const [starterError, setStarterError] = useState<string | null>(null);
   const dynamicTestState = useDynamicPersonalityTestStore();
+
+  const recoveryRollout = productStateQuery.data?.rollout.recovery ?? null;
+  const draftStorageStatus = useSyncExternalStore(
+    subscribePersonalityDraftStorageStatus,
+    getPersonalityDraftStorageStatus,
+    () => "idle",
+  );
+
+  useEffect(() => installPersonalityDraftOwnershipListener(), []);
+
+  useEffect(() => {
+    if (!recoveryRollout) {
+      return;
+    }
+
+    const recoveryEnabled = recoveryRollout === "recovery-v1";
+    configurePersonalityDraftRecovery(recoveryEnabled);
+
+    if (!recoveryEnabled) {
+      return;
+    }
+
+    // The store module may load before the refresh-cookie session has been
+    // restored. Rehydrate again only after a verifiable subject/session binding
+    // exists; an unbound draft is never exposed to the UI.
+    if (authSession.getSessionBinding()) {
+      void usePersonalityTestStore.persist.rehydrate();
+    }
+  }, [recoveryRollout]);
+
+  useEffect(() => {
+    if (draftStorageStatus === "lost") {
+      usePersonalityTestStore.getState().reset();
+    }
+  }, [draftStorageStatus]);
 
   const hasUnsentAnswers =
     Object.keys(testState.answers).length > 0 ||
     Boolean(dynamicTestState.engineState);
-  const clearAssessmentRequestMemory = useCallback(() => {
-    submissionPairRef.current = null;
-    const snapshot = usePersonalityTestStore.getState();
 
-    if (Object.keys(snapshot.answers).length > 0) {
-      snapshot.reset();
-    }
-    useDynamicPersonalityTestStore.getState().reset();
-  }, []);
-  const shouldBlockNavigation = useCallback(() => {
-    const shouldLeave = window.confirm(
-      "Your answers have not been submitted. Leave and lose them?",
-    );
-
-    if (shouldLeave) {
-      clearAssessmentRequestMemory();
+  useEffect(() => {
+    const productState = productStateQuery.data;
+    if (
+      !productState ||
+      recoveryAvailableRecordedRef.current ||
+      testState.screen.id !== "recovery"
+    ) {
+      return;
     }
 
-    return !shouldLeave;
-  }, [clearAssessmentRequestMemory]);
+    recoveryAvailableRecordedRef.current = true;
+    void recordOnboardingExposure({
+      routeCode: "ONBOARDING_PERSONALITY",
+      treatment: "RECOVERY",
+    }).catch(() => undefined);
+    void recordOnboardingObservation({
+      eventName: onboardingObservationEventNames.draftAvailable,
+      experimentVersion: "ONB-GATE-RECOVERY-V1",
+      outcomeCode: "SHOWN",
+      productState,
+      routeCode: "ONBOARDING_PERSONALITY",
+    }).catch(() => undefined);
+  }, [productStateQuery.data, testState.screen.id]);
 
-  useBlocker({
-    disabled: !hasUnsentAnswers,
-    enableBeforeUnload: hasUnsentAnswers,
-    shouldBlockFn: shouldBlockNavigation,
-  });
+  function recordRecoveryDecision(outcomeCode: "RESUMED" | "DISCARDED") {
+    const productState = productStateQuery.data;
+    if (!productState) return;
 
-  useEffect(
-    () => () => {
-      clearAssessmentRequestMemory();
-    },
-    [clearAssessmentRequestMemory],
-  );
+    void recordOnboardingObservation({
+      eventName:
+        outcomeCode === "RESUMED"
+          ? onboardingObservationEventNames.draftResumed
+          : onboardingObservationEventNames.draftDiscarded,
+      experimentVersion: "ONB-GATE-RECOVERY-V1",
+      outcomeCode,
+      productState,
+      routeCode: "ONBOARDING_PERSONALITY",
+    }).catch(() => undefined);
+  }
 
+  function resumeRecoveredDraft() {
+    recordRecoveryDecision("RESUMED");
+    testState.actions.resumeRecoveredDraft();
+  }
+
+  function discardRecoveredDraft() {
+    recordRecoveryDecision("DISCARDED");
+    testState.actions.discardRecoveredDraft();
+  }
   const completeSubmission = useCallback(
     (
       response: Awaited<
@@ -358,6 +453,20 @@ export function usePersonalityTestPageFlow() {
     );
   }
 
+  async function keepResultPrivate() {
+    if (isEditMode && compatibilityInputLock.isBlocked) {
+      setResultActionError(
+        compatibilityInputLock.message ??
+          "This assessment cannot be changed right now.",
+      );
+      return;
+    }
+
+    await runResultAction("keep-private", () =>
+      PersonalityAssessmentApi.keepPrivate(),
+    );
+  }
+
   async function discardDraft() {
     const nextState = await runResultAction("discard", () =>
       PersonalityAssessmentApi.discardDraft(),
@@ -467,7 +576,10 @@ export function usePersonalityTestPageFlow() {
       const nextState = await request();
       queryClient.setQueryData(PERSONALITY_ASSESSMENT_QUERY_KEY, nextState);
       setSubmittedDisclosure(nextState.disclosure);
-      await invalidateCurrentUser();
+      await Promise.all([
+        invalidateCurrentUser(),
+        invalidateOnboardingProductState(),
+      ]);
       return nextState;
     } catch (error) {
       setResultActionError(getResultActionErrorMessage(error));
@@ -491,6 +603,54 @@ export function usePersonalityTestPageFlow() {
     await navigateToInterests();
   }
 
+  async function exploreAfterStarter() {
+    if (isCompletingStarter) return;
+
+    const snapshot = usePersonalityTestStore.getState();
+    const answers = STARTER_QUESTION_IDS.map((questionId) => ({
+      questionId,
+      value: snapshot.answers[questionId],
+    }));
+
+    if (answers.some((answer) => answer.value === undefined)) {
+      setStarterError("Answer all ten starter questions before continuing.");
+      return;
+    }
+
+    setIsCompletingStarter(true);
+    setStarterError(null);
+
+    try {
+      const result = await OnboardingCommands.completeStarter({
+        answers: answers as Array<{
+          questionId: number;
+          value: 1 | 2 | 3 | 4 | 5;
+        }>,
+        idempotencyKey: crypto.randomUUID(),
+        manifestHash: STARTER_MANIFEST_HASH,
+        manifestVersion: STARTER_MANIFEST_VERSION,
+      });
+      await invalidateOnboardingProductState();
+      const nextSearch = buildPersonalityNextSearch({
+        mbti: result.personalityType,
+        returnTo,
+        returnSearch,
+        returnSection,
+        returnGroupId,
+      });
+      await navigate({
+        to: "/onboarding/interests",
+        search: toOptionalOnboardingSearch(nextSearch),
+      });
+    } catch {
+      setStarterError(
+        "We couldn't save your starting point. Your answers are still here.",
+      );
+    } finally {
+      setIsCompletingStarter(false);
+    }
+  }
+
   async function goBack() {
     if (isEditMode) {
       await exitPersonalityEditMode();
@@ -501,10 +661,11 @@ export function usePersonalityTestPageFlow() {
       returnTo,
       returnSearch,
       returnSection,
+      returnGroupId,
     });
 
     await navigate({
-      to: "/onboarding/profile",
+      to: "/onboarding/intent",
       search: toOptionalOnboardingSearch(previousSearch),
     });
   }
@@ -516,6 +677,7 @@ export function usePersonalityTestPageFlow() {
         returnTo,
         returnSearch,
         returnSection,
+        returnGroupId,
       }),
     );
   }
@@ -526,6 +688,7 @@ export function usePersonalityTestPageFlow() {
       returnTo,
       returnSearch,
       returnSection,
+      returnGroupId,
     });
 
     await navigate({
@@ -535,6 +698,17 @@ export function usePersonalityTestPageFlow() {
   }
 
   const displayProgress = (() => {
+    const isStarterProgress =
+      testState.starterCheckpointEnabled &&
+      ((testState.screen.id === "questions" &&
+        testState.screen.currentPage <= 2) ||
+        (testState.screen.id === "intermission" &&
+          testState.screen.type === 0));
+
+    if (isStarterProgress) {
+      return Math.min(testState.answeredInPoolCount, 10) / 10;
+    }
+
     if (
       testState.screen.id === "dynamic-questions" &&
       dynamicTestState.engineState
@@ -591,6 +765,7 @@ export function usePersonalityTestPageFlow() {
     isFetching: assessmentQuery.isFetching,
     isPending: assessmentQuery.isPending,
   });
+  const canChooseAssessmentLength = Boolean(assessmentQuery.data?.current);
 
   return {
     assessment: {
@@ -608,6 +783,12 @@ export function usePersonalityTestPageFlow() {
         assessmentQuery.data?.publication.decision === "GRANTED" &&
         assessmentQuery.data.publicProfile?.assessmentId ===
           displayedProfile?.assessmentId,
+      isAcceptedPrivately:
+        assessmentQuery.data?.draft === null &&
+        assessmentQuery.data.current?.assessmentId ===
+          displayedProfile?.assessmentId &&
+        assessmentQuery.data.publicProfile?.assessmentId !==
+          displayedProfile?.assessmentId,
       isLegacyResult:
         assessmentQuery.data?.current?.assessmentId ===
           displayedProfile?.assessmentId &&
@@ -616,6 +797,7 @@ export function usePersonalityTestPageFlow() {
         displayedAssessment?.compatibilityEligible ?? false,
       onDiscard: discardDraft,
       onDeleteAll: deleteAllPersonalityData,
+      onKeepPrivate: keepResultPrivate,
       onSave: publishResult,
       onRetake: retakeAssessment,
       preview: displayedProfile,
@@ -623,9 +805,12 @@ export function usePersonalityTestPageFlow() {
       stateStatus: assessmentStateStatus,
     },
     backLabel: buildBackToLabel(backDestination),
+    canChooseAssessmentLength,
     continueLabel: isEditMode ? "Back to settings" : "Continue",
     continueToInterests,
+    exploreAfterStarter,
     displayProgress,
+    draftStorageStatus,
     dynamic: {
       capability: capabilitiesQuery.data?.dynamic ?? null,
       continue: continueDynamicAssessment,
@@ -637,7 +822,13 @@ export function usePersonalityTestPageFlow() {
     isOnline,
     scrollContainerRef,
     setPendingLength,
+    discardRecoveredDraft,
+    resumeRecoveredDraft,
     submissionError,
+    starter: {
+      error: starterError,
+      isCompleting: isCompletingStarter,
+    },
     submitCurrentAssessment,
     testState,
   };

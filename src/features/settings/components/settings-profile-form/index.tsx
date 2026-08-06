@@ -201,6 +201,7 @@ function SecuritySettingsPanel({
           isOnline: security.isOnline,
           isLoadingSessions: security.isLoadingSessions,
           isSendingPasswordResetLink: security.isSendingPasswordResetLink,
+          isConnectingGoogle: security.isConnectingGoogle,
           isRevokingOtherSessions: security.isRevokingOtherSessions,
         }}
         errors={{
@@ -208,6 +209,8 @@ function SecuritySettingsPanel({
           sessionsError: security.sessionsError,
         }}
         onSendPasswordResetLink={security.onSendPasswordResetLink}
+        onConnectGoogle={security.onConnectGoogle}
+        onGoogleConnectionIntent={security.onGoogleConnectionIntent}
         onRevokeSession={security.onRevokeSession}
         onRevokeOtherSessions={security.onRevokeOtherSessions}
       />

@@ -3,6 +3,7 @@ import { useAccountExport } from "@/features/settings/hooks/use-account-export";
 import { useAccountLifecycle } from "@/features/settings/hooks/use-account-lifecycle";
 import { useActivityInviteAvailability } from "@/features/settings/hooks/use-activity-invite-availability";
 import { useAdultEligibilityCorrection } from "@/features/settings/hooks/use-adult-eligibility-correction";
+import { getUserSignInMethods } from "@/shared/lib/user-sign-in-methods";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import { useSettingsAvatarActions } from "./use-settings-avatar-actions";
 import { useSettingsPreferencesActions } from "./use-settings-preferences-actions";
@@ -46,7 +47,8 @@ export function useSettingsProfileForm({
     userId,
   });
   const accountExport = useAccountExport({
-    authProvider: profile.currentUser?.authProvider,
+    canReauthenticateWithPassword: getUserSignInMethods(profile.currentUser)
+      .password,
     enabled: Boolean(userId) && activeSection === "privacy",
     userId,
   });
@@ -65,6 +67,9 @@ export function useSettingsProfileForm({
     saveError: profile.saveError,
     avatarError: avatar.avatarError,
     securityError: security.securityError,
+    connectGoogle: security.connectGoogle,
+    isConnectingGoogle: security.isConnectingGoogle,
+    preloadGoogleConnection: security.preloadGoogleConnection,
     profileSummary: profile.profileSummary,
     uploadAvatar: avatar.uploadAvatar,
     deleteAvatar: avatar.deleteAvatar,

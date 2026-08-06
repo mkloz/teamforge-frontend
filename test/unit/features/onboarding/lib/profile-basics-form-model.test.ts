@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildProfileBasicsFlowSearch,
   getProfileBasicsProgress,
   requiresProfileBasicsDateOfBirth,
   toProfileBasicsDto,
@@ -19,23 +20,38 @@ describe("profile basics form model", () => {
   it("only requires a date of birth when eligibility is missing or unknown", () => {
     expect(requiresProfileBasicsDateOfBirth()).toBe(true);
     expect(
-      requiresProfileBasicsDateOfBirth({
-        accessVersion: 1,
-        status: "UNKNOWN",
-      }),
+      requiresProfileBasicsDateOfBirth(
+        {
+          accessVersion: 1,
+          status: "UNKNOWN",
+        },
+        27,
+      ),
     ).toBe(true);
     expect(
-      requiresProfileBasicsDateOfBirth({
-        accessVersion: 2,
-        status: "ELIGIBLE",
-      }),
+      requiresProfileBasicsDateOfBirth(
+        {
+          accessVersion: 2,
+          status: "ELIGIBLE",
+        },
+        27,
+      ),
     ).toBe(false);
     expect(
-      requiresProfileBasicsDateOfBirth({
-        accessVersion: 2,
-        status: "REVIEW_REQUIRED",
-      }),
+      requiresProfileBasicsDateOfBirth(
+        {
+          accessVersion: 2,
+          status: "REVIEW_REQUIRED",
+        },
+        27,
+      ),
     ).toBe(false);
+    expect(
+      requiresProfileBasicsDateOfBirth(
+        { accessVersion: 2, status: "ELIGIBLE" },
+        null,
+      ),
+    ).toBe(true);
   });
 
   it("derives age from date of birth and omits both for existing eligibility", () => {
@@ -74,5 +90,19 @@ describe("profile basics form model", () => {
         false,
       ),
     ).toBe(1);
+  });
+
+  it("preserves a dynamic intended destination without serializing empty flow state", () => {
+    expect(
+      buildProfileBasicsFlowSearch({
+        returnTo: "/groups/$groupId",
+        returnSearch: null,
+        returnSection: null,
+        returnGroupId: "group-123",
+      }),
+    ).toEqual({
+      returnTo: "/groups/$groupId",
+      returnGroupId: "group-123",
+    });
   });
 });

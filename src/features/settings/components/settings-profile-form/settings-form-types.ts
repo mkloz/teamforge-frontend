@@ -119,11 +119,14 @@ export interface SecuritySettingsState {
   isOnline: boolean;
   isLoadingSessions: boolean;
   isSendingPasswordResetLink: boolean;
+  isConnectingGoogle: boolean;
   isRevokingOtherSessions: boolean;
   revokingSessionId: string | null;
   securityError: string | null;
   sessionsError: string | null;
   onSendPasswordResetLink: () => Promise<unknown>;
+  onConnectGoogle: () => void;
+  onGoogleConnectionIntent: () => void;
   onRevokeSession: (session: AuthSession) => Promise<void>;
   onRevokeOtherSessions: () => Promise<void>;
 }

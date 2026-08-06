@@ -49,10 +49,6 @@ function RecommendedGroupsView({
     4,
   );
 
-  if (isRecommendationsLoading && recommendations.length === 0) {
-    return <HomeRecommendedGroupsSkeleton />;
-  }
-
   return (
     <section
       aria-labelledby="recommended-groups-heading"
@@ -91,6 +87,8 @@ function RecommendedGroupsView({
             Try again
           </Button>
         </div>
+      ) : isRecommendationsLoading && recommendations.length === 0 ? (
+        <HomeRecommendedGroupsSkeleton />
       ) : visibleRecommendations.length === 0 ? (
         <div className="flex items-start gap-3 rounded-2xl border border-border/70 border-dashed p-4">
           <IconTile icon={Compass} size="md" shape="circle" tone="neutral" />
@@ -118,7 +116,9 @@ function RecommendedGroupsView({
 }
 
 function getRecommendationKey(recommendation: ExploreFeedItem) {
-  return recommendation.type === "GROUP"
-    ? `group-${recommendation.group.id}`
-    : `opening-${recommendation.opening.id}`;
+  if (recommendation.type === "FORMATION_OPENING") {
+    return `opening-${recommendation.opening.id}`;
+  }
+
+  return `${recommendation.type.toLowerCase()}-${recommendation.group.id}`;
 }

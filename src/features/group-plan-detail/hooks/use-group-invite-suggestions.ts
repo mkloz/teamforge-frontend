@@ -204,8 +204,7 @@ async function refreshSuggestionContext(
 ) {
   await Promise.all([
     appQueryClient.invalidateQueries({
-      exact: true,
-      queryKey: APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
+      queryKey: APP_QUERY_KEYS.groupPlanDetail.detailAllScopes(groupId),
     }),
     refetchSuggestions(),
   ]);

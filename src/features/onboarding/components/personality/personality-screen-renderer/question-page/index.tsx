@@ -8,6 +8,7 @@ import { QuestionPageHeader } from "./question-page-header";
 import { getQuestionPageProgress } from "./question-page-progress";
 
 interface QuestionPageProps {
+  finalActionLabel?: string;
   pageQuestions: IpipQuestion[];
   startIndex: number;
   pageNumber: number;
@@ -20,6 +21,7 @@ interface QuestionPageProps {
 }
 
 export function QuestionPage({
+  finalActionLabel,
   pageQuestions,
   startIndex,
   pageNumber,
@@ -63,6 +65,7 @@ export function QuestionPage({
       />
       <QuestionPageActions
         allAnswered={progress.allAnswered}
+        finalActionLabel={finalActionLabel}
         isFinalPage={progress.isFinalPage}
         onNext={onNext}
         onReview={onReview}

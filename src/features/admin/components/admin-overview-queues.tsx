@@ -1,4 +1,4 @@
-import { useQueries } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ListChecks, RefreshCw, ShieldAlert } from "lucide-react";
 import { operatorQueries } from "@/features/operator/public/operator-queries";
@@ -44,42 +44,29 @@ const QUEUES = [
 ] as const;
 
 export function AdminOverviewQueues() {
-  const queueQueries = useQueries({
-    queries: QUEUES.map(({ queue }) =>
-      operatorQueries.cases({ queue, page: 1, limit: 1 }),
-    ),
-  });
-
-  const queueData = QUEUES.map((definition, index) => ({
+  const queueSummaryQuery = useQuery(operatorQueries.queueSummary());
+  const queueData = QUEUES.map((definition) => ({
     definition,
-    query: queueQueries[index],
-    total: queueQueries[index]?.data?.total,
+    total: queueSummaryQuery.data?.counts.find(
+      ({ queue }) => queue === definition.queue,
+    )?.count,
   }));
   const criticalQueue = queueData[0];
   const remainingQueues = queueData.slice(1);
-  const loadedTotals = queueData.flatMap(({ total }) =>
-    total === undefined ? [] : [total],
-  );
-  const totalCases = loadedTotals.reduce((sum, total) => sum + total, 0);
+  const queuesNeedingAttention = queueData.filter(
+    ({ total }) => (total ?? 0) > 0,
+  ).length;
   const maxRemainingTotal = Math.max(
     1,
     ...remainingQueues.map(({ total }) => total ?? 0),
   );
-  const isPending = queueQueries.some((query) => query.isPending);
-  const isError = queueQueries.some((query) => query.isError);
-  const isFetching = queueQueries.some((query) => query.isFetching);
-  const allQueuesClear =
-    !isPending &&
-    !isError &&
-    loadedTotals.length === QUEUES.length &&
-    totalCases === 0;
+  const isPending = queueSummaryQuery.isPending;
+  const isError = queueSummaryQuery.isError;
+  const isFetching = queueSummaryQuery.isFetching;
+  const allQueuesClear = !isPending && !isError && queuesNeedingAttention === 0;
 
   function retryQueues() {
-    for (const query of queueQueries) {
-      if (query.isError) {
-        void query.refetch();
-      }
-    }
+    void queueSummaryQuery.refetch();
   }
 
   return (
@@ -101,7 +88,7 @@ export function AdminOverviewQueues() {
           isFetching={isFetching}
           isPending={isPending}
           onRetry={retryQueues}
-          total={totalCases}
+          queuesNeedingAttention={queuesNeedingAttention}
         />
 
         <p className="col-span-2 max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
@@ -111,10 +98,10 @@ export function AdminOverviewQueues() {
 
       <AdminSummaryStrip>
         <AdminSummaryMetric
-          label="Waiting review"
-          value={isPending ? "—" : totalCases}
-          tone={totalCases > 0 ? "warning" : "success"}
-          detail={totalCases > 0 ? "Across all queues" : "Queues are clear"}
+          label="Queues with work"
+          value={isPending ? "—" : queuesNeedingAttention}
+          tone={queuesNeedingAttention > 0 ? "warning" : "success"}
+          detail="Memberships overlap; do not add counts"
         />
         <AdminSummaryMetric
           label="Critical now"
@@ -186,11 +173,11 @@ export function AdminOverviewQueues() {
               </div>
 
               <div className="grid gap-4">
-                {remainingQueues.map(({ definition, query, total }) => (
+                {remainingQueues.map(({ definition, total }) => (
                   <QueueLoadRow
                     key={definition.queue}
-                    isError={query?.isError ?? false}
-                    isPending={query?.isPending ?? true}
+                    isError={isError}
+                    isPending={isPending}
                     label={definition.label}
                     maxTotal={maxRemainingTotal}
                     queue={definition.queue}
@@ -274,13 +261,13 @@ function QueueOverviewTotal({
   isFetching,
   isPending,
   onRetry,
-  total,
+  queuesNeedingAttention,
 }: {
   isError: boolean;
   isFetching: boolean;
   isPending: boolean;
   onRetry: () => void;
-  total: number;
+  queuesNeedingAttention: number;
 }) {
   if (isPending) {
     return (
@@ -293,7 +280,9 @@ function QueueOverviewTotal({
   return (
     <div className="flex items-center gap-2">
       <span className="font-medium text-slate-muted text-sm">
-        {total} open {total === 1 ? "case" : "cases"}
+        {queuesNeedingAttention === 0
+          ? "All queues clear"
+          : `${queuesNeedingAttention} ${queuesNeedingAttention === 1 ? "queue needs" : "queues need"} attention`}
       </span>
       {isError ? (
         <Button

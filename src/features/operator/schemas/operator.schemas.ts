@@ -15,6 +15,20 @@ export const OPERATOR_QUEUES = [
 
 export const operatorQueueSchema = z.enum(OPERATOR_QUEUES);
 
+export const OPERATOR_CASE_SLA_STATES = [
+  "OVERDUE",
+  "DUE_SOON",
+  "MISSING_DEADLINE",
+] as const;
+export const operatorCaseSlaStateSchema = z.enum(OPERATOR_CASE_SLA_STATES);
+export const OPERATOR_CASE_SORTS = [
+  "DECISION_TARGET_ASC",
+  "SEVERITY_DECISION_TARGET",
+  "OLDEST_RECEIVED",
+  "RECENTLY_UPDATED",
+] as const;
+export const operatorCaseSortSchema = z.enum(OPERATOR_CASE_SORTS);
+
 export const moderationCaseStatusSchema = z.enum([
   "OPEN",
   "TRIAGING",
@@ -74,12 +88,24 @@ export const operatorCaseSummarySchema = z.object({
   version: z.number().int().positive(),
 });
 
+export const operatorQueueFilteredSummarySchema = z.object({
+  definitionVersion: z.string(),
+  generatedAt: dateTimeSchema,
+  total: z.number().int().nonnegative(),
+  highSeverity: z.number().int().nonnegative(),
+  overdue: z.number().int().nonnegative(),
+  dueSoon: z.number().int().nonnegative(),
+  missingDeadline: z.number().int().nonnegative(),
+  oldestCreatedAt: nullableDateTimeSchema,
+});
+
 export const operatorCasesResponseSchema = z.object({
   data: z.array(operatorCaseSummarySchema),
   queue: operatorQueueSchema,
   page: z.number().int().positive(),
   limit: z.number().int().positive(),
   total: z.number().int().nonnegative(),
+  summary: operatorQueueFilteredSummarySchema,
 });
 
 export const operatorIntakeResponseSchema = z.object({
@@ -87,6 +113,18 @@ export const operatorIntakeResponseSchema = z.object({
   page: z.number().int().positive(),
   limit: z.number().int().positive(),
   total: z.number().int().nonnegative(),
+  summary: operatorQueueFilteredSummarySchema,
+});
+
+export const operatorQueueSummarySchema = z.object({
+  counts: z.array(
+    z.object({
+      queue: operatorQueueSchema,
+      count: z.number().int().nonnegative(),
+    }),
+  ),
+  definitionVersion: z.string(),
+  generatedAt: dateTimeSchema,
 });
 
 export const OPERATOR_ROLES = [
@@ -606,6 +644,11 @@ export const revealedMediaEvidenceSchema = z.object({
 });
 
 export type OperatorQueue = z.infer<typeof operatorQueueSchema>;
+export type OperatorCaseSlaState = z.infer<typeof operatorCaseSlaStateSchema>;
+export type OperatorCaseSort = z.infer<typeof operatorCaseSortSchema>;
+export type ModerationSeverity = z.infer<typeof moderationSeveritySchema>;
+export type EvidenceCompleteness = z.infer<typeof evidenceCompletenessSchema>;
+export type ModerationUncertainty = z.infer<typeof moderationUncertaintySchema>;
 export type OperatorRole = z.infer<typeof operatorRoleSchema>;
 export type OperatorSession = z.infer<typeof operatorSessionSchema>;
 export type ModerationCaseStatus = z.infer<typeof moderationCaseStatusSchema>;

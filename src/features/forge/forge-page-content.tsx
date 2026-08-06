@@ -55,6 +55,7 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button
               onClick={() => onForgeClick()}
+              data-onboarding-tour="forge-start"
               variant="primary"
               size="hero"
               className="w-full sm:w-auto"

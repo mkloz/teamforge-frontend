@@ -3,6 +3,7 @@ import {
   type SettingsProfileValues,
   unspecifiedGenderValue,
 } from "@/features/settings/schemas/settings-profile.schema";
+import { getUserSignInMethods } from "@/shared/lib/user-sign-in-methods";
 import type { Gender, User } from "@/shared/schemas";
 
 function toNullableText(value: string) {
@@ -67,6 +68,8 @@ export function buildSettingsProfilePayload(
 }
 
 export function buildProfileSummary(user: User) {
+  const signInMethods = getUserSignInMethods(user);
+
   return [
     {
       label: "Email",
@@ -74,7 +77,12 @@ export function buildProfileSummary(user: User) {
     },
     {
       label: "Provider",
-      value: user.authProvider === "GOOGLE" ? "Google" : "Email",
+      value:
+        signInMethods.google && signInMethods.password
+          ? "Email + Google"
+          : signInMethods.google
+            ? "Google"
+            : "Email",
     },
     {
       label: "Verification",

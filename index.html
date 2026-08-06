@@ -331,8 +331,9 @@
     </style>
     <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="canonical" href="__TEAMFORGE_APP_URL__/" />
     <link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- teamforge:seo:start -->
+    <link rel="canonical" href="__TEAMFORGE_APP_URL__/" />
     <title>TeamForge | Find your people, intelligently.</title>
     <meta
       name="description"
@@ -362,6 +363,10 @@
       content="TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context."
     />
     <meta name="twitter:image" content="__TEAMFORGE_APP_URL__/group-covers/flat-social-map.png" />
+    <script type="application/ld+json" data-teamforge-json-ld="public-site">
+      {"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"__TEAMFORGE_APP_URL__/#organization","name":"TeamForge","url":"__TEAMFORGE_APP_URL__/","logo":"__TEAMFORGE_APP_URL__/icons/pwa-512x512.png","description":"TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context."},{"@type":"WebSite","@id":"__TEAMFORGE_APP_URL__/#website","url":"__TEAMFORGE_APP_URL__/","name":"TeamForge","description":"TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context.","publisher":{"@id":"__TEAMFORGE_APP_URL__/#organization"}}]}
+    </script>
+    <!-- teamforge:seo:end -->
   </head>
   <body>
     <div id="root">

@@ -8,6 +8,7 @@ import {
   OPERATOR_QUERY_KEYS,
   operatorQueries,
 } from "@/features/operator/api/operator-queries";
+import { OperatorCaseFilters } from "@/features/operator/components/operator-case-filters";
 import { OperatorReauthenticationDialog } from "@/features/operator/components/operator-reauthentication-dialog";
 import {
   OperatorAccessState,
@@ -18,14 +19,32 @@ import {
   humanizeCode,
   SEVERITY_LABELS,
 } from "@/features/operator/lib/operator-language";
+import {
+  hasOperatorIntakeFilters,
+  type OperatorListSearch,
+  toOperatorListInput,
+} from "@/features/operator/lib/operator-route";
 import { useOperatorSessionStepUp } from "@/features/operator/public/use-operator-session-step-up";
 import type { OperatorCaseSummary } from "@/features/operator/schemas/operator.schemas";
 import {
-  AdminSegmentedBar,
   AdminSummaryMetric,
   AdminSummaryStrip,
 } from "@/shared/components/admin/admin-visuals";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/shared/components/ui/pagination";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
 import { cn } from "@/shared/lib/utils";
 
 const CASES_PER_PAGE = 50;
@@ -36,7 +55,7 @@ export function OperatorIntakePage() {
   const navigate = useNavigate({ from: "/admin/moderation/intake" });
   const page = search.page ?? 1;
   const query = useQuery(
-    operatorQueries.intake({ page, limit: CASES_PER_PAGE }),
+    operatorQueries.intake(toOperatorListInput(search, CASES_PER_PAGE)),
   );
   const { reauthenticationDialogProps, rejectCurrentStepUp, sessionQuery } =
     useOperatorSessionStepUp();
@@ -51,9 +70,12 @@ export function OperatorIntakePage() {
 
     void navigate({
       replace: true,
-      search: { page: totalPages === 1 ? undefined : totalPages },
+      search: {
+        ...search,
+        page: totalPages === 1 ? undefined : totalPages,
+      },
     });
-  }, [navigate, page, query.data, totalPages]);
+  }, [navigate, page, query.data, search, totalPages]);
 
   useEffect(() => {
     if (
@@ -87,21 +109,11 @@ export function OperatorIntakePage() {
     );
   }
 
-  const now = Date.now();
-  const waitingAges = query.data.data
-    .map((item) => Math.max(0, now - new Date(item.createdAt).getTime()))
-    .sort((a, b) => a - b);
-  const oldestWaiting = waitingAges.at(-1) ?? 0;
-  const medianWaiting =
-    waitingAges.length === 0
-      ? 0
-      : (waitingAges[Math.floor(waitingAges.length / 2)] ?? 0);
-  const highSeverity = query.data.data.filter(
-    (item) => item.severity === "P0" || item.severity === "P1",
-  ).length;
-  const overdue = query.data.data.filter(
-    (item) => item.dueAt && new Date(item.dueAt).getTime() < now,
-  ).length;
+  const summary = query.data.summary;
+  const generatedAt = new Date(summary.generatedAt).getTime();
+  const oldestWaiting = summary.oldestCreatedAt
+    ? Math.max(0, generatedAt - new Date(summary.oldestCreatedAt).getTime())
+    : 0;
 
   return (
     <div className="mx-auto grid w-full max-w-7xl content-start gap-10 px-4 py-6 md:px-8 md:py-10">
@@ -133,87 +145,141 @@ export function OperatorIntakePage() {
         />
         <AdminSummaryMetric
           label="High severity"
-          value={highSeverity}
-          tone={highSeverity > 0 ? "danger" : "success"}
-          detail="P0 or P1 on this page"
+          value={summary.highSeverity}
+          tone={summary.highSeverity > 0 ? "danger" : "success"}
+          detail="P0 or P1 in filtered results"
         />
         <AdminSummaryMetric
           label="Oldest waiting"
           value={formatWaitingAge(oldestWaiting)}
           tone={oldestWaiting > 24 * 60 * 60_000 ? "danger" : "muted"}
-          detail="Current page"
+          detail="Full filtered result"
         />
         <AdminSummaryMetric
-          label="Median wait"
-          value={formatWaitingAge(medianWaiting)}
-          tone={medianWaiting > 8 * 60 * 60_000 ? "warning" : "muted"}
-          detail="Current page"
+          label="Overdue"
+          value={summary.overdue}
+          tone={summary.overdue > 0 ? "danger" : "success"}
+          detail={`${summary.dueSoon} due in 24h · ${summary.missingDeadline} without target`}
         />
       </AdminSummaryStrip>
 
-      {query.data.data.length ? (
-        <div className="grid gap-3 rounded-2xl bg-card p-5 sm:p-6">
-          <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <div>
-              <h2 className="font-semibold text-base text-ink">Queue aging</h2>
-              <p className="mt-1 text-slate-muted text-sm">
-                Urgency across the cases currently visible.
-              </p>
-            </div>
-            <span className="font-semibold text-slate-muted text-xs">
-              {overdue} overdue
-            </span>
-          </div>
-          <AdminSegmentedBar
-            label="Intake urgency"
-            segments={[
-              { label: "Overdue", value: overdue, tone: "danger" },
-              {
-                label: "High severity",
-                value: Math.max(0, highSeverity - overdue),
-                tone: "warning",
-              },
-              {
-                label: "Routine",
-                value: Math.max(
-                  0,
-                  query.data.data.length - Math.max(overdue, highSeverity),
-                ),
-                tone: "muted",
-              },
-            ]}
-          />
-        </div>
-      ) : null}
+      <OperatorCaseFilters
+        search={search}
+        showQueue
+        onChange={(patch) =>
+          void navigate({ search: { ...search, ...patch, page: undefined } })
+        }
+        onClear={() => void navigate({ search: { sort: search.sort } })}
+      />
+
+      <p className="sr-only" aria-live="polite">
+        {query.isFetching
+          ? "Updating intake results"
+          : "Intake results updated"}
+      </p>
 
       {query.data.data.length ? (
-        <div className="grouped-surface grid overflow-hidden rounded-2xl [&>*]:bg-card">
-          {query.data.data.map((item) => (
-            <IntakeCaseCard
-              key={item.id}
-              item={item}
-              commandsEnabled
-              onCommandError={(error) => {
-                if (getOperatorControlErrorKind(error) === "STALE_SESSION") {
-                  rejectCurrentStepUp();
-                }
-              }}
-            />
-          ))}
+        <div
+          className={cn(
+            "overflow-hidden rounded-2xl bg-card shadow-sm transition-opacity",
+            query.isFetching && "opacity-65",
+          )}
+        >
+          <Table>
+            <TableCaption className="sr-only">
+              Unassigned intake cases, page {page} of {totalPages}
+            </TableCaption>
+            <TableHeader className="hidden bg-card text-slate-muted text-xs lg:table-header-group">
+              <TableRow className="hover:bg-card">
+                <TableHead
+                  className="w-[25%] px-5"
+                  aria-sort={
+                    !search.sort || search.sort === "SEVERITY_DECISION_TARGET"
+                      ? "ascending"
+                      : "none"
+                  }
+                >
+                  <button
+                    type="button"
+                    className="rounded-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    onClick={() =>
+                      void navigate({
+                        search: {
+                          ...search,
+                          page: undefined,
+                          sort: "SEVERITY_DECISION_TARGET",
+                        },
+                      })
+                    }
+                  >
+                    Case and severity
+                  </button>
+                </TableHead>
+                <TableHead>Evidence</TableHead>
+                <TableHead>Uncertainty</TableHead>
+                <TableHead>Reports</TableHead>
+                <TableHead
+                  aria-sort={
+                    search.sort === "OLDEST_RECEIVED" ? "ascending" : "none"
+                  }
+                >
+                  <button
+                    type="button"
+                    className="rounded-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    onClick={() =>
+                      void navigate({
+                        search: {
+                          ...search,
+                          page: undefined,
+                          sort: "OLDEST_RECEIVED",
+                        },
+                      })
+                    }
+                  >
+                    Waiting
+                  </button>
+                </TableHead>
+                <TableHead className="w-56">
+                  <span className="sr-only">Action</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="grouped-surface">
+              {query.data.data.map((item) => (
+                <IntakeCaseRow
+                  key={item.id}
+                  item={item}
+                  returnSearch={search}
+                  commandsEnabled
+                  onCommandError={(error) => {
+                    if (
+                      getOperatorControlErrorKind(error) === "STALE_SESSION"
+                    ) {
+                      rejectCurrentStepUp();
+                    }
+                  }}
+                />
+              ))}
+            </TableBody>
+          </Table>
         </div>
       ) : (
         <div className="grid min-h-44 place-items-center rounded-xl border border-border border-dashed px-5 py-8 text-center">
           <div className="grid max-w-md justify-items-center gap-2">
             <h2 className="font-semibold text-base text-ink">
-              Intake is clear
+              {hasOperatorIntakeFilters(search)
+                ? "No intake cases match these filters"
+                : "Intake is clear"}
             </h2>
             <p className="text-pretty text-slate-muted text-sm leading-relaxed">
-              Every received case has been routed to an operator.
+              {hasOperatorIntakeFilters(search)
+                ? "Adjust or clear the filters to see other unassigned cases."
+                : "Every received case has been routed to an operator."}
             </p>
           </div>
         </div>
       )}
-      <IntakePagination page={page} totalPages={totalPages} />
+      <IntakePagination page={page} search={search} totalPages={totalPages} />
       <OperatorReauthenticationDialog {...reauthenticationDialogProps} />
     </div>
   );
@@ -229,65 +295,80 @@ function formatWaitingAge(milliseconds: number) {
 
 function IntakePagination({
   page,
+  search,
   totalPages,
 }: {
   page: number;
+  search: OperatorListSearch;
   totalPages: number;
 }) {
   if (totalPages <= 1) return null;
 
   return (
-    <nav
+    <Pagination
       aria-label="Intake pagination"
-      className="flex flex-wrap items-center justify-between gap-3 pt-2"
+      className="mx-0 flex-wrap justify-between gap-3 pt-2"
     >
       <p className="font-medium text-slate-muted text-sm" aria-live="polite">
         Page {page} of {totalPages}
       </p>
-      <div className="flex items-center gap-2">
+      <PaginationContent className="gap-2">
         {page > 1 ? (
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/admin/moderation/intake"
-              search={{ page: page === 2 ? undefined : page - 1 }}
-              rel="prev"
-            >
-              Previous
-            </Link>
-          </Button>
+          <PaginationItem>
+            <Button asChild variant="outline" size="sm">
+              <Link
+                to="/admin/moderation/intake"
+                search={{
+                  ...search,
+                  page: page === 2 ? undefined : page - 1,
+                }}
+                rel="prev"
+              >
+                Previous
+              </Link>
+            </Button>
+          </PaginationItem>
         ) : (
-          <Button variant="outline" size="sm" disabled>
-            Previous
-          </Button>
+          <PaginationItem>
+            <Button variant="outline" size="sm" disabled>
+              Previous
+            </Button>
+          </PaginationItem>
         )}
         {page < totalPages ? (
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/admin/moderation/intake"
-              search={{ page: page + 1 }}
-              rel="next"
-            >
-              Next
-            </Link>
-          </Button>
+          <PaginationItem>
+            <Button asChild variant="outline" size="sm">
+              <Link
+                to="/admin/moderation/intake"
+                search={{ ...search, page: page + 1 }}
+                rel="next"
+              >
+                Next
+              </Link>
+            </Button>
+          </PaginationItem>
         ) : (
-          <Button variant="outline" size="sm" disabled>
-            Next
-          </Button>
+          <PaginationItem>
+            <Button variant="outline" size="sm" disabled>
+              Next
+            </Button>
+          </PaginationItem>
         )}
-      </div>
-    </nav>
+      </PaginationContent>
+    </Pagination>
   );
 }
 
-function IntakeCaseCard({
+function IntakeCaseRow({
   commandsEnabled,
   item,
   onCommandError,
+  returnSearch,
 }: {
   commandsEnabled: boolean;
   item: OperatorCaseSummary;
   onCommandError: (error: unknown) => void;
+  returnSearch: OperatorListSearch;
 }) {
   const queryClient = useQueryClient();
   const [assigned, setAssigned] = useState(false);
@@ -312,10 +393,10 @@ function IntakeCaseCard({
   const isOverdue = dueAt ? dueAt.getTime() < Date.now() : false;
 
   return (
-    <article className="grid gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[minmax(14rem,1fr)_minmax(20rem,1.25fr)_minmax(12rem,0.7fr)_auto] lg:items-center">
-      <div className="grid min-w-0 gap-1.5">
+    <TableRow className="grid grid-cols-2 gap-x-5 gap-y-4 bg-card px-5 py-5 sm:px-6 lg:table-row lg:px-0 lg:py-0">
+      <TableCell className="col-span-2 min-w-0 whitespace-normal p-0 lg:table-cell lg:px-5 lg:py-4">
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
-          <h2 className="truncate font-semibold text-ink">{item.reference}</h2>
+          <p className="truncate font-semibold text-ink">{item.reference}</p>
           <span
             className={cn(
               "font-semibold text-xs",
@@ -336,25 +417,28 @@ function IntakeCaseCard({
             ? item.mandatoryHumanReasons.map(humanizeCode).join(" · ")
             : humanizeCode(item.status)}
         </p>
-      </div>
+      </TableCell>
 
-      <dl className="grid grid-cols-3 gap-x-6 gap-y-2 text-sm">
-        <IntakeFact
-          label="Evidence"
-          value={humanizeCode(item.evidenceCompleteness)}
-        />
-        <IntakeFact
-          label="Uncertainty"
-          value={humanizeCode(item.uncertainty)}
-        />
-        <IntakeFact label="Reports" value={String(item.reportCount)} />
-      </dl>
+      <IntakeAttributeCell
+        label="Evidence"
+        value={humanizeCode(item.evidenceCompleteness)}
+      />
+      <IntakeAttributeCell
+        label="Uncertainty"
+        value={humanizeCode(item.uncertainty)}
+      />
+      <IntakeAttributeCell
+        label="Reports"
+        value={`${item.reportCount} ${item.reportCount === 1 ? "report" : "reports"}`}
+        tabular
+      />
 
-      <div className="grid gap-1.5">
-        <p className="font-medium text-ink text-sm">
+      <TableCell className="grid gap-1 whitespace-normal p-0 lg:table-cell lg:p-2">
+        <span className="text-slate-muted text-xs lg:hidden">Waiting</span>
+        <span className="font-medium text-ink text-sm">
           Received {formatOperatorDate(item.createdAt)}
-        </p>
-        <p
+        </span>
+        <span
           className={cn(
             "flex items-center gap-1.5 text-xs",
             isOverdue ? "font-medium text-danger" : "text-slate-muted",
@@ -362,43 +446,59 @@ function IntakeCaseCard({
         >
           <Clock3 className="size-3.5" aria-hidden="true" />
           {dueAt ? `Due ${formatOperatorDate(item.dueAt)}` : "No due date"}
-        </p>
-      </div>
+        </span>
+      </TableCell>
 
-      {assigned ? (
-        <Link
-          to="/admin/moderation/cases/$caseId"
-          params={{ caseId: item.id }}
-          className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm lg:justify-self-end"
-        >
-          Open assigned case
-          <ArrowRight className="size-4" aria-hidden="true" />
-        </Link>
-      ) : (
-        <div className="grid gap-2 lg:justify-items-end">
-          <Button
-            disabled={!commandsEnabled || mutation.isPending}
-            loading={mutation.isPending}
-            onClick={() => mutation.mutate()}
+      <TableCell className="col-span-2 grid gap-2 whitespace-normal p-0 lg:table-cell lg:p-2 lg:pr-5 lg:text-right">
+        {assigned ? (
+          <Link
+            to="/admin/moderation/cases/$caseId"
+            params={{ caseId: item.id }}
+            search={{
+              ...returnSearch,
+              queue: "CRITICAL_NOW",
+              source: "intake",
+            }}
+            className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm"
           >
-            Assign to me for 8 hours
-          </Button>
-          {mutation.isError ? (
-            <p className="max-w-64 text-destructive text-xs" role="alert">
-              Assignment failed. Check your owner access, then verify and retry.
-            </p>
-          ) : null}
-        </div>
-      )}
-    </article>
+            Open assigned case
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
+        ) : (
+          <div className="grid gap-2 lg:justify-items-end">
+            <Button
+              disabled={!commandsEnabled || mutation.isPending}
+              loading={mutation.isPending}
+              onClick={() => mutation.mutate()}
+            >
+              Assign to me for 8 hours
+            </Button>
+            {mutation.isError ? (
+              <p className="max-w-64 text-destructive text-xs" role="alert">
+                Assignment failed. Check your owner access, then verify and
+                retry.
+              </p>
+            ) : null}
+          </div>
+        )}
+      </TableCell>
+    </TableRow>
   );
 }
 
-function IntakeFact({ label, value }: { label: string; value: string }) {
+function IntakeAttributeCell({
+  label,
+  tabular = false,
+  value,
+}: {
+  label: string;
+  tabular?: boolean;
+  value: string;
+}) {
   return (
-    <div className="grid gap-0.5">
-      <dt className="font-semibold text-slate-muted text-xs">{label}</dt>
-      <dd className="text-ink">{value}</dd>
-    </div>
+    <TableCell className="grid gap-1 whitespace-normal p-0 text-sm lg:table-cell lg:p-2">
+      <span className="text-slate-muted text-xs lg:hidden">{label}</span>
+      <span className={cn("text-ink", tabular && "tabular-nums")}>{value}</span>
+    </TableCell>
   );
 }

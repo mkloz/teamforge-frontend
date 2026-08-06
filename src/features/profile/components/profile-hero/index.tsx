@@ -43,7 +43,10 @@ export function ProfileHero({
 
   return (
     <Sheet>
-      <div className="relative flex w-full flex-col pb-4 sm:px-0 sm:pb-8">
+      <div
+        className="relative flex w-full flex-col pb-4 sm:px-0 sm:pb-8"
+        data-onboarding-tour="profile-overview"
+      >
         <div className="flex w-full flex-col gap-5 sm:gap-6 lg:gap-9">
           <div className="flex w-full flex-col justify-between gap-5 sm:flex-row sm:items-start sm:gap-6">
             <div className="relative min-w-0 flex-1">

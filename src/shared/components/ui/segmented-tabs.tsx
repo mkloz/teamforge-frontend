@@ -24,12 +24,12 @@ const SEGMENTED_TAB_SIZE_CLASS_NAMES: Record<
     icon: "size-4",
   },
   md: {
-    button: "h-11 gap-1.5 px-3 text-xs [@media(pointer:fine)]:h-9",
+    button: "h-9 gap-1.5 px-3 text-xs",
     gap: "gap-1",
     icon: "size-3.5",
   },
   sm: {
-    button: "h-11 gap-1 px-2.5 text-xs [@media(pointer:fine)]:h-7",
+    button: "h-7 gap-1 px-2.5 text-xs",
     gap: "gap-0.5",
     icon: "size-3",
   },

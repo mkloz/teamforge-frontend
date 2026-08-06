@@ -25,7 +25,16 @@ import {
   triageCaseSchema,
 } from "@/features/operator/schemas/operator.schemas";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+} from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/shared/components/ui/native-select";
 import { Textarea } from "@/shared/components/ui/textarea";
 
 type CommandBodyInput = Omit<
@@ -521,13 +530,15 @@ function CommandFields({ assessmentId }: { assessmentId: string | null }) {
         required={false}
       />
       <TextField name="policyVersion" label="Policy version" />
-      <label
-        htmlFor={rationaleId}
-        className="grid gap-1 font-semibold text-ink text-xs"
-      >
-        Rationale (optional)
+      <Field className="gap-1">
+        <FieldLabel
+          htmlFor={rationaleId}
+          className="font-semibold text-ink text-xs"
+        >
+          Rationale (optional)
+        </FieldLabel>
         <Textarea id={rationaleId} name="rationale" maxLength={1000} rows={3} />
-      </label>
+      </Field>
     </>
   );
 }
@@ -549,8 +560,10 @@ function TextField({
 }) {
   const id = useId();
   return (
-    <label htmlFor={id} className="grid gap-1 font-semibold text-ink text-xs">
-      {label}
+    <Field className="gap-1">
+      <FieldLabel htmlFor={id} className="font-semibold text-ink text-xs">
+        {label}
+      </FieldLabel>
       <Input
         id={id}
         name={name}
@@ -559,9 +572,11 @@ function TextField({
         placeholder={placeholder}
       />
       {hint ? (
-        <span className="font-normal text-slate-muted">{hint}</span>
+        <FieldDescription className="font-normal text-slate-muted text-xs">
+          {hint}
+        </FieldDescription>
       ) : null}
-    </label>
+    </Field>
   );
 }
 
@@ -574,21 +589,21 @@ function SelectField({
   name: string;
   values: string[];
 }) {
+  const id = useId();
+
   return (
-    <label className="grid gap-1 font-semibold text-ink text-xs">
-      {label}
-      <select
-        name={name}
-        required
-        className="h-11 rounded-lg border border-border bg-input px-3 text-ink text-sm"
-      >
+    <Field className="gap-1">
+      <FieldLabel htmlFor={id} className="font-semibold text-ink text-xs">
+        {label}
+      </FieldLabel>
+      <NativeSelect id={id} name={name} required>
         {values.map((value) => (
-          <option key={value} value={value}>
+          <NativeSelectOption key={value} value={value}>
             {value.toLowerCase().replaceAll("_", " ")}
-          </option>
+          </NativeSelectOption>
         ))}
-      </select>
-    </label>
+      </NativeSelect>
+    </Field>
   );
 }
 
@@ -612,50 +627,55 @@ function readCommandBody(
 }
 
 function AssessmentDispositionField() {
+  const id = useId();
+
   return (
-    <label className="grid gap-1 font-semibold text-ink text-xs">
-      How did the latest assessment inform this decision?
-      <select
-        name="assistanceDisposition"
-        required
-        className="h-11 rounded-lg border border-border bg-input px-3 text-ink text-sm"
-      >
-        <option value="">Choose one</option>
-        <option value="FOLLOWED">I followed its suggestion</option>
-        <option value="CHANGED">I made a different decision</option>
-        <option value="NOT_USED">I did not use it</option>
-      </select>
-      <span className="font-normal text-slate-muted">
+    <Field className="gap-1">
+      <FieldLabel htmlFor={id} className="font-semibold text-ink text-xs">
+        How did the latest assessment inform this decision?
+      </FieldLabel>
+      <NativeSelect id={id} name="assistanceDisposition" required>
+        <NativeSelectOption value="">Choose one</NativeSelectOption>
+        <NativeSelectOption value="FOLLOWED">
+          I followed its suggestion
+        </NativeSelectOption>
+        <NativeSelectOption value="CHANGED">
+          I made a different decision
+        </NativeSelectOption>
+        <NativeSelectOption value="NOT_USED">
+          I did not use it
+        </NativeSelectOption>
+      </NativeSelect>
+      <FieldDescription className="font-normal text-slate-muted text-xs">
         Applies to the latest completed assessment shown in this case.
-      </span>
-    </label>
+      </FieldDescription>
+    </Field>
   );
 }
 
 function ReportField({ reports }: { reports: OperatorCaseDetail["reports"] }) {
+  const id = useId();
   const sortedReports = [...reports].sort((left, right) =>
     right.report.submittedAt.localeCompare(left.report.submittedAt),
   );
 
   return (
-    <label className="grid gap-1 font-semibold text-ink text-xs">
-      Report to reply to
-      <select
-        name="reportId"
-        required
-        className="h-11 rounded-lg border border-border bg-input px-3 text-ink text-sm"
-      >
+    <Field className="gap-1">
+      <FieldLabel htmlFor={id} className="font-semibold text-ink text-xs">
+        Report to reply to
+      </FieldLabel>
+      <NativeSelect id={id} name="reportId" required>
         {sortedReports.map(({ report }) => (
-          <option key={report.id} value={report.id}>
+          <NativeSelectOption key={report.id} value={report.id}>
             {report.referenceCode} · {humanizeCode(report.category)} ·{" "}
             {formatOperatorDate(report.submittedAt)}
-          </option>
+          </NativeSelectOption>
         ))}
-      </select>
-      <span className="font-normal text-slate-muted">
+      </NativeSelect>
+      <FieldDescription className="font-normal text-slate-muted text-xs">
         The request is sent only to the person who submitted this report.
-      </span>
-    </label>
+      </FieldDescription>
+    </Field>
   );
 }
 

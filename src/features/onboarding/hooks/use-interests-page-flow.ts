@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { ensureOnboardingProductState } from "@/shared/api/onboarding-product-state-query";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 
@@ -25,8 +26,14 @@ export function useInterestsPageFlow() {
   const [isDone, setIsDone] = useState(false);
   const [didFinishEdit, setDidFinishEdit] = useState(false);
   const navigate = useNavigate();
-  const { isEditMode, mbti, returnTo, returnSearch, returnSection } =
-    useOnboardingFlowState();
+  const {
+    isEditMode,
+    mbti,
+    returnTo,
+    returnSearch,
+    returnSection,
+    returnGroupId,
+  } = useOnboardingFlowState();
   const compatibilityInputLock = useCompatibilityInputLock({
     enabled: isEditMode,
   });
@@ -65,11 +72,20 @@ export function useInterestsPageFlow() {
           returnTo,
           returnSearch,
           returnSection,
+          returnGroupId,
         },
         "settings",
       ),
     );
-  }, [didFinishEdit, navigate, reset, returnSearch, returnSection, returnTo]);
+  }, [
+    didFinishEdit,
+    navigate,
+    reset,
+    returnGroupId,
+    returnSearch,
+    returnSection,
+    returnTo,
+  ]);
 
   useScrollToTop([state.screen], scrollContainerRef);
 
@@ -78,16 +94,42 @@ export function useInterestsPageFlow() {
     ? getOnboardingReturnDestinationLabel(returnTo, null, "settings")
     : "personality";
 
-  function enterApp() {
+  async function enterApp() {
     state.reset();
-    resetPersonalityTestStoreAfterExit();
 
-    void navigate(
+    if (returnTo) {
+      await navigate(
+        resolveInterestsExitNavigation(
+          { returnTo, returnSearch, returnSection, returnGroupId },
+          "home",
+        ),
+      );
+      return;
+    }
+
+    try {
+      const productState = await ensureOnboardingProductState();
+      await navigate({
+        to:
+          productState.presentation.destination === "FORGE"
+            ? "/forge"
+            : "/explore",
+      });
+      return;
+    } catch (error) {
+      warnInDevelopment(
+        "Onboarding practice state could not be loaded after interests.",
+        error,
+      );
+    }
+
+    await navigate(
       resolveInterestsExitNavigation(
         {
           returnTo,
           returnSearch,
           returnSection,
+          returnGroupId,
         },
         "home",
       ),
@@ -103,6 +145,7 @@ export function useInterestsPageFlow() {
             returnTo,
             returnSearch,
             returnSection,
+            returnGroupId,
           },
           "settings",
         ),
@@ -114,6 +157,7 @@ export function useInterestsPageFlow() {
       returnTo,
       returnSearch,
       returnSection,
+      returnGroupId,
       mbti,
     });
 
@@ -134,18 +178,4 @@ export function useInterestsPageFlow() {
     scrollContainerRef,
     state,
   };
-}
-
-function resetPersonalityTestStoreAfterExit() {
-  void import("../store/personality-test-store")
-    .then(({ usePersonalityTestStore }) => {
-      usePersonalityTestStore.getState().reset();
-      return undefined;
-    })
-    .catch((error: unknown) => {
-      warnInDevelopment(
-        "Personality test store reset failed after interests completion.",
-        error,
-      );
-    });
 }

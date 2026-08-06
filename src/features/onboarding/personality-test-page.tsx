@@ -16,15 +16,21 @@ export function PersonalityTestPage() {
   const {
     assessment,
     backLabel,
+    canChooseAssessmentLength,
     continueLabel,
     continueToInterests,
+    exploreAfterStarter,
     displayProgress,
+    draftStorageStatus,
     dynamic,
     goBack,
     isOnline,
     scrollContainerRef,
     setPendingLength,
+    discardRecoveredDraft,
+    resumeRecoveredDraft,
     submissionError,
+    starter,
     submitCurrentAssessment,
     testState,
   } = usePersonalityTestPageFlow();
@@ -46,19 +52,35 @@ export function PersonalityTestPage() {
       showHomeLink
     >
       <div key={screenTransitionKey} className="flex flex-1 flex-col">
+        {draftStorageStatus === "unavailable" ||
+        draftStorageStatus === "lost" ? (
+          <div
+            role="status"
+            className="mx-auto mb-4 w-full max-w-2xl rounded-2xl bg-card px-4 py-3 text-muted-foreground text-sm"
+          >
+            {draftStorageStatus === "lost"
+              ? "This draft continued in another tab, so this copy was stopped. You can start again here without affecting the other tab."
+              : "Session recovery is unavailable in this browser. Your answers remain here while this page stays open."}
+          </div>
+        ) : null}
         <PersonalityScreenRenderer
           assessment={assessment}
+          canChooseAssessmentLength={canChooseAssessmentLength}
           dynamic={dynamic}
           state={testState}
           backLabel={backLabel}
           onBack={goBack}
           onSelectionChange={setPendingLength}
           onRetrySubmission={submitCurrentAssessment}
+          onRecoveryDiscard={discardRecoveredDraft}
+          onRecoveryResume={resumeRecoveredDraft}
           onContinue={continueToInterests}
+          onExploreAfterStarter={exploreAfterStarter}
           continueLabel={continueLabel}
           isOnline={isOnline}
           questionsPerPage={QUESTIONS_PER_PAGE}
           submissionError={submissionError}
+          starter={starter}
         />
       </div>
     </PersonalityPageContent>

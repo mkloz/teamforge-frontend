@@ -4,7 +4,12 @@ import { GroupPlanDetailPageContent } from "@/features/group-plan-detail/group-p
 import { useGroupPlanDetail } from "@/features/group-plan-detail/hooks/use-group-plan-detail";
 import { useGroupPlanDetailLandingFocus } from "@/features/group-plan-detail/hooks/use-group-plan-detail-landing-focus";
 import { useGroupPlanDetailRealtime } from "@/features/group-plan-detail/hooks/use-group-plan-detail-realtime";
-import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import { IntroductoryGroupPlanDetailPage } from "@/features/group-plan-detail/introductory-group-plan-detail-page";
+import {
+  type GroupPlanDetail,
+  type GroupPlanDetailResponse,
+  isRichGroupPlanDetail,
+} from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
@@ -40,6 +45,10 @@ function GroupPlanDetailQueryState({
 
   if (detailQuery.isError || !detailQuery.data) {
     return <GroupPlanDetailErrorState onRetry={detailQuery.refetch} />;
+  }
+
+  if (!isRichGroupPlanDetail(detailQuery.data)) {
+    return <IntroductoryGroupPlanDetailPage detail={detailQuery.data} />;
   }
 
   return (
@@ -107,23 +116,31 @@ function useGroupPlanDetailLoadedView({
   });
 }
 
-function getGroupPlanDetailPageMetadata(detail: GroupPlanDetail | undefined) {
+function getGroupPlanDetailPageMetadata(
+  detail: GroupPlanDetailResponse | undefined,
+) {
   return createTeamForgePageMetadata({
     title: getGroupPlanDetailPageTitle(detail),
     description: getGroupPlanDetailPageDescription(detail),
   });
 }
 
-function getGroupPlanDetailPageTitle(detail: GroupPlanDetail | undefined) {
+function getGroupPlanDetailPageTitle(
+  detail: GroupPlanDetailResponse | undefined,
+) {
+  if (!isRichGroupPlanDetail(detail)) return "Group preview";
+
   return detail?.plan?.title
     ? `${detail.plan.title} · ${detail.group.name}`
     : (detail?.group.name ?? "Group details");
 }
 
 function getGroupPlanDetailPageDescription(
-  detail: GroupPlanDetail | undefined,
+  detail: GroupPlanDetailResponse | undefined,
 ) {
-  return detail?.plan?.description
-    ? detail.plan.description
-    : GROUP_PLAN_DETAIL_DEFAULT_DESCRIPTION;
+  if (!isRichGroupPlanDetail(detail)) {
+    return GROUP_PLAN_DETAIL_DEFAULT_DESCRIPTION;
+  }
+
+  return detail.plan?.description ?? GROUP_PLAN_DETAIL_DEFAULT_DESCRIPTION;
 }

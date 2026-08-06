@@ -3,7 +3,11 @@ import type { getPostAuthRedirectPath } from "@/shared/lib/post-auth-route";
 type EditableOnboardingDestination =
   | "/onboarding/personality"
   | "/onboarding/interests";
-type PostAuthRedirectPath = ReturnType<typeof getPostAuthRedirectPath>;
+type PostAuthRedirectPath =
+  | ReturnType<typeof getPostAuthRedirectPath>
+  | "/explore"
+  | "/forge"
+  | "/onboarding/intent";
 
 export function isOnboardingEditMode(searchStr: string) {
   return new URLSearchParams(searchStr).get("mode") === "edit";
@@ -19,7 +23,10 @@ export function getEditableOnboardingRedirectTarget({
   isEditMode: boolean;
 }) {
   return isEditMode
-    ? getEditModeOnboardingRedirectTarget(canonicalDestination)
+    ? getEditModeOnboardingRedirectTarget(
+        canonicalDestination,
+        expectedDestination,
+      )
     : getLinearOnboardingRedirectTarget({
         canonicalDestination,
         expectedDestination,
@@ -28,8 +35,17 @@ export function getEditableOnboardingRedirectTarget({
 
 function getEditModeOnboardingRedirectTarget(
   canonicalDestination: PostAuthRedirectPath,
+  expectedDestination: EditableOnboardingDestination,
 ) {
-  return canonicalDestination === "/home" ? null : canonicalDestination;
+  const isEstablishedEdit =
+    canonicalDestination === "/home" || canonicalDestination === "/forge";
+  const isIntroductoryAssessmentContinuation =
+    canonicalDestination === "/explore" &&
+    expectedDestination === "/onboarding/personality";
+
+  return isEstablishedEdit || isIntroductoryAssessmentContinuation
+    ? null
+    : canonicalDestination;
 }
 
 function getLinearOnboardingRedirectTarget({

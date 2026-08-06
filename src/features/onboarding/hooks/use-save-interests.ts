@@ -46,7 +46,10 @@ export function useSaveInterests({
     ) => OnboardingCommands.setInterests(payload),
     onSuccess: async (result) => {
       OnboardingCache.applySavedInterests(queryClient, result.interests);
-      await OnboardingCache.invalidateCurrentUser(queryClient);
+      await Promise.all([
+        OnboardingCache.invalidateCurrentUser(queryClient),
+        OnboardingCache.invalidateProductState(queryClient),
+      ]);
     },
   });
 

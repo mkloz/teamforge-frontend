@@ -96,13 +96,27 @@ const INTERMISSION_CONTENT: {
 const INTERMISSION_UPGRADE_OPTIONS: TestLength[] = [30, 50];
 
 export function getIntermissionContent(milestoneIndex: number) {
+  if (milestoneIndex === 0) {
+    return {
+      icon: Target,
+      title: "Your starting set is complete",
+      description:
+        "You answered 10 questions. Choose your interests now, or continue all 30 questions for a more detailed matching profile.",
+      factTitle: "Nothing is lost",
+      fact: "If you continue later in this session, these ten answers remain part of the full assessment.",
+    };
+  }
+
   const validIndex = Math.max(0, milestoneIndex - 1);
 
   return INTERMISSION_CONTENT[validIndex % INTERMISSION_CONTENT.length];
 }
 
-export function canExtendIntermission(totalQuestions: number) {
-  return totalQuestions < 50;
+export function canExtendIntermission(
+  totalQuestions: number,
+  allowLengthChanges = true,
+) {
+  return allowLengthChanges && totalQuestions < 50;
 }
 
 export function getIntermissionActionLabel({

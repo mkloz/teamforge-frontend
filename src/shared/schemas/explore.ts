@@ -65,6 +65,43 @@ export const exploreGroupSchema = z.object({
 
 export type ExploreGroup = z.infer<typeof exploreGroupSchema>;
 
+const introductoryExploreInterestSchema = z
+  .object({
+    name: z.string(),
+    slug: z.string(),
+  })
+  .strict();
+
+const introductoryExploreActivitySchema = z
+  .object({
+    interests: z.array(introductoryExploreInterestSchema),
+  })
+  .strict();
+
+const introductoryExplorePlanSchema = z
+  .object({
+    category: planCategorySchema,
+    scheduleMode: planScheduleModeSchema.nullable(),
+    locationMode: locationModeSchema,
+    cost: costTypeSchema,
+  })
+  .strict();
+
+export const introductoryExploreGroupSchema = z
+  .object({
+    id: z.string(),
+    activeMembersCount: z.number().int().nonnegative(),
+    maxMembers: z.number().int().positive(),
+    activity: introductoryExploreActivitySchema,
+    plan: introductoryExplorePlanSchema.nullable(),
+    interestFitPercentage: z.number().int().min(0).max(100),
+  })
+  .strict();
+
+export type IntroductoryExploreGroup = z.infer<
+  typeof introductoryExploreGroupSchema
+>;
+
 export const exploreFormationOpeningSchema = z
   .object({
     id: z.string(),
@@ -115,6 +152,12 @@ export const exploreFeedItemSchema = z.discriminatedUnion("type", [
     .object({
       type: z.literal("FORMATION_OPENING"),
       opening: exploreFormationOpeningSchema,
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("INTRODUCTORY_GROUP"),
+      group: introductoryExploreGroupSchema,
     })
     .strict(),
 ]);

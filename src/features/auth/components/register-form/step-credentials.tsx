@@ -1,15 +1,19 @@
 import { FormLevelError } from "@/features/auth/components/form-level-error";
 import { useGoogleAuth } from "@/features/auth/hooks/use-google-auth";
+import type { RegistrationAccountRecovery } from "@/features/auth/lib/registration-account-recovery";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { GoogleIcon } from "@/shared/components/icons";
 import { Button } from "@/shared/components/ui/button";
+import { Notice } from "@/shared/components/ui/notice";
 import { RegisterIdentityFields } from "./register-identity-fields";
 import { RegisterPasswordField } from "./register-password-field";
 
 interface StepCredentialsProps {
+  accountRecovery?: RegistrationAccountRecovery | null;
   onNext: () => void;
   onGoogleSuccess?: () => void | Promise<void>;
   onNextIntent?: () => void;
+  onSwitchToLogin: () => void;
 }
 
 interface GoogleRegisterButtonViewState {
@@ -19,9 +23,11 @@ interface GoogleRegisterButtonViewState {
 }
 
 export function StepCredentials({
+  accountRecovery,
   onNext,
   onGoogleSuccess,
   onNextIntent,
+  onSwitchToLogin,
 }: StepCredentialsProps) {
   const {
     isOnline: isGoogleOnline,
@@ -40,6 +46,13 @@ export function StepCredentials({
 
   return (
     <div className="flex flex-col gap-4">
+      <RegistrationRecoveryNotice
+        recovery={accountRecovery}
+        googleButtonState={googleButtonState}
+        onGoogleSignIn={startGoogleAuth}
+        onSwitchToLogin={onSwitchToLogin}
+      />
+
       <RegisterIdentityFields />
       <RegisterPasswordField />
 
@@ -55,6 +68,50 @@ export function StepCredentials({
 
       <GoogleRegisterError message={googleError} />
     </div>
+  );
+}
+
+function RegistrationRecoveryNotice({
+  googleButtonState,
+  onGoogleSignIn,
+  onSwitchToLogin,
+  recovery,
+}: {
+  googleButtonState: GoogleRegisterButtonViewState;
+  onGoogleSignIn: () => void;
+  onSwitchToLogin: () => void;
+  recovery?: RegistrationAccountRecovery | null;
+}) {
+  if (!recovery) {
+    return null;
+  }
+
+  const isGoogleAccount = recovery === "google";
+
+  return (
+    <Notice
+      role="status"
+      tone="info"
+      size="md"
+      statusIcon
+      action={
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={isGoogleAccount ? googleButtonState.disabled : false}
+          onClick={isGoogleAccount ? onGoogleSignIn : onSwitchToLogin}
+        >
+          {isGoogleAccount ? "Sign in with Google" : "Go to sign in"}
+        </Button>
+      }
+    >
+      <p>
+        {isGoogleAccount
+          ? "You already have a TeamForge account with this email. Use Google to sign in—your existing account and progress are safe."
+          : "You already have a TeamForge account with this email. Sign in instead of creating another account."}
+      </p>
+    </Notice>
   );
 }
 

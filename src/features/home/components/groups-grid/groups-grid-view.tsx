@@ -58,7 +58,7 @@ export function GroupsGridView({
         }
       />
 
-      <GroupedMenuList aria-label="Your groups">
+      <GroupedMenuList aria-label="Your groups" className="overflow-visible">
         {visibleGroups.length > 0 ? (
           visibleGroups.map((group) => {
             const unreadCount =

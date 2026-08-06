@@ -26,7 +26,7 @@ export function FilterChipItem({
       value={value}
       aria-label={ariaLabel ?? label}
       className={cn(
-        "group/chip relative h-8 w-auto min-w-fit snap-start rounded-full px-2 md:h-7",
+        "group/chip relative h-7 w-auto min-w-fit snap-start rounded-full px-2",
         "aspect-auto whitespace-nowrap",
         "inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1 border font-bold text-xs leading-none outline-none",
         "transition-all duration-150 ease-out",

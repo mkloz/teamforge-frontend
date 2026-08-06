@@ -1,4 +1,4 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Link,
   Outlet,
@@ -9,10 +9,12 @@ import {
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeft,
+  ChartNoAxesCombined,
   ClipboardList,
   Gauge,
   LayoutDashboard,
   Menu,
+  ScrollText,
   ServerCog,
   Settings,
   ShieldCheck,
@@ -79,13 +81,25 @@ const ADMIN_NAVIGATION = [
     group: "System",
   },
   {
+    id: "queueHealth",
+    label: "Queue health",
+    icon: ChartNoAxesCombined,
+    group: "System",
+  },
+  {
     id: "settings",
     label: "Settings",
     icon: Settings,
     group: "Configuration",
   },
+  {
+    id: "audit",
+    label: "Audit history",
+    icon: ScrollText,
+    group: "Governance",
+  },
 ] as const satisfies ReadonlyArray<{
-  group: "Configuration" | "Overview" | "Review" | "System";
+  group: "Configuration" | "Governance" | "Overview" | "Review" | "System";
   icon: LucideIcon;
   id: AdminNavigationTarget;
   label: string;
@@ -95,6 +109,7 @@ const ADMIN_NAVIGATION_GROUPS = [
   "Overview",
   "Review",
   "System",
+  "Governance",
   "Configuration",
 ] as const;
 
@@ -126,8 +141,16 @@ export function AdminLayout() {
         Skip to admin content
       </a>
 
-      <AdminDesktopNavigation displayName={adminSession.displayName} />
-      <AdminMobileHeader displayName={adminSession.displayName} />
+      <AdminDesktopNavigation
+        canViewAuditLog={adminSession.capabilities.viewAuditLog}
+        canViewQueueHealth={adminSession.capabilities.viewQueueHealth}
+        displayName={adminSession.displayName}
+      />
+      <AdminMobileHeader
+        canViewAuditLog={adminSession.capabilities.viewAuditLog}
+        canViewQueueHealth={adminSession.capabilities.viewQueueHealth}
+        displayName={adminSession.displayName}
+      />
 
       <main id="admin-main" tabIndex={-1} className="min-h-dvh lg:pl-64">
         <Outlet />
@@ -136,17 +159,37 @@ export function AdminLayout() {
   );
 }
 
-function AdminDesktopNavigation({ displayName }: { displayName: string }) {
+function AdminDesktopNavigation({
+  canViewAuditLog,
+  canViewQueueHealth,
+  displayName,
+}: {
+  canViewAuditLog: boolean;
+  canViewQueueHealth: boolean;
+  displayName: string;
+}) {
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-sidebar-border border-r bg-sidebar lg:flex">
       <AdminBrand />
-      <AdminNavigationLinks className="flex-1 px-3 py-4" />
+      <AdminNavigationLinks
+        canViewAuditLog={canViewAuditLog}
+        canViewQueueHealth={canViewQueueHealth}
+        className="flex-1 px-3 py-4"
+      />
       <AdminSessionFooter displayName={displayName} />
     </aside>
   );
 }
 
-function AdminMobileHeader({ displayName }: { displayName: string }) {
+function AdminMobileHeader({
+  canViewAuditLog,
+  canViewQueueHealth,
+  displayName,
+}: {
+  canViewAuditLog: boolean;
+  canViewQueueHealth: boolean;
+  displayName: string;
+}) {
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-border border-b bg-canvas/95 px-4 backdrop-blur lg:hidden">
       <div className="flex min-w-0 items-center gap-2">
@@ -175,7 +218,12 @@ function AdminMobileHeader({ displayName }: { displayName: string }) {
               Navigate between TeamForge administration workspaces.
             </SheetDescription>
           </SheetHeader>
-          <AdminNavigationLinks className="mt-5 flex-1" mobile />
+          <AdminNavigationLinks
+            canViewAuditLog={canViewAuditLog}
+            canViewQueueHealth={canViewQueueHealth}
+            className="mt-5 flex-1"
+            mobile
+          />
           <AdminSessionFooter displayName={displayName} mobile />
         </SheetContent>
       </Sheet>
@@ -201,41 +249,27 @@ function AdminBrand() {
 }
 
 function AdminNavigationLinks({
+  canViewAuditLog,
+  canViewQueueHealth,
   className,
   mobile = false,
 }: {
+  canViewAuditLog: boolean;
+  canViewQueueHealth: boolean;
   className?: string;
   mobile?: boolean;
 }) {
   const pathname = useRouterState({
     select: (state) => (state.resolvedLocation ?? state.location).pathname,
   });
-  const moderationQueueQueries = useQueries({
-    queries: [
-      operatorQueries.cases({
-        queue: "CRITICAL_NOW",
-        page: 1,
-        limit: 1,
-      }),
-      operatorQueries.cases({
-        queue: "HUMAN_REQUIRED",
-        page: 1,
-        limit: 1,
-      }),
-      operatorQueries.cases({
-        queue: "APPEALS",
-        page: 1,
-        limit: 1,
-      }),
-    ],
-  });
+  const queueSummaryQuery = useQuery(operatorQueries.queueSummary());
   const intakeQuery = useQuery(operatorQueries.intake({ page: 1, limit: 1 }));
   const workersQuery = useQuery(operatorQueries.workers());
   const readinessQuery = useQuery(adminPilotOperationsReadinessQueryOptions());
-  const moderationTotal = moderationQueueQueries.reduce(
-    (total, query) => total + (query.data?.total ?? 0),
-    0,
-  );
+  const criticalTotal =
+    queueSummaryQuery.data?.counts.find(
+      (entry) => entry.queue === "CRITICAL_NOW",
+    )?.count ?? 0;
 
   return (
     <nav
@@ -243,7 +277,13 @@ function AdminNavigationLinks({
       className={cn("grid content-start gap-5", className)}
     >
       {ADMIN_NAVIGATION_GROUPS.map((group) => {
-        const items = ADMIN_NAVIGATION.filter((item) => item.group === group);
+        const items = ADMIN_NAVIGATION.filter((item) => {
+          if (item.group !== group) return false;
+          if (item.id === "audit") return canViewAuditLog;
+          if (item.id === "queueHealth") return canViewQueueHealth;
+          return true;
+        });
+        if (items.length === 0) return null;
         return (
           <div key={group} className="grid gap-1">
             {group !== "Overview" ? (
@@ -257,7 +297,7 @@ function AdminNavigationLinks({
               const signal = getNavigationSignal({
                 id: item.id,
                 intakeTotal: intakeQuery.data?.total ?? 0,
-                moderationTotal,
+                criticalTotal,
                 operationsBlocked: readinessQuery.data?.status === "BLOCKED",
                 workersDegraded:
                   workersQuery.data?.workers.some(
@@ -331,18 +371,18 @@ type NavigationSignal =
 function getNavigationSignal({
   id,
   intakeTotal,
-  moderationTotal,
+  criticalTotal,
   operationsBlocked,
   workersDegraded,
 }: {
   id: AdminNavigationTarget;
   intakeTotal: number;
-  moderationTotal: number;
+  criticalTotal: number;
   operationsBlocked: boolean;
   workersDegraded: boolean;
 }): NavigationSignal | null {
-  if (id === "moderation" && moderationTotal > 0) {
-    return { kind: "count", tone: "danger", value: moderationTotal };
+  if (id === "moderation" && criticalTotal > 0) {
+    return { kind: "count", tone: "danger", value: criticalTotal };
   }
   if (id === "intake" && intakeTotal > 0) {
     return { kind: "count", tone: "warning", value: intakeTotal };

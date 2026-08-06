@@ -3,6 +3,7 @@ import { GroupedMenuList } from "@/shared/components/ui/grouped-menu";
 import { Notice } from "@/shared/components/ui/notice";
 import { AccountLifecycleSection } from "./account-lifecycle-section";
 import { ActiveSessionsSection } from "./active-sessions-section";
+import { GoogleConnectionSection } from "./google-connection-section";
 import { PasswordRecoverySection } from "./password-recovery-section";
 import { SecuritySummary } from "./security-summary";
 import type { SecuritySettingsSectionProps } from "./types";
@@ -14,6 +15,8 @@ export function SecuritySettingsSection({
   status,
   errors,
   onSendPasswordResetLink,
+  onConnectGoogle,
+  onGoogleConnectionIntent,
   onRevokeSession,
   onRevokeOtherSessions,
   accountLifecycle,
@@ -31,6 +34,13 @@ export function SecuritySettingsSection({
 
         <GroupedMenuList aria-label="Sign-in and recovery" className="mt-5">
           <SecuritySummary currentUser={currentUser} />
+          <GoogleConnectionSection
+            currentUser={currentUser}
+            isConnecting={status.isConnectingGoogle}
+            isOnline={status.isOnline}
+            onConnect={onConnectGoogle}
+            onIntent={onGoogleConnectionIntent}
+          />
           <PasswordRecoverySection
             currentUser={currentUser}
             isOnline={status.isOnline}

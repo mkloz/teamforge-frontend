@@ -329,6 +329,21 @@ async function runScenarioRecipe(
         page.getByRole("dialog", { name: "Notifications", exact: true }),
       ).toBeVisible();
       return;
+    case "onboarding-guidance-replay":
+      await page
+        .getByRole("button", {
+          name: "Replay navigation tutorial",
+          exact: true,
+        })
+        .click();
+      await expect(page).toHaveURL(/\/explore/u);
+      await expect(
+        page.getByRole("dialog", {
+          name: "Find plans without committing",
+          exact: true,
+        }),
+      ).toBeVisible();
+      return;
     default:
       return;
   }

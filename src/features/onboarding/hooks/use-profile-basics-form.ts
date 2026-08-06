@@ -19,6 +19,7 @@ import {
   requiresProfileBasicsDateOfBirth,
   toProfileBasicsDto,
 } from "@/features/onboarding/lib/profile-basics-form-model";
+import { refreshSessionAfterProfileBasicsUpdate } from "@/features/onboarding/lib/profile-basics-session-refresh";
 import {
   type ProfileBasicsValues,
   profileBasicsSchema,
@@ -27,7 +28,6 @@ import {
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-import { getPostAuthRedirectPath } from "@/shared/lib/post-auth-route";
 
 function areProfileBasicsValuesEqual(
   currentValues: ProfileBasicsValues,
@@ -50,6 +50,7 @@ export function useProfileBasicsForm() {
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const requiresDateOfBirth = requiresProfileBasicsDateOfBirth(
     currentUser?.adultEligibility,
+    currentUser?.age,
   );
   const validationSchema = useMemo(
     () =>
@@ -113,13 +114,14 @@ export function useProfileBasicsForm() {
     }
 
     try {
-      const updatedUser = await profileBasicsMutation.mutateAsync(payload);
+      await profileBasicsMutation.mutateAsync(payload);
+      await refreshSessionAfterProfileBasicsUpdate(payload);
       form.resetField("dateOfBirth", { defaultValue: "" });
-      const nextDestination = getPostAuthRedirectPath(updatedUser);
+      await OnboardingCache.invalidateProductState(queryClient);
       const nextSearch = buildProfileBasicsFlowSearch(flowState);
 
       await navigate({
-        to: getProfileBasicsNextRoute(nextDestination),
+        to: getProfileBasicsNextRoute("/onboarding/intent"),
         search: toOptionalOnboardingSearch(nextSearch),
       });
     } catch (error) {

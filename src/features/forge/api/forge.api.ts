@@ -187,8 +187,13 @@ export class ForgeApi {
     );
   }
 
-  static async forgeActivity(activityId: string, payload: unknown) {
+  static async forgeActivity(
+    activityId: string,
+    payload: unknown,
+    idempotencyKey: string,
+  ) {
     const response = await apiClient.post(`activities/${activityId}/forge`, {
+      headers: { "Idempotency-Key": idempotencyKey },
       json: forgeActivityInputSchema.parse(payload),
     });
 

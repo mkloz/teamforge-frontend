@@ -27,9 +27,9 @@ export function ProposalRoster({ proposal }: ProposalRosterProps) {
           Proposed group
         </h2>
         <p className="mt-2 text-pretty text-muted-foreground text-sm leading-relaxed">
-          Everyone sees the same roster. Compatibility below is only between you
-          and each person; nobody can see other members&apos; responses. It is
-          not a safety rating or a promise that the group will work.
+          {proposal.matchingStrategy === "INTRODUCTORY_INTERESTS"
+            ? "This introductory group uses shared interests and practical plan constraints. It is not a compatibility assessment or a safety rating."
+            : "Everyone sees the same roster. Compatibility below is only between you and each person; nobody can see other members’ responses. It is not a safety rating or a promise that the group will work."}
         </p>
       </div>
 
@@ -39,6 +39,9 @@ export function ProposalRoster({ proposal }: ProposalRosterProps) {
             key={seat.seatId}
             seat={seat}
             proposalId={proposal.id}
+            introductory={
+              proposal.matchingStrategy === "INTRODUCTORY_INTERESTS"
+            }
             isViewer={seat.seatId === proposal.viewer.seatId}
           />
         ))}
@@ -50,10 +53,12 @@ export function ProposalRoster({ proposal }: ProposalRosterProps) {
 function ProposalRosterSeat({
   isViewer,
   proposalId,
+  introductory,
   seat,
 }: {
   isViewer: boolean;
   proposalId: string;
+  introductory: boolean;
   seat: ForgeProposalSeat;
 }) {
   const meta = getSeatMeta(seat);
@@ -95,9 +100,11 @@ function ProposalRosterSeat({
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            <StatusPill tone="teal" surface="outline" size="sm">
-              {seat.profile.personalityType}
-            </StatusPill>
+            {seat.profile.personalityType ? (
+              <StatusPill tone="teal" surface="outline" size="sm">
+                {seat.profile.personalityType}
+              </StatusPill>
+            ) : null}
             {seat.profile.interests.slice(0, 4).map((interest) => (
               <StatusPill
                 key={interest.id}
@@ -110,7 +117,7 @@ function ProposalRosterSeat({
             ))}
           </div>
 
-          <ProposalPersonalityDetails seat={seat} />
+          {!introductory ? <ProposalPersonalityDetails seat={seat} /> : null}
 
           {!isViewer ? (
             <ProposalSeatSafetyActions proposalId={proposalId} seat={seat} />

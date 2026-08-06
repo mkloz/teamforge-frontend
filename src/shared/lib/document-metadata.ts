@@ -15,12 +15,38 @@ export type MetaDescriptor =
 export interface PageMetadata {
   title: string;
   meta?: MetaDescriptor[];
+  links?: LinkDescriptor[];
+  jsonLd?: JsonLdDescriptor[];
+}
+
+export interface LinkDescriptor {
+  rel: "canonical";
+  href: string | null;
+}
+
+export interface JsonLdDescriptor {
+  id: string;
+  value: unknown;
 }
 
 interface MetadataSnapshot {
   element: HTMLMetaElement;
   previousContent: string | null;
   created: boolean;
+}
+
+interface LinkSnapshot {
+  element: HTMLLinkElement;
+  previousHref: string | null;
+  created: boolean;
+  removed: boolean;
+}
+
+interface JsonLdSnapshot {
+  element: HTMLScriptElement;
+  previousText: string;
+  created: boolean;
+  removed: boolean;
 }
 
 const DOCUMENT_TITLE_BADGE_PATTERN = /^\((?:\d+|99\+)\)\s+/;
@@ -84,6 +110,84 @@ function applyMetaDescriptor(
   return snapshot;
 }
 
+function applyLinkDescriptor(
+  browserDocument: Document,
+  descriptor: LinkDescriptor,
+): LinkSnapshot | null {
+  const existingElement = Array.from(
+    browserDocument.head.querySelectorAll<HTMLLinkElement>("link[rel]"),
+  ).find((element) => element.rel === descriptor.rel);
+
+  if (descriptor.href === null) {
+    if (!existingElement) return null;
+
+    const snapshot = {
+      element: existingElement,
+      previousHref: existingElement.getAttribute("href"),
+      created: false,
+      removed: true,
+    };
+    existingElement.remove();
+    return snapshot;
+  }
+
+  const element = existingElement ?? browserDocument.createElement("link");
+  if (!existingElement) {
+    element.rel = descriptor.rel;
+    browserDocument.head.appendChild(element);
+  }
+
+  const snapshot = {
+    element,
+    previousHref: element.getAttribute("href"),
+    created: !existingElement,
+    removed: false,
+  };
+  element.href = descriptor.href;
+  return snapshot;
+}
+
+function applyJsonLdDescriptor(
+  browserDocument: Document,
+  descriptor: JsonLdDescriptor,
+): JsonLdSnapshot | null {
+  const selector = `script[type="application/ld+json"][data-teamforge-json-ld="${descriptor.id}"]`;
+  const existingElement =
+    browserDocument.head.querySelector<HTMLScriptElement>(selector);
+
+  if (descriptor.value === null) {
+    if (!existingElement) return null;
+
+    const snapshot = {
+      element: existingElement,
+      previousText: existingElement.textContent ?? "",
+      created: false,
+      removed: true,
+    };
+    existingElement.remove();
+    return snapshot;
+  }
+
+  const element = existingElement ?? browserDocument.createElement("script");
+  if (!existingElement) {
+    element.type = "application/ld+json";
+    element.dataset.teamforgeJsonLd = descriptor.id;
+    browserDocument.head.appendChild(element);
+  }
+
+  const snapshot = {
+    element,
+    previousText: element.textContent ?? "",
+    created: !existingElement,
+    removed: false,
+  };
+  element.textContent = JSON.stringify(descriptor.value).replaceAll(
+    "<",
+    "\\u003c",
+  );
+  return snapshot;
+}
+
 export function applyDocumentMetadata(metadata: PageMetadata) {
   const browserDocument = getBrowserDocument();
 
@@ -96,6 +200,15 @@ export function applyDocumentMetadata(metadata: PageMetadata) {
     metadata.meta?.map((descriptor) =>
       applyMetaDescriptor(browserDocument, descriptor),
     ) ?? [];
+  const linkSnapshots =
+    metadata.links
+      ?.map((descriptor) => applyLinkDescriptor(browserDocument, descriptor))
+      .filter((snapshot): snapshot is LinkSnapshot => snapshot !== null) ?? [];
+  const jsonLdSnapshots =
+    metadata.jsonLd
+      ?.map((descriptor) => applyJsonLdDescriptor(browserDocument, descriptor))
+      .filter((snapshot): snapshot is JsonLdSnapshot => snapshot !== null) ??
+    [];
 
   browserDocument.title = formatDocumentTitle(metadata.title);
 
@@ -114,6 +227,32 @@ export function applyDocumentMetadata(metadata: PageMetadata) {
       }
 
       element.setAttribute("content", previousContent);
+    });
+
+    linkSnapshots.forEach(({ element, previousHref, created, removed }) => {
+      if (created) {
+        element.remove();
+        return;
+      }
+
+      if (removed) browserDocument.head.appendChild(element);
+
+      if (previousHref === null) {
+        element.removeAttribute("href");
+        return;
+      }
+
+      element.setAttribute("href", previousHref);
+    });
+
+    jsonLdSnapshots.forEach(({ element, previousText, created, removed }) => {
+      if (created) {
+        element.remove();
+        return;
+      }
+
+      if (removed) browserDocument.head.appendChild(element);
+      element.textContent = previousText;
     });
   };
 }

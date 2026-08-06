@@ -28,7 +28,7 @@ export function TimeFilter() {
               aria-pressed={active}
               onClick={() => selectPreset(option.id)}
               className={cn(
-                "inline-flex h-11 min-w-0 items-center gap-1.5 rounded-full border border-border/60 bg-card/35 px-2.5 font-bold text-muted-foreground text-xs transition-colors lg:h-8",
+                "inline-flex h-8 min-w-0 items-center gap-1.5 rounded-full border border-border/60 bg-card/35 px-2.5 font-bold text-muted-foreground text-xs transition-colors",
                 "hover:border-border hover:bg-muted/35 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
                 active &&
                   "border-forge-teal/40 bg-forge-teal/10 text-forge-teal hover:border-forge-teal/50 hover:bg-forge-teal/12 dark:text-secondary-foreground",

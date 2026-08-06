@@ -11,6 +11,7 @@ interface InterestsFlowSearchParams {
   returnTo: OnboardingReturnTarget | null;
   returnSearch: string | null;
   returnSection: SettingsSection | null;
+  returnGroupId: string | null;
   mbti: PersonalityType | null;
 }
 
@@ -18,10 +19,16 @@ export function buildInterestsFlowSearch({
   returnTo,
   returnSearch,
   returnSection,
+  returnGroupId,
   mbti,
 }: InterestsFlowSearchParams) {
   return {
-    ...buildOnboardingReturnSearch({ returnTo, returnSearch, returnSection }),
+    ...buildOnboardingReturnSearch({
+      returnTo,
+      returnSearch,
+      returnSection,
+      returnGroupId,
+    }),
     ...(mbti ? { mbti } : {}),
   };
 }
@@ -39,5 +46,6 @@ export function resolveInterestsExitNavigation(
     flowSearch.returnSearch,
     flowSearch.returnSection,
     fallback,
+    flowSearch.returnGroupId,
   );
 }

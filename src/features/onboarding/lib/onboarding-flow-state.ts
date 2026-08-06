@@ -16,6 +16,7 @@ const onboardingFlowParsers = {
   returnTo: parseAsString,
   returnSearch: parseAsString,
   returnSection: parseAsStringLiteral(settingsSectionValues),
+  returnGroupId: parseAsString,
   mbti: parseAsString,
 };
 
@@ -23,6 +24,7 @@ export interface OnboardingReturnSearchParams {
   returnTo: OnboardingReturnTarget | null;
   returnSearch: string | null;
   returnSection: (typeof settingsSectionValues)[number] | null;
+  returnGroupId?: string | null;
 }
 
 function isOnboardingReturnTarget(
@@ -49,11 +51,15 @@ export function buildOnboardingReturnSearch({
   returnTo,
   returnSearch,
   returnSection,
+  returnGroupId,
 }: OnboardingReturnSearchParams) {
   return {
     ...(returnTo ? { returnTo } : {}),
     ...(returnSearch ? { returnSearch } : {}),
     ...(returnSection ? { returnSection } : {}),
+    ...(returnTo === "/groups/$groupId" && returnGroupId
+      ? { returnGroupId }
+      : {}),
   };
 }
 
@@ -64,7 +70,7 @@ export function toOptionalOnboardingSearch<T extends Record<string, unknown>>(
 }
 
 export function useOnboardingFlowState() {
-  const [{ mode, returnTo, returnSearch, returnSection, mbti }] =
+  const [{ mode, returnTo, returnSearch, returnSection, returnGroupId, mbti }] =
     useQueryStates(onboardingFlowParsers, {
       history: "replace",
     });
@@ -78,6 +84,10 @@ export function useOnboardingFlowState() {
     returnSection:
       resolvedReturnTo === "/settings"
         ? normalizeSettingsSection(returnSection)
+        : null,
+    returnGroupId:
+      resolvedReturnTo === "/groups/$groupId" && returnGroupId?.trim()
+        ? returnGroupId.trim()
         : null,
     mbti: mbti && isPersonalityType(mbti) ? mbti : null,
   };

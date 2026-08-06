@@ -9,6 +9,7 @@ export type ScenarioFeature =
   | "Home"
   | "Network"
   | "Notifications"
+  | "Onboarding"
   | "Profile"
   | "Safety"
   | "Settings";
@@ -88,6 +89,48 @@ export const scenarioCatalog = [
     "/onboarding/profile",
     "Profile basics still need to be completed.",
     ["onboarding-incomplete"],
+  ),
+  scenario(
+    "onboarding-intent-prompt",
+    "Onboarding · intent prompt",
+    "Onboarding",
+    "/onboarding/intent",
+    "Profile basics are complete and the optional first-mission prompt is next.",
+  ),
+  scenario(
+    "onboarding-introductory",
+    "Onboarding · introductory access",
+    "Onboarding",
+    "/explore",
+    "Limited browsing while the full assessment is still incomplete.",
+  ),
+  scenario(
+    "onboarding-practice",
+    "Onboarding · replay guidance",
+    "Onboarding",
+    "/practice?returnTo=/explore",
+    "Replay the guided, element-anchored main-navigation tutorial.",
+  ),
+  scenario(
+    "onboarding-intent-create",
+    "Onboarding · creator mission",
+    "Onboarding",
+    "/forge",
+    "The plan-first intent enters the real Forge wizard with one introductory entitlement.",
+  ),
+  scenario(
+    "onboarding-intent-explore",
+    "Onboarding · explore mission",
+    "Onboarding",
+    "/explore",
+    "The join-first intent opens relevant recommendations without forcing plan creation.",
+  ),
+  scenario(
+    "onboarding-intent-skipped",
+    "Onboarding · intent skipped",
+    "Onboarding",
+    "/explore",
+    "Skipping intent keeps a neutral first mission and does not affect authorization.",
   ),
 
   scenario(
@@ -596,6 +639,78 @@ export const scenarioCatalog = [
     "/admin/moderation/workers",
     "Worker health and retry boundaries.",
     ["worker-degraded"],
+    "admin",
+  ),
+  scenario(
+    "admin-audit-standard",
+    "Admin · audit history",
+    "Admin",
+    "/admin/audit",
+    "Owner-only redacted administrative action history.",
+    [],
+    "admin",
+  ),
+  scenario(
+    "admin-audit-restricted",
+    "Admin · audit restricted",
+    "Admin",
+    "/admin/audit",
+    "Audit history capability is disabled.",
+    ["audit-restricted"],
+    "admin",
+  ),
+  scenario(
+    "admin-queue-health-standard",
+    "Admin · queue health",
+    "Admin",
+    "/admin/moderation/operations/queue-health",
+    "Current moderation backlog, deadlines, assignment pressure, and age bands.",
+    [],
+    "admin",
+  ),
+  scenario(
+    "admin-queue-health-empty",
+    "Admin · queue health clear",
+    "Admin",
+    "/admin/moderation/operations/queue-health",
+    "All current moderation queues are clear.",
+    ["admin-empty"],
+    "admin",
+  ),
+  scenario(
+    "admin-queue-health-stale",
+    "Admin · queue health stale",
+    "Admin",
+    "/admin/moderation/operations/queue-health",
+    "The current-state snapshot is too old for a staffing decision.",
+    ["queue-health-stale"],
+    "admin",
+  ),
+  scenario(
+    "admin-queue-health-partial",
+    "Admin · queue health partial",
+    "Admin",
+    "/admin/moderation/operations/queue-health",
+    "The API marks the current-state snapshot as partially available.",
+    ["queue-health-partial"],
+    "admin",
+  ),
+  scenario(
+    "admin-queue-health-restricted",
+    "Admin · queue health restricted",
+    "Admin",
+    "/admin/moderation/operations/queue-health",
+    "Queue-health capability is disabled.",
+    ["queue-health-restricted"],
+    "admin",
+  ),
+  scenario(
+    "admin-queue-health-error",
+    "Admin · queue health error",
+    "Admin",
+    "/admin/moderation/operations/queue-health",
+    "Current moderation aggregates cannot be loaded.",
+    ["queue-health-error"],
     "admin",
   ),
 

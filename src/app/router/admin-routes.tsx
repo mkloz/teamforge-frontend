@@ -9,31 +9,18 @@ import {
   AdminAccessUnavailable,
   AdminRouteLoading,
 } from "@/features/admin/components/admin-route-states";
+import { parseOperatorAuditSearch } from "@/features/operator/lib/operator-audit-route";
+import {
+  parseOperatorCaseReturnSearch,
+  parseOperatorListSearch,
+  parseOperatorModerationSearch,
+} from "@/features/operator/lib/operator-route";
+import { OperatorAuditPage } from "@/features/operator/operator-audit-page";
 import { OperatorCaseDetailPage } from "@/features/operator/operator-case-detail-page";
 import { OperatorIntakePage } from "@/features/operator/operator-intake-page";
+import { OperatorQueueHealthPage } from "@/features/operator/operator-queue-health-page";
 import { OperatorWorkerOperationsPage } from "@/features/operator/operator-worker-operations-page";
 import { OperatorWorkspacePage } from "@/features/operator/operator-workspace-page";
-import {
-  type OperatorQueue,
-  operatorQueueSchema,
-} from "@/features/operator/schemas/operator.schemas";
-
-type OperatorListSearch = {
-  page?: number;
-};
-
-type OperatorModerationSearch = OperatorListSearch & {
-  queue: OperatorQueue;
-};
-
-function parseOperatorPage(value: unknown) {
-  if (typeof value !== "number" && typeof value !== "string") {
-    return undefined;
-  }
-
-  const page = Number(value);
-  return Number.isSafeInteger(page) && page > 0 ? page : undefined;
-}
 
 const adminBaseRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -50,30 +37,35 @@ const adminOverviewRoute = createRoute({
   component: AdminOverviewPage,
 });
 
+const adminAuditRoute = createRoute({
+  getParentRoute: () => adminBaseRoute,
+  path: "/audit",
+  validateSearch: (search: Record<string, unknown>) =>
+    parseOperatorAuditSearch(search),
+  component: OperatorAuditPage,
+});
+
 const adminModerationRoute = createRoute({
   getParentRoute: () => adminBaseRoute,
   path: "/moderation",
-  validateSearch: (
-    search: Record<string, unknown>,
-  ): OperatorModerationSearch => ({
-    queue: operatorQueueSchema.safeParse(search.queue).data ?? "CRITICAL_NOW",
-    page: parseOperatorPage(search.page),
-  }),
+  validateSearch: (search: Record<string, unknown>) =>
+    parseOperatorModerationSearch(search),
   component: OperatorWorkspacePage,
 });
 
 const adminCaseRoute = createRoute({
   getParentRoute: () => adminBaseRoute,
   path: "/moderation/cases/$caseId",
+  validateSearch: (search: Record<string, unknown>) =>
+    parseOperatorCaseReturnSearch(search),
   component: OperatorCaseDetailPage,
 });
 
 const adminIntakeRoute = createRoute({
   getParentRoute: () => adminBaseRoute,
   path: "/moderation/intake",
-  validateSearch: (search: Record<string, unknown>): OperatorListSearch => ({
-    page: parseOperatorPage(search.page),
-  }),
+  validateSearch: (search: Record<string, unknown>) =>
+    parseOperatorListSearch(search),
   component: OperatorIntakePage,
 });
 
@@ -89,6 +81,12 @@ const adminOperationsRoute = createRoute({
   component: AdminOperationsPage,
 });
 
+const adminQueueHealthRoute = createRoute({
+  getParentRoute: () => adminBaseRoute,
+  path: "/moderation/operations/queue-health",
+  component: OperatorQueueHealthPage,
+});
+
 const adminSettingsRoute = createRoute({
   getParentRoute: () => adminBaseRoute,
   path: "/moderation/settings",
@@ -97,10 +95,12 @@ const adminSettingsRoute = createRoute({
 
 export const adminRoute = adminBaseRoute.addChildren([
   adminOverviewRoute,
+  adminAuditRoute,
   adminModerationRoute,
   adminCaseRoute,
   adminIntakeRoute,
   adminWorkersRoute,
   adminOperationsRoute,
+  adminQueueHealthRoute,
   adminSettingsRoute,
 ]);

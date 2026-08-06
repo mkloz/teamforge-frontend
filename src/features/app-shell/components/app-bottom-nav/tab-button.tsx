@@ -74,6 +74,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
   return (
     <Link
       {...item.navigation}
+      data-onboarding-tour={`nav-${item.id}`}
       aria-current={state.active ? "page" : undefined}
       aria-label={state.ariaLabel}
       className={cn(

@@ -44,7 +44,7 @@ export function InterestReviewCategory({
               key={id}
               size="xs"
               asChild
-              className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-xs shadow-xs sm:px-2 sm:py-1"
+              className="h-auto max-w-full gap-1 rounded-full px-1.5 py-0.75 text-xs shadow-xs after:hidden hover:translate-y-0! hover:shadow-xs! active:scale-100 sm:px-2 sm:py-1"
             >
               <m.button
                 layout

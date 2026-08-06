@@ -166,6 +166,12 @@ function getApiExceptionMessage(error: unknown) {
   return isNonBlankString(apiException?.message) ? apiException.message : null;
 }
 
+export function getApiErrorCode(error: unknown) {
+  const context = getApiExceptionContext(error);
+
+  return context ? (readStringProperty(context.cause, "code") ?? null) : null;
+}
+
 export function getApiErrorMessage(
   error: unknown,
   fallbackMessage: string,

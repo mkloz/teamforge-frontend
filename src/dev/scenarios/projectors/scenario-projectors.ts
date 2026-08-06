@@ -6,6 +6,7 @@ import {
   chatApiSchema,
   exploreGroupSchema,
   groupApiSchema,
+  introductoryExploreGroupSchema,
 } from "@/shared/schemas";
 
 export function projectHomeGroups(world: ScenarioWorld) {
@@ -104,6 +105,63 @@ export function projectExploreFeed(world: ScenarioWorld) {
   return projectExploreGroups(world).map((group) => ({
     group,
     type: "GROUP" as const,
+  }));
+}
+
+export function projectIntroductoryExploreGroups(world: ScenarioWorld) {
+  const viewerInterestIds = new Set(
+    world.viewerId
+      ? (world.entities.users[world.viewerId]?.interests ?? []).map(
+          ({ id }) => id,
+        )
+      : [],
+  );
+
+  return Object.values(world.entities.groups)
+    .map((group) => {
+      const activity = world.entities.activities[group.activityId];
+      const plan = getCurrentPlan(world, group.id);
+      const sharedInterestCount = activity.interestIds.filter((id) =>
+        viewerInterestIds.has(id),
+      ).length;
+
+      return introductoryExploreGroupSchema.parse({
+        activeMembersCount: group.memberIds.length,
+        activity: {
+          interests: activity.interestIds.map((id) => {
+            const interest = world.entities.interests[id];
+            return { name: interest.name, slug: interest.slug };
+          }),
+        },
+        id: group.id,
+        interestFitPercentage: activity.interestIds.length
+          ? Math.round(
+              (sharedInterestCount / activity.interestIds.length) * 100,
+            )
+          : 0,
+        maxMembers: group.maxMembers,
+        plan: plan
+          ? {
+              category: plan.category,
+              cost: plan.cost,
+              locationMode: plan.locationMode,
+              scheduleMode: plan.scheduleMode,
+            }
+          : null,
+      });
+    })
+    .filter(({ interestFitPercentage }) => interestFitPercentage > 0)
+    .sort(
+      (left, right) =>
+        right.interestFitPercentage - left.interestFitPercentage ||
+        left.id.localeCompare(right.id),
+    );
+}
+
+export function projectIntroductoryExploreFeed(world: ScenarioWorld) {
+  return projectIntroductoryExploreGroups(world).map((group) => ({
+    group,
+    type: "INTRODUCTORY_GROUP" as const,
   }));
 }
 

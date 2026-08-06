@@ -185,6 +185,9 @@ export interface ScenarioWorld {
   forge: {
     activeRequestId: string | null;
   };
+  onboarding: {
+    intentStepComplete: boolean;
+  };
   participation: {
     externalInvites: Record<string, ScenarioExternalInviteState[]>;
     guestMembershipProposals: Record<

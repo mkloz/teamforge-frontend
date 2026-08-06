@@ -1,10 +1,9 @@
-import { Loader2 } from "lucide-react";
-
+import { Spinner } from "@/shared/components/ui/spinner";
 import { ImagePlaceholder } from "../image-placeholder";
 
 export const DEFAULT_LOADING_COMPONENT = (
   <div className="flex size-8 items-center justify-center rounded-full bg-background/80 p-1 shadow-sm">
-    <Loader2 className="size-4 animate-spin text-forge-teal" />
+    <Spinner className="size-4 text-forge-teal" />
   </div>
 );
 

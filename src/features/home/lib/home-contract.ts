@@ -8,35 +8,35 @@ export interface UserStats {
   profileCompleteness: number;
 }
 
+export type HomeSetupStepKind =
+  | "security"
+  | "account"
+  | "personality"
+  | "interests";
+
+export type HomeSetupStepId =
+  | "email"
+  | "basics"
+  | "bio"
+  | "avatar"
+  | "assessment"
+  | "interests";
+
+export interface HomeSetupStep {
+  id: HomeSetupStepId;
+  kind: HomeSetupStepKind;
+  title: string;
+  body: string;
+  label: string;
+}
+
 export interface HomeViewer {
   firstName: string;
   mbti: User["personalityType"] | null;
-  nextStep:
-    | {
-        kind: "security";
-        title: string;
-        body: string;
-        label: string;
-      }
-    | {
-        kind: "account";
-        title: string;
-        body: string;
-        label: string;
-      }
-    | {
-        kind: "personality";
-        title: string;
-        body: string;
-        label: string;
-      }
-    | {
-        kind: "interests";
-        title: string;
-        body: string;
-        label: string;
-      }
-    | null;
+  nextStep: HomeSetupStep | null;
+  setupCompletedCount: number;
+  setupSteps: HomeSetupStep[];
+  setupTotalCount: number;
 }
 
 export type PlannedGroup = HomeGroup & {

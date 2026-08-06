@@ -6,7 +6,6 @@ import {
   type HomeParticipationAnswer,
   useHomeParticipationActions,
 } from "@/features/home/hooks/use-home-participation-actions";
-import { useHomeViewer } from "@/features/home/hooks/use-home-viewer";
 import { hasHomeParticipationDeadlinePassed } from "@/features/home/lib/home-participation-deadline";
 import { useProfileFriendRequests } from "@/features/profile/public/profile-friend-requests";
 
@@ -35,7 +34,6 @@ export function useAttentionQueueState({
   onClearFriendRequestFocus,
   onClearInvitationFocus,
 }: UseAttentionQueueStateInput) {
-  const viewer = useHomeViewer();
   const {
     groups,
     invitations,
@@ -110,8 +108,7 @@ export function useAttentionQueueState({
     visibleRequests.length +
     pendingParticipations.length +
     continuationCheckIns.length +
-    proposedPlans.length +
-    (viewer.nextStep ? 1 : 0);
+    proposedPlans.length;
   const shouldShowSkeleton =
     queueSize === 0 &&
     (isGroupsLoading ||
@@ -262,7 +259,6 @@ export function useAttentionQueueState({
     proposedPlans,
     queueSize,
     shouldShowSkeleton,
-    viewer,
     visibleInvitations,
     visibleRequests,
   };

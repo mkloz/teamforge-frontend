@@ -14,10 +14,9 @@ import { useCurrentSessionSignOut } from "@/shared/hooks/use-current-session-sig
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getBrowserDocument } from "@/shared/lib/browser-environment";
 import { scheduleDelay } from "@/shared/lib/browser-scheduling";
-import type { User } from "@/shared/schemas";
 
 interface UseAccountExportOptions {
-  authProvider: User["authProvider"] | undefined;
+  canReauthenticateWithPassword: boolean;
   enabled: boolean;
   userId: string | undefined;
 }
@@ -25,7 +24,7 @@ interface UseAccountExportOptions {
 type RecentAuthenticationAction = "request" | "retry" | "download";
 
 export function useAccountExport({
-  authProvider,
+  canReauthenticateWithPassword,
   enabled,
   userId,
 }: UseAccountExportOptions) {
@@ -159,8 +158,6 @@ export function useAccountExport({
 
     return true;
   }
-
-  const canReauthenticateWithPassword = authProvider === "EMAIL";
 
   return {
     accountExport: query.data?.export ?? null,

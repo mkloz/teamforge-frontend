@@ -1,4 +1,4 @@
-import { LoaderCircle, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { Button } from "@/shared/components/ui/button";
@@ -9,6 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/shared/components/ui/sheet";
+import { Spinner } from "@/shared/components/ui/spinner";
 
 const MobileFiltersPanel = lazy(() =>
   import("./mobile-filters-panel").then((module) => ({
@@ -30,7 +31,7 @@ export function MobileFiltersSheet() {
         aria-label={filtered ? "Open filters, filters active" : "Open filters"}
         title={filtered ? "Filters active" : "Open filters"}
         onClick={() => setOpen(true)}
-        className="group/filter h-11 shrink-0 rounded-full px-2 sm:h-9 sm:px-3"
+        className="group/filter h-9 shrink-0 rounded-full px-2 sm:px-3"
       >
         <SlidersHorizontal
           className={
@@ -87,10 +88,7 @@ function MobileFiltersLoadingPanel({
             className="mt-8 flex min-h-24 items-center justify-center gap-2 font-semibold text-muted-foreground text-sm"
             role="status"
           >
-            <LoaderCircle
-              className="size-4 animate-spin motion-reduce:animate-none"
-              aria-hidden="true"
-            />
+            <Spinner className="size-4" aria-hidden="true" />
             Loading filters
           </div>
         </div>

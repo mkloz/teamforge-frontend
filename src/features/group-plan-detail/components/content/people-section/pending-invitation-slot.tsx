@@ -1,7 +1,8 @@
-import { Clock3, LoaderCircle, Trash2 } from "lucide-react";
+import { Clock3, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { GroupPlanDetailPendingInvitation } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Avatar } from "@/shared/components/common/avatar";
+import { Spinner } from "@/shared/components/ui/spinner";
 
 export function PendingInvitationSlot({
   canCancel,
@@ -54,10 +55,7 @@ export function PendingInvitationSlot({
             onClick={() => void onCancel(invite.id)}
           >
             {cancelling ? (
-              <LoaderCircle
-                className="size-3.5 animate-spin motion-reduce:animate-none"
-                aria-hidden="true"
-              />
+              <Spinner className="size-3.5" aria-hidden="true" />
             ) : (
               <Trash2 className="size-3.5" aria-hidden="true" />
             )}

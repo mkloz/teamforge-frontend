@@ -1,9 +1,9 @@
 import { HTTPError, type Options } from "ky";
+import type { OperatorCaseListInput } from "@/features/operator/lib/operator-route";
 import {
   assignmentResultSchema,
   caseStatusResultSchema,
   informationRequestResultSchema,
-  type ModerationCaseStatus,
   type OperatorCommand,
   type OperatorQueue,
   type OperatorWorkerKind,
@@ -15,6 +15,7 @@ import {
   operatorEvidenceListSchema,
   operatorIntakeResponseSchema,
   operatorJobReplayResultSchema,
+  operatorQueueSummarySchema,
   operatorSessionSchema,
   operatorWorkerCommandResultSchema,
   operatorWorkerCommandSchema,
@@ -55,6 +56,7 @@ import {
 } from "@/features/operator/schemas/operator-control.schemas";
 import { apiClient } from "@/shared/api/api";
 import { appQueryClient } from "@/shared/api/query-client";
+import { compactOperatorSearchParams } from "./operator-search-params";
 
 const OPERATOR_MODERATION_PATH = "operator/moderation";
 const OPERATOR_CACHE_KEY = ["admin", "operator"] as const;
@@ -118,28 +120,23 @@ export const OperatorApi = {
     return operatorSessionSchema.parse(await response.json());
   },
 
-  async getIntake(input: { page: number; limit: number }) {
+  async getIntake(input: OperatorCaseListInput) {
     const response = await operatorModerationApi.get("intake", {
-      searchParams: input,
+      searchParams: compactOperatorSearchParams(input),
     });
     return operatorIntakeResponseSchema.parse(await response.json());
   },
 
-  async getCases(input: {
-    queue: OperatorQueue;
-    status?: ModerationCaseStatus;
-    page: number;
-    limit: number;
-  }) {
+  async getCases(input: OperatorCaseListInput & { queue: OperatorQueue }) {
     const response = await operatorModerationApi.get("cases", {
-      searchParams: {
-        queue: input.queue,
-        ...(input.status ? { status: input.status } : {}),
-        page: input.page,
-        limit: input.limit,
-      },
+      searchParams: compactOperatorSearchParams(input),
     });
     return operatorCasesResponseSchema.parse(await response.json());
+  },
+
+  async getQueueSummary() {
+    const response = await operatorModerationApi.get("queue-summary");
+    return operatorQueueSummarySchema.parse(await response.json());
   },
 
   async getCase(caseId: string) {

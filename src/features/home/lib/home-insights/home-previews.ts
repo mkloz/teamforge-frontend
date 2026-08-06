@@ -55,6 +55,10 @@ function getRecommendationTimestamp(recommendation: ExploreFeedItem) {
 }
 
 function getScheduledRecommendationDateTime(recommendation: ExploreFeedItem) {
+  if (recommendation.type === "INTRODUCTORY_GROUP") {
+    return null;
+  }
+
   if (recommendation.type === "GROUP") {
     return recommendation.group.plan?.scheduleMode === "TO_BE_DECIDED"
       ? null

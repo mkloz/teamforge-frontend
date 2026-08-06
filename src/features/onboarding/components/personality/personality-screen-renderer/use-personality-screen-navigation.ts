@@ -3,13 +3,19 @@ import type { usePersonalityTest } from "@/features/onboarding/hooks/use-persona
 import { findFirstUnansweredPage } from "@/features/onboarding/lib/personality-test-flow";
 
 interface UsePersonalityScreenNavigationParams {
+  canChooseAssessmentLength: boolean;
   onBack: () => void;
+  onRecoveryDiscard: () => void;
+  onRecoveryResume: () => void;
   questionsPerPage: number;
   state: ReturnType<typeof usePersonalityTest>;
 }
 
 export function usePersonalityScreenNavigation({
+  canChooseAssessmentLength,
   onBack,
+  onRecoveryDiscard,
+  onRecoveryResume,
   questionsPerPage,
   state,
 }: UsePersonalityScreenNavigationParams) {
@@ -54,11 +60,18 @@ export function usePersonalityScreenNavigation({
   }
 
   function handleAdjustLength() {
+    if (!canChooseAssessmentLength) return;
+
     actions.setIsReviewMode(false);
     actions.setScreen({ id: "length" });
   }
 
   function handleExtendFromIntermission(length: TestLength) {
+    if (!canChooseAssessmentLength) {
+      actions.handleContinueFromIntermission();
+      return;
+    }
+
     actions.setIsReviewMode(false);
     actions.updateTestLength(length);
     actions.handleContinueFromIntermission();
@@ -67,7 +80,10 @@ export function usePersonalityScreenNavigation({
   return {
     guidelines: {
       onBack: () => actions.setScreen({ id: "theory" }),
-      onNext: () => actions.setScreen({ id: "length" }),
+      nextLabel: state.starterCheckpointEnabled
+        ? "Start quick check-in"
+        : "Start assessment",
+      onNext: () => actions.handleBegin(30),
     },
     intermission: {
       onAdjustLength: handleAdjustLength,
@@ -87,6 +103,11 @@ export function usePersonalityScreenNavigation({
       onAnswer: actions.handleAnswer,
       onNext: actions.handleNextPage,
       onReview: handleQuestionReview,
+    },
+    recovery: {
+      onBack,
+      onDiscard: onRecoveryDiscard,
+      onResume: onRecoveryResume,
     },
     theory: {
       onBack: () => actions.setScreen({ id: "intro" }),

@@ -11,6 +11,7 @@ import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import {
   requireCanonicalOnboardingRoute,
   requireEditableOnboardingRoute,
+  requireIntentOnboardingRoute,
 } from "@/app/router/route-guards";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
@@ -26,6 +27,20 @@ const ProfileBasicsRouteLoading = createLazyRouteLoading(
       default: m.OnboardingPageLoading,
     })),
   { mode: "route", step: "profile" },
+);
+
+const intentPageModule = createLazyRouteModule(() =>
+  import("@/features/onboarding/onboarding-intent-page").then((m) => ({
+    default: m.OnboardingIntentPage,
+  })),
+);
+
+const IntentRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/onboarding/onboarding-page.loading").then((m) => ({
+      default: m.OnboardingPageLoading,
+    })),
+  { mode: "route", step: "intent" },
 );
 
 const personalityTestPageModule = createLazyRouteModule(() =>
@@ -88,6 +103,29 @@ const profileBasicsRoute = createRoute({
   }),
 });
 
+const intentRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/onboarding/intent",
+  beforeLoad: ({ location }) =>
+    preloadPageWhileGuardRuns(
+      requireIntentOnboardingRoute(location),
+      intentPageModule,
+    ),
+  pendingComponent: IntentRouteLoading,
+  component: createLazyPageRoute(
+    intentPageModule.Component,
+    <IntentRouteLoading />,
+  ),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.onboardingIntent,
+    fullPage: true,
+    title: "We couldn't load your first-mission step",
+    description: "Your choices did not load. Try again or return home.",
+    fallbackTo: "/home",
+    fallbackLabel: "Back to home",
+  }),
+});
+
 const personalityRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/onboarding/personality",
@@ -138,6 +176,7 @@ const interestsRoute = createRoute({
 
 export const onboardingRoutes = [
   profileBasicsRoute,
+  intentRoute,
   personalityRoute,
   interestsRoute,
 ];

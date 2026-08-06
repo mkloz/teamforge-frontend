@@ -10,6 +10,7 @@ import {
   parseJsonWithRequestId,
 } from "@/shared/api/api";
 import { sendResetPasswordLink as sharedSendResetPasswordLink } from "@/shared/api/auth-session-commands";
+import { fullUserResponseSchema } from "@/shared/schemas";
 import { getAgeFromDateOfBirth } from "@/shared/validators/date-of-birth.validator";
 import type { GoogleAuthIntent } from "./auth.types";
 
@@ -181,6 +182,20 @@ export class AuthApi {
 
     return parseJsonWithRequestId(response, (payload) =>
       authResultSchema.parse(payload),
+    );
+  }
+
+  static async linkGoogleAccount(code: string) {
+    const response = await apiClient.post("auth/google/link", {
+      json: { code },
+      context: {
+        auth: "access",
+        retryOnUnauthorized: false,
+      },
+    });
+
+    return parseJsonWithRequestId(response, (payload) =>
+      fullUserResponseSchema.parse(payload),
     );
   }
 }

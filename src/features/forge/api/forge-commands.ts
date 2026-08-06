@@ -60,6 +60,8 @@ function buildManualForgeInput(input: AutoForgeExecutionInput) {
 
 async function executeManualForge(
   input: AutoForgeExecutionInput,
+  idempotencyKey: string,
+  existingActivityId: string | null,
 ): Promise<ForgeExecutionResult> {
   const currentUser = await getCurrentUser();
   const createActivityInput = buildCreateActivityInput(
@@ -72,30 +74,38 @@ async function executeManualForge(
     throw new MissingForgeInterestSignalsError();
   }
 
-  const activityResult = await ForgeApi.createActivity(createActivityInput);
+  const activityResult = existingActivityId
+    ? null
+    : await ForgeApi.createActivity(createActivityInput);
+  if (activityResult) void invalidateRecentForgeActivities();
 
-  void invalidateRecentForgeActivities();
-
-  const activityId = activityResult.data.id;
+  const activityId = existingActivityId ?? activityResult?.data.id;
+  if (!activityId) {
+    throw new Error("Forge activity creation did not return an activity.");
+  }
   const forgeInput = buildManualForgeInput(input);
 
   let forgeResult: Awaited<ReturnType<typeof ForgeApi.forgeActivity>>;
 
   try {
-    forgeResult = await ForgeApi.forgeActivity(activityId, forgeInput);
+    forgeResult = await ForgeApi.forgeActivity(
+      activityId,
+      forgeInput,
+      idempotencyKey,
+    );
   } catch {
     return buildFailedForgeResult({
       activityId,
       requestIds: {
         autoForgeRequest: null,
-        createActivity: activityResult.requestId,
+        createActivity: activityResult?.requestId ?? null,
         forgeActivity: null,
       },
     });
   }
 
   return buildForgeSuccessResult({
-    createActivityRequestId: activityResult.requestId,
+    createActivityRequestId: activityResult?.requestId ?? null,
     currentUserId: currentUser.id,
     forgeResult,
   });
@@ -127,6 +137,14 @@ async function buildForgeSuccessResult({
 }
 
 export class ForgeCommands {
+  static executeManualForge(
+    input: AutoForgeExecutionInput,
+    idempotencyKey: string,
+    existingActivityId: string | null,
+  ) {
+    return executeManualForge(input, idempotencyKey, existingActivityId);
+  }
+
   static createAutoForgeRequest(
     activityId: string,
     input: AutoForgeExecutionInput,
@@ -165,10 +183,6 @@ export class ForgeCommands {
     }
 
     return result;
-  }
-
-  static async executeManualForge(input: AutoForgeExecutionInput) {
-    return executeManualForge(input);
   }
 
   static async executeAutoForge(

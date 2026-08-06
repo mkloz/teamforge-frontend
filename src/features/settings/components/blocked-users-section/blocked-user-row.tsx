@@ -1,8 +1,9 @@
-import { Loader2, ShieldOff } from "lucide-react";
+import { ShieldOff } from "lucide-react";
 import { Avatar } from "@/shared/components/common/avatar";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { GroupedMenuItem } from "@/shared/components/ui/grouped-menu";
+import { Spinner } from "@/shared/components/ui/spinner";
 import type { UserBlockApi } from "@/shared/schemas";
 import { formatBlockedDate } from "./blocked-users-formatters";
 
@@ -75,7 +76,7 @@ export function BlockedUserRow({
 
 function UnblockButtonIcon({ isUnblocking }: { isUnblocking: boolean }) {
   if (isUnblocking) {
-    return <Loader2 size={14} className="animate-spin" />;
+    return <Spinner aria-hidden="true" className="size-3.5" />;
   }
 
   return <ShieldOff size={14} />;

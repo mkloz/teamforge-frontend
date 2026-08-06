@@ -10,6 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 
 export interface OperatorReauthenticationDialogProps {
@@ -28,6 +34,8 @@ export function OperatorReauthenticationDialog({
   open,
 }: OperatorReauthenticationDialogProps) {
   const passwordInputId = useId();
+  const passwordDescriptionId = `${passwordInputId}-description`;
+  const passwordErrorId = `${passwordInputId}-error`;
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -58,13 +66,17 @@ export function OperatorReauthenticationDialog({
             if (password.trim() && !loading) onConfirm(password);
           }}
         >
-          <label
-            htmlFor={passwordInputId}
-            className="grid gap-2 font-semibold text-ink text-sm"
-          >
-            Current password
+          <Field className="gap-2" data-invalid={Boolean(error)}>
+            <FieldLabel
+              htmlFor={passwordInputId}
+              className="font-semibold text-ink"
+            >
+              Current password
+            </FieldLabel>
             <Input
               id={passwordInputId}
+              aria-describedby={error ? passwordErrorId : passwordDescriptionId}
+              aria-invalid={Boolean(error)}
               autoComplete="current-password"
               disabled={loading}
               type={passwordVisible ? "text" : "password"}
@@ -90,18 +102,18 @@ export function OperatorReauthenticationDialog({
                 </Button>
               }
             />
-          </label>
-
-          {error ? (
-            <p className="text-destructive text-sm" role="alert">
-              {error}
-            </p>
-          ) : (
-            <p className="text-slate-muted text-xs leading-relaxed">
-              Verification remains valid for 15 minutes. You can keep reviewing
-              admin data after it expires.
-            </p>
-          )}
+            {error ? (
+              <FieldError id={passwordErrorId}>{error}</FieldError>
+            ) : (
+              <FieldDescription
+                id={passwordDescriptionId}
+                className="text-slate-muted text-xs leading-relaxed"
+              >
+                Verification remains valid for 15 minutes. You can keep
+                reviewing admin data after it expires.
+              </FieldDescription>
+            )}
+          </Field>
 
           <DialogFooter>
             <Button

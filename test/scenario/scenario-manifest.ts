@@ -11,7 +11,8 @@ export type ScenarioAuditRecipe =
   | "explore-pagination-loading"
   | "home-recommendations-error"
   | "home-recommendations-recovery"
-  | "notifications-drawer";
+  | "notifications-drawer"
+  | "onboarding-guidance-replay";
 
 const smokeScenarioIds = new Set([
   "standard",
@@ -20,6 +21,7 @@ const smokeScenarioIds = new Set([
   "home-recommendations-error",
   "activity-standard",
   "notifications-dense",
+  "onboarding-practice",
   "explore-standard",
   "explore-loading",
   "explore-pagination-loading",
@@ -47,6 +49,7 @@ const recipeByScenarioId: Readonly<Record<string, ScenarioAuditRecipe>> = {
   "notifications-empty": "notifications-drawer",
   "notifications-long-copy": "notifications-drawer",
   "notifications-standard": "notifications-drawer",
+  "onboarding-practice": "onboarding-guidance-replay",
 };
 
 export function getScenarioAuditEntries(profile: ScenarioAuditProfile) {

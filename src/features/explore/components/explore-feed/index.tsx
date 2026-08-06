@@ -1,12 +1,13 @@
 "use client";
 
 import { Link } from "@tanstack/react-router";
-import { LoaderCircle, SlidersHorizontal, UsersRound } from "lucide-react";
+import { SlidersHorizontal, UsersRound } from "lucide-react";
 import { EmptyExploreFilteredVisual } from "@/features/explore/assets/empty-explore-filtered";
 import { EmptyExploreOpenVisual } from "@/features/explore/assets/empty-explore-open";
 import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Button } from "@/shared/components/ui/button";
+import { Spinner } from "@/shared/components/ui/spinner";
 import { buildForgeLaunchNavigation } from "@/shared/navigation/forge-navigation";
 
 import { ExploreFeedContent } from "./explore-feed-content";
@@ -61,10 +62,7 @@ export function ExploreFeed() {
           className="mb-2 flex min-h-6 items-center justify-end gap-1.5 px-1 font-semibold text-muted-foreground text-xs"
           role="status"
         >
-          <LoaderCircle
-            className="size-3.5 animate-spin motion-reduce:animate-none"
-            aria-hidden="true"
-          />
+          <Spinner className="size-3.5" aria-hidden="true" />
           Updating results
         </div>
       ) : null}

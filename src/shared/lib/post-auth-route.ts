@@ -1,4 +1,8 @@
 import type { User } from "@/shared/schemas";
+import type {
+  OnboardingDestination,
+  OnboardingProductState,
+} from "@/shared/schemas/onboarding-product-state";
 
 const OCEAN_SCORE_FIELDS = [
   "oceanO",
@@ -62,4 +66,20 @@ export function getPostAuthRedirectPath(user: User | null | undefined) {
   );
 
   return redirectRule?.path ?? ("/home" as const);
+}
+
+const PRODUCT_DESTINATION_PATHS = {
+  HOME: "/home",
+  EXPLORE: "/explore",
+  FORGE: "/forge",
+  ONBOARDING_PROFILE: "/onboarding/profile",
+  ONBOARDING_INTENT: "/onboarding/intent",
+  ONBOARDING_INTERESTS: "/onboarding/interests",
+  ONBOARDING_PERSONALITY: "/onboarding/personality",
+} as const satisfies Record<OnboardingDestination, string>;
+
+export function getProductStateRedirectPath(
+  productState: Pick<OnboardingProductState, "safeDefaultDestination">,
+) {
+  return PRODUCT_DESTINATION_PATHS[productState.safeDefaultDestination];
 }

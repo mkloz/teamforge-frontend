@@ -49,8 +49,14 @@ function toProfileBasicsLocationValue(value: number | null | undefined) {
 
 export function requiresProfileBasicsDateOfBirth(
   adultEligibility?: AdultEligibility,
+  currentAge?: number | null,
 ) {
-  return !adultEligibility || adultEligibility.status === "UNKNOWN";
+  return (
+    currentAge === null ||
+    currentAge === undefined ||
+    !adultEligibility ||
+    adultEligibility.status === "UNKNOWN"
+  );
 }
 
 export function getProfileBasicsProgress(
@@ -107,12 +113,18 @@ export function buildProfileBasicsFlowSearch({
   returnTo,
   returnSearch,
   returnSection,
+  returnGroupId,
 }: OnboardingReturnSearchParams) {
-  return buildOnboardingReturnSearch({ returnTo, returnSearch, returnSection });
+  return buildOnboardingReturnSearch({
+    returnTo,
+    returnSearch,
+    returnSection,
+    returnGroupId,
+  });
 }
 
 export function getProfileBasicsNextRoute(nextDestination: string) {
   return nextDestination === "/onboarding/profile"
-    ? "/onboarding/personality"
+    ? "/onboarding/intent"
     : nextDestination;
 }

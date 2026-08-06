@@ -38,6 +38,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
+import {
+  Field,
+  FieldError,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/shared/components/ui/field";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/shared/components/ui/native-select";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 
@@ -357,36 +368,43 @@ function ReportFormContent({
 function TargetField({ targets }: { targets: readonly ReportTarget[] }) {
   const { register } = useFormContextForReport();
   return (
-    <label
-      htmlFor="report-target"
-      className="grid gap-2 font-semibold text-ink text-sm"
-    >
-      What are you reporting?
-      <select
+    <Field className="gap-2">
+      <FieldLabel
+        htmlFor="report-target"
+        className="font-semibold text-ink text-sm"
+      >
+        What are you reporting?
+      </FieldLabel>
+      <NativeSelect
         id="report-target"
         {...register("targetKey")}
-        className="h-11 w-full rounded-xl border border-input-border bg-input px-3 text-ink text-sm outline-none focus-visible:border-primary/45 focus-visible:ring-2 focus-visible:ring-primary/20"
+        className="rounded-xl"
       >
         {targets.map((target) => (
-          <option key={getTargetKey(target)} value={getTargetKey(target)}>
+          <NativeSelectOption
+            key={getTargetKey(target)}
+            value={getTargetKey(target)}
+          >
             {target.label}
-          </option>
+          </NativeSelectOption>
         ))}
-      </select>
-    </label>
+      </NativeSelect>
+    </Field>
   );
 }
 
 function CategoryField() {
   const { register, formState } = useFormContextForReport();
   return (
-    <fieldset
+    <FieldSet
       className="grid gap-3"
       aria-describedby={
         formState.errors.category ? "report-category-error" : undefined
       }
     >
-      <legend className="font-semibold text-ink text-sm">Primary reason</legend>
+      <FieldLegend className="font-semibold text-ink text-sm" variant="label">
+        Primary reason
+      </FieldLegend>
       <div className="grid gap-1 sm:grid-cols-2">
         {REPORT_CATEGORY_OPTIONS.map(([value, label]) => (
           <label
@@ -404,15 +422,15 @@ function CategoryField() {
         ))}
       </div>
       {formState.errors.category ? (
-        <p id="report-category-error" className="text-destructive text-sm">
+        <FieldError id="report-category-error">
           {formState.errors.category.message}
-        </p>
+        </FieldError>
       ) : null}
       <CheckRow
         label="Someone may be in immediate danger"
         registration={register("immediateSafety")}
       />
-    </fieldset>
+    </FieldSet>
   );
 }
 
@@ -476,12 +494,17 @@ function SafetyGuidanceLink({ href, label }: { href: string; label: string }) {
 function DescriptionField() {
   const { register, formState } = useFormContextForReport();
   return (
-    <label
-      htmlFor="report-description"
-      className="grid gap-2 font-semibold text-ink text-sm"
+    <Field
+      className="gap-2"
+      data-invalid={Boolean(formState.errors.description)}
     >
-      What happened?{" "}
-      <span className="font-normal text-slate-muted">Optional</span>
+      <FieldLabel
+        htmlFor="report-description"
+        className="font-semibold text-ink text-sm"
+      >
+        What happened?{" "}
+        <span className="font-normal text-slate-muted">Optional</span>
+      </FieldLabel>
       <Textarea
         id="report-description"
         {...register("description")}
@@ -494,14 +517,11 @@ function DescriptionField() {
         }
       />
       {formState.errors.description ? (
-        <span
-          id="report-description-error"
-          className="font-normal text-destructive text-sm"
-        >
+        <FieldError id="report-description-error">
           {formState.errors.description.message}
-        </span>
+        </FieldError>
       ) : null}
-    </label>
+    </Field>
   );
 }
 
@@ -538,10 +558,13 @@ function RequestedActions({
   const { register } = useFormContextForReport();
   if (!canRequestBlock && !canRequestLeave) return null;
   return (
-    <fieldset className="grid gap-2">
-      <legend className="mb-1 font-semibold text-ink text-sm">
+    <FieldSet className="grid gap-2">
+      <FieldLegend
+        className="mb-1 font-semibold text-ink text-sm"
+        variant="label"
+      >
         Actions you can take now
-      </legend>
+      </FieldLegend>
       {canRequestBlock ? (
         <CheckRow
           label="Block this person now"
@@ -558,7 +581,7 @@ function RequestedActions({
         These actions run separately from your report. If the report cannot be
         sent, you can still block the person or leave the group.
       </p>
-    </fieldset>
+    </FieldSet>
   );
 }
 

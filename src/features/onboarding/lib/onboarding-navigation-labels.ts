@@ -7,6 +7,7 @@ const returnTargetLabels: Record<OnboardingReturnTarget, string> = {
   "/activity": "activity",
   "/explore": "explore",
   "/forge": "forge",
+  "/groups/$groupId": "group preview",
   "/home": "home",
   "/invite": "your invitation",
   "/profile": "profile",

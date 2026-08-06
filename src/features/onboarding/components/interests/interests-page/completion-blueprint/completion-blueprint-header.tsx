@@ -1,7 +1,6 @@
 import { m } from "framer-motion";
 import { BadgeCheck } from "lucide-react";
 
-import { DialogTitle } from "@/shared/components/ui/dialog";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 
 import { completionFadeUp } from "./completion-blueprint-motion";
@@ -17,11 +16,15 @@ export function CompletionBlueprintHeader() {
       >
         All set
       </StatusPill>
-      <DialogTitle asChild>
-        <h1 className="font-extrabold font-sans text-4xl text-foreground leading-tight tracking-tight drop-shadow-lg">
-          Your TeamForge profile is ready
-        </h1>
-      </DialogTitle>
+      <h1
+        id="starter-ready-title"
+        className="font-extrabold font-sans text-4xl text-foreground leading-tight tracking-tight drop-shadow-lg"
+      >
+        Your starter profile is ready
+      </h1>
+      <p className="mt-4 text-pretty text-base text-muted-foreground leading-relaxed">
+        You bring a plan → TeamForge finds compatible people → You decide
+      </p>
     </m.div>
   );
 }

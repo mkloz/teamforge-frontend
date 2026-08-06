@@ -9,6 +9,7 @@ import {
 } from "@/features/settings/lib/account-data-copy";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import {
   GroupedMenuItem,
   GroupedMenuList,
@@ -198,14 +199,23 @@ function PasswordConfirmationDialog({
         </Button>
       }
     >
-      <div className="grid gap-2">
-        <label
-          className="font-semibold text-ink text-sm"
+      <Field
+        className="gap-2"
+        data-invalid={Boolean(state.reauthenticationError)}
+      >
+        <FieldLabel
+          className="font-semibold text-ink"
           htmlFor="account-export-password"
         >
           Password
-        </label>
+        </FieldLabel>
         <Input
+          aria-describedby={
+            state.reauthenticationError
+              ? "account-export-password-error"
+              : undefined
+          }
+          aria-invalid={Boolean(state.reauthenticationError)}
           autoComplete="current-password"
           id="account-export-password"
           maxLength={100}
@@ -215,11 +225,11 @@ function PasswordConfirmationDialog({
           value={password}
         />
         {state.reauthenticationError ? (
-          <p className="text-destructive text-xs" role="alert">
+          <FieldError id="account-export-password-error" className="text-xs">
             {state.reauthenticationError}
-          </p>
+          </FieldError>
         ) : null}
-      </div>
+      </Field>
     </ActionDialog>
   );
 }

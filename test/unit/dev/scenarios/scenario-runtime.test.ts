@@ -4,6 +4,7 @@ import { handleScenarioRequest } from "@/dev/scenarios/runtime/scenario-handler"
 import { resolveScenarioMediaUrl } from "@/dev/scenarios/runtime/scenario-media";
 import { groupPlanDetailSchema } from "@/features/group-plan-detail/schemas/group-plan-detail.schema";
 import { homeGroupSchema } from "@/features/home/schemas/home-group.schema";
+import { operatorQueueHealthSchema } from "@/features/operator/schemas/operator-queue-health.schemas";
 import {
   createPaginatedSchema,
   exploreFeedItemSchema,
@@ -14,6 +15,7 @@ import {
   publicFriendSummaryApiSchema,
   viewerProfileSchema,
 } from "@/shared/schemas";
+import { onboardingProductStateSchema } from "@/shared/schemas/onboarding-product-state";
 import {
   personalityAssessmentCapabilitiesSchema,
   personalityAssessmentStateSchema,
@@ -137,6 +139,108 @@ describe("scenario runtime", () => {
     ).toMatchObject({ onboardingUse: "ENABLED", pageSize: 5 });
   });
 
+  it("moves from profile basics to a persisted intent or skip step", async () => {
+    const controller = createController("onboarding-incomplete");
+    await handleScenarioRequest(
+      controller,
+      apiRequest("users/me", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ age: 27, city: "London", gender: "FEMALE" }),
+      }),
+    );
+
+    const intentStateResponse = await handleScenarioRequest(
+      controller,
+      apiRequest("onboarding/product-state"),
+    );
+    const intentState = onboardingProductStateSchema.parse(
+      await intentStateResponse.json(),
+    );
+    expect(intentState.safeDefaultDestination).toBe("ONBOARDING_INTENT");
+    expect(intentState.milestones.intentStepComplete).toBe(false);
+
+    await handleScenarioRequest(
+      controller,
+      apiRequest("users/me", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ onboardingIntent: "BRING_A_PLAN" }),
+      }),
+    );
+    const selectedStateResponse = await handleScenarioRequest(
+      controller,
+      apiRequest("onboarding/product-state"),
+    );
+    const selectedState = onboardingProductStateSchema.parse(
+      await selectedStateResponse.json(),
+    );
+    expect(selectedState.presentation.firstMission).toBe(
+      "CREATE_INTRODUCTORY_PLAN",
+    );
+
+    await handleScenarioRequest(
+      controller,
+      apiRequest("users/me", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ onboardingIntent: null }),
+      }),
+    );
+    const skippedStateResponse = await handleScenarioRequest(
+      controller,
+      apiRequest("onboarding/product-state"),
+    );
+    const skippedState = onboardingProductStateSchema.parse(
+      await skippedStateResponse.json(),
+    );
+    expect(skippedState.safeDefaultDestination).not.toBe("ONBOARDING_INTENT");
+    expect(skippedState.milestones.intentStepComplete).toBe(true);
+  });
+
+  it("projects an introductory practice treatment without matching access", async () => {
+    const controller = createController("onboarding-practice");
+    const response = await handleScenarioRequest(
+      controller,
+      apiRequest("onboarding/product-state"),
+    );
+    const state = onboardingProductStateSchema.parse(await response.json());
+
+    expect(state).toMatchObject({
+      rollout: {
+        education: "education-v1",
+        introductoryAccess: "introductory-access-v1",
+      },
+      safeDefaultDestination: "EXPLORE",
+      stage: "INTRODUCTORY",
+    });
+    expect(state.capabilities.BROWSE_PUBLIC_CONTENT.allowed).toBe(true);
+    expect(state.capabilities.USE_ONBOARDING_PRACTICE.allowed).toBe(true);
+    expect(state.capabilities.CREATE_PLAN).toMatchObject({
+      allowed: false,
+      reasonCode: "FULL_ASSESSMENT_REQUIRED",
+    });
+  });
+
+  it("accepts onboarding observations without an unmatched request", async () => {
+    const controller = createController("onboarding-practice");
+    const [events, exposures] = await Promise.all([
+      handleScenarioRequest(
+        controller,
+        apiRequest("onboarding/events", { method: "POST" }),
+      ),
+      handleScenarioRequest(
+        controller,
+        apiRequest("onboarding/exposures", { method: "POST" }),
+      ),
+    ]);
+
+    expect(events.status).toBe(201);
+    expect(exposures.status).toBe(201);
+    expect(await events.json()).toEqual({ accepted: 1 });
+    expect(await exposures.json()).toEqual({ accepted: 1 });
+  });
+
   it("projects schema-valid mutual and public friends", async () => {
     const controller = createController("profile-public");
     const [commonResponse, publicResponse] = await Promise.all([
@@ -247,6 +351,39 @@ describe("scenario runtime", () => {
     expect(group.members).toHaveLength(3);
   });
 
+  it("projects privacy-limited Explore cards for every introductory intent", async () => {
+    const payloads = await Promise.all(
+      [
+        "onboarding-intent-create",
+        "onboarding-intent-explore",
+        "onboarding-intent-skipped",
+      ].map(async (scenarioId) => {
+        const controller = createController(scenarioId);
+        const response = await handleScenarioRequest(
+          controller,
+          apiRequest("explore/feed?limit=24"),
+        );
+        return createPaginatedSchema(exploreFeedItemSchema)
+          .extend({ insight: exploreViewInsightSchema })
+          .parse(await response.json());
+      }),
+    );
+
+    for (const payload of payloads) {
+      expect(payload.items.length).toBeGreaterThan(0);
+      expect(
+        payload.items.every(({ type }) => type === "INTRODUCTORY_GROUP"),
+      ).toBe(true);
+      expect(
+        payload.items.some(
+          (item) =>
+            item.type === "INTRODUCTORY_GROUP" &&
+            item.group.interestFitPercentage > 0,
+        ),
+      ).toBe(true);
+    }
+  });
+
   it("fails closed for an unhandled request", async () => {
     const controller = createController();
     const response = await handleScenarioRequest(
@@ -261,6 +398,48 @@ describe("scenario runtime", () => {
     expect(controller.requests).toEqual([
       { method: "GET", pathname: "unknown/endpoint", status: 501 },
     ]);
+  });
+
+  it("projects versioned queue-health standard, empty, and partial states", async () => {
+    const responses = await Promise.all(
+      [
+        "admin-queue-health-standard",
+        "admin-queue-health-empty",
+        "admin-queue-health-partial",
+      ].map(async (scenarioId) => {
+        const response = await handleScenarioRequest(
+          createController(scenarioId),
+          apiRequest("operator/moderation/queue-health"),
+        );
+        return operatorQueueHealthSchema.parse(await response.json());
+      }),
+    );
+
+    expect(responses[0]).toMatchObject({
+      backlog: 27,
+      dataQuality: "COMPLETE",
+    });
+    expect(responses[1]).toMatchObject({
+      backlog: 0,
+      oldestCaseAgeSeconds: null,
+    });
+    expect(responses[2]).toMatchObject({ backlog: 27, dataQuality: "PARTIAL" });
+  });
+
+  it("fails queue health closed for restricted and unavailable scenarios", async () => {
+    const [restricted, unavailable] = await Promise.all([
+      handleScenarioRequest(
+        createController("admin-queue-health-restricted"),
+        apiRequest("operator/moderation/queue-health"),
+      ),
+      handleScenarioRequest(
+        createController("admin-queue-health-error"),
+        apiRequest("operator/moderation/queue-health"),
+      ),
+    ]);
+
+    expect(restricted.status).toBe(403);
+    expect(unavailable.status).toBe(503);
   });
 
   it("projects schema-valid safety collections", async () => {

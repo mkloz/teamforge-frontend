@@ -1,10 +1,12 @@
-import { Loader2, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { FormationOpeningReportAction } from "@/features/reporting/public/reporting";
 import { FormationOpeningCard } from "@/shared/components/formation-opening-card";
 import { Button } from "@/shared/components/ui/button";
+import { Spinner } from "@/shared/components/ui/spinner";
 import type { ExploreFeedItem } from "@/shared/schemas";
 import { ExploreGroupPlanCard } from "./explore-group-plan-card";
+import { IntroductoryExploreGroupCard } from "./introductory-explore-group-card";
 
 interface ExploreFeedContentProps {
   items: ExploreFeedItem[];
@@ -25,6 +27,9 @@ export function ExploreFeedContent({
     <div className="flex flex-col gap-5">
       <section>
         <FeedSectionLabel
+          isIntroductory={items.some(
+            (item) => item.type === "INTRODUCTORY_GROUP",
+          )}
           title="Open plans"
           detail={`${totalItems} ${totalItems === 1 ? "opening" : "openings"}`}
         />
@@ -108,7 +113,7 @@ function ExploreInfiniteScrollSentinel({
         className="disabled:cursor-wait disabled:opacity-70"
       >
         {isFetchingNextPage ? (
-          <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+          <Spinner className="size-3.5" aria-hidden="true" />
         ) : (
           <RefreshCw className="size-3.5" aria-hidden="true" />
         )}
@@ -120,9 +125,11 @@ function ExploreInfiniteScrollSentinel({
 
 function FeedSectionLabel({
   detail,
+  isIntroductory,
   title,
 }: {
   detail: string;
+  isIntroductory: boolean;
   title: string;
 }) {
   return (
@@ -132,7 +139,9 @@ function FeedSectionLabel({
           {title}
         </h2>
         <p className="mt-1 font-medium text-muted-foreground text-sm">
-          Ranked for your profile, with the strongest fit first.
+          {isIntroductory
+            ? "A preview based on the interests you have already shared."
+            : "Ranked for your profile, with the strongest fit first."}
         </p>
       </div>
       <span className="shrink-0 pb-0.5 font-bold text-muted-foreground text-xs sm:text-sm">
@@ -159,6 +168,12 @@ function ExploreFeedItemCard({
           emphasis={emphasis}
           imagePriority={imagePriority}
           variant="discovery"
+        />
+      ) : item.type === "INTRODUCTORY_GROUP" ? (
+        <IntroductoryExploreGroupCard
+          group={item.group}
+          emphasis={emphasis}
+          imagePriority={imagePriority}
         />
       ) : (
         <FormationOpeningCard
@@ -200,7 +215,7 @@ function getExploreGridSlotClassName(index: number) {
 }
 
 function getExploreFeedItemKey(item: ExploreFeedItem) {
-  return item.type === "GROUP"
+  return item.type === "GROUP" || item.type === "INTRODUCTORY_GROUP"
     ? `group-${item.group.id}`
     : `opening-${item.opening.id}`;
 }

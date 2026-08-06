@@ -29,7 +29,7 @@ export function DownloadDeviceTabs({
             key={option.id}
             htmlFor={inputId}
             className={cn(
-              "relative inline-flex h-11 min-w-0 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 font-bold text-xs leading-none outline-none transition-colors duration-200 has-focus-visible:ring-2 has-focus-visible:ring-forge-teal/70 has-focus-visible:ring-offset-1 has-focus-visible:ring-offset-hero-bg [@media(pointer:fine)]:h-9",
+              "relative inline-flex h-9 min-w-0 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 font-bold text-xs leading-none outline-none transition-colors duration-200 has-focus-visible:ring-2 has-focus-visible:ring-forge-teal/70 has-focus-visible:ring-offset-1 has-focus-visible:ring-offset-hero-bg",
               active
                 ? "bg-forge-teal text-white shadow-[0_2px_0_#063b37]"
                 : "text-white/62 hover:bg-white/8 hover:text-white",

@@ -20,6 +20,7 @@ import {
   getPreviousStep,
 } from "@/features/forge/lib/forge-wizard";
 import { isRecentActivityTemplateId } from "@/features/forge/lib/recent-activity/recent-activity-template-id";
+import { readForgeWizardDraft } from "@/features/forge/store/forge-wizard-session-storage";
 import {
   cloneForgeWizardDraft,
   useForgeWizardDraftStore,
@@ -63,7 +64,9 @@ export function useForgeWizard({
   enterGroupHub,
 }: UseForgeWizardOptions) {
   const initialDraftRef = useRef(
-    initialDraft ?? useForgeWizardDraftStore.getState().draft,
+    initialDraft ??
+      useForgeWizardDraftStore.getState().draft ??
+      readForgeWizardDraft(),
   );
   const saveDraft = useForgeWizardDraftStore((store) => store.saveDraft);
   const clearDraft = useForgeWizardDraftStore((store) => store.clearDraft);

@@ -1,6 +1,10 @@
 import { create } from "zustand";
 
 import type { ForgeWizardData } from "@/features/forge/lib/forge-wizard";
+import {
+  clearForgeWizardSession,
+  writeForgeWizardDraft,
+} from "./forge-wizard-session-storage";
 
 interface ForgeWizardDraftStore {
   draft: ForgeWizardData | null;
@@ -11,8 +15,15 @@ interface ForgeWizardDraftStore {
 export const useForgeWizardDraftStore = create<ForgeWizardDraftStore>(
   (set) => ({
     draft: null,
-    clearDraft: () => set({ draft: null }),
-    saveDraft: (draft) => set({ draft: cloneForgeWizardDraft(draft) }),
+    clearDraft: () => {
+      clearForgeWizardSession();
+      set({ draft: null });
+    },
+    saveDraft: (draft) => {
+      const cloned = cloneForgeWizardDraft(draft);
+      writeForgeWizardDraft(cloned);
+      set({ draft: cloned });
+    },
   }),
 );
 

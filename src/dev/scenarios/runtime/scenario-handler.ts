@@ -7,6 +7,8 @@ import {
   projectExploreGroups,
   projectGroupDetail,
   projectHomeGroups,
+  projectIntroductoryExploreFeed,
+  projectIntroductoryExploreGroups,
   projectViewerProfile,
 } from "@/dev/scenarios/projectors/scenario-projectors";
 import type { ScenarioController } from "@/dev/scenarios/runtime/scenario-controller";
@@ -27,12 +29,24 @@ import {
   messageApiSchema,
 } from "@/shared/schemas";
 import {
+  onboardingProductStateSchema,
+  productCapabilityValues,
+} from "@/shared/schemas/onboarding-product-state";
+import {
   personalityAssessmentCapabilitiesSchema,
   personalityAssessmentStateSchema,
 } from "@/shared/schemas/personality-assessment";
 import type { PlanParticipantPlace } from "@/shared/schemas/plan-operational-state";
 
 const API_VERSION_MARKER = "/api/v1/";
+
+function isIntroductoryScenario(scenarioId: string) {
+  return (
+    scenarioId === "onboarding-introductory" ||
+    scenarioId === "onboarding-practice" ||
+    scenarioId.startsWith("onboarding-intent-")
+  );
+}
 
 export async function handleScenarioRequest(
   controller: ScenarioController,
@@ -155,6 +169,28 @@ async function projectResponse(
         );
   }
 
+  if (pathname === "onboarding/product-state" && request.method === "GET") {
+    return viewer
+      ? scenarioJson(
+          projectOnboardingProductState(
+            viewer,
+            controller.descriptor.id,
+            world.onboarding.intentStepComplete,
+          ),
+        )
+      : scenarioJson(
+          { error: "UNAUTHENTICATED", message: "Sign in required." },
+          { status: 401 },
+        );
+  }
+
+  if (
+    (pathname === "onboarding/events" || pathname === "onboarding/exposures") &&
+    request.method === "POST"
+  ) {
+    return scenarioJson({ accepted: 1 }, { status: 201 });
+  }
+
   if (pathname === "users/me/reputation-evidence" && request.method === "GET") {
     const firstPlan = Object.values(world.entities.plans).at(0);
 
@@ -224,6 +260,9 @@ async function projectResponse(
 
   if (pathname === "users/me" && request.method === "PATCH" && viewer) {
     const payload = await readJsonObject(request);
+    if (Object.hasOwn(payload, "onboardingIntent")) {
+      world.onboarding.intentStepComplete = true;
+    }
     const updatedViewer = fullUserResponseSchema.parse({
       ...viewer,
       ...payload,
@@ -242,7 +281,7 @@ async function projectResponse(
   }
 
   if (pathname === "admin/moderation/session" && request.method === "GET") {
-    if (!viewer || viewer.role !== "ADMIN") {
+    if (viewer?.role !== "ADMIN") {
       return scenarioJson(
         { error: "FORBIDDEN", message: "Administrator access required." },
         { status: 403 },
@@ -258,6 +297,8 @@ async function projectResponse(
         manageWorkers: true,
         revealEvidence: true,
         reverseActions: true,
+        viewAuditLog: !world.traits.includes("audit-restricted"),
+        viewQueueHealth: !world.traits.includes("queue-health-restricted"),
         viewCases: true,
       },
       displayName: viewer.name,
@@ -271,7 +312,7 @@ async function projectResponse(
   }
 
   if (pathname === "operator/moderation/session" && request.method === "GET") {
-    if (!viewer || viewer.role !== "ADMIN") {
+    if (viewer?.role !== "ADMIN") {
       return scenarioJson(
         { error: "FORBIDDEN", message: "Operator access required." },
         { status: 403 },
@@ -340,29 +381,147 @@ async function projectResponse(
     });
   }
 
+  if (
+    pathname === "operator/moderation/queue-summary" &&
+    request.method === "GET"
+  ) {
+    const count = world.traits.includes("admin-empty") ? 0 : 1;
+    return scenarioJson({
+      counts: [
+        "CRITICAL_NOW",
+        "HUMAN_REQUIRED",
+        "APPEALS",
+        "CONTAINMENT_REVIEW",
+        "ROUTINE",
+        "CAMPAIGNS_TRENDS",
+      ].map((queue) => ({ count, queue })),
+      definitionVersion: "moderation-operations-v1",
+      generatedAt: world.clock,
+    });
+  }
+
+  if (
+    pathname === "operator/moderation/queue-health" &&
+    request.method === "GET"
+  ) {
+    if (world.traits.includes("queue-health-restricted")) {
+      return scenarioJson(
+        { error: "FORBIDDEN", message: "Queue health is restricted." },
+        { status: 403 },
+      );
+    }
+    if (world.traits.includes("queue-health-error")) {
+      return scenarioJson(
+        { error: "UNAVAILABLE", message: "Queue health is unavailable." },
+        { status: 503 },
+      );
+    }
+    return scenarioJson(scenarioQueueHealth(world));
+  }
+
+  if (pathname === "operator/audit-events" && request.method === "GET") {
+    if (world.traits.includes("audit-restricted")) {
+      return scenarioJson(
+        { error: "FORBIDDEN", message: "Audit history is restricted." },
+        { status: 403 },
+      );
+    }
+    const allEvents = world.traits.includes("admin-empty")
+      ? []
+      : scenarioAuditEvents();
+    const filtered = filterScenarioAuditEvents(allEvents, url);
+    const offset = url.searchParams.has("cursor") ? 25 : 0;
+    const limit = Number(url.searchParams.get("limit") ?? 25);
+    const items = filtered.slice(offset, offset + limit);
+    return scenarioJson({
+      generatedAt: world.clock,
+      items,
+      nextCursor: offset + limit < filtered.length ? "scenario-next" : null,
+    });
+  }
+
+  const auditEventMatch = pathname.match(/^operator\/audit-events\/([^/]+)$/u);
+  if (auditEventMatch && request.method === "GET") {
+    const event = scenarioAuditEvents().find(
+      (item) => item.id === decodeURIComponent(auditEventMatch[1]),
+    );
+    if (!event) {
+      return scenarioJson(
+        { error: "NOT_FOUND", message: "Audit event not found." },
+        { status: 404 },
+      );
+    }
+    return scenarioJson({
+      ...event,
+      metadata: {
+        policyVersion: "policy-2026-08",
+        requestedItems: ["caseId", "outcome"],
+      },
+    });
+  }
+
   if (pathname === "operator/moderation/cases" && request.method === "GET") {
     const queue = url.searchParams.get("queue") ?? "HUMAN_REQUIRED";
-    const data = world.traits.includes("admin-empty")
+    const candidates = world.traits.includes("admin-empty")
       ? []
       : [scenarioModerationCase(world.clock)];
+    const data = filterScenarioModerationCases(candidates, url, world.clock);
     return scenarioJson({
       data,
       limit: Number(url.searchParams.get("limit") ?? 25),
       page: Number(url.searchParams.get("page") ?? 1),
       queue,
+      summary: scenarioCaseSummary(data, world.clock),
       total: data.length,
     });
   }
 
   if (pathname === "operator/moderation/intake" && request.method === "GET") {
-    const data = world.traits.includes("admin-empty")
+    const candidates = world.traits.includes("admin-empty")
       ? []
       : [scenarioModerationCase(world.clock)];
+    const data = filterScenarioModerationCases(candidates, url, world.clock);
     return scenarioJson({
       data,
       limit: Number(url.searchParams.get("limit") ?? 25),
       page: Number(url.searchParams.get("page") ?? 1),
+      summary: scenarioCaseSummary(data, world.clock),
       total: data.length,
+    });
+  }
+
+  if (
+    /^operator\/moderation\/cases\/[^/]+$/u.test(pathname) &&
+    request.method === "GET"
+  ) {
+    return scenarioJson({
+      ...scenarioModerationCase(world.clock),
+      appeals: [],
+      breakGlassReviewRequired: false,
+      decisions: [],
+      enforcementActions: [],
+      operatorAssignments: [],
+      outcomeReviewRequests: [],
+      protectiveContainments: [],
+      reports: [],
+    });
+  }
+
+  if (
+    /^operator\/moderation\/cases\/[^/]+\/evidence$/u.test(pathname) &&
+    request.method === "GET"
+  ) {
+    return scenarioJson([]);
+  }
+
+  if (
+    /^operator\/moderation\/cases\/[^/]+\/assessments$/u.test(pathname) &&
+    request.method === "GET"
+  ) {
+    return scenarioJson({
+      assessments: [],
+      state: "NOT_REQUESTED",
+      stateReasonCode: null,
     });
   }
 
@@ -971,9 +1130,12 @@ async function projectResponse(
   }
 
   if (pathname === "explore/feed" && request.method === "GET") {
+    const introductory = isIntroductoryScenario(controller.descriptor.id);
     return scenarioJson({
       ...scenarioPage(
-        projectExploreFeed(world),
+        introductory
+          ? projectIntroductoryExploreFeed(world)
+          : projectExploreFeed(world),
         Number(url.searchParams.get("limit") ?? 24),
         Number(url.searchParams.get("page") ?? 1),
       ),
@@ -982,15 +1144,20 @@ async function projectResponse(
           "Several groups meet near your saved area.",
           "Your strongest overlaps are community, learning, and sport.",
         ],
-        summary: "A varied set of groups fits the profile in this scenario.",
+        summary: introductory
+          ? "These previews use only your selected interests and practical plan settings."
+          : "A varied set of groups fits the profile in this scenario.",
       },
     });
   }
 
   if (pathname === "explore/groups" && request.method === "GET") {
+    const introductory = isIntroductoryScenario(controller.descriptor.id);
     return scenarioJson({
       ...scenarioPage(
-        projectExploreGroups(world),
+        introductory
+          ? projectIntroductoryExploreGroups(world)
+          : projectExploreGroups(world),
         Number(url.searchParams.get("limit") ?? 24),
         Number(url.searchParams.get("page") ?? 1),
       ),
@@ -999,7 +1166,9 @@ async function projectResponse(
           "Several groups meet near your saved area.",
           "Your strongest overlaps are community, learning, and sport.",
         ],
-        summary: "A varied set of groups fits the profile in this scenario.",
+        summary: introductory
+          ? "These previews use only your selected interests and practical plan settings."
+          : "A varied set of groups fits the profile in this scenario.",
       },
     });
   }
@@ -2126,6 +2295,243 @@ function scenarioModerationCase(clock: string) {
   };
 }
 
+type ScenarioModerationCase = ReturnType<typeof scenarioModerationCase>;
+
+function scenarioAuditEvents() {
+  return Array.from({ length: 28 }, (_, index) => {
+    const sequence = 28 - index;
+    const createdAt = new Date(
+      Date.UTC(2026, 7, 1, 9, 30) - index * 15 * 60_000,
+    ).toISOString();
+    const outcome = index % 7 === 0 ? "DENIED" : "SUCCEEDED";
+    return {
+      actor: {
+        accountId: "scenario-operator-account",
+        displayName: "Quinn Hart",
+        reference: "OPERATOR-ACCOUNT",
+      },
+      caseId: "scenario-moderation-case-1",
+      caseReference: "CASE-N-CASE-1",
+      createdAt,
+      eventType:
+        index % 3 === 0
+          ? "OPERATOR_CASE_OPENED"
+          : index % 3 === 1
+            ? "OPERATOR_CASE_ASSIGNED"
+            : "OPERATOR_AUDIT_LOG_LIST_VIEWED",
+      id: `scenario-audit-${String(sequence).padStart(2, "0")}`,
+      outcome,
+      reasonCode: outcome === "DENIED" ? "ROLE_NOT_PERMITTED" : "CASE_REVIEW",
+      targetId: "scenario-moderation-case-1",
+      targetType: "MODERATION_CASE",
+    };
+  });
+}
+
+type ScenarioAuditEvent = ReturnType<typeof scenarioAuditEvents>[number];
+
+function filterScenarioAuditEvents(events: ScenarioAuditEvent[], url: URL) {
+  const exactFilters: Array<[keyof ScenarioAuditEvent, string]> = [
+    ["caseId", "caseId"],
+    ["eventType", "eventType"],
+    ["outcome", "outcome"],
+    ["targetId", "targetId"],
+    ["targetType", "targetType"],
+  ];
+  const filtered = events.filter((event) => {
+    const scalarMatch = exactFilters.every(([field, parameter]) => {
+      const expected = url.searchParams.get(parameter);
+      return !expected || event[field] === expected;
+    });
+    const actor = url.searchParams.get("actorAccountId");
+    const from = url.searchParams.get("from");
+    const to = url.searchParams.get("to");
+    const time = new Date(event.createdAt).getTime();
+    return (
+      scalarMatch &&
+      (!actor || event.actor.accountId === actor) &&
+      (!from || time >= new Date(from).getTime()) &&
+      (!to || time <= new Date(to).getTime())
+    );
+  });
+  return url.searchParams.get("sort") === "OLDEST"
+    ? [...filtered].reverse()
+    : filtered;
+}
+
+function filterScenarioModerationCases(
+  cases: ScenarioModerationCase[],
+  url: URL,
+  clock: string,
+) {
+  const generatedAt = new Date(clock).getTime();
+  return cases.filter((item) => {
+    const matchesScalar = [
+      ["status", item.status],
+      ["severity", item.severity],
+      ["evidenceCompleteness", item.evidenceCompleteness],
+      ["uncertainty", item.uncertainty],
+    ].every(([key, value]) => {
+      const requested = url.searchParams.get(key);
+      return !requested || requested === value;
+    });
+    if (!matchesScalar) return false;
+
+    const dueAt = item.dueAt ? new Date(item.dueAt).getTime() : null;
+    const sla = url.searchParams.get("sla");
+    if (sla === "OVERDUE" && (!dueAt || dueAt > generatedAt)) return false;
+    if (
+      sla === "DUE_SOON" &&
+      (!dueAt || dueAt <= generatedAt || dueAt > generatedAt + 86_400_000)
+    ) {
+      return false;
+    }
+    if (sla === "MISSING_DEADLINE" && dueAt !== null) return false;
+    return (
+      matchesScenarioDateRange(item.createdAt, url, "created") &&
+      matchesScenarioDateRange(item.dueAt, url, "due")
+    );
+  });
+}
+
+function matchesScenarioDateRange(
+  value: string | null,
+  url: URL,
+  prefix: "created" | "due",
+) {
+  const from = url.searchParams.get(`${prefix}From`);
+  const to = url.searchParams.get(`${prefix}To`);
+  if (!from && !to) return true;
+  if (!value) return false;
+  const time = new Date(value).getTime();
+  return (
+    (!from || time >= new Date(from).getTime()) &&
+    (!to || time <= new Date(to).getTime())
+  );
+}
+
+function scenarioCaseSummary(cases: ScenarioModerationCase[], clock: string) {
+  const generatedAt = new Date(clock).getTime();
+  const unresolved = cases.filter(
+    (item) => item.status !== "RESOLVED" && item.status !== "CLOSED",
+  );
+  return {
+    definitionVersion: "moderation-operations-v1",
+    dueSoon: unresolved.filter((item) => {
+      const dueAt = item.dueAt ? new Date(item.dueAt).getTime() : null;
+      return dueAt && dueAt > generatedAt && dueAt <= generatedAt + 86_400_000;
+    }).length,
+    generatedAt: clock,
+    highSeverity: cases.filter(
+      (item) => item.severity === "P0" || item.severity === "P1",
+    ).length,
+    missingDeadline: unresolved.filter((item) => !item.dueAt).length,
+    oldestCreatedAt:
+      cases
+        .map((item) => item.createdAt)
+        .sort((left, right) => left.localeCompare(right))[0] ?? null,
+    overdue: unresolved.filter(
+      (item) => item.dueAt && new Date(item.dueAt).getTime() <= generatedAt,
+    ).length,
+    total: cases.length,
+  };
+}
+
+function scenarioQueueHealth(world: ScenarioController["world"]) {
+  const empty = world.traits.includes("admin-empty");
+  const generatedAt = world.traits.includes("queue-health-stale")
+    ? "2026-07-31T10:30:00.000Z"
+    : new Date().toISOString();
+  const counts = empty
+    ? {
+        backlog: 0,
+        dueSoon: 0,
+        missingDeadline: 0,
+        oldestCaseAgeSeconds: null,
+        overdue: 0,
+        unassigned: 0,
+      }
+    : {
+        backlog: 27,
+        dueSoon: 5,
+        missingDeadline: 3,
+        oldestCaseAgeSeconds: 9 * 86_400,
+        overdue: 6,
+        unassigned: 8,
+      };
+  const queueRows = [
+    ["CRITICAL_NOW", 8, 6, 1, 1, 3, 9 * 86_400],
+    ["HUMAN_REQUIRED", 14, 4, 3, 3, 5, 9 * 86_400],
+    ["APPEALS", 4, 1, 1, 0, 1, 4 * 86_400],
+    ["CONTAINMENT_REVIEW", 3, 2, 0, 0, 1, 3 * 86_400],
+    ["ROUTINE", 9, 0, 4, 0, 2, 2 * 86_400],
+    ["CAMPAIGNS_TRENDS", 2, 0, 0, 1, 1, 7 * 86_400],
+  ] as const;
+
+  return {
+    ageBands: [
+      {
+        code: "AGE_LT_24H",
+        count: empty ? 0 : 6,
+        maximumHours: 24,
+        minimumHours: 0,
+      },
+      {
+        code: "AGE_24_TO_72H",
+        count: empty ? 0 : 9,
+        maximumHours: 72,
+        minimumHours: 24,
+      },
+      {
+        code: "AGE_72H_TO_7D",
+        count: empty ? 0 : 8,
+        maximumHours: 168,
+        minimumHours: 72,
+      },
+      {
+        code: "AGE_7D_PLUS",
+        count: empty ? 0 : 4,
+        maximumHours: null,
+        minimumHours: 168,
+      },
+    ],
+    ...counts,
+    bandDefinitionVersion: "moderation-queue-health-bands-v1",
+    dataQuality: world.traits.includes("queue-health-partial")
+      ? "PARTIAL"
+      : "COMPLETE",
+    definitionVersion: "moderation-operations-v1",
+    generatedAt,
+    queues: queueRows.map(
+      ([
+        queue,
+        backlog,
+        overdue,
+        dueSoon,
+        missingDeadline,
+        unassigned,
+        oldestCaseAgeSeconds,
+      ]) => ({
+        backlog: empty ? 0 : backlog,
+        dueSoon: empty ? 0 : dueSoon,
+        missingDeadline: empty ? 0 : missingDeadline,
+        oldestCaseAgeSeconds: empty ? null : oldestCaseAgeSeconds,
+        overdue: empty ? 0 : overdue,
+        queue,
+        unassigned: empty ? 0 : unassigned,
+      }),
+    ),
+    severityDistribution: [
+      { count: empty ? 0 : 2, severity: "P0" },
+      { count: empty ? 0 : 5, severity: "P1" },
+      { count: empty ? 0 : 8, severity: "P2" },
+      { count: empty ? 0 : 7, severity: "P3" },
+      { count: empty ? 0 : 3, severity: "P4" },
+      { count: empty ? 0 : 2, severity: "UNSET" },
+    ],
+  };
+}
+
 function scenarioWorker(
   kind:
     | "DOMAIN_EVENT_OUTBOX"
@@ -2398,5 +2804,185 @@ function projectPersonalityAssessmentCapabilities() {
       startPolicy: "AVAILABLE",
     },
     retiredForms: ["IPIP_150_V1"],
+  });
+}
+
+function projectOnboardingProductState(
+  viewer: CurrentUser,
+  scenarioId: string,
+  intentStepComplete = true,
+) {
+  const introductoryEnabled = isIntroductoryScenario(scenarioId);
+  const educationEnabled = introductoryEnabled;
+  const intent =
+    viewer.onboardingIntent ??
+    (scenarioId.includes("intent-create")
+      ? "BRING_A_PLAN"
+      : scenarioId.includes("intent-explore")
+        ? "EXPLORE_AND_JOIN"
+        : null);
+  const basicsComplete = Boolean(
+    viewer.age !== null && viewer.gender && viewer.city?.trim(),
+  );
+  const interestsComplete = (viewer.interests?.length ?? 0) >= 10;
+  const fullAssessmentAccepted = Boolean(
+    viewer.personalitySetupComplete &&
+      viewer.personalityType &&
+      viewer.oceanO !== null &&
+      viewer.oceanC !== null &&
+      viewer.oceanE !== null &&
+      viewer.oceanA !== null &&
+      viewer.oceanN !== null,
+  );
+  const matchingReady =
+    basicsComplete && interestsComplete && fullAssessmentAccepted;
+  const safeDefaultDestination = !basicsComplete
+    ? "ONBOARDING_PROFILE"
+    : !intentStepComplete
+      ? "ONBOARDING_INTENT"
+      : !interestsComplete
+        ? "ONBOARDING_INTERESTS"
+        : !matchingReady
+          ? introductoryEnabled
+            ? "EXPLORE"
+            : "ONBOARDING_PERSONALITY"
+          : "HOME";
+  const deniedReason = !basicsComplete
+    ? "PROFILE_BASICS_REQUIRED"
+    : !interestsComplete
+      ? "INTERESTS_REQUIRED"
+      : "FULL_ASSESSMENT_REQUIRED";
+  const matchingDecision = matchingReady
+    ? { allowed: true as const, policyVersion: "onboarding-authorization-v1" }
+    : {
+        allowed: false as const,
+        policyVersion: "onboarding-authorization-v1",
+        reasonCode: deniedReason,
+      };
+  const capabilities = Object.fromEntries(
+    productCapabilityValues.map((capability) => [
+      capability,
+      capability === "EDIT_OWN_PROFILE"
+        ? {
+            allowed: true as const,
+            policyVersion: "onboarding-authorization-v1",
+          }
+        : capability === "BROWSE_PUBLIC_CONTENT" ||
+            capability === "VIEW_PUBLIC_GROUP_PLAN" ||
+            capability === "VIEW_PUBLIC_PROFILE"
+          ? interestsComplete
+            ? {
+                allowed: true as const,
+                policyVersion: "onboarding-authorization-v1",
+              }
+            : {
+                allowed: false as const,
+                policyVersion: "onboarding-authorization-v1",
+                reasonCode: "INTERESTS_REQUIRED" as const,
+              }
+          : capability === "USE_ONBOARDING_PRACTICE"
+            ? educationEnabled
+              ? {
+                  allowed: true as const,
+                  policyVersion: "onboarding-authorization-v1",
+                }
+              : {
+                  allowed: false as const,
+                  policyVersion: "onboarding-authorization-v1",
+                  reasonCode: "FEATURE_NOT_AVAILABLE" as const,
+                }
+            : capability === "START_INTRODUCTORY_FORGE" &&
+                introductoryEnabled &&
+                basicsComplete &&
+                interestsComplete &&
+                !matchingReady
+              ? {
+                  allowed: true as const,
+                  policyVersion: "onboarding-authorization-v1",
+                }
+              : matchingDecision,
+    ]),
+  );
+
+  return onboardingProductStateSchema.parse({
+    authorizationPolicyVersion: "onboarding-authorization-v1",
+    clientPolicy: {
+      category: "COMPATIBLE",
+      declaredVersion: "onboarding-authorization-v1",
+      treatmentEligible: true,
+    },
+    capabilities,
+    milestones: {
+      activeFullAttempt: false,
+      basicsComplete,
+      intentStepComplete,
+      compatibilityCurrent: matchingReady,
+      fullAssessmentAccepted,
+      interestsComplete,
+      reviewableAssessmentResult: false,
+      starterAnswersRetained: false,
+      starterSatisfied: introductoryEnabled || fullAssessmentAccepted,
+      introductoryForgeAvailable:
+        introductoryEnabled &&
+        basicsComplete &&
+        interestsComplete &&
+        !matchingReady,
+      introductoryForgeUsed: false,
+    },
+    minimumCompatibleClientPolicyVersion: "onboarding-authorization-v1",
+    policyVersion: "onboarding-product-state-v1",
+    recommendedAction: {
+      code: !basicsComplete
+        ? "COMPLETE_BASICS"
+        : !intentStepComplete
+          ? "CHOOSE_INTENT"
+          : !interestsComplete
+            ? "CHOOSE_INTERESTS"
+            : !matchingReady
+              ? "COMPLETE_FULL_ASSESSMENT"
+              : "NONE",
+      routeCode: safeDefaultDestination,
+    },
+    presentation:
+      intent === "BRING_A_PLAN"
+        ? {
+            intent,
+            firstMission: "CREATE_INTRODUCTORY_PLAN",
+            destination: "FORGE",
+            coachmarkOrder: ["FORGE", "EXPLORE", "ACTIVITY"],
+          }
+        : intent === "EXPLORE_AND_JOIN"
+          ? {
+              intent,
+              firstMission: "EXPLORE_RECOMMENDATIONS",
+              destination: "EXPLORE",
+              coachmarkOrder: ["EXPLORE", "ACTIVITY", "FORGE"],
+            }
+          : {
+              intent: null,
+              firstMission: "EXPLORE_WITH_FORGE_OPTION",
+              destination: "EXPLORE",
+              coachmarkOrder: ["EXPLORE", "FORGE", "ACTIVITY"],
+            },
+    requirements: {
+      fullFormVersion: "IPIP_30_V1",
+      minimumInterestCategoryCount: 2,
+      minimumInterestCount: 10,
+    },
+    rollout: {
+      education: educationEnabled ? "education-v1" : "education-v1:disabled",
+      introductoryAccess: introductoryEnabled
+        ? "introductory-access-v1"
+        : "introductory-access-v1:disabled",
+      recovery: "recovery-v1:disabled",
+      starter: "starter-v1:disabled",
+      stitchedScoring: "stitched-scoring-v1:disabled",
+    },
+    safeDefaultDestination,
+    stage: matchingReady
+      ? "MATCHING_READY"
+      : introductoryEnabled
+        ? "INTRODUCTORY"
+        : "SETUP",
   });
 }

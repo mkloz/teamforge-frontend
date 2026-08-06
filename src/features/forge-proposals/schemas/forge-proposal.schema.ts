@@ -6,7 +6,6 @@ import {
   personalityTypeSchema,
   planScheduleModeSchema,
 } from "@/shared/schemas";
-import { personalityTraitScoresSchema } from "@/shared/schemas/public-personality-profile";
 
 export const forgeProposalStateSchema = z.enum([
   "OPEN",
@@ -147,8 +146,16 @@ const proposalProfileSchema = z
     avatar: z.string().nullable(),
     age: z.number().int().min(18).max(120).nullable(),
     city: z.string().max(100).nullable(),
-    personalityType: personalityTypeSchema,
-    ocean: personalityTraitScoresSchema.strict(),
+    personalityType: personalityTypeSchema.nullable(),
+    ocean: z
+      .object({
+        openness: z.number().int().min(0).max(100).nullable(),
+        conscientiousness: z.number().int().min(0).max(100).nullable(),
+        extraversion: z.number().int().min(0).max(100).nullable(),
+        agreeableness: z.number().int().min(0).max(100).nullable(),
+        neuroticism: z.number().int().min(0).max(100).nullable(),
+      })
+      .strict(),
     interests: z.array(proposalInterestSchema).max(50),
   })
   .strict();
@@ -185,6 +192,9 @@ const canonicalForgeProposalSchema = z
   .object({
     id: z.string().min(1),
     requestId: z.string().min(1),
+    matchingStrategy: z
+      .enum(["FULL_COMPATIBILITY", "INTRODUCTORY_INTERESTS"])
+      .default("FULL_COMPATIBILITY"),
     policyVersion: forgeProposalDecisionPolicySchema,
     version: z.number().int().positive(),
     state: forgeProposalStateSchema,
@@ -363,6 +373,17 @@ function validateViewerSeat(
   for (const [index, seat] of proposal.seats.entries()) {
     const isViewer = seat.seatId === proposal.viewer.seatId;
     const hasViewerScore = seat.compatibilityWithViewer !== null;
+
+    if (proposal.matchingStrategy === "INTRODUCTORY_INTERESTS") {
+      if (hasViewerScore) {
+        context.addIssue({
+          code: "custom",
+          message: "Introductory proposals do not expose compatibility scores.",
+          path: ["seats", index, "compatibilityWithViewer"],
+        });
+      }
+      continue;
+    }
 
     if (isViewer === hasViewerScore) {
       context.addIssue({

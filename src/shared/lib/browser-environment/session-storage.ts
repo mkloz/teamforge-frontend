@@ -28,11 +28,35 @@ export function getBrowserSessionStorageItem(key: string) {
 }
 
 export function setBrowserSessionStorageItem(key: string, value: string) {
-  accessBrowserSessionStorage(
+  return accessBrowserSessionStorage(
     (storage) => {
       storage.setItem(key, value);
+      return storage.getItem(key) === value;
     },
-    undefined,
+    false,
     "Session storage write failed.",
   );
+}
+
+export function removeBrowserSessionStorageItem(key: string) {
+  return accessBrowserSessionStorage(
+    (storage) => {
+      storage.removeItem(key);
+      return storage.getItem(key) === null;
+    },
+    false,
+    "Session storage removal failed.",
+  );
+}
+
+export function canUseBrowserSessionStorage() {
+  const probeKey = "teamforge:session-storage-probe";
+  const probeValue = crypto.randomUUID();
+  const written = setBrowserSessionStorageItem(probeKey, probeValue);
+
+  if (written) {
+    removeBrowserSessionStorageItem(probeKey);
+  }
+
+  return written;
 }

@@ -18,7 +18,6 @@ import { EmptyQueueItem } from "./empty-queue-item";
 import { FriendRequestQueueItem } from "./friend-request-queue-item";
 import { InvitationQueueItem } from "./invitation-queue-item";
 import { ParticipationQueueItem } from "./participation-queue-item";
-import { ProfileStepQueueItem } from "./profile-step-queue-item";
 import { ProposedPlanQueueItem } from "./proposed-plan-queue-item";
 import { useAttentionQueueFocus } from "./use-attention-queue-focus";
 import { useAttentionQueueState } from "./use-attention-queue-state";
@@ -119,7 +118,6 @@ function AttentionQueueView({
     proposedPlans,
     queueSize,
     shouldShowSkeleton,
-    viewer,
     visibleInvitations,
     visibleRequests,
   } = state;
@@ -130,7 +128,6 @@ function AttentionQueueView({
       proposedPlans,
       queueSize,
       shouldShowSkeleton,
-      viewer,
       visibleInvitations,
       visibleRequests,
       maxVisibleItems,
@@ -140,7 +137,6 @@ function AttentionQueueView({
     continuationCheckIns,
     pendingParticipations,
     proposedPlans,
-    viewer,
     visibleInvitations,
     visibleRequests,
   });
@@ -424,10 +420,6 @@ function renderAttentionQueueItem(
         onAnswer={context.answerVisibleContinuation}
       />
     );
-  }
-
-  if (item.kind === "profile") {
-    return <ProfileStepQueueItem key="profile-step" nextStep={item.nextStep} />;
   }
 
   return null;

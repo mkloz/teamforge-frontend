@@ -7,6 +7,7 @@ import {
   forgeRouteOptions,
   groupPlanDetailRouteOptions,
   homeRouteOptions,
+  onboardingPracticeRouteOptions,
   planGuestRouteOptions,
   profileRouteOptions,
   restrictionDetailRouteOptions,
@@ -25,18 +26,22 @@ import {
 } from "@/app/router/app-shell-route-components";
 import { loadAppShellWithNotifications } from "@/app/router/app-shell-route-loaders";
 import { rootRoute } from "@/app/router/root-route";
-import { requireCanonicalAppRoute } from "@/app/router/route-guards";
+import {
+  requireAuthenticatedAppRoute,
+  requireCanonicalAppRoute,
+  requireProductCapabilityRoute,
+} from "@/app/router/route-guards";
 
 const appShellBaseRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
-  beforeLoad: ({ location }) => {
-    void loadAppShellWithNotifications().catch(() => null);
-    preloadMatchedAppRouteModule(location.pathname);
-
-    return requireCanonicalAppRoute(location, {
+  beforeLoad: async ({ location }) => {
+    await requireAuthenticatedAppRoute(location, {
       onSessionRestored: createSessionRestoredRoutePreload(location.pathname),
     });
+
+    void loadAppShellWithNotifications().catch(() => null);
+    preloadMatchedAppRouteModule(location.pathname);
   },
   pendingComponent: AppShellRouteLoading,
   component: AppShellRouteComponent,
@@ -45,11 +50,20 @@ const appShellBaseRoute = createRoute({
 const homeRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
   ...homeRouteOptions,
+  beforeLoad: ({ location }) => requireCanonicalAppRoute(location),
 });
 
 const exploreRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
   ...exploreRouteOptions,
+  beforeLoad: ({ location }) => requireCanonicalAppRoute(location),
+});
+
+const onboardingPracticeRoute = createRoute({
+  getParentRoute: () => appShellBaseRoute,
+  ...onboardingPracticeRouteOptions,
+  beforeLoad: ({ location }) =>
+    requireProductCapabilityRoute(location, "USE_ONBOARDING_PRACTICE"),
 });
 
 const groupPlanDetailRoute = createRoute({
@@ -60,11 +74,19 @@ const groupPlanDetailRoute = createRoute({
 const planGuestRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
   ...planGuestRouteOptions,
+  beforeLoad: ({ location }) =>
+    requireProductCapabilityRoute(location, "VIEW_PUBLIC_GROUP_PLAN", {
+      preserveEstablishedObligations: true,
+    }),
 });
 
 const activityRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
   ...activityRouteOptions,
+  beforeLoad: ({ location }) =>
+    requireProductCapabilityRoute(location, "VIEW_PUBLIC_GROUP_PLAN", {
+      preserveEstablishedObligations: true,
+    }),
 });
 
 const profileRoute = createRoute({
@@ -75,6 +97,10 @@ const profileRoute = createRoute({
 const userDetailRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
   ...userDetailRouteOptions,
+  beforeLoad: ({ location }) =>
+    requireProductCapabilityRoute(location, "VIEW_PUBLIC_PROFILE", {
+      preserveEstablishedObligations: true,
+    }),
 });
 
 const settingsRoute = createRoute({
@@ -105,16 +131,26 @@ const restrictionDetailRoute = createRoute({
 const forgeRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
   ...forgeRouteOptions,
+  beforeLoad: ({ location }) =>
+    requireProductCapabilityRoute(location, [
+      "START_FORGE",
+      "START_INTRODUCTORY_FORGE",
+    ]),
 });
 
 const forgeProposalRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
   ...forgeProposalRouteOptions,
+  beforeLoad: ({ location }) =>
+    requireProductCapabilityRoute(location, "START_FORGE", {
+      preserveEstablishedObligations: true,
+    }),
 });
 
 const appRoutes = [
   homeRoute,
   exploreRoute,
+  onboardingPracticeRoute,
   groupPlanDetailRoute,
   planGuestRoute,
   activityRoute,

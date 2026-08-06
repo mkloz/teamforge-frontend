@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "@tanstack/react-router";
+import { Link, useParams, useSearch } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { getOperatorControlErrorKind } from "@/features/operator/api/operator-control-errors";
 import { operatorQueries } from "@/features/operator/api/operator-queries";
@@ -29,6 +29,7 @@ export function OperatorCaseDetailPage() {
   const { caseId } = useParams({
     from: "/admin/moderation/cases/$caseId",
   });
+  const search = useSearch({ from: "/admin/moderation/cases/$caseId" });
   const query = useQuery(operatorQueries.case(caseId));
   const { reauthenticationDialogProps, rejectCurrentStepUp, sessionQuery } =
     useOperatorSessionStepUp();
@@ -53,6 +54,7 @@ export function OperatorCaseDetailPage() {
   }
 
   const item = query.data;
+  const { source, queue, ...listSearch } = search;
   const handleCommandError = (error: unknown) => {
     if (getOperatorControlErrorKind(error) === "STALE_SESSION") {
       rejectCurrentStepUp();
@@ -62,10 +64,17 @@ export function OperatorCaseDetailPage() {
   return (
     <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-6 md:px-8 md:py-10">
       <Button asChild variant="ghost" className="w-fit px-2">
-        <Link to="/admin/moderation" search={{ queue: "CRITICAL_NOW" }}>
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          Back to queues
-        </Link>
+        {source === "intake" ? (
+          <Link to="/admin/moderation/intake" search={listSearch}>
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            Back to intake
+          </Link>
+        ) : (
+          <Link to="/admin/moderation" search={{ ...listSearch, queue }}>
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            Back to queue
+          </Link>
+        )}
       </Button>
 
       <header className="grid gap-4 pb-2">

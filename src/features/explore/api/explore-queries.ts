@@ -10,11 +10,15 @@ import {
   API_MAX_PAGE,
   EXPLORE_MAX_CATEGORY_FILTERS,
 } from "@/shared/api/api-constraints";
+import { authSession } from "@/shared/api/auth-session";
+import { clearProjectionSensitiveCaches } from "@/shared/api/onboarding-product-state-query";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { getHttpErrorStatus } from "@/shared/lib/api-error-message";
 import type {
   ExploreFeedItem,
   ExploreGroup,
   ExploreViewInsight,
+  IntroductoryExploreGroup,
   PaginationMeta,
 } from "@/shared/schemas";
 
@@ -25,7 +29,7 @@ export type ExploreFeedQueryData = {
 };
 
 export type ExploreGroupsQueryData = {
-  groups: ExploreGroup[];
+  groups: Array<ExploreGroup | IntroductoryExploreGroup>;
   insight: ExploreViewInsight;
   meta: PaginationMeta;
 };
@@ -33,9 +37,14 @@ export type ExploreGroupsQueryData = {
 const EXPLORE_GROUPS_PAGE_SIZE = "24";
 
 export const exploreQueries = {
-  feed(filters: ExploreFilters, searchQuery: string) {
+  feed(filters: ExploreFilters, searchQuery: string, projectionScope: string) {
     return infiniteQueryOptions({
-      queryKey: APP_QUERY_KEYS.explore.feedWithFilters(searchQuery, filters),
+      queryKey: APP_QUERY_KEYS.explore.feedWithFilters(
+        authSession.getCacheScope(),
+        projectionScope,
+        searchQuery,
+        filters,
+      ),
       initialPageParam: 1,
       queryFn: async ({ pageParam }): Promise<ExploreFeedQueryData> => {
         const searchParams = buildExploreSearchParams(
@@ -43,7 +52,9 @@ export const exploreQueries = {
           searchQuery,
           pageParam,
         );
-        const response = await ExploreApi.getFeed(searchParams);
+        const response = await getProjectionSensitiveResponse(() =>
+          ExploreApi.getFeed(searchParams),
+        );
 
         return {
           items: response.items,
@@ -52,6 +63,7 @@ export const exploreQueries = {
         };
       },
       getNextPageParam: getNextExplorePage,
+      gcTime: 0,
       placeholderData: keepPreviousData,
       refetchInterval: (query) =>
         query.state.data?.pages.some((page) =>
@@ -59,13 +71,24 @@ export const exploreQueries = {
         )
           ? 15_000
           : false,
-      staleTime: 60_000,
+      refetchOnMount: "always",
+      refetchOnWindowFocus: true,
+      staleTime: 0,
     });
   },
 
-  groups(filters: ExploreFilters, searchQuery: string) {
+  groups(
+    filters: ExploreFilters,
+    searchQuery: string,
+    projectionScope: string,
+  ) {
     return infiniteQueryOptions({
-      queryKey: APP_QUERY_KEYS.explore.groupsWithFilters(searchQuery, filters),
+      queryKey: APP_QUERY_KEYS.explore.groupsWithFilters(
+        authSession.getCacheScope(),
+        projectionScope,
+        searchQuery,
+        filters,
+      ),
       initialPageParam: 1,
       queryFn: async ({ pageParam }): Promise<ExploreGroupsQueryData> => {
         const searchParams = buildExploreSearchParams(
@@ -73,7 +96,9 @@ export const exploreQueries = {
           searchQuery,
           pageParam,
         );
-        const response = await ExploreApi.getGroups(searchParams);
+        const response = await getProjectionSensitiveResponse(() =>
+          ExploreApi.getGroups(searchParams),
+        );
 
         return {
           groups: response.items,
@@ -82,11 +107,26 @@ export const exploreQueries = {
         };
       },
       getNextPageParam: getNextExplorePage,
+      gcTime: 0,
       placeholderData: keepPreviousData,
-      staleTime: 60_000,
+      refetchOnMount: "always",
+      refetchOnWindowFocus: true,
+      staleTime: 0,
     });
   },
 };
+
+async function getProjectionSensitiveResponse<T>(request: () => Promise<T>) {
+  try {
+    return await request();
+  } catch (error) {
+    const status = getHttpErrorStatus(error);
+    if (status === 401 || status === 403) {
+      clearProjectionSensitiveCaches({ preserveExploreQueries: true });
+    }
+    throw error;
+  }
+}
 
 function buildExploreSearchParams(
   filters: ExploreFilters,

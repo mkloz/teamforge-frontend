@@ -16,6 +16,10 @@ export type UserRole = z.infer<typeof userRoleSchema>;
 
 const fullUserResponseInputSchema = z.object({
   ...userCoreFields,
+  onboardingIntent: z
+    .enum(["BRING_A_PLAN", "EXPLORE_AND_JOIN", "BOTH_OR_UNSURE"])
+    .nullable()
+    .optional(),
   role: userRoleSchema,
   trustScore: userCoreFields.trustScore.default(0),
   profileComplete: userCoreFields.profileComplete.default(false),
@@ -27,6 +31,7 @@ export const fullUserResponseSchema = fullUserResponseInputSchema.transform(
   (user) => ({
     ...userSchema.parse(user),
     adultEligibility: user.adultEligibility,
+    onboardingIntent: user.onboardingIntent,
     role: user.role,
   }),
 );

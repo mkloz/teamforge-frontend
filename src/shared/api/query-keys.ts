@@ -32,15 +32,51 @@ export const APP_QUERY_KEYS = {
   },
   explore: {
     feed: ["explore-feed"] as const,
-    feedWithFilters: (searchQuery: string, filters: unknown) =>
-      ["explore-feed", searchQuery, filters] as const,
+    feedWithFilters: (
+      sessionScope: string,
+      projectionScope: string,
+      searchQuery: string,
+      filters: unknown,
+    ) =>
+      [
+        "explore-feed",
+        sessionScope,
+        projectionScope,
+        searchQuery,
+        filters,
+      ] as const,
     groups: ["explore-groups"] as const,
-    groupsWithFilters: (searchQuery: string, filters: unknown) =>
-      ["explore-groups", searchQuery, filters] as const,
+    groupsWithFilters: (
+      sessionScope: string,
+      projectionScope: string,
+      searchQuery: string,
+      filters: unknown,
+    ) =>
+      [
+        "explore-groups",
+        sessionScope,
+        projectionScope,
+        searchQuery,
+        filters,
+      ] as const,
   },
   groupPlanDetail: {
     all: ["group-plan-detail"] as const,
     byId: (groupId: string) => ["group-plan-detail", groupId] as const,
+    detailAllScopes: (groupId: string) =>
+      ["group-plan-detail", groupId, "detail"] as const,
+    detail: (
+      groupId: string,
+      sessionScope: string,
+      authorizationScope: string,
+    ) =>
+      [
+        "group-plan-detail",
+        groupId,
+        "detail",
+        sessionScope,
+        authorizationScope,
+      ] as const,
     inviteSuggestions: (groupId: string, planId: string) =>
       ["group-plan-detail", groupId, "invite-suggestions", planId] as const,
     commitmentReadiness: (planId: string) =>
@@ -71,6 +107,8 @@ export const APP_QUERY_KEYS = {
     invitations: ["home", "invitations"] as const,
     sentInvitations: ["home", "sent-invitations"] as const,
     recommendations: ["home", "recommendations"] as const,
+    recommendationsForScope: (sessionScope: string, projectionScope: string) =>
+      ["home", "recommendations", sessionScope, projectionScope] as const,
     plans: ["home", "plans"] as const,
     stats: ["home", "stats"] as const,
   },
@@ -116,6 +154,9 @@ export const APP_QUERY_KEYS = {
   },
   onboarding: {
     interestTree: ["onboarding", "interests", "tree"] as const,
+    productState: ["onboarding", "product-state"] as const,
+    productStateForSession: (sessionScope: string) =>
+      ["onboarding", "product-state", sessionScope] as const,
   },
   profile: {
     activityHistory: ["profile", "activity-history", "me"] as const,

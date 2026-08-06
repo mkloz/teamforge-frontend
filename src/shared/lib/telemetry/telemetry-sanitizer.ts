@@ -40,6 +40,7 @@ const SENSITIVE_KEY_EXCEPTIONS = new Set([
 const SENSITIVE_AUTH_ROUTE_PATTERNS = [
   /\/auth\/reset-password\/[^/?#]+/giu,
   /\/auth\/activate\/[^/?#]+/giu,
+  /\/invite\/[^/?#]+/giu,
 ];
 const EMAIL_PATTERN = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/giu;
 const TOKEN_LIKE_PATTERN = /\b(?:eyJ[A-Za-z0-9_-]{12,}|[A-Za-z0-9_-]{32,})\b/gu;

@@ -19,6 +19,12 @@ async function invalidateGroupPlanDetail(groupId: string) {
   });
 }
 
+function removeGroupPlanDetail(groupId: string) {
+  appQueryClient.removeQueries({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.detailAllScopes(groupId),
+  });
+}
+
 async function invalidateSeatRecovery(planId: string) {
   await Promise.all([
     appQueryClient.invalidateQueries({
@@ -249,8 +255,9 @@ export const GroupPlanDetailCommands = {
   async declineInvite(groupId: string, inviteId: string) {
     const result = await GroupPlanDetailApi.declineInvite(inviteId);
 
+    removeGroupPlanDetail(groupId);
+
     await Promise.all([
-      invalidateGroupPlanDetail(groupId),
       invalidateInvitationSurfaces(),
       invalidateNotificationSurfaces(),
     ]);
@@ -323,8 +330,9 @@ export const GroupPlanDetailCommands = {
   async leaveGroup(groupId: string) {
     const result = await GroupPlanDetailApi.leaveGroup(groupId);
 
+    removeGroupPlanDetail(groupId);
+
     await Promise.all([
-      invalidateGroupPlanDetail(groupId),
       invalidateGroupMembershipSurfaces(),
       invalidateNotificationSurfaces(),
     ]);

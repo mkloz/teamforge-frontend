@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { preloadGoogleAccountConnection } from "@/features/auth/public/google-account-link";
 import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { settingsQueries } from "@/features/settings/api/settings-queries";
@@ -13,6 +14,10 @@ import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { AuthSession } from "@/shared/schemas";
+
+function preloadGoogleConnection() {
+  void preloadGoogleAccountConnection().catch(() => undefined);
+}
 
 export function useSettingsSecurityActions({
   currentUser,
@@ -36,12 +41,30 @@ export function useSettingsSecurityActions({
   });
 
   const {
+    connectGoogleMutation,
     passwordResetMutation,
     revokeOtherSessionsMutation,
     revokeSessionMutation,
   } = useSettingsSecurityMutations({
     setSecurityError,
   });
+
+  function connectGoogle() {
+    if (
+      guardOfflineAction({
+        id: "settings-connect-google-offline",
+        description: "Reconnect before connecting Google sign-in.",
+      })
+    ) {
+      setSecurityError(
+        "You are offline. Reconnect before connecting Google sign-in.",
+      );
+      return;
+    }
+
+    setSecurityError(null);
+    connectGoogleMutation.mutate();
+  }
 
   async function sendPasswordResetLink() {
     if (!currentUser?.email) {
@@ -138,6 +161,9 @@ export function useSettingsSecurityActions({
   }
 
   return {
+    connectGoogle,
+    isConnectingGoogle: connectGoogleMutation.isPending,
+    preloadGoogleConnection,
     securityError,
     sendPasswordResetLink,
     isSendingPasswordResetLink: passwordResetMutation.isPending,

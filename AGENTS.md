@@ -127,6 +127,8 @@ Use the narrowest command that matches the change:
 - `npm run audit:release` / `audit:nightly` — browser quality audits.
 - `node scripts/research/firecrawl-local.mjs <command>` — fail-closed local
   Firecrawl CLI.
+- `npx impeccable update` — refresh the project-local unified Impeccable v4
+  skill and its Codex design hook.
 
 Do not add tests mechanically. Add or update them for risky behavior,
 regressions, contracts, state machines, and logic that is cheaper to prove than
@@ -151,13 +153,15 @@ smallest set that matches the task; do not load the catalog as a checklist.
 `AGENTS.md`, TeamForge rules, current code, and generated contracts override
 generic advice in a skill.
 
-- Default product UI implementation: `frontend-product-ui-engineer`. Add at
-  most one focused visual skill—`adapt`, `layout`, `typeset`, `clarify`,
-  `polish`, or `critique`—for the specific problem being solved.
-- New visual direction: `frontend-design`. Use `accessibility-a11y` for a11y
-  review and `ui-animation` for purposeful motion. Treat `ui-ux-pro-max` and
+- Default product UI implementation: `frontend-product-ui-engineer`. Add
+  `impeccable` only when the task explicitly calls for design exploration, a
+  redesign, or a focused visual or copy review; follow its routed v4 workflow
+  instead of loading standalone micro-skills.
+- New visual direction: `impeccable`. Use `accessibility-a11y` for a11y review
+  and `ui-animation` for purposeful motion. Treat `ui-ux-pro-max` and
   `web-design-guidelines` as secondary references, not competing design systems.
-- Product copy: `clarify` for comprehension and `humanizer` for final tone.
+- Product copy: use the `impeccable` clarify workflow for comprehension and
+  `humanizer` for final tone.
 - Cinematic marketing or intentionally motion-led experiments: `gpt-taste`.
   Use it only when that direction is explicitly requested; experimental
   composition and motion never override TeamForge's product UI, performance
@@ -179,5 +183,6 @@ with the TeamForge skill and add a specialist only when it contributes a
 distinct workflow.
 
 Do not restore the intentionally excluded generic orchestration, duplicate
-global tooling, Impeccable micro-skills, or generic debugging/refactoring
-packs without a concrete repository need.
+global tooling, retired Impeccable v3 micro-skills, or generic
+debugging/refactoring packs without a concrete repository need.
+Impeccable v4 is managed by its own installer, not `skills-lock.json`.

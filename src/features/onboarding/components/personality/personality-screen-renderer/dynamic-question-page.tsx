@@ -10,6 +10,7 @@ import type {
   DynamicResponseValue,
 } from "@/features/onboarding/lib/dynamic-personality-engine";
 import { Button } from "@/shared/components/ui/button";
+import { Progress } from "@/shared/components/ui/progress";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { LikertScale } from "./question-page/likert-scale";
@@ -61,21 +62,15 @@ export function DynamicQuestionPage({
               Flexible length
             </StatusPill>
           </div>
-          <div
-            className="h-1.5 overflow-hidden rounded-full bg-muted"
+          <Progress
+            className="h-1.5 bg-muted"
+            indicatorClassName="bg-forge-teal"
             aria-label={`Page ${pageNumber} of up to ${maximumPages}`}
-            role="progressbar"
             aria-valuemin={1}
             aria-valuemax={maximumPages}
             aria-valuenow={pageNumber}
-          >
-            <div
-              className={cn(
-                "h-full rounded-full bg-forge-teal transition-[width] duration-300 motion-reduce:transition-none",
-                getProgressWidthClass(pageNumber, maximumPages),
-              )}
-            />
-          </div>
+            value={(pageNumber / maximumPages) * 100}
+          />
         </div>
       </div>
 
@@ -152,23 +147,4 @@ export function DynamicQuestionPage({
       </div>
     </div>
   );
-}
-
-function getProgressWidthClass(pageNumber: number, maximumPages: number) {
-  const percentage = Math.round((pageNumber / maximumPages) * 10) * 10;
-
-  const classes: Record<number, string> = {
-    10: "w-[10%]",
-    20: "w-1/5",
-    30: "w-[30%]",
-    40: "w-2/5",
-    50: "w-1/2",
-    60: "w-3/5",
-    70: "w-[70%]",
-    80: "w-4/5",
-    90: "w-[90%]",
-    100: "w-full",
-  };
-
-  return classes[percentage] ?? "w-0";
 }

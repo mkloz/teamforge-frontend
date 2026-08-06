@@ -8,6 +8,8 @@ const adminCapabilitiesSchema = z.object({
   reverseActions: z.boolean(),
   manageWorkers: z.boolean(),
   manageConfiguration: z.boolean(),
+  viewAuditLog: z.boolean(),
+  viewQueueHealth: z.boolean(),
 });
 
 export const adminSessionSchema = z.object({

@@ -14,7 +14,12 @@ import { PersonalityResultSummary } from "./personality-result-summary";
 import { PersonalityTraitMap } from "./personality-trait-map";
 import { SectionHeading } from "./section-heading";
 
-type ResultAction = "publish" | "discard" | "delete-all" | "retake";
+type ResultAction =
+  | "publish"
+  | "keep-private"
+  | "discard"
+  | "delete-all"
+  | "retake";
 
 interface PersonalityResultsProps {
   activeResultAction: ResultAction | null;
@@ -29,6 +34,7 @@ interface PersonalityResultsProps {
     status: CompatibilityInputLockStatus;
   };
   isOnline: boolean;
+  isAcceptedPrivately: boolean;
   isSaved: boolean;
   isLegacyResult: boolean;
   isCompatibilityEligible: boolean;
@@ -36,6 +42,7 @@ interface PersonalityResultsProps {
   onContinue: () => void;
   onDiscard: () => void;
   onDeleteAll: () => void;
+  onKeepPrivate: () => void;
   onSave: () => void;
   onRetake: () => void;
   onRetryState: () => void;
@@ -51,6 +58,7 @@ export function PersonalityResults({
   hasDraft,
   inputLock,
   isOnline,
+  isAcceptedPrivately,
   isSaved,
   isLegacyResult,
   isCompatibilityEligible,
@@ -58,6 +66,7 @@ export function PersonalityResults({
   onContinue,
   onDiscard,
   onDeleteAll,
+  onKeepPrivate,
   onSave,
   onRetake,
   onRetryState,
@@ -133,11 +142,11 @@ export function PersonalityResults({
       </section>
 
       <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
-        <SectionHeading title="A portrait people can understand" />
+        <SectionHeading title="Choose who can see this" />
         <p className="text-pretty text-ink/82 text-sm leading-relaxed">
           {isCompatibilityEligible
-            ? "Save this result to add the portrait to your profile. Other signed-in TeamForge users can see it, and TeamForge can use it when forming groups."
-            : "Save this result to add the portrait to your profile. Other signed-in TeamForge users can see it, but TeamForge does not use this result when forming groups yet."}
+            ? "Use the result privately for matching, or also add the portrait to your profile for other signed-in members to see."
+            : "Keep the result private, or add the portrait to your profile. This assessment version is not currently used for matching."}
         </p>
         <p className="text-pretty text-muted-foreground text-xs leading-relaxed">
           Your answers were used for this assessment and are not saved.
@@ -169,6 +178,7 @@ export function PersonalityResults({
         retakeBlocked={inputLock.isBlocked}
         retakeBlockedReason={inputLock.message}
         isOnline={isOnline}
+        isAcceptedPrivately={isAcceptedPrivately}
         isSaved={isSaved}
         isLegacyResult={isLegacyResult}
         publishBlocked={inputLock.isBlocked}
@@ -176,6 +186,7 @@ export function PersonalityResults({
         onContinue={onContinue}
         onDiscard={onDiscard}
         onDeleteAll={onDeleteAll}
+        onKeepPrivate={onKeepPrivate}
         onSave={onSave}
         onRetake={onRetake}
       />

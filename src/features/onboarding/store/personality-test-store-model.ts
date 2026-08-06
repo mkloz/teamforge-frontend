@@ -7,11 +7,12 @@ import type { PersonalityTestSnapshot } from "./personality-test-store.types";
 
 export const PERSONALITY_TEST_DEFAULT_STATE: PersonalityTestSnapshot = {
   screen: { id: "intro" },
-  testLength: 50,
+  testLength: 30,
   questionIds: [],
   answers: {},
   previousScreen: null,
   isReviewMode: false,
+  recoveryScreen: null,
 };
 
 const QUESTION_BY_ID = new Map(
