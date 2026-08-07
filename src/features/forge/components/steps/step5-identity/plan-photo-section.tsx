@@ -106,7 +106,7 @@ function getPresetGradient(
 
 function getCoverChoiceButtonClassName(selected: boolean) {
   return cn(
-    "group relative aspect-4/3 h-auto w-20 shrink-0 overflow-hidden rounded-xl border-2 bg-card p-0 shadow-none transition-all duration-200 active:scale-95 sm:w-22",
+    "group relative aspect-4/3 h-auto w-20 shrink-0 overflow-hidden rounded-xl border-2 bg-card p-0 shadow-none transition-[background-color,border-color,box-shadow,color,transform] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 motion-reduce:transition-none sm:w-22",
     selected
       ? "border-forge-teal ring-2 ring-forge-teal/15"
       : "border-transparent hover:border-forge-teal/45",

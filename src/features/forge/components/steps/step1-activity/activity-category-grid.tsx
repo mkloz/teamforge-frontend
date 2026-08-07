@@ -179,7 +179,7 @@ function getActivityButtonClassName({
   selected,
 }: ReturnType<typeof getActivityCategoryTileState>) {
   return cn(
-    "group relative flex min-h-20 min-w-0 flex-col gap-2 overflow-hidden whitespace-normal rounded-lg border px-3 py-2.5 text-left transition duration-200 active:scale-95",
+    "group relative flex min-h-20 min-w-0 flex-col gap-2 overflow-hidden whitespace-normal rounded-lg border px-3 py-2.5 text-left transition-[background-color,border-color,box-shadow,color,transform] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 motion-reduce:transition-none",
     selected
       ? "border-spark-amber/65 bg-spark-amber/10 shadow-sm ring-1 ring-spark-amber/20"
       : personalised

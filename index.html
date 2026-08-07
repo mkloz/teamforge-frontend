@@ -11,34 +11,22 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#0D9488" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#090909" media="(prefers-color-scheme: dark)" />
-    <script>
-      (() => {
-        window.__TEAMFORGE_BOOT_STARTED_AT = performance.now();
-
-        const root = document.documentElement;
-        const prefersLight = window.matchMedia?.("(prefers-color-scheme: light)").matches ?? false;
-        const theme = prefersLight ? "light" : "dark";
-
-        root.dataset.theme = theme;
-        root.classList.add(theme);
-      })();
-    </script>
+    <meta name="theme-color" content="#000000" />
+    <script src="/theme-boot.js"></script>
     <style>
       :root {
         color-scheme: dark;
-        --tf-boot-background: #0b0f0e;
-        --tf-boot-foreground: #f2f5f1;
-        --tf-boot-canvas: #111716;
+        --tf-boot-background: #000000;
+        --tf-boot-foreground: #ffffff;
+        --tf-boot-canvas: #080808;
         --color-forge-teal: #0d9488;
         --color-spark-amber: #fbbf24;
       }
       :root.light {
         color-scheme: light;
-        --tf-boot-background: #f1f4f1;
-        --tf-boot-foreground: #1c1f1d;
-        --tf-boot-canvas: #f7f8f4;
+        --tf-boot-background: #f5f5f3;
+        --tf-boot-foreground: #171717;
+        --tf-boot-canvas: #ffffff;
         --color-spark-amber: #f59e0b;
       }
       *,
@@ -83,9 +71,7 @@
         }
       }
       .tf-boot {
-        background:
-          radial-gradient(circle at 50% 44%, color-mix(in srgb, var(--color-forge-teal) 10%, transparent), transparent 28%),
-          var(--tf-boot-canvas);
+        background: var(--tf-boot-canvas);
         align-items: center;
         justify-content: center;
         min-height: 100dvh;

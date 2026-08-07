@@ -113,7 +113,7 @@ function Slider({
             thumbCount: thumbKeys.length,
           })}
           data-slot="slider-thumb"
-          className="block size-5 shrink-0 cursor-grab rounded-full border border-primary bg-background shadow-sm ring-ring/50 transition-all hover:ring-4 focus-visible:outline-none focus-visible:ring-4 active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50"
+          className="block size-5 shrink-0 cursor-grab rounded-full border-2 border-primary bg-background outline-none transition-[background-color,border-color,box-shadow] duration-150 hover:bg-primary/10 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background active:cursor-grabbing active:bg-primary/16 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
         />
       ))}
     </SliderPrimitive.Root>

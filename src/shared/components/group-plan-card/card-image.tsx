@@ -45,7 +45,7 @@ export function CardImage({
         loading={viewState.loading}
         showLoadingState={!viewState.isPriority}
         wrapperClassName="absolute inset-0"
-        className="transition-transform duration-700 ease-out will-change-transform group-hover:scale-105"
+        className="transition-transform duration-700 ease-out will-change-transform group-hover:scale-105 motion-reduce:transition-none"
         noImageComponent={<NoImagePlaceholder />}
         fallbackComponent={<NoImagePlaceholder />}
       />
@@ -109,7 +109,7 @@ function getCardImageWrapperClassName(isCompact: boolean) {
 
 function NoImagePlaceholder() {
   return (
-    <div className="relative size-full overflow-hidden bg-canvas transition-transform duration-700 ease-out will-change-transform group-hover:scale-105">
+    <div className="relative size-full overflow-hidden bg-canvas transition-transform duration-700 ease-out will-change-transform group-hover:scale-105 motion-reduce:transition-none">
       <span className="sr-only">Opening without artwork</span>
       <div
         className="absolute inset-0 bg-[radial-gradient(circle_at_28%_24%,color-mix(in_srgb,var(--color-forge-teal)_16%,transparent),transparent_34%),radial-gradient(circle_at_72%_76%,color-mix(in_srgb,var(--color-spark-amber)_13%,transparent),transparent_32%)]"

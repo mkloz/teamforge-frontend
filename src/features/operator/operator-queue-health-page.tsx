@@ -74,7 +74,9 @@ export function OperatorQueueHealthPage() {
     <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)] content-start gap-8 px-4 py-6 md:px-8 md:py-10">
       <header className="sm:main-action-grid grid items-end gap-x-5 gap-y-2">
         <div className="grid gap-1">
-          <p className="font-semibold text-primary text-xs">Operations</p>
+          <p className="font-semibold text-muted-foreground text-xs">
+            Operations
+          </p>
           <h1 className="font-extrabold text-3xl text-ink">Queue health</h1>
           <p className="max-w-2xl text-pretty text-slate-muted text-sm leading-relaxed">
             Identify overdue work, missing decision targets, and queues that

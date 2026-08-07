@@ -52,7 +52,7 @@ const TOASTER_PROPS = {
   toastOptions: {
     classNames: {
       actionButton:
-        "col-start-2! mt-0.5! flex! h-9! w-full! justify-self-stretch! items-center! justify-center! gap-2! rounded-md! border-2! border-primary! bg-primary! px-4! font-bold! text-primary-foreground! text-sm! leading-none! shadow-button-primary! transition-all! duration-150! ease-out! hover:-translate-y-0.5! hover:shadow-button-primary! focus-visible:ring-2! focus-visible:ring-primary! focus-visible:ring-offset-2! focus-visible:ring-offset-card! active:translate-y-0! active:shadow-none! sm:w-fit! sm:justify-self-end!",
+        "col-start-2! mt-0.5! flex! h-9! w-full! justify-self-stretch! items-center! justify-center! gap-2! rounded-md! border-2! border-primary! bg-primary! px-4! font-bold! text-primary-foreground! text-sm! leading-none! shadow-button-primary! transition-all! duration-150! ease-out! hover:-translate-y-0.5! hover:shadow-button-primary! focus-visible:outline-none! focus-visible:ring-1! focus-visible:ring-primary! focus-visible:ring-offset-2! focus-visible:ring-offset-card! active:translate-y-0! active:shadow-none! sm:w-fit! sm:justify-self-end!",
       closeButton:
         "border-current bg-card font-bold text-current transition-colors hover:bg-background",
       content: "min-w-0 gap-1 pr-2",
@@ -60,7 +60,7 @@ const TOASTER_PROPS = {
       icon: "mt-0.5",
       title: "text-pretty font-black text-sm leading-5",
       toast:
-        "grid! grid-cols-[auto_minmax(0,1fr)]! items-start! gap-x-3! gap-y-3! rounded-lg! border! p-4! shadow-2xl! shadow-black/12!",
+        "grid! grid-cols-[auto_minmax(0,1fr)]! items-start! gap-x-3! gap-y-3! rounded-lg! border! p-4! shadow-soft-sm!",
     },
   },
 } satisfies ToasterProps;

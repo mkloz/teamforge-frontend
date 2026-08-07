@@ -102,7 +102,7 @@ function SelectionShelfHeader({
             shape="square"
             iconClassName="size-3"
           />
-          <p className="font-bold font-sans text-forge-teal text-xs">
+          <p className="font-bold font-sans text-muted-foreground text-xs">
             Related to your picks ({suggestionCount})
           </p>
         </>

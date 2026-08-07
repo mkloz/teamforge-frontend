@@ -151,7 +151,14 @@ export function populateStandardWorld(world: ScenarioWorld) {
   }
 
   world.entities.interests = scenarioInterestLeavesById;
-  quinn.interests = Object.values(scenarioInterestCatalog);
+  const coreInterests = Object.values(scenarioInterestCatalog);
+  const coreInterestIds = new Set(coreInterests.map((interest) => interest.id));
+  quinn.interests = [
+    ...coreInterests,
+    ...Object.values(scenarioInterestLeavesById).filter(
+      (interest) => !coreInterestIds.has(interest.id),
+    ),
+  ].slice(0, 10);
 
   world.entities.activities = {
     "scenario-activity-basketball": {

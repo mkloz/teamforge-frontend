@@ -22,7 +22,9 @@ export function AdminPageShell({
       <header className="main-action-grid grid items-end gap-x-6 gap-y-2">
         <div className="grid max-w-3xl gap-2">
           {eyebrow ? (
-            <p className="font-semibold text-primary text-xs">{eyebrow}</p>
+            <p className="font-semibold text-muted-foreground text-xs">
+              {eyebrow}
+            </p>
           ) : null}
           <h1 className="text-balance font-extrabold text-3xl text-ink leading-tight">
             {title}

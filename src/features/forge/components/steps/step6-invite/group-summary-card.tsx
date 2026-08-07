@@ -54,7 +54,7 @@ export function GroupSummaryCard(props: GroupSummaryCardProps) {
             className="size-14 rounded-xl border-4 border-canvas bg-muted shadow-sm"
             fallbackClassName="font-black text-sm"
           />
-          <p className="mb-1 truncate font-semibold text-forge-teal text-xs">
+          <p className="mb-1 truncate font-semibold text-muted-foreground text-xs">
             {summary.displayPlanTitle}
           </p>
         </div>

@@ -14,7 +14,7 @@ export function PwaDiagnosticsHeader({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p className="mb-2 font-semibold text-forge-teal text-xs">
+        <p className="mb-2 font-semibold text-muted-foreground text-xs">
           Device readiness
         </p>
         <div className="flex items-center justify-between gap-4">

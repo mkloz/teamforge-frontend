@@ -1,17 +1,5 @@
 :root[data-theme-style="ink"] {
   --radius: 0.5rem;
-  --card: color-mix(in srgb, var(--canvas) 72%, var(--foreground) 7%);
-  --popover: color-mix(in srgb, var(--canvas) 76%, var(--foreground) 8%);
-  --input: color-mix(in srgb, var(--canvas) 62%, var(--foreground) 13%);
-  --muted: color-mix(in srgb, var(--canvas) 70%, var(--foreground) 10%);
-  --border: color-mix(in srgb, var(--foreground) 24%, transparent);
-  --secondary: color-mix(in srgb, var(--primary) 18%, var(--canvas) 14%);
-  --sidebar: color-mix(in srgb, var(--canvas) 70%, var(--foreground) 8%);
-  --sidebar-accent: color-mix(in srgb, var(--primary) 18%, var(--canvas) 14%);
-  --sidebar-border: color-mix(in srgb, var(--foreground) 22%, transparent);
-  --shadow-button-primary: 0 3px 0
-    color-mix(in srgb, var(--primary) 55%, var(--button-shadow-base));
-  --shadow-button-secondary: 0 3px 0
-    color-mix(in srgb, var(--accent) 55%, var(--button-shadow-base));
-  --shadow-button-outline: 0 3px 0 var(--foreground);
+  --control-height: 2.5rem;
+  --density-space: 0.75rem;
 }

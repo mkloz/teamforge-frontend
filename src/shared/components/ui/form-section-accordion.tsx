@@ -35,7 +35,7 @@ export function FormSectionAccordionItem({
         className,
       )}
     >
-      <AccordionTrigger className="group items-center px-4 py-3.5 hover:no-underline focus-visible:border-transparent focus-visible:bg-foreground/[0.035] focus-visible:ring-forge-teal/50 focus-visible:ring-inset">
+      <AccordionTrigger className="group items-center px-4 py-3.5 hover:no-underline focus-visible:border-transparent focus-visible:ring-foreground focus-visible:ring-inset">
         <span className="flex min-w-0 items-center gap-3">
           <Icon
             className="size-4 shrink-0"

@@ -142,7 +142,7 @@ export function ExternalInvitePage() {
         </aside>
 
         <section className="flex min-w-0 flex-col justify-center p-5 sm:p-8 lg:p-10">
-          <p className="font-semibold text-forge-teal text-sm">
+          <p className="font-semibold text-muted-foreground text-sm">
             Private plan invitation
           </p>
           <h1 className="mt-2 text-balance font-extrabold text-3xl text-ink tracking-tight sm:text-4xl">

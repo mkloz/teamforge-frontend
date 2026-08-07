@@ -1,9 +1,52 @@
 :root.dark {
-  --card: #131615;
-  --card-foreground: var(--foreground);
-  --popover: var(--card);
-  --popover-foreground: var(--foreground);
-  --input: #171b1a;
-  --input-border: color-mix(in srgb, var(--foreground) 7%, transparent);
-  --grouped-menu-selected: #0e1918;
+  --surface-raised: var(--card);
+  --surface-inset: color-mix(
+    in srgb,
+    var(--background) 82%,
+    var(--foreground) 5%
+  );
+  --surface-selected: color-mix(in srgb, var(--primary) 15%, var(--card));
+  --surface-interactive: color-mix(
+    in srgb,
+    var(--card) 90%,
+    var(--primary) 10%
+  );
+  --text-secondary: var(--muted-foreground);
+  --text-disabled: color-mix(
+    in srgb,
+    var(--muted-foreground) 54%,
+    var(--background)
+  );
+  --divider: color-mix(in srgb, var(--foreground) 11%, transparent);
+  --focus: var(--foreground);
+  --grouped-menu-selected: var(--surface-selected);
+  --button-shadow-base: color-mix(
+    in srgb,
+    var(--background) 88%,
+    var(--foreground)
+  );
+  --button-shadow-inverse: color-mix(
+    in srgb,
+    var(--foreground) 88%,
+    var(--background)
+  );
+  --elevation-soft-sm:
+    inset 0 1px 0 rgb(255 255 255 / 0.035), 0 3px 8px rgb(0 0 0 / 0.24);
+  --elevation-soft-md:
+    inset 0 1px 0 rgb(255 255 255 / 0.045), 0 10px 28px rgb(0 0 0 / 0.3),
+    0 2px 6px rgb(0 0 0 / 0.22);
+  --elevation-soft-lg:
+    inset 0 1px 0 rgb(255 255 255 / 0.055), 0 22px 56px rgb(0 0 0 / 0.38),
+    0 5px 14px rgb(0 0 0 / 0.22);
+  --success: #62c29b;
+  --success-foreground: #07150f;
+  --warning: #efbd63;
+  --warning-foreground: #1d1405;
+  --warning-text: #f2c673;
+  --error: #ef8d91;
+  --error-foreground: #1c090a;
+  --info: #79b9df;
+  --info-foreground: #06141d;
+  --illustration-background: #000000;
+  --illustration-border: color-mix(in srgb, var(--foreground) 17%, transparent);
 }

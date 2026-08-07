@@ -32,9 +32,9 @@ export function InsightSection({
 
       <m.div
         variants={fadeUpItem}
-        className="mx-auto w-full max-w-xl border-forge-teal/25 border-l-2 py-1 pl-4 text-left sm:pl-6"
+        className="mx-auto w-full max-w-xl border-border border-l-2 py-1 pl-4 text-left sm:pl-6"
       >
-        <span className="mb-2 block font-bold font-sans text-forge-teal text-xs">
+        <span className="mb-2 block font-bold font-sans text-muted-foreground text-xs">
           {factTitle}
         </span>
         <p className="font-sans text-muted-foreground text-sm leading-relaxed">

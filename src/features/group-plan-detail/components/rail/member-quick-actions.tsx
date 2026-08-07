@@ -50,7 +50,7 @@ export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
     >
       <h3
         id="member-quick-actions"
-        className="px-1 font-bold text-forge-teal text-xs"
+        className="px-1 font-bold text-muted-foreground text-xs"
       >
         Quick actions
       </h3>

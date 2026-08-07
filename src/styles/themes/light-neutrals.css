@@ -1,35 +1,24 @@
 :root:not(.dark) {
-  --background: color-mix(in srgb, #f1f4f1 96%, var(--primary) 4%);
-  --foreground: color-mix(in srgb, #24302b 94%, var(--primary) 6%);
-  --ink: var(--foreground);
-  --slate-muted: color-mix(in srgb, #52615a 92%, var(--primary) 8%);
-  --canvas: color-mix(in srgb, #f7f9f4 97%, var(--primary) 3%);
-  --card: color-mix(in srgb, #fffefa 98%, var(--primary) 2%);
-  --card-foreground: var(--foreground);
-  --popover: var(--card);
-  --popover-foreground: var(--foreground);
-  --primary-foreground: var(--card);
-  --secondary: color-mix(in srgb, var(--primary) 10%, var(--canvas));
-  --secondary-foreground: color-mix(
+  --surface-raised: var(--card);
+  --surface-inset: color-mix(
     in srgb,
-    var(--primary) 82%,
-    var(--foreground)
+    var(--background) 86%,
+    var(--foreground) 4%
   );
-  --muted: color-mix(in srgb, var(--canvas) 88%, var(--foreground) 12%);
-  --muted-foreground: var(--slate-muted);
-  --border: color-mix(in srgb, var(--foreground) 16%, transparent);
-  --input: color-mix(in srgb, var(--canvas) 84%, var(--foreground) 16%);
-  --input-border: color-mix(in srgb, var(--foreground) 12%, transparent);
-  --sidebar: var(--canvas);
-  --sidebar-foreground: var(--foreground);
-  --sidebar-primary-foreground: var(--card);
-  --sidebar-accent: color-mix(in srgb, var(--primary) 10%, var(--canvas));
-  --sidebar-accent-foreground: var(--secondary-foreground);
-  --sidebar-border: color-mix(in srgb, var(--foreground) 14%, transparent);
-  --grouped-menu-selected: color-mix(in srgb, var(--primary) 8%, var(--card));
+  --surface-selected: color-mix(in srgb, var(--primary) 10%, var(--card));
+  --surface-interactive: color-mix(in srgb, var(--card) 92%, var(--primary) 8%);
+  --text-secondary: var(--muted-foreground);
+  --text-disabled: color-mix(
+    in srgb,
+    var(--muted-foreground) 62%,
+    var(--background)
+  );
+  --divider: color-mix(in srgb, var(--foreground) 11%, transparent);
+  --focus: var(--foreground);
+  --grouped-menu-selected: var(--surface-selected);
   --button-shadow-base: color-mix(
     in srgb,
-    var(--foreground) 78%,
+    var(--foreground) 72%,
     var(--background)
   );
   --button-shadow-inverse: color-mix(
@@ -37,6 +26,23 @@
     var(--background) 88%,
     var(--foreground)
   );
-  --shadow-button-outline: 0 4px 0
-    color-mix(in srgb, var(--foreground) 82%, transparent);
+  --elevation-soft-sm:
+    inset 0 1px 0 rgb(255 255 255 / 0.72), 0 2px 6px rgb(35 39 36 / 0.07);
+  --elevation-soft-md:
+    inset 0 1px 0 rgb(255 255 255 / 0.78), 0 8px 24px rgb(35 39 36 / 0.09),
+    0 2px 5px rgb(35 39 36 / 0.05);
+  --elevation-soft-lg:
+    inset 0 1px 0 rgb(255 255 255 / 0.8), 0 18px 48px rgb(35 39 36 / 0.12),
+    0 4px 10px rgb(35 39 36 / 0.05);
+  --success: #24745c;
+  --success-foreground: #ffffff;
+  --warning: #9a6400;
+  --warning-foreground: #211609;
+  --warning-text: #704700;
+  --error: #b43f45;
+  --error-foreground: #ffffff;
+  --info: #2b6f9f;
+  --info-foreground: #ffffff;
+  --illustration-background: #ffffff;
+  --illustration-border: color-mix(in srgb, var(--foreground) 14%, transparent);
 }

@@ -33,6 +33,7 @@ const smokeScenarioIds = new Set([
   "external-invite",
   "profile-owner",
   "settings-standard",
+  "settings-appearance",
   "settings-notification-timing",
   "safety-active",
   "admin-standard",

@@ -35,7 +35,7 @@ export function CardMemberStack({
           fallback={member.name ? undefined : fallbackInitial}
           imageSize={64}
           className={cn(
-            "border-canvas border-thin bg-canvas transition-transform duration-300 hover:z-20 hover:-translate-y-1",
+            "border-canvas border-thin bg-canvas transition-[border-color,transform] duration-300 hover:z-20 hover:-translate-y-1 hover:border-foreground/35 motion-reduce:transition-none",
             index > 0 && "-ml-2",
             sizeClassName,
           )}
@@ -46,7 +46,7 @@ export function CardMemberStack({
       {shouldShowHiddenCount ? (
         <div
           className={cn(
-            "relative z-10 flex items-center justify-center rounded-full border-canvas border-thin bg-muted font-extrabold text-muted-foreground text-xs transition-transform duration-300 hover:z-20 hover:-translate-y-1",
+            "relative z-10 flex items-center justify-center rounded-full border-canvas border-thin bg-muted font-extrabold text-muted-foreground text-xs transition-[border-color,transform] duration-300 hover:z-20 hover:-translate-y-1 hover:border-foreground/35 motion-reduce:transition-none",
             "-ml-2",
             sizeClassName,
           )}

@@ -9,7 +9,7 @@ export function InstallBenefitsSection() {
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <div className="grid gap-10 lg:grid-cols-5 lg:gap-12">
           <div className="lg:col-span-2">
-            <p className="font-semibold text-forge-teal text-xs dark:text-secondary-foreground">
+            <p className="font-semibold text-muted-foreground text-xs">
               Why install it
             </p>
             <h2

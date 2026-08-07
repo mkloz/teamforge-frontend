@@ -92,7 +92,7 @@ function getSegmentedTabButtonClassName({
   size: SegmentedTabsSize;
 }) {
   return cn(
-    "relative isolate inline-flex min-w-0 items-center justify-center overflow-hidden rounded-full font-bold leading-none outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-1 focus-visible:ring-offset-background motion-reduce:transition-none",
+    "relative isolate inline-flex min-w-0 items-center justify-center overflow-hidden rounded-full font-bold leading-none outline-none transition-colors duration-150 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none",
     SEGMENTED_TAB_SIZE_CLASS_NAMES[size].button,
     fill && "flex-1",
     disabled && "cursor-not-allowed opacity-60",

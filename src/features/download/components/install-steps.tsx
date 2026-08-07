@@ -33,7 +33,7 @@ export function InstallStepsSection({
     >
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <div className="mb-3">
-          <p className="mb-3 font-semibold text-forge-teal text-xs dark:text-secondary-foreground">
+          <p className="mb-3 font-semibold text-muted-foreground text-xs">
             Step-by-step
           </p>
           <h2 className="font-extrabold text-3xl text-ink sm:text-4xl">

@@ -20,16 +20,16 @@ function getLargeActionButtonClassName({
   );
 }
 
-function getActionButtonShadowClassName(isPrimary: boolean) {
-  return isPrimary
-    ? "hover:shadow-button-primary"
-    : "hover:shadow-button-outline-dark";
-}
-
 function getStaticPublicThemeButtonClassName(isPrimary: boolean) {
   return isPrimary
     ? "border-forge-teal bg-forge-teal text-white hover:shadow-button-primary focus-visible:ring-forge-teal"
     : "border-white bg-transparent text-white hover:shadow-button-outline-dark focus-visible:ring-white";
+}
+
+function getActionButtonShadowClassName(isPrimary: boolean) {
+  return isPrimary
+    ? "hover:shadow-button-primary"
+    : "hover:shadow-button-outline-dark";
 }
 
 export function actionButtonClassName({

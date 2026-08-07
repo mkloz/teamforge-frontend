@@ -25,7 +25,7 @@ export function OnboardingPracticePage() {
     <main className="mx-auto flex min-h-[70vh] w-full max-w-3xl items-center px-4 py-12 sm:px-6">
       <section aria-labelledby="guidance-title" className="w-full">
         <Compass className="size-7 text-forge-teal" aria-hidden="true" />
-        <p className="mt-5 font-bold text-forge-teal text-sm">
+        <p className="mt-5 font-bold text-muted-foreground text-sm">
           Navigation tutorial
         </p>
         <h1

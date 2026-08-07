@@ -146,7 +146,7 @@ function CopyInviteLinkButton({
       }}
       disabled={!groupLink}
       className={cn(
-        "h-9 shrink-0 rounded-md px-3 font-bold text-xs transition-colors active:scale-95",
+        "h-9 shrink-0 rounded-md px-3 font-bold text-xs transition-[background-color,color,transform] active:scale-95 motion-reduce:transition-none",
         inviteCopied
           ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal/90"
           : "bg-muted text-foreground hover:bg-forge-teal/10 hover:text-forge-teal",

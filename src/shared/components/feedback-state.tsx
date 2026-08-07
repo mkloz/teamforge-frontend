@@ -41,7 +41,7 @@ export function FeedbackState({
       <section
         aria-labelledby={headingId}
         className={cn(
-          "w-full max-w-md px-6 py-8 text-center sm:px-8",
+          "w-full max-w-md rounded-3xl border border-border/70 bg-card px-6 py-8 text-center shadow-soft-lg sm:px-8",
           className,
         )}
       >
@@ -77,7 +77,7 @@ function FeedbackVisual({
   if (visual) {
     return (
       <div
-        className="mx-auto mb-6 flex max-w-44 justify-center"
+        className="mx-auto mb-6 flex max-w-56 justify-center"
         aria-hidden="true"
       >
         {visual}

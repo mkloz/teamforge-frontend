@@ -42,7 +42,7 @@ export function ForgeSnapshotTitleBlock({
   return (
     <div className="border-border/35 border-y py-5">
       {eyebrow ? (
-        <p className="mb-1.5 font-semibold text-forge-teal text-xs">
+        <p className="mb-1.5 font-semibold text-muted-foreground text-xs">
           {eyebrow}
         </p>
       ) : null}

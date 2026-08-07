@@ -15,7 +15,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
     <PersonalityScreenShell className="max-w-lg">
       <m.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs"
+        className="mb-3 text-center font-bold font-sans text-muted-foreground text-xs"
       >
         How scoring works
       </m.p>

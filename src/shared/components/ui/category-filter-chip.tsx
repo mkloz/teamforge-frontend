@@ -58,7 +58,7 @@ function getChipClassName(
   className?: string,
 ) {
   return cn(
-    "inline-flex h-8 w-auto shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border px-3 font-bold text-xs leading-none transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50",
+    "inline-flex h-8 w-auto shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border px-3 font-bold text-xs leading-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none",
     selected
       ? SELECTED_CHIP_CLASS_NAMES[selectedVariant]
       : RESTING_CHIP_CLASS_NAME,

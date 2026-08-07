@@ -19,7 +19,7 @@ export function MemberMetrics({
   return (
     <div className="mt-1.5 flex min-w-0 items-center gap-1.5">
       {viewState.personalityType ? (
-        <span className="shrink-0 font-semibold text-forge-teal text-xs leading-tight">
+        <span className="shrink-0 font-semibold text-muted-foreground text-xs leading-tight">
           {viewState.personalityType}
         </span>
       ) : null}

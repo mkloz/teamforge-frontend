@@ -158,7 +158,7 @@ function getPreviewFrameClassName(style: ThemeStyleValue) {
   }
 
   if (style === ThemeStyle.GLASS) {
-    return "rounded-2xl border border-border/70 bg-card/45 shadow-xl backdrop-blur-md";
+    return "rounded-xl border border-border bg-background/75";
   }
 
   return style === ThemeStyle.INK
@@ -172,7 +172,7 @@ function getPreviewSurfaceClassName(style: ThemeStyleValue) {
   }
 
   if (style === ThemeStyle.GLASS) {
-    return "rounded-xl border border-border/65 bg-card/65 shadow-lg backdrop-blur-md";
+    return "rounded-lg border border-border bg-card";
   }
 
   return style === ThemeStyle.INK

@@ -106,7 +106,9 @@ export function AdminSectionHeader({
     <header className="main-action-grid grid items-end gap-x-5 gap-y-1.5">
       <div className="grid gap-1">
         {eyebrow ? (
-          <p className="font-semibold text-primary text-xs">{eyebrow}</p>
+          <p className="font-semibold text-muted-foreground text-xs">
+            {eyebrow}
+          </p>
         ) : null}
         <h2
           id={id}

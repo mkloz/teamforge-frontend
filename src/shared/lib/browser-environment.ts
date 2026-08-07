@@ -9,6 +9,10 @@ export {
   isBrowserDocumentVisible,
 } from "@/shared/lib/browser-environment/document";
 export {
+  getBrowserLocalStorageItem,
+  setBrowserLocalStorageItem,
+} from "@/shared/lib/browser-environment/local-storage";
+export {
   getBrowserNavigator,
   getBrowserServiceWorker,
   hasBrowserNavigator,

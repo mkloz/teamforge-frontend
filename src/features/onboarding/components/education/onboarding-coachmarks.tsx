@@ -200,7 +200,10 @@ export function OnboardingCoachmarks({ pathname }: { pathname: string }) {
       >
         <div className="flex items-start gap-3">
           <div className="min-w-0 flex-1">
-            <p className="font-bold text-forge-teal text-xs" aria-live="polite">
+            <p
+              className="font-bold text-muted-foreground text-xs"
+              aria-live="polite"
+            >
               {currentStepIndex + 1} of {steps.length} · {currentStep.pageLabel}
             </p>
             <h2

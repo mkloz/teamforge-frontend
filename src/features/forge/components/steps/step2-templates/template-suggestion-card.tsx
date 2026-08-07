@@ -41,7 +41,7 @@ export function TemplateSuggestionCard({
       aria-pressed={active}
       onClick={handleTemplateSelect}
       className={cn(
-        "group relative size-full min-w-0 overflow-hidden rounded-2xl border bg-muted text-left transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal active:scale-[0.99]",
+        "group relative size-full min-w-0 overflow-hidden rounded-2xl border bg-muted text-left transition-[background-color,border-color,box-shadow,color,transform] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.99] motion-reduce:transition-none",
         getTemplateBorderClassName({
           active,
           isProfilePick,

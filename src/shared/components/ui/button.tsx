@@ -66,17 +66,6 @@ function isButtonUnavailable({
   return Boolean(disabled || loading);
 }
 
-function shouldRenderSweepEffect({
-  disabled,
-  loading,
-  variant,
-}: Pick<ButtonV2Props, "disabled" | "loading" | "variant">) {
-  return (
-    (variant === "primary" || variant === "secondary") &&
-    !isButtonUnavailable({ disabled, loading })
-  );
-}
-
 function getButtonClassName({
   asChild,
   children,
@@ -150,6 +139,8 @@ function Button({
       ref={ref}
       type={type}
       disabled={isUnavailable}
+      data-slot="button"
+      data-size={size ?? "default"}
       data-loading={loading}
       aria-disabled={isUnavailable}
       aria-busy={loading}
@@ -160,14 +151,7 @@ function Button({
         children
       ) : (
         <>
-          {/* Layer 1: Internal sweep effect on solid buttons */}
-          {shouldRenderSweepEffect({ disabled, loading, variant }) ? (
-            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
-              <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-sweep" />
-            </div>
-          ) : null}
-
-          {/* Layer 2: Loading Overlay */}
+          {/* Loading overlay */}
           {loading && (
             <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[inherit]">
               <Spinner
@@ -178,7 +162,7 @@ function Button({
             </div>
           )}
 
-          {/* Layer 3: Content Container - Maintains layout width while loading */}
+          {/* Content container maintains layout width while loading. */}
           <span
             className={getButtonContentClassName({
               contentClassName,

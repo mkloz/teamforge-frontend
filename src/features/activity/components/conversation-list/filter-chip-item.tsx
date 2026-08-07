@@ -30,7 +30,7 @@ export function FilterChipItem({
         "aspect-auto whitespace-nowrap",
         "inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1 border font-bold text-xs leading-none outline-none",
         "transition-all duration-150 ease-out",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "border-border/45 bg-card/35 text-slate-muted hover:-translate-y-1 hover:border-button-primary-border hover:bg-forge-teal-readable hover:text-white hover:shadow-button-primary active:translate-y-0 active:shadow-none",
         isActive &&

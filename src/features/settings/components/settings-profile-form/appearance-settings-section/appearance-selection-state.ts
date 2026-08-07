@@ -2,15 +2,14 @@ import {
   DEFAULT_THEME_APPEARANCE,
   DEFAULT_THEME_COLOR,
   DEFAULT_THEME_STYLE,
+  normalizeThemePreferences,
   type ThemeAppearance as ThemeAppearanceValue,
-  type ThemeColor as ThemeColorValue,
   type ThemeStyle as ThemeStyleValue,
 } from "@/shared/constants/theme-preferences";
 import type { NotificationPreferences } from "@/shared/schemas";
 import {
   APPEARANCE_OPTION_BY_ID,
   APPEARANCE_OPTIONS,
-  COLOR_OPTION_BY_VALUE,
   COLOR_OPTIONS,
   STYLE_OPTION_BY_VALUE,
   STYLE_OPTIONS,
@@ -23,9 +22,8 @@ export function getThemeSelectionState(
   notificationPreferences: NotificationPreferences | null,
   fallback: ThemePreferenceValues,
 ): ThemeSelectionState {
-  const selectedValues = getSelectedThemeValues(
-    notificationPreferences,
-    fallback,
+  const selectedValues = normalizeThemePreferences(
+    getSelectedThemeValues(notificationPreferences, fallback),
   );
 
   return {
@@ -78,8 +76,13 @@ function getSelectedStyleOption(themeStyle: ThemeStyleValue) {
   return STYLE_OPTION_BY_VALUE.get(themeStyle) ?? STYLE_OPTIONS[0];
 }
 
-function getSelectedColorOption(themeColor: ThemeColorValue) {
-  return COLOR_OPTION_BY_VALUE.get(themeColor) ?? COLOR_OPTIONS[0];
+function getSelectedColorOption(
+  themeColor: ReturnType<typeof normalizeThemePreferences>["themeColor"],
+) {
+  return (
+    COLOR_OPTIONS.find((option) => option.value === themeColor) ??
+    COLOR_OPTIONS[0]
+  );
 }
 
 function getIsDefaultTheme({

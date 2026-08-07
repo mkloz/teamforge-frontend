@@ -1,30 +1,30 @@
-import { Brush, Frame, Layers2, PenLine } from "lucide-react";
+import { Blend, FoldHorizontal, Gauge, ScanText } from "lucide-react";
 
 import { ThemeStyle } from "@/shared/constants/theme-preferences";
 
 export const STYLE_OPTIONS = [
   {
     value: ThemeStyle.CLASSIC,
-    label: "Classic",
-    description: "Standard cards and panels.",
-    icon: Layers2,
-  },
-  {
-    value: ThemeStyle.GLASS,
-    label: "Glass",
-    description: "Soft translucent panels.",
-    icon: Brush,
+    label: "Comfortable",
+    description: "44px controls, 12px corners, and full motion.",
+    icon: Blend,
   },
   {
     value: ThemeStyle.INK,
-    label: "Ink",
-    description: "Denser, tighter surfaces.",
-    icon: PenLine,
+    label: "Compact",
+    description: "40px controls and tighter 8px corners.",
+    icon: FoldHorizontal,
   },
   {
     value: ThemeStyle.POSTER,
-    label: "Poster",
-    description: "Bolder graphic borders.",
-    icon: Frame,
+    label: "High contrast",
+    description: "Stronger neutral edges, text, and focus indicators.",
+    icon: ScanText,
+  },
+  {
+    value: ThemeStyle.GLASS,
+    label: "Reduced effects",
+    description: "Removes decorative motion, blur, and elevation.",
+    icon: Gauge,
   },
 ] as const;

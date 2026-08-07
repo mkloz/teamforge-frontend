@@ -12,7 +12,7 @@ export function StartBlankTemplateButton({
     <button
       type="button"
       onClick={onStartBlank}
-      className="flex w-full items-center gap-3 rounded-lg border border-border/50 border-dashed bg-background/40 px-3.5 py-3 text-left transition-colors duration-200 hover:border-forge-teal/30 hover:bg-forge-teal/5 active:scale-95"
+      className="flex w-full items-center gap-3 rounded-lg border border-border/50 border-dashed bg-background/40 px-3.5 py-3 text-left transition-[background-color,border-color,box-shadow,color,transform] duration-150 hover:border-forge-teal/35 hover:bg-forge-teal/5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 motion-reduce:transition-none"
     >
       <IconTile icon={FilePlus2} size="lg" tone="neutral" className="size-9" />
       <div className="min-w-0 flex-1">

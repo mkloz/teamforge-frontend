@@ -45,7 +45,7 @@ export function KeepInMind({
     <PersonalityScreenShell className="max-w-md">
       <m.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs"
+        className="mb-3 text-center font-bold font-sans text-muted-foreground text-xs"
       >
         Before you begin
       </m.p>

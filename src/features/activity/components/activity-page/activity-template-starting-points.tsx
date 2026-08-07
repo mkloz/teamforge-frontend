@@ -43,7 +43,7 @@ export function ActivityTemplateStartingPoints({
       )}
     >
       <div className={cn("w-full", !isSidebar && "mx-auto max-w-2xl")}>
-        <p className="font-semibold text-forge-teal text-xs">
+        <p className="font-semibold text-muted-foreground text-xs">
           Start with a plan
         </p>
         <h2

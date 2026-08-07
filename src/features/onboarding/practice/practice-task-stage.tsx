@@ -112,7 +112,7 @@ function PracticeChoice({
       aria-pressed={selected}
       onClick={() => onChoose(choice.id)}
       className={cn(
-        "group flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 bg-background px-2 py-3 text-center text-muted-foreground transition-[background-color,color,transform] duration-200 hover:bg-foreground/5 hover:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-foreground/35 active:scale-[0.98] sm:min-h-24 sm:px-4",
+        "group flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 bg-background px-2 py-3 text-center text-muted-foreground transition-[background-color,box-shadow,color,transform] duration-150 hover:bg-foreground/5 hover:text-foreground focus-visible:z-10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-inset active:scale-[0.98] motion-reduce:transition-none sm:min-h-24 sm:px-4",
         selected && correct && "bg-forge-teal/12 text-foreground",
         selected && !correct && "bg-destructive/8 text-foreground",
       )}

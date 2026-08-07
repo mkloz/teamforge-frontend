@@ -32,9 +32,9 @@ export function InterestsReview({
         {groups.length > 0 && (
           <m.div
             variants={fadeUpItem}
-            className="mb-7 border-forge-teal/40 border-l pl-4"
+            className="mb-7 border-border border-l pl-4"
           >
-            <p className="font-bold font-sans text-forge-teal text-xs">
+            <p className="font-bold font-sans text-muted-foreground text-xs">
               Interest shape
             </p>
             <p className="mt-2 text-pretty font-medium text-ink/82 text-sm leading-relaxed">

@@ -39,7 +39,7 @@ export function UserMenuProfileSummary() {
               {profileSummary.email}
             </span>
             {profileSummary.context ? (
-              <span className="mt-1 block truncate font-semibold text-forge-teal text-xs">
+              <span className="mt-1 block truncate font-semibold text-muted-foreground text-xs">
                 {profileSummary.context}
               </span>
             ) : null}

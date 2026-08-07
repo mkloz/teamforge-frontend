@@ -4,6 +4,7 @@ import { defineConfig } from "@playwright/test";
 const outputRoot =
   process.env.SCENARIO_SCREENSHOT_OUTPUT ??
   path.join(process.cwd(), "temp", "scenario-screenshots", "smoke");
+const skipWebServer = process.env.SCENARIO_SKIP_WEBSERVER === "1";
 
 export default defineConfig({
   expect: { timeout: 12_000 },
@@ -65,11 +66,13 @@ export default defineConfig({
     timezoneId: "Europe/London",
     trace: "retain-on-failure",
   },
-  webServer: {
-    command: "npm run scenario:preview -- --port 4174 --strictPort",
-    reuseExistingServer: false,
-    timeout: 30_000,
-    url: "http://127.0.0.1:4174",
-  },
+  webServer: skipWebServer
+    ? undefined
+    : {
+        command: "npm run scenario:preview -- --port 4174 --strictPort",
+        reuseExistingServer: false,
+        timeout: 30_000,
+        url: "http://127.0.0.1:4174",
+      },
   workers: 1,
 });

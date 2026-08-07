@@ -45,7 +45,7 @@ export function FormationOpeningCard({
             <UsersRound className="size-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <p className="font-bold text-primary text-xs uppercase tracking-wide">
+            <p className="font-bold text-muted-foreground text-xs uppercase tracking-wide">
               One place open
             </p>
             <h3

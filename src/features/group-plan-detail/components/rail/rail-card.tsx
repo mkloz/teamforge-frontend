@@ -46,7 +46,7 @@ function RailCardEyebrow({ eyebrow }: { eyebrow?: string }) {
     return null;
   }
 
-  return <p className="font-bold text-forge-teal text-xs">{eyebrow}</p>;
+  return <p className="font-bold text-muted-foreground text-xs">{eyebrow}</p>;
 }
 
 function RailCardHeading({ heading }: { heading?: string }) {

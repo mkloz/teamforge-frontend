@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-07T15:00:00+01:00",
+  "title": "Design System: TeamForge",
+  "extensions": {
+    "colorMeta": {
+      "forge-teal": {
+        "role": "primary",
+        "displayName": "Forge Teal",
+        "canonical": "#0f766e",
+        "tonalRamp": [
+          "#042f2e",
+          "#115e59",
+          "#0f766e",
+          "#0d9488",
+          "#5eead4",
+          "#ccfbf1"
+        ]
+      },
+      "signal-amber": {
+        "role": "secondary",
+        "displayName": "Signal Amber",
+        "canonical": "#956508",
+        "tonalRamp": [
+          "#451a03",
+          "#92400e",
+          "#956508",
+          "#ffbf00",
+          "#fde68a",
+          "#fffbeb"
+        ]
+      },
+      "neutral-background": {
+        "role": "neutral",
+        "displayName": "Neutral Light",
+        "canonical": "#f4f4f2",
+        "tonalRamp": [
+          "#171717",
+          "#525252",
+          "#a3a3a3",
+          "#e5e5e5",
+          "#f4f4f2",
+          "#ffffff"
+        ]
+      },
+      "black-background": {
+        "role": "neutral",
+        "displayName": "True-black Dark",
+        "canonical": "#000000",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#1c1c1c",
+          "#a3a3a3",
+          "#ffffff"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Inter Display",
+        "purpose": "Route, section, and hero hierarchy without decorative styling."
+      },
+      "body": {
+        "displayName": "Inter Interface",
+        "purpose": "Planning, settings, forms, and status copy."
+      }
+    },
+    "shadows": [
+      {
+        "name": "button-primary",
+        "value": "0 4px 0 color-mix(in srgb, var(--primary) 72%, var(--button-shadow-base))",
+        "purpose": "Hard, unblurred edge revealed by the short mechanical lift."
+      },
+      {
+        "name": "surface-soft-sm",
+        "value": "var(--elevation-soft-sm)",
+        "purpose": "Restrained separation for elevated surfaces; controls remain flat."
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-response",
+        "value": "150ms ease-out",
+        "purpose": "A short mechanical lift for primary actions plus crisp border, fill, text, and focus response."
+      }
+    ],
+    "breakpoints": [
+      { "name": "compact", "value": "380px" },
+      { "name": "sm", "value": "640px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The original mechanical primary action with a short hard-shadow lift and compact press response, paired with crisp focus and no glossy sweep or glow.",
+      "html": "<button class=\"ds-button-primary\">Start a plan</button>",
+      "css": ".ds-button-primary { height: 44px; padding: 0 24px; border: 2px solid var(--primary); border-radius: 12px; background: var(--primary); color: var(--primary-foreground); font: 700 14px/1.25 Inter, system-ui, sans-serif; transition: all 150ms ease-out; } .ds-button-primary:hover { transform: translateY(-4px); box-shadow: var(--shadow-button-primary); } .ds-button-primary:active { transform: translateY(0) scale(.95); box-shadow: none; } .ds-button-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--primary); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "A transparent structural action using the existing two-pixel edge.",
+      "html": "<button class=\"ds-button-outline\">Details</button>",
+      "css": ".ds-button-outline { height: 44px; padding: 0 24px; border: 2px solid var(--ink); border-radius: 12px; background: transparent; color: var(--ink); font: 700 14px/1.25 Inter, system-ui, sans-serif; transition: border-color 150ms ease-out, box-shadow 150ms ease-out, color 150ms ease-out, transform 150ms ease-out; } .ds-button-outline:hover { transform: translateY(-4px); box-shadow: 0 4px 0 var(--button-shadow-base); } .ds-button-outline:active { transform: translateY(0); box-shadow: none; } .ds-button-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--ink); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "The existing compact field with semantic fill and border.",
+      "html": "<input class=\"ds-input\" value=\"Saturday morning\" aria-label=\"Plan time\">",
+      "css": ".ds-input { height: 44px; padding: 8px 14px; border: 1px solid var(--input-border); border-radius: 12px; background: var(--input); color: var(--ink); font: 500 14px/1.25 Inter, system-ui, sans-serif; transition: background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out, color 150ms ease-out; } .ds-input:hover { border-color: color-mix(in srgb, var(--foreground) 35%, transparent); } .ds-input:focus-visible { border-color: color-mix(in srgb, var(--foreground) 70%, transparent); outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--foreground); } .ds-input:disabled { background: color-mix(in srgb, var(--muted) 70%, transparent); color: var(--slate-muted); opacity: .7; }"
+    },
+    {
+      "name": "Product Surface",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "A restrained semantic surface that does not alter route structure.",
+      "html": "<section class=\"ds-card\"><strong>Riverside walk</strong><p>Saturday · 10:30</p></section>",
+      "css": ".ds-card { padding: 24px; border: 1px solid var(--border); border-radius: 20px; background: var(--card); color: var(--foreground); font: 400 15px/1.5 Inter, system-ui, sans-serif; } .ds-card strong { display: block; font-weight: 700; font-size: 18px; letter-spacing: -.02em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clear Shared Workshop",
+    "overview": "Preserve TeamForge's existing UI anatomy and apply a restrained semantic theme. Balanced dark is truly black; alternate palettes remain purpose-led.",
+    "keyCharacteristics": [
+      "True-black default dark environment and neutral light environment.",
+      "Restrained 12px control geometry and approximately 20px major surfaces.",
+      "Mechanical actions use a short hard-shadow lift while fields stay flat and crisp.",
+      "Established route-specific SVGs and semantic icon tiles remain in use until replacement is explicitly requested."
+    ],
+    "rules": [
+      {
+        "name": "Preserve Anatomy",
+        "body": "Theme work changes semantic styling, not page structure or component identity.",
+        "section": "layout"
+      },
+      {
+        "name": "Semantic Meaning",
+        "body": "Palette atmosphere may change, but interaction and feedback roles keep their meaning.",
+        "section": "colors"
+      },
+      {
+        "name": "Interaction Cue Priority",
+        "body": "Prefer mechanical lift, edge, ink, or icon response before using a background tint; reserve fill changes for ghost controls and persistent selected states.",
+        "section": "components"
+      },
+      {
+        "name": "Focus Color Scope",
+        "body": "Neutral controls use a foreground focus edge; teal focus belongs only to controls whose surface and content are already teal.",
+        "section": "components"
+      },
+      {
+        "name": "Neutral Heading Context",
+        "body": "Do not decorate headings with teal eyebrows, kickers, route names, or subtitles. Remove redundant labels and render useful dates, progress, and section metadata as neutral supporting text.",
+        "section": "typography"
+      },
+      {
+        "name": "Visual Asset Authorization",
+        "body": "Treat supplied imagery as visual reference only; preserve existing product assets unless replacement is explicitly requested.",
+        "section": "illustration"
+      }
+    ],
+    "dos": [
+      "Do preserve existing routes, controls, and Appearance information architecture.",
+      "Do keep the Balanced dark application background exactly black.",
+      "Do test keyboard focus, contrast, zoom, and preference startup behavior."
+    ],
+    "donts": [
+      "Don't replace established controls with generic floating pills or glass cards.",
+      "Don't increase radii as a shortcut for polish.",
+      "Don't infer permission to integrate new assets from a stylistic reference."
+    ]
+  }
+}

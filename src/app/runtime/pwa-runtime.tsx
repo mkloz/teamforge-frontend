@@ -350,7 +350,7 @@ function OfflineConnectionNotice() {
         tabIndex={isExpanded ? -1 : undefined}
         onClick={() => setIsExpanded(true)}
         className={cn(
-          "absolute top-0 right-0 flex size-12 origin-center items-center justify-center rounded-full border border-spark-amber/45 bg-canvas text-spark-amber shadow-2xl shadow-black/15 transition-[opacity,transform,background-color] duration-250 ease-out hover:bg-spark-amber/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spark-amber/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:transition-none",
+          "absolute top-0 right-0 flex size-12 origin-center items-center justify-center rounded-full border border-spark-amber/45 bg-canvas text-spark-amber shadow-soft-sm transition-[opacity,transform,background-color,border-color,box-shadow] duration-250 ease-out hover:border-spark-amber/70 hover:bg-spark-amber/8 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-spark-amber focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:transition-none",
           isExpanded
             ? "pointer-events-none translate-x-2 -translate-y-1 scale-75 opacity-0"
             : "pointer-events-auto translate-x-0 translate-y-0 scale-100 opacity-100 hover:scale-105 active:scale-95",

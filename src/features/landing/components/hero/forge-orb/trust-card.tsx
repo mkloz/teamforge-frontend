@@ -19,7 +19,7 @@ export function TrustCard() {
           <p className="font-sans text-text-dark-muted text-xs leading-snug">
             Eligible plans
           </p>
-          <p className="font-sans font-semibold text-forge-teal text-xs leading-snug">
+          <p className="font-sans font-semibold text-slate-muted text-xs leading-snug">
             Build reputation
           </p>
         </div>

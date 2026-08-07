@@ -97,7 +97,9 @@ export function OnboardingPractice({
     <main className="mx-auto w-full max-w-5xl px-4 py-6 pb-28 sm:px-6 md:py-10 lg:px-8">
       <header className="flex items-start justify-between gap-4">
         <div className="max-w-3xl">
-          <p className="font-bold text-forge-teal text-sm">Practice mode</p>
+          <p className="font-bold text-muted-foreground text-sm">
+            Practice mode
+          </p>
           <h1 className="mt-2 text-balance font-black text-3xl leading-none tracking-[-0.04em] sm:text-5xl">
             Learn by trying it.
           </h1>
@@ -129,7 +131,7 @@ export function OnboardingPractice({
             className="mt-7 grid min-w-0 items-center gap-6 lg:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.28fr)] lg:gap-10"
           >
             <div className="min-w-0 lg:py-4">
-              <p className="font-semibold text-forge-teal text-sm">
+              <p className="font-semibold text-muted-foreground text-sm">
                 {activeTask.eyebrow}
               </p>
               <h2

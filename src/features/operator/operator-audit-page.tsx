@@ -80,7 +80,9 @@ export function OperatorAuditPage() {
       <header className="grid gap-2">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="font-semibold text-primary text-xs">Governance</p>
+            <p className="font-semibold text-muted-foreground text-xs">
+              Governance
+            </p>
             <h1 className="mt-1 font-extrabold text-3xl text-ink">
               Audit history
             </h1>

@@ -25,7 +25,7 @@ export function AppearanceStylePicker({
       <div>
         <h3 className="font-bold text-base text-ink">Interface character</h3>
         <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          Change the shape, depth, and density of every surface.
+          Choose compact controls, stronger contrast, or fewer visual effects.
         </p>
       </div>
 
@@ -42,8 +42,8 @@ export function AppearanceStylePicker({
               className={cn(
                 "group relative min-w-0 rounded-[13px] bg-background/55 p-2 text-left transition-colors duration-150 motion-reduce:transition-none sm:p-3",
                 isSelected
-                  ? "bg-primary/10 ring-1 ring-primary/45"
-                  : "hover:bg-muted/55",
+                  ? "bg-primary/10 ring-1 ring-foreground/45"
+                  : "hover:ring-1 hover:ring-foreground/25",
                 disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
               )}
             >
@@ -54,7 +54,7 @@ export function AppearanceStylePicker({
                 checked={isSelected}
                 disabled={disabled}
                 onChange={() => onSelect(option.value)}
-                className="absolute inset-0 size-full cursor-pointer appearance-none rounded-[13px] outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed"
+                className="absolute inset-0 z-10 size-full cursor-pointer appearance-none rounded-[13px] outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed"
               />
               <StyleSpecimen style={option.value} selected={isSelected} />
 
@@ -100,6 +100,7 @@ function StyleSpecimen({
   return (
     <span
       aria-hidden="true"
+      data-appearance-specimen={style}
       className={cn(
         "relative block h-18 overflow-hidden bg-canvas p-2.5",
         getSpecimenFrameClassName(style),
@@ -107,7 +108,7 @@ function StyleSpecimen({
       )}
     >
       {style === ThemeStyle.CLASSIC ? <ClassicSpecimen /> : null}
-      {style === ThemeStyle.GLASS ? <GlassSpecimen /> : null}
+      {style === ThemeStyle.GLASS ? <ReducedEffectsSpecimen /> : null}
       {style === ThemeStyle.INK ? <InkSpecimen /> : null}
       {style === ThemeStyle.POSTER ? <PosterSpecimen /> : null}
     </span>
@@ -130,22 +131,18 @@ function ClassicSpecimen() {
   );
 }
 
-function GlassSpecimen() {
+function ReducedEffectsSpecimen() {
   return (
-    <>
-      <span className="absolute top-2 left-6 size-10 rounded-full bg-primary/20 blur-md" />
-      <span className="absolute right-5 bottom-1 size-9 rounded-full bg-accent/15 blur-md" />
-      <span className="relative grid h-full grid-cols-2 gap-2">
-        <span className="rounded-[14px] border border-border/70 bg-card/55 p-2 shadow-lg backdrop-blur-md">
-          <span className="block h-2 w-3/4 rounded-full bg-ink/65" />
-          <span className="mt-2 block h-1.5 w-full rounded-full bg-muted/70" />
-        </span>
-        <span className="mt-2 rounded-[14px] border border-border/70 bg-card/55 p-2 shadow-lg backdrop-blur-md">
-          <span className="block h-1.5 w-full rounded-full bg-muted/75" />
-          <span className="mt-1 block h-1.5 w-2/3 rounded-full bg-muted/60" />
-        </span>
+    <span className="grid h-full grid-cols-2 gap-2">
+      <span className="rounded-lg border border-border bg-card p-2">
+        <span className="block h-2 w-3/4 rounded-full bg-ink/65" />
+        <span className="mt-2 block h-1.5 w-full rounded-full bg-muted" />
       </span>
-    </>
+      <span className="rounded-lg border border-border bg-card p-2">
+        <span className="block h-1.5 w-full rounded-full bg-muted" />
+        <span className="mt-1 block h-1.5 w-2/3 rounded-full bg-muted" />
+      </span>
+    </span>
   );
 }
 

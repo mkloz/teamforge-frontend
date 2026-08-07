@@ -1,4 +1,6 @@
 :root,
 :root[data-theme-style="classic"] {
   --radius: 0.75rem;
+  --control-height: 2.75rem;
+  --density-space: 1rem;
 }

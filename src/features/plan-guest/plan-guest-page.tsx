@@ -95,7 +95,7 @@ export function PlanGuestPage() {
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-7 sm:px-6 sm:py-10">
       <header className="max-w-3xl">
-        <p className="flex items-center gap-2 font-semibold text-forge-teal text-sm">
+        <p className="flex items-center gap-2 font-semibold text-muted-foreground text-sm">
           <TicketCheck className="size-4" aria-hidden />
           {isGuest
             ? "Your plan place"

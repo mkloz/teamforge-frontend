@@ -543,6 +543,13 @@ export const scenarioCatalog = [
     "Default account settings.",
   ),
   scenario(
+    "settings-appearance",
+    "Settings · appearance",
+    "Settings",
+    "/settings?section=appearance",
+    "Mode, purpose palette, live preview, reset, and comfort controls.",
+  ),
+  scenario(
     "settings-export-waiting",
     "Settings · export waiting",
     "Settings",

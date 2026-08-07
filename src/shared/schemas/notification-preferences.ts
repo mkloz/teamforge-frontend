@@ -1,13 +1,25 @@
 import { z } from "zod";
 import {
+  normalizeThemeAppearance,
+  normalizeThemeColor,
+  normalizeThemeStyle,
   themeAppearanceValues,
   themeColorValues,
   themeStyleValues,
 } from "@/shared/constants/theme-preferences";
 
-const themeAppearanceSchema = z.enum(themeAppearanceValues);
-const themeStyleSchema = z.enum(themeStyleValues);
-const themeColorSchema = z.enum(themeColorValues);
+const themeAppearanceSchema = z.preprocess(
+  normalizeThemeAppearance,
+  z.enum(themeAppearanceValues),
+);
+const themeStyleSchema = z.preprocess(
+  normalizeThemeStyle,
+  z.enum(themeStyleValues),
+);
+const themeColorSchema = z.preprocess(
+  normalizeThemeColor,
+  z.enum(themeColorValues),
+);
 export const presencePrecisionSchema = z.enum([
   "HIDDEN",
   "APPROXIMATE",

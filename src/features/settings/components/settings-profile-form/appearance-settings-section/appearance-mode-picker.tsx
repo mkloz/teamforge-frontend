@@ -43,8 +43,8 @@ export function AppearanceModePicker({
               className={cn(
                 "group relative flex min-w-0 flex-col items-center rounded-xl bg-background/55 px-2 py-3 text-center transition-colors duration-150 motion-reduce:transition-none sm:py-4",
                 isSelected
-                  ? "bg-primary/10 text-ink ring-1 ring-primary/45"
-                  : "text-slate-muted hover:bg-muted/55 hover:text-ink",
+                  ? "bg-primary/10 text-ink ring-1 ring-foreground/45"
+                  : "text-slate-muted hover:text-ink hover:ring-1 hover:ring-foreground/25",
                 disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
               )}
             >
@@ -55,7 +55,7 @@ export function AppearanceModePicker({
                 checked={isSelected}
                 disabled={disabled}
                 onChange={() => onSelect(option.id)}
-                className="absolute inset-0 size-full cursor-pointer appearance-none rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed"
+                className="absolute inset-0 size-full cursor-pointer appearance-none rounded-xl outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed"
               />
               <Icon
                 className={cn(

@@ -32,7 +32,7 @@ export function OnboardingIntentPage() {
     >
       <div className="flex w-full flex-col">
         <div className="mb-6 text-center sm:mb-8">
-          <p className="font-bold text-forge-teal text-xs uppercase tracking-[0.18em]">
+          <p className="font-bold text-muted-foreground text-xs uppercase tracking-[0.18em]">
             Your first mission
           </p>
           <h1 className="mt-2 text-balance font-extrabold text-3xl text-ink leading-tight tracking-tight sm:text-4xl">

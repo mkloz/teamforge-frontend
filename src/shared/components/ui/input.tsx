@@ -24,11 +24,11 @@ function getInputClassName({
   isSearch: boolean;
 }) {
   return cn(
-    "h-11 w-full min-w-0 rounded-lg border border-input-border bg-input px-3.5 py-2 font-medium font-sans text-ink text-sm shadow-xs outline-none transition-all duration-200 selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:font-medium file:text-foreground file:text-sm placeholder:text-slate-muted/70 hover:border-primary/40 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/15 disabled:cursor-not-allowed disabled:bg-muted/70 disabled:text-slate-muted disabled:opacity-70",
-    "aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/15 dark:aria-invalid:ring-destructive/30",
+    "h-(--control-height) w-full min-w-0 rounded-lg border border-input-border bg-input px-3.5 py-2 font-medium font-sans text-ink text-sm outline-none transition-[background-color,border-color,box-shadow,color] duration-150 ease-out selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:font-medium file:text-foreground file:text-sm placeholder:text-slate-muted/70 hover:border-foreground/35 focus-visible:border-foreground/70 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:bg-muted/70 disabled:text-slate-muted disabled:opacity-70 motion-reduce:transition-none",
+    "aria-invalid:border-destructive focus-visible:aria-invalid:ring-destructive",
     "appearance-none [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
-    isSearch && "h-9 rounded-full px-3 py-1.5 text-xs shadow-none",
-    leftIcon && (isSearch ? "pl-8 focus:pl-3" : "pl-9"),
+    isSearch && "h-9! rounded-full px-3 py-1.5 text-xs shadow-none",
+    leftIcon && (isSearch ? "pl-8" : "pl-9"),
     rightIcon && (isSearch ? "pr-9" : "pr-10"),
     className,
   );
@@ -36,10 +36,8 @@ function getInputClassName({
 
 function getLeftIconClassName(isSearch: boolean) {
   return cn(
-    "pointer-events-none absolute top-1/2 z-10 flex -translate-y-1/2 items-center justify-center text-slate-muted transition-all duration-200 group-focus-within/input:text-primary motion-reduce:transition-none",
-    isSearch
-      ? "left-2.5 size-3.5 group-focus-within/input:-translate-x-2 group-focus-within/input:opacity-0"
-      : "left-3 size-4",
+    "pointer-events-none absolute top-1/2 z-10 flex -translate-y-1/2 items-center justify-center text-slate-muted transition-colors duration-150 group-focus-within/input:text-ink motion-reduce:transition-none",
+    isSearch ? "left-2.5 size-3.5" : "left-3 size-4",
   );
 }
 

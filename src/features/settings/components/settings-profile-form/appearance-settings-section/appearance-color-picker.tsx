@@ -86,8 +86,8 @@ function PaletteOption({
       className={cn(
         "group relative min-w-0 rounded-xl bg-background/55 p-2 text-left transition-colors duration-150 motion-reduce:transition-none sm:p-2.5",
         isSelected
-          ? "bg-primary/10 ring-1 ring-primary/45"
-          : "hover:bg-muted/55",
+          ? "bg-primary/10 ring-1 ring-foreground/45"
+          : "hover:ring-1 hover:ring-foreground/25",
         disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
       )}
     >
@@ -98,7 +98,7 @@ function PaletteOption({
         checked={isSelected}
         disabled={disabled}
         onChange={() => onSelect(option.value)}
-        className="absolute inset-0 size-full cursor-pointer appearance-none rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed"
+        className="absolute inset-0 size-full cursor-pointer appearance-none rounded-xl outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed"
       />
       <span className="flex h-7 overflow-hidden rounded-lg">
         {swatches.map((swatch) => (
@@ -141,9 +141,9 @@ function getColorGroups(options: readonly ColorOption[]) {
     },
     {
       id: "appearance-experimental-palettes",
-      label: "Experimental",
-      description: "More expressive",
-      options: options.filter((option) => option.tag === "Experimental"),
+      label: "Specialized",
+      description: "Focused needs",
+      options: options.filter((option) => option.tag === "Specialized"),
     },
   ] as const;
 }

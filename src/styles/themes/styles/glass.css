@@ -1,20 +1,59 @@
 :root[data-theme-style="glass"] {
-  --radius: 1rem;
-  --card: color-mix(in srgb, var(--canvas) 82%, transparent);
-  --popover: color-mix(in srgb, var(--canvas) 88%, var(--card) 12%);
-  --input: color-mix(in srgb, var(--canvas) 72%, var(--foreground) 8%);
-  --muted: color-mix(in srgb, var(--canvas) 82%, var(--foreground) 7%);
-  --border: color-mix(in srgb, var(--foreground) 17%, transparent);
-  --secondary: color-mix(in srgb, var(--primary) 14%, transparent);
-  --sidebar: color-mix(in srgb, var(--canvas) 86%, transparent);
-  --sidebar-accent: color-mix(in srgb, var(--primary) 14%, transparent);
-  --sidebar-border: color-mix(in srgb, var(--foreground) 15%, transparent);
-  --shadow-button-primary:
-    0 10px 26px color-mix(in srgb, var(--primary) 24%, transparent),
-    0 3px 0 color-mix(in srgb, var(--primary) 58%, var(--button-shadow-base));
-  --shadow-button-secondary:
-    0 10px 24px color-mix(in srgb, var(--accent) 22%, transparent),
-    0 3px 0 color-mix(in srgb, var(--accent) 58%, var(--button-shadow-base));
-  --shadow-button-outline: 0 3px 0
-    color-mix(in srgb, var(--foreground) 72%, transparent);
+  --radius: 0.75rem;
+  --control-height: 2.75rem;
+  --density-space: 1rem;
+  --blur-subtle: 0px;
+  --blur-md: 0px;
+  --blur-lg: 0px;
+  --blur-xl: 0px;
+  --blur-hero: 0px;
+  --elevation-soft-sm: none;
+  --elevation-soft-md: none;
+  --elevation-soft-lg: none;
+  --shadow-button-primary: none;
+  --shadow-button-secondary: none;
+  --shadow-button-outline: none;
+  --shadow-button-outline-dark: none;
+  --shadow-button-destructive: none;
+}
+
+:root[data-theme-style="glass"] [class*="backdrop-blur"] {
+  /* biome-ignore lint/complexity/noImportantStyles: Reduced effects must neutralize utility-authored backdrop filters. */
+  -webkit-backdrop-filter: none !important;
+  /* biome-ignore lint/complexity/noImportantStyles: Reduced effects must neutralize utility-authored backdrop filters. */
+  backdrop-filter: none !important;
+}
+
+:root[data-theme-style="glass"]
+  :where([class*="shadow"]):not([data-appearance-specimen] *) {
+  /* Keep Tailwind's ring layers intact while removing its decorative shadow layer. */
+  /* biome-ignore lint/complexity/noImportantStyles: Reduced effects must neutralize utility-authored elevation. */
+  --tw-shadow: 0 0 #0000 !important;
+  /* biome-ignore lint/complexity/noImportantStyles: Reduced effects must neutralize utility-authored inset elevation. */
+  --tw-inset-shadow: 0 0 #0000 !important;
+  /* biome-ignore lint/complexity/noImportantStyles: Reduced effects must neutralize decorative text depth. */
+  text-shadow: none !important;
+}
+
+:root[data-theme-style="glass"]
+  :where([class*="hover:-translate"], [class*="hover:translate"]):hover,
+:root[data-theme-style="glass"] :where([class*="hover:scale"]):hover,
+:root[data-theme-style="glass"] [class*="active:scale"]:active,
+:root[data-theme-style="glass"]
+  :where([class*="group-hover:scale"], [class*="group-hover:translate"]),
+:root[data-theme-style="glass"] [data-slot="button"]:is(:hover, :active) {
+  transform: none;
+}
+
+:root[data-theme-style="glass"] *,
+:root[data-theme-style="glass"] *::before,
+:root[data-theme-style="glass"] *::after {
+  /* biome-ignore lint/complexity/noImportantStyles: Reduced-effects mode must override component animation declarations. */
+  animation-duration: 0.01ms !important;
+  /* biome-ignore lint/complexity/noImportantStyles: Reduced-effects mode must stop looping animations globally. */
+  animation-iteration-count: 1 !important;
+  /* biome-ignore lint/complexity/noImportantStyles: Reduced-effects mode must override smooth scrolling. */
+  scroll-behavior: auto !important;
+  /* biome-ignore lint/complexity/noImportantStyles: Reduced-effects mode must override component transition declarations. */
+  transition-duration: 0.01ms !important;
 }

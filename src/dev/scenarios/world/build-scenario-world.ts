@@ -36,8 +36,8 @@ const defaultSettings = {
   showCityOnProfile: true,
   showFriendsListOnProfile: true,
   showGenderOnProfile: true,
-  themeAppearance: "dark" as const,
-  themeColor: "forge" as const,
+  themeAppearance: "system" as const,
+  themeColor: "graphite" as const,
   themeStyle: "classic" as const,
 };
 

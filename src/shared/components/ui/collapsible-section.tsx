@@ -58,7 +58,7 @@ export function CollapsibleSection({
     >
       <CollapsibleTrigger
         className={cn(
-          "group/collapsible-trigger flex cursor-pointer items-center justify-between gap-3 rounded-lg text-left font-semibold outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-primary/35 disabled:pointer-events-none disabled:opacity-50",
+          "group/collapsible-trigger flex cursor-pointer items-center justify-between gap-3 rounded-lg text-left font-semibold outline-none transition-colors hover:text-primary focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
           triggerVariants[variant],
           triggerClassName,
         )}

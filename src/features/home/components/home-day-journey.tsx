@@ -80,7 +80,9 @@ function HomeJourneyHeader({ firstName }: { firstName: string }) {
   return (
     <header className="max-w-3xl" data-onboarding-tour="home-overview">
       <div className="flex items-start justify-between gap-4">
-        <p className="font-semibold text-forge-teal text-sm">{currentDate}</p>
+        <p className="font-semibold text-muted-foreground text-sm">
+          {currentDate}
+        </p>
         <div className="shrink-0 md:hidden">
           <HomeHeroNotificationButton />
         </div>
@@ -160,7 +162,7 @@ function HomeNextMoves({
       className="mt-12 scroll-mt-8 border-border/60 border-t pt-8 md:mt-14 md:pt-10"
     >
       <header className="max-w-2xl">
-        <p className="font-semibold text-forge-teal text-xs">
+        <p className="font-semibold text-muted-foreground text-xs">
           More ways to connect
         </p>
         <h2

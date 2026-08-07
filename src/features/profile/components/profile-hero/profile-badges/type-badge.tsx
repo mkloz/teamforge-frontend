@@ -83,7 +83,7 @@ export function TypeBadge({
               <p className="font-semibold text-sm text-white">
                 {typeInfo.title}
               </p>
-              <p className="mt-0.5 font-medium text-forge-teal text-xs">
+              <p className="mt-0.5 font-medium text-slate-muted text-xs">
                 {personalityType} · {category}
               </p>
             </div>
