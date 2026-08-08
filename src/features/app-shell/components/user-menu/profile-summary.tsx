@@ -26,8 +26,8 @@ export function UserMenuProfileSummary() {
           <Avatar
             src={profileSummary.avatar}
             name={profileSummary.avatarName}
-            className="size-14 border border-forge-teal/20 bg-forge-teal/10 text-forge-teal"
-            fallbackClassName="bg-forge-teal/10 text-base tracking-wide text-forge-teal"
+            className="size-14 border border-border/55 bg-muted text-foreground"
+            fallbackClassName="bg-muted text-base tracking-wide text-foreground"
             loading="eager"
           />
 
@@ -50,7 +50,7 @@ export function UserMenuProfileSummary() {
           <SheetClose asChild>
             <Link
               {...getPublicProfileNavigation(currentUser)}
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-primary px-3 font-black text-primary-foreground text-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-3 font-black text-primary-foreground text-sm transition-[box-shadow,transform] hover:-translate-y-1 hover:shadow-button-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:translate-y-0 active:shadow-none motion-reduce:transform-none"
             >
               View profile
               <ArrowUpRight className="size-4" aria-hidden="true" />
@@ -59,9 +59,9 @@ export function UserMenuProfileSummary() {
           <SheetClose asChild>
             <Link
               {...buildSettingsNavigation()}
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-border/70 px-3 font-bold text-foreground text-sm transition-colors hover:bg-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-muted/45 px-3 font-bold text-foreground text-sm shadow-soft-sm transition-[box-shadow,transform] hover:-translate-y-1 hover:shadow-soft-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground active:translate-y-0 active:shadow-none motion-reduce:transform-none"
             >
-              <Settings className="size-4 text-forge-teal" aria-hidden="true" />
+              <Settings className="size-4 text-foreground" aria-hidden="true" />
               Edit account
             </Link>
           </SheetClose>

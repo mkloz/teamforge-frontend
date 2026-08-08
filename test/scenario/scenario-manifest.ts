@@ -6,6 +6,7 @@ import {
 export type ScenarioAuditProfile = "full" | "smoke";
 
 export type ScenarioAuditRecipe =
+  | "activity-open-conversation"
   | "explore-join-pending"
   | "explore-join-rollback"
   | "explore-pagination-loading"
@@ -41,6 +42,9 @@ const smokeScenarioIds = new Set([
 ]);
 
 const recipeByScenarioId: Readonly<Record<string, ScenarioAuditRecipe>> = {
+  "activity-dense": "activity-open-conversation",
+  "activity-long-copy": "activity-open-conversation",
+  "activity-standard": "activity-open-conversation",
   "explore-join-pending": "explore-join-pending",
   "explore-join-rollback": "explore-join-rollback",
   "explore-pagination-loading": "explore-pagination-loading",

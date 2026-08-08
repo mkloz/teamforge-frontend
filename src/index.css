@@ -1,6 +1,8 @@
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@fontsource-variable/source-sans-3/wght.css";
+@import "@fontsource-variable/source-serif-4/wght.css";
 
 /* Core design tokens & Tailwind theme */
 @import "./styles/theme.css";

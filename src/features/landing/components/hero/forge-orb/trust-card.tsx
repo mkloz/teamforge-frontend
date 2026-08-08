@@ -11,7 +11,7 @@ export function TrustCard() {
         <div className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-forge-teal/75 bg-forge-teal/10">
           <ShieldCheck
             aria-hidden="true"
-            className="size-5 text-forge-teal"
+            className="size-5 text-foreground"
             strokeWidth={2}
           />
         </div>

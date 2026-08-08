@@ -153,7 +153,7 @@ function AvatarFallback({
   return (
     <div
       className={cn(
-        "flex size-full items-center justify-center bg-forge-teal/10 font-black text-forge-teal text-xs leading-none",
+        "flex size-full items-center justify-center bg-forge-teal/10 font-black text-foreground text-xs leading-none",
         className,
       )}
     >

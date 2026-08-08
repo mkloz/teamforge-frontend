@@ -34,7 +34,7 @@ export const SETTINGS_SECTION_GROUPS: readonly SettingsSectionGroup[] = [
         label: "Appearance",
         headline: "Appearance",
         description:
-          "Set the mode, interface character, and palette used across TeamForge.",
+          "Set the mode, interface style, and palette used across TeamForge.",
         icon: Palette,
       },
     ],

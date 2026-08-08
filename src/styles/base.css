@@ -11,6 +11,11 @@
     font-family: var(--font-sans);
   }
 
+  h1 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+  }
+
   @supports (scrollbar-gutter: stable) {
     html {
       scrollbar-gutter: stable;
@@ -80,6 +85,23 @@
     padding-right: 0 !important;
     /* biome-ignore lint/complexity/noImportantStyles: Prevents modal/drawer scroll lock from doubling the app's reserved scrollbar gutter. */
     margin-right: 0 !important;
+  }
+}
+
+/*
+ * Narrow layouts should use the platform's overlay scrollbar behavior. Keeping
+ * a permanent desktop gutter at phone widths silently removes ten pixels from
+ * every route and makes already-dense compositions wrap earlier than intended.
+ */
+@media (max-width: 47.999rem) {
+  html {
+    overflow-y: auto;
+    scrollbar-gutter: auto;
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
   }
 }
 

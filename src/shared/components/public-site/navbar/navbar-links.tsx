@@ -24,8 +24,8 @@ const MOBILE_NAV_LINK_CLASS =
   "rounded-xl px-3 py-2.5 text-center font-sans font-semibold text-sm text-text-dark-secondary transition-all duration-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-4";
 
 const NAV_FOCUS_CLASS = {
-  static: "focus-visible:ring-forge-teal",
-  token: "focus-visible:ring-primary",
+  static: "focus-visible:ring-white",
+  token: "focus-visible:ring-white",
 } as const;
 
 const NAV_UNDERLINE_CLASS =

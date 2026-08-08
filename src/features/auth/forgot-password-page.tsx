@@ -33,7 +33,7 @@ export function ForgotPasswordPage() {
           Need a fresh start instead?{" "}
           <Link
             {...buildAuthRouteNavigation("/auth/register", returnTo)}
-            className="font-medium text-forge-teal hover:underline"
+            className="font-medium text-foreground hover:underline"
           >
             Create an account
           </Link>

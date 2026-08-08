@@ -210,7 +210,7 @@ export function GroupPlanFitSectionSkeleton({
 export function GroupPlanDecisionRailSkeleton() {
   return (
     <div className="flex flex-col gap-3 lg:sticky lg:top-6">
-      <div className="rounded-2xl border border-border bg-card p-4">
+      <div className="rounded-2xl bg-card p-4 shadow-soft-sm">
         <SkeletonText lines={3} widths={["w-32", "w-full", "w-4/5"]} />
         <div className="mt-5 flex flex-col gap-3">
           <SkeletonButton className="h-11 w-full" tone="teal" />
@@ -218,10 +218,7 @@ export function GroupPlanDecisionRailSkeleton() {
         </div>
       </div>
       {["countdown", "trust"].map((item, index) => (
-        <div
-          key={item}
-          className="rounded-2xl border border-border bg-card p-4"
-        >
+        <div key={item} className="rounded-2xl bg-card p-4 shadow-soft-sm">
           <div className="flex items-center gap-3">
             <Skeleton
               shape="circle"

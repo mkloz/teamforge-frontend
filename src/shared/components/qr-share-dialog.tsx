@@ -195,7 +195,7 @@ export function QrShareDialog({
               avatarImageSrc && "pt-10",
             )}
           >
-            <DialogClose className="absolute top-4 right-4 z-50 flex size-9 items-center justify-center rounded-full text-slate-muted transition-colors hover:bg-foreground/6 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/60">
+            <DialogClose className="absolute top-4 right-4 z-50 flex size-9 items-center justify-center rounded-full text-slate-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground">
               <X className="size-4" />
               <span className="sr-only">Close</span>
             </DialogClose>

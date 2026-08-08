@@ -4,7 +4,6 @@ import { useNotifications } from "@/features/notifications/hooks/use-notificatio
 import { resolveNotificationDestination } from "@/features/notifications/lib/destination";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import type { Notification } from "@/shared/schemas";
-import { NotificationsDrawerShell } from "./notifications-drawer-shell";
 import {
   INITIAL_NOTIFICATIONS_DRAWER_STATE,
   notificationsDrawerReducer,
@@ -22,7 +21,7 @@ interface NotificationsDrawerProps {
 
 type NotificationReadMutation = (id: string) => Promise<unknown>;
 
-export function NotificationsDrawer({
+export function NotificationsDrawerContent({
   open,
   onClose,
 }: NotificationsDrawerProps) {
@@ -133,7 +132,7 @@ export function NotificationsDrawer({
   }
 
   return (
-    <NotificationsDrawerShell open={open} onClose={onClose}>
+    <>
       <NotificationsDrawerHeader
         count={count}
         isMarkingAllRead={isMarkingAllRead}
@@ -155,7 +154,7 @@ export function NotificationsDrawer({
       {/* Scrollable list */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto overscroll-contain"
+        className="flex-1 overflow-y-auto overscroll-contain pb-safe-bottom"
       >
         <NotificationsDrawerBody
           isLoading={isLoading}
@@ -175,7 +174,7 @@ export function NotificationsDrawer({
           }
         />
       </div>
-    </NotificationsDrawerShell>
+    </>
   );
 }
 

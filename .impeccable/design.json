@@ -59,11 +59,11 @@
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Inter Display",
-        "purpose": "Route, section, and hero hierarchy without decorative styling."
+        "displayName": "Source Serif 4 Display",
+        "purpose": "Warm editorial hierarchy for page-level headlines only."
       },
       "body": {
-        "displayName": "Inter Interface",
+        "displayName": "Source Sans 3 Interface",
         "purpose": "Planning, settings, forms, and status copy."
       }
     },
@@ -76,7 +76,7 @@
       {
         "name": "surface-soft-sm",
         "value": "var(--elevation-soft-sm)",
-        "purpose": "Restrained separation for elevated surfaces; controls remain flat."
+        "purpose": "Restrained separation for elevated surfaces; fields use a separate quiet inset treatment."
       }
     ],
     "motion": [
@@ -99,7 +99,7 @@
       "refersTo": "button-primary",
       "description": "The original mechanical primary action with a short hard-shadow lift and compact press response, paired with crisp focus and no glossy sweep or glow.",
       "html": "<button class=\"ds-button-primary\">Start a plan</button>",
-      "css": ".ds-button-primary { height: 44px; padding: 0 24px; border: 2px solid var(--primary); border-radius: 12px; background: var(--primary); color: var(--primary-foreground); font: 700 14px/1.25 Inter, system-ui, sans-serif; transition: all 150ms ease-out; } .ds-button-primary:hover { transform: translateY(-4px); box-shadow: var(--shadow-button-primary); } .ds-button-primary:active { transform: translateY(0) scale(.95); box-shadow: none; } .ds-button-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--primary); }"
+      "css": ".ds-button-primary { height: 44px; padding: 0 24px; border: 2px solid transparent; border-radius: 12px; background: var(--primary); color: var(--primary-foreground); font: 700 14px/1.25 'Source Sans 3 Variable', 'Segoe UI', system-ui, sans-serif; transition: all 150ms ease-out; } .ds-button-primary:hover { transform: translateY(-4px); box-shadow: var(--shadow-button-primary); } .ds-button-primary:active { transform: translateY(0) scale(.95); box-shadow: none; } .ds-button-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--primary); }"
     },
     {
       "name": "Outline Button",
@@ -107,15 +107,15 @@
       "refersTo": "button-outline",
       "description": "A transparent structural action using the existing two-pixel edge.",
       "html": "<button class=\"ds-button-outline\">Details</button>",
-      "css": ".ds-button-outline { height: 44px; padding: 0 24px; border: 2px solid var(--ink); border-radius: 12px; background: transparent; color: var(--ink); font: 700 14px/1.25 Inter, system-ui, sans-serif; transition: border-color 150ms ease-out, box-shadow 150ms ease-out, color 150ms ease-out, transform 150ms ease-out; } .ds-button-outline:hover { transform: translateY(-4px); box-shadow: 0 4px 0 var(--button-shadow-base); } .ds-button-outline:active { transform: translateY(0); box-shadow: none; } .ds-button-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--ink); }"
+      "css": ".ds-button-outline { height: 44px; padding: 0 24px; border: 2px solid var(--ink); border-radius: 12px; background: transparent; color: var(--ink); font: 700 14px/1.25 'Source Sans 3 Variable', 'Segoe UI', system-ui, sans-serif; transition: border-color 150ms ease-out, box-shadow 150ms ease-out, color 150ms ease-out, transform 150ms ease-out; } .ds-button-outline:hover { transform: translateY(-4px); box-shadow: 0 4px 0 var(--button-shadow-base); } .ds-button-outline:active { transform: translateY(0); box-shadow: none; } .ds-button-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--ink); }"
     },
     {
       "name": "Text Input",
       "kind": "input",
       "refersTo": "input",
-      "description": "The existing compact field with semantic fill and border.",
+      "description": "The existing compact field with semantic fill, a transparent resting edge, and quiet inset depth.",
       "html": "<input class=\"ds-input\" value=\"Saturday morning\" aria-label=\"Plan time\">",
-      "css": ".ds-input { height: 44px; padding: 8px 14px; border: 1px solid var(--input-border); border-radius: 12px; background: var(--input); color: var(--ink); font: 500 14px/1.25 Inter, system-ui, sans-serif; transition: background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out, color 150ms ease-out; } .ds-input:hover { border-color: color-mix(in srgb, var(--foreground) 35%, transparent); } .ds-input:focus-visible { border-color: color-mix(in srgb, var(--foreground) 70%, transparent); outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--foreground); } .ds-input:disabled { background: color-mix(in srgb, var(--muted) 70%, transparent); color: var(--slate-muted); opacity: .7; }"
+      "css": ".ds-input { height: 44px; padding: 8px 14px; border: 1px solid var(--control-border); border-radius: 12px; background: var(--input); color: var(--ink); box-shadow: var(--field-shadow); font: 500 14px/1.25 'Source Sans 3 Variable', 'Segoe UI', system-ui, sans-serif; transition: background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out, color 150ms ease-out; } .ds-input:hover { box-shadow: var(--field-shadow-hover); } .ds-input:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--foreground); } .ds-input:disabled { background: color-mix(in srgb, var(--muted) 70%, transparent); color: var(--slate-muted); box-shadow: none; opacity: .7; }"
     },
     {
       "name": "Product Surface",
@@ -123,7 +123,7 @@
       "refersTo": "card",
       "description": "A restrained semantic surface that does not alter route structure.",
       "html": "<section class=\"ds-card\"><strong>Riverside walk</strong><p>Saturday · 10:30</p></section>",
-      "css": ".ds-card { padding: 24px; border: 1px solid var(--border); border-radius: 20px; background: var(--card); color: var(--foreground); font: 400 15px/1.5 Inter, system-ui, sans-serif; } .ds-card strong { display: block; font-weight: 700; font-size: 18px; letter-spacing: -.02em; }"
+      "css": ".ds-card { padding: 24px; border: 0; border-radius: 20px; background: var(--card); color: var(--foreground); box-shadow: var(--elevation-soft-sm); font: 400 15px/1.5 'Source Sans 3 Variable', 'Segoe UI', system-ui, sans-serif; } .ds-card strong { display: block; font-weight: 700; font-size: 18px; letter-spacing: -.02em; }"
     }
   ],
   "narrative": {
@@ -132,7 +132,7 @@
     "keyCharacteristics": [
       "True-black default dark environment and neutral light environment.",
       "Restrained 12px control geometry and approximately 20px major surfaces.",
-      "Mechanical actions use a short hard-shadow lift while fields stay flat and crisp.",
+      "Mechanical actions use a short hard-shadow lift while fields stay unelevated with quiet inset shading.",
       "Established route-specific SVGs and semantic icon tiles remain in use until replacement is explicitly requested."
     ],
     "rules": [

@@ -92,7 +92,7 @@ function ReadinessSignals({ rows }: { rows: SignalRow[] }) {
                   className={cn(
                     "shrink-0 font-medium text-xs",
                     row.tone === "teal"
-                      ? "text-primary"
+                      ? "text-foreground"
                       : row.tone === "amber"
                         ? "text-accent"
                         : "text-slate-muted",
@@ -131,7 +131,7 @@ function SafetyQueueSignals({ rows }: { rows: SignalRow[] }) {
           <p
             className={cn(
               "font-semibold text-4xl tabular-nums",
-              total === 0 ? "text-primary" : "text-accent",
+              total === 0 ? "text-foreground" : "text-accent",
             )}
           >
             {NUMBER_FORMATTER.format(total)}

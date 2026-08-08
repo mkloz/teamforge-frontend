@@ -2,16 +2,21 @@ import type { ReactNode } from "react";
 import { useRef } from "react";
 import { AuthPageContent } from "@/features/auth/auth-page-content";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
-import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
+import type {
+  VoronoiCatalystHandle,
+  VoronoiFormationTarget,
+} from "@/shared/lib/voronoi/voronoi-contract";
 
 interface AuthPageShellProps {
   children: ReactNode;
+  formation?: VoronoiFormationTarget;
   progress: number;
   scrollDeps: unknown[];
 }
 
 export function AuthPageShell({
   children,
+  formation,
   progress,
   scrollDeps,
 }: AuthPageShellProps) {
@@ -27,6 +32,7 @@ export function AuthPageShell({
   return (
     <AuthPageContent
       catalystRef={catalystRef}
+      formation={formation}
       onInput={handleInput}
       progress={progress}
       scrollContainerRef={scrollContainerRef}

@@ -66,7 +66,7 @@ export function ParticipantRow({
             {participantName}
           </p>
           {highlight && !removed ? (
-            <span className="shrink-0 font-bold text-[0.6875rem] text-spark-amber">
+            <span className="shrink-0 font-bold text-spark-amber text-xs">
               Best match
             </span>
           ) : null}
@@ -112,9 +112,9 @@ export function ParticipantRow({
         aria-label={`${removed ? "Restore" : "Remove"} ${participantName}`}
         title={`${removed ? "Restore" : "Remove"} ${participantName}`}
         className={cn(
-          "relative z-20 size-8 shrink-0 rounded-full",
+          "relative z-20 size-9 shrink-0 rounded-full",
           removed
-            ? "text-muted-foreground hover:text-forge-teal"
+            ? "text-muted-foreground hover:text-foreground"
             : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
         )}
       >

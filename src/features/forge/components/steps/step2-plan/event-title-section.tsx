@@ -78,7 +78,7 @@ function PlanNameStatusAside({
     <span
       className={cn(
         "text-muted-foreground/50 text-xs",
-        isNameValid && "text-forge-teal",
+        isNameValid && "text-foreground",
       )}
     >
       {status}

@@ -48,7 +48,7 @@ export function CategorySection({
       ref={(element) => onRegisterCategory(category.id, element)}
       className="scroll-m-28 border-none"
     >
-      <AccordionTrigger className="group -mx-2 rounded-lg px-2 py-4 transition-all hover:no-underline focus-visible:text-forge-teal focus-visible:underline">
+      <AccordionTrigger className="group -mx-2 rounded-lg px-2 py-4 transition-all hover:no-underline focus-visible:text-foreground focus-visible:underline">
         <div className="flex items-center gap-3">
           <div
             className={cn(
@@ -56,7 +56,7 @@ export function CategorySection({
               getCategoryColorClass(category.id),
             )}
           />
-          <span className="font-bold font-sans text-sm transition-colors group-hover:text-forge-teal">
+          <span className="font-bold font-sans text-sm underline-offset-4 group-hover:underline">
             {category.name}
           </span>
         </div>

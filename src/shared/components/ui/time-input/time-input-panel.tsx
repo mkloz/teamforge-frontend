@@ -28,7 +28,7 @@ export function TimeInputPanel({
       id={panelId}
       ref={panelRef}
       style={panelStyle}
-      className="z-100 rounded-xl border border-border bg-card p-2 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]"
+      className="z-100 rounded-xl bg-card p-2 shadow-soft-md"
     >
       <TimePickerGrid
         activeHourRef={activeHourRef}

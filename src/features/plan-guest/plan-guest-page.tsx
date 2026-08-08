@@ -311,7 +311,7 @@ function GuestCommitmentSection({
           The plan changed. Review it and answer again.
         </Notice>
       ) : null}
-      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+      <div className="mt-3 flex flex-wrap gap-2">
         {options.map((option) => (
           <Button
             aria-pressed={

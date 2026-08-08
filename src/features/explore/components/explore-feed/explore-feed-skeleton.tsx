@@ -18,7 +18,7 @@ export function ExploreFeedSkeleton() {
       <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-12">
         {EXPLORE_CARD_SKELETONS.map((key, index) => (
           <div key={key} className={getSkeletonSlotClassName(index)}>
-            <div className="relative size-full min-h-92 overflow-hidden rounded-[1.25rem] border border-border/75 bg-card md:min-h-0">
+            <div className="relative size-full min-h-92 overflow-hidden rounded-[1.25rem] bg-card shadow-soft-sm md:min-h-0">
               <Skeleton
                 className="absolute inset-0 size-full rounded-none"
                 tone={index === 0 ? "teal" : "default"}

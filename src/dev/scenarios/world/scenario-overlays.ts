@@ -15,6 +15,7 @@ export function applyScenarioOverlays(
   }
   if (values.has("activity-empty")) {
     world.entities.chats = {};
+    world.entities.friendships = {};
     world.entities.groups = {};
     world.entities.messages = {};
     world.entities.plans = {};

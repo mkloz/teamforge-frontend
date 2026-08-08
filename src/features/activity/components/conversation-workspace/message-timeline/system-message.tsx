@@ -32,11 +32,11 @@ export function SystemMessage({
       iconStroke: 2.5,
     },
     info: {
-      container: "border-primary/20 bg-primary/5 text-primary",
+      container: "border-primary/20 bg-primary/5 text-foreground",
       iconStroke: 2.5,
     },
     success: {
-      container: "border-primary/25 bg-primary/8 text-primary",
+      container: "border-primary/25 bg-primary/8 text-foreground",
       iconStroke: 3,
     },
     warning: {

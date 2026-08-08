@@ -50,8 +50,8 @@ function ReplyReferenceContent({
       <div className="w-1 shrink-0 rounded-full bg-primary opacity-80" />
       <div className="min-w-0 flex-1">
         <div className="mb-0.5 flex min-w-0 items-center gap-1.5">
-          <Reply className="size-3 shrink-0 text-primary" />
-          <span className="min-w-0 flex-1 truncate font-bold text-primary text-xs">
+          <Reply className="size-3 shrink-0 text-foreground" />
+          <span className="min-w-0 flex-1 truncate font-bold text-foreground text-xs">
             {replyTo.sender?.name}
           </span>
         </div>
@@ -74,6 +74,6 @@ function getReplyReferenceClassName({
     "mb-1.5 flex w-0 min-w-full max-w-full items-stretch gap-2 overflow-hidden rounded-lg px-2 py-1.5 text-left transition",
     isOwn ? "bg-canvas/45 dark:bg-white/7" : "bg-muted/45 dark:bg-white/6",
     isActionable &&
-      "cursor-pointer hover:bg-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35",
+      "cursor-pointer hover:ring-1 hover:ring-foreground/35 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
   );
 }

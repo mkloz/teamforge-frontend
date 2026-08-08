@@ -155,7 +155,7 @@ export function ScenarioModePanel({
         <div className="fade-in slide-in-from-top-2 fixed top-16 right-2 left-2 max-h-[calc(100dvh-5rem)] animate-in overflow-y-auto rounded-2xl border border-border/75 bg-card/98 p-4 shadow-2xl backdrop-blur-xl duration-200 motion-reduce:animate-none sm:left-auto sm:w-96 md:top-3 md:right-14 md:max-h-[calc(100dvh-1.5rem)]">
           <header className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/12 text-primary">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/12 text-foreground">
                 <FlaskConical aria-hidden="true" className="size-4" />
               </span>
               <div className="min-w-0 pt-0.5">

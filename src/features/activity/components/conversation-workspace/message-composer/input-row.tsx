@@ -75,7 +75,7 @@ export function InputRow({
                 type="button"
                 variant="ghost"
                 size="icon-sm"
-                className="size-11 rounded-full text-slate-muted hover:text-forge-teal [@media(pointer:fine)]:size-8"
+                className="size-11 rounded-full text-slate-muted hover:text-foreground [@media(pointer:fine)]:size-8"
                 disabled={controlsDisabled}
                 onClick={onCreateProposal}
                 aria-label="Suggest a plan change"

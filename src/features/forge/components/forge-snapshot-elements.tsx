@@ -72,7 +72,7 @@ export function ForgeSnapshotFact({
       <dt
         className={cn(
           "font-semibold text-muted-foreground text-xs transition-colors",
-          active && "text-forge-teal",
+          active && "text-foreground",
         )}
       >
         {label}

@@ -112,7 +112,7 @@ function CompactGroupCoverHeader({
         aria-label="Scroll group panel to top"
         tabIndex={isCompactVisible ? 0 : -1}
         onClick={onCompactHeaderClick}
-        className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-inset"
+        className="absolute inset-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-inset"
       />
 
       <Avatar
@@ -121,7 +121,7 @@ function CompactGroupCoverHeader({
         alt={`${group.name} avatar`}
         shape="rounded"
         className="pointer-events-none relative z-10 size-10 rounded-md bg-forge-teal/10 ring-1 ring-border/50"
-        fallbackClassName="bg-forge-teal/10 text-forge-teal"
+        fallbackClassName="bg-forge-teal/10 text-foreground"
         loading="eager"
       />
       <div className="pointer-events-none relative z-10 min-w-0 flex-1">

@@ -135,7 +135,7 @@ function HistoryCardCover({ item }: { item: PlanHistoryItem }) {
 function HistoryCardTitleRow({ item }: { item: PlanHistoryItem }) {
   return (
     <div className="flex min-w-0 items-start gap-2">
-      <h4 className="truncate font-semibold text-ink text-sm transition-colors group-hover:text-forge-teal">
+      <h4 className="truncate font-semibold text-ink text-sm transition-colors group-hover:text-foreground">
         {item.title}
       </h4>
       <HistoryRatingPill rating={item.rating} />

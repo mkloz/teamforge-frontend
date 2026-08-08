@@ -122,7 +122,7 @@ export function MobilePlanReview({ fw }: MobilePlanReviewProps) {
                 <span className="font-semibold text-foreground text-sm">
                   {getPeekLabel(isReady, reviewState.missingDetails)}
                 </span>
-                <span className="shrink-0 text-forge-teal text-xs">
+                <span className="shrink-0 text-foreground text-xs">
                   {isReady ? "Open preview" : "See details"}
                 </span>
               </span>
@@ -143,7 +143,7 @@ export function MobilePlanReview({ fw }: MobilePlanReviewProps) {
 
           <button
             type="button"
-            className="flex min-w-0 items-center gap-2.5 rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45"
+            className="flex min-w-0 items-center gap-2.5 rounded-xl text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
             onClick={openReview}
           >
             <PlanThumbnail coverImage={fw.coverImage} />
@@ -250,11 +250,11 @@ function MissingPlanChecklist({
         {details.map((detail, index) => (
           <button
             type="button"
-            className="group flex w-full items-center gap-3 border-border/35 border-b py-4 text-left last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-inset"
+            className="group flex w-full items-center gap-3 border-border/35 border-b py-4 text-left last:border-b-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-inset"
             key={detail.id}
             onClick={() => onSelect(detail)}
           >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border/60 font-semibold text-muted-foreground text-xs group-hover:border-forge-teal/50 group-hover:text-forge-teal">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border/60 font-semibold text-muted-foreground text-xs group-hover:border-foreground/45 group-hover:text-foreground">
               {index + 1}
             </span>
             <span className="min-w-0 flex-1">
@@ -267,7 +267,7 @@ function MissingPlanChecklist({
             </span>
             <ChevronRight
               aria-hidden="true"
-              className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-forge-teal"
+              className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground"
             />
           </button>
         ))}

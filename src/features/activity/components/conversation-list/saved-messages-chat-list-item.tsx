@@ -137,7 +137,7 @@ function SavedMessagesListItemRow({
           type="button"
           aria-current={viewState.isSelected ? "true" : undefined}
           aria-label={SAVED_MESSAGES_TITLE}
-          className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset"
+          className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-inset"
           onClick={onSelect}
         >
           <span className="sr-only">Open saved messages</span>
@@ -200,7 +200,7 @@ function SavedMessagesListItemContent({
           {count > 0 ? preview : SAVED_MESSAGES_SUBTITLE}
         </p>
         <ChevronRight
-          className="size-3.5 shrink-0 text-slate-muted/70 transition group-hover/item:translate-x-0.5 group-hover/item:text-forge-teal"
+          className="size-3.5 shrink-0 text-slate-muted/70 transition group-hover/item:translate-x-0.5 group-hover/item:text-foreground"
           strokeWidth={2.25}
           aria-hidden="true"
         />

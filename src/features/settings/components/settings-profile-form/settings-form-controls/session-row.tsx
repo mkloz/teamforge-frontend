@@ -122,7 +122,7 @@ function SessionTechnicalDetails({ session }: { session: AuthSession }) {
     <CollapsibleSection
       className="mt-2 text-xs"
       summary="Technical details"
-      triggerClassName="text-slate-muted"
+      triggerClassName="min-h-9 text-slate-muted"
     >
       <dl className="grid gap-2 text-slate-muted">
         <div className="flex items-start gap-2">

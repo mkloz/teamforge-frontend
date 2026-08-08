@@ -33,8 +33,7 @@ export function DevToolIconButton({
           aria-pressed={pressed}
           className={cn(
             "size-9 shrink-0 rounded-full border border-border/70 bg-card/95 p-0 text-muted-foreground shadow-sm backdrop-blur-md hover:border-foreground/20 hover:bg-muted hover:text-foreground",
-            active &&
-              "border-primary/45 bg-primary/12 text-primary hover:border-primary/55 hover:bg-primary/18",
+            active && "border-transparent bg-primary text-primary-foreground",
           )}
           onClick={onClick}
           size="icon-xs"

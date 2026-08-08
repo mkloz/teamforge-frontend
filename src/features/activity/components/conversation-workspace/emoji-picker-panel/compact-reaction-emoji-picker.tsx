@@ -171,7 +171,7 @@ function CompactReactionEmojiButton({
       aria-label={`Use ${emoji.label}`}
       aria-pressed={isSelected}
       className={cn(
-        "flex size-7 min-w-0 items-center justify-center self-center justify-self-center rounded-md text-base leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/18",
+        "flex size-7 min-w-0 items-center justify-center self-center justify-self-center rounded-md text-base leading-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
         isSelected
           ? "bg-accent/18 shadow-sm ring-1 ring-accent/45 hover:bg-accent/22"
           : "hover:bg-primary/10",

@@ -28,7 +28,7 @@ export function SignalRow({ signal }: { signal: GroupPlanFitSignal }) {
       <Icon
         className={cn(
           "mt-0.5 size-4 shrink-0",
-          signal.strength === "HIGH" && "text-forge-teal",
+          signal.strength === "HIGH" && "text-foreground",
           signal.strength === "MEDIUM" && "text-spark-amber",
           signal.strength === "LOW" && "text-muted-foreground",
         )}

@@ -307,8 +307,8 @@ function TitlePinButton({
       aria-label={isPinned ? "Unpin chat" : "Pin chat"}
       className={cn(
         "relative z-20 hidden size-6 shrink-0 items-center justify-center rounded-full text-slate-muted/70 transition",
-        "hover:bg-forge-teal/8 hover:text-forge-teal",
-        "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25",
+        "hover:bg-forge-teal/8 hover:text-foreground",
+        "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
         "opacity-100 group-focus-within/item:inline-flex group-hover/item:inline-flex",
       )}
       onClick={(event) => {
@@ -329,7 +329,7 @@ function StaticPinnedIcon() {
         size="2xs"
         shape="circle"
         tone="none"
-        className="size-3.5 text-forge-teal"
+        className="size-3.5 text-foreground"
       >
         <Pin
           className="size-2.5 rotate-45"

@@ -44,14 +44,14 @@ export function LocationFilter() {
                 "flex min-h-12 cursor-pointer items-center gap-3 px-3.5 py-2.5 transition-colors",
                 index > 0 && "border-border/55 border-t",
                 isSelected
-                  ? "bg-forge-teal/8 text-ink"
+                  ? "bg-foreground/7 text-ink shadow-[inset_2px_0_0_color-mix(in_srgb,var(--color-foreground)_40%,transparent)]"
                   : "text-slate-muted hover:bg-muted/25 hover:text-ink",
               )}
             >
               <Icon
                 className={cn(
                   "size-4 shrink-0",
-                  isSelected && "text-forge-teal",
+                  isSelected && "text-foreground",
                 )}
                 aria-hidden="true"
               />

@@ -193,7 +193,7 @@ export function OperatorWorkspacePage() {
                 <span
                   className={cn(
                     "ml-2 font-semibold text-xs tabular-nums",
-                    queueId === queue ? "text-primary" : "text-slate-muted",
+                    queueId === queue ? "text-foreground" : "text-slate-muted",
                   )}
                 >
                   {count ?? "—"}
@@ -471,7 +471,7 @@ function OperatorCaseRow({
           to="/admin/moderation/cases/$caseId"
           params={{ caseId: item.id }}
           search={{ ...returnSearch, source: "assigned" }}
-          className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm"
+          className="inline-flex min-h-11 items-center gap-2 font-semibold text-foreground text-sm"
         >
           Open case
           <ArrowRight className="size-4" aria-hidden="true" />

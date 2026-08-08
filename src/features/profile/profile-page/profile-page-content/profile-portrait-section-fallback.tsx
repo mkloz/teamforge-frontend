@@ -47,7 +47,7 @@ export function ProfilePortraitSectionFallback() {
         </div>
       </div>
 
-      <div className="flex h-full min-h-64 flex-col rounded-2xl border border-forge-teal/20 bg-forge-teal/8 p-4">
+      <div className="flex h-full min-h-64 flex-col rounded-2xl bg-forge-teal/8 p-4 shadow-soft-sm">
         <div className="flex items-center justify-between gap-3">
           <Skeleton className="h-3 w-28" />
           <Skeleton shape="circle" className="size-4" tone="teal" />

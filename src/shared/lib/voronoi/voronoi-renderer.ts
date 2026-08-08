@@ -1,8 +1,19 @@
 import type { Voronoi } from "d3-delaunay";
-import { ANIMATION_CONFIG, COLORS } from "@/shared/constants/voronoi.constants";
-import type { Point } from "./voronoi-contract";
+import {
+  ANIMATION_CONFIG,
+  COLORS,
+  NUM_FORMATION,
+  NUM_GUARD,
+} from "@/shared/constants/voronoi.constants";
+import type { Point, VoronoiFormationLayout } from "./voronoi-contract";
 
 type VoronoiCell = ReturnType<Voronoi<Float64Array>["cellPolygon"]>;
+type RgbColor = readonly [number, number, number];
+
+const FORMATION_TEAL: RgbColor = [13, 148, 136];
+const FORMATION_TEAL_EDGE: RgbColor = [45, 212, 191];
+const FORMATION_AMBER: RgbColor = [245, 158, 11];
+const FORMATION_AMBER_EDGE: RgbColor = [251, 191, 36];
 
 export function drawParticleCells(
   ctx: CanvasRenderingContext2D,
@@ -13,6 +24,8 @@ export function drawParticleCells(
   canvasMouseY: number,
   typingPulse: number,
   mouseActive: boolean,
+  formation: VoronoiFormationLayout,
+  formationProgress: number,
 ) {
   for (let i = 0; i < points.length; i++) {
     const p = points[i];
@@ -21,7 +34,12 @@ export function drawParticleCells(
 
     traceVoronoiCell(ctx, cell);
 
-    const baseOpacity = p.opacity + typingPulse * 0.02;
+    const isFormationCell = i < NUM_FORMATION;
+    const isAssemblyCell = i < NUM_FORMATION + NUM_GUARD;
+    const assemblyFade = isAssemblyCell
+      ? 1 - formationProgress * 0.78
+      : 1 - formationProgress * 0.22;
+    const baseOpacity = (p.opacity + typingPulse * 0.015) * assemblyFade;
     const drawX = flatPoints[i * 2];
     const drawY = flatPoints[i * 2 + 1];
 
@@ -45,8 +63,93 @@ export function drawParticleCells(
 
     ctx.fill();
 
-    strokeParticleCellEdges(ctx);
+    strokeParticleCellEdges(ctx, formationProgress, isAssemblyCell);
+    if (isFormationCell && formationProgress > 0.02) {
+      drawAssembledParticleCell({
+        accentWeight: formation.accentWeights[i] ?? 0,
+        cell,
+        cellRadius: formation.cellRadius,
+        ctx,
+        formationProgress,
+        index: i,
+        siteX: drawX,
+        siteY: drawY,
+      });
+    }
   }
+}
+
+function drawAssembledParticleCell({
+  accentWeight,
+  cell,
+  cellRadius,
+  ctx,
+  formationProgress,
+  index,
+  siteX,
+  siteY,
+}: {
+  accentWeight: number;
+  cell: VoronoiCell;
+  cellRadius: number;
+  ctx: CanvasRenderingContext2D;
+  formationProgress: number;
+  index: number;
+  siteX: number;
+  siteY: number;
+}) {
+  const reveal = smoothstep(0.08, 0.94, formationProgress);
+  const maxRadius = cellRadius * (1.14 - reveal * 0.14);
+  const inset = 0.9 - reveal * 0.08;
+
+  ctx.beginPath();
+  for (let vertexIndex = 0; vertexIndex < cell.length; vertexIndex++) {
+    const deltaX = cell[vertexIndex][0] - siteX;
+    const deltaY = cell[vertexIndex][1] - siteY;
+    const distance = Math.hypot(deltaX, deltaY);
+    const radiusScale = distance > 0 ? Math.min(1, maxRadius / distance) : 1;
+    const x = siteX + deltaX * radiusScale * inset;
+    const y = siteY + deltaY * radiusScale * inset;
+    if (vertexIndex === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+
+  const tone = ((index * 17) % 13) / 12;
+  const accentReveal =
+    Math.max(0, Math.min(1, accentWeight)) *
+    smoothstep(0.28, 0.92, formationProgress);
+  ctx.fillStyle = toRgba(
+    mixRgb(FORMATION_TEAL, FORMATION_AMBER, accentReveal),
+    (0.44 + tone * 0.2) * reveal,
+  );
+  ctx.fill();
+  ctx.strokeStyle = toRgba(
+    mixRgb(FORMATION_TEAL_EDGE, FORMATION_AMBER_EDGE, accentReveal),
+    reveal * (0.16 + tone * 0.12),
+  );
+  ctx.lineWidth = 0.75;
+  ctx.stroke();
+}
+
+function mixRgb(from: RgbColor, to: RgbColor, amount: number): RgbColor {
+  return [
+    Math.round(from[0] + (to[0] - from[0]) * amount),
+    Math.round(from[1] + (to[1] - from[1]) * amount),
+    Math.round(from[2] + (to[2] - from[2]) * amount),
+  ];
+}
+
+function toRgba(color: RgbColor, alpha: number) {
+  return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
+}
+
+function smoothstep(edgeStart: number, edgeEnd: number, value: number) {
+  const normalized = Math.max(
+    0,
+    Math.min(1, (value - edgeStart) / (edgeEnd - edgeStart)),
+  );
+  return normalized * normalized * (3 - 2 * normalized);
 }
 
 function traceVoronoiCell(ctx: CanvasRenderingContext2D, cell: VoronoiCell) {
@@ -97,19 +200,21 @@ function drawCellHoverOverlay({
   ctx: CanvasRenderingContext2D;
   hoverIntensity: number;
 }) {
-  ctx.fillStyle = `rgba(13, 148, 136, ${Math.min(1, baseOpacity + 0.4 * hoverIntensity)})`;
-
-  ctx.strokeStyle = `rgba(13, 148, 136, ${0.4 * hoverIntensity})`;
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
+  ctx.fillStyle = `rgba(13, 148, 136, ${Math.min(1, baseOpacity + 0.2 * hoverIntensity)})`;
 }
 
-function strokeParticleCellEdges(ctx: CanvasRenderingContext2D) {
-  ctx.strokeStyle = "rgba(13, 148, 136, 0.15)";
+function strokeParticleCellEdges(
+  ctx: CanvasRenderingContext2D,
+  formationProgress: number,
+  isAssemblyCell: boolean,
+) {
+  const fade =
+    1 - smoothstep(0.2, 0.9, formationProgress) * (isAssemblyCell ? 0.9 : 0.62);
+  ctx.strokeStyle = `rgba(13, 148, 136, ${0.15 * fade})`;
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  ctx.strokeStyle = "rgba(13, 148, 136, 0.05)";
+  ctx.strokeStyle = `rgba(13, 148, 136, ${0.05 * fade})`;
   ctx.lineWidth = 2;
   ctx.stroke();
 }
@@ -122,10 +227,8 @@ export function drawCatalystCore(
   amberOpacity: number,
 ) {
   const timeNow = Date.now();
-  const coreRadius = (8 * sparkPhase + Math.sin(timeNow / 150) * 1.5) * 0.75;
-
-  const outerGlowRadius =
-    60 * sparkPhase * (1 + Math.sin(timeNow / 800) * 0.1) * 0.75;
+  const pulse = (Math.sin(timeNow / 520) + 1) / 2;
+  const outerGlowRadius = (18 + pulse * 7) * sparkPhase;
   ctx.beginPath();
   ctx.arc(coreAvgX, coreAvgY, outerGlowRadius, 0, Math.PI * 2);
   const outerGradient = ctx.createRadialGradient(
@@ -136,79 +239,28 @@ export function drawCatalystCore(
     coreAvgY,
     outerGlowRadius,
   );
-  outerGradient.addColorStop(0, `rgba(245, 158, 11, ${amberOpacity * 0.3})`);
+  outerGradient.addColorStop(0, `rgba(245, 158, 11, ${amberOpacity * 0.24})`);
   outerGradient.addColorStop(1, "rgba(245, 158, 11, 0)");
   ctx.fillStyle = outerGradient;
   ctx.fill();
 
-  const innerGlowRadius =
-    24 * sparkPhase * (1 + Math.sin(timeNow / 300) * 0.2) * 0.75;
   ctx.beginPath();
-  ctx.arc(coreAvgX, coreAvgY, innerGlowRadius, 0, Math.PI * 2);
-  const innerGradient = ctx.createRadialGradient(
-    coreAvgX,
-    coreAvgY,
-    0,
-    coreAvgX,
-    coreAvgY,
-    innerGlowRadius,
-  );
-  innerGradient.addColorStop(0, `rgba(245, 158, 11, ${amberOpacity * 0.8})`);
-  innerGradient.addColorStop(1, "rgba(245, 158, 11, 0)");
-  ctx.fillStyle = innerGradient;
-  ctx.fill();
-
-  // Rays
-  const numRays = 8;
-  ctx.save();
-  ctx.translate(coreAvgX, coreAvgY);
-  ctx.rotate(timeNow / 3000);
-  for (let r = 0; r < numRays; r++) {
-    const rayAngle = (r / numRays) * Math.PI * 2;
-    const rayLength =
-      (15 + Math.sin(timeNow / 200 + r) * 5) * sparkPhase * 0.75;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(Math.cos(rayAngle) * rayLength, Math.sin(rayAngle) * rayLength);
-    ctx.strokeStyle = `rgba(245, 158, 11, ${amberOpacity * 0.6})`;
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-  }
-  ctx.restore();
-
-  // Sharp Core
-  ctx.beginPath();
-  ctx.arc(coreAvgX, coreAvgY, Math.max(0.1, coreRadius * 0.5), 0, Math.PI * 2);
+  ctx.arc(coreAvgX, coreAvgY, Math.max(0.1, 2.5 * sparkPhase), 0, Math.PI * 2);
   ctx.fillStyle = COLORS.amberLight;
   ctx.fill();
 
-  // Secondary ring
   ctx.beginPath();
-  ctx.arc(coreAvgX, coreAvgY, Math.max(0.1, coreRadius * 0.8), 0, Math.PI * 2);
-  ctx.strokeStyle = `rgba(245, 158, 11, ${amberOpacity * 0.8})`;
+  ctx.arc(coreAvgX, coreAvgY, Math.max(0.1, 5 * sparkPhase), 0, Math.PI * 2);
+  ctx.strokeStyle = `rgba(245, 158, 11, ${amberOpacity * 0.68})`;
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  // Pulse Ring
-  const pulseTime = (timeNow / 800) % 1;
-  const pulseRadius = pulseTime * 120 * sparkPhase;
-  const pulseOpacity = (1 - pulseTime) * amberOpacity * 0.4;
+  const pulseTime = (timeNow / 1600) % 1;
+  const pulseRadius = (8 + pulseTime * 30) * sparkPhase;
+  const pulseOpacity = (1 - pulseTime) * amberOpacity * 0.18;
   ctx.beginPath();
   ctx.arc(coreAvgX, coreAvgY, Math.max(0.1, pulseRadius), 0, Math.PI * 2);
   ctx.strokeStyle = `rgba(245, 158, 11, ${pulseOpacity})`;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Tech Ring
-  ctx.save();
-  ctx.translate(coreAvgX, coreAvgY);
-  ctx.rotate(-timeNow / 4000);
-  ctx.beginPath();
-  ctx.arc(0, 0, 40 * sparkPhase, 0, Math.PI * 2);
-  ctx.strokeStyle = `rgba(13, 148, 136, ${amberOpacity * 0.5})`;
   ctx.lineWidth = 1;
-  ctx.setLineDash([4, 6]);
   ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.restore();
 }

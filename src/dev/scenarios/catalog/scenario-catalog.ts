@@ -109,7 +109,7 @@ export const scenarioCatalog = [
     "Onboarding · replay guidance",
     "Onboarding",
     "/practice?returnTo=/explore",
-    "Replay the guided, element-anchored main-navigation tutorial.",
+    "Replay the focused Explore, Forge, and Activity product tour.",
   ),
   scenario(
     "onboarding-intent-create",

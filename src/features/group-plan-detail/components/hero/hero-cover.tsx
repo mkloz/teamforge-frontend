@@ -44,11 +44,11 @@ export function HeroCover({ detail, alt, children }: HeroCoverProps) {
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-4/5 bg-linear-to-t from-canvas via-canvas/92 to-80% to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-4/5 bg-linear-to-t from-black/88 via-black/48 to-80% to-transparent"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-0 w-3/4 bg-linear-to-r from-canvas/35 to-transparent"
+          className="pointer-events-none absolute inset-y-0 left-0 w-3/4 bg-linear-to-r from-black/28 to-transparent"
         />
 
         <div className="transform-[translate3d(0,var(--group-detail-cover-original-y,0px),0)] relative flex h-full flex-col justify-end p-5 opacity-(--group-detail-cover-original-opacity,1) transition-[opacity,transform] duration-300 ease-out [transition-delay:var(--group-detail-cover-original-delay,0ms)] motion-reduce:transition-none sm:p-7 md:p-9">

@@ -54,7 +54,7 @@ export function DynamicQuestionPage({
               ref={pageHeadingRef}
               tabIndex={-1}
               aria-label={`Personality assessment, page ${pageNumber} of up to ${maximumPages}`}
-              className="rounded font-bold font-sans text-muted-foreground text-xs outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2"
+              className="rounded font-bold font-sans text-muted-foreground text-xs outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2"
             >
               Page {pageNumber} of up to {maximumPages}
             </h1>
@@ -94,7 +94,7 @@ export function DynamicQuestionPage({
             <m.div key={item.itemVersionId} variants={fadeUpItem}>
               <div
                 className={cn(
-                  "relative w-full rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-300",
+                  "relative w-full rounded-xl bg-card p-4 shadow-soft-sm transition-all duration-300",
                   value === undefined
                     ? "hover:shadow-sm active:bg-muted/50 hover:sm:shadow-md"
                     : "border-forge-teal/30 bg-forge-teal/6 shadow-sm",

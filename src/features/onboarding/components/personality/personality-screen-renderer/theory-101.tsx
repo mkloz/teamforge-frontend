@@ -44,23 +44,23 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
 
           <ul className="ml-2 flex flex-col gap-2.5 border-forge-teal/30 border-l-2 py-1 pl-4 font-sans text-foreground/90 text-sm sm:ml-4 sm:gap-3 sm:pl-5 sm:text-chat-input">
             <li className="flex items-center gap-2.5">
-              <span className="w-4 font-black text-forge-teal">O</span>
+              <span className="w-4 font-black text-foreground">O</span>
               <span>Openness to Experience</span>
             </li>
             <li className="flex items-center gap-2.5">
-              <span className="w-4 font-black text-forge-teal">C</span>
+              <span className="w-4 font-black text-foreground">C</span>
               <span>Conscientiousness</span>
             </li>
             <li className="flex items-center gap-2.5">
-              <span className="w-4 font-black text-forge-teal">E</span>
+              <span className="w-4 font-black text-foreground">E</span>
               <span>Extraversion</span>
             </li>
             <li className="flex items-center gap-2.5">
-              <span className="w-4 font-black text-forge-teal">A</span>
+              <span className="w-4 font-black text-foreground">A</span>
               <span>Agreeableness</span>
             </li>
             <li className="flex items-center gap-2.5">
-              <span className="w-4 font-black text-forge-teal">N</span>
+              <span className="w-4 font-black text-foreground">N</span>
               <span>Emotional sensitivity</span>
             </li>
           </ul>

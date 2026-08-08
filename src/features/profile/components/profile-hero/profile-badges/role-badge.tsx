@@ -42,7 +42,7 @@ export function RoleBadge({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="group rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="group inline-flex min-h-9 min-w-9 items-center rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
           aria-label={`Group role: ${groupMode}. Click for more information.`}
         >
           <ProfileSignal label="Role" value={groupMode} />

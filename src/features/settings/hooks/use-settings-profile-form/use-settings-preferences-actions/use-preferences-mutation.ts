@@ -2,7 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 
 import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
-import { getChangedPreferenceKeys } from "@/features/settings/hooks/use-settings-profile-form/use-settings-preferences-actions/preference-keys";
+import {
+  getChangedPreferenceKeys,
+  type SettingsPreferenceKey,
+} from "@/features/settings/hooks/use-settings-profile-form/use-settings-preferences-actions/preference-keys";
 import type { PreferencesMutationContext } from "@/features/settings/hooks/use-settings-profile-form/use-settings-preferences-actions/preferences-mutation-context";
 import { rollbackChangedPreferenceKeys } from "@/features/settings/hooks/use-settings-profile-form/use-settings-preferences-actions/rollback-preferences";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
@@ -15,6 +18,12 @@ import { useThemeStore } from "@/shared/store/theme.store";
 type UpdateNotificationPreferencesResult = Awaited<
   ReturnType<typeof SettingsCommands.updateNotificationPreferences>
 >;
+
+const appearancePreferenceKeys = new Set<SettingsPreferenceKey>([
+  "themeAppearance",
+  "themeStyle",
+  "themeColor",
+]);
 
 export function usePreferencesMutation({
   setPreferencesError,
@@ -55,13 +64,17 @@ export function usePreferencesMutation({
         previousPreferences,
       } satisfies PreferencesMutationContext;
     },
-    onSuccess: (result) => {
+    onSuccess: (result, _nextPreferences, context) => {
       SettingsCache.setNotificationPreferences(result.data);
       useThemeStore.getState().setThemePreferences(result.data);
       setPreferencesError(null);
-      showAppSuccessToast("Settings updated.", {
-        id: "settings-preferences-updated",
-      });
+      if (
+        !context?.changedKeys.every((key) => appearancePreferenceKeys.has(key))
+      ) {
+        showAppSuccessToast("Settings updated.", {
+          id: "settings-preferences-updated",
+        });
+      }
       trackMutationOutcome(
         trackedMutationNames.settingsNotificationPreferences,
         "success",

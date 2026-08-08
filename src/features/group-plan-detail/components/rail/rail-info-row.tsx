@@ -16,19 +16,21 @@ export function RailInfoRow({
   value,
 }: RailInfoRowProps) {
   return (
-    <FactItem
-      icon={Icon}
-      iconShape="square"
-      iconSize="lg"
-      iconTileClassName="size-9"
-      label={label}
-      labelClassName="font-semibold text-muted-foreground"
-      value={value}
-      valueClassName={cn(
-        "font-bold text-foreground",
-        truncateValue && "truncate",
-      )}
-      className="gap-3.5"
-    />
+    <dl>
+      <FactItem
+        icon={Icon}
+        iconShape="square"
+        iconSize="lg"
+        iconTileClassName="size-9"
+        label={label}
+        labelClassName="font-semibold text-muted-foreground"
+        value={value}
+        valueClassName={cn(
+          "font-bold text-foreground",
+          truncateValue && "truncate",
+        )}
+        className="[&>dd]:gap-3.5"
+      />
+    </dl>
   );
 }

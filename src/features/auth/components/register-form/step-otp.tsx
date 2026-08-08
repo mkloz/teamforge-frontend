@@ -28,7 +28,7 @@ interface StepOtpProps {
 }
 
 const OTP_SLOT_CLASS =
-  "h-12 w-10 max-w-12 rounded-xl border border-border bg-card font-mono text-lg transition-all duration-200 hover:border-forge-teal/40 focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-forge-teal/15 sm:w-12";
+  "h-12 w-10 max-w-12 rounded-xl border border-border bg-card font-mono text-lg transition-all duration-200 hover:border-foreground/35 focus-within:border-foreground/70 focus-within:ring-1 focus-within:ring-foreground focus-within:ring-offset-2 focus-within:ring-offset-background sm:w-12";
 
 const OTP_SLOT_GROUPS = [
   [0, 1, 2],

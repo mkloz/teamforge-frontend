@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { CalendarCheck2, History } from "lucide-react";
+import { CalendarCheck2 } from "lucide-react";
 
 import { ProfileApi } from "@/features/profile/api/profile.api";
 import type { PersonalActivityHistoryItem } from "@/features/profile/schemas/personal-activity-history.schema";
@@ -21,21 +21,16 @@ export function PersonalActivityHistorySection() {
 
   return (
     <section aria-labelledby="private-activity-history-heading">
-      <div className="mb-4 flex items-start gap-3">
-        <span className="mt-0.5 rounded-xl bg-primary/10 p-2 text-primary">
-          <History aria-hidden="true" className="size-5" />
-        </span>
-        <div>
-          <h2
-            id="private-activity-history-heading"
-            className="font-bold text-ink text-xl"
-          >
-            Activity history
-          </h2>
-          <p className="mt-1 text-slate-muted text-sm">
-            Completed plans, visible only to you.
-          </p>
-        </div>
+      <div className="mb-4">
+        <h2
+          id="private-activity-history-heading"
+          className="font-bold text-ink text-xl"
+        >
+          Activity history
+        </h2>
+        <p className="mt-1 text-slate-muted text-sm">
+          Completed plans, visible only to you.
+        </p>
       </div>
 
       {query.isPending ? (
@@ -95,7 +90,7 @@ function HistoryRow({ item }: { item: PersonalActivityHistoryItem }) {
     <article className="flex min-w-0 items-start gap-3 rounded-2xl bg-card px-4 py-4 sm:px-5">
       <CalendarCheck2
         aria-hidden="true"
-        className="mt-0.5 size-5 shrink-0 text-primary"
+        className="mt-0.5 size-5 shrink-0 text-foreground"
       />
       <div className="min-w-0 flex-1">
         <h3 className="truncate font-semibold text-ink">

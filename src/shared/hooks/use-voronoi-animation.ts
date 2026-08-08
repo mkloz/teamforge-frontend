@@ -3,14 +3,21 @@ import { useEventListener } from "usehooks-ts";
 
 import { NUM_SEEDS } from "@/shared/constants/voronoi.constants";
 import { startVoronoiAnimationLoop } from "@/shared/hooks/voronoi-animation/animation-loop";
-import { INITIAL_MOUSE_POSITION } from "@/shared/hooks/voronoi-animation/mouse";
+import {
+  getCanvasPointerPosition,
+  INITIAL_MOUSE_POSITION,
+} from "@/shared/hooks/voronoi-animation/mouse";
 import {
   createVoronoiPoint,
   getCenterPoint,
+  resizeVoronoiPoints,
 } from "@/shared/hooks/voronoi-animation/points";
 import {
+  getBrowserComputedStyle,
   getBrowserDevicePixelRatio,
+  getBrowserDocumentElement,
   getBrowserMediaQuery,
+  getBrowserWindow,
 } from "@/shared/lib/browser-environment";
 import type {
   ScheduledAnimationFrameHandle,
@@ -21,15 +28,25 @@ import type {
   Dimensions,
   MouseState,
   Point,
+  VoronoiFormationLayout,
+  VoronoiFormationTarget,
 } from "@/shared/lib/voronoi/voronoi-contract";
+import {
+  createVoronoiFormationLayout,
+  getDefaultVoronoiFormation,
+  getVoronoiFormationKey,
+  getVoronoiFormationLayoutKey,
+} from "@/shared/lib/voronoi/voronoi-formation";
 
 interface UseVoronoiOptions {
   progress: number;
+  formation?: VoronoiFormationTarget;
   rotationDegrees?: number;
 }
 
 export function useVoronoiAnimation({
   progress,
+  formation = getDefaultVoronoiFormation(),
   rotationDegrees = -25,
 }: UseVoronoiOptions) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,7 +54,10 @@ export function useVoronoiAnimation({
   const pointsRef = useRef<Point[]>([]);
   const requestRef = useRef<ScheduledAnimationFrameHandle | null>(null);
   const dprRef = useRef(1);
-  const prefersReducedMotionRef = useRef(false);
+  const formationRef = useRef<VoronoiFormationLayout | null>(null);
+  const previousDimensionsRef = useRef<Dimensions | null>(null);
+  const isVisibleRef = useRef(true);
+  const lastFrameTimeRef = useRef<number | null>(null);
 
   // Animation State
   const currentProgressRef = useRef(0);
@@ -59,6 +79,15 @@ export function useVoronoiAnimation({
     width: 0,
     height: 0,
   });
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const formationKey = getVoronoiFormationKey(formation);
+  const formationLayoutKey = getVoronoiFormationLayoutKey(
+    formation,
+    rotationDegrees,
+  );
+  const formationTargetRef = useRef(formation);
+  formationTargetRef.current = formation;
+  const reducedMotionProgress = reducedMotion ? progress : null;
 
   // Sync props to refs
   useEffect(() => {
@@ -94,32 +123,79 @@ export function useVoronoiAnimation({
       return;
     }
 
-    setDimensions({
+    const nextDimensions = {
       width: containerRef.current.clientWidth,
       height: containerRef.current.clientHeight,
-    });
+    };
+    setDimensions((currentDimensions) =>
+      currentDimensions.width === nextDimensions.width &&
+      currentDimensions.height === nextDimensions.height
+        ? currentDimensions
+        : nextDimensions,
+    );
     dprRef.current = getBrowserDevicePixelRatio();
   }, []);
 
   useEventListener("resize", syncDimensions, undefined, { passive: true });
 
-  // Handle Container Resizing and Environment Monitoring
+  // Handle container resizing and both OS and in-app reduced-effects settings.
   useEffect(() => {
     const motionQuery = getBrowserMediaQuery(
       "(prefers-reduced-motion: reduce)",
     );
-    prefersReducedMotionRef.current = motionQuery?.matches ?? false;
-    const motionListener = (e: MediaQueryListEvent) => {
-      prefersReducedMotionRef.current = e.matches;
+    const documentElement = getBrowserDocumentElement();
+    const browserWindow = getBrowserWindow();
+    const syncReducedMotion = () => {
+      setReducedMotion(
+        (motionQuery?.matches ?? false) ||
+          documentElement?.dataset.themeStyle === "glass",
+      );
     };
+    const motionListener = (e: MediaQueryListEvent) => {
+      setReducedMotion(
+        e.matches || documentElement?.dataset.themeStyle === "glass",
+      );
+    };
+    const effectsObserver =
+      documentElement && browserWindow?.MutationObserver
+        ? new browserWindow.MutationObserver(syncReducedMotion)
+        : null;
+    const resizeObserver =
+      containerRef.current && browserWindow?.ResizeObserver
+        ? new browserWindow.ResizeObserver(syncDimensions)
+        : null;
 
     syncDimensions();
+    syncReducedMotion();
     motionQuery?.addEventListener("change", motionListener);
+    if (documentElement) {
+      effectsObserver?.observe(documentElement, {
+        attributeFilter: ["data-theme-style"],
+        attributes: true,
+      });
+    }
+    if (containerRef.current) {
+      resizeObserver?.observe(containerRef.current);
+    }
 
     return () => {
       motionQuery?.removeEventListener("change", motionListener);
+      effectsObserver?.disconnect();
+      resizeObserver?.disconnect();
     };
   }, [syncDimensions]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const browserWindow = getBrowserWindow();
+    if (!container || !browserWindow?.IntersectionObserver) return undefined;
+
+    const observer = new browserWindow.IntersectionObserver(([entry]) => {
+      isVisibleRef.current = entry?.isIntersecting ?? true;
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   // Initialize Mouse Targets
   useEffect(() => {
@@ -136,20 +212,48 @@ export function useVoronoiAnimation({
       return undefined;
     }
 
-    pointsRef.current = Array.from({ length: NUM_SEEDS }).map((_, index) =>
-      createVoronoiPoint(index, dimensions),
-    );
+    const previousDimensions = previousDimensionsRef.current;
+    if (pointsRef.current.length === 0) {
+      pointsRef.current = Array.from({ length: NUM_SEEDS }).map((_, index) =>
+        createVoronoiPoint(index, dimensions),
+      );
+    } else if (previousDimensions) {
+      resizeVoronoiPoints(pointsRef.current, previousDimensions, dimensions);
+    }
+
+    const target = formationTargetRef.current;
+    if (getVoronoiFormationKey(target) !== formationKey) {
+      return undefined;
+    }
+
+    formationRef.current = createVoronoiFormationLayout({
+      dimensions,
+      points: pointsRef.current,
+      rotationDegrees,
+      target,
+    });
+    previousDimensionsRef.current = dimensions;
 
     return undefined;
-  }, [dimensions]);
+  }, [dimensions, formationKey, rotationDegrees]);
 
   // Main Animation Loop
   useEffect(() => {
+    if (formationRef.current?.key !== formationLayoutKey) {
+      return undefined;
+    }
+    if (reducedMotionProgress !== null) {
+      progressRef.current = reducedMotionProgress;
+    }
+
     const animationRefs = {
       currentMouseRef,
       currentProgressRef,
       dprRef,
+      formationRef,
       isTypingRef,
+      isVisibleRef,
+      lastFrameTimeRef,
       mouseActiveRef,
       pointsRef,
       progressRef,
@@ -164,14 +268,29 @@ export function useVoronoiAnimation({
       canvas: canvasRef.current,
       dimensions,
       refs: animationRefs,
+      reducedMotion,
       rotationDegrees,
     });
-  }, [dimensions, rotationDegrees]);
+  }, [
+    dimensions,
+    formationLayoutKey,
+    reducedMotion,
+    reducedMotionProgress,
+    rotationDegrees,
+  ]);
 
   function handleMouseMove(clientX: number, clientY: number) {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    targetMouseRef.current = { x: clientX - rect.left, y: clientY - rect.top };
+    const point = { x: clientX - rect.left, y: clientY - rect.top };
+    const canvas = canvasRef.current;
+    targetMouseRef.current = canvas
+      ? getCanvasPointerPosition({
+          center: getCenterPoint(dimensions),
+          point,
+          transform: getBrowserComputedStyle(canvas)?.transform ?? "none",
+        })
+      : point;
     mouseActiveRef.current = true;
   }
 

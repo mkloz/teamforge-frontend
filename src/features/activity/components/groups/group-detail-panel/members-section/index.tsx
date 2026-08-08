@@ -504,9 +504,9 @@ function OpenMemberSlot({
           : `Open member slot ${slotNumber} of ${maxMembers}`
       }
       className={cn(
-        "group/slot flex min-h-16 w-full items-center gap-3 rounded-xl border border-border/45 border-dashed px-2 py-2 text-left text-muted-foreground transition-[background-color,border-color,color] duration-150",
+        "group/slot flex min-h-16 w-full items-center gap-3 rounded-xl border border-border/45 border-dashed px-2 py-2 text-left text-muted-foreground transition-[border-color,box-shadow,color,transform] duration-150",
         isInteractive &&
-          "hover:border-forge-teal/45 hover:bg-forge-teal/5 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30",
+          "hover:-translate-y-0.5 hover:border-foreground/35 hover:text-foreground hover:shadow-soft-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-0 active:shadow-none motion-reduce:transform-none",
         !isInteractive && "cursor-default opacity-65",
       )}
       disabled={!isInteractive || disabled}
@@ -516,7 +516,7 @@ function OpenMemberSlot({
           : undefined
       }
     >
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border/55 border-dashed bg-muted/25 transition-colors group-hover/slot:border-forge-teal/35 group-hover/slot:bg-forge-teal/8">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border/55 border-dashed bg-muted/25 transition-colors group-hover/slot:border-foreground/35">
         {isInteractive ? (
           <UserPlus className="size-4.5" aria-hidden="true" />
         ) : (

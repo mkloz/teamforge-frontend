@@ -26,11 +26,11 @@ export function TrustBadge({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="group rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="group inline-flex min-h-9 min-w-9 items-center rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
           aria-label={`${accessibleValue}. Open details.`}
         >
           <ProfileSignal
-            accent="text-forge-teal"
+            accent="text-foreground"
             label="Participation"
             value={displayValue}
           />
@@ -77,7 +77,7 @@ function ReputationPopoverContent({
             : "Current score"}
         </p>
         {score !== null ? (
-          <p className="mt-0.5 font-bold text-forge-teal text-lg tabular-nums">
+          <p className="mt-0.5 font-bold text-foreground text-lg tabular-nums">
             {score} / 100
           </p>
         ) : null}
@@ -106,7 +106,7 @@ function ReputationPopoverContent({
         <p>Calculation version: {summary.calculationVersion}</p>
         {isSelf ? (
           <a
-            className="mt-2 inline-flex min-h-9 items-center font-semibold text-forge-teal underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal"
+            className="mt-2 inline-flex min-h-9 items-center font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
             href="/settings?tab=privacy"
           >
             {summary.hasOpenCorrection

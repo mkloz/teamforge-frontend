@@ -26,14 +26,14 @@ export function PendingInvitationSlot({
         name={invite.name}
         className="size-10 opacity-55 grayscale"
         imageClassName="opacity-75"
-        fallbackClassName="bg-muted text-muted-foreground"
+        fallbackClassName="bg-muted text-foreground/80"
       />
 
       <div className="min-w-0 flex-1">
-        <p className="truncate font-semibold text-foreground/60 text-sm">
+        <p className="truncate font-semibold text-foreground/75 text-sm">
           {invite.name}
         </p>
-        <div className="mt-1.5 flex items-center gap-1.5 text-muted-foreground/65 text-xs">
+        <div className="mt-1.5 flex items-center gap-1.5 text-muted-foreground text-xs">
           {invite.personalityType ? (
             <span className="font-semibold">{invite.personalityType}</span>
           ) : null}
@@ -42,7 +42,7 @@ export function PendingInvitationSlot({
       </div>
 
       <div className="relative flex shrink-0 items-center justify-end">
-        <span className="flex items-center gap-1 text-muted-foreground/65 text-xs transition-opacity sm:group-hover/pending:opacity-0 sm:group-focus-within/pending:opacity-0">
+        <span className="flex items-center gap-1 text-muted-foreground text-xs transition-opacity sm:group-hover/pending:opacity-0 sm:group-focus-within/pending:opacity-0">
           <Clock3 className="size-3.5" aria-hidden="true" />
           <time dateTime={invite.createdAt}>{elapsed}</time>
         </span>
@@ -50,7 +50,7 @@ export function PendingInvitationSlot({
           <button
             type="button"
             aria-label={`Cancel invitation for ${invite.name}`}
-            className="flex size-8 items-center justify-center rounded-full text-muted-foreground transition-[background-color,color,opacity,transform] hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/35 disabled:pointer-events-none sm:absolute sm:right-0 sm:translate-x-1 sm:opacity-0 sm:group-hover/pending:translate-x-0 sm:group-hover/pending:opacity-100 sm:group-focus-within/pending:translate-x-0 sm:group-focus-within/pending:opacity-100"
+            className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-[background-color,color,opacity,transform] hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/35 disabled:pointer-events-none sm:absolute sm:right-0 sm:size-8 sm:translate-x-1 sm:opacity-0 sm:group-hover/pending:translate-x-0 sm:group-hover/pending:opacity-100 sm:group-focus-within/pending:translate-x-0 sm:group-focus-within/pending:opacity-100"
             disabled={cancelDisabled}
             onClick={() => void onCancel(invite.id)}
           >

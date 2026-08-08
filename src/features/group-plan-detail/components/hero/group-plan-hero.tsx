@@ -73,7 +73,7 @@ export function GroupPlanHero({
                 <Button
                   variant="inverseGhost"
                   size="icon"
-                  className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
+                  className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-foreground hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-foreground data-[state=open]:bg-white data-[state=open]:text-foreground"
                   aria-label="Show group QR code"
                 >
                   <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
@@ -117,7 +117,7 @@ function HeroReportButton() {
     <Button
       variant="inverseGhost"
       size="icon"
-      className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
+      className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-foreground hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-foreground data-[state=open]:bg-white data-[state=open]:text-foreground"
       aria-label="Report this group, plan, or activity"
     >
       <Flag size={18} strokeWidth={2.25} aria-hidden="true" />
@@ -219,7 +219,7 @@ function GroupPlanCompactHero({
             aria-label="Scroll group details to top"
             tabIndex={visible ? 0 : -1}
             onClick={scrollWindowToTop}
-            className="absolute inset-0 z-10 rounded-b-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+            className="absolute inset-0 z-10 rounded-b-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           />
 
           <div className="pointer-events-none relative z-20 flex size-full items-center gap-3 px-4 sm:px-5 lg:px-6">
@@ -232,7 +232,7 @@ function GroupPlanCompactHero({
               </p>
             </div>
 
-            {canCreateJoinLinks ? (
+            {canCreateJoinLinks && visible ? (
               <div className="pointer-events-auto shrink-0">
                 <CompactHeroQrDialog compactHero={compactHero} />
               </div>
@@ -288,7 +288,7 @@ function CompactHeroQrButton() {
     <Button
       variant="inverseGhost"
       size="icon"
-      className="size-9 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal sm:size-10"
+      className="size-9 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-foreground hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-foreground data-[state=open]:bg-white data-[state=open]:text-foreground sm:size-10"
       aria-label="Show group QR code"
     >
       <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />

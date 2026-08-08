@@ -37,7 +37,7 @@ export function LegalSectionBlock({ section }: LegalSectionBlockProps) {
           {section.bullets.map((bullet) => (
             <li key={bullet} className="flex items-start gap-2.5">
               <LockKeyhole
-                className="mt-1 size-3.5 shrink-0 text-primary"
+                className="mt-1 size-3.5 shrink-0 text-foreground"
                 aria-hidden="true"
               />
               <span className="font-medium text-ink/82 text-sm leading-relaxed">

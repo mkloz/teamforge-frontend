@@ -28,7 +28,7 @@ export function FirefoxNotice() {
                 "/auth/login",
                 DOWNLOAD_AUTH_RETURN_TO,
               )}
-              className="font-medium text-forge-teal underline-offset-2 hover:underline"
+              className="font-medium text-foreground underline-offset-2 hover:underline"
             >
               Sign in here.
             </Link>

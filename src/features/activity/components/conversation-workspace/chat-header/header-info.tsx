@@ -232,7 +232,7 @@ function HeaderSubtitle({
             transition={{ duration: 0.2 }}
             className="mt-0.5 flex min-w-0 items-center gap-1.5"
           >
-            <p className="min-w-0 truncate font-bold text-primary text-xs leading-tight">
+            <p className="min-w-0 truncate font-bold text-foreground text-xs leading-tight">
               {typingText}
             </p>
             <UnifiedTypingIndicator
@@ -284,7 +284,7 @@ function HeaderAvatar({
           : "size-10",
       )}
       imageClassName="transition-transform duration-700 ease-out"
-      fallbackClassName={isGroup ? "bg-primary/10 text-primary" : undefined}
+      fallbackClassName={isGroup ? "bg-primary/10 text-foreground" : undefined}
       loading="eager"
     >
       <div className="absolute inset-0 bg-ink/0" />

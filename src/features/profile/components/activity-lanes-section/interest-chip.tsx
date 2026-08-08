@@ -23,10 +23,10 @@ export function InterestChip({ evidence }: InterestChipProps) {
         <button
           type="button"
           className={cn(
-            "inline-flex min-h-8 min-w-0 max-w-full cursor-help items-center rounded-full border px-2.5 text-left font-bold text-xs leading-snug focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 sm:px-3",
+            "inline-flex min-h-9 min-w-9 max-w-full cursor-help items-center rounded-full border px-2.5 text-left font-bold text-xs leading-snug focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground sm:min-h-8 sm:min-w-0 sm:px-3",
             isSupporting
               ? "border-border/80 bg-canvas text-ink/70"
-              : "border-forge-teal/20 bg-forge-teal/10 text-forge-teal dark:text-slate-muted",
+              : "border-forge-teal/20 bg-forge-teal/10 text-foreground dark:text-slate-muted",
           )}
         >
           {interest.name}

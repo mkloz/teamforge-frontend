@@ -23,14 +23,14 @@ export function AppearanceStylePicker({
   return (
     <section className="rounded-2xl bg-card p-3 sm:p-5">
       <div>
-        <h3 className="font-bold text-base text-ink">Interface character</h3>
+        <h3 className="font-bold text-base text-ink">Interface style</h3>
         <p className="mt-1 text-slate-muted text-sm leading-relaxed">
           Choose compact controls, stronger contrast, or fewer visual effects.
         </p>
       </div>
 
       <fieldset
-        aria-label="Interface character"
+        aria-label="Interface style"
         className="mt-4 grid gap-2 sm:grid-cols-2"
       >
         {STYLE_OPTIONS.map((option) => {
@@ -40,10 +40,10 @@ export function AppearanceStylePicker({
             <label
               key={option.value}
               className={cn(
-                "group relative min-w-0 rounded-[13px] bg-background/55 p-2 text-left transition-colors duration-150 motion-reduce:transition-none sm:p-3",
+                "group relative min-w-0 rounded-[13px] bg-background/55 p-2 text-left shadow-soft-sm transition-[background-color,box-shadow] duration-150 motion-reduce:transition-none sm:p-3",
                 isSelected
-                  ? "bg-primary/10 ring-1 ring-foreground/45"
-                  : "hover:ring-1 hover:ring-foreground/25",
+                  ? "bg-primary/10 shadow-soft-md"
+                  : "hover:shadow-soft-md",
                 disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
               )}
             >
@@ -134,11 +134,11 @@ function ClassicSpecimen() {
 function ReducedEffectsSpecimen() {
   return (
     <span className="grid h-full grid-cols-2 gap-2">
-      <span className="rounded-lg border border-border bg-card p-2">
+      <span className="rounded-lg bg-surface-inset p-2">
         <span className="block h-2 w-3/4 rounded-full bg-ink/65" />
         <span className="mt-2 block h-1.5 w-full rounded-full bg-muted" />
       </span>
-      <span className="rounded-lg border border-border bg-card p-2">
+      <span className="rounded-lg bg-surface-inset p-2">
         <span className="block h-1.5 w-full rounded-full bg-muted" />
         <span className="mt-1 block h-1.5 w-2/3 rounded-full bg-muted" />
       </span>

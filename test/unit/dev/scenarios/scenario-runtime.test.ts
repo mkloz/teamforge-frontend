@@ -351,6 +351,16 @@ describe("scenario runtime", () => {
     expect(group.members).toHaveLength(3);
   });
 
+  it("removes direct relationships from the activity-empty world", async () => {
+    const response = await handleScenarioRequest(
+      createController("activity-empty"),
+      apiRequest("friends?limit=50"),
+    );
+
+    expect(response.status).toBe(200);
+    expect((await response.json()).items).toEqual([]);
+  });
+
   it("projects privacy-limited Explore cards for every introductory intent", async () => {
     const payloads = await Promise.all(
       [

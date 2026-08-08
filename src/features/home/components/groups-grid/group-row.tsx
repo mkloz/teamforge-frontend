@@ -61,7 +61,7 @@ export function GroupRow({
               name={group.name}
               imageSize={128}
               className={cn(
-                "size-14 bg-card ring-1 ring-border/60 transition-shadow group-hover:ring-primary/35 sm:size-16",
+                "size-14 bg-card ring-1 ring-border/60 transition-all group-hover:-translate-y-0.5 group-hover:shadow-soft-sm group-hover:ring-foreground/30 sm:size-16",
                 hasUnreadMessages && "ring-2 ring-forge-teal/35",
               )}
               fallbackClassName="text-sm"
@@ -77,7 +77,7 @@ export function GroupRow({
             ) : null}
 
             <div className="flex min-w-0 items-center gap-2">
-              <h3 className="truncate font-black text-foreground text-sm leading-tight transition-colors group-hover:text-primary sm:text-base">
+              <h3 className="truncate font-black text-foreground text-sm leading-tight sm:text-base">
                 {group.name}
               </h3>
               {hasUnreadMessages ? (
@@ -94,7 +94,7 @@ export function GroupRow({
                 "mt-1 grid min-w-0 grid-cols-[1rem_minmax(0,1fr)] items-center gap-1.5 text-muted-foreground",
                 activityContext.kind === "message" &&
                   hasUnreadMessages &&
-                  "text-forge-teal",
+                  "text-foreground",
               )}
             >
               <span className="grid size-4 place-items-center">
@@ -134,7 +134,7 @@ export function GroupRow({
             </div>
           </div>
 
-          <span className="grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors group-hover:bg-primary/8 group-hover:text-primary">
+          <span className="grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground">
             <span className="sr-only">Open {group.name}</span>
             <ArrowUpRight className="size-4" aria-hidden="true" />
           </span>

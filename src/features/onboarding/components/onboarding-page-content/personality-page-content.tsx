@@ -3,12 +3,14 @@ import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { cn } from "@/shared/lib/utils";
+import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 import { OnboardingVisualPanel } from "./onboarding-visual-panel";
 
 interface PersonalityPageContentProps {
   catalystProgress: number;
   children: ReactNode;
   displayProgress: number;
+  formation: VoronoiFormationTarget;
   hasTopPadding: boolean;
   scrollContainerRef?: RefObject<HTMLDivElement | null>;
   showHomeLink: boolean;
@@ -18,6 +20,7 @@ export function PersonalityPageContent({
   catalystProgress,
   children,
   displayProgress,
+  formation,
   hasTopPadding,
   scrollContainerRef,
   showHomeLink,
@@ -49,7 +52,11 @@ export function PersonalityPageContent({
         </div>
       </div>
 
-      <OnboardingVisualPanel progress={catalystProgress} side="right" />
+      <OnboardingVisualPanel
+        formation={formation}
+        progress={catalystProgress}
+        side="right"
+      />
     </div>
   );
 }

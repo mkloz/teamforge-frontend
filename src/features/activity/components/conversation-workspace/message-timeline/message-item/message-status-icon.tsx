@@ -116,7 +116,7 @@ function getMessageStatusIconClassName(
   isReadByOthers?: boolean,
 ) {
   if (status === "READ") {
-    return isReadByOthers ? "text-primary" : "text-slate-muted/40";
+    return isReadByOthers ? "text-foreground" : "text-slate-muted/40";
   }
 
   return MESSAGE_STATUS_ICON_CONFIG[status].className ?? "";

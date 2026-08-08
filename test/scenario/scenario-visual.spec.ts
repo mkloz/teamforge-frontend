@@ -27,17 +27,23 @@ const lightSmokeScenarioByProject: Readonly<Record<string, string>> = {
   "light-mobile": "home-dense",
   "light-tablet": "group-admin",
 };
+const fullLightAudit = process.env.SCENARIO_FULL_LIGHT === "1";
 
 test.describe.configure({ mode: "serial" });
 
 for (const scenario of getScenarioAuditEntries(profile)) {
   test(`${scenario.feature} / ${scenario.id}`, async ({ page }, testInfo) => {
-    const lightSmokeScenario =
-      lightSmokeScenarioByProject[testInfo.project.name];
+    const isLightProject = testInfo.project.name.startsWith("light-");
+    const lightSmokeScenario = fullLightAudit
+      ? undefined
+      : lightSmokeScenarioByProject[testInfo.project.name];
     test.skip(
       Boolean(lightSmokeScenario && lightSmokeScenario !== scenario.id),
       "Light mode uses one representative scenario per device class.",
     );
+    if (scenario.feature === "Network") {
+      test.setTimeout(70_000);
+    }
     const consoleErrors: string[] = [];
     const pageErrors: string[] = [];
     const escapedRequests: string[] = [];
@@ -74,7 +80,7 @@ for (const scenario of getScenarioAuditEntries(profile)) {
 
     await page.clock.setFixedTime(SCENARIO_CLOCK);
     const auditUrl = new URL(getScenarioAuditUrl(scenario), baseUrl);
-    if (lightSmokeScenario) {
+    if (isLightProject) {
       const overlays = new Set(
         auditUrl.searchParams.get("__overlays")?.split(",").filter(Boolean) ??
           [],
@@ -117,7 +123,9 @@ for (const scenario of getScenarioAuditEntries(profile)) {
       element.setAttribute("hidden", "");
     });
 
-    await runScenarioRecipe(page, getScenarioAuditRecipe(scenario.id));
+    const recipe = getScenarioAuditRecipe(scenario.id);
+    await runScenarioRecipe(page, recipe);
+    await waitForSettledNetworkScenario(page, scenario.id);
 
     await expect(scenarioPanel).toHaveAttribute(
       "data-scenario-unmatched-count",
@@ -137,10 +145,30 @@ for (const scenario of getScenarioAuditEntries(profile)) {
     mkdirSync(path.dirname(screenshotPath), { recursive: true });
     await page.screenshot({
       animations: "disabled",
-      fullPage: true,
+      fullPage: recipe !== "notifications-drawer",
       path: screenshotPath,
     });
   });
+}
+
+async function waitForSettledNetworkScenario(
+  page: import("@playwright/test").Page,
+  scenarioId: string,
+) {
+  if (scenarioId === "network-slow") {
+    await expect(
+      page.getByRole("heading", { name: /Good (morning|afternoon|evening)/u }),
+    ).toBeVisible({ timeout: 50_000 });
+    return;
+  }
+
+  if (scenarioId.startsWith("network-")) {
+    await expect(
+      page.getByRole("heading", {
+        name: "Something went wrong in TeamForge",
+      }),
+    ).toBeVisible({ timeout: 50_000 });
+  }
 }
 
 async function assertScenarioFaultState(
@@ -161,6 +189,7 @@ async function assertScenarioFaultState(
   }
 
   const scopedStatusByScenario: Readonly<Record<string, string>> = {
+    "admin-queue-health-error": "503",
     "explore-join-rollback": "409",
     "home-recommendations-error": "403",
     "home-recommendations-recovery": "403",
@@ -321,6 +350,13 @@ async function runScenarioRecipe(
       ).toBeVisible();
       return;
     }
+    case "activity-open-conversation": {
+      await page.getByRole("button", { name: /^Riverside Hoops/u }).click();
+      await expect(
+        page.getByRole("textbox", { name: "Type a message" }),
+      ).toBeVisible();
+      return;
+    }
     case "notifications-drawer":
       await page
         .getByRole("button", { name: /(?:unread )?notifications/iu })
@@ -328,18 +364,19 @@ async function runScenarioRecipe(
       await expect(
         page.getByRole("dialog", { name: "Notifications", exact: true }),
       ).toBeVisible();
+      await expect(page.getByText("Loading notifications")).toBeHidden();
       return;
     case "onboarding-guidance-replay":
       await page
         .getByRole("button", {
-          name: "Replay navigation tutorial",
+          name: "Replay quick tour",
           exact: true,
         })
         .click();
       await expect(page).toHaveURL(/\/explore/u);
       await expect(
         page.getByRole("dialog", {
-          name: "Find plans without committing",
+          name: "Find a plan that fits",
           exact: true,
         }),
       ).toBeVisible();

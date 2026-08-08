@@ -45,7 +45,7 @@ export function IntroductoryGroupPlanDetailPage({
 
           <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-8">
             <p className="font-bold text-sm text-white/70">{category.label}</p>
-            <h1 className="mt-2 max-w-3xl font-black text-4xl leading-[0.98] tracking-[-0.045em] sm:text-6xl">
+            <h1 className="mt-2 max-w-3xl text-balance font-black text-display-sm leading-[1.02] tracking-[-0.03em] sm:text-6xl">
               {primaryInterest} group
             </h1>
             <p className="mt-4 max-w-2xl text-base text-white/76 leading-relaxed sm:text-lg">

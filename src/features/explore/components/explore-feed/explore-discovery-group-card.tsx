@@ -92,7 +92,7 @@ export function ExploreDiscoveryGroupCard({
   const fitScore = formatFitScore(group.compatibility.total);
 
   return (
-    <article className="group relative size-full min-h-92 overflow-hidden rounded-[1.25rem] border border-border/75 bg-card text-foreground transition-colors duration-200 hover:border-forge-teal/45 sm:min-h-96 md:min-h-0">
+    <article className="group relative size-full min-h-92 overflow-hidden rounded-[1.25rem] bg-card text-foreground shadow-soft-sm transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-soft-md sm:min-h-96 md:min-h-0">
       <div className="absolute inset-0 z-10">
         <ExploreGroupDetailsLink group={group} />
       </div>
@@ -130,7 +130,7 @@ export function ExploreDiscoveryGroupCard({
           <span className="block font-black text-lg tabular-nums leading-none">
             {fitScore}%
           </span>
-          <span className="mt-1 block font-semibold text-[0.65rem] text-white/75">
+          <span className="mt-1 block font-semibold text-white/75 text-xs">
             fit
           </span>
         </div>
@@ -201,7 +201,7 @@ function ExploreMetaLine({
 }) {
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <Icon className="size-3.5 shrink-0 text-forge-teal" aria-hidden="true" />
+      <Icon className="size-3.5 shrink-0 text-foreground" aria-hidden="true" />
       <span className="truncate font-semibold">{children}</span>
     </div>
   );
@@ -213,7 +213,7 @@ function ExploreImageFallback({
   icon: ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="grid size-full place-items-center bg-primary/8 text-forge-teal/55">
+    <div className="grid size-full place-items-center bg-primary/8 text-foreground/55">
       <Icon className="size-16" aria-hidden="true" />
     </div>
   );

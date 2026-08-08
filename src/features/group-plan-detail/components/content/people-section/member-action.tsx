@@ -27,7 +27,7 @@ import {
 import { cn } from "@/shared/lib/utils";
 
 const memberActionClassName =
-  "flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground opacity-80 transition-colors duration-150 hover:bg-forge-teal/10 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 group-hover:opacity-100";
+  "flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground opacity-80 transition-[color,transform] duration-150 hover:-translate-y-0.5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground group-hover:opacity-100";
 
 export function MemberAction({ member }: { member: GroupPlanDetailMember }) {
   return (

@@ -31,7 +31,7 @@ export function IntroductoryExploreGroupCard({
   const isLead = emphasis === "lead";
 
   return (
-    <article className="group relative size-full min-h-92 overflow-hidden rounded-[1.25rem] border border-border/75 bg-card transition-colors duration-200 hover:border-forge-teal/45 sm:min-h-96 md:min-h-0">
+    <article className="group relative size-full min-h-92 overflow-hidden rounded-[1.25rem] bg-card shadow-soft-sm transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-soft-md sm:min-h-96 md:min-h-0">
       <div
         aria-hidden="true"
         className={cn(
@@ -50,7 +50,7 @@ export function IntroductoryExploreGroupCard({
           <span className="block font-black text-xl tabular-nums leading-none">
             {group.interestFitPercentage}%
           </span>
-          <span className="mt-1 block font-semibold text-[0.65rem] text-white/75">
+          <span className="mt-1 block font-semibold text-white/75 text-xs">
             interest fit
           </span>
         </div>

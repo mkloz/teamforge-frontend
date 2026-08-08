@@ -187,9 +187,9 @@ export function AdminModerationGovernance({
                     type="button"
                     aria-pressed={selected}
                     onClick={() => setSelectedId(version.id)}
-                    className={`grid min-w-32 shrink-0 gap-0.5 rounded-xl px-3 py-2 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/35 ${
+                    className={`grid min-w-32 shrink-0 gap-0.5 rounded-xl px-3 py-2 text-left outline-none transition-colors focus-visible:ring-1 focus-visible:ring-foreground ${
                       selected
-                        ? "bg-primary/8 text-primary"
+                        ? "bg-primary/8 text-foreground"
                         : "text-slate-muted hover:bg-muted/55 hover:text-ink"
                     }`}
                   >
@@ -223,7 +223,7 @@ export function AdminModerationGovernance({
                   ["03", "Release", "Activate an approved rollout stage."],
                 ].map(([number, label, description]) => (
                   <li key={number} className="flex items-start gap-3">
-                    <span className="font-semibold text-primary text-xs tabular-nums">
+                    <span className="font-semibold text-foreground text-xs tabular-nums">
                       {number}
                     </span>
                     <div>
@@ -499,7 +499,7 @@ function ConfigurationStateSummary({
               {active ? `Version ${active.version}` : "No policy deployed"}
             </p>
             <p
-              className={`mt-1 font-semibold text-sm ${active ? "text-primary" : "text-accent"}`}
+              className={`mt-1 font-semibold text-sm ${active ? "text-foreground" : "text-accent"}`}
             >
               {active
                 ? formatRollout(active.rolloutMode)
@@ -531,7 +531,9 @@ function ConfigurationStateSummary({
                 <p
                   key={stage.mode}
                   className={`font-semibold text-xs ${
-                    index === activeStage ? "text-primary" : "text-slate-muted"
+                    index === activeStage
+                      ? "text-foreground"
+                      : "text-slate-muted"
                   }`}
                 >
                   {stage.label}

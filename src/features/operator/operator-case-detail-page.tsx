@@ -87,7 +87,7 @@ export function OperatorCaseDetailPage() {
               {item.reference}
             </h1>
           </div>
-          <span className="flex items-center gap-2 font-semibold text-primary text-xs">
+          <span className="flex items-center gap-2 font-semibold text-foreground text-xs">
             <span
               className="size-2 rounded-full bg-primary"
               aria-hidden="true"

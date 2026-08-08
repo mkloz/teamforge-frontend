@@ -35,7 +35,7 @@ export function HomeRecommendedGroupCardSkeleton({
 }) {
   return (
     <div className={className}>
-      <div className="relative isolate z-10 flex w-full overflow-hidden rounded-xl border-2 border-border bg-card">
+      <div className="relative isolate z-10 flex w-full overflow-hidden rounded-xl bg-card shadow-soft-sm">
         <div className="flex w-full flex-col">
           <Skeleton
             shape="square"

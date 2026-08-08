@@ -117,7 +117,7 @@ export function ParticipantInviteSlots({
             className="group flex min-h-20 w-full items-center gap-3 px-3 py-3 text-left text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             onClick={() => setIsOpen(true)}
           >
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border/60 border-dashed transition-colors group-hover:border-forge-teal/45 group-hover:text-forge-teal">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border/60 border-dashed transition-colors group-hover:border-foreground/35 group-hover:text-foreground">
               <UserRoundPlus className="size-4" aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1">
@@ -128,7 +128,7 @@ export function ParticipantInviteSlots({
                 Choose a friend to invite.
               </span>
             </span>
-            <span className="font-bold text-forge-teal text-xs">Add</span>
+            <span className="font-bold text-foreground text-xs">Add</span>
           </button>
         </GroupedMenuItem>
       ))}
@@ -238,7 +238,7 @@ function SelectedInviteeRow({
       <div className="min-w-0 flex-1">
         <p className="truncate font-black text-foreground text-sm">{name}</p>
         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-          <span className="text-forge-teal">Invitation ready to send</span>
+          <span className="text-foreground">Invitation ready to send</span>
           <CompactFitSignal
             label="You"
             pending={compatibilityPending}
@@ -255,7 +255,7 @@ function SelectedInviteeRow({
         type="button"
         variant="ghost"
         size="icon"
-        className="size-8 shrink-0 rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+        className="size-9 shrink-0 rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
         aria-label={`Remove ${name} from the invitation list`}
         title={`Remove ${name}`}
         onClick={onRemove}
@@ -360,7 +360,7 @@ function CompactFitSignal({
           pending || value === null
             ? "text-muted-foreground/55"
             : value >= 70
-              ? "text-forge-teal"
+              ? "text-foreground"
               : value < 50
                 ? "text-spark-amber"
                 : "text-foreground",

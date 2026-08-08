@@ -41,7 +41,7 @@ export function TemplateSuggestionCard({
       aria-pressed={active}
       onClick={handleTemplateSelect}
       className={cn(
-        "group relative size-full min-w-0 overflow-hidden rounded-2xl border bg-muted text-left transition-[background-color,border-color,box-shadow,color,transform] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.99] motion-reduce:transition-none",
+        "group relative size-full min-w-0 overflow-hidden rounded-2xl border bg-muted text-left transition-[background-color,border-color,box-shadow,color,transform] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.99] motion-reduce:transition-none",
         getTemplateBorderClassName({
           active,
           isProfilePick,
@@ -132,20 +132,20 @@ function getTemplateBorderClassName({
   }
 
   if (isProfilePick) {
-    return "border-2 border-forge-teal hover:border-forge-teal";
+    return "border-2 border-white/55 hover:border-white";
   }
 
   if (isRecommended) {
     return "border-2 border-spark-amber hover:border-spark-amber";
   }
 
-  return "border-border/35 hover:border-forge-teal/45";
+  return "border-border/35 hover:border-white/65";
 }
 
 function TemplateCoverFallback({ icon: Icon }: { icon: LucideIcon }) {
   return (
     <div className="flex size-full items-center justify-center bg-primary/8">
-      <Icon className="size-10 text-primary/55" aria-hidden="true" />
+      <Icon className="size-10 text-foreground/55" aria-hidden="true" />
     </div>
   );
 }

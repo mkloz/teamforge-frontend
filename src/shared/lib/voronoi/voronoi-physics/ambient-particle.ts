@@ -6,33 +6,46 @@ import type { MousePhysicsState, ParticlePhysicsState } from "./types";
 export function updateAmbientParticle({
   currentProgress,
   dimensions,
+  frameScale,
   mouseState,
   physicsState,
   point,
+  settleInstantly,
 }: {
   currentProgress: number;
   dimensions: Dimensions;
+  frameScale: number;
   mouseState: MousePhysicsState;
   physicsState: ParticlePhysicsState;
   point: Point;
+  settleInstantly: boolean;
 }) {
-  randomlyNudgeAmbientTarget(point);
+  randomlyNudgeAmbientTarget(point, frameScale);
   pushAmbientTargetOutsideExclusion({
     currentProgress,
     physicsState,
     point,
   });
   keepAmbientTargetNearCanvas(point, dimensions);
-  pullAmbientParticleTowardTarget(point);
+  pullAmbientParticleTowardTarget(point, frameScale);
   applyMouseRepulsion({
     mouseState,
     point,
+    frameScale,
   });
-  applyFrictionAndMove(point, ANIMATION_CONFIG.friction);
+  if (settleInstantly) {
+    point.x = point.targetX;
+    point.y = point.targetY;
+    point.vx = 0;
+    point.vy = 0;
+    return;
+  }
+  applyFrictionAndMove(point, ANIMATION_CONFIG.friction, frameScale);
 }
 
-function randomlyNudgeAmbientTarget(point: Point) {
-  if (Math.random() < 0.02) {
+function randomlyNudgeAmbientTarget(point: Point, frameScale: number) {
+  const probability = 1 - (1 - 0.02) ** frameScale;
+  if (Math.random() < probability) {
     point.targetX += (Math.random() - 0.5) * 15;
     point.targetY += (Math.random() - 0.5) * 15;
   }
@@ -49,15 +62,18 @@ function pushAmbientTargetOutsideExclusion({
 }) {
   const txDx = point.targetX - physicsState.driftingCenterX;
   const tyDy = point.targetY - physicsState.driftingCenterY;
-  const tDist = Math.sqrt(txDx * txDx + tyDy * tyDy);
+  const normalizedDistance = Math.sqrt(
+    (txDx / physicsState.exclusionRadiusX) ** 2 +
+      (tyDy / physicsState.exclusionRadiusY) ** 2,
+  );
 
-  if (tDist < physicsState.exclusionRadius && tDist > 0) {
-    const push =
-      (physicsState.exclusionRadius - tDist) *
-      0.05 *
-      Math.max(0.1, currentProgress);
-    point.targetX += (txDx / tDist) * push;
-    point.targetY += (tyDy / tDist) * push;
+  if (normalizedDistance < 1 && normalizedDistance > 0) {
+    const boundaryScale = 1 / normalizedDistance;
+    const boundaryX = physicsState.driftingCenterX + txDx * boundaryScale;
+    const boundaryY = physicsState.driftingCenterY + tyDy * boundaryScale;
+    const pushResponse = 0.08 * Math.max(0.1, currentProgress);
+    point.targetX += (boundaryX - point.targetX) * pushResponse;
+    point.targetY += (boundaryY - point.targetY) * pushResponse;
   }
 }
 
@@ -91,17 +107,21 @@ function nudgeAmbientTargetAxisNearCanvas({
   return nextValue;
 }
 
-function pullAmbientParticleTowardTarget(point: Point) {
-  point.vx += (point.targetX - point.x) * ANIMATION_CONFIG.springConstant;
-  point.vy += (point.targetY - point.y) * ANIMATION_CONFIG.springConstant;
+function pullAmbientParticleTowardTarget(point: Point, frameScale: number) {
+  point.vx +=
+    (point.targetX - point.x) * ANIMATION_CONFIG.springConstant * frameScale;
+  point.vy +=
+    (point.targetY - point.y) * ANIMATION_CONFIG.springConstant * frameScale;
 }
 
 function applyMouseRepulsion({
   mouseState,
   point,
+  frameScale,
 }: {
   mouseState: MousePhysicsState;
   point: Point;
+  frameScale: number;
 }) {
   const mDistX = point.x - mouseState.mouseX;
   const mDistY = point.y - mouseState.mouseY;
@@ -115,7 +135,7 @@ function applyMouseRepulsion({
     const push =
       (1 - mDist / ANIMATION_CONFIG.repulsionRadius) ** 2 *
       ANIMATION_CONFIG.repulsionForce;
-    point.vx += (mDistX / mDist) * push;
-    point.vy += (mDistY / mDist) * push;
+    point.vx += (mDistX / mDist) * push * frameScale;
+    point.vy += (mDistY / mDist) * push * frameScale;
   }
 }

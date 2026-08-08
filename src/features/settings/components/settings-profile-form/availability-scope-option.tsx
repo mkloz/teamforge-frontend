@@ -41,7 +41,7 @@ export function AvailabilityScopeOption({
         <Icon
           className={cn(
             "size-4 shrink-0",
-            checked ? "text-primary" : "text-slate-muted",
+            checked ? "text-foreground" : "text-slate-muted",
           )}
           aria-hidden="true"
         />

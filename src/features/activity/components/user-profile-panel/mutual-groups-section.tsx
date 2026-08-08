@@ -43,10 +43,10 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
                 className="size-9 bg-canvas ring-1 ring-border/40"
               />
 
-              <span className="min-w-0 flex-1 truncate font-bold text-sm transition-colors group-hover:text-forge-teal">
+              <span className="min-w-0 flex-1 truncate font-bold text-sm transition-colors group-hover:text-foreground">
                 {group.name}
               </span>
-              <ArrowRight className="size-3.5 shrink-0 text-slate-muted transition-colors group-hover:text-forge-teal" />
+              <ArrowRight className="size-3.5 shrink-0 text-slate-muted transition-colors group-hover:text-foreground" />
             </Link>
           </Button>
         ))}

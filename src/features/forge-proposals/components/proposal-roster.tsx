@@ -147,12 +147,12 @@ function SeatCompatibility({
 
   return (
     <div className="max-w-xs sm:text-right">
-      <p className="font-bold text-forge-teal text-lg tabular-nums">
+      <p className="font-bold text-foreground text-lg tabular-nums">
         {compatibility.score}/100 compatibility
       </p>
       <p className="mt-1 text-pretty text-muted-foreground text-xs leading-relaxed">
         <Info
-          className="mr-1 inline size-3 text-forge-teal"
+          className="mr-1 inline size-3 text-foreground"
           aria-hidden="true"
           strokeWidth={2}
         />

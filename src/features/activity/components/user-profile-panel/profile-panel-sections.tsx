@@ -108,7 +108,7 @@ function PersonalitySignal({ signal }: { signal: ShowUpSignal }) {
             {signal.level}
           </p>
         </div>
-        <p className="shrink-0 font-bold text-forge-teal text-xs leading-tight">
+        <p className="shrink-0 font-bold text-foreground text-xs leading-tight">
           {roundedValue}%
         </p>
       </div>

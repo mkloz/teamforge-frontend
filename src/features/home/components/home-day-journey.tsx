@@ -135,7 +135,7 @@ function JourneyMoment({
         <p
           className={cn(
             "mb-3 font-semibold text-xs",
-            tone === "active" ? "text-forge-teal" : "text-muted-foreground",
+            tone === "active" ? "text-foreground" : "text-muted-foreground",
           )}
         >
           {timeLabel}
@@ -162,12 +162,9 @@ function HomeNextMoves({
       className="mt-12 scroll-mt-8 border-border/60 border-t pt-8 md:mt-14 md:pt-10"
     >
       <header className="max-w-2xl">
-        <p className="font-semibold text-muted-foreground text-xs">
-          More ways to connect
-        </p>
         <h2
           id="home-next-moves-heading"
-          className="mt-2 text-balance font-black text-2xl text-foreground leading-tight tracking-tight sm:text-3xl"
+          className="text-balance font-black text-2xl text-foreground leading-tight tracking-tight sm:text-3xl"
         >
           Your next move
         </h2>

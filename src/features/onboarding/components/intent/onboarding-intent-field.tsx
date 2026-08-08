@@ -47,7 +47,7 @@ export function OnboardingIntentField({
               "focus-within:ring-2 focus-within:ring-forge-teal focus-within:ring-offset-2",
               selected === option.value
                 ? "border-forge-teal bg-forge-teal/8"
-                : "border-border bg-card hover:border-forge-teal/35",
+                : "border-border bg-card hover:border-foreground/40 hover:shadow-soft-sm",
             )}
           >
             <input

@@ -29,7 +29,7 @@ export function StepHeader({ headingRef, step }: StepHeaderProps) {
         className="text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight tracking-tight outline-none sm:text-4xl"
       >
         {title}
-        <span className="text-forge-teal">.</span>
+        <span className="text-foreground">.</span>
       </h1>
       <p className="mt-1 max-w-sm text-center font-sans text-slate-muted text-xs sm:mt-2 sm:text-base">
         {description}

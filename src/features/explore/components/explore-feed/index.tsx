@@ -3,7 +3,6 @@
 import { Link } from "@tanstack/react-router";
 import { SlidersHorizontal, UsersRound } from "lucide-react";
 import { EmptyExploreFilteredVisual } from "@/features/explore/assets/empty-explore-filtered";
-import { EmptyExploreOpenVisual } from "@/features/explore/assets/empty-explore-open";
 import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Button } from "@/shared/components/ui/button";
@@ -12,6 +11,7 @@ import { buildForgeLaunchNavigation } from "@/shared/navigation/forge-navigation
 
 import { ExploreFeedContent } from "./explore-feed-content";
 import { ExploreFeedSkeleton } from "./explore-feed-skeleton";
+import { ExploreStarterTemplates } from "./explore-starter-templates";
 
 export function ExploreFeed() {
   const {
@@ -86,35 +86,30 @@ function ExploreFeedEmpty({
   isFiltered: boolean;
   resetFilters: () => void;
 }) {
+  if (!isFiltered) {
+    return <ExploreStarterTemplates />;
+  }
+
   return (
     <section className="grid min-h-[calc(100dvh-12rem)] place-items-center px-4 py-12 text-center">
       <div className="mx-auto flex max-w-lg flex-col items-center gap-6">
-        {isFiltered ? (
-          <EmptyExploreFilteredVisual className="h-36 w-auto text-foreground" />
-        ) : (
-          <EmptyExploreOpenVisual className="h-36 w-auto text-foreground" />
-        )}
+        <EmptyExploreFilteredVisual className="h-36 w-auto text-foreground" />
 
         <div className="flex flex-col gap-2">
           <h3 className="font-black text-2xl text-foreground leading-tight tracking-tight">
-            {isFiltered
-              ? "No openings meet these filters."
-              : "No open plans yet"}
+            No openings meet these filters.
           </h3>
           <p className="mx-auto max-w-md font-medium text-muted-foreground text-sm leading-relaxed">
-            {isFiltered
-              ? "Try clearing a filter or increasing the distance to see more openings."
-              : "Explore is quiet right now. Forge a group and give others a clear place to join in."}
+            Try clearing a filter or increasing the distance to see more
+            openings.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
-          {isFiltered ? (
-            <Button variant="outline" size="sm" onClick={resetFilters}>
-              <SlidersHorizontal className="size-4" aria-hidden="true" />
-              Clear filters
-            </Button>
-          ) : null}
+          <Button variant="outline" size="sm" onClick={resetFilters}>
+            <SlidersHorizontal className="size-4" aria-hidden="true" />
+            Clear filters
+          </Button>
           <Button asChild variant="primary" size="sm">
             <Link
               {...buildForgeLaunchNavigation()}

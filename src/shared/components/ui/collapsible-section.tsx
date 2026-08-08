@@ -27,7 +27,7 @@ const rootVariants: Record<CollapsibleSectionVariant, string> = {
 };
 
 const triggerVariants: Record<CollapsibleSectionVariant, string> = {
-  plain: "w-fit py-1 text-primary text-xs",
+  plain: "w-fit py-1 text-foreground text-xs",
   card: "w-full px-4 py-3 text-ink text-sm",
   panel: "w-full px-5 py-5 text-ink text-sm sm:px-6",
 };
@@ -58,7 +58,7 @@ export function CollapsibleSection({
     >
       <CollapsibleTrigger
         className={cn(
-          "group/collapsible-trigger flex cursor-pointer items-center justify-between gap-3 rounded-lg text-left font-semibold outline-none transition-colors hover:text-primary focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
+          "group/collapsible-trigger flex cursor-pointer items-center justify-between gap-3 rounded-lg text-left font-semibold outline-none transition-colors hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
           triggerVariants[variant],
           triggerClassName,
         )}

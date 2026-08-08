@@ -5,8 +5,10 @@ export type ParticlePhysicsState = {
   driftingCenterX: number;
   driftingCenterY: number;
   easedProgress: number;
-  exclusionRadius: number;
-  guardSize: number;
+  exclusionRadiusX: number;
+  exclusionRadiusY: number;
+  guardRadiusX: number;
+  guardRadiusY: number;
   sparkPhase: number;
 };
 

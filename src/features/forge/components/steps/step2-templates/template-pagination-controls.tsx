@@ -57,7 +57,7 @@ export function TemplatePaginationControls({
                 onClick={onPrevious}
                 disabled={!canPage}
                 aria-label="Previous templates"
-                className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35"
+                className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-foreground/40 hover:enabled:text-foreground disabled:opacity-35"
               >
                 <ChevronLeft size={15} />
               </Button>
@@ -75,7 +75,7 @@ export function TemplatePaginationControls({
                 onClick={onNext}
                 disabled={!canPage}
                 aria-label="Next templates"
-                className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35"
+                className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-foreground/40 hover:enabled:text-foreground disabled:opacity-35"
               >
                 <ChevronRight size={15} />
               </Button>

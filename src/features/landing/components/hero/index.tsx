@@ -20,10 +20,10 @@ export function HeroSection() {
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-20 pb-16 pl-6 md:pt-28 md:pb-20 md:pl-12">
         <div className="flex flex-col items-center gap-8 md:gap-10 lg:flex-row">
           <div className="order-2 flex max-w-xl flex-1 animate-hero-fade-in flex-col items-start text-start lg:order-1 lg:text-left">
-            <h1 className="mb-5 max-w-3xl text-balance text-center font-extrabold font-sans text-4xl text-white leading-none sm:text-start sm:text-5xl lg:text-6xl">
+            <h1 className="mb-5 max-w-3xl text-balance text-center font-display font-extrabold text-4xl text-white leading-none sm:text-start sm:text-5xl lg:text-6xl">
               Find your people,
               <br />
-              <span className="relative inline-block pb-2 text-forge-teal">
+              <span className="relative inline-block pb-2 text-foreground">
                 intelligently.
               </span>
             </h1>

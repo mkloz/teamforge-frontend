@@ -45,7 +45,7 @@ export function GroupArrivalPreview({ summary }: GroupArrivalPreviewProps) {
         />
 
         <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1 font-bold text-white text-xs backdrop-blur-md">
-          <Check className="size-3.5 text-forge-teal" strokeWidth={2.6} />
+          <Check className="size-3.5 text-foreground" strokeWidth={2.6} />
           Created
         </div>
       </div>
@@ -68,7 +68,7 @@ export function GroupArrivalPreview({ summary }: GroupArrivalPreviewProps) {
 
         <div className="mt-2.5 flex items-center gap-2 font-semibold text-muted-foreground text-xs lg:mt-4">
           <UsersRound
-            className="size-3.5 text-forge-teal"
+            className="size-3.5 text-foreground"
             strokeWidth={2}
             aria-hidden="true"
           />

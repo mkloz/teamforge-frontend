@@ -41,10 +41,10 @@ export function AppearanceModePicker({
             <label
               key={option.id}
               className={cn(
-                "group relative flex min-w-0 flex-col items-center rounded-xl bg-background/55 px-2 py-3 text-center transition-colors duration-150 motion-reduce:transition-none sm:py-4",
+                "group relative flex min-w-0 flex-col items-center rounded-xl bg-background/55 px-2 py-3 text-center shadow-soft-sm transition-[color,background-color,box-shadow] duration-150 motion-reduce:transition-none sm:py-4",
                 isSelected
-                  ? "bg-primary/10 text-ink ring-1 ring-foreground/45"
-                  : "text-slate-muted hover:text-ink hover:ring-1 hover:ring-foreground/25",
+                  ? "bg-primary/10 text-ink shadow-soft-md"
+                  : "text-slate-muted hover:text-ink hover:shadow-soft-md",
                 disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
               )}
             >
@@ -60,7 +60,7 @@ export function AppearanceModePicker({
               <Icon
                 className={cn(
                   "size-5",
-                  isSelected ? "text-primary" : "text-slate-muted",
+                  isSelected ? "text-foreground" : "text-slate-muted",
                 )}
                 strokeWidth={1.8}
                 aria-hidden="true"

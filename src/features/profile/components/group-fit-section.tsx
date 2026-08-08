@@ -168,7 +168,7 @@ function SignalRead({
         />
         <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3">
           <p className="font-bold text-slate-muted text-sm">{label}</p>
-          <p className="shrink-0 font-black text-forge-teal text-sm">
+          <p className="shrink-0 font-black text-foreground text-sm">
             {signal.value}
           </p>
         </div>

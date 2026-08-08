@@ -31,7 +31,7 @@ export function FormSectionAccordionItem({
     <AccordionItem
       value={value}
       className={cn(
-        "overflow-hidden rounded-xl border border-border/55 bg-card/45 transition-colors last:border-b data-[state=open]:border-forge-teal/35 data-[state=open]:bg-forge-teal/[0.035]",
+        "overflow-hidden rounded-xl bg-card/70 shadow-soft-sm transition-[background-color,box-shadow] data-[state=open]:bg-forge-teal/[0.035] data-[state=open]:shadow-soft-md",
         className,
       )}
     >

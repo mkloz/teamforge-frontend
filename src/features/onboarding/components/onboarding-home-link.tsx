@@ -19,7 +19,7 @@ export function OnboardingHomeLink({ className }: OnboardingHomeLinkProps) {
         asChild
         variant="ghost"
         size="icon"
-        className="pointer-events-auto size-11 rounded-lg p-0 text-white/80 hover:bg-white/5 hover:text-white focus-visible:ring-forge-teal focus-visible:ring-offset-hero-bg [@media(pointer:fine)]:size-10"
+        className="pointer-events-auto size-11 rounded-lg p-0 text-white/80 hover:text-white focus-visible:ring-white focus-visible:ring-offset-hero-bg [@media(pointer:fine)]:size-10"
       >
         <Link to="/" aria-label="Back to TeamForge home">
           <TeamForgeLogo className="size-10" showBackground={false} />

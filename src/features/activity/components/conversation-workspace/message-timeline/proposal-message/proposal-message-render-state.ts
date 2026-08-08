@@ -10,7 +10,7 @@ const PROPOSAL_SWIPE_SHELL_STATE_BY_OWNERSHIP = {
       "justify-end",
     ),
     replyIndicatorClassName: cn(
-      "absolute top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-primary/20 text-primary",
+      "absolute top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-primary/20 text-foreground",
       "right-10",
     ),
     replyIndicatorX: -20,
@@ -22,7 +22,7 @@ const PROPOSAL_SWIPE_SHELL_STATE_BY_OWNERSHIP = {
       "justify-start",
     ),
     replyIndicatorClassName: cn(
-      "absolute top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-primary/20 text-primary",
+      "absolute top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-primary/20 text-foreground",
       "left-10",
     ),
     replyIndicatorX: 20,

@@ -103,10 +103,10 @@ function HowYouShowUpCard({
   }
 
   return (
-    <div className="flex h-full min-h-64 flex-col rounded-2xl border border-forge-teal/20 bg-forge-teal/8 p-4">
+    <div className="flex h-full min-h-64 flex-col rounded-2xl bg-forge-teal/8 p-4 shadow-soft-sm">
       <div className="flex items-center justify-between gap-3">
         <p className="font-black text-slate-muted text-sm">Profile signals</p>
-        <Radar className="size-4 text-forge-teal" aria-hidden="true" />
+        <Radar className="size-4 text-foreground" aria-hidden="true" />
       </div>
       <div className="mt-4 flex flex-1 flex-col justify-between gap-3">
         {visibleCandidates.map((candidate, rank) => (
@@ -154,7 +154,7 @@ function ShowUpMeter({
         {isSelected ? (
           <p className="flex items-center gap-1.5 font-bold text-slate-muted text-xs">
             <BadgeCheck
-              className="size-3.5 text-forge-teal"
+              className="size-3.5 text-foreground"
               aria-hidden="true"
             />
             Selected profile
@@ -162,7 +162,7 @@ function ShowUpMeter({
         ) : (
           <p className="font-bold text-slate-muted text-xs">{rankLabel}</p>
         )}
-        <p className="shrink-0 font-black text-forge-teal text-xs">
+        <p className="shrink-0 font-black text-foreground text-xs">
           {percent}%
         </p>
       </div>

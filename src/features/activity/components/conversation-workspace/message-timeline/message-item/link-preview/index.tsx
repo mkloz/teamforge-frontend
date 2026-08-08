@@ -27,7 +27,7 @@ type LinkPreviewRenderState =
 const LINK_PREVIEW_BASE_CLASS =
   "group min-w-0 max-w-full overflow-hidden border transition-colors duration-150";
 const LINK_PREVIEW_FOCUS_CLASS =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40";
+  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground";
 
 const LINK_PREVIEW_LAYOUT_CLASS = {
   image: "flex flex-col rounded-xl hover:shadow-sm",
@@ -40,9 +40,9 @@ const LINK_PREVIEW_SURFACE_CLASS = {
     other: "border-border/50 bg-card hover:border-border",
   },
   text: {
-    own: "border-primary/20 bg-canvas/80 hover:border-primary/30 hover:bg-canvas dark:bg-card/60 hover:dark:bg-card/80",
+    own: "border-foreground/20 bg-canvas/80 hover:border-foreground/40 dark:bg-card/60 hover:dark:bg-card/80",
     other:
-      "border-border/55 bg-muted/35 hover:border-primary/25 hover:bg-muted/50",
+      "border-border/55 bg-muted/35 hover:border-foreground/35 hover:bg-muted/50",
   },
 } as const;
 

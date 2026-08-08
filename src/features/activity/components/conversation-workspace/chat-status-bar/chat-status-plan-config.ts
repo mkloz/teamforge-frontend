@@ -31,8 +31,8 @@ export const PLAN_STATUS_CONFIG: Record<Plan["status"], PlanStatusConfig> = {
     icon: CheckCircle2,
     label: "Confirmed",
     accentClass: "bg-primary",
-    badgeClass: "bg-primary/8 text-primary",
-    colorClass: "text-primary",
+    badgeClass: "bg-primary/8 text-foreground",
+    colorClass: "text-foreground",
   },
   COMPLETED: {
     icon: CheckCircle2,
@@ -52,8 +52,8 @@ export const PLAN_STATUS_CONFIG: Record<Plan["status"], PlanStatusConfig> = {
     icon: CalendarClock,
     label: "In Progress",
     accentClass: "bg-primary",
-    badgeClass: "bg-primary/8 text-primary",
-    colorClass: "text-primary",
+    badgeClass: "bg-primary/8 text-foreground",
+    colorClass: "text-foreground",
   },
   CANCELLED: {
     icon: X,
@@ -83,7 +83,7 @@ export function getPlanStatusConfig(plan: Plan): PlanStatusConfig {
 
 export const PINNED_MESSAGE_CONFIG = {
   accentClass: "bg-primary",
-  colorClass: "text-primary",
+  colorClass: "text-foreground",
   icon: Pin,
   label: "Pinned",
 } as const;

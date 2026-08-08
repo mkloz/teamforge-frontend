@@ -14,11 +14,12 @@ const iconTileVariants = cva(
         muted: "bg-slate-muted/10 text-slate-muted",
         neutral: "bg-muted text-muted-foreground",
         none: "",
-        teal: "bg-primary/10 text-primary",
+        teal: "bg-primary text-primary-foreground",
       },
       size: {
         "2xs": "size-4",
         xs: "size-5",
+        marker: "size-6",
         sm: "size-7",
         md: "size-8",
         lg: "size-10",
@@ -67,6 +68,11 @@ const iconTileVariants = cva(
       },
       {
         shape: "square",
+        size: "marker",
+        className: "rounded-md",
+      },
+      {
+        shape: "square",
         size: "sm",
         className: "rounded-sm",
       },
@@ -80,7 +86,7 @@ const iconTileVariants = cva(
       bordered: false,
       shape: "square",
       size: "md",
-      tone: "teal",
+      tone: "neutral",
     },
   },
 );
@@ -88,6 +94,7 @@ const iconTileVariants = cva(
 const iconSizeClassNames = {
   "2xs": "size-2.5",
   xs: "size-3",
+  marker: "size-3.5",
   sm: "size-3.5",
   md: "size-4",
   lg: "size-5",

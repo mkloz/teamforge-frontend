@@ -118,7 +118,7 @@ export function FilterHeader({
             <Button
               variant="accentGhost"
               size="icon"
-              className="size-8 rounded-full border border-border/55 bg-card/55 text-slate-muted hover:enabled:border-forge-teal/30 hover:enabled:bg-forge-teal/8 hover:enabled:text-forge-teal"
+              className="size-9 rounded-full border border-border/55 bg-card/55 text-slate-muted hover:enabled:border-foreground/40 hover:enabled:text-foreground"
               onClick={() => onDensityChange?.(NEXT_DENSITY[density])}
               aria-label={densityLabel}
             >

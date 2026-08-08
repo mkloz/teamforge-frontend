@@ -66,7 +66,7 @@ const STANDARD_DROPZONE_STYLE: Omit<
   dropPillClassName: "bg-forge-teal text-white",
   helperPillClassName: "border-border/50 bg-muted/40 text-slate-muted/75",
   iconTileClassName:
-    "size-9 bg-forge-teal/10 text-forge-teal group-hover:bg-forge-teal/15",
+    "size-9 bg-forge-teal/10 text-foreground group-hover:bg-forge-teal/15",
   titleClassName: "text-ink",
 };
 
@@ -200,8 +200,8 @@ function getFileLimit({
 
 function getRootInteractionClassName(isDragging: boolean) {
   return isDragging
-    ? "border-forge-teal/60 bg-forge-teal/5 ring-2 ring-forge-teal/15"
-    : "hover:border-forge-teal/40 hover:bg-forge-teal/3 hover:ring-1 hover:ring-forge-teal/10";
+    ? "border-foreground/45 bg-forge-teal/8 ring-1 ring-foreground/20"
+    : "hover:border-foreground/35 hover:shadow-soft-sm";
 }
 
 function getRootButtonClassName({
@@ -218,7 +218,7 @@ function getRootButtonClassName({
   variantStyle: FileDropzoneVariantStyle;
 }) {
   return cn(
-    "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border border-border/55 border-dashed bg-card p-0 text-left transition-all duration-200 focus-visible:ring-forge-teal/35",
+    "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border border-border/55 border-dashed bg-card p-0 text-left transition-[border-color,box-shadow,color] duration-200 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     variantStyle.rootVariantClassName,
     getRootInteractionClassName(isDragging),
     error && "border-destructive/45 bg-destructive/4",
@@ -255,7 +255,9 @@ function getActionPillClassName({
     "ml-auto hidden px-4 py-1.5 font-semibold transition-all duration-200 sm:inline-flex",
     isCover
       ? "border-white/28 bg-white/12 text-white group-hover:bg-white/22"
-      : "border-forge-teal/25 bg-forge-teal/8 text-forge-teal group-hover:border-forge-teal/40 group-hover:bg-forge-teal/14",
-    isDragging && !isCover && "border-forge-teal/50 bg-forge-teal/18",
+      : "border-border/55 bg-muted/60 text-foreground group-hover:border-foreground/25 group-hover:shadow-soft-sm",
+    isDragging &&
+      !isCover &&
+      "border-transparent bg-primary text-primary-foreground shadow-soft-sm",
   );
 }

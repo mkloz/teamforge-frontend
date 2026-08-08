@@ -15,7 +15,7 @@ const CHECK_ICON_CONFIG = {
   FAILED: null,
   READ: {
     Icon: CheckCheck,
-    className: "text-forge-teal",
+    className: "text-foreground",
   },
   SENT: {
     Icon: Check,

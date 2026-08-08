@@ -52,7 +52,7 @@ function ProfileAvatarButton({
   return (
     <button
       type="button"
-      className="group relative shrink-0 cursor-zoom-in appearance-none rounded-full border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+      className="group relative shrink-0 cursor-zoom-in appearance-none rounded-full border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
       aria-label={`Expand ${name} avatar`}
       onClick={onOpen}
     >
@@ -63,7 +63,7 @@ function ProfileAvatarButton({
           src={src}
           name={name}
           className="size-full border-canvas border-thick bg-muted text-2xl shadow-lg ring-1 ring-border/70 sm:text-4xl"
-          fallbackClassName="bg-muted text-forge-teal text-2xl sm:text-4xl"
+          fallbackClassName="bg-muted text-foreground text-2xl sm:text-4xl"
           imageSize={128}
           loading="eager"
         />

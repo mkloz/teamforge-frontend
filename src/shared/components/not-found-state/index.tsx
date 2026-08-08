@@ -36,7 +36,7 @@ export function NotFoundState({
       >
         <Link
           to="/"
-          className="relative z-20 inline-flex w-fit items-center gap-3 rounded-xl text-ink/70 text-sm transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+          className="relative z-20 inline-flex w-fit items-center gap-3 rounded-xl text-ink/70 text-sm transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
           aria-label="Go to TeamForge start page"
         >
           <IconTile

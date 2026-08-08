@@ -29,9 +29,9 @@ export function TimeFilter() {
               onClick={() => selectPreset(option.id)}
               className={cn(
                 "inline-flex h-8 min-w-0 items-center gap-1.5 rounded-full border border-border/60 bg-card/35 px-2.5 font-bold text-muted-foreground text-xs transition-colors",
-                "hover:border-border hover:bg-muted/35 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
+                "hover:border-foreground/35 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground",
                 active &&
-                  "border-forge-teal/40 bg-forge-teal/10 text-forge-teal hover:border-forge-teal/50 hover:bg-forge-teal/12 dark:text-secondary-foreground",
+                  "border-foreground/30 bg-foreground/8 text-foreground shadow-soft-sm hover:border-foreground/45",
               )}
             >
               <Icon className="size-3.5 shrink-0" aria-hidden="true" />

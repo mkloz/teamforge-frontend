@@ -42,7 +42,7 @@ export function NotificationsDrawerShell({
           "border-border bg-canvas text-ink shadow-none",
           isDesktop
             ? "lg:rounded-l-2xl lg:border-l"
-            : "max-lg:h-[92dvh] max-lg:max-h-[92dvh] max-lg:rounded-t-[1.25rem] max-lg:border-t",
+            : "max-lg:h-dvh max-lg:max-h-dvh max-lg:rounded-none! max-lg:border-0! max-lg:pt-[env(safe-area-inset-top)]",
         )}
       >
         <DrawerHeader className="sr-only">

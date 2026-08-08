@@ -46,8 +46,8 @@ export function CompletedReviewFields({
               className={cn(
                 "flex min-h-9 cursor-pointer items-center justify-center rounded-lg border px-2 text-center font-semibold text-xs transition-colors",
                 rating.followThrough === option.value
-                  ? "border-primary/55 bg-primary/10 text-primary"
-                  : "border-border/70 bg-card/65 text-slate-muted hover:border-primary/35",
+                  ? "border-primary/55 bg-primary/10 text-foreground"
+                  : "border-border/70 bg-card/65 text-slate-muted hover:border-foreground/35",
                 viewState.isReviewFormBusy && "cursor-not-allowed opacity-60",
               )}
             >
@@ -63,7 +63,7 @@ export function CompletedReviewFields({
             </label>
           ))}
         </div>
-        <p className="mt-1.5 text-[0.6875rem] text-slate-muted leading-relaxed">
+        <p className="mt-1.5 text-slate-muted text-xs leading-relaxed">
           Private and revealed in a batch. It can inform participation
           reputation, never safety or matching. “Not sure” adds no evidence.
         </p>
@@ -76,7 +76,7 @@ export function CompletedReviewFields({
         rows={2}
         placeholder="Optional note"
         onChange={(event) => rating.setComment(event.target.value)}
-        className="min-h-18 resize-none rounded-lg border-border/70 bg-card/65 text-ink text-xs placeholder:text-slate-muted/70 focus-visible:border-primary/40"
+        className="min-h-18 resize-none rounded-lg border-border/70 bg-card/65 text-ink text-xs placeholder:text-slate-muted/70 focus-visible:border-foreground/70"
       />
     </div>
   );

@@ -192,7 +192,7 @@ export function ModerationConfigurationEditor({
                   <span
                     className={cn(
                       "font-semibold text-sm",
-                      checked ? "text-primary" : "text-ink",
+                      checked ? "text-foreground" : "text-ink",
                     )}
                   >
                     {rolloutLabel(mode)}

@@ -49,7 +49,7 @@ export function RecommendedGroupAction({
       onClick={() => joinMutation.mutate()}
       title={getRecommendedActionTitle(joinMutation.isOnline)}
       className={cn(
-        "size-9 shrink-0 px-0 sm:h-9 sm:w-auto sm:px-3",
+        "size-11 shrink-0 px-0 sm:h-9 sm:w-auto sm:px-3",
         isFull && "opacity-60",
       )}
       contentClassName="whitespace-nowrap"

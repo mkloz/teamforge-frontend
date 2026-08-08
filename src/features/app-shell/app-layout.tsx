@@ -53,7 +53,7 @@ export function AppLayout({
       <main
         id="main-content"
         className={cn(
-          "min-h-screen md:pb-4 md:pl-14",
+          "min-h-screen scroll-pb-28 md:scroll-pb-4 md:pb-4 md:pl-14",
           bottomNavHidden ? "pb-0" : "pb-app-bottom-nav",
         )}
         tabIndex={-1}

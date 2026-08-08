@@ -25,7 +25,7 @@ export function MemberCard({
       {onShowProfile ? (
         <button
           type="button"
-          className="flex min-w-0 flex-1 items-center justify-start gap-3 rounded-xl text-left text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30"
+          className="flex min-w-0 flex-1 items-center justify-start gap-3 rounded-xl text-left text-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
           aria-label={`Open ${viewState.memberName} details`}
           onClick={() => onShowProfile(member)}
         >

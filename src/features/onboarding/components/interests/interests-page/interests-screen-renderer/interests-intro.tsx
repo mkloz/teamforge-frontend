@@ -32,7 +32,7 @@ export function InterestsIntro({
 }: InterestsIntroProps) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center gap-0 pt-10 text-center sm:pt-12">
-      <h1 className="mb-4 text-balance font-extrabold font-sans text-2xl text-ink leading-tight sm:text-display-lg">
+      <h1 className="mb-4 text-balance font-display font-extrabold text-2xl text-ink leading-tight sm:text-display-lg">
         What do you love doing?
       </h1>
 

@@ -85,7 +85,7 @@ function ReadinessSummary({ readiness }: { readiness: Readiness }) {
         <p
           className={cn(
             "flex items-center gap-2 font-semibold text-sm",
-            ready ? "text-primary" : "text-accent",
+            ready ? "text-foreground" : "text-accent",
           )}
         >
           <span
@@ -204,7 +204,7 @@ function ActionReadiness({ readiness }: { readiness: Readiness }) {
               <div
                 className={cn(
                   "flex items-center justify-between gap-3 font-semibold text-xs",
-                  action.allowed ? "text-primary" : "text-accent",
+                  action.allowed ? "text-foreground" : "text-accent",
                 )}
               >
                 <span className="tabular-nums">

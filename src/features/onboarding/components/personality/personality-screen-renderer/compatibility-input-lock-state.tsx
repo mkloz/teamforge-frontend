@@ -25,7 +25,7 @@ export function CompatibilityInputLockState({
     <PersonalityScreenShell className="max-w-md justify-center text-center">
       {isChecking ? (
         <Spinner
-          className="mx-auto mb-4 size-6 text-primary"
+          className="mx-auto mb-4 size-6 text-foreground"
           aria-hidden="true"
         />
       ) : null}

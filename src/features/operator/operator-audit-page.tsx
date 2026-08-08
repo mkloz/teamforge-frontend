@@ -663,7 +663,7 @@ function outcomeClass(outcome: OperatorAuditEvent["outcome"]) {
   return cn(
     "font-semibold text-xs",
     outcome === "SUCCEEDED"
-      ? "text-primary"
+      ? "text-foreground"
       : outcome === "FAILED" || outcome === "DENIED"
         ? "text-danger"
         : "text-accent",

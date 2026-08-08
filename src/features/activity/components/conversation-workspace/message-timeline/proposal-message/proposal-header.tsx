@@ -14,7 +14,7 @@ interface ProposalHeaderProps {
 
 const STATUS_STYLES: Record<PlanProposalStatus, string> = {
   PENDING: "text-accent",
-  APPROVED: "text-primary",
+  APPROVED: "text-foreground",
   REJECTED: "text-slate-muted",
   WITHDRAWN: "text-slate-muted",
   CANCELLED: "text-slate-muted",
@@ -35,7 +35,7 @@ export function ProposalHeader({
       aria-label={`${isExpanded ? "Collapse" : "Expand"} ${
         FIELD_LABELS[field]
       } proposal`}
-      className="group/header flex w-full items-center justify-between gap-2 px-2 py-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/18"
+      className="group/header flex w-full items-center justify-between gap-2 px-2 py-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
       onClick={onToggle}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">

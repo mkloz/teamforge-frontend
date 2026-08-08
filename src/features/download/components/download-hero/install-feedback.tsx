@@ -12,7 +12,7 @@ export function HeroInstallFeedback({
   if (isStandalone) {
     return (
       <p
-        className="mt-4 flex items-center gap-2 font-medium text-forge-teal text-sm"
+        className="mt-4 flex items-center gap-2 font-medium text-foreground text-sm"
         role="status"
         aria-live="polite"
       >

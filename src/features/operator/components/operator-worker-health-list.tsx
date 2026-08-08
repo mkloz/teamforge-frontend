@@ -373,7 +373,11 @@ function WorkerHeartbeat({
         <p
           className={cn(
             "truncate text-xs",
-            healthy ? "text-primary" : delayed ? "text-accent" : "text-danger",
+            healthy
+              ? "text-foreground"
+              : delayed
+                ? "text-accent"
+                : "text-danger",
           )}
         >
           {formatOperatorDate(heartbeatAt)}

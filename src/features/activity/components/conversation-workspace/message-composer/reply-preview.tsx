@@ -24,8 +24,8 @@ export function ReplyPreview({ replyingTo, onClear }: ReplyPreviewProps) {
                 <div className="w-1 self-stretch rounded-full bg-primary opacity-80" />
                 <div className="min-w-0 flex-1">
                   <div className="mb-0.5 flex items-center gap-1.5">
-                    <Reply className="size-3 text-primary" />
-                    <span className="truncate font-bold text-primary text-xs">
+                    <Reply className="size-3 text-foreground" />
+                    <span className="truncate font-bold text-foreground text-xs">
                       {replyingTo.sender?.name}
                     </span>
                   </div>

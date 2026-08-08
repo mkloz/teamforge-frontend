@@ -3,7 +3,7 @@ import { Clock3, Search } from "lucide-react";
 export function SearchStarted({ activityTitle }: { activityTitle: string }) {
   return (
     <section className="flex flex-col items-center gap-5 py-8 text-center">
-      <div className="flex size-14 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+      <div className="flex size-14 items-center justify-center rounded-full bg-forge-teal/10 text-foreground">
         <Search className="size-6" aria-hidden="true" />
       </div>
       <div className="grid gap-2">

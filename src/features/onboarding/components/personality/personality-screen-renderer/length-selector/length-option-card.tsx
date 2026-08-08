@@ -32,12 +32,12 @@ export function LengthOptionCard({
       variant="ghost"
       onClick={() => onSelect(length)}
       className={cn(
-        "relative h-auto w-full overflow-hidden rounded-xl border-2 bg-card p-4 text-left text-card-foreground shadow-none transition-all duration-300 focus-visible:ring-forge-teal/20 sm:p-4.5",
+        "relative h-auto w-full overflow-hidden rounded-xl border-2 bg-card p-4 text-left text-card-foreground shadow-none transition-all duration-300 focus-visible:ring-foreground sm:p-4.5",
         isSelected
           ? "border-forge-teal/30 bg-forge-teal/8"
           : viewModel.isRecommended
-            ? "border-forge-teal/10 bg-card hover:border-forge-teal/20 dark:border-forge-teal/20"
-            : "border-border bg-card hover:dark:border-white/15",
+            ? "border-foreground/20 bg-card hover:border-foreground/40"
+            : "border-border bg-card hover:border-foreground/30",
       )}
       contentClassName="block h-auto w-full"
     >

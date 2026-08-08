@@ -120,7 +120,7 @@ function EmojiPickerToolbar({
           variant="ghost"
           size="icon-xs"
           aria-label="Back to quick reactions"
-          className="size-8 shrink-0 rounded-lg border border-border/55 bg-input text-slate-muted focus-visible:ring-primary/18 hover:enabled:border-primary/35 hover:enabled:bg-primary/8 hover:enabled:text-ink"
+          className="size-8 shrink-0 rounded-lg border border-border/55 bg-input text-slate-muted focus-visible:ring-foreground hover:enabled:border-foreground/35 hover:enabled:text-ink"
           onClick={onCollapse}
         >
           <ChevronLeft className="size-4" />
@@ -128,7 +128,7 @@ function EmojiPickerToolbar({
       ) : null}
       {!searchDisabled ? <EmojiPickerSearch /> : null}
       {!skinTonesDisabled ? (
-        <EmojiPicker.SkinToneSelector className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-input text-base transition-colors hover:border-primary/35 hover:bg-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/18" />
+        <EmojiPicker.SkinToneSelector className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-input text-base transition-colors hover:border-foreground/35 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground" />
       ) : null}
     </div>
   );
@@ -230,7 +230,7 @@ function EmojiButtonBase({
       type="button"
       aria-pressed={isSelected}
       className={cn(
-        "flex min-w-0 flex-1 items-center justify-center rounded-md text-lg leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/18",
+        "flex min-w-0 flex-1 items-center justify-center rounded-md text-lg leading-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
         compact ? "h-7 text-base" : "h-8",
         isSelected
           ? "bg-accent/18 shadow-sm ring-1 ring-accent/45 hover:bg-accent/22"

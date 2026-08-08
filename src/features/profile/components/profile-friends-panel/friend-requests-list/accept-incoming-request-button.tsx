@@ -17,7 +17,7 @@ export function AcceptIncomingRequestButton({
       onClick={onClick}
       aria-label="Accept request"
       title="Accept"
-      className="size-11 text-muted-foreground hover:text-forge-teal [@media(pointer:fine)]:size-8"
+      className="size-11 text-muted-foreground hover:text-foreground [@media(pointer:fine)]:size-8"
     >
       {loading ? (
         <Spinner aria-hidden="true" className="size-4" />

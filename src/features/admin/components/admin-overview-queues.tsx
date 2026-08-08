@@ -154,7 +154,7 @@ export function AdminOverviewQueues() {
             <Link
               {...buildAdminNavigation("moderation")}
               search={{ queue: "CRITICAL_NOW" }}
-              className="inline-flex min-h-11 w-fit items-center gap-2 rounded-xl font-semibold text-primary text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+              className="inline-flex min-h-11 w-fit items-center gap-2 rounded-xl font-semibold text-foreground text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
             >
               Review critical queue
               <ArrowRight className="size-4" aria-hidden="true" />
@@ -217,11 +217,9 @@ function QueueLoadRow({
     <Link
       {...buildAdminNavigation("moderation")}
       search={{ queue }}
-      className="group grid min-h-11 grid-cols-[minmax(0,9.5rem)_minmax(4rem,1fr)_auto] items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 sm:grid-cols-[minmax(0,12rem)_minmax(5rem,1fr)_auto]"
+      className="group grid min-h-11 grid-cols-[minmax(0,9.5rem)_minmax(4rem,1fr)_auto] items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground sm:grid-cols-[minmax(0,12rem)_minmax(5rem,1fr)_auto]"
     >
-      <span className="truncate font-medium text-ink text-sm group-hover:text-primary">
-        {label}
-      </span>
+      <span className="truncate font-medium text-ink text-sm">{label}</span>
 
       {isPending ? (
         <Skeleton className="h-1.5 w-full rounded-full" />
@@ -248,7 +246,7 @@ function QueueLoadRow({
           <span className="text-ink">{total}</span>
         )}
         <ArrowRight
-          className="size-3.5 text-slate-muted transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+          className="size-3.5 text-slate-muted transition-transform group-hover:translate-x-0.5 group-hover:text-foreground"
           aria-hidden="true"
         />
       </span>

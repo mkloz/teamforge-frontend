@@ -40,7 +40,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
         <span
           className={cn(
             "font-black text-xs transition-colors",
-            score.isBorderline ? "text-spark-amber" : "text-forge-teal",
+            score.isBorderline ? "text-spark-amber" : "text-foreground",
           )}
         >
           {markerPosition}%
@@ -51,7 +51,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
         <span
           className={cn(
             "flex w-4 justify-center font-black text-xs transition-colors",
-            isLeftSide ? "text-forge-teal" : "text-slate-muted/50",
+            isLeftSide ? "text-foreground" : "text-slate-muted/50",
           )}
         >
           {labels.left}
@@ -67,7 +67,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
         <span
           className={cn(
             "flex w-4 justify-center font-black text-xs transition-colors",
-            !isLeftSide ? "text-forge-teal" : "text-slate-muted/50",
+            !isLeftSide ? "text-foreground" : "text-slate-muted/50",
           )}
         >
           {labels.right}

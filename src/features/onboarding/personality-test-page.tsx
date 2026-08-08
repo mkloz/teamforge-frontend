@@ -1,6 +1,8 @@
+import { useMemo } from "react";
 import { PersonalityScreenRenderer } from "@/features/onboarding/components/personality/personality-screen-renderer";
 import { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import { QUESTIONS_PER_PAGE } from "@/features/onboarding/lib/personality-test-page-constants";
+import { getPersonalityVoronoiFormation } from "@/features/onboarding/lib/personality-voronoi-formation";
 import { PersonalityPageContent } from "@/features/onboarding/onboarding-page-content";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
@@ -42,11 +44,29 @@ export function PersonalityTestPage() {
   const screenTransitionKey = getPersonalityScreenTransitionKey(
     testState.screen,
   );
+  const personalityFormation = useMemo(
+    () =>
+      getPersonalityVoronoiFormation({
+        answers: testState.answers,
+        dynamicState: dynamic.state.engineState,
+        pendingDynamicAnswers: dynamic.state.pageAnswers,
+        questions: testState.questions,
+        result: assessment.preview,
+      }),
+    [
+      assessment.preview,
+      dynamic.state.engineState,
+      dynamic.state.pageAnswers,
+      testState.answers,
+      testState.questions,
+    ],
+  );
 
   return (
     <PersonalityPageContent
-      catalystProgress={testState.progress}
+      catalystProgress={displayProgress}
       displayProgress={displayProgress}
+      formation={personalityFormation}
       hasTopPadding={hasTopPadding}
       scrollContainerRef={scrollContainerRef}
       showHomeLink

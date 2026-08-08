@@ -345,7 +345,7 @@ function TokenList({
               className={
                 compact
                   ? "rounded-full bg-muted px-2 py-0.5 text-slate-muted text-xs"
-                  : "rounded-full bg-primary/9 px-2.5 py-1 font-semibold text-primary text-xs"
+                  : "rounded-full bg-primary/9 px-2.5 py-1 font-semibold text-foreground text-xs"
               }
             >
               {humanizeCode(value)}

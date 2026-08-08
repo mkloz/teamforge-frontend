@@ -13,23 +13,36 @@ describe("editable onboarding redirects", () => {
     ).toBeNull();
   });
 
-  it("does not let introductory edit mode skip into interests", () => {
+  it("allows an introductory user to edit interests", () => {
     expect(
       getEditableOnboardingRedirectTarget({
         canonicalDestination: "/explore",
         expectedDestination: "/onboarding/interests",
         isEditMode: true,
       }),
-    ).toBe("/explore");
+    ).toBeNull();
   });
 
-  it("keeps established users on either editable onboarding route", () => {
+  it.each(["/onboarding/personality", "/onboarding/interests"] as const)(
+    "keeps established users on %s",
+    (expectedDestination) => {
+      expect(
+        getEditableOnboardingRedirectTarget({
+          canonicalDestination: "/home",
+          expectedDestination,
+          isEditMode: true,
+        }),
+      ).toBeNull();
+    },
+  );
+
+  it("still redirects incomplete users to their required onboarding step", () => {
     expect(
       getEditableOnboardingRedirectTarget({
-        canonicalDestination: "/home",
-        expectedDestination: "/onboarding/personality",
+        canonicalDestination: "/onboarding/intent",
+        expectedDestination: "/onboarding/interests",
         isEditMode: true,
       }),
-    ).toBeNull();
+    ).toBe("/onboarding/intent");
   });
 });

@@ -1,11 +1,7 @@
-import {
-  GUARD_OFFSETS,
-  NUM_CORE,
-  NUM_GUARD,
-} from "@/shared/constants/voronoi.constants";
+import { NUM_FORMATION, NUM_GUARD } from "@/shared/constants/voronoi.constants";
 import type { Dimensions, Point } from "@/shared/lib/voronoi/voronoi-contract";
 
-type VoronoiPointRole = "ambient" | "core" | "guard";
+type VoronoiPointRole = "ambient" | "formation" | "guard";
 
 export function getCenterPoint(dimensions: Dimensions) {
   return {
@@ -36,12 +32,34 @@ export function createVoronoiPoint(
   };
 }
 
-function getVoronoiPointRole(index: number): VoronoiPointRole {
-  if (index < NUM_CORE) {
-    return "core";
+export function resizeVoronoiPoints(
+  points: Point[],
+  previousDimensions: Dimensions,
+  nextDimensions: Dimensions,
+) {
+  if (previousDimensions.width <= 0 || previousDimensions.height <= 0) {
+    return;
   }
 
-  if (index < NUM_CORE + NUM_GUARD) {
+  const scaleX = nextDimensions.width / previousDimensions.width;
+  const scaleY = nextDimensions.height / previousDimensions.height;
+
+  for (const point of points) {
+    point.x *= scaleX;
+    point.y *= scaleY;
+    point.targetX *= scaleX;
+    point.targetY *= scaleY;
+    point.vx *= scaleX;
+    point.vy *= scaleY;
+  }
+}
+
+function getVoronoiPointRole(index: number): VoronoiPointRole {
+  if (index < NUM_FORMATION) {
+    return "formation";
+  }
+
+  if (index < NUM_FORMATION + NUM_GUARD) {
     return "guard";
   }
 
@@ -57,54 +75,61 @@ function getVoronoiPointPosition({
   index: number;
   role: VoronoiPointRole;
 }) {
-  if (role === "core") {
-    return getCorePointStartPosition(index, dimensions);
+  if (role === "formation") {
+    return getFormationPointStartPosition(index, dimensions);
   }
 
   if (role === "guard") {
     return getGuardPointStartPosition(index, dimensions);
   }
 
-  return getRandomPointStartPosition(dimensions);
+  return getRandomPointStartPosition(dimensions, index);
 }
 
-function getCorePointStartPosition(index: number, dimensions: Dimensions) {
-  const spreadX = dimensions.width * 0.35;
-  const spreadY = dimensions.height * 0.35;
+function getFormationPointStartPosition(index: number, dimensions: Dimensions) {
+  const columns = 16;
+  const rows = Math.ceil(NUM_FORMATION / columns);
+  const column = index % columns;
+  const row = Math.floor(index / columns);
+  const jitterX = (deterministicNoise(index, 17) - 0.5) * 0.56;
+  const jitterY = (deterministicNoise(index, 29) - 0.5) * 0.56;
 
   return {
-    x: dimensions.width / 2 + getCoreColumnDirection(index) * spreadX,
-    y: dimensions.height / 2 + getCoreRowDirection(index) * spreadY,
+    x: dimensions.width * (0.05 + ((column + 0.5 + jitterX) / columns) * 0.9),
+    y: dimensions.height * (0.05 + ((row + 0.5 + jitterY) / rows) * 0.9),
   };
-}
-
-function getCoreColumnDirection(index: number) {
-  return index % 2 === 0 ? -1 : 1;
-}
-
-function getCoreRowDirection(index: number) {
-  return Math.floor(index / 2) === 0 ? -1 : 1;
 }
 
 function getGuardPointStartPosition(index: number, dimensions: Dimensions) {
-  const guardSize = Math.min(dimensions.width, dimensions.height) * 0.3;
-  const guardOffset = GUARD_OFFSETS[index - NUM_CORE];
+  const guardIndex = index - NUM_FORMATION;
+  const ringCount = NUM_GUARD / 2;
+  const ringIndex = guardIndex % ringCount;
+  const ring = Math.floor(guardIndex / ringCount);
+  const angle = ((ringIndex + ring * 0.5) / ringCount) * Math.PI * 2;
+  const guardRadius =
+    Math.min(dimensions.width, dimensions.height) * (ring === 0 ? 0.22 : 0.34);
 
   return {
-    x: dimensions.width / 2 + guardOffset.x * guardSize,
-    y: dimensions.height / 2 + guardOffset.y * guardSize,
+    x: dimensions.width / 2 + Math.cos(angle) * guardRadius,
+    y: dimensions.height / 2 + Math.sin(angle) * guardRadius,
   };
 }
 
-function getRandomPointStartPosition(dimensions: Dimensions) {
+function getRandomPointStartPosition(
+  dimensions: Dimensions,
+  index = NUM_FORMATION + NUM_GUARD,
+) {
   return {
-    x: Math.random() * dimensions.width,
-    y: Math.random() * dimensions.height,
+    x: deterministicNoise(index, 41) * dimensions.width,
+    y: deterministicNoise(index, 73) * dimensions.height,
   };
 }
 
 function getInitialVoronoiPointOpacity(role: VoronoiPointRole) {
-  return role === "core"
-    ? 0.2 + Math.random() * 0.3
-    : 0.03 + Math.random() * 0.12;
+  return role === "formation" ? 0.055 : 0.035;
+}
+
+function deterministicNoise(index: number, salt: number) {
+  const value = Math.sin((index + 1) * 12.9898 + salt * 78.233) * 43_758.5453;
+  return value - Math.floor(value);
 }

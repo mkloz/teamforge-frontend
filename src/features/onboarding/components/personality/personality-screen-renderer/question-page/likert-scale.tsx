@@ -104,7 +104,7 @@ export function LikertScale({ labelledBy, value, onChange }: LikertScaleProps) {
                 className={cn(
                   "max-w-full text-xs leading-4 transition-colors duration-200 motion-reduce:transition-none",
                   value === point
-                    ? "font-bold text-forge-teal"
+                    ? "font-bold text-foreground"
                     : "font-semibold text-muted-foreground",
                 )}
               >

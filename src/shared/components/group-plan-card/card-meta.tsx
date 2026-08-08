@@ -16,7 +16,7 @@ export function CardMeta({ group, distance }: CardMetaProps) {
     <div className="relative z-10 mb-3 flex flex-col gap-2">
       <div className="flex items-center gap-2 text-foreground/80 text-sm transition-colors group-hover:text-foreground">
         <CalendarClock
-          className="size-4 shrink-0 text-primary"
+          className="size-4 shrink-0 text-foreground"
           strokeWidth={2.5}
           aria-hidden="true"
         />
@@ -37,7 +37,7 @@ export function CardMeta({ group, distance }: CardMetaProps) {
           {isFree ? (
             <>
               <Gift
-                className="size-4 shrink-0 text-forge-teal"
+                className="size-4 shrink-0 text-foreground"
                 strokeWidth={2}
                 aria-hidden="true"
               />

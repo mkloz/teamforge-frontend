@@ -31,7 +31,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.Label
       className={cn(
-        "px-2.5 pt-2 pb-1 font-bold text-[11px] text-slate-muted",
+        "px-2.5 pt-2 pb-1 font-bold text-slate-muted text-xs",
         className,
       )}
       data-slot="select-label"
@@ -55,7 +55,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "group/select flex h-(--control-height) w-full min-w-0 cursor-pointer items-center justify-between gap-2 rounded-lg border border-input-border bg-input px-3.5 py-2 font-medium font-sans text-ink text-sm outline-none transition-[background-color,border-color,box-shadow,color] duration-150 ease-out placeholder:text-slate-muted/70 hover:border-foreground/35 focus-visible:border-foreground/70 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:bg-muted/70 disabled:text-slate-muted disabled:opacity-70 aria-invalid:border-destructive focus-visible:aria-invalid:ring-destructive data-[placeholder]:text-slate-muted/70 *:data-[slot=select-value]:flex *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate motion-reduce:transition-none [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "group/select flex h-(--control-height) w-full min-w-0 cursor-pointer items-center justify-between gap-2 rounded-lg border border-control-border bg-input px-3.5 py-2 font-medium font-sans text-ink text-sm shadow-field outline-none transition-[background-color,border-color,box-shadow,color] duration-150 ease-out placeholder:text-slate-muted/70 hover:shadow-field-hover focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:bg-muted/70 disabled:text-slate-muted disabled:opacity-70 disabled:shadow-none aria-invalid:bg-destructive/8 aria-invalid:ring-1 aria-invalid:ring-destructive/35 focus-visible:aria-invalid:ring-destructive data-[placeholder]:text-slate-muted/70 *:data-[slot=select-value]:flex *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate motion-reduce:transition-none [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
         size === "sm" && "h-9! px-3 text-xs",
         className,
       )}
@@ -92,7 +92,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 relative z-50 max-h-(--radix-select-content-available-height) min-w-36 origin-(--radix-select-content-transform-origin) overflow-hidden rounded-lg border border-border bg-card text-ink shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] data-[state=closed]:animate-out data-[state=open]:animate-in",
+          "data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 relative z-50 max-h-(--radix-select-content-available-height) min-w-36 origin-(--radix-select-content-transform-origin) overflow-hidden rounded-lg bg-card text-ink shadow-soft-md data-[state=closed]:animate-out data-[state=open]:animate-in",
           position === "popper" &&
             "data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
           className,
@@ -134,7 +134,7 @@ function SelectItem({
     >
       <span
         data-slot="select-item-indicator"
-        className="absolute right-2 flex size-3.5 items-center justify-center text-primary"
+        className="absolute right-2 flex size-3.5 items-center justify-center text-foreground"
       >
         <SelectPrimitive.ItemIndicator>
           <CheckIcon className="size-3.5" />

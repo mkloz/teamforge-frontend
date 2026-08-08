@@ -169,13 +169,13 @@ export function ExploreQuickFilters() {
               onClick={() => toggleFilter(filter.id)}
               className={cn(
                 "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-card px-3 font-bold text-muted-foreground text-xs transition-colors",
-                "hover:border-border hover:bg-muted/25 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
+                "hover:border-foreground/35 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground",
                 active &&
-                  "border-forge-teal/55 bg-primary/8 text-foreground hover:border-forge-teal/70",
+                  "border-foreground/30 bg-foreground/8 text-foreground shadow-soft-sm hover:border-foreground/45",
               )}
             >
               <Icon
-                className={cn("size-3.5", active && "text-primary")}
+                className={cn("size-3.5", active && "text-foreground")}
                 strokeWidth={2}
                 aria-hidden="true"
               />

@@ -163,7 +163,7 @@ function NotificationItemContent({
         {item.message}
       </span>
       {readiness ? (
-        <span className="font-semibold text-forge-teal text-xs">
+        <span className="font-semibold text-foreground text-xs">
           {readiness.title}
         </span>
       ) : null}
@@ -185,7 +185,7 @@ function NotificationTitleLine({ item }: { item: Notification }) {
       </span>
       <time
         dateTime={item.createdAt}
-        className="mt-px shrink-0 font-medium text-[0.6875rem] text-slate-muted/60"
+        className="mt-px shrink-0 font-medium text-slate-muted/75 text-xs"
       >
         {relativeTime(item.createdAt)}
       </time>
@@ -200,7 +200,7 @@ function NotificationPendingState({ isPending }: { isPending: boolean }) {
 
   return (
     <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-      <span className="inline-flex items-center gap-1 font-semibold text-forge-teal text-xs">
+      <span className="inline-flex items-center gap-1 font-semibold text-foreground text-xs">
         <Spinner className="size-3 shrink-0" aria-hidden="true" />
         Opening
       </span>
@@ -314,7 +314,7 @@ function NotificationSource({
             className="absolute inset-0 hidden size-11 rounded-md bg-canvas/95 p-0 opacity-0 shadow-sm transition-opacity duration-150 lg:inline-flex lg:group-hover:opacity-100 lg:group-focus-within:opacity-100 lg:[@media(pointer:coarse)]:opacity-100 [@media(pointer:fine)]:size-10"
           >
             <ReadStateIcon
-              className="size-4 shrink-0 text-forge-teal"
+              className="size-4 shrink-0 text-foreground"
               aria-hidden="true"
             />
           </Button>

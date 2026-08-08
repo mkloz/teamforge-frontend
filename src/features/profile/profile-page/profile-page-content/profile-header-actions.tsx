@@ -29,7 +29,7 @@ export function ProfileHeaderActions({
           <Button
             variant="inverseGhost"
             size="icon"
-            className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
+            className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-foreground hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-foreground data-[state=open]:bg-white data-[state=open]:text-foreground"
             aria-label="Show QR Code"
           >
             <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />

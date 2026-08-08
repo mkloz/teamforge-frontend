@@ -26,7 +26,7 @@ import {
   type NavigationTourStep,
 } from "./navigation-tour-steps";
 
-const VERSION = "main-navigation-tour-v2" as const;
+const VERSION = "focused-product-tour-v3" as const;
 export const ONBOARDING_COACHMARK_REPLAY_EVENT =
   "teamforge:onboarding-coachmarks-replay";
 
@@ -155,8 +155,6 @@ export function OnboardingCoachmarks({ pathname }: { pathname: string }) {
 
   const nextStep = steps[currentStepIndex + 1] ?? null;
   const previousStep = steps[currentStepIndex - 1] ?? null;
-  const pageProgress = getPageProgress(steps, currentStep);
-
   function goToStep(step: NavigationTourStep) {
     updateProgress({
       currentStepId: step.id,
@@ -184,7 +182,8 @@ export function OnboardingCoachmarks({ pathname }: { pathname: string }) {
     <>
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed z-110 rounded-xl border-2 border-primary bg-transparent shadow-[0_0_0_9999px_rgb(0_0_0/0.46)] transition-[top,left,width,height] duration-200 motion-reduce:transition-none"
+        data-onboarding-tour-spotlight
+        className="pointer-events-none fixed z-110 rounded-xl bg-transparent shadow-[0_0_0_9999px_rgb(0_0_0/0.56)] transition-[top,left,width,height] duration-200 motion-reduce:transition-none"
         style={getSpotlightStyle(target)}
       />
 
@@ -204,7 +203,7 @@ export function OnboardingCoachmarks({ pathname }: { pathname: string }) {
               className="font-bold text-muted-foreground text-xs"
               aria-live="polite"
             >
-              {currentStepIndex + 1} of {steps.length} · {currentStep.pageLabel}
+              {currentStepIndex + 1} of {steps.length}
             </p>
             <h2
               id="onboarding-tour-title"
@@ -231,35 +230,39 @@ export function OnboardingCoachmarks({ pathname }: { pathname: string }) {
           {currentStep.body}
         </p>
 
-        <div className="mt-4 flex items-center gap-1.5" aria-hidden="true">
-          {pageProgress.pages.map((pageId, index) => (
+        <p className="mt-3 border-foreground/35 border-l-2 pl-3 font-semibold text-sm leading-5">
+          {currentStep.action}
+        </p>
+
+        <div
+          className="mt-4 flex items-center gap-1.5"
+          role="progressbar"
+          aria-label="Tutorial progress"
+          aria-valuemin={1}
+          aria-valuemax={steps.length}
+          aria-valuenow={currentStepIndex + 1}
+        >
+          {steps.map((step, index) => (
             <span
-              key={pageId}
+              key={step.id}
+              aria-hidden="true"
               className={`h-1 flex-1 rounded-full ${
-                index <= pageProgress.currentPageIndex
-                  ? "bg-forge-teal"
-                  : "bg-muted"
+                index <= currentStepIndex ? "bg-forge-teal" : "bg-muted"
               }`}
             />
           ))}
         </div>
-        <p className="mt-2 text-muted-foreground text-xs">
-          Page {pageProgress.currentPageIndex + 1} of{" "}
-          {pageProgress.pages.length}. You can still use the page normally.
-        </p>
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={goBack}
-            disabled={!previousStep}
-          >
-            Back
-          </Button>
+          {previousStep ? (
+            <Button type="button" variant="ghost" size="sm" onClick={goBack}>
+              Back
+            </Button>
+          ) : (
+            <span />
+          )}
           <Button type="button" size="sm" onClick={advance}>
-            {getAdvanceLabel(currentStep, nextStep)}
+            {getAdvanceLabel(nextStep)}
           </Button>
         </div>
       </section>
@@ -370,6 +373,8 @@ function getDialogStyle(target: TargetGeometry): CSSProperties {
   const canFitRight =
     target.right + targetGap + width <= viewportWidth - outerGap;
   const isLeftRailTarget = target.left < 80 && target.width < 96;
+  const isTallLeftPanel =
+    target.left < viewportWidth / 2 && target.height > estimatedHeight * 1.25;
 
   let left = clamp(
     target.left + target.width / 2 - width / 2,
@@ -378,7 +383,7 @@ function getDialogStyle(target: TargetGeometry): CSSProperties {
   );
   let top: number;
 
-  if (isLeftRailTarget && canFitRight) {
+  if ((isLeftRailTarget || isTallLeftPanel) && canFitRight) {
     left = target.right + targetGap;
     top = clamp(
       target.top + target.height / 2 - estimatedHeight / 2,
@@ -400,14 +405,9 @@ function getDialogStyle(target: TargetGeometry): CSSProperties {
   return { left, top };
 }
 
-function getAdvanceLabel(
-  currentStep: NavigationTourStep,
-  nextStep: NavigationTourStep | null,
-) {
+function getAdvanceLabel(nextStep: NavigationTourStep | null) {
   if (!nextStep) return "Finish tutorial";
-  return currentStep.pageId === nextStep.pageId
-    ? "Continue"
-    : `Next: ${nextStep.pageLabel}`;
+  return `Next: ${nextStep.pageLabel}`;
 }
 
 function getCurrentStepIndex(
@@ -418,17 +418,6 @@ function getCurrentStepIndex(
     ? steps.findIndex((step) => step.id === currentStepId)
     : -1;
   return savedIndex >= 0 ? savedIndex : 0;
-}
-
-function getPageProgress(
-  steps: NavigationTourStep[],
-  currentStep: NavigationTourStep,
-) {
-  const pages = [...new Set(steps.map((step) => step.pageId))];
-  return {
-    pages,
-    currentPageIndex: Math.max(0, pages.indexOf(currentStep.pageId)),
-  };
 }
 
 function readProgress(): TourProgress {

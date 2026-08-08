@@ -2,7 +2,10 @@ import { lazy, type RefObject, Suspense } from "react";
 import { useDesktopOnboardingVisualEnabled } from "@/features/onboarding/hooks/use-desktop-onboarding-visual-enabled";
 import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
 import { cn } from "@/shared/lib/utils";
-import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
+import type {
+  VoronoiCatalystHandle,
+  VoronoiFormationTarget,
+} from "@/shared/lib/voronoi/voronoi-contract";
 
 const VoronoiCatalyst = lazy(() =>
   import("@/shared/components/visuals/voronoi-catalyst").then((module) => ({
@@ -12,6 +15,7 @@ const VoronoiCatalyst = lazy(() =>
 
 interface OnboardingVisualPanelProps {
   catalystRef?: RefObject<VoronoiCatalystHandle | null>;
+  formation?: VoronoiFormationTarget;
   progress: number;
   side: "left" | "right";
   asAside?: boolean;
@@ -19,6 +23,7 @@ interface OnboardingVisualPanelProps {
 
 export function OnboardingVisualPanel({
   catalystRef,
+  formation,
   progress,
   side,
   asAside = false,
@@ -36,7 +41,11 @@ export function OnboardingVisualPanel({
     >
       {showVisual ? (
         <Suspense fallback={null}>
-          <VoronoiCatalyst ref={catalystRef} progress={progress} />
+          <VoronoiCatalyst
+            ref={catalystRef}
+            formation={formation}
+            progress={progress}
+          />
         </Suspense>
       ) : null}
     </Panel>

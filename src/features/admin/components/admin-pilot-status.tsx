@@ -288,7 +288,7 @@ function StatusSection({
                         className={cn(
                           "shrink-0 font-medium text-xs",
                           row.tone === "teal"
-                            ? "text-primary"
+                            ? "text-foreground"
                             : row.tone === "destructive"
                               ? "text-danger"
                               : row.tone === "amber"

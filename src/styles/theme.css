@@ -1,16 +1,9 @@
 @custom-variant dark (&:is(.dark *));
 
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400 900;
-  font-display: swap;
-  src: url("/fonts/inter-latin-var.woff2") format("woff2");
-}
-
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Source Sans 3 Variable", "Segoe UI", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-display: "Source Serif 4 Variable", Georgia, ui-serif, serif;
 
   --color-forge-teal: #0d9488;
   --color-forge-deep-panel: #0a1212;
@@ -72,6 +65,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-input-border: var(--input-border);
+  --color-control-border: var(--control-border);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -157,6 +151,8 @@
   --shadow-soft-sm: var(--elevation-soft-sm);
   --shadow-soft-md: var(--elevation-soft-md);
   --shadow-soft-lg: var(--elevation-soft-lg);
+  --shadow-field: var(--field-shadow);
+  --shadow-field-hover: var(--field-shadow-hover);
   --shadow-button-primary: 0 4px 0
     color-mix(in srgb, var(--primary) 72%, var(--button-shadow-base));
   --shadow-button-secondary: 0 4px 0

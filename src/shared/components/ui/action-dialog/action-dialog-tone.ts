@@ -18,14 +18,14 @@ export const ACTION_DIALOG_TONE_CONFIG = {
   },
   info: {
     defaultIcon: Info,
-    iconClassName: "text-primary",
+    iconClassName: "text-foreground",
     detailLabel: "Worth knowing",
     ruleClassName: "border-primary/45",
     confirmVariant: "primary",
   },
   success: {
     defaultIcon: CheckCircle2,
-    iconClassName: "text-primary",
+    iconClassName: "text-foreground",
     detailLabel: "What happens",
     ruleClassName: "border-primary/45",
     confirmVariant: "primary",

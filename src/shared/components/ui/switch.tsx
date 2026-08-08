@@ -18,12 +18,12 @@ function Switch({
     >
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-1/2 h-7 -translate-y-1/2 rounded-full border border-input-border transition-colors duration-150 group-data-[state=checked]/switch:border-primary group-data-[state=checked]/switch:bg-primary group-data-[state=unchecked]/switch:bg-input motion-reduce:transition-none dark:group-data-[state=unchecked]/switch:bg-input/80"
+        className="pointer-events-none absolute inset-x-0 top-1/2 h-7 -translate-y-1/2 rounded-full border border-control-border shadow-field transition-[background-color,box-shadow] duration-150 group-data-[state=checked]/switch:bg-primary group-data-[state=unchecked]/switch:bg-input group-data-[state=checked]/switch:shadow-soft-sm motion-reduce:transition-none dark:group-data-[state=unchecked]/switch:bg-input/80"
       />
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
         className={cn(
-          "pointer-events-none relative block size-6 rounded-full border border-foreground/20 bg-background ring-0 transition-transform duration-150 data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0 motion-reduce:transition-none",
+          "pointer-events-none relative block size-6 rounded-full bg-background shadow-soft-sm ring-0 transition-transform duration-150 data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0 motion-reduce:transition-none",
         )}
       />
     </SwitchPrimitive.Root>

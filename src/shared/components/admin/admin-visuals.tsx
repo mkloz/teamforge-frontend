@@ -21,7 +21,7 @@ const TONE_STYLES: Record<
   success: {
     bar: "bg-primary",
     dot: "bg-primary",
-    text: "text-primary",
+    text: "text-foreground",
   },
   warning: {
     bar: "bg-accent",
@@ -81,7 +81,7 @@ export function AdminSummaryMetric({
         {value}
       </dd>
       {detail ? (
-        <p className="truncate text-slate-muted text-xs">{detail}</p>
+        <dd className="truncate text-slate-muted text-xs">{detail}</dd>
       ) : null}
     </div>
   );

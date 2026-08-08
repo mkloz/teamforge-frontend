@@ -32,7 +32,7 @@ export function InterestsBrowseHeader({
             size="xs"
             key={`nav-${category.id}`}
             onClick={() => onQuickJumpCategory(category.id)}
-            className="shrink-0 rounded-full border-slate-muted/15 bg-card text-slate-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 dark:border-white/10"
+            className="shrink-0 rounded-full border-slate-muted/15 bg-card text-slate-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-1 dark:border-white/10"
           >
             <div
               className={cn(

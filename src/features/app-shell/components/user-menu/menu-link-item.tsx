@@ -73,9 +73,9 @@ export function MenuLinkItemContent({
     <>
       <IconTile
         icon={icon}
-        tone={tone === "destructive" ? "destructive" : "teal"}
+        tone={tone === "destructive" ? "destructive" : "none"}
         size="md"
-        className="bg-transparent"
+        className="text-muted-foreground transition-colors group-hover:text-foreground"
       />
       <span className="min-w-0 flex-1">
         <span className="block truncate font-bold text-sm">{label}</span>

@@ -43,7 +43,7 @@ export function MatchingThresholdControl({
         <div className="min-w-0">
           <h3 className="flex items-center gap-2 font-bold text-base text-ink">
             <SlidersHorizontal
-              className="size-4 text-primary"
+              className="size-4 text-foreground"
               aria-hidden="true"
             />
             Compatibility filter
@@ -54,7 +54,7 @@ export function MatchingThresholdControl({
         </div>
 
         <div className="shrink-0 text-right">
-          <p className="font-bold text-2xl text-primary leading-none">
+          <p className="font-bold text-2xl text-foreground leading-none">
             {draftValue === 0 ? "Open" : `${draftValue}%`}
           </p>
           <p className="mt-1 text-slate-muted text-xs">

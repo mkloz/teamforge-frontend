@@ -84,10 +84,8 @@ function PaletteOption({
   return (
     <label
       className={cn(
-        "group relative min-w-0 rounded-xl bg-background/55 p-2 text-left transition-colors duration-150 motion-reduce:transition-none sm:p-2.5",
-        isSelected
-          ? "bg-primary/10 ring-1 ring-foreground/45"
-          : "hover:ring-1 hover:ring-foreground/25",
+        "group relative min-w-0 rounded-xl bg-background/55 p-2 text-left shadow-soft-sm transition-[background-color,box-shadow] duration-150 motion-reduce:transition-none sm:p-2.5",
+        isSelected ? "bg-primary/10 shadow-soft-md" : "hover:shadow-soft-md",
         disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
       )}
     >

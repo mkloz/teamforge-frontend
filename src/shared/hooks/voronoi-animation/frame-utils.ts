@@ -1,4 +1,8 @@
-import { NUM_CORE, NUM_GUARD } from "@/shared/constants/voronoi.constants";
+import {
+  ANIMATION_CONFIG,
+  NUM_FORMATION,
+  NUM_GUARD,
+} from "@/shared/constants/voronoi.constants";
 import type { MouseState, Point } from "@/shared/lib/voronoi/voronoi-contract";
 import { drawCatalystCore } from "@/shared/lib/voronoi/voronoi-renderer";
 
@@ -9,7 +13,11 @@ export function writeDepthAdjustedPoints(
 ) {
   for (let index = 0; index < points.length; index++) {
     const depth =
-      index < NUM_CORE ? 1.0 : index < NUM_CORE + NUM_GUARD ? 0.6 : 0.3;
+      index < NUM_FORMATION
+        ? 1.0
+        : index < NUM_FORMATION + NUM_GUARD
+          ? 0.6
+          : 0.3;
     flatPoints[index * 2] = points[index].x + parallaxOffset.x * depth;
     flatPoints[index * 2 + 1] = points[index].y + parallaxOffset.y * depth;
   }
@@ -18,8 +26,11 @@ export function writeDepthAdjustedPoints(
 export function getNextProgress(
   currentProgress: number,
   targetProgress: number,
+  deltaSeconds: number,
 ) {
-  return currentProgress + (targetProgress - currentProgress) * 0.012;
+  const response =
+    1 - Math.exp(-ANIMATION_CONFIG.progressResponse * deltaSeconds);
+  return currentProgress + (targetProgress - currentProgress) * response;
 }
 
 export function clampProgress(progress: number) {
@@ -35,28 +46,36 @@ export function getTypingPulseTarget(
 
 export function getNextTypingPulse({
   currentPulse,
+  deltaSeconds,
   isTyping,
   targetPulse,
 }: {
   currentPulse: number;
+  deltaSeconds: number;
   isTyping: boolean;
   targetPulse: number;
 }) {
-  return currentPulse + (targetPulse - currentPulse) * (isTyping ? 0.05 : 0.02);
+  const responseRate = isTyping
+    ? ANIMATION_CONFIG.typingResponseIn
+    : ANIMATION_CONFIG.typingResponseOut;
+  const response = 1 - Math.exp(-responseRate * deltaSeconds);
+  return currentPulse + (targetPulse - currentPulse) * response;
 }
 
 export function drawCatalystCoreIfActive({
   ctx,
   coreAvg,
   parallaxOffset,
+  sparkEnabled,
   sparkPhase,
 }: {
   ctx: CanvasRenderingContext2D;
   coreAvg: MouseState;
   parallaxOffset: MouseState;
+  sparkEnabled: boolean;
   sparkPhase: number;
 }) {
-  if (sparkPhase <= 0.01) {
+  if (!sparkEnabled || sparkPhase <= 0.01) {
     return;
   }
 

@@ -23,10 +23,7 @@ export function getEditableOnboardingRedirectTarget({
   isEditMode: boolean;
 }) {
   return isEditMode
-    ? getEditModeOnboardingRedirectTarget(
-        canonicalDestination,
-        expectedDestination,
-      )
+    ? getEditModeOnboardingRedirectTarget(canonicalDestination)
     : getLinearOnboardingRedirectTarget({
         canonicalDestination,
         expectedDestination,
@@ -35,17 +32,13 @@ export function getEditableOnboardingRedirectTarget({
 
 function getEditModeOnboardingRedirectTarget(
   canonicalDestination: PostAuthRedirectPath,
-  expectedDestination: EditableOnboardingDestination,
 ) {
-  const isEstablishedEdit =
-    canonicalDestination === "/home" || canonicalDestination === "/forge";
-  const isIntroductoryAssessmentContinuation =
-    canonicalDestination === "/explore" &&
-    expectedDestination === "/onboarding/personality";
+  const canEditOnboardingInputs =
+    canonicalDestination === "/home" ||
+    canonicalDestination === "/explore" ||
+    canonicalDestination === "/forge";
 
-  return isEstablishedEdit || isIntroductoryAssessmentContinuation
-    ? null
-    : canonicalDestination;
+  return canEditOnboardingInputs ? null : canonicalDestination;
 }
 
 function getLinearOnboardingRedirectTarget({

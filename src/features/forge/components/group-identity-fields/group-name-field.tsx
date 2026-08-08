@@ -74,8 +74,8 @@ export function GroupNameField({
               className={cn(
                 "h-auto rounded-lg border px-2 py-1 font-semibold text-xs transition-colors duration-150",
                 groupName === name
-                  ? "border-forge-teal/40 bg-forge-teal/10 text-forge-teal"
-                  : "border-border/50 bg-card text-muted-foreground hover:border-forge-teal/30 hover:bg-forge-teal/5 hover:text-foreground",
+                  ? "border-forge-teal/40 bg-forge-teal/10 text-foreground"
+                  : "border-border/50 bg-card text-muted-foreground hover:border-foreground/35 hover:text-foreground",
               )}
             >
               <PenLine size={9} className="shrink-0 opacity-60" />

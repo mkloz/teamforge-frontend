@@ -42,7 +42,7 @@ export function CtaSection() {
           >
             <h2 className="mb-6 text-balance font-bold font-sans text-3xl text-white leading-tight sm:text-5xl">
               Stop waiting for the right{" "}
-              <span className="text-forge-teal">group</span> to appear.
+              <span className="text-foreground">group</span> to appear.
             </h2>
             <p className="mx-auto mb-10 max-w-xl text-pretty font-sans text-base text-text-dark-secondary leading-relaxed sm:text-lg">
               The setup takes a little thought. That is the point. TeamForge

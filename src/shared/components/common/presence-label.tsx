@@ -8,7 +8,7 @@ import type { OnlineStatus } from "@/shared/schemas/enums";
 const PRESENCE_TONES: Record<OnlineStatus, string> = {
   AWAY: "text-spark-amber",
   OFFLINE: "text-muted-foreground/65",
-  ONLINE: "text-forge-teal",
+  ONLINE: "text-foreground",
 };
 
 const PRESENCE_DOTS: Record<OnlineStatus, string> = {
@@ -47,7 +47,7 @@ export function PresenceLabel({
   return (
     <span
       className={cn(
-        "flex min-w-0 items-center gap-1 font-medium text-[0.6875rem] leading-none",
+        "flex min-w-0 items-center gap-1 font-medium text-xs leading-none",
         PRESENCE_TONES[toneStatus],
         className,
       )}

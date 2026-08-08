@@ -231,7 +231,7 @@ function InviteCandidateRow({
         />
 
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-semibold text-foreground text-sm transition-colors group-hover/profile:text-forge-teal">
+          <span className="block truncate font-semibold text-foreground text-sm">
             {candidate.name}
           </span>
           <span className="mt-1 flex min-w-0 items-center gap-2">

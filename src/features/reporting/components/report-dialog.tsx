@@ -479,7 +479,7 @@ function SafetyGuidanceLink({ href, label }: { href: string; label: string }) {
   return (
     <a
       href={href}
-      className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="font-semibold text-foreground underline decoration-primary/40 underline-offset-2 hover:decoration-primary focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       rel={isExternalLink ? "noopener noreferrer" : undefined}
       target={isExternalLink ? "_blank" : undefined}
     >
@@ -540,7 +540,7 @@ function EvidenceNotice({
   return (
     <div className="flex items-start gap-2.5 text-slate-muted text-sm leading-relaxed">
       <Info
-        className="mt-0.5 size-4 shrink-0 text-primary"
+        className="mt-0.5 size-4 shrink-0 text-foreground"
         aria-hidden="true"
       />
       <p>{message} A receipt confirms delivery; it is not a decision.</p>

@@ -35,19 +35,18 @@ type CategoryFilterChipSelectedVariant = NonNullable<
 >;
 
 const SELECTED_CHIP_CLASS_NAMES = {
-  soft: "border-primary/75 bg-primary/8 text-primary hover:border-primary hover:bg-primary/10",
-  solid:
-    "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
+  soft: "bg-primary/10 text-foreground shadow-soft-sm",
+  solid: "bg-primary text-primary-foreground shadow-soft-sm",
 } satisfies Record<CategoryFilterChipSelectedVariant, string>;
 
 const CHECKED_CHIP_CLASS_NAMES = {
-  soft: "data-[state=checked]:border-primary/75 data-[state=checked]:bg-primary/8 data-[state=checked]:text-primary hover:data-[state=checked]:bg-primary/10",
+  soft: "data-[state=checked]:bg-primary/10 data-[state=checked]:text-foreground data-[state=checked]:shadow-soft-sm",
   solid:
-    "data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground hover:data-[state=checked]:bg-primary/90",
+    "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:shadow-soft-sm",
 } satisfies Record<CategoryFilterChipSelectedVariant, string>;
 
 const RESTING_CHIP_CLASS_NAME =
-  "border-border bg-card text-slate-muted hover:border-border/90 hover:bg-muted/35 hover:text-foreground";
+  "bg-card text-slate-muted shadow-soft-sm hover:shadow-soft-md hover:text-foreground";
 
 const RESTING_BADGE_CLASS_NAME =
   "bg-muted text-slate-muted group-hover/chip:bg-muted/80 group-hover/chip:text-foreground group-data-[state=checked]/chip:bg-primary-foreground/20 group-data-[state=checked]/chip:text-primary-foreground";
@@ -58,7 +57,7 @@ function getChipClassName(
   className?: string,
 ) {
   return cn(
-    "inline-flex h-8 w-auto shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border px-3 font-bold text-xs leading-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none",
+    "inline-flex h-8 w-auto shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-control-border px-3 font-bold text-xs leading-none transition-[color,box-shadow] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none",
     selected
       ? SELECTED_CHIP_CLASS_NAMES[selectedVariant]
       : RESTING_CHIP_CLASS_NAME,
@@ -169,7 +168,7 @@ function getBadgeToneClassName({
   }
 
   return selectedVariant === "soft"
-    ? "bg-primary/12 text-primary"
+    ? "bg-primary/12 text-foreground"
     : "bg-primary-foreground/20 text-primary-foreground";
 }
 

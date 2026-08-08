@@ -13,7 +13,7 @@ export function SwitchViewPrompt({ onClick }: SwitchViewPromptProps) {
         variant="link"
         size="sm"
         onClick={onClick}
-        className="h-auto p-0 font-semibold"
+        className="min-h-11 p-0 font-semibold"
       >
         Create an account
       </Button>

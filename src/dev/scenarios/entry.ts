@@ -10,6 +10,10 @@ import {
 } from "@/dev/scenarios/runtime/scenario-selection";
 import { setScenarioController } from "@/dev/scenarios/runtime/scenario-state";
 import { authSession } from "@/shared/api/auth-session";
+import {
+  THEME_PREFERENCE_STORAGE_KEY,
+  THEME_PREFERENCE_VERSION,
+} from "@/shared/constants/theme-preferences";
 import type {
   ScenarioExternalEffect,
   ScenarioRuntimeFacade,
@@ -87,6 +91,7 @@ export const scenarioRuntime: ScenarioRuntimeFacade = Object.freeze({
     }
 
     if (descriptor) {
+      applyScenarioAppearanceDefaults(controller);
       if (controller?.world.account.authenticated) {
         authSession.setTokens({
           accessToken: "scenario-access-token",
@@ -126,6 +131,39 @@ export const scenarioRuntime: ScenarioRuntimeFacade = Object.freeze({
     return descriptor ? resolveScenarioMediaUrl(path) : null;
   },
 });
+
+function applyScenarioAppearanceDefaults(
+  scenarioController: ScenarioController | null,
+) {
+  if (!scenarioController) {
+    return;
+  }
+
+  const preferences = scenarioController.world.settings;
+  window.localStorage.setItem(
+    THEME_PREFERENCE_STORAGE_KEY,
+    JSON.stringify({
+      version: THEME_PREFERENCE_VERSION,
+      themeAppearance: preferences.themeAppearance,
+      themeColor: preferences.themeColor,
+      themeStyle: preferences.themeStyle,
+    }),
+  );
+
+  const root = document.documentElement;
+  const resolvedAppearance =
+    preferences.themeAppearance === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+      : preferences.themeAppearance;
+
+  root.dataset.themeAppearance = preferences.themeAppearance;
+  root.dataset.themeColor = preferences.themeColor;
+  root.dataset.themeStyle = preferences.themeStyle;
+  root.classList.remove("light", "dark");
+  root.classList.add(resolvedAppearance);
+}
 
 function isScenarioRequestMatcher(
   value: unknown,

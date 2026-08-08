@@ -60,8 +60,8 @@ function getTagPillSlotClasses({
 
 function getTagPillSurfaceClass(selected: boolean) {
   return selected
-    ? null
-    : "border-border/40 bg-card text-slate-muted dark:border-white/10";
+    ? "border-forge-teal bg-forge-teal text-white shadow-[0_2px_6px_rgb(13_148_136_/_0.25)] hover:shadow-[0_2px_6px_rgb(13_148_136_/_0.25)]!"
+    : "border-slate-muted/20 bg-card text-slate-muted shadow-none hover:border-foreground/35 hover:text-foreground hover:shadow-none! dark:border-white/10";
 }
 
 function getTagPillVariant(selected: boolean): TagPillVariant {

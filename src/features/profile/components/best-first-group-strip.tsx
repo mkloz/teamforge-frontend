@@ -46,7 +46,7 @@ export function BestFirstGroupStrip({
                   tone="none"
                   size="md"
                   className="min-h-9 max-w-full border-border/80 text-ink/80 leading-snug"
-                  iconClassName="text-forge-teal"
+                  iconClassName="text-foreground"
                 >
                   <span className="wrap-break-word min-w-0">{idea.title}</span>
                 </StatusPill>

@@ -57,11 +57,11 @@ export function FriendRequestQueueItem({
           />
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-2">
-              <p className="truncate font-bold text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
+              <p className="truncate font-bold text-foreground text-sm">
                 {request.counterpart.name}
               </p>
               <ArrowRight
-                className="size-3.5 shrink-0 text-muted-foreground/70 opacity-0 transition duration-150 group-focus-within:translate-x-0.5 group-focus-within:text-forge-teal group-focus-within:opacity-100 group-hover:translate-x-0.5 group-hover:text-forge-teal group-hover:opacity-100"
+                className="size-3.5 shrink-0 text-muted-foreground/70 opacity-0 transition duration-150 group-focus-within:translate-x-0.5 group-focus-within:text-foreground group-focus-within:opacity-100 group-hover:translate-x-0.5 group-hover:text-foreground group-hover:opacity-100"
                 aria-hidden="true"
               />
             </div>

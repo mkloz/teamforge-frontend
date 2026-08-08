@@ -20,7 +20,7 @@ export function ReportReceipt({
   return (
     <div className="flex flex-col gap-6 p-5 sm:p-6">
       <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal/12 text-forge-teal">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal/12 text-foreground">
           <CheckCircle2 className="size-5" aria-hidden="true" />
         </span>
         <div>

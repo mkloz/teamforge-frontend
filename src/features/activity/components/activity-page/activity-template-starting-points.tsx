@@ -68,7 +68,7 @@ export function ActivityTemplateStartingPoints({
         <div
           className={cn(
             "mt-5 grid",
-            isSidebar ? "grid-cols-1" : "grid-cols-1 gap-x-8 sm:grid-cols-2",
+            isSidebar ? "grid-cols-1" : "grid-cols-1 gap-x-8 lg:grid-cols-2",
           )}
         >
           {ACTIVITY_TEMPLATE_STARTING_POINTS.map((startingPoint) => {
@@ -81,16 +81,16 @@ export function ActivityTemplateStartingPoints({
                 {...buildForgeTemplateLaunchNavigation(
                   startingPoint.templateId,
                 )}
-                className="group flex min-w-0 items-start gap-3 border-border border-t py-4 text-left outline-none transition-colors hover:text-forge-teal focus-visible:rounded-xl focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+                className="group grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-3 border-border border-t py-4 text-left outline-none transition-colors focus-visible:rounded-xl focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
               >
                 <IconTile
                   icon={Icon}
-                  size="sm"
+                  size="marker"
                   tone="teal"
-                  className="mt-0.5 shrink-0"
+                  className="shrink-0"
                 />
-                <span className="min-w-0 flex-1">
-                  <span className="block font-semibold text-foreground text-sm leading-snug transition-colors group-hover:text-forge-teal">
+                <span className="min-w-0">
+                  <span className="block font-semibold text-foreground text-sm leading-6 underline-offset-4 group-hover:underline">
                     {startingPoint.title}
                   </span>
                   <span className="mt-1 line-clamp-2 text-muted-foreground text-xs leading-relaxed">
@@ -103,7 +103,7 @@ export function ActivityTemplateStartingPoints({
                 <ArrowRight
                   aria-hidden="true"
                   size={16}
-                  className="mt-1 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-forge-teal"
+                  className="mt-1 shrink-0 text-muted-foreground transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-foreground"
                 />
               </Link>
             );

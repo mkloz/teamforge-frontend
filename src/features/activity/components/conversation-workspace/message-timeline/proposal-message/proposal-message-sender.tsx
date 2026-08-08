@@ -23,7 +23,7 @@ export function ProposalMessageSender({
   }
 
   return (
-    <p className="mb-0.5 ml-1.5 font-bold text-primary text-xs opacity-90">
+    <p className="mb-0.5 ml-1.5 font-bold text-foreground text-xs opacity-90">
       {sender.senderName}
     </p>
   );

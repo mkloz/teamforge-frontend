@@ -4,12 +4,18 @@ import { useAuthPageNavigation } from "@/features/auth/hooks/use-auth-page-navig
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 
 const LOGIN_PAGE_METADATA = createTeamForgePageMetadata({
   title: "Sign In",
   description:
     "Sign in to your TeamForge account to access your groups, activities, and plans.",
 });
+
+const LOGIN_FORMATION = {
+  kind: "text",
+  value: "READY",
+} as const satisfies VoronoiFormationTarget;
 
 export function LoginPage() {
   usePageMetadata(LOGIN_PAGE_METADATA);
@@ -18,7 +24,11 @@ export function LoginPage() {
     useAuthPageNavigation();
 
   return (
-    <AuthPageShell progress={progress} scrollDeps={["login"]}>
+    <AuthPageShell
+      formation={LOGIN_FORMATION}
+      progress={progress}
+      scrollDeps={["login"]}
+    >
       <div className="w-full animate-auth-form-enter">
         <LoginForm
           authReturnTo={returnTo}

@@ -245,7 +245,7 @@ function AvailabilityChoices({
               Local proposals need a saved location.{" "}
               <Link
                 {...buildSettingsNavigation("account")}
-                className="font-semibold text-primary underline-offset-4 hover:underline"
+                className="font-semibold text-foreground underline-offset-4 hover:underline"
               >
                 Add your location
               </Link>
@@ -283,7 +283,7 @@ function AvailabilityChoice({
         <Icon
           className={cn(
             "size-4 shrink-0",
-            checked ? "text-forge-teal" : "text-muted-foreground",
+            checked ? "text-foreground" : "text-muted-foreground",
           )}
           aria-hidden="true"
         />
@@ -390,7 +390,7 @@ function AvailabilityExpiry({
 
   return (
     <p className="flex items-center gap-2 text-muted-foreground text-sm">
-      <Clock3 className="size-4 shrink-0 text-forge-teal" aria-hidden="true" />
+      <Clock3 className="size-4 shrink-0 text-foreground" aria-hidden="true" />
       <span>
         {availability.lifecycle === "OPEN"
           ? "Open until"
@@ -429,7 +429,7 @@ function AvailabilityActions({
         This setting is read-only while your account is restricted. Review your{" "}
         <Link
           {...buildSettingsNavigation("account")}
-          className="font-semibold text-primary underline-offset-4 hover:underline"
+          className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
           account settings
         </Link>{" "}

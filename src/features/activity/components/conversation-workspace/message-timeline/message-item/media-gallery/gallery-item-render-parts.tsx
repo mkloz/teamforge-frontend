@@ -209,7 +209,7 @@ function GalleryImageMedia({
 function VideoPlaceholderMedia() {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-muted/70 text-slate-muted">
-      <span className="flex size-11 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary">
+      <span className="flex size-11 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-foreground">
         <Play className="ml-0.5 size-5 fill-current" />
       </span>
       <span className="font-semibold text-xs">Video</span>

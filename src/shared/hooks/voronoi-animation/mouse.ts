@@ -1,33 +1,56 @@
 import { ANIMATION_CONFIG } from "@/shared/constants/voronoi.constants";
 import type { MouseState } from "@/shared/lib/voronoi/voronoi-contract";
 
-const RAD = 25 * (Math.PI / 180);
-const COS_RAD = Math.cos(RAD);
-const SIN_RAD = Math.sin(RAD);
-
 export const INITIAL_MOUSE_POSITION = { x: -1000, y: -1000 } as const;
 
-export function getRotatedMousePosition(
-  targetMouse: MouseState,
-  center: MouseState,
-) {
-  const targetDeltaX = targetMouse.x - center.x;
-  const targetDeltaY = targetMouse.y - center.y;
+export function getCanvasPointerPosition({
+  center,
+  point,
+  transform,
+}: {
+  center: MouseState;
+  point: MouseState;
+  transform: string;
+}) {
+  const matrix = parseTransformMatrix(transform);
+  if (!matrix) return point;
+
+  const determinant = matrix.a * matrix.d - matrix.b * matrix.c;
+  if (Math.abs(determinant) < Number.EPSILON) return point;
+
+  const translatedX = point.x - center.x - matrix.e;
+  const translatedY = point.y - center.y - matrix.f;
 
   return {
-    x: center.x + targetDeltaX * COS_RAD - targetDeltaY * SIN_RAD,
-    y: center.y + targetDeltaX * SIN_RAD + targetDeltaY * COS_RAD,
+    x:
+      center.x +
+      (matrix.d * translatedX - matrix.c * translatedY) / determinant,
+    y:
+      center.y +
+      (-matrix.b * translatedX + matrix.a * translatedY) / determinant,
   };
+}
+
+function parseTransformMatrix(transform: string) {
+  if (!transform || transform === "none") return null;
+  const values = transform.match(/matrix\(([^)]+)\)/)?.[1]?.split(",");
+  if (values?.length !== 6) return null;
+  const [a, b, c, d, e, f] = values.map(Number);
+  if ([a, b, c, d, e, f].some((value) => !Number.isFinite(value))) {
+    return null;
+  }
+  return { a, b, c, d, e, f };
 }
 
 export function lerpMousePosition(
   currentMouse: MouseState,
   activeTarget: MouseState,
+  deltaSeconds: number,
 ) {
-  currentMouse.x +=
-    (activeTarget.x - currentMouse.x) * ANIMATION_CONFIG.lerpRate;
-  currentMouse.y +=
-    (activeTarget.y - currentMouse.y) * ANIMATION_CONFIG.lerpRate;
+  const response =
+    1 - Math.exp(-ANIMATION_CONFIG.pointerResponse * deltaSeconds);
+  currentMouse.x += (activeTarget.x - currentMouse.x) * response;
+  currentMouse.y += (activeTarget.y - currentMouse.y) * response;
 }
 
 export function getParallaxOffset(

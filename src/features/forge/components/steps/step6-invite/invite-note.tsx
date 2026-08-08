@@ -65,7 +65,7 @@ function HandoffStepItem({
           aria-hidden="true"
         />
       )}
-      <span className="relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full border border-forge-teal/25 bg-canvas text-forge-teal">
+      <span className="relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full border border-border/60 bg-canvas text-foreground">
         <Icon className="size-3" strokeWidth={2.2} aria-hidden="true" />
       </span>
       <div className="min-w-0 pt-0.5">

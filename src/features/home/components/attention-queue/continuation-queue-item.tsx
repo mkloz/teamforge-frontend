@@ -88,7 +88,7 @@ export function ContinuationQueueItem({
                   Are you still meeting or keeping in touch with{" "}
                   <Link
                     {...navigation}
-                    className="rounded-sm underline decoration-border underline-offset-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="rounded-sm underline decoration-border underline-offset-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {group.name}
                   </Link>
@@ -148,7 +148,7 @@ export function ContinuationQueueItem({
         ) : feedback !== "NO_LONGER_ELIGIBLE" ? (
           <Link
             {...navigation}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-1 self-end rounded-full border border-border px-3 font-bold text-foreground text-xs transition-colors hover:border-primary/35 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-8 sm:self-auto"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-1 self-end rounded-full border border-border px-3 font-bold text-foreground text-xs transition-all hover:-translate-y-0.5 hover:border-foreground/35 hover:shadow-soft-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground sm:h-8 sm:self-auto"
           >
             View group
             <ArrowRight className="size-3.5" aria-hidden="true" />

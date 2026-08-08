@@ -164,7 +164,7 @@ function LoginPasswordLabel({
       <FormLabel className={authFormLabelClassName}>Password</FormLabel>
       <Link
         {...buildAuthRouteNavigation("/auth/forgot-password", authReturnTo)}
-        className="inline-flex min-h-11 items-center font-medium font-sans text-forge-teal text-xs outline-hidden transition-colors hover:underline focus:ring-2 focus:ring-forge-teal/20 [@media(pointer:fine)]:min-h-0"
+        className="inline-flex min-h-11 items-center font-medium font-sans text-foreground text-xs outline-hidden transition-colors hover:underline focus:ring-1 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background [@media(pointer:fine)]:min-h-0"
       >
         Forgot password?
       </Link>

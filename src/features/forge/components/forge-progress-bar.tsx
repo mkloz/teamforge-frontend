@@ -84,11 +84,11 @@ function getProgressStepClassName(isActive: boolean, isComplete: boolean) {
 
 function getProgressLabelClassName(isActive: boolean, isComplete: boolean) {
   return cn(
-    "relative select-none truncate px-2 font-bold text-[10px] leading-none transition-colors duration-200",
+    "relative select-none truncate px-2 font-bold text-xs leading-none transition-colors duration-200",
     isActive
-      ? "pl-4 text-forge-teal"
+      ? "pl-4 text-foreground"
       : isComplete
-        ? "text-forge-teal/60"
+        ? "text-foreground/60"
         : "text-muted-foreground/40",
   );
 }

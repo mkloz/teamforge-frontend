@@ -24,7 +24,7 @@ import {
 } from "@/features/home/lib/home-plan-presenters";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
-import { IconTile } from "@/shared/components/ui/icon-tile";
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import { cn } from "@/shared/lib/utils";
 import { buildActivityNavigation } from "@/shared/navigation/activity-navigation";
 import { buildGroupPlanDetailNavigation } from "@/shared/navigation/group-navigation";
@@ -50,12 +50,14 @@ export function HomeJourneyPlans() {
         id="home-journey-plans-heading"
         title="Upcoming plans"
         action={
-          <Button asChild variant="ghost" size="sm">
-            <Link {...buildActivityNavigation({ filter: "groups" })}>
-              View all
-              <ArrowRight className="size-3.5" aria-hidden="true" />
-            </Link>
-          </Button>
+          visiblePlans.length > 0 ? (
+            <Button asChild variant="ghost" size="sm">
+              <Link {...buildActivityNavigation({ filter: "groups" })}>
+                View all
+                <ArrowRight className="size-3.5" aria-hidden="true" />
+              </Link>
+            </Button>
+          ) : null
         }
       />
 
@@ -174,7 +176,7 @@ function FeaturedJourneyPlan({ plannedGroup }: { plannedGroup: PlannedGroup }) {
                 tone={readiness.tone}
               />
             ) : null}
-            <h3 className="max-w-[85%] text-balance font-black text-2xl text-white leading-[1.05] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] transition-colors group-hover:text-forge-teal sm:text-3xl">
+            <h3 className="max-w-[85%] text-balance font-black text-2xl text-white leading-[1.05] tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] sm:text-3xl">
               {plan.title}
             </h3>
             {groupContext ? (
@@ -308,7 +310,7 @@ function CompactJourneyPlan({ plannedGroup }: { plannedGroup: PlannedGroup }) {
         </div>
 
         <div className="min-w-0">
-          <p className="truncate font-bold text-foreground text-sm transition-colors group-hover:text-forge-teal sm:text-base">
+          <p className="truncate font-bold text-foreground text-sm sm:text-base">
             {plan.title}
           </p>
           {groupContext ? (
@@ -329,7 +331,7 @@ function CompactJourneyPlan({ plannedGroup }: { plannedGroup: PlannedGroup }) {
         </div>
 
         <ArrowUpRight
-          className="absolute top-3 right-3 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-forge-teal sm:static"
+          className="absolute top-3 right-3 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground sm:static"
           aria-hidden="true"
         />
       </Link>
@@ -349,9 +351,9 @@ function PlanReadinessBadge({
   return (
     <span
       className={cn(
-        "mt-2 inline-flex rounded-full px-2 py-0.5 font-bold text-[0.6875rem]",
+        "mt-2 inline-flex rounded-full px-2 py-0.5 font-bold text-xs",
         inverse && "bg-black/35 text-white backdrop-blur-sm",
-        !inverse && tone === "success" && "bg-success/10 text-success",
+        !inverse && tone === "success" && "bg-success/10 text-foreground",
         !inverse && tone === "warning" && "bg-warning/10 text-warning",
         !inverse && tone === "danger" && "bg-destructive/10 text-destructive",
         !inverse && tone === "neutral" && "bg-muted text-muted-foreground",
@@ -400,16 +402,10 @@ function JourneyPlanImageFallback({ compact = false }: { compact?: boolean }) {
 
 function EmptyJourneyPlans() {
   return (
-    <div className="flex min-h-36 items-center justify-center gap-3 rounded-lg border border-border/70 border-dashed px-4 py-6">
-      <IconTile icon={CalendarDays} size="xl" shape="circle" tone="neutral" />
-      <div className="min-w-0">
-        <p className="font-bold text-foreground text-sm">
-          Your calendar is open.
-        </p>
-        <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
-          Forge a group or join one to get a real plan moving.
-        </p>
-      </div>
-    </div>
+    <EmptyState
+      icon={CalendarDays}
+      title="Your calendar is open."
+      description="Forge a group or join one to get a real plan moving."
+    />
   );
 }

@@ -31,8 +31,8 @@ export function GroupDescriptionField({
         onChange={(event) => onGroupDescriptionChange(event.target.value)}
         className={cn(
           "rounded-xl border-border/60 px-3.5 py-3 font-medium text-sm",
-          "placeholder:text-slate-muted/55 focus-visible:border-forge-teal/60",
-          "resize-none leading-relaxed transition-colors duration-150 focus-visible:ring-forge-teal/12",
+          "placeholder:text-slate-muted/55 focus-visible:border-foreground/70",
+          "resize-none leading-relaxed transition-colors duration-150 focus-visible:ring-foreground",
         )}
       />
       {groupDescription.length > 0 && (

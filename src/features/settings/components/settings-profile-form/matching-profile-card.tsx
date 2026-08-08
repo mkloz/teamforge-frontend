@@ -83,7 +83,7 @@ export function MatchingProfileCard({
                   onClick={() =>
                     setShowAllInterests((isExpanded) => !isExpanded)
                   }
-                  className="rounded-full bg-muted px-2.5 py-1 font-semibold text-ink text-xs outline-none transition-colors hover:bg-primary/12 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary/50"
+                  className="rounded-full border border-transparent bg-muted px-2.5 py-1 font-semibold text-ink text-xs outline-none transition-all hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-soft-sm focus-visible:ring-1 focus-visible:ring-foreground"
                 >
                   {showAllInterests
                     ? "Show less"

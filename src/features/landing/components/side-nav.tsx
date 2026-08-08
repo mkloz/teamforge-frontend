@@ -49,7 +49,7 @@ export function SideNav() {
             variant="ghost"
             size="icon-xs"
             onClick={scrollToTop}
-            className="animate-side-nav-reveal p-1.5 text-slate-muted hover:text-primary motion-reduce:animate-none"
+            className="animate-side-nav-reveal p-1.5 text-slate-muted hover:text-foreground motion-reduce:animate-none"
             aria-label="Back to top"
             title="Back to top"
           >

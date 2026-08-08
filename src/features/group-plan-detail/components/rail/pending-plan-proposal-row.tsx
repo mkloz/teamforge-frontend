@@ -49,7 +49,7 @@ export function PendingPlanProposalRow({
           </p>
         </div>
         <span
-          className="shrink-0 font-bold text-forge-teal text-xs"
+          className="shrink-0 font-bold text-foreground text-xs"
           title={`${proposal.eligibleVoterCount} members can vote`}
         >
           {approvalCount}/{proposal.approvalThreshold} approvals

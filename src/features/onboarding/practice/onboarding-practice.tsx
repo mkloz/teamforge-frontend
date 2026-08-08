@@ -150,7 +150,7 @@ export function OnboardingPractice({
                 {activeComplete ? (
                   <p className="flex items-start gap-2 text-sm leading-relaxed">
                     <Check
-                      className="mt-0.5 size-4 shrink-0 text-forge-teal"
+                      className="mt-0.5 size-4 shrink-0 text-foreground"
                       strokeWidth={3}
                       aria-hidden="true"
                     />
@@ -224,7 +224,7 @@ function PracticeJourney({
                 className={cn(
                   "flex h-11 w-full min-w-0 items-center justify-center gap-2 rounded-xl bg-foreground/5 px-2 text-muted-foreground transition-colors hover:bg-foreground/8 hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground/35",
                   active && "bg-forge-teal/12 text-foreground",
-                  complete && !active && "text-forge-teal",
+                  complete && !active && "text-foreground",
                 )}
               >
                 {complete ? (

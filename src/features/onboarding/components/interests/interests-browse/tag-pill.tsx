@@ -82,8 +82,8 @@ function TagPillContent({
       asChild
       disabled={viewState.isToggleDisabled}
       className={cn(
-        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-xs after:hidden hover:translate-y-0! hover:shadow-none! sm:py-1",
-        showRejectAction ? "pr-7 sm:pl-2" : "sm:px-2",
+        "h-auto max-w-full rounded-full border px-3 py-1.5 font-medium font-sans text-xs leading-none after:hidden hover:translate-y-0!",
+        showRejectAction && "pr-8",
         viewState.surfaceClass,
       )}
     >

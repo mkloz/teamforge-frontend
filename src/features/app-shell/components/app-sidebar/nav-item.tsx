@@ -37,7 +37,7 @@ function getNavLinkClassName(active: boolean) {
     "size-10 justify-center",
     "font-medium text-sm",
     active
-      ? "bg-secondary text-primary"
+      ? "bg-secondary text-foreground"
       : "text-muted-foreground hover:bg-muted hover:text-foreground",
   );
 }
@@ -46,7 +46,7 @@ function getNavIconClassName(active: boolean) {
   return cn(
     "shrink-0 transition-colors duration-150",
     active
-      ? "text-primary"
+      ? "text-foreground"
       : "text-muted-foreground group-hover:text-foreground",
   );
 }

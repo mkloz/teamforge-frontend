@@ -41,7 +41,7 @@ export function PlanSection({
         type="button"
         aria-controls={contentId}
         aria-expanded={active}
-        className="group grid min-h-20 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 px-1 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-inset sm:min-h-24 sm:gap-x-5 sm:px-4"
+        className="group grid min-h-20 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 px-1 py-4 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-inset sm:min-h-24 sm:gap-x-5 sm:px-4"
         onClick={onToggle}
       >
         <span
@@ -50,7 +50,7 @@ export function PlanSection({
             active
               ? "border-forge-teal bg-forge-teal text-white"
               : complete
-                ? "border-forge-teal/45 bg-forge-teal/10 text-forge-teal"
+                ? "border-forge-teal/45 bg-forge-teal/10 text-foreground"
                 : "border-border/55 text-muted-foreground",
           )}
         >
@@ -83,7 +83,7 @@ export function PlanSection({
         <ChevronDown
           className={cn(
             "size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:text-foreground",
-            active && "rotate-180 text-forge-teal",
+            active && "rotate-180 text-foreground",
           )}
           aria-hidden="true"
         />

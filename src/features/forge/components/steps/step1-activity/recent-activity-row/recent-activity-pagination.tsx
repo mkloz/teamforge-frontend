@@ -34,7 +34,7 @@ export function RecentActivityPagination({
         <PaginationItem>
           <span
             aria-hidden="true"
-            className="block border-border/40 border-r px-2 font-semibold text-[11px] text-muted-foreground/55"
+            className="block border-border/40 border-r px-2 font-semibold text-muted-foreground/75 text-xs"
           >
             {page + 1}/{pageCount}
           </span>
@@ -51,7 +51,7 @@ export function RecentActivityPagination({
                 size="icon-xs"
                 onClick={onPrevious}
                 aria-label="Previous recently used activities"
-                className="size-10 rounded-none border-0 border-border/40 border-r bg-transparent text-muted-foreground hover:bg-forge-teal/8 hover:text-forge-teal md:size-7"
+                className="size-10 rounded-none border-0 border-border/40 border-r bg-transparent text-muted-foreground hover:bg-forge-teal/8 hover:text-foreground md:size-7"
               >
                 <ChevronLeft size={13} />
               </Button>
@@ -68,7 +68,7 @@ export function RecentActivityPagination({
                 size="icon-xs"
                 onClick={onNext}
                 aria-label="Next recently used activities"
-                className="size-10 rounded-none border-0 bg-transparent text-muted-foreground hover:bg-forge-teal/8 hover:text-forge-teal md:size-7"
+                className="size-10 rounded-none border-0 bg-transparent text-muted-foreground hover:bg-forge-teal/8 hover:text-foreground md:size-7"
               >
                 <ChevronRight size={13} />
               </Button>

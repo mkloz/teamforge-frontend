@@ -1,5 +1,6 @@
 import type { ReactNode, RefObject } from "react";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 import { OnboardingVisualPanel } from "./onboarding-visual-panel";
 
 interface InterestsPageContentProps {
@@ -11,6 +12,11 @@ interface InterestsPageContentProps {
   scrollContainerRef?: RefObject<HTMLDivElement | null>;
 }
 
+const INTERESTS_FORMATION = {
+  kind: "symbol",
+  value: "group",
+} as const satisfies VoronoiFormationTarget;
+
 export function InterestsPageContent({
   children,
   completion,
@@ -21,7 +27,12 @@ export function InterestsPageContent({
 }: InterestsPageContentProps) {
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
-      <OnboardingVisualPanel asAside progress={progress} side="left" />
+      <OnboardingVisualPanel
+        asAside
+        formation={INTERESTS_FORMATION}
+        progress={progress}
+        side="left"
+      />
 
       <main className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
         <BackgroundTexture />

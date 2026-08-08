@@ -943,7 +943,7 @@ function MetricDisclosure({
       className="mt-4"
       variant="card"
       summary={label}
-      triggerClassName="text-primary text-xs"
+      triggerClassName="text-foreground text-xs"
     >
       {children}
     </CollapsibleSection>

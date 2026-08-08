@@ -10,8 +10,6 @@ const LazyProfileDeferredInsights = lazy(() =>
   ),
 );
 
-const PROFILE_DEFERRED_INSIGHTS_DELAY_MS = 12_000;
-
 export function DeferredProfileInsights({
   dimensionScores,
   mode,
@@ -19,7 +17,8 @@ export function DeferredProfileInsights({
   profileInsights,
 }: ComponentProps<typeof LazyProfileDeferredInsights>) {
   const { sentinelRef, shouldRender } = useDeferredRender({
-    delayMs: PROFILE_DEFERRED_INSIGHTS_DELAY_MS,
+    initialShouldRender: true,
+    rootMargin: "400px 0px",
   });
 
   return (

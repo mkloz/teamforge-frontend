@@ -23,7 +23,7 @@ export function NativeInstallCallout({
         </p>
         {feedback && (
           <p
-            className="mt-2 font-medium text-primary text-sm"
+            className="mt-2 font-medium text-foreground text-sm"
             aria-hidden="true"
           >
             {feedback}

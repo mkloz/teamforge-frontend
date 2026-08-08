@@ -24,7 +24,7 @@ export function OpenMemberSlot({
       className={cn(
         "group/slot flex min-h-16 w-full items-center gap-3 rounded-xl border border-border/45 border-dashed px-2 py-2 text-left text-muted-foreground transition-[background-color,border-color,color] duration-150",
         interactive &&
-          "hover:border-forge-teal/45 hover:bg-forge-teal/5 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30",
+          "hover:border-foreground/40 hover:text-foreground hover:shadow-soft-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground",
         !interactive && "cursor-default opacity-65",
       )}
       disabled={!interactive}

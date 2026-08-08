@@ -112,7 +112,7 @@ function LinkPreviewSourceRow({
         <ExternalLink
           size={12}
           strokeWidth={1.75}
-          className="shrink-0 text-slate-muted transition-colors duration-150 group-hover:text-primary"
+          className="shrink-0 text-slate-muted transition-colors duration-150 group-hover:text-foreground"
           aria-hidden
         />
       ) : null}

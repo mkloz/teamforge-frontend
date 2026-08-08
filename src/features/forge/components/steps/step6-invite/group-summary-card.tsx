@@ -119,7 +119,7 @@ function SummaryCover({
       />
 
       <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1 font-bold text-white text-xs backdrop-blur-md">
-        <Check className="size-3.5 text-forge-teal" strokeWidth={2.6} />
+        <Check className="size-3.5 text-foreground" strokeWidth={2.6} />
         {statusLabel}
       </div>
     </div>
@@ -136,7 +136,7 @@ function SummaryFact({ icon: Icon, label, value }: SummaryFactProps) {
   return (
     <div className="flex min-w-0 items-center gap-2.5 py-3 sm:px-3 first:sm:pl-0">
       <Icon
-        className="size-3.5 shrink-0 text-forge-teal"
+        className="size-3.5 shrink-0 text-foreground"
         strokeWidth={2}
         aria-hidden="true"
       />

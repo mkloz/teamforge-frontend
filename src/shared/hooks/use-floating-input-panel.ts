@@ -18,7 +18,7 @@ export function useFloatingInputPanel({
   const [panelStyle, setPanelStyle] = useState<CSSProperties | null>(null);
   const triggerRef = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const portalTarget = getBrowserDocumentBody();
+  const portalTarget = getFloatingPanelPortalTarget(triggerRef.current);
 
   const closePanel = useCallback(() => {
     setOpen(false);
@@ -62,4 +62,10 @@ export function useFloatingInputPanel({
     triggerRef,
     updatePanelPosition,
   };
+}
+
+export function getFloatingPanelPortalTarget(trigger: HTMLElement | null) {
+  return (
+    trigger?.closest<HTMLElement>('[role="dialog"]') ?? getBrowserDocumentBody()
+  );
 }

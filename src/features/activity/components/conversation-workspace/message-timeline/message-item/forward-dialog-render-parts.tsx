@@ -53,7 +53,7 @@ export function ForwardDialogHeader({
           value={query}
           onChange={(event) => onQueryChange(event.currentTarget.value)}
           placeholder="Search chats and groups"
-          className="h-11 w-full rounded-xl border border-input-border bg-input pr-3 pl-10 text-ink text-sm outline-none transition-colors placeholder:text-slate-muted focus-visible:border-primary/45 focus-visible:ring-2 focus-visible:ring-primary/20"
+          className="h-11 w-full rounded-lg border border-input-border bg-input pr-3 pl-10 text-ink text-sm outline-none transition-colors placeholder:text-slate-muted hover:border-foreground/35 focus-visible:border-foreground/70 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         />
       </label>
     </DialogHeader>
@@ -175,7 +175,7 @@ function ForwardTargetButton({
             alt=""
             imageSize={48}
             className="size-10"
-            fallbackClassName="bg-primary/12 text-primary"
+            fallbackClassName="bg-primary/12 text-foreground"
             aria-hidden="true"
           />
           <span className="min-w-0 flex-1">
@@ -188,10 +188,13 @@ function ForwardTargetButton({
             </span>
           </span>
           {isPending ? (
-            <Spinner className="size-4 text-primary" aria-label="Forwarding" />
+            <Spinner
+              className="size-4 text-foreground"
+              aria-label="Forwarding"
+            />
           ) : (
             <SendHorizontal
-              className="size-4 text-slate-muted transition-colors group-hover:text-primary"
+              className="size-4 text-slate-muted transition-colors group-hover:text-foreground"
               aria-hidden="true"
             />
           )}

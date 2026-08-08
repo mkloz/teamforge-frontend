@@ -24,7 +24,6 @@ import {
 import {
   getActiveMouseTarget,
   getParallaxOffset,
-  getRotatedMousePosition,
   lerpMousePosition,
 } from "./mouse";
 import { getCenterPoint } from "./points";
@@ -34,11 +33,13 @@ export function startVoronoiAnimationLoop({
   canvas,
   dimensions,
   refs,
+  reducedMotion,
   rotationDegrees,
 }: {
   canvas: HTMLCanvasElement | null;
   dimensions: Dimensions;
   refs: VoronoiAnimationRefs;
+  reducedMotion: boolean;
   rotationDegrees: number;
 }) {
   const animationTarget = getAnimationCanvasTarget(canvas, dimensions);
@@ -51,33 +52,52 @@ export function startVoronoiAnimationLoop({
   const flatPoints = new Float64Array(NUM_SEEDS * 2);
   const bounds = getVoronoiBounds(dimensions);
 
-  const animate = () => {
-    refs.timeRef.current += 0.01;
+  const animate = (timestamp: number) => {
+    if (!refs.isVisibleRef.current) {
+      refs.lastFrameTimeRef.current = null;
+      refs.requestRef.current = scheduleAnimationFrame(animate);
+      return;
+    }
+
+    const previousTimestamp = refs.lastFrameTimeRef.current ?? timestamp;
+    const deltaSeconds = Math.min(
+      1 / 20,
+      Math.max(1 / 240, (timestamp - previousTimestamp) / 1000),
+    );
+    const frameScale = deltaSeconds * 60;
+    refs.lastFrameTimeRef.current = timestamp;
+    refs.timeRef.current += deltaSeconds * 0.6;
     const time = refs.timeRef.current;
     const dpr = refs.dprRef.current;
     const center = getCenterPoint(dimensions);
+    const formation = refs.formationRef.current;
+    const points = refs.pointsRef.current;
+
+    if (!formation || points.length === 0) {
+      refs.requestRef.current = scheduleAnimationFrame(animate);
+      return;
+    }
 
     prepareCanvasFrame({
       ctx,
       dimensions,
       dpr,
+      reducedMotion,
       startTime: refs.startTimeRef.current,
     });
 
-    const points = refs.pointsRef.current;
-    if (points.length === 0) {
-      ctx.restore();
-      return;
-    }
-
-    refs.currentProgressRef.current = getNextProgress(
-      refs.currentProgressRef.current,
-      refs.progressRef.current,
-    );
+    refs.currentProgressRef.current = reducedMotion
+      ? refs.progressRef.current
+      : getNextProgress(
+          refs.currentProgressRef.current,
+          refs.progressRef.current,
+          deltaSeconds,
+        );
     const currentProgress = clampProgress(refs.currentProgressRef.current);
 
     refs.typingPulseRef.current = getNextTypingPulse({
       currentPulse: refs.typingPulseRef.current,
+      deltaSeconds,
       isTyping: refs.isTypingRef.current,
       targetPulse: getTypingPulseTarget(
         refs.isTypingRef.current,
@@ -92,26 +112,27 @@ export function startVoronoiAnimationLoop({
         mouseActive: refs.mouseActiveRef.current,
         targetMouse: refs.targetMouseRef.current,
       }),
+      deltaSeconds,
     );
 
-    const canvasMouse = getRotatedMousePosition(
-      refs.targetMouseRef.current,
-      center,
-    );
+    const canvasMouse = refs.currentMouseRef.current;
     const parallaxOffset = getParallaxOffset(
       refs.currentMouseRef.current,
       center,
     );
 
-    const { coreAvg, sparkPhase } = updateParticlePhysics({
+    const { formationCenter, sparkPhase } = updateParticlePhysics({
       points,
       time,
       currentProgress,
       isTyping: refs.isTypingRef.current,
       dimensions,
+      formation,
+      frameScale,
       mouseX: canvasMouse.x,
       mouseY: canvasMouse.y,
       mouseActive: refs.mouseActiveRef.current,
+      settleInstantly: reducedMotion,
     });
 
     writeDepthAdjustedPoints(flatPoints, points, parallaxOffset);
@@ -127,24 +148,24 @@ export function startVoronoiAnimationLoop({
       canvasMouse.y,
       refs.typingPulseRef.current,
       refs.mouseActiveRef.current,
+      formation,
+      currentProgress,
     );
 
     drawCatalystCoreIfActive({
       ctx,
-      coreAvg,
+      coreAvg: formationCenter,
       parallaxOffset,
+      sparkEnabled: formation.sparkEnabled,
       sparkPhase,
     });
 
-    setCanvasFrameTransform(
-      targetCanvas,
-      refs.currentMouseRef.current,
-      center,
-      rotationDegrees,
-    );
+    setCanvasFrameTransform(targetCanvas, rotationDegrees);
 
     ctx.restore();
-    refs.requestRef.current = scheduleAnimationFrame(animate);
+    refs.requestRef.current = reducedMotion
+      ? null
+      : scheduleAnimationFrame(animate);
   };
 
   refs.requestRef.current = scheduleAnimationFrame(animate);

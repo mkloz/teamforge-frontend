@@ -51,8 +51,8 @@
   --card-foreground: #ffffff;
   --popover: #121212;
   --popover-foreground: #ffffff;
-  --primary: #54bdb4;
-  --primary-foreground: #071412;
+  --primary: #378371;
+  --primary-foreground: #ffffff;
   --secondary: color-mix(in srgb, var(--primary) 10%, transparent);
   --secondary-foreground: #59c8bf;
   --muted: #1c1c1c;

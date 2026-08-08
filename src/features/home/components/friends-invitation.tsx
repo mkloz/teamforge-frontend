@@ -50,7 +50,7 @@ export function FriendsInvitation() {
         description="Invite someone you know to TeamForge."
       />
 
-      <div className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 px-3 py-3">
+      <div className="rounded-xl bg-forge-teal/10 px-3 py-3 shadow-soft-sm">
         <div className="max-w-xl">
           <p className="font-bold text-foreground text-sm">
             Share one simple link
@@ -76,13 +76,13 @@ export function FriendsInvitation() {
               variant="accentGhost"
               size="icon-xs"
               onClick={handleCopy}
-              className="absolute top-1/2 right-1 size-9 -translate-y-1/2 rounded-md"
+              className="absolute top-1/2 right-1 size-11 -translate-y-1/2 rounded-md sm:size-9"
               aria-label={
                 copied ? "TeamForge link copied" : "Copy TeamForge link"
               }
             >
               {copied ? (
-                <Check className="size-3.5 text-forge-teal" />
+                <Check className="size-3.5 text-foreground" />
               ) : (
                 <Copy className="size-3.5 text-muted-foreground" />
               )}

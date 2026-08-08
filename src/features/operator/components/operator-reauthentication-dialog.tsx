@@ -49,7 +49,7 @@ export function OperatorReauthenticationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md gap-5">
         <DialogHeader className="pr-10 text-left">
-          <span className="mb-1 inline-flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <span className="mb-1 inline-flex size-9 items-center justify-center rounded-full bg-primary/10 text-foreground">
             <KeyRound className="size-4.5" aria-hidden="true" />
           </span>
           <DialogTitle>Confirm it’s you</DialogTitle>

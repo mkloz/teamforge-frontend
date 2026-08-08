@@ -56,7 +56,7 @@ export function AdminOverviewSystem() {
         action={
           <Link
             {...buildAdminNavigation("operations")}
-            className="inline-flex min-h-10 items-center gap-2 font-semibold text-primary text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+            className="inline-flex min-h-10 items-center gap-2 font-semibold text-foreground text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
           >
             Open operations
             <ArrowRight className="size-4" aria-hidden="true" />

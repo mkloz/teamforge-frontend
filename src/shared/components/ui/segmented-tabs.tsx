@@ -73,7 +73,7 @@ function getSegmentedTabsClassName({
   size: SegmentedTabsSize;
 }) {
   return cn(
-    "inline-flex max-w-full items-center rounded-full border border-border bg-input p-0.5 shadow-sm",
+    "inline-flex max-w-full items-center rounded-full border border-control-border bg-input p-0.5 shadow-field",
     SEGMENTED_TAB_SIZE_CLASS_NAMES[size].gap,
     fill && "flex w-full",
     className,
@@ -96,9 +96,7 @@ function getSegmentedTabButtonClassName({
     SEGMENTED_TAB_SIZE_CLASS_NAMES[size].button,
     fill && "flex-1",
     disabled && "cursor-not-allowed opacity-60",
-    active
-      ? "text-primary-foreground"
-      : "text-slate-muted hover:bg-muted hover:text-ink",
+    active ? "text-primary-foreground" : "text-slate-muted hover:text-ink",
   );
 }
 

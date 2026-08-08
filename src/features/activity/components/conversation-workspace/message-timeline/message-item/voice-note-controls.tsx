@@ -25,8 +25,8 @@ export function VoiceNotePlayButton({
         "size-10 shrink-0 rounded-full transition active:scale-90",
         "disabled:cursor-not-allowed disabled:opacity-60",
         isOwn
-          ? "border border-primary/10 bg-primary/10 text-primary hover:bg-primary/20 dark:border-white/10 dark:bg-white/10 dark:text-white hover:dark:bg-white/20"
-          : "border border-primary/10 bg-primary/5 text-primary hover:bg-primary/10",
+          ? "border border-primary/10 bg-primary/10 text-foreground hover:bg-primary/20 dark:border-white/10 dark:bg-white/10 dark:text-white hover:dark:bg-white/20"
+          : "border border-primary/10 bg-primary/5 text-foreground hover:bg-primary/10",
       )}
     >
       {isPlaying ? (
@@ -59,8 +59,8 @@ export function VoiceNoteSpeedButton({
         "h-8 shrink-0 rounded-lg border px-2 font-black text-xs tabular-nums transition",
         "disabled:cursor-not-allowed disabled:opacity-60",
         isOwn
-          ? "border-primary/10 bg-primary/5 text-primary/70 hover:bg-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 hover:dark:bg-white/10"
-          : "border-primary/10 bg-primary/5 text-primary/70 hover:bg-primary/10",
+          ? "border-primary/10 bg-primary/5 text-foreground/70 hover:bg-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 hover:dark:bg-white/10"
+          : "border-primary/10 bg-primary/5 text-foreground/70 hover:bg-primary/10",
       )}
     >
       {playbackSpeed}x

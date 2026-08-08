@@ -19,7 +19,7 @@ export function ExplorePageContent({
     <main className="w-full">
       <div className="mx-auto w-full max-w-7xl px-4 pt-5 pb-32 sm:px-6 md:pt-8 lg:px-8">
         <header className="max-w-3xl">
-          <h1 className="max-w-2xl font-black text-4xl text-foreground leading-[0.98] tracking-[-0.045em] sm:text-5xl lg:text-6xl">
+          <h1 className="max-w-2xl text-balance font-black text-display-sm text-foreground leading-[1.02] tracking-[-0.03em] sm:text-5xl lg:text-6xl">
             Find something worth showing up for.
           </h1>
           <p className="mt-4 max-w-2xl font-medium text-base text-muted-foreground leading-relaxed sm:text-lg">

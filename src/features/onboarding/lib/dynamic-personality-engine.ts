@@ -34,6 +34,11 @@ export interface DynamicResponseQuality {
   responseVariance: number;
 }
 
+export interface DynamicAssessmentPreview {
+  answeredCounts: Record<DynamicDimension, number>;
+  estimates: DynamicTraitEstimates;
+}
+
 export interface DynamicAssessmentState {
   answers: Record<string, DynamicResponseValue>;
   currentPage: DynamicAssessmentPage;
@@ -195,6 +200,30 @@ export function getDynamicAssessmentResult(state: DynamicAssessmentState) {
       },
       responseQuality: state.responseQuality,
     },
+  };
+}
+
+export function getDynamicAssessmentPreview(
+  state: DynamicAssessmentState,
+  pendingAnswers: Record<string, DynamicResponseValue>,
+): DynamicAssessmentPreview {
+  const answers = { ...state.answers, ...pendingAnswers };
+  const answeredCounts: Record<DynamicDimension, number> = {
+    A: 0,
+    C: 0,
+    E: 0,
+    N: 0,
+    O: 0,
+  };
+
+  for (const itemVersionId of Object.keys(answers)) {
+    const item = ITEMS_BY_ID.get(itemVersionId);
+    if (item) answeredCounts[item.dimension] += 1;
+  }
+
+  return {
+    answeredCounts,
+    estimates: toPublicEstimates(estimateTraits(answers)),
   };
 }
 

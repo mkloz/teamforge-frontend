@@ -155,7 +155,7 @@ function getGalleryItemButtonClassName({
 }: GalleryItemButtonClassInput) {
   return cn(
     "group/gallery-item relative block w-full appearance-none overflow-hidden bg-muted/60 text-left",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2",
+    "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2",
     "disabled:cursor-not-allowed",
     canOpenGalleryItem(visibleState) && "cursor-zoom-in",
     getGalleryItemShapeClassName({ count, index, isGif }),

@@ -43,7 +43,7 @@ export function ProposalVoters({
                     tabIndex={0}
                     aria-label={`${voter.name} ${voteLabel}`}
                     className={cn(
-                      "size-5 ring-2 transition-transform hover:z-10 hover:scale-110 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-primary",
+                      "size-5 ring-2 transition-transform hover:z-10 hover:scale-110 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-foreground",
                       index > 0 && "-ml-1.5",
                       voter.vote === "APPROVE"
                         ? "ring-primary"
@@ -52,7 +52,7 @@ export function ProposalVoters({
                     fallbackClassName={cn(
                       "text-xs",
                       voter.vote === "APPROVE"
-                        ? "text-primary"
+                        ? "text-foreground"
                         : "text-slate-muted",
                     )}
                   />

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense } from "react";
 import { ActivityLanesSection } from "@/features/profile/components/activity-lanes-section";
 import { BestFirstGroupStrip } from "@/features/profile/components/best-first-group-strip";
 import { GroupFitSection } from "@/features/profile/components/group-fit-section";
@@ -8,8 +8,7 @@ import type {
   OceanScores,
 } from "@/features/profile/lib/profile-contract";
 import type { ProfileInsightModel } from "@/features/profile/lib/profile-insights";
-import { getBrowserWindow } from "@/shared/lib/browser-environment";
-import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
+import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 
 const PsychometricsSidebar = lazy(() =>
   import("@/features/profile/components/psychometrics-sidebar").then(
@@ -57,43 +56,14 @@ function ProfilePsychometricsPanel({
   dimensionScores: DimensionScore[] | null;
   oceanScores: OceanScores | null;
 }) {
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  const [shouldRender, setShouldRender] = useState(false);
-
-  useEffect(() => {
-    const element = panelRef.current;
-    const IntersectionObserverCtor = getBrowserWindow()?.IntersectionObserver;
-
-    if (!element || shouldRender) {
-      return undefined;
-    }
-
-    if (!IntersectionObserverCtor) {
-      const fallbackTimer = scheduleDelay(() => setShouldRender(true), 800);
-
-      return () => cancelDelay(fallbackTimer);
-    }
-
-    const observer = new IntersectionObserverCtor(
-      ([entry]) => {
-        if (!entry?.isIntersecting) {
-          return;
-        }
-
-        setShouldRender(true);
-        observer.disconnect();
-      },
-      { rootMargin: "320px 0px" },
-    );
-
-    observer.observe(element);
-
-    return () => observer.disconnect();
-  }, [shouldRender]);
+  const { sentinelRef, shouldRender } = useDeferredRender({
+    delayMs: 250,
+    rootMargin: "320px 0px",
+  });
 
   return (
     <div
-      ref={panelRef}
+      ref={sentinelRef}
       className="flex min-w-0 shrink-0 flex-col border-border/70 lg:sticky lg:top-(--profile-sidebar-sticky-top) lg:self-start lg:border-l lg:pl-8 xl:pl-10"
     >
       {shouldRender ? (

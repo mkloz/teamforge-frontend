@@ -93,7 +93,7 @@ function getGroupPlanCardRenderState(
 function getCardFrameClassName(isCompact: boolean) {
   return cn(
     // oxlint-disable-next-line tailwindcss/consistent-variant-order -- Preserve the established lift animation class order.
-    "relative isolate z-10 flex w-full cursor-pointer overflow-hidden rounded-xl border-2 border-border bg-card transition-all duration-150 ease-out hover:-translate-y-1 hover:border-ink hover:shadow-button-outline dark:hover:border-white dark:hover:shadow-button-outline-dark",
+    "relative isolate z-10 flex w-full cursor-pointer overflow-hidden rounded-xl border-2 border-transparent bg-card shadow-soft-sm transition-all duration-150 ease-out hover:-translate-y-1 hover:shadow-button-outline dark:hover:shadow-button-outline-dark",
     isCompact ? "flex-col" : "flex-col md:flex-row",
   );
 }

@@ -115,7 +115,7 @@ function ActivityCategoryButton({
             value={coverImage}
             alt=""
             className="size-full"
-            imageClassName="size-full object-cover opacity-35 saturate-75 transition duration-500 group-hover:scale-105 group-hover:opacity-50 group-hover:saturate-100"
+            imageClassName="size-full object-cover opacity-24 grayscale transition-[opacity,transform] duration-300 group-hover:scale-[1.025] group-hover:opacity-34"
           />
         </div>
       ) : null}
@@ -179,12 +179,12 @@ function getActivityButtonClassName({
   selected,
 }: ReturnType<typeof getActivityCategoryTileState>) {
   return cn(
-    "group relative flex min-h-20 min-w-0 flex-col gap-2 overflow-hidden whitespace-normal rounded-lg border px-3 py-2.5 text-left transition-[background-color,border-color,box-shadow,color,transform] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 motion-reduce:transition-none",
+    "group relative flex min-h-20 min-w-0 flex-col gap-2 overflow-hidden whitespace-normal rounded-lg border px-3 py-2.5 text-left transition-[border-color,box-shadow,color,transform] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 motion-reduce:transition-none",
     selected
       ? "border-spark-amber/65 bg-spark-amber/10 shadow-sm ring-1 ring-spark-amber/20"
       : personalised
-        ? "border-forge-teal/35 bg-forge-teal/5 hover:border-forge-teal/50 hover:bg-forge-teal/10"
-        : "border-border/40 bg-card/80 hover:border-forge-teal/30 hover:bg-forge-teal/5",
+        ? "border-foreground/15 bg-forge-teal/5 hover:border-foreground/40 hover:shadow-soft-sm"
+        : "border-border/40 bg-card/80 hover:border-foreground/35 hover:shadow-soft-sm",
   );
 }
 
@@ -194,10 +194,10 @@ function getActivityIconTileClassName({
 }: ReturnType<typeof getActivityCategoryTileState>) {
   return cn(
     selected && "bg-spark-amber/15 shadow-none ring-0",
-    personalised && "group-hover:bg-forge-teal/15",
+    personalised && "group-hover:-translate-y-0.5 group-hover:shadow-soft-sm",
     !selected &&
       !personalised &&
-      "bg-muted group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
+      "bg-muted group-hover:-translate-y-0.5 group-hover:bg-card group-hover:text-foreground group-hover:shadow-soft-sm",
   );
 }
 

@@ -5,13 +5,21 @@ import { ProfileBasicsPageContent } from "@/features/onboarding/onboarding-page-
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
-import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
+import type {
+  VoronoiCatalystHandle,
+  VoronoiFormationTarget,
+} from "@/shared/lib/voronoi/voronoi-contract";
 
 const PROFILE_BASICS_METADATA = createTeamForgePageMetadata({
   title: "Profile Setup",
   description:
     "Add the basic profile details TeamForge needs before forming a group.",
 });
+
+const PROFILE_FORMATION = {
+  kind: "symbol",
+  value: "location",
+} as const satisfies VoronoiFormationTarget;
 
 export function ProfileBasicsPage() {
   usePageMetadata(PROFILE_BASICS_METADATA);
@@ -38,6 +46,7 @@ export function ProfileBasicsPage() {
   return (
     <ProfileBasicsPageContent
       catalystRef={catalystRef}
+      formation={PROFILE_FORMATION}
       onInput={handleInput}
       progress={progress}
       scrollContainerRef={scrollContainerRef}

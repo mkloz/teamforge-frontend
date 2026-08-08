@@ -17,24 +17,24 @@ colors:
   dark-amber: "#ffbf00"
 typography:
   display:
-    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Source Serif 4 Variable, Georgia, ui-serif, serif"
     fontSize: "clamp(2rem, 3vw, 2.5rem)"
     fontWeight: 750
     lineHeight: 1.1
     letterSpacing: "-0.025em"
   title:
-    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Source Sans 3 Variable, Segoe UI, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.25rem"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "-0.02em"
   body:
-    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Source Sans 3 Variable, Segoe UI, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.9375rem"
     fontWeight: 400
     lineHeight: 1.5
   label:
-    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Source Sans 3 Variable, Segoe UI, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 700
     lineHeight: 1.25
@@ -87,7 +87,8 @@ components:
 
 TeamForge keeps the product's established component anatomy and layout. The
 theme supplies a sharper, quieter visual character through semantic color,
-controlled geometry, explicit borders, and purposeful interaction feedback.
+controlled geometry, selective structural edges, and purposeful interaction
+feedback.
 The default dark environment is genuinely black; alternate purpose palettes
 may use tinted near-black surfaces where that serves their stated need.
 
@@ -98,7 +99,8 @@ may use tinted near-black surfaces where that serves their stated need.
   remain recognizable; the theme does not redesign product structure.
 - Corners are restrained: 12px controls, 16px selected/raised controls, and
   about 20px for larger surfaces.
-- Borders, tone, labels, and icons carry state; shadow is never the only cue.
+- Tone, labels, icons, and selective edges carry state; shadow is never the only
+  cue.
 
 ## Colors
 
@@ -128,13 +130,15 @@ success, warning, error, information, and destructive roles keep their meaning.
 
 ## Typography
 
-**Display and body font:** Inter, self-hosted variable WOFF2 with system sans
-fallbacks.
+**Display font:** Source Serif 4 Variable for page-level `h1` headlines, with
+Georgia and system serif fallbacks. Its optical sizing provides a warm editorial
+voice without entering dense controls.
 
-Inter replaces the rejected expressive pairing. Personality now comes from
-weight, scale, spacing, color, and the illustration voice rather than a visibly
-stylized heading face. Headings are confident but not decorative; dense UI copy
-remains compact and predictable.
+**Interface and body font:** Source Sans 3 Variable with Segoe UI and system
+sans fallbacks. It carries navigation, fields, tables, buttons, section titles,
+and supporting copy. Both families are bundled from Fontsource with variable
+weights and `font-display: swap`; the app no longer preloads the unused Inter
+asset.
 
 Do not place a teal eyebrow, kicker, route name, or subtitle above a heading.
 Remove redundant labels such as a page name repeated by its hero; render useful
@@ -145,7 +149,7 @@ deliberate icon accents—not routine heading hierarchy.
 ## Layout
 
 Use the existing route and component layout. The Appearance settings remain the
-original single-column flow: live preview, mode, interface character, then
+original single-column flow: live preview, mode, interface style, then
 palette. Do not convert it into a dashboard, sticky configurator, or new card
 architecture. Use the established responsive stacking and 4/8px spacing rhythm.
 
@@ -174,10 +178,10 @@ spread pill or oversized-card geometry across ordinary controls.
 ### Buttons
 
 - Preserve the established component, variants, and sizing.
-- Primary buttons use a solid teal field and explicit 2px edge. Hover uses the
-  short mechanical lift and a hard shadow; press returns the action to its
-  resting plane. Outline buttons use the same physics while staying transparent
-  and structural.
+- Primary buttons use a solid teal field with a transparent 2px footprint edge,
+  so interaction never changes their geometry. Hover uses the short mechanical
+  lift and a hard shadow; press returns the action to its resting plane. Outline
+  buttons use the same physics while staying transparent and structural.
 - Prefer lift/shadow, border strength, ink, or icon response before changing a
   control's fill. Background tint is the fallback for flat ghost controls and
   the primary cue only for persistent selected states.
@@ -191,18 +195,20 @@ spread pill or oversized-card geometry across ordinary controls.
 
 ### Cards / Containers
 
-- Use semantic surfaces and a visible border where separation is needed.
+- Use tonal separation first. Add a visible border only where structure,
+  selection, focus, error, or the High contrast style requires it.
 - Avoid nesting decorative cards or increasing radius merely to imply polish.
 - Keep padding aligned with existing route density.
 
 ### Inputs / Fields
 
 - Preserve the existing 44px field height and 12px corner.
-- Use the semantic input fill and border with no resting shadow. Hover strengthens
-  the neutral border without changing the field fill or introducing accent color
-  prematurely.
-- Keyboard focus strengthens the field border in the foreground color and adds
-  the same solid one-pixel foreground ring with a two-pixel background offset.
+- Use the semantic input fill, a transparent resting edge, and subtle inset
+  shading that separates the field without making the interface outline-heavy.
+  Hover deepens the neutral inset response without changing the field fill or
+  introducing accent color prematurely.
+- Keyboard focus adds the same solid one-pixel foreground ring with a two-pixel
+  background offset while preserving the neutral field edge.
 - Search remains the intentionally pill-shaped exception.
 
 ### Navigation
@@ -212,7 +218,7 @@ clear label, and icon/position cue. Theme work must not alter navigation anatomy
 
 ### Appearance Preview
 
-The existing preview mirrors mode, palette, and interface-character changes.
+The existing preview mirrors mode, palette, and interface-style changes.
 It remains part of the original settings flow and does not become a new page or
 sticky desktop workbench.
 

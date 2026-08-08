@@ -37,7 +37,7 @@ export function OperatorCaseFilters({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <SlidersHorizontal
-            className="size-4 text-primary"
+            className="size-4 text-foreground"
             aria-hidden="true"
           />
           <h2 className="font-semibold text-ink text-sm">Refine cases</h2>
@@ -121,7 +121,7 @@ export function OperatorCaseFilters({
       </div>
 
       <details className="group">
-        <summary className="w-fit cursor-pointer rounded-md font-medium text-primary text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <summary className="w-fit cursor-pointer rounded-md font-medium text-foreground text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring">
           Date range filters
         </summary>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -210,7 +210,7 @@ function DateFilter({
         type="date"
         value={value ?? ""}
         onChange={(event) => onValue(event.currentTarget.value || undefined)}
-        className="h-9 rounded-lg border border-input-border bg-input px-3 text-ink text-sm outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/15"
+        className="h-9 rounded-lg border border-input-border bg-input px-3 text-ink text-sm outline-none hover:border-foreground/35 focus-visible:border-foreground/70 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       />
     </Field>
   );

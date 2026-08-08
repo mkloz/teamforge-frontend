@@ -14,7 +14,7 @@ export function SeeRestButton({ hiddenItemCount }: SeeRestButtonProps) {
         asChild
         variant="ghost"
         size="sm"
-        className="w-auto px-2 hover:enabled:text-forge-teal"
+        className="w-auto px-2 hover:enabled:text-foreground"
       >
         <Link
           {...buildHomeNavigation({ notifications: true })}

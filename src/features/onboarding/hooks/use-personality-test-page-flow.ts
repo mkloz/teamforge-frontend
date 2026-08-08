@@ -714,7 +714,8 @@ export function usePersonalityTestPageFlow() {
       dynamicTestState.engineState
     ) {
       return (
-        Object.keys(dynamicTestState.engineState.answers).length /
+        (Object.keys(dynamicTestState.engineState.answers).length +
+          Object.keys(dynamicTestState.pageAnswers).length) /
         (capabilitiesQuery.data?.dynamic.maximumQuestions ?? 50)
       );
     }

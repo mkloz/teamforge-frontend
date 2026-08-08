@@ -60,28 +60,19 @@ function getStartsBeforeMin(startsAfter: string | null, todayValue: string) {
 }
 
 export function DateRangeFilter() {
-  const {
-    setStartsAfter,
-    setStartsBefore,
-    setTimeWindow,
-    startsAfter,
-    startsBefore,
-  } = useExploreRouteState();
+  const { setDateRange, startsAfter, startsBefore } = useExploreRouteState();
   const rangeState = getDateRangeFilterState({ startsAfter, startsBefore });
 
   function updateStartsAfter(nextStartsAfter: string) {
-    setTimeWindow("ALL");
-    setStartsAfter(nextStartsAfter || null);
+    setDateRange(nextStartsAfter || null, startsBefore);
   }
 
   function updateStartsBefore(nextStartsBefore: string) {
-    setTimeWindow("ALL");
-    setStartsBefore(nextStartsBefore || null);
+    setDateRange(startsAfter, nextStartsBefore || null);
   }
 
   function clearDateRange() {
-    setStartsAfter(null);
-    setStartsBefore(null);
+    setDateRange(null, null);
   }
 
   return (

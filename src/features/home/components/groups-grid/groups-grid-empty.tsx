@@ -5,10 +5,9 @@ export function GroupsGridEmpty() {
   return (
     <li className="sm:col-span-2">
       <EmptyState
-        className="min-h-36"
+        description="Explore a group or forge one to start building your circle."
         icon={UsersRound}
         title="No groups yet"
-        description="Explore a group or forge one to start building your circle."
       />
     </li>
   );

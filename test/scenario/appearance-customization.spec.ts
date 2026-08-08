@@ -7,7 +7,12 @@ const APPEARANCE_SCENARIO_URL =
 test("appearance applies, follows the system, resets, and remains accessible", async ({
   page,
 }, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop", "Desktop interaction lane");
+  test.skip(
+    !["desktop", "mobile"].includes(testInfo.project.name),
+    "Appearance interaction lane",
+  );
+  test.setTimeout(70_000);
+  const isMobile = testInfo.project.name === "mobile";
 
   await page.goto(APPEARANCE_SCENARIO_URL, { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Appearance" })).toBeVisible();
@@ -54,7 +59,7 @@ test("appearance applies, follows the system, resets, and remains accessible", a
       ),
     );
   expect(compactRadius).toBe(0.5);
-  await page.getByRole("link", { name: "Account", exact: true }).click();
+  await navigateToSettingsSection(page, "Account", isMobile);
   await expect(page.getByRole("textbox", { name: "Full name" })).toHaveCSS(
     "height",
     "40px",
@@ -63,9 +68,9 @@ test("appearance applies, follows the system, resets, and remains accessible", a
     "height",
     "40px",
   );
-  await page.getByRole("link", { name: "Appearance", exact: true }).click();
+  await navigateToSettingsSection(page, "Appearance", isMobile);
   await expect(
-    page.getByRole("heading", { name: "Interface character" }),
+    page.getByRole("heading", { name: "Interface style" }),
   ).toBeVisible();
 
   await page.getByRole("radio", { name: /^High contrast/u }).click();
@@ -110,7 +115,7 @@ test("appearance applies, follows the system, resets, and remains accessible", a
     ),
   ).toBe(true);
 
-  await page.getByRole("link", { name: "Account", exact: true }).click();
+  await navigateToSettingsSection(page, "Account", isMobile);
   const reducedEffectsSaveButton = page.getByRole("button", {
     name: "Save changes",
   });
@@ -119,9 +124,9 @@ test("appearance applies, follows the system, resets, and remains accessible", a
   await page.keyboard.press("Tab");
   await expect(reducedEffectsSaveButton).toBeFocused();
   await expect(reducedEffectsSaveButton).not.toHaveCSS("box-shadow", "none");
-  await page.getByRole("link", { name: "Appearance", exact: true }).click();
+  await navigateToSettingsSection(page, "Appearance", isMobile);
   await expect(
-    page.getByRole("heading", { name: "Interface character" }),
+    page.getByRole("heading", { name: "Interface style" }),
   ).toBeVisible();
 
   await page.getByRole("button", { name: "Reset" }).click();
@@ -133,6 +138,17 @@ test("appearance applies, follows the system, resets, and remains accessible", a
 
   await expectNoMaterialAxeViolations(page);
 });
+
+async function navigateToSettingsSection(
+  page: import("@playwright/test").Page,
+  sectionName: "Account" | "Appearance",
+  isMobile: boolean,
+) {
+  if (isMobile) {
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+  }
+  await page.getByRole("link", { name: sectionName, exact: true }).click();
+}
 
 async function expectNoMaterialAxeViolations(
   page: import("@playwright/test").Page,

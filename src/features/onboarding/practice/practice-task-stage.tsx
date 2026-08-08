@@ -112,7 +112,7 @@ function PracticeChoice({
       aria-pressed={selected}
       onClick={() => onChoose(choice.id)}
       className={cn(
-        "group flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 bg-background px-2 py-3 text-center text-muted-foreground transition-[background-color,box-shadow,color,transform] duration-150 hover:bg-foreground/5 hover:text-foreground focus-visible:z-10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-inset active:scale-[0.98] motion-reduce:transition-none sm:min-h-24 sm:px-4",
+        "group flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 bg-background px-2 py-3 text-center text-muted-foreground transition-[box-shadow,color,transform] duration-150 hover:-translate-y-0.5 hover:text-foreground hover:shadow-soft-sm focus-visible:z-10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-inset active:scale-[0.98] motion-reduce:transition-none sm:min-h-24 sm:px-4",
         selected && correct && "bg-forge-teal/12 text-foreground",
         selected && !correct && "bg-destructive/8 text-foreground",
       )}
@@ -122,7 +122,7 @@ function PracticeChoice({
         {selected ? (
           correct ? (
             <Check
-              className="absolute -right-2 -bottom-1 size-3.5 text-forge-teal"
+              className="absolute -right-2 -bottom-1 size-3.5 text-foreground"
               strokeWidth={3}
               aria-hidden="true"
             />
@@ -253,7 +253,7 @@ function PlanChangesVisual() {
     <div className="flex h-full min-h-56 items-center justify-center gap-3 sm:gap-6">
       <CalendarTile day="18" label="Friday" muted />
       <RefreshCcw
-        className="size-5 shrink-0 text-forge-teal"
+        className="size-5 shrink-0 text-foreground"
         aria-hidden="true"
       />
       <CalendarTile day="19" label="Saturday" />
@@ -292,7 +292,7 @@ function PrivacyVisual() {
           <p className="text-muted-foreground text-xs">Invitation preview</p>
           <p className="mt-1 font-black text-2xl">Sunday photo walk</p>
         </div>
-        <ShieldCheck className="size-6 text-forge-teal" aria-hidden="true" />
+        <ShieldCheck className="size-6 text-foreground" aria-hidden="true" />
       </div>
       <div className="grid gap-2">
         <PreviewRow icon={MapPin} label="Shoreditch · 10:00" />

@@ -147,7 +147,7 @@ function TypingPreview({ isCompact }: { isCompact: boolean }) {
   return (
     <div className="fade-in slide-in-from-left-2 flex animate-in items-baseline gap-1 duration-300">
       <span
-        className={cn("font-bold text-forge-teal leading-tight", "text-xs")}
+        className={cn("font-bold text-foreground leading-tight", "text-xs")}
       >
         typing
       </span>

@@ -36,7 +36,7 @@ export function PersonalityRecovery({
 
   return (
     <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
-      <p className="mb-2 font-semibold text-sm text-teal">
+      <p className="mb-2 font-semibold text-foreground text-sm">
         {requiresTakeover ? "Found in another tab" : "Saved in this tab"}
       </p>
       <h1 className="text-balance font-extrabold text-2xl text-ink leading-tight sm:text-display-lg">

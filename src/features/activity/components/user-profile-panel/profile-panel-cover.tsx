@@ -86,7 +86,7 @@ function PanelCompactProfileHeader({
           aria-label="Scroll profile panel to top"
           tabIndex={visible ? 0 : -1}
           onClick={onClick}
-          className="pointer-events-auto absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-inset"
+          className="pointer-events-auto absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-inset"
         />
       ) : null}
 
@@ -95,7 +95,7 @@ function PanelCompactProfileHeader({
           src={participant.avatar}
           name={participant.name}
           className="size-12 border-2 border-canvas bg-muted text-lg shadow-sm ring-1 ring-border/70"
-          fallbackClassName="bg-muted text-forge-teal"
+          fallbackClassName="bg-muted text-foreground"
           loading="eager"
         />
         {onlineStatus ? (

@@ -1,8 +1,5 @@
-import { ANIMATION_CONFIG } from "@/shared/constants/voronoi.constants";
-import type {
-  Dimensions,
-  MouseState,
-} from "@/shared/lib/voronoi/voronoi-contract";
+import { getVoronoiCanvasScale } from "@/shared/constants/voronoi.constants";
+import type { Dimensions } from "@/shared/lib/voronoi/voronoi-contract";
 
 export interface AnimationCanvasTarget {
   canvas: HTMLCanvasElement;
@@ -50,28 +47,26 @@ export function prepareCanvasFrame({
   ctx,
   dimensions,
   dpr,
+  reducedMotion,
   startTime,
 }: {
   ctx: CanvasRenderingContext2D;
   dimensions: Dimensions;
   dpr: number;
+  reducedMotion: boolean;
   startTime: number;
 }) {
   ctx.save();
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, dimensions.width, dimensions.height);
-  ctx.globalAlpha = Math.min((Date.now() - startTime) / 1500, 1);
+  ctx.globalAlpha = reducedMotion
+    ? 1
+    : Math.min((Date.now() - startTime) / 1500, 1);
 }
 
 export function setCanvasFrameTransform(
   canvas: HTMLCanvasElement,
-  currentMouse: MouseState,
-  center: MouseState,
   rotationDegrees: number,
 ) {
-  const frameX =
-    (currentMouse.x - center.x) * ANIMATION_CONFIG.frameParallaxFactor;
-  const frameY =
-    (currentMouse.y - center.y) * ANIMATION_CONFIG.frameParallaxFactor;
-  canvas.style.transform = `scale(1.25) rotate(${rotationDegrees}deg) translate(${frameX}px, ${frameY}px)`;
+  canvas.style.transform = `scale(${getVoronoiCanvasScale(rotationDegrees)}) rotate(${rotationDegrees}deg)`;
 }

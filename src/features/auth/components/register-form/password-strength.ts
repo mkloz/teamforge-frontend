@@ -13,7 +13,7 @@ const PASSWORD_STRENGTH_LEVELS = [
   {
     score: 3 as const,
     label: "Strong",
-    colorClassName: "bg-forge-teal text-forge-teal",
+    colorClassName: "bg-forge-teal text-foreground",
   },
 ] as const;
 

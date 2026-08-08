@@ -151,7 +151,7 @@ function PanelProfileAvatar({
     <AvatarPreviewDialog name={name} src={src}>
       <button
         type="button"
-        className="group relative shrink-0 cursor-zoom-in appearance-none rounded-full border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+        className="group relative shrink-0 cursor-zoom-in appearance-none rounded-full border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
         aria-label={`Expand ${name} avatar`}
       >
         <div className="absolute inset-0 rounded-full bg-spark-amber/20 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100" />
@@ -161,7 +161,7 @@ function PanelProfileAvatar({
             src={src}
             name={name}
             className="size-full border-canvas border-thick bg-muted text-2xl shadow-lg ring-1 ring-border/70"
-            fallbackClassName="bg-muted text-forge-teal text-2xl"
+            fallbackClassName="bg-muted text-foreground text-2xl"
             loading="eager"
           />
           {onlineStatus ? (

@@ -139,7 +139,7 @@ function ConversationListItemRow({
           type="button"
           aria-current={viewState.isSelected ? "true" : undefined}
           aria-label={viewState.optionLabel}
-          className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset"
+          className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-inset"
           onClick={onSelect}
         >
           <span className="sr-only">{viewState.optionLabel}</span>
@@ -216,7 +216,7 @@ function PinConversationMenuItem({
     <ContextMenuItem
       className={cn(
         ACTIVITY_MENU_ITEM_CLASS,
-        item.isPinned && "text-forge-teal",
+        item.isPinned && "text-foreground",
       )}
       onSelect={onTogglePinned}
     >
@@ -243,7 +243,7 @@ function MuteConversationMenuItem({
 }) {
   return (
     <ContextMenuItem
-      className={cn(ACTIVITY_MENU_ITEM_CLASS, isMuted && "text-forge-teal")}
+      className={cn(ACTIVITY_MENU_ITEM_CLASS, isMuted && "text-foreground")}
       onSelect={onToggleMuted}
     >
       <ActivityMenuIcon tone={isMuted ? "active" : "default"}>

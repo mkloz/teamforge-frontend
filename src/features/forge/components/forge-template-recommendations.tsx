@@ -105,7 +105,7 @@ function ForgeTemplateRecommendationTile({
     <button
       type="button"
       onClick={() => onSelect(recommendation.id)}
-      className="group relative size-full min-w-0 overflow-hidden rounded-2xl bg-muted text-left ring-1 ring-border/35 transition duration-200 hover:ring-primary/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      className="group relative size-full min-w-0 overflow-hidden rounded-2xl bg-muted text-left ring-1 ring-border/35 transition duration-200 hover:-translate-y-1 hover:shadow-soft-md hover:ring-foreground/35 focus-visible:outline-none focus-visible:ring-foreground"
     >
       <PlanCover
         value={recommendation.coverImage}
@@ -163,7 +163,7 @@ function ForgeTemplateRecommendationTile({
 function TemplateCoverFallback({ icon: Icon }: { icon: LucideIcon }) {
   return (
     <div className="flex size-full items-center justify-center bg-primary/8">
-      <Icon className="size-10 text-primary/55" aria-hidden="true" />
+      <Icon className="size-10 text-foreground/55" aria-hidden="true" />
     </div>
   );
 }

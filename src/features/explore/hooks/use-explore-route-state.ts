@@ -7,6 +7,7 @@ import {
   CLEAR_EXPLORE_FILTER_ROUTE,
   getAccessRoutePatch,
   getCategoryRoutePatch,
+  getDateRangeRoutePatch,
   getDistanceRoutePatch,
   getLocationRoutePatch,
   getSearchRoutePatch,
@@ -175,6 +176,16 @@ export function useExploreRouteState() {
     });
   }
 
+  function updateDateRange(
+    nextStartsAfter: string | null,
+    nextStartsBefore: string | null,
+  ) {
+    void setExploreRouteState(
+      getDateRangeRoutePatch(nextStartsAfter, nextStartsBefore),
+      { history: "push" },
+    );
+  }
+
   function clearAllFilters() {
     resetFilters();
     void setExploreRouteState(CLEAR_EXPLORE_FILTER_ROUTE, {
@@ -208,6 +219,7 @@ export function useExploreRouteState() {
     setAccess: updateAccess,
     setSortBy: updateSortBy,
     setTimeWindow: updateTimeWindow,
+    setDateRange: updateDateRange,
     setStartsAfter: updateStartsAfter,
     setStartsBefore: updateStartsBefore,
     resetFilters: clearAllFilters,

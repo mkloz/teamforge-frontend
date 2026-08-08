@@ -10,12 +10,18 @@ import { Notice } from "@/shared/components/ui/notice";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 
 const INTENT_METADATA = createTeamForgePageMetadata({
   title: "Your first TeamForge mission",
   description:
     "Choose the kind of TeamForge experience you want to begin with.",
 });
+
+const INTENT_FORMATION = {
+  kind: "symbol",
+  value: "calendar",
+} as const satisfies VoronoiFormationTarget;
 
 export function OnboardingIntentPage() {
   usePageMetadata(INTENT_METADATA);
@@ -27,16 +33,14 @@ export function OnboardingIntentPage() {
 
   return (
     <ProfileBasicsPageContent
+      formation={INTENT_FORMATION}
       progress={1}
       scrollContainerRef={scrollContainerRef}
     >
       <div className="flex w-full flex-col">
         <div className="mb-6 text-center sm:mb-8">
-          <p className="font-bold text-muted-foreground text-xs uppercase tracking-[0.18em]">
-            Your first mission
-          </p>
-          <h1 className="mt-2 text-balance font-extrabold text-3xl text-ink leading-tight tracking-tight sm:text-4xl">
-            Why are you here<span className="text-forge-teal">?</span>
+          <h1 className="text-balance font-extrabold text-3xl text-ink leading-tight tracking-tight sm:text-4xl">
+            Why are you here<span className="text-foreground">?</span>
           </h1>
           <p className="mx-auto mt-2 max-w-sm text-slate-muted text-sm leading-6 sm:text-base">
             Pick the closest answer so your first mission feels useful. You can

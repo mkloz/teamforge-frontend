@@ -96,10 +96,10 @@ function getMemberRatingButtonClassName({
 }: MemberRatingButtonState) {
   return cn(
     "h-auto shrink-0 rounded-full border px-3 py-1.5 text-xs transition-colors",
-    "focus-visible:ring-primary/40",
+    "focus-visible:ring-foreground",
     isSelected
-      ? "border-primary/40 bg-primary/10 text-primary"
-      : "border-border bg-card text-ink hover:border-primary/30",
+      ? "border-primary/40 bg-primary/10 text-foreground"
+      : "border-border bg-card text-ink hover:border-foreground/35",
     isRated && "opacity-50",
   );
 }

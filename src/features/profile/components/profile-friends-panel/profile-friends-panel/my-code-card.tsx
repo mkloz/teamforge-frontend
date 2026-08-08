@@ -36,7 +36,7 @@ export function MyCodeCard({ url, user }: { url: string; user: User }) {
             <Button
               variant="outline"
               size="sm"
-              className="shrink-0 rounded-lg border-forge-teal/25 bg-background/80 text-forge-teal hover:bg-forge-teal/8"
+              className="shrink-0 rounded-lg border-forge-teal/25 bg-background/80 text-foreground hover:bg-forge-teal/8"
             >
               <QrCode className="size-4" />
               Show

@@ -57,7 +57,9 @@ export function DocumentMessage({ attachment, isOwn }: DocumentMessageProps) {
 
 function DocumentMessageFileIcon({ isOwn }: { isOwn?: boolean }) {
   return (
-    <FileText className={cn("size-5", isOwn ? "text-white" : "text-primary")} />
+    <FileText
+      className={cn("size-5", isOwn ? "text-white" : "text-foreground")}
+    />
   );
 }
 
@@ -147,7 +149,7 @@ function DocumentDownloadButton({
             "size-8 rounded-lg transition",
             isOwn
               ? "bg-white/10 text-white hover:bg-white/20"
-              : "bg-primary/5 text-primary hover:bg-primary/10",
+              : "bg-primary/5 text-foreground hover:bg-primary/10",
           )}
           aria-label={`Download ${attachment.name || "file"}`}
         >

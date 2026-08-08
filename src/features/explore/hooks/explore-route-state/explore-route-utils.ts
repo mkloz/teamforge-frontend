@@ -180,3 +180,14 @@ export function getStartsBeforeRoutePatch(nextStartsBefore: string | null) {
     to: normalizeDateTimeInput(nextStartsBefore),
   };
 }
+
+export function getDateRangeRoutePatch(
+  nextStartsAfter: string | null,
+  nextStartsBefore: string | null,
+) {
+  return {
+    ...getTimeRoutePatch(DEFAULT_FILTERS.timeWindow),
+    ...getStartsAfterRoutePatch(nextStartsAfter),
+    ...getStartsBeforeRoutePatch(nextStartsBefore),
+  };
+}

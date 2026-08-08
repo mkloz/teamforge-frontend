@@ -56,13 +56,13 @@ function TooltipContent({
       >
         <div
           data-slot="tooltip-panel"
-          className="relative z-10 rounded-md border-2 border-popover-foreground bg-popover px-3 py-1.5 font-semibold text-popover-foreground text-xs leading-snug shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]"
+          className="relative z-10 rounded-md bg-popover px-3 py-1.5 font-semibold text-popover-foreground text-xs leading-snug shadow-soft-md"
         >
           {children}
         </div>
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute z-0 hidden size-2 rotate-45 border-2 border-popover-foreground bg-popover transition-none group-data-[side=bottom]:-top-1 group-data-[side=left]:top-1/2 group-data-[side=right]:top-1/2 group-data-[side=left]:-right-1 group-data-[side=top]:-bottom-1 group-data-[side=bottom]:left-1/2 group-data-[side=right]:-left-1 group-data-[side=top]:left-1/2 group-data-[side=bottom]:block group-data-[side=left]:block group-data-[side=right]:block group-data-[side=top]:block group-data-[side=bottom]:-translate-x-1/2 group-data-[side=top]:-translate-x-1/2 group-data-[side=left]:-translate-y-1/2 group-data-[side=right]:-translate-y-1/2"
+          className="pointer-events-none absolute z-0 hidden size-2 rotate-45 bg-popover transition-none group-data-[side=bottom]:-top-1 group-data-[side=left]:top-1/2 group-data-[side=right]:top-1/2 group-data-[side=left]:-right-1 group-data-[side=top]:-bottom-1 group-data-[side=bottom]:left-1/2 group-data-[side=right]:-left-1 group-data-[side=top]:left-1/2 group-data-[side=bottom]:block group-data-[side=left]:block group-data-[side=right]:block group-data-[side=top]:block group-data-[side=bottom]:-translate-x-1/2 group-data-[side=top]:-translate-x-1/2 group-data-[side=left]:-translate-y-1/2 group-data-[side=right]:-translate-y-1/2"
         />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>

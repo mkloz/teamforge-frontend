@@ -40,7 +40,7 @@ export function Footer() {
               <FooterSeparator />
               <Link
                 to={link.to}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md font-sans text-sm text-text-dark-muted transition-colors hover:text-text-dark-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md font-sans text-sm text-text-dark-muted transition-colors hover:text-text-dark-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg"
               >
                 {link.label}
               </Link>

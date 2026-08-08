@@ -139,7 +139,7 @@ function ConversationActionButton({
             strokeWidth={headerButtonIconStrokeWidth}
             className={cn(
               "size-4 transition-colors duration-200",
-              isActionOpen && "text-primary",
+              isActionOpen && "text-foreground",
             )}
           />
         </Button>

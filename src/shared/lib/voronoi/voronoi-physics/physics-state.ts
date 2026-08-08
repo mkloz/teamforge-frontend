@@ -1,41 +1,42 @@
 import { ANIMATION_CONFIG } from "@/shared/constants/voronoi.constants";
-import type { Dimensions } from "../voronoi-contract";
+import type { Dimensions, VoronoiFormationLayout } from "../voronoi-contract";
 import type { ParticlePhysicsState } from "./types";
 
 export function getParticlePhysicsState({
   currentProgress,
   dimensions,
+  formation,
   time,
 }: {
   currentProgress: number;
   dimensions: Dimensions;
+  formation: VoronoiFormationLayout;
   time: number;
 }): ParticlePhysicsState {
-  const centerX = dimensions.width / 2;
-  const centerY = dimensions.height / 2;
+  const centerX = formation.center.x;
+  const centerY = formation.center.y;
 
   const driftingCenterX =
     centerX +
-    Math.cos(time * 0.3) * ANIMATION_CONFIG.driftRadius +
-    Math.sin(time * 0.4) * (ANIMATION_CONFIG.driftRadius * 0.5);
+    Math.cos(time * 0.3) * (ANIMATION_CONFIG.driftRadius * 0.18) +
+    Math.sin(time * 0.4) * (ANIMATION_CONFIG.driftRadius * 0.08);
   const driftingCenterY =
-    centerY -
-    30 +
-    Math.sin(time * 0.35) * ANIMATION_CONFIG.driftRadius +
-    Math.cos(time * 0.45) * (ANIMATION_CONFIG.driftRadius * 0.5);
+    centerY +
+    Math.sin(time * 0.35) * (ANIMATION_CONFIG.driftRadius * 0.18) +
+    Math.cos(time * 0.45) * (ANIMATION_CONFIG.driftRadius * 0.08);
 
-  const guardSize =
+  const guardPadding = Math.min(dimensions.width, dimensions.height) * 0.04;
+  const guardRadiusX = formation.bounds.width / 2 + guardPadding;
+  const guardRadiusY = formation.bounds.height / 2 + guardPadding;
+  const exclusionPadding =
     Math.min(dimensions.width, dimensions.height) *
-      (0.44 - currentProgress * 0.15) *
-      0.53 +
-    Math.sin(time * 0.4) * 3.5;
-  const exclusionRadius =
-    Math.min(dimensions.width, dimensions.height) *
-    (0.35 + currentProgress * 0.15) *
-    0.35;
-  const easedProgress = 1 - (1 - currentProgress) ** 2;
+    (0.025 + currentProgress * 0.025);
+  const exclusionRadiusX = formation.bounds.width / 2 + exclusionPadding;
+  const exclusionRadiusY = formation.bounds.height / 2 + exclusionPadding;
+  const easedProgress =
+    currentProgress * currentProgress * (3 - 2 * currentProgress);
   const sparkPhase =
-    currentProgress > 0.85 ? Math.min((currentProgress - 0.85) / 0.15, 1) : 0;
+    currentProgress > 0.9 ? Math.min((currentProgress - 0.9) / 0.1, 1) : 0;
   const breathStrength = 1 - sparkPhase;
 
   return {
@@ -45,8 +46,10 @@ export function getParticlePhysicsState({
     driftingCenterX,
     driftingCenterY,
     easedProgress,
-    exclusionRadius,
-    guardSize,
+    exclusionRadiusX,
+    exclusionRadiusY,
+    guardRadiusX,
+    guardRadiusY,
     sparkPhase,
   };
 }

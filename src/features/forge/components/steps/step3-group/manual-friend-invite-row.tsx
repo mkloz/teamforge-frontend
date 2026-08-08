@@ -60,7 +60,7 @@ function FriendProfileLink({ friend }: { friend: FriendProfile }) {
     <Link
       {...buildProfileNavigation(friend.id)}
       aria-label={`View ${friend.name}'s profile`}
-      className="absolute inset-0 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-inset"
+      className="absolute inset-0 z-10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-inset"
     >
       <span className="sr-only">View {friend.name}'s profile</span>
     </Link>
@@ -112,7 +112,7 @@ function FriendIdentityMeta({
       <span
         className={cn(
           "truncate font-black text-foreground text-sm leading-tight transition-colors",
-          !selected && "group-hover:text-forge-teal",
+          !selected && "group-hover:text-foreground",
         )}
       >
         {friend.name}
@@ -160,7 +160,7 @@ function FriendFitSignal({
           pending || value === null
             ? "text-muted-foreground/55"
             : value >= 70
-              ? "text-forge-teal"
+              ? "text-foreground"
               : value < 50
                 ? "text-spark-amber"
                 : "text-foreground",
@@ -204,7 +204,7 @@ function InviteToggleButton({
           "size-11 rounded-full md:size-7",
           selected
             ? "bg-forge-teal text-white"
-            : "text-muted-foreground hover:enabled:text-forge-teal",
+            : "text-muted-foreground hover:enabled:text-foreground",
         )}
         aria-label={`${selected ? "Remove" : "Invite"} ${friend.name}`}
       >

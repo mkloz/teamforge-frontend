@@ -55,7 +55,7 @@ export function InlineForgeHeader({
                 id={headingId}
                 ref={headingRef}
                 tabIndex={-1}
-                className="whitespace-nowrap rounded-sm font-black text-base text-foreground tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 md:text-lg"
+                className="whitespace-nowrap rounded-sm font-black text-base text-foreground tracking-tight focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 md:text-lg"
               >
                 {currentMetadata.title}
               </h2>

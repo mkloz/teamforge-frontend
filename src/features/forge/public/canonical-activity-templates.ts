@@ -20,7 +20,11 @@ export interface CanonicalActivityTemplateSelection {
 export interface ActivityTemplateStartingPoint {
   categoryId: PlanCategory;
   categoryLabel: string;
+  coverImage: string | null;
   description: string;
+  locationType: ForgePlanTemplate["locationType"];
+  maximumGroupSize: number | null;
+  minimumGroupSize: number | null;
   templateId: string;
   title: string;
 }
@@ -56,10 +60,20 @@ function getRequiredActivityTemplateStartingPoint(
     throw new Error(`Missing canonical Forge template: ${templateId}`);
   }
 
+  const template = buildTemplateFromSeed(
+    catalogEntry.category,
+    catalogEntry.seed,
+    undefined,
+  );
+
   return {
     categoryId: catalogEntry.category.id,
     categoryLabel: catalogEntry.category.label,
+    coverImage: template.coverImage,
     description: catalogEntry.seed.description,
+    locationType: template.locationType,
+    maximumGroupSize: template.recommendedMaximumGroupSize,
+    minimumGroupSize: template.recommendedMinimumGroupSize,
     templateId,
     title: catalogEntry.seed.title,
   };

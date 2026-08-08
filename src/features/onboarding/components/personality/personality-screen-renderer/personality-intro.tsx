@@ -32,7 +32,7 @@ export function PersonalityIntro({
 
   return (
     <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
-      <h1 className="mb-4 text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight sm:text-display-lg">
+      <h1 className="mb-4 text-balance text-center font-display font-extrabold text-2xl text-ink leading-tight sm:text-display-lg">
         Know what happens to your answers
       </h1>
 
@@ -102,7 +102,7 @@ function AssessmentStateNotice({
   if (status === "error") {
     return (
       <div
-        className="grid gap-3 rounded-2xl border border-border bg-card p-4 text-left"
+        className="grid gap-3 rounded-2xl bg-card p-4 text-left shadow-soft-sm"
         role="alert"
       >
         <p className="text-muted-foreground text-sm leading-relaxed">

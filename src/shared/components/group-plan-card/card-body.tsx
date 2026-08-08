@@ -20,7 +20,7 @@ export function CardBody({
     <div className={cn("relative z-20", isCompact ? "mb-4" : "mb-3.5")}>
       <h3
         className={cn(
-          "line-clamp-2 font-extrabold text-foreground leading-tight tracking-tight transition-colors duration-300 group-hover:text-primary md:pr-6",
+          "line-clamp-2 font-extrabold text-foreground leading-tight tracking-tight md:pr-6",
           isCompact ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
         )}
       >
@@ -36,7 +36,7 @@ export function CardBody({
       </p>
 
       {!isCompact ? (
-        <div className="absolute top-1 right-0 hidden -translate-x-4 text-muted-foreground opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:text-primary group-hover:opacity-100 md:block">
+        <div className="absolute top-1 right-0 hidden -translate-x-4 text-muted-foreground opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:text-foreground group-hover:opacity-100 md:block">
           <ArrowRight className="size-5" aria-hidden="true" />
         </div>
       ) : null}

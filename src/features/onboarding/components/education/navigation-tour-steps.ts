@@ -1,20 +1,12 @@
 import type { OnboardingProductState } from "@/shared/schemas/onboarding-product-state";
 
 export type NavigationTourPageId =
-  | "HOME"
-  | "EXPLORE"
-  | "FORGE"
-  | "ACTIVITY"
-  | "PROFILE";
+  OnboardingProductState["presentation"]["coachmarkOrder"][number];
 
-export type NavigationTourPath =
-  | "/home"
-  | "/explore"
-  | "/forge"
-  | "/activity"
-  | "/profile";
+export type NavigationTourPath = "/explore" | "/forge" | "/activity";
 
 export interface NavigationTourStep {
+  action: string;
   body: string;
   id: string;
   pageId: NavigationTourPageId;
@@ -22,17 +14,6 @@ export interface NavigationTourStep {
   pathname: NavigationTourPath;
   targetSelector: string;
   title: string;
-}
-
-interface NavigationTourPage {
-  id: NavigationTourPageId;
-  label: string;
-  pathname: NavigationTourPath;
-  purpose: Omit<NavigationTourStep, "id" | "pageId" | "pageLabel" | "pathname">;
-  navigation: Omit<
-    NavigationTourStep,
-    "id" | "pageId" | "pageLabel" | "pathname"
-  >;
 }
 
 interface NavigationTourProductState {
@@ -45,81 +26,36 @@ interface NavigationTourProductState {
   };
 }
 
-const TOUR_PAGES: Record<NavigationTourPageId, NavigationTourPage> = {
-  HOME: {
-    id: "HOME",
-    label: "Home",
-    pathname: "/home",
-    purpose: {
-      targetSelector: "[data-onboarding-tour='home-overview']",
-      title: "See what needs you now",
-      body: "Home brings together invitations, upcoming plans, active searches, and the next account task that matters.",
-    },
-    navigation: {
-      targetSelector: "[data-onboarding-tour='nav-home']",
-      title: "Return to Home",
-      body: "Use Home whenever you want a clear overview of current plans and actions waiting for you.",
-    },
-  },
+const TOUR_STEPS: Record<NavigationTourPageId, NavigationTourStep> = {
   EXPLORE: {
-    id: "EXPLORE",
-    label: "Explore",
+    action: "Use Filters, then open one plan to check the details.",
+    body: "Search and filters narrow the open plans. Before joining, you can check the activity, time, place, and group fit.",
+    id: "explore-discovery",
+    pageId: "EXPLORE",
+    pageLabel: "Explore",
     pathname: "/explore",
-    purpose: {
-      targetSelector: "[data-onboarding-tour='explore-discovery']",
-      title: "Find plans without committing",
-      body: "Explore shows open plans you can search and filter. Opening a plan lets you understand it before you decide whether to take part.",
-    },
-    navigation: {
-      targetSelector: "[data-onboarding-tour='nav-explore']",
-      title: "Open Explore",
-      body: "Use Explore when you want to discover something new or return to an opening you were considering.",
-    },
+    targetSelector: "[data-onboarding-tour='explore-discovery']",
+    title: "Find a plan that fits",
   },
   FORGE: {
-    id: "FORGE",
-    label: "Forge",
+    action: "Choose Start when you have an activity in mind.",
+    body: "When nothing fits, start your own plan. Set the activity and group shape; TeamForge helps bring compatible people together.",
+    id: "forge-start",
+    pageId: "FORGE",
+    pageLabel: "Forge",
     pathname: "/forge",
-    purpose: {
-      targetSelector: "[data-onboarding-tour='forge-start']",
-      title: "Start with one real plan",
-      body: "Forge turns an activity idea into a real group plan. You choose what should happen; TeamForge helps find compatible people.",
-    },
-    navigation: {
-      targetSelector: "[data-onboarding-tour='nav-forge']",
-      title: "Bring a plan to Forge",
-      body: "Use Forge when you know what you want to do and want TeamForge to help assemble the group.",
-    },
+    targetSelector: "[data-onboarding-tour='forge-start']",
+    title: "Turn an idea into a group",
   },
   ACTIVITY: {
-    id: "ACTIVITY",
-    label: "Activity",
+    action: "Open the item with an unread badge or pending decision.",
+    body: "Invites, conversations, plan changes, and matching progress stay together here so you can respond without losing context.",
+    id: "activity-workspace",
+    pageId: "ACTIVITY",
+    pageLabel: "Activity",
     pathname: "/activity",
-    purpose: {
-      targetSelector: "[data-onboarding-tour='activity-workspace']",
-      title: "Follow real progress",
-      body: "Activity keeps group conversations, invitations, plan changes, and search progress together so you can respond in context.",
-    },
-    navigation: {
-      targetSelector: "[data-onboarding-tour='nav-activity']",
-      title: "Check Activity",
-      body: "Use Activity when a plan moves forward, someone messages you, or TeamForge needs a decision from you.",
-    },
-  },
-  PROFILE: {
-    id: "PROFILE",
-    label: "Profile",
-    pathname: "/profile",
-    purpose: {
-      targetSelector: "[data-onboarding-tour='profile-overview']",
-      title: "Review how you appear to people",
-      body: "Profile shows the introduction, interests, and matching information other people can use when considering a plan with you.",
-    },
-    navigation: {
-      targetSelector: "[data-onboarding-tour='nav-profile']",
-      title: "Open your Profile",
-      body: "Use Profile to review your public information and see how your TeamForge history develops over time.",
-    },
+    targetSelector: "[data-onboarding-tour='activity-workspace']",
+    title: "Keep the plan moving",
   },
 };
 
@@ -138,17 +74,12 @@ export function buildNavigationTourSteps(
     productState.capabilities.START_FORGE,
     productState.capabilities.START_INTRODUCTORY_FORGE,
   ].some((decision) => decision.allowed);
-  const intentOrder: NavigationTourPageId[] = [
-    ...productState.presentation.coachmarkOrder,
-  ];
   const pageOrder = uniquePageIds([
-    ...intentOrder,
+    ...productState.presentation.coachmarkOrder,
     ...FALLBACK_PRODUCT_ORDER,
-    "HOME",
-    "PROFILE",
   ]).filter((pageId) => pageId !== "FORGE" || canOpenForge);
 
-  return pageOrder.flatMap((page) => buildPageSteps(TOUR_PAGES[page]));
+  return pageOrder.map((pageId) => TOUR_STEPS[pageId]);
 }
 
 export function isNavigationTourPathActive(
@@ -158,25 +89,6 @@ export function isNavigationTourPathActive(
   return (
     pathname === expectedPathname || pathname.startsWith(`${expectedPathname}/`)
   );
-}
-
-function buildPageSteps(page: NavigationTourPage): NavigationTourStep[] {
-  return [
-    {
-      ...page.purpose,
-      id: `${page.id.toLowerCase()}-purpose`,
-      pageId: page.id,
-      pageLabel: page.label,
-      pathname: page.pathname,
-    },
-    {
-      ...page.navigation,
-      id: `${page.id.toLowerCase()}-navigation`,
-      pageId: page.id,
-      pageLabel: page.label,
-      pathname: page.pathname,
-    },
-  ];
 }
 
 function uniquePageIds(pageIds: NavigationTourPageId[]) {

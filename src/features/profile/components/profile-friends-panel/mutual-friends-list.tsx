@@ -1,6 +1,7 @@
 import { MessageSquare } from "lucide-react";
 import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
 import { Button } from "@/shared/components/ui/button";
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { FriendCard } from "./friend-card";
 import { FriendMessageAction } from "./friend-message-action";
@@ -51,15 +52,11 @@ export function MutualFriendsList({ userId }: MutualFriendsListProps) {
 
   if (commonFriends.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-border border-dashed py-16 text-center">
-        <div className="rounded-full bg-muted/50 p-3">
-          <MessageSquare className="size-6 text-muted-foreground" />
-        </div>
-        <h3 className="mt-4 font-bold text-foreground">No mutual friends</h3>
-        <p className="mt-1 max-w-sm text-muted-foreground text-sm">
-          You don't have any friends in common with this user.
-        </p>
-      </div>
+      <EmptyState
+        icon={MessageSquare}
+        title="No mutual friends"
+        description="People you both know will appear here."
+      />
     );
   }
 

@@ -14,28 +14,40 @@ export default defineConfig({
   projects: [
     {
       name: "small-mobile",
-      use: { viewport: { height: 800, width: 360 } },
+      use: {
+        colorScheme: "dark",
+        hasTouch: true,
+        isMobile: true,
+        viewport: { height: 800, width: 360 },
+      },
     },
     {
       name: "mobile",
-      use: { viewport: { height: 844, width: 390 } },
+      use: {
+        colorScheme: "dark",
+        hasTouch: true,
+        isMobile: true,
+        viewport: { height: 844, width: 390 },
+      },
     },
     {
       name: "tablet",
-      use: { viewport: { height: 1180, width: 820 } },
+      use: { colorScheme: "dark", viewport: { height: 1180, width: 820 } },
     },
     {
       name: "tablet-landscape",
-      use: { viewport: { height: 768, width: 1024 } },
+      use: { colorScheme: "dark", viewport: { height: 768, width: 1024 } },
     },
     {
       name: "desktop",
-      use: { viewport: { height: 1000, width: 1440 } },
+      use: { colorScheme: "dark", viewport: { height: 1000, width: 1440 } },
     },
     {
       name: "light-mobile",
       use: {
         colorScheme: "light",
+        hasTouch: true,
+        isMobile: true,
         viewport: { height: 844, width: 390 },
       },
     },

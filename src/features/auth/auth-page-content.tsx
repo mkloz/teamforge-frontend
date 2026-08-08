@@ -8,7 +8,10 @@ import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { Button } from "@/shared/components/ui/button";
 import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
 import { cn } from "@/shared/lib/utils";
-import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
+import type {
+  VoronoiCatalystHandle,
+  VoronoiFormationTarget,
+} from "@/shared/lib/voronoi/voronoi-contract";
 
 const LazyVoronoiCatalyst = lazy(() =>
   import("@/shared/components/visuals/voronoi-catalyst").then((module) => ({
@@ -19,6 +22,7 @@ const LazyVoronoiCatalyst = lazy(() =>
 interface AuthPageContentProps {
   catalystRef?: RefObject<VoronoiCatalystHandle | null>;
   children: ReactNode;
+  formation?: VoronoiFormationTarget;
   onInput?: () => void;
   progress: number;
   scrollContainerRef?: RefObject<HTMLElement | null>;
@@ -27,6 +31,7 @@ interface AuthPageContentProps {
 export function AuthPageContent({
   catalystRef,
   children,
+  formation,
   onInput,
   progress,
   scrollContainerRef,
@@ -60,7 +65,11 @@ export function AuthPageContent({
       >
         {isDesktopAuthVisualEnabled ? (
           <Suspense fallback={null}>
-            <LazyVoronoiCatalyst ref={catalystRef} progress={progress} />
+            <LazyVoronoiCatalyst
+              ref={catalystRef}
+              formation={formation}
+              progress={progress}
+            />
           </Suspense>
         ) : null}
       </div>

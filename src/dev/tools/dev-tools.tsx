@@ -54,7 +54,7 @@ export function DevTools() {
               >
                 <Wrench
                   aria-hidden="true"
-                  className={`size-4 transition-transform duration-200 ${isOpen ? "rotate-45 text-primary" : ""}`}
+                  className={`size-4 transition-transform duration-200 ${isOpen ? "rotate-45 text-foreground" : ""}`}
                 />
                 <TailwindBreakpointBadge />
               </Button>

@@ -496,7 +496,7 @@ function ActionForm({
         </p>
       ) : null}
       {isSuccess ? (
-        <p className="text-primary text-xs" role="status">
+        <p className="text-foreground text-xs" role="status">
           Command accepted.
         </p>
       ) : null}

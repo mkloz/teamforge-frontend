@@ -10,7 +10,6 @@ import { usePlanCommitment } from "@/features/group-plan-detail/hooks/use-plan-c
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Button } from "@/shared/components/ui/button";
 import { Notice } from "@/shared/components/ui/notice";
-import { cn } from "@/shared/lib/utils";
 import type { PlanOperationalState } from "@/shared/schemas/plan-operational-state";
 
 const RESPONSE_OPTIONS = [
@@ -82,7 +81,7 @@ export function PlanCommitmentSection({
         </p>
       ) : null}
 
-      <fieldset className="grouped-surface mt-3 grid overflow-hidden rounded-2xl sm:grid-cols-3">
+      <fieldset className="mt-3 flex flex-wrap gap-2">
         <legend className="sr-only">Your plan response</legend>
         {RESPONSE_OPTIONS.map((option) => {
           const selected =
@@ -94,10 +93,6 @@ export function PlanCommitmentSection({
             <Button
               key={option.value}
               aria-pressed={selected}
-              className={cn(
-                "h-12 w-full rounded-none border-0 bg-card",
-                selected && "bg-(--grouped-menu-selected) text-ink",
-              )}
               disabled={
                 !commitment.isOnline ||
                 commitment.query.isError ||
@@ -108,8 +103,8 @@ export function PlanCommitmentSection({
                 commitment.mutation.variables === option.value
               }
               onClick={() => commitment.respond(option.value)}
-              size="md"
-              variant="ghost"
+              size="sm"
+              variant={selected ? "primary" : "outline"}
             >
               <Icon className="size-4" aria-hidden="true" />
               {option.label}

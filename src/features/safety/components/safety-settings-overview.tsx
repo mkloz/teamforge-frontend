@@ -337,7 +337,7 @@ function SafetyRow({
             <p className="mt-1 text-slate-muted text-xs">{date}</p>
           ) : null}
         </div>
-        <div className="inline-flex items-center gap-1 font-semibold text-primary text-sm [&_a:focus-visible]:ring-2 [&_a:focus-visible]:ring-primary/30 [&_a]:rounded-md [&_a]:outline-none">
+        <div className="inline-flex items-center gap-1 font-semibold text-foreground text-sm [&_a:focus-visible]:ring-1 [&_a:focus-visible]:ring-foreground [&_a:focus-visible]:ring-offset-2 [&_a:focus-visible]:ring-offset-background [&_a]:rounded-md [&_a]:outline-none">
           {link}
           <ChevronRight className="size-4" aria-hidden="true" />
         </div>

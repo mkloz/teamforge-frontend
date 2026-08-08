@@ -27,10 +27,10 @@ export function DynamicAssessmentOptionCard({
       disabled={!available}
       onClick={onSelect}
       className={cn(
-        "relative h-auto w-full overflow-hidden rounded-xl border-2 bg-card p-4 text-left text-card-foreground shadow-none transition-all duration-300 focus-visible:ring-forge-teal/20 sm:p-4.5",
+        "relative h-auto w-full overflow-hidden rounded-xl border-2 bg-card p-4 text-left text-card-foreground shadow-none transition-all duration-300 focus-visible:ring-foreground sm:p-4.5",
         isSelected
           ? "border-forge-teal/30 bg-forge-teal/8"
-          : "border-forge-teal/10 hover:border-forge-teal/20 dark:border-forge-teal/20",
+          : "border-foreground/20 hover:border-foreground/40",
       )}
       contentClassName="block h-auto w-full"
     >
@@ -57,7 +57,7 @@ export function DynamicAssessmentOptionCard({
 
         <div className="flex min-w-0 flex-col gap-1.5 whitespace-normal text-muted-foreground text-xs">
           <span className="flex items-center gap-1.5 font-semibold text-ink">
-            <Gauge className="size-4 text-forge-teal" aria-hidden="true" />
+            <Gauge className="size-4 text-foreground" aria-hidden="true" />
             <span className="min-w-0">Checks progress after each page</span>
           </span>
           <span className="flex items-start gap-1.5 leading-snug">

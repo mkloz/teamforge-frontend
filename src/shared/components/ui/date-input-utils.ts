@@ -7,7 +7,7 @@ const calendarDayButtonBaseClassName = "size-8 rounded-lg font-bold text-xs";
 const calendarDayButtonSelectedClassName =
   "border-primary bg-primary text-primary-foreground";
 const calendarDayButtonOutsideMonthClassName = "text-slate-muted/35";
-const calendarDayButtonTodayClassName = "border-primary/30 text-primary";
+const calendarDayButtonTodayClassName = "border-foreground/30 text-foreground";
 
 const nextCalendarViewByView = {
   days: "months",

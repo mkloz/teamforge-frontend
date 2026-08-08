@@ -44,7 +44,7 @@ export function AvatarPreviewDialog({
               "size-64 bg-muted text-7xl ring-1 ring-white/15 sm:size-80 sm:text-8xl md:size-96",
               shape === "rounded" && "rounded-2xl",
             )}
-            fallbackClassName="bg-muted text-forge-teal"
+            fallbackClassName="bg-muted text-foreground"
             loading="eager"
           />
           <figcaption className="max-w-72 truncate rounded-full bg-background/70 px-3 py-1.5 font-semibold text-ink text-sm backdrop-blur-sm">

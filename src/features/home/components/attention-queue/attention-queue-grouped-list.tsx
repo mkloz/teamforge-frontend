@@ -278,12 +278,12 @@ function UrgencyGroup({
             <CollapsibleTrigger asChild>
               <button
                 type="button"
-                className="group flex min-w-0 flex-1 items-center gap-2 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="group flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:min-h-0"
               >
                 <span
                   className={cn(
                     "inline-flex items-center gap-2 font-bold text-sm",
-                    group.tone === "teal" && "text-forge-teal",
+                    group.tone === "teal" && "text-foreground",
                     group.tone === "amber" && "text-spark-amber",
                     group.tone === "muted" && "text-muted-foreground",
                   )}
@@ -311,7 +311,7 @@ function UrgencyGroup({
                   disabled={batchAcceptDisabled}
                   loading={batchAcceptLoading}
                   onClick={() => void acceptGroupSelection()}
-                  className="size-8 px-0 sm:w-auto sm:px-3"
+                  className="size-11 px-0 sm:h-8 sm:w-auto sm:px-3"
                   aria-label={`Accept ${selectedBatchableItems.length} selected`}
                 >
                   <Check className="size-3.5" />
@@ -325,7 +325,7 @@ function UrgencyGroup({
                   disabled={batchDeclineDisabled}
                   loading={batchDeclineLoading}
                   onClick={() => void declineGroupSelection()}
-                  className="size-8 px-0 sm:w-auto sm:px-3"
+                  className="size-11 px-0 sm:h-8 sm:w-auto sm:px-3"
                   aria-label={`Decline ${selectedBatchableItems.length} selected`}
                 >
                   <X className="size-3.5" />
@@ -336,7 +336,7 @@ function UrgencyGroup({
                 <Button
                   size="xs"
                   variant="ghost"
-                  className="h-8 px-2.5"
+                  className="h-11 px-2.5 sm:h-8"
                   disabled={isBatchActionLoading}
                   onClick={clearGroupSelection}
                 >
@@ -347,7 +347,7 @@ function UrgencyGroup({
               <button
                 type="button"
                 onClick={selectGroupItems}
-                className="rounded-full px-2 py-1 font-semibold text-muted-foreground text-xs transition-colors hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="min-h-11 rounded-full px-2 py-1 font-semibold text-muted-foreground text-xs transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:min-h-0"
               >
                 Select
               </button>
@@ -422,7 +422,7 @@ function AttentionQueueCompactRow({
                 "relative inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-ring",
                 selected
                   ? "border-forge-teal bg-forge-teal text-primary-foreground"
-                  : "border-border text-muted-foreground hover:border-forge-teal/50 hover:text-forge-teal",
+                  : "border-border text-muted-foreground hover:border-foreground/45 hover:text-foreground",
               )}
             >
               <input
@@ -478,7 +478,7 @@ function AttentionQueueCompactRow({
             <ChevronRight
               className={cn(
                 "size-4 shrink-0 text-muted-foreground transition-transform duration-200",
-                active && "rotate-90 text-forge-teal",
+                active && "rotate-90 text-foreground",
               )}
               aria-hidden="true"
             />

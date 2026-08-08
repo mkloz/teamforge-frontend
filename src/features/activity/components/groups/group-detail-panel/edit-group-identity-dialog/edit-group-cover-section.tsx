@@ -204,7 +204,7 @@ function SelectedPlanCoverPresetIcon({ selected }: { selected: boolean }) {
       size="xs"
       shape="circle"
       tone="none"
-      className="absolute top-1 right-1 bg-white/95 text-forge-teal shadow-sm"
+      className="absolute top-1 right-1 bg-white/95 text-foreground shadow-sm"
     />
   );
 }

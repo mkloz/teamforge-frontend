@@ -68,10 +68,10 @@ function getRecentActivityCardViewState(
 
 function getCardClassName(active: boolean) {
   return cn(
-    "group flex h-16 w-full min-w-0 overflow-hidden rounded-xl border bg-card/70 text-left transition-[background-color,border-color,box-shadow,color,transform] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] motion-reduce:transition-none",
+    "group flex h-16 w-full min-w-0 overflow-hidden rounded-xl border bg-card/70 text-left transition-[background-color,border-color,box-shadow,color,transform] duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] motion-reduce:transition-none",
     active
       ? "border-forge-teal bg-forge-teal/8 ring-1 ring-forge-teal/20"
-      : "border-border/45 hover:border-forge-teal/45 hover:bg-card",
+      : "border-border/45 hover:border-foreground/35 hover:shadow-soft-sm",
   );
 }
 
@@ -94,7 +94,7 @@ function RecentActivityMedia({
       ) : (
         <FallbackIcon
           aria-hidden="true"
-          className="size-9 text-muted-foreground/70 transition-colors group-hover:text-forge-teal"
+          className="size-9 text-muted-foreground/70 transition-colors group-hover:text-foreground"
           strokeWidth={1.5}
         />
       )}

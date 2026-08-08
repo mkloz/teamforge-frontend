@@ -2,12 +2,16 @@ import type { ReactNode, RefObject } from "react";
 import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-home-link";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
-import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
+import type {
+  VoronoiCatalystHandle,
+  VoronoiFormationTarget,
+} from "@/shared/lib/voronoi/voronoi-contract";
 import { OnboardingVisualPanel } from "./onboarding-visual-panel";
 
 interface ProfileBasicsPageContentProps {
   catalystRef?: RefObject<VoronoiCatalystHandle | null>;
   children: ReactNode;
+  formation?: VoronoiFormationTarget;
   onInput?: () => void;
   progress: number;
   scrollContainerRef?: RefObject<HTMLDivElement | null>;
@@ -16,6 +20,7 @@ interface ProfileBasicsPageContentProps {
 export function ProfileBasicsPageContent({
   catalystRef,
   children,
+  formation,
   onInput,
   progress,
   scrollContainerRef,
@@ -24,6 +29,7 @@ export function ProfileBasicsPageContent({
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <OnboardingVisualPanel
         catalystRef={catalystRef}
+        formation={formation}
         progress={progress}
         side="left"
       />

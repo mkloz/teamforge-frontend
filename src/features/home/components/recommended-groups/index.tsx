@@ -5,7 +5,7 @@ import { HomeRecommendedGroupsSkeleton } from "@/features/home/components/home-s
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { getRecommendationPreview } from "@/features/home/lib/home-insights";
 import { Button } from "@/shared/components/ui/button";
-import { IconTile } from "@/shared/components/ui/icon-tile";
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import { useUnexpiredExploreFeedItems } from "@/shared/hooks/use-unexpired-explore-feed-items";
 import { buildExploreNavigation } from "@/shared/navigation";
 import type { ExploreFeedItem } from "@/shared/schemas";
@@ -72,7 +72,7 @@ function RecommendedGroupsView({
 
       {isRecommendationsError && visibleRecommendations.length === 0 ? (
         <div
-          className="flex min-h-36 items-center justify-between gap-4 rounded-lg border border-border/70 border-dashed px-3 py-5 sm:px-4"
+          className="flex min-h-36 items-center justify-between gap-4 rounded-lg bg-destructive/6 px-3 py-5 shadow-soft-sm sm:px-4"
           role="alert"
         >
           <div className="min-w-0">
@@ -90,17 +90,11 @@ function RecommendedGroupsView({
       ) : isRecommendationsLoading && recommendations.length === 0 ? (
         <HomeRecommendedGroupsSkeleton />
       ) : visibleRecommendations.length === 0 ? (
-        <div className="flex items-start gap-3 rounded-2xl border border-border/70 border-dashed p-4">
-          <IconTile icon={Compass} size="md" shape="circle" tone="neutral" />
-          <div className="min-w-0">
-            <p className="font-bold text-foreground text-sm">
-              Nothing open right now.
-            </p>
-            <p className="mt-1 font-medium text-muted-foreground text-xs leading-5">
-              New plans with an open place will appear here.
-            </p>
-          </div>
-        </div>
+        <EmptyState
+          icon={Compass}
+          title="Nothing open right now."
+          description="New plans with an open place will appear here."
+        />
       ) : (
         <ul className="list-none p-0">
           {visibleRecommendations.map((recommendation) => (

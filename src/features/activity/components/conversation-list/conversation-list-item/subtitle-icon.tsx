@@ -13,9 +13,9 @@ export function SubtitleIcon({
   const size = isCompact ? 12 : 14;
 
   const icons: Partial<Record<MessageType, ReactElement>> = {
-    VOICE: <Mic size={size} className="shrink-0 text-forge-teal" />,
-    IMAGE: <ImageIcon size={size} className="shrink-0 text-forge-teal" />,
-    FILE: <FileText size={size} className="shrink-0 text-forge-teal" />,
+    VOICE: <Mic size={size} className="shrink-0 text-foreground" />,
+    IMAGE: <ImageIcon size={size} className="shrink-0 text-foreground" />,
+    FILE: <FileText size={size} className="shrink-0 text-foreground" />,
     PLAN_UPDATE: (
       <ClipboardList size={size} className="shrink-0 text-spark-amber" />
     ),

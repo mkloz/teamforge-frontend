@@ -72,7 +72,7 @@ function VisibilityOptionButton({
           aria-hidden="true"
           className={cn(
             "size-4 shrink-0 transition-colors",
-            active ? "text-forge-teal" : "text-muted-foreground",
+            active ? "text-foreground" : "text-muted-foreground",
           )}
         />
         <span className="min-w-0 flex-1">

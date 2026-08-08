@@ -45,7 +45,7 @@ export function DownloadHeroSection({
       <div className="relative z-10 mx-auto grid min-h-[calc(100svh-4rem)] max-w-6xl grid-cols-1 gap-10 px-6 py-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
         <div className="flex min-h-0 flex-col items-center justify-center text-center lg:items-start lg:text-left">
           <h1 className="mb-4 text-balance font-extrabold text-4xl text-white leading-none sm:text-5xl lg:text-6xl">
-            Your groups, <span className="text-forge-teal">one tap away.</span>
+            Your groups, <span className="text-foreground">one tap away.</span>
           </h1>
 
           <p className="mb-8 max-w-md text-pretty text-base text-text-dark-secondary leading-relaxed">

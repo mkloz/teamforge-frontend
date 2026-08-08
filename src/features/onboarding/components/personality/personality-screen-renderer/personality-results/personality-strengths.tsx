@@ -32,7 +32,7 @@ function StrengthItem({ children }: { children: string }) {
       variants={popDownItem}
       className="flex items-start gap-3 font-semibold text-ink/86 text-sm leading-snug"
     >
-      <Check size={15} className="mt-0.5 shrink-0 text-forge-teal" />
+      <Check size={15} className="mt-0.5 shrink-0 text-foreground" />
       <span>{children}</span>
     </m.div>
   );

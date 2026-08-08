@@ -26,11 +26,11 @@ export function FilterChipItem({
       value={value}
       aria-label={ariaLabel ?? label}
       className={cn(
-        "group/chip relative h-7 w-auto min-w-fit snap-start rounded-full px-2",
+        "group/chip relative h-9 w-auto min-w-9 snap-start rounded-full px-3",
         "aspect-auto whitespace-nowrap",
         "inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1 border font-bold text-xs leading-none outline-none",
         "transition-all duration-150 ease-out",
-        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "border-border/45 bg-card/35 text-slate-muted hover:-translate-y-1 hover:border-button-primary-border hover:bg-forge-teal-readable hover:text-white hover:shadow-button-primary active:translate-y-0 active:shadow-none",
         isActive &&

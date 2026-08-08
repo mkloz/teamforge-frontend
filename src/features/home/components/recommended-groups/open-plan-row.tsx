@@ -183,7 +183,7 @@ function FormationOpeningRow({
           onClick={
             isRequested ? application.withdrawRequest : application.requestPlace
           }
-          className="size-9 shrink-0 px-0 sm:h-9 sm:w-auto sm:px-3"
+          className="size-11 shrink-0 px-0 sm:h-9 sm:w-auto sm:px-3"
         >
           <ActionIcon
             className={cn("size-3.5", isPending && "animate-spin")}
@@ -194,7 +194,7 @@ function FormationOpeningRow({
       }
       date={date}
       image={
-        <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-primary/8 text-primary ring-1 ring-primary/15 sm:size-20 sm:rounded-2xl">
+        <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-primary/8 text-foreground ring-1 ring-primary/15 sm:size-20 sm:rounded-2xl">
           <CategoryIcon className="size-7 sm:size-8" aria-hidden="true" />
         </div>
       }
@@ -241,7 +241,7 @@ function OpenPlanRowFrame({
       {image}
 
       <div className="grid min-w-0 grid-rows-[repeat(4,minmax(0,auto))] gap-1">
-        <h3 className="truncate font-black text-foreground text-sm leading-tight transition-colors group-hover:text-primary sm:text-base">
+        <h3 className="truncate font-black text-foreground text-sm leading-tight sm:text-base">
           {title}
         </h3>
         <p className="truncate font-medium text-muted-foreground text-xs sm:text-sm">

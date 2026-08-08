@@ -80,7 +80,7 @@ function NextAction({ icon: Icon, text, title }: NextActionItem) {
   return (
     <div className="flex min-w-0 gap-3 py-3.5 sm:px-4 sm:py-4 first:sm:pl-0">
       <Icon
-        className="mt-0.5 size-4 shrink-0 text-forge-teal"
+        className="mt-0.5 size-4 shrink-0 text-foreground"
         strokeWidth={2}
         aria-hidden="true"
       />

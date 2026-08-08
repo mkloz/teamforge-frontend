@@ -9,7 +9,7 @@ import { cn } from "@/shared/lib/utils";
 export type UserMenuTrigger = "avatar" | "settings";
 
 const SETTINGS_TRIGGER_CLASS_NAME =
-  "size-10 border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal";
+  "size-10 border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-foreground hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-foreground data-[state=open]:bg-white data-[state=open]:text-foreground";
 
 interface UserMenuTriggerButtonProps
   extends Omit<ComponentPropsWithoutRef<"button">, "children"> {
@@ -62,8 +62,8 @@ function UserMenuTriggerVisual({
     <Avatar
       src={currentUser?.avatar}
       name={currentUser?.name}
-      className="size-8 border border-primary/20 bg-primary/10 text-primary"
-      fallbackClassName="bg-primary/10 text-xs tracking-wide text-primary"
+      className="size-8 border border-border/55 bg-muted text-foreground"
+      fallbackClassName="bg-muted text-xs tracking-wide text-foreground"
       loading="eager"
     />
   );

@@ -251,7 +251,7 @@ function RequestRateBar({
         <p className="font-semibold text-ink text-sm">
           {label}
           {primary ? (
-            <span className="ml-2 font-medium text-primary text-xs">
+            <span className="ml-2 font-medium text-foreground text-xs">
               primary
             </span>
           ) : null}

@@ -38,13 +38,13 @@ export function SortDropdown() {
       <DropdownMenuTrigger
         aria-label={`Sort groups, ${activeLabel}`}
         className={cn(
-          "group inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-input px-2 text-muted-foreground shadow-xs outline-hidden transition-all duration-150",
-          "hover:border-primary/35 hover:bg-muted hover:text-ink focus-visible:ring-2 focus-visible:ring-primary/35",
-          "data-[state=open]:border-primary/35 data-[state=open]:bg-card data-[state=open]:text-ink",
+          "group inline-flex h-9 min-w-9 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-input px-2 text-muted-foreground shadow-xs outline-hidden transition-all duration-150",
+          "hover:border-foreground/35 hover:text-ink hover:shadow-soft-sm focus-visible:ring-1 focus-visible:ring-foreground",
+          "data-[state=open]:border-foreground/35 data-[state=open]:bg-card data-[state=open]:text-ink",
         )}
       >
         <ActiveIcon
-          className="size-3.5 shrink-0 text-primary"
+          className="size-3.5 shrink-0 text-foreground"
           aria-hidden="true"
         />
         <span className="hidden items-center gap-1.5 sm:inline-flex">

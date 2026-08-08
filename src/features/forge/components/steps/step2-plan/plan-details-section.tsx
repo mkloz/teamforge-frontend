@@ -20,7 +20,7 @@ export function PlanDetailsSection({
           Optional details people should know before joining.
         </p>
       </div>
-      <div className="rounded-xl border border-border/45 bg-input transition-colors focus-within:border-forge-teal/60 focus-within:ring-2 focus-within:ring-forge-teal/12">
+      <div className="rounded-xl border border-border/45 bg-input transition-[border-color,box-shadow] focus-within:border-foreground/70 focus-within:ring-1 focus-within:ring-foreground focus-within:ring-offset-2 focus-within:ring-offset-background">
         <Textarea
           id="plan-description"
           value={planDescription}

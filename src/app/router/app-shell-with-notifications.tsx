@@ -2,14 +2,15 @@ import { Bell } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { AppLayout } from "@/features/app-shell/public/app-layout";
 import {
-  NotificationsDrawerLoading,
+  NotificationsDrawerShell,
+  NotificationsDrawerSkeleton,
   useNotificationsDrawerState,
 } from "@/features/notifications/public/notification-drawer";
 import { Button } from "@/shared/components/ui/button";
 
-const NotificationsDrawer = lazy(() =>
+const NotificationsDrawerContent = lazy(() =>
   import("@/features/notifications/public/notification-shell").then(
-    (module) => ({ default: module.NotificationsDrawer }),
+    (module) => ({ default: module.NotificationsDrawerContent }),
   ),
 );
 
@@ -37,19 +38,23 @@ export function AppShellWithNotifications() {
       }
       notificationDrawer={
         open ? (
-          <Suspense
-            fallback={
-              <NotificationsDrawerLoading
+          <NotificationsDrawerShell
+            open={open}
+            onClose={() => void closeDrawer()}
+          >
+            <Suspense
+              fallback={
+                <div className="flex-1 overflow-y-auto overscroll-contain">
+                  <NotificationsDrawerSkeleton />
+                </div>
+              }
+            >
+              <NotificationsDrawerContent
                 open={open}
                 onClose={() => void closeDrawer()}
               />
-            }
-          >
-            <NotificationsDrawer
-              open={open}
-              onClose={() => void closeDrawer()}
-            />
-          </Suspense>
+            </Suspense>
+          </NotificationsDrawerShell>
         ) : null
       }
     />

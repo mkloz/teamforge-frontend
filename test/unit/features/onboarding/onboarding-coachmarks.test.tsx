@@ -52,8 +52,8 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("main-navigation onboarding tutorial", () => {
-  it("anchors each explanation and advances to the next page", async () => {
+describe("focused product onboarding tutorial", () => {
+  it("anchors each workflow stop and advances to the next feature", async () => {
     authSession.setTokens({ accessToken: accessToken("user-a", "session-a") });
     const user = userEvent.setup();
     render(
@@ -67,16 +67,16 @@ describe("main-navigation onboarding tutorial", () => {
     );
 
     const dialog = screen.getByRole("dialog", {
-      name: "Find plans without committing",
+      name: "Find a plan that fits",
     });
     expect(dialog).toHaveAttribute("aria-modal", "false");
+    expect(screen.getByText(/Use Filters, then open one plan/)).toBeVisible();
     expect(
-      screen.getByText(/You can still use the page normally/),
-    ).toBeVisible();
-    expect(document.querySelector("[aria-hidden='true'].z-110")).not.toBeNull();
-
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(screen.getByRole("dialog", { name: "Open Explore" })).toBeVisible();
+      screen.getByRole("progressbar", { name: "Tutorial progress" }),
+    ).toHaveAttribute("aria-valuemax", "3");
+    expect(
+      document.querySelector("[data-onboarding-tour-spotlight]"),
+    ).not.toHaveClass("border-2");
 
     await user.click(screen.getByRole("button", { name: "Next: Forge" }));
     expect(navigateMock).toHaveBeenCalledWith({ to: "/forge" });

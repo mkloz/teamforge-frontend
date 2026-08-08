@@ -18,7 +18,7 @@ export function SavedMessageBubbleHeader({
 }: SavedMessageBubbleHeaderProps) {
   return (
     <div className="mb-1 flex min-w-0 max-w-full flex-wrap items-center gap-x-2 gap-y-1 px-1">
-      <span className="max-w-32 shrink-0 truncate font-bold text-primary text-xs">
+      <span className="max-w-32 shrink-0 truncate font-bold text-foreground text-xs">
         {isOwn ? "You" : senderName}
       </span>
       <StatusPill

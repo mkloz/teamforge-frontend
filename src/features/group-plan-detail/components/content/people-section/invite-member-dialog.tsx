@@ -34,7 +34,7 @@ export function InviteMemberDialog({
       <DialogContent className="max-w-lg gap-0 overflow-hidden rounded-2xl border-border/50 bg-popover p-0">
         <DialogHeader className="px-5 pt-5 pr-14 pb-3 text-left sm:px-6 sm:pt-6 sm:pr-16">
           <span className="flex items-center gap-2 font-semibold text-muted-foreground text-xs">
-            <Users className="size-4 text-forge-teal" aria-hidden="true" />
+            <Users className="size-4 text-foreground" aria-hidden="true" />
             Open member places
           </span>
           <DialogTitle className="mt-2 font-black text-xl">

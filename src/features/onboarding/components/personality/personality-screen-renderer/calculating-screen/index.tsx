@@ -12,7 +12,7 @@ export function SubmissionScreen({ error, onRetry }: SubmissionScreenProps) {
     <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center px-4 py-12 text-center sm:px-6">
       <LoaderCircle
         aria-hidden="true"
-        className={error ? "text-destructive" : "animate-spin text-forge-teal"}
+        className={error ? "text-destructive" : "animate-spin text-foreground"}
         size={32}
         strokeWidth={1.5}
       />

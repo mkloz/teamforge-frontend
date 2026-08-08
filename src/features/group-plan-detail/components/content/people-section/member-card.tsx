@@ -277,6 +277,7 @@ function KnownConnectionIndicator({ label }: { label: string }) {
       shape="circle"
       size="xs"
       tone="amber"
+      role="img"
       aria-hidden={false}
       aria-label={label}
       className="bg-spark-amber/12"

@@ -14,7 +14,7 @@ const statusPillVariants = cva(
         muted: "border-muted-foreground/15 bg-muted text-muted-foreground",
         none: "",
         neutral: "border-border/55 bg-muted text-muted-foreground",
-        teal: "border-primary/20 bg-primary/10 text-secondary-foreground",
+        teal: "border-primary/20 bg-primary/10 text-foreground",
       },
       size: {
         "2xs": "gap-0.5 px-1.5 py-0.5 text-xs",
@@ -63,7 +63,7 @@ const statusPillVariants = cva(
       {
         surface: "soft",
         tone: "teal",
-        className: "bg-primary/8 text-secondary-foreground",
+        className: "bg-primary/8 text-foreground",
       },
       {
         surface: "solid",
@@ -94,7 +94,7 @@ const statusPillVariants = cva(
     defaultVariants: {
       numeric: false,
       size: "xs",
-      surface: "outline",
+      surface: "soft",
       textCase: "normal",
       tone: "teal",
     },

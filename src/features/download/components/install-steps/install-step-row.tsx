@@ -18,7 +18,7 @@ export function InstallStep({ index, step }: InstallStepProps) {
       )}
     >
       <span
-        className="shrink-0 select-none font-extrabold text-5xl text-forge-teal/20 tabular-nums leading-none transition-colors duration-200 group-hover:text-forge-teal/40 sm:text-7xl"
+        className="shrink-0 select-none font-extrabold text-5xl text-foreground/20 tabular-nums leading-none transition-colors duration-200 group-hover:text-foreground/40 sm:text-7xl"
         aria-hidden="true"
       >
         {step.isAlternative ? "↳" : index}
@@ -40,7 +40,7 @@ export function InstallStep({ index, step }: InstallStepProps) {
           {step.body}
         </p>
         {step.tip && (
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-forge-teal/8 px-3 py-1.5 font-medium text-forge-teal text-sm dark:text-secondary-foreground">
+          <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-forge-teal/8 px-3 py-1.5 font-medium text-foreground text-sm">
             {step.tip}
           </p>
         )}

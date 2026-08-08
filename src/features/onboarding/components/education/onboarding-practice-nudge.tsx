@@ -69,11 +69,11 @@ export function OnboardingPracticeNudge() {
 
   return (
     <aside className="flex flex-col gap-4 rounded-[1.25rem] bg-card px-4 py-4 sm:flex-row sm:items-center sm:px-5">
-      <Compass className="size-5 shrink-0 text-forge-teal" aria-hidden="true" />
+      <Compass className="size-5 shrink-0 text-foreground" aria-hidden="true" />
       <div className="min-w-0 flex-1">
-        <p className="font-bold text-sm">Try TeamForge before it counts.</p>
+        <p className="font-bold text-sm">See how TeamForge fits together.</p>
         <p className="mt-1 text-muted-foreground text-sm">
-          Tap through five familiar moments in a safe preview.
+          Follow the three moves that take an idea from discovery to action.
         </p>
       </div>
       <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -82,7 +82,7 @@ export function OnboardingPracticeNudge() {
             {...buildOnboardingPracticeNavigation("/explore")}
             onClick={() => recordDecision("SELECTED")}
           >
-            Try it
+            Take the quick tour
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </Button>

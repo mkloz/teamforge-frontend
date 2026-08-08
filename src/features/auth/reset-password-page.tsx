@@ -40,7 +40,7 @@ export function ResetPasswordPage() {
           Your password has been updated.{" "}
           <Link
             {...buildAuthRouteNavigation("/auth/login", returnTo)}
-            className="font-medium text-forge-teal hover:underline"
+            className="font-medium text-foreground hover:underline"
           >
             Sign in now
           </Link>

@@ -21,7 +21,7 @@ export function ActivityMenuIcon({
       className={cn(
         "flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-input text-muted-foreground",
         tone === "active" &&
-          "border-forge-teal/20 bg-forge-teal/8 text-forge-teal",
+          "border-transparent bg-forge-teal/8 text-foreground",
         tone === "danger" &&
           "border-destructive/20 bg-destructive/8 text-destructive",
         className,

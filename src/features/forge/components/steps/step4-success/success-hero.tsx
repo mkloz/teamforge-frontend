@@ -51,7 +51,7 @@ export function SuccessHero({
     <section className="overflow-hidden rounded-2xl bg-card ring-1 ring-forge-teal/20 ring-inset">
       <div className="sm:main-action-grid grid gap-5 px-4 py-5 sm:items-end sm:px-5">
         <div className="min-w-0">
-          <p className="flex items-center gap-2 font-bold text-forge-teal text-sm">
+          <p className="flex items-center gap-2 font-bold text-foreground text-sm">
             <CheckCircle2 aria-hidden="true" className="size-4" />
             Group found
           </p>
@@ -123,18 +123,18 @@ function SummaryFact({
   detail: string;
 }) {
   return (
-    <div className="flex min-w-0 items-start gap-3 bg-card px-4 py-3.5 sm:px-5">
+    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3 bg-card px-4 py-3.5 sm:px-5">
       <Icon
         aria-hidden="true"
-        className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+        className="row-[1/4] mt-0.5 size-4 shrink-0 text-muted-foreground"
       />
-      <div className="min-w-0">
-        <dt className="font-semibold text-muted-foreground text-xs">{label}</dt>
-        <dd className="mt-0.5 truncate font-bold text-foreground text-sm">
-          {value}
-        </dd>
-        <dd className="mt-0.5 text-muted-foreground/70 text-xs">{detail}</dd>
-      </div>
+      <dt className="min-w-0 font-semibold text-muted-foreground text-xs">
+        {label}
+      </dt>
+      <dd className="mt-0.5 min-w-0 truncate font-bold text-foreground text-sm">
+        {value}
+      </dd>
+      <dd className="mt-0.5 min-w-0 text-muted-foreground text-xs">{detail}</dd>
     </div>
   );
 }

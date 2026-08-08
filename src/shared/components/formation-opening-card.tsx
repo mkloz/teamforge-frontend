@@ -35,13 +35,13 @@ export function FormationOpeningCard({
   return (
     <article
       className={cn(
-        "flex size-full flex-col overflow-hidden rounded-2xl border border-primary/20 bg-card text-card-foreground",
+        "flex size-full flex-col overflow-hidden rounded-2xl bg-card text-card-foreground shadow-soft-sm",
         isCompact ? "gap-4 p-4" : "gap-5 p-5 sm:p-6",
       )}
     >
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-foreground">
             <UsersRound className="size-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
@@ -148,7 +148,7 @@ function OpeningDetail({
   return (
     <div className="flex items-center gap-1.5">
       <dt className="sr-only">{label}</dt>
-      <Icon className="size-3.5 text-primary" aria-hidden="true" />
+      <Icon className="size-3.5 text-foreground" aria-hidden="true" />
       <dd>{children}</dd>
     </div>
   );

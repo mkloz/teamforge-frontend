@@ -32,7 +32,7 @@ export function ActivateAccountPage() {
             Still stuck?{" "}
             <Link
               {...buildAuthRouteNavigation("/auth/register", returnTo)}
-              className="font-medium text-forge-teal hover:underline"
+              className="font-medium text-foreground hover:underline"
             >
               Return to sign up
             </Link>

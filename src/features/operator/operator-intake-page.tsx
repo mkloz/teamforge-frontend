@@ -459,7 +459,7 @@ function IntakeCaseRow({
               queue: "CRITICAL_NOW",
               source: "intake",
             }}
-            className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary text-sm"
+            className="inline-flex min-h-11 items-center gap-2 font-semibold text-foreground text-sm"
           >
             Open assigned case
             <ArrowRight className="size-4" aria-hidden="true" />

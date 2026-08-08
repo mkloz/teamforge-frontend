@@ -51,13 +51,13 @@ function getTabAriaLabel(item: AppNavigationItem, badge: number) {
 }
 
 function getActiveTextClassName(isForge: boolean) {
-  return isForge ? "text-accent stroke-[2.5]" : "text-primary stroke-[2.5]";
+  return isForge ? "text-accent stroke-[2.5]" : "text-foreground stroke-[2.5]";
 }
 
 function getActiveBackgroundClassName(isForge: boolean) {
   return isForge
     ? "border-accent/25 bg-accent/15 dark:bg-accent/20"
-    : "border-primary/25 bg-primary/15 dark:bg-primary/20";
+    : "border-foreground/15 bg-foreground/8 dark:bg-white/8";
 }
 
 function getTabBadgeClassName(badge: number) {

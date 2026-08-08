@@ -157,7 +157,7 @@ function GroupReachabilityEditor({
           id="group-reachability-heading"
           className="flex items-center gap-2 font-bold text-base text-ink"
         >
-          <Waypoints className="size-4 text-primary" aria-hidden="true" />
+          <Waypoints className="size-4 text-foreground" aria-hidden="true" />
           Ways groups can reach you
         </h3>
         <p className="mt-1 text-muted-foreground text-sm leading-relaxed">
@@ -311,7 +311,7 @@ function ReachabilityChannelOption({
         <Icon
           className={
             checked
-              ? "mt-0.5 size-4 text-primary"
+              ? "mt-0.5 size-4 text-foreground"
               : "mt-0.5 size-4 text-slate-muted"
           }
           aria-hidden="true"
@@ -365,7 +365,7 @@ function ScopeSupportMessage({
         Local activities need a saved location.{" "}
         <Link
           {...buildSettingsNavigation("account")}
-          className="font-semibold text-primary underline-offset-4 hover:underline"
+          className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
           Add your location
         </Link>
@@ -431,7 +431,10 @@ function ReachabilityFacts({
 
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-border/45 border-t pt-4 text-muted-foreground text-xs">
-      <Clock3 className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
+      <Clock3
+        className="size-3.5 shrink-0 text-foreground"
+        aria-hidden="true"
+      />
       {facts.map((fact, index) => (
         <span key={fact}>
           {index > 0 ? <span className="mr-3 text-border">·</span> : null}

@@ -4,25 +4,25 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 
 export const categoryColors: Record<PlanCategory, string> = {
-  TECH: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
-  SPORTS: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  TECH: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
+  SPORTS: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
   ARTS: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
   SOCIAL: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
-  OUTDOORS: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
-  LEARNING: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  OUTDOORS: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
+  LEARNING: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
   MUSIC: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
   FOOD: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
   GAMING: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
-  WELLNESS: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
-  TRAVEL: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  WELLNESS: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
+  TRAVEL: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
   OTHER: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
 };
 
 export const statusColors: Record<PlanStatus, string> = {
   DRAFT: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
   PROPOSED: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
-  CONFIRMED: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
-  IN_PROGRESS: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  CONFIRMED: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
+  IN_PROGRESS: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
   COMPLETED: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
   CANCELLED: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
 };

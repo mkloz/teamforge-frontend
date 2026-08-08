@@ -1,6 +1,6 @@
 /* biome-ignore-all lint/a11y/noNoninteractiveElementInteractions: Message rows keep article semantics while supporting selection and context-menu keyboard workflows. */
 /* biome-ignore-all lint/a11y/noNoninteractiveTabindex: Message rows are focusable context-menu triggers. */
-// oxlint-disable jsx-a11y/no-noninteractive-tabindex -- Message rows are focusable context-menu triggers.
+// oxlint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- Message rows retain article semantics while supporting row-level selection and context-menu keyboard workflows.
 import { Forward } from "lucide-react";
 import type { KeyboardEventHandler, MouseEventHandler, ReactNode } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
@@ -30,7 +30,7 @@ export function MessageItemArticleFrame({
       aria-roledescription="message"
       aria-label={messageAriaLabel}
       className={cn(
-        "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+        "group relative w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
         canToggleSelection && "cursor-pointer",
         shouldShowOuterFocus ? "overflow-visible" : "overflow-hidden",
       )}
@@ -113,7 +113,7 @@ function MessageSenderLabel({
   }
 
   return (
-    <p className="mb-0.5 ml-1.5 font-bold text-primary text-xs opacity-90">
+    <p className="mb-0.5 ml-1.5 font-bold text-foreground text-xs opacity-90">
       {label}
     </p>
   );
@@ -264,7 +264,7 @@ export function ForwardedIndicator({
     <div
       className={cn(
         "mx-1.5 mt-1 mb-0.5 flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-0.5 font-bold text-xs",
-        isOwn ? "bg-primary/8 text-primary" : "bg-muted/55 text-slate-muted",
+        isOwn ? "bg-primary/8 text-foreground" : "bg-muted/55 text-slate-muted",
       )}
     >
       <Forward className="size-3 shrink-0" aria-hidden="true" />

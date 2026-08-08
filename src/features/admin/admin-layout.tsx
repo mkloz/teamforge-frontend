@@ -236,7 +236,7 @@ function AdminBrand() {
     <div className="border-sidebar-border border-b p-4">
       <Link
         {...buildAdminNavigation()}
-        className="flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+        className="flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
       >
         <TeamForgeLogo className="size-9" showBackground={false} />
         <span>
@@ -310,9 +310,9 @@ function AdminNavigationLinks({
                   {...buildAdminNavigation(item.id)}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative flex min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35",
+                    "relative flex min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
                     active
-                      ? "bg-primary/8 text-primary before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-primary"
+                      ? "bg-primary/8 text-foreground before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-primary"
                       : "text-slate-muted hover:bg-muted/55 hover:text-ink",
                   )}
                 >
@@ -414,7 +414,7 @@ function AdminSessionFooter({
   const content = (
     <Link
       {...buildHomeNavigation()}
-      className="flex items-center gap-2 rounded-xl px-3 py-2 font-semibold text-slate-muted text-sm transition-colors hover:bg-muted/55 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+      className="flex items-center gap-2 rounded-xl px-3 py-2 font-semibold text-slate-muted text-sm transition-all hover:-translate-y-0.5 hover:text-ink hover:shadow-soft-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
     >
       <ArrowLeft className="size-4" aria-hidden="true" />
       Back to TeamForge

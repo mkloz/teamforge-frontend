@@ -66,7 +66,7 @@ export function TypeBadge({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="group rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="group inline-flex min-h-9 min-w-9 items-center rounded text-left transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
           aria-label={`Personality type: ${personalityType}. Click for more information.`}
         >
           <ProfileSignal label="Type" value={typeValue} />
@@ -87,7 +87,7 @@ export function TypeBadge({
                 {personalityType} · {category}
               </p>
             </div>
-            <span className="shrink-0 rounded-md bg-forge-teal/10 px-2 py-1 font-bold text-forge-teal text-sm leading-none">
+            <span className="shrink-0 rounded-md bg-forge-teal/10 px-2 py-1 font-bold text-foreground text-sm leading-none">
               {personalityType}
             </span>
           </div>
@@ -123,7 +123,7 @@ function TypeDimensionRow({ code }: { code: PersonalityType }) {
               className={cn(
                 "type-signature-label flex size-5 items-center justify-center rounded font-bold transition-colors",
                 letter === active
-                  ? "bg-forge-teal/15 text-forge-teal"
+                  ? "bg-forge-teal/15 text-foreground"
                   : "text-white/20",
               )}
             >

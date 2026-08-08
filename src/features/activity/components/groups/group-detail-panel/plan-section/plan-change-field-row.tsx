@@ -132,7 +132,7 @@ function PlanFieldLabel({
       <span
         className={[
           "block font-medium text-sm leading-snug transition-colors duration-150",
-          isExpanded ? "text-forge-teal" : "text-ink",
+          isExpanded ? "text-foreground" : "text-ink",
         ].join(" ")}
       >
         {label}
@@ -157,7 +157,7 @@ function PlanFieldChevron({ isExpanded }: { isExpanded: boolean }) {
       <ChevronDown
         className={[
           "size-4 transition-colors duration-150",
-          isExpanded ? "text-forge-teal" : "text-slate-muted/40",
+          isExpanded ? "text-foreground" : "text-slate-muted/40",
         ].join(" ")}
         strokeWidth={1.75}
       />

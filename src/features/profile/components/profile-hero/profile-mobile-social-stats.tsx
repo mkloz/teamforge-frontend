@@ -63,15 +63,15 @@ const SOCIAL_STAT_VARIANTS: Record<
   },
   mutual: {
     buttonClassName:
-      "inline-flex items-center gap-2.5 rounded-full border border-slate-muted/20 bg-canvas py-1.5 pr-4 pl-2 transition-[background-color,border-color,box-shadow,color] duration-150 hover:border-foreground/35 hover:bg-foreground/[0.04] focus:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none",
+      "inline-flex items-center gap-2.5 rounded-full border border-slate-muted/20 bg-canvas py-1.5 pr-4 pl-2 transition-[border-color,box-shadow,color,transform] duration-150 hover:-translate-y-0.5 hover:border-foreground/35 hover:shadow-soft-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none",
     iconContainerClassName:
       "flex size-6 shrink-0 items-center justify-center rounded-full bg-slate-muted/10 text-slate-muted",
   },
   teal: {
     buttonClassName:
-      "group inline-flex items-center gap-2.5 rounded-full border border-forge-teal/15 bg-forge-teal/5 py-1.5 pr-4 pl-2 transition-[background-color,border-color,box-shadow,color,transform] duration-150 hover:border-forge-teal/35 hover:bg-forge-teal/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.97] motion-reduce:transition-none",
+      "group inline-flex items-center gap-2.5 rounded-full border border-foreground/12 bg-forge-teal/5 py-1.5 pr-4 pl-2 transition-[background-color,border-color,box-shadow,color,transform] duration-150 hover:border-foreground/35 hover:shadow-soft-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.97] motion-reduce:transition-none",
     iconContainerClassName:
-      "flex size-6 shrink-0 items-center justify-center rounded-full bg-forge-teal/15 text-forge-teal transition-transform group-hover:scale-105 motion-reduce:transition-none",
+      "flex size-6 shrink-0 items-center justify-center rounded-full bg-forge-teal/15 text-foreground transition-transform group-hover:scale-105 motion-reduce:transition-none",
   },
 };
 

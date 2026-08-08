@@ -52,7 +52,7 @@ function PinnedMessageIndicator({ isVisible }: { isVisible: boolean }) {
   return (
     <Pin
       aria-label="Pinned message"
-      className="size-3 rotate-45 text-primary"
+      className="size-3 rotate-45 text-foreground"
     />
   );
 }
@@ -65,7 +65,7 @@ function SavedMessageIndicator({ isVisible }: { isVisible: boolean }) {
   return (
     <Bookmark
       aria-label="Saved message"
-      className="size-3 fill-primary/20 text-primary"
+      className="size-3 fill-primary/20 text-foreground"
     />
   );
 }
@@ -106,7 +106,7 @@ function ReadBySummary({
 
   return (
     <span
-      className="ml-0.5 inline-flex min-w-0 items-center gap-1 rounded-full bg-primary/8 px-1.5 py-0.5 text-primary"
+      className="ml-0.5 inline-flex min-w-0 items-center gap-1 rounded-full bg-primary/8 px-1.5 py-0.5 text-foreground"
       title={readerNames ? `Read by ${readerNames}` : label}
     >
       <span className="max-w-18 truncate font-black text-xs">{label}</span>

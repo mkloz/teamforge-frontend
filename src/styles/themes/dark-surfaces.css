@@ -18,6 +18,7 @@
     var(--background)
   );
   --divider: color-mix(in srgb, var(--foreground) 11%, transparent);
+  --control-border: transparent;
   --focus: var(--foreground);
   --grouped-menu-selected: var(--surface-selected);
   --button-shadow-base: color-mix(
@@ -38,6 +39,11 @@
   --elevation-soft-lg:
     inset 0 1px 0 rgb(255 255 255 / 0.055), 0 22px 56px rgb(0 0 0 / 0.38),
     0 5px 14px rgb(0 0 0 / 0.22);
+  --field-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.035), inset 0 2px 5px rgb(0 0 0 / 0.22);
+  --field-shadow-hover:
+    inset 0 1px 0 rgb(255 255 255 / 0.055), inset 0 2px 5px rgb(0 0 0 / 0.26),
+    0 3px 9px rgb(0 0 0 / 0.18);
   --success: #62c29b;
   --success-foreground: #07150f;
   --warning: #efbd63;

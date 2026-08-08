@@ -49,8 +49,8 @@
   --card-foreground: var(--foreground);
   --popover: #1a2528;
   --popover-foreground: var(--foreground);
-  --primary: #54bdb4;
-  --primary-foreground: #061412;
+  --primary: #378371;
+  --primary-foreground: #ffffff;
   --secondary: #173431;
   --secondary-foreground: #a6e0da;
   --muted: #222d30;
@@ -63,7 +63,7 @@
   --input: #202b2e;
   --input-border: rgb(234 240 239 / 0.14);
   --ring: var(--foreground);
-  --chart-1: #54bdb4;
+  --chart-1: #378371;
   --chart-2: #7fa5ae;
   --chart-3: #d8a56f;
   --chart-4: #91a5ca;

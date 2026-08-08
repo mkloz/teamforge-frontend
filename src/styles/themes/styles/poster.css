@@ -17,6 +17,7 @@
   --border: color-mix(in srgb, var(--foreground) 48%, transparent);
   --divider: color-mix(in srgb, var(--foreground) 42%, transparent);
   --input-border: color-mix(in srgb, var(--foreground) 58%, transparent);
+  --control-border: var(--input-border);
   --focus: var(--foreground);
   --elevation-soft-sm: 0 2px 5px
     color-mix(in srgb, var(--foreground) 10%, transparent);

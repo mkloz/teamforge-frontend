@@ -8,7 +8,7 @@ import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadat
 
 const PRACTICE_METADATA = createTeamForgePageMetadata({
   title: "TeamForge Guidance",
-  description: "Replay TeamForge’s guided main-navigation tutorial.",
+  description: "Replay TeamForge’s focused product tour.",
 });
 
 function replayNavigationTutorial() {
@@ -24,24 +24,24 @@ export function OnboardingPracticePage() {
   return (
     <main className="mx-auto flex min-h-[70vh] w-full max-w-3xl items-center px-4 py-12 sm:px-6">
       <section aria-labelledby="guidance-title" className="w-full">
-        <Compass className="size-7 text-forge-teal" aria-hidden="true" />
+        <Compass className="size-7 text-foreground" aria-hidden="true" />
         <p className="mt-5 font-bold text-muted-foreground text-sm">
-          Navigation tutorial
+          Quick product tour
         </p>
         <h1
           id="guidance-title"
           className="mt-2 text-balance font-black text-4xl leading-none tracking-[-0.04em] sm:text-5xl"
         >
-          Learn the main pages in one clear tour.
+          Learn the workflow that matters.
         </h1>
         <p className="mt-5 max-w-xl text-pretty text-muted-foreground leading-relaxed sm:text-lg">
-          The tutorial highlights the exact navigation and page area it is
-          explaining. When a page is complete, it continues to the next one. You
-          can go back, exit at any time, or replay it later.
+          See how to find a plan, create one when nothing fits, and keep it
+          moving once people are involved. Three useful stops, then you are
+          done.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button onClick={replayNavigationTutorial}>
-            Replay navigation tutorial
+            Replay quick tour
             <ArrowRight className="size-4" aria-hidden="true" />
           </Button>
           <Button

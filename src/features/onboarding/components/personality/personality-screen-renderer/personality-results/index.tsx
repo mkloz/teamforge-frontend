@@ -111,7 +111,7 @@ export function PersonalityResults({
               ([trait, uncertainty]) => (
                 <div
                   key={trait}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5"
+                  className="flex items-center justify-between gap-3 rounded-xl bg-card px-3 py-2.5 shadow-soft-sm"
                 >
                   <span className="font-semibold text-ink text-sm capitalize">
                     {trait}

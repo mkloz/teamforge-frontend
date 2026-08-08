@@ -49,12 +49,14 @@ export function GroupsGridView({
         title="Active groups"
         description="Latest updates and upcoming plans."
         action={
-          <Button asChild variant="ghost" size="sm">
-            <Link {...buildActivityNavigation({ filter: "groups" })}>
-              View all
-              <ArrowRight className="size-3.5" aria-hidden="true" />
-            </Link>
-          </Button>
+          visibleGroups.length > 0 ? (
+            <Button asChild variant="ghost" size="sm">
+              <Link {...buildActivityNavigation({ filter: "groups" })}>
+                View all
+                <ArrowRight className="size-3.5" aria-hidden="true" />
+              </Link>
+            </Button>
+          ) : null
         }
       />
 

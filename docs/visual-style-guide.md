@@ -7,12 +7,14 @@ shared components in `src/` are the implementation source of truth.
 
 TeamForge is a clear shared workshop: calm, social, and practical. Theme work
 preserves the established UI anatomy and uses restrained geometry, layered
-neutral surfaces, explicit borders, and deliberate interaction feedback.
+neutral surfaces, selective structural edges, and deliberate interaction
+feedback.
 
 - Keep most of the screen neutral. Teal identifies action and positive momentum;
   ember adds warmth or controlled urgency.
 - Prefer one meaningful surface to nested boxes.
-- Use explicit borders, labels, and state icons in addition to elevation.
+- Use tonal separation and state icons first. Reserve explicit borders for
+  structure, selection, focus, errors, and High contrast mode.
 - Keep movement short and spatial. Respect both operating-system reduced motion
   and the in-app Reduced effects profile.
 - Compose compact layouts intentionally; do not preserve empty desktop rails.
@@ -56,9 +58,12 @@ to a supported choice before they reach the UI.
 
 ## Typography
 
-- Display, heading, interface, and body face: **Inter**, variable weights 400–900.
-- Inter is a self-hosted WOFF2 file with `font-display: swap`, preloaded for
-  first paint, and backed by system sans-serif fallbacks.
+- Page-level `h1` headlines use **Source Serif 4 Variable**, variable weights
+  200–900 with optical sizing, Georgia, and system-serif fallbacks.
+- Interface, body, control, table, and section text use **Source Sans 3
+  Variable**, variable weights 200–900 with Segoe UI and system-sans fallbacks.
+- Both families are bundled through Fontsource with `font-display: swap`; no
+  remote font request or obsolete font preload is required.
 - Headings use tight but not compressed tracking and balanced wrapping.
 - Body copy uses comfortable line height and pretty wrapping.
 - Product text must not be smaller than 12px unless it is a nonessential mark in
@@ -83,8 +88,10 @@ to a supported choice before they reach the UI.
 - Choose interaction cues in this order: mechanical lift for primary clickable
   surfaces; stronger edge, ink, or icon response for quieter controls; background
   tint only when a flat ghost control needs it or a selected state must persist.
-- Fields are flat at rest. Hover strengthens a neutral edge; teal does not appear
-  on a neutral field merely because a pointer or keyboard reaches it.
+- Fields are unelevated at rest and use quiet inset shading rather than a visible
+  outline. Hover deepens that neutral inset response without changing the fill;
+  teal does not appear on a neutral field merely because a pointer or keyboard
+  reaches it.
 - Keyboard focus on neutral controls uses a solid one-pixel foreground ring—
   near-black in light mode and white in dark mode—separated by a two-pixel
   background offset. Teal focus is limited to controls already rendered in teal.
@@ -108,11 +115,11 @@ Appearance separates three decisions:
 
 1. **Mode:** System, Light, or Dark.
 2. **Palette:** the five purpose-led visual environments above.
-3. **Comfort:** Comfortable, Compact, High contrast, or Reduced effects.
+3. **Interface style:** Comfortable, Compact, High contrast, or Reduced effects.
 
 Changes apply optimistically and update the existing functional preview.
-The original single-column Appearance sequence—preview, mode, interface
-character, palette—remains unchanged. Preferences are
+The original single-column Appearance sequence—preview, mode, interface style,
+palette—remains unchanged. Preferences are
 stored locally for startup and sent through account settings for cross-device
 support. Reset returns to System, Balanced, and Comfortable. A synchronous boot
 script sanitizes saved values and applies the resolved theme before React to
@@ -145,7 +152,23 @@ the boot script does not parse a separate version field.
 
 ## States and responsive behavior
 
+- Soft UI surfaces should not be outlined by default. Use tonal separation,
+  inset highlights, and restrained elevation for ordinary cards, fields,
+  menus, and secondary controls. Reserve visible borders for structural
+  dividers, keyboard focus, semantic errors, explicit selection, and the High
+  contrast interface style.
 - Empty states explain what is absent and suggest the next useful action.
+- Icon-and-copy layouts follow a line-count contract. A 24px `marker` area
+  aligns to one 24px title row in repeated lists and longer action cards, while
+  its 14px glyph matches the adjacent 14px title type. Its job is punctuation,
+  not illustration, so the backplate is optional: use no background for a
+  neutral action marker and retain one only when it communicates category or
+  status. A 40px tile accompanies compact two-line copy, while a 56px tile
+  balances a title plus up to two supporting lines in an empty-state panel.
+  Tile backgrounds may grow for composition, but interface glyphs stop at
+  24px. When copy exceeds that range, keep the icon as a top-aligned marker or
+  move it above the copy instead of scaling it into an oversized floating
+  block.
 - Errors preserve user work, avoid blame, and pair recovery copy with a specific
   action.
 - Success is quiet and informative rather than confetti-heavy.

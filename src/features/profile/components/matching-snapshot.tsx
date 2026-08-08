@@ -35,9 +35,9 @@ function SignalPill({ signal }: { signal: MatchingSignal }) {
         <button
           type="button"
           className={cn(
-            "inline-flex min-h-9 max-w-full cursor-help items-center gap-2 rounded-full border px-3 text-left font-bold text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35",
+            "inline-flex min-h-11 max-w-full cursor-help items-center gap-2 rounded-full border px-3 text-left font-bold text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground sm:min-h-9",
             signal.strength === "ready"
-              ? "border-forge-teal/25 bg-forge-teal/10 text-forge-teal"
+              ? "border-foreground/15 bg-forge-teal/10 text-foreground"
               : signal.strength === "good"
                 ? "border-spark-amber/25 bg-spark-amber/8 text-spark-amber"
                 : "border-border/80 text-slate-muted",
@@ -47,7 +47,7 @@ function SignalPill({ signal }: { signal: MatchingSignal }) {
           <span
             className={
               signal.strength === "ready"
-                ? "text-forge-teal dark:text-slate-muted"
+                ? "text-foreground dark:text-slate-muted"
                 : undefined
             }
           >

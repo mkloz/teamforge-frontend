@@ -43,45 +43,48 @@ export function FactItem({
   ...props
 }: FactItemProps) {
   return (
-    <div
-      className={cn("flex min-w-0 items-center gap-2", className)}
-      {...props}
-    >
-      <IconTile
-        icon={icon}
-        iconClassName={iconClassName}
-        shape={iconShape}
-        size={iconSize}
-        tone={iconTone}
-        className={iconTileClassName}
-      />
-      <div className="min-w-0 flex-1">
-        <dt className={cn("text-slate-muted text-xs", labelClassName)}>
-          {label}
-        </dt>
-        <dd
-          className={cn(
-            "wrap-break-word font-semibold text-ink text-sm leading-snug",
-            valueClassName,
-          )}
-        >
-          {href ? (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn("text-primary hover:underline", linkClassName)}
-            >
-              {value}
-            </a>
-          ) : (
-            value
-          )}
-          {meta ? (
-            <span className="ml-1 font-medium text-slate-muted">{meta}</span>
-          ) : null}
-        </dd>
-      </div>
+    <div className={cn("min-w-0", className)} {...props}>
+      <dt className="sr-only">{label}</dt>
+      <dd className="flex min-w-0 items-center gap-2">
+        <IconTile
+          icon={icon}
+          iconClassName={iconClassName}
+          shape={iconShape}
+          size={iconSize}
+          tone={iconTone}
+          className={iconTileClassName}
+        />
+        <div className="min-w-0 flex-1">
+          <span
+            aria-hidden="true"
+            className={cn("block text-slate-muted text-xs", labelClassName)}
+          >
+            {label}
+          </span>
+          <span
+            className={cn(
+              "wrap-break-word block font-semibold text-ink text-sm leading-snug",
+              valueClassName,
+            )}
+          >
+            {href ? (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn("text-foreground hover:underline", linkClassName)}
+              >
+                {value}
+              </a>
+            ) : (
+              value
+            )}
+            {meta ? (
+              <span className="ml-1 font-medium text-slate-muted">{meta}</span>
+            ) : null}
+          </span>
+        </div>
+      </dd>
     </div>
   );
 }

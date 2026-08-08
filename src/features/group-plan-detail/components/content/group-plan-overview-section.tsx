@@ -60,7 +60,7 @@ export function GroupPlanOverviewSection({
       ref={sectionRef}
       aria-labelledby="group-section-heading plan-section-heading"
       className={cn(
-        "grouped-surface flex scroll-mt-24 flex-col overflow-hidden rounded-2xl bg-transparent transition-colors duration-500",
+        "grouped-surface flex scroll-mt-24 flex-col overflow-hidden rounded-2xl transition-colors duration-500",
         isHighlighted &&
           "ring-2 ring-forge-teal/30 ring-offset-4 ring-offset-background",
       )}
@@ -92,7 +92,7 @@ function PlanAccessFacts({ plan }: { plan: Plan }) {
       className="rounded-xl bg-card px-5 py-4 sm:px-6 lg:px-7"
     >
       <div className="flex items-start gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-forge-teal">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-foreground">
           <Accessibility className="size-4" aria-hidden="true" />
         </span>
         <div className="min-w-0 flex-1">
@@ -177,7 +177,7 @@ function GroupStory({ detail }: { detail: GroupPlanDetail }) {
           className="size-14 shrink-0 rounded-xl sm:size-16"
           fallback={
             <CategoryIcon
-              className="size-6 text-forge-teal/50 sm:size-7"
+              className="size-6 text-foreground/50 sm:size-7"
               aria-hidden="true"
             />
           }
@@ -230,11 +230,11 @@ function PlanCalendar({
             <span className="font-black text-6xl text-foreground leading-none tracking-[-0.06em]">
               {calendar.day}
             </span>
-            <span className="pb-1 font-black text-3xl text-forge-teal leading-none">
+            <span className="pb-1 font-black text-3xl text-foreground leading-none">
               {calendar.month}
             </span>
           </div>
-          <div className="mt-5 flex items-center gap-2 border-forge-teal/35 border-t pt-4 text-forge-teal">
+          <div className="mt-5 flex items-center gap-2 border-divider border-t pt-4 text-foreground">
             <CalendarClock className="size-4" aria-hidden="true" />
             <span className="font-bold text-lg">{calendar.time}</span>
           </div>
@@ -245,7 +245,7 @@ function PlanCalendar({
       ) : (
         <div className="mt-8">
           <CalendarClock
-            className="size-8 text-forge-teal"
+            className="size-8 text-foreground"
             aria-hidden="true"
           />
           <p className="mt-4 font-extrabold text-foreground text-xl">
@@ -328,7 +328,7 @@ function PlanPlace({
         target="_blank"
         rel="noreferrer"
         aria-label={`Open ${location} in Google Maps`}
-        className="group/map relative min-h-44 flex-1 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/60 focus-visible:ring-inset"
+        className="group/map relative min-h-44 flex-1 overflow-hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-inset"
       >
         <Image
           src={mapImageUrl}
@@ -343,7 +343,7 @@ function PlanPlace({
       </a>
       <div className="mt-2 flex items-start gap-3 bg-card/35 px-5 py-4 sm:px-6">
         <MapPin
-          className="mt-0.5 size-5 shrink-0 text-forge-teal"
+          className="mt-0.5 size-5 shrink-0 text-foreground"
           aria-hidden="true"
         />
         <div className="min-w-0">
@@ -378,7 +378,7 @@ function AreaPlanPlace({
       <div className="relative flex h-full min-h-42 items-center">
         <div className="max-w-sm">
           <div className="flex items-center gap-2">
-            <MapPin className="size-4 text-forge-teal" aria-hidden="true" />
+            <MapPin className="size-4 text-foreground" aria-hidden="true" />
             <p className="font-bold text-muted-foreground text-xs">
               {isResolved ? "Meeting area" : "Location"}
             </p>
@@ -406,10 +406,10 @@ function OnlinePlanPlace({ plan }: { plan: Plan }) {
       />
       <div className="relative flex h-full min-h-42 flex-col justify-between">
         <div className="flex items-center justify-between">
-          <span className="flex size-10 items-center justify-center rounded-full bg-forge-teal/12 text-forge-teal">
+          <span className="flex size-10 items-center justify-center rounded-full bg-forge-teal/12 text-foreground">
             <MonitorUp className="size-5" aria-hidden="true" />
           </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-forge-teal/10 px-2.5 py-1 font-bold text-[0.65rem] text-forge-teal">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-forge-teal/10 px-2.5 py-1 font-bold text-foreground text-xs">
             <Wifi className="size-3" aria-hidden="true" />
             Online
           </span>
@@ -541,7 +541,7 @@ function OverviewFact({
         className,
       )}
     >
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-forge-teal">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-foreground">
         <Icon className="size-4" aria-hidden="true" />
       </span>
       <div className="min-w-0">

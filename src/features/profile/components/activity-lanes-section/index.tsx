@@ -90,7 +90,7 @@ function ActivityLanesToggleButton({
       type="button"
       variant="ghost"
       size="sm"
-      className="h-auto min-h-11 self-start px-0 py-1.5 text-forge-teal active:enabled:translate-y-0 active:enabled:scale-100 active:enabled:bg-transparent! hover:enabled:bg-transparent! hover:enabled:text-forge-teal/80 [@media(pointer:fine)]:min-h-0"
+      className="h-auto min-h-11 self-start px-0 py-1.5 text-foreground active:enabled:translate-y-0 active:enabled:scale-100 active:enabled:bg-transparent! hover:enabled:bg-transparent! hover:enabled:text-foreground/80 [@media(pointer:fine)]:min-h-0"
       onClick={onToggleExpanded}
     >
       <Icon className="size-4" aria-hidden="true" />

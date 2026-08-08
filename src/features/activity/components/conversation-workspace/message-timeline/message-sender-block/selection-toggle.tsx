@@ -12,10 +12,10 @@ export function MessageSelectionToggle({
       aria-label={isSelected ? "Unselect message" : "Select message"}
       aria-pressed={isSelected}
       className={cn(
-        "absolute top-1/2 left-0 z-20 flex size-6 -translate-y-1/2 items-center justify-center rounded-full border text-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25",
+        "absolute top-1/2 left-0 z-20 flex size-6 -translate-y-1/2 items-center justify-center rounded-full border text-foreground transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
         isSelected
           ? "border-primary bg-primary text-primary-foreground shadow-sm"
-          : "border-border/70 bg-canvas/90 text-slate-muted backdrop-blur-md hover:border-primary/45 hover:text-primary",
+          : "border-border/70 bg-canvas/90 text-slate-muted backdrop-blur-md hover:border-foreground/45 hover:text-foreground",
       )}
       onClick={(event) => {
         event.stopPropagation();

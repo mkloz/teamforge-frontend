@@ -41,7 +41,7 @@ export function FeedbackState({
       <section
         aria-labelledby={headingId}
         className={cn(
-          "w-full max-w-md rounded-3xl border border-border/70 bg-card px-6 py-8 text-center shadow-soft-lg sm:px-8",
+          "w-full max-w-md rounded-3xl bg-card px-6 py-8 text-center shadow-soft-lg sm:px-8",
           className,
         )}
       >

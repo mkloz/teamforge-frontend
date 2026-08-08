@@ -8,7 +8,7 @@ export function FitScore({ percent }: { percent: number }) {
         className={cn(
           "font-black text-xl leading-none",
           percent >= 75
-            ? "text-forge-teal"
+            ? "text-foreground"
             : percent >= 45
               ? "text-spark-amber"
               : "text-muted-foreground",
