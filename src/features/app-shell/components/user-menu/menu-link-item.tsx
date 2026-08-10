@@ -40,7 +40,7 @@ export function MenuLinkItem({
             className={cn(
               "min-h-14 px-4 py-2.5",
               tone === "destructive" &&
-                "text-destructive hover:bg-destructive/8",
+                "text-destructive hover:bg-destructive-soft",
             )}
           >
             <MenuLinkItemContent

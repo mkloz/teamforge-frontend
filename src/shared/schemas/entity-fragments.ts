@@ -28,12 +28,10 @@ export const userCoreFields = {
   avatar: z.string().nullable(),
   bio: z.string().nullable(),
   authProvider: authProviderSchema,
-  signInMethods: z
-    .object({
-      google: z.boolean(),
-      password: z.boolean(),
-    })
-    .optional(),
+  signInMethods: z.object({
+    google: z.boolean(),
+    password: z.boolean(),
+  }),
   googleId: z.string().nullable().optional(),
   emailVerified: z.boolean(),
   createdAt: z.string().datetime(),

@@ -23,8 +23,8 @@ export const rootRoute = createRootRoute({
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.root,
     fullPage: true,
-    title: "Something went wrong in TeamForge",
-    description: "TeamForge could not load this screen.",
+    title: "Something went wrong in Findafew",
+    description: "Findafew could not load this screen.",
     fallbackTo: "/",
     fallbackLabel: "Back home",
   }),

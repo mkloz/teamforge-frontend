@@ -49,7 +49,7 @@ export function MatchingThresholdControl({
             Compatibility filter
           </h3>
           <p className="mt-1 max-w-md text-slate-muted text-sm leading-relaxed">
-            Set the minimum group fit before TeamForge shows you a proposal.
+            Set the minimum group fit before Findafew shows you a proposal.
           </p>
         </div>
 

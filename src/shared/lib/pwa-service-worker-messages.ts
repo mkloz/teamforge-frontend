@@ -1,6 +1,6 @@
 export const PWA_SERVICE_WORKER_MESSAGE_TYPES = {
-  notificationClick: "teamforge:pwa-notification-click",
-  pushReceived: "teamforge:pwa-push-received",
+  notificationClick: "findafew:pwa-notification-click",
+  pushReceived: "findafew:pwa-push-received",
 } as const;
 
 export type PwaServiceWorkerMessageType =

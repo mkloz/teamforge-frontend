@@ -49,7 +49,7 @@ export function useSubscribeWebPushMutation({
       const publicKeyState = await getPublicKeyState();
 
       if (!publicKeyState.enabled || !publicKeyState.publicKey) {
-        throw new Error("TeamForge push notifications are not enabled.");
+        throw new Error("Findafew push notifications are not enabled.");
       }
 
       const browserSubscription = await subscribeBrowserToWebPush(

@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import {
   getBrowserDocument,
   getBrowserWindow,
@@ -103,7 +103,7 @@ function loadGoogleIdentityScript() {
       script.src = GOOGLE_GSI_SCRIPT_SRC;
       script.async = true;
       script.defer = true;
-      script.dataset.teamforgeGoogleIdentity = "true";
+      script.dataset.findafewGoogleIdentity = "true";
       browserDocument.body.appendChild(script);
     }
   });
@@ -134,6 +134,7 @@ export async function requestGoogleAuthCode(clientId: string) {
     const codeClient = google.accounts?.oauth2?.initCodeClient({
       client_id: clientId,
       scope: GOOGLE_AUTH_SCOPE,
+      ux_mode: "popup",
       callback: (response) => {
         if (response.error) {
           reject(

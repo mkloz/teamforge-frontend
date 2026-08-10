@@ -9,7 +9,7 @@ export type ParticlePhysicsState = {
   exclusionRadiusY: number;
   guardRadiusX: number;
   guardRadiusY: number;
-  sparkPhase: number;
+  particlePhase: number;
 };
 
 export type MousePhysicsState = {

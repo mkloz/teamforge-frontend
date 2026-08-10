@@ -13,7 +13,7 @@ const authReturnTargets = [
   "/activity",
   "/profile",
   "/settings",
-  "/forge",
+  "/plans/new",
   "/admin",
   "/admin/moderation",
   "/admin/moderation/intake",
@@ -307,7 +307,7 @@ export function buildPostAuthRedirectNavigationForDestination(
     | "/auth/login"
     | "/home"
     | "/explore"
-    | "/forge"
+    | "/plans/new"
     | "/onboarding/profile"
     | "/onboarding/intent"
     | "/onboarding/personality"
@@ -319,7 +319,7 @@ export function buildPostAuthRedirectNavigationForDestination(
   if (
     canonicalDestination === "/home" ||
     canonicalDestination === "/explore" ||
-    canonicalDestination === "/forge"
+    canonicalDestination === "/plans/new"
   ) {
     return (
       buildAuthenticatedReturnNavigation(returnLocation) ??

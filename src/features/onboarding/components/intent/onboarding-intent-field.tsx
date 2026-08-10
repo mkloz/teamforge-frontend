@@ -6,13 +6,13 @@ import { cn } from "@/shared/lib/utils";
 const INTENT_OPTIONS = [
   {
     value: "BRING_A_PLAN",
-    label: "Bring a plan",
+    label: "Start a plan",
     description: "Start with an idea and find people for it.",
   },
   {
     value: "EXPLORE_AND_JOIN",
-    label: "Explore and join",
-    description: "See relevant plans and find your next thing.",
+    label: "Explore plans",
+    description: "See activity plans and their practical details.",
   },
   {
     value: "BOTH_OR_UNSURE",
@@ -30,7 +30,7 @@ export function OnboardingIntentField({
 
   return (
     <fieldset aria-describedby="onboarding-intent-help" className="min-w-0">
-      <legend className="sr-only">Choose what brings you to TeamForge</legend>
+      <legend className="sr-only">Choose what brings you to Findafew</legend>
       <p
         id="onboarding-intent-help"
         className="text-slate-muted text-sm leading-6"
@@ -44,9 +44,9 @@ export function OnboardingIntentField({
             key={option.value}
             className={cn(
               "flex min-h-24 cursor-pointer flex-col justify-center rounded-2xl border px-4 py-3 transition-colors",
-              "focus-within:ring-2 focus-within:ring-forge-teal focus-within:ring-offset-2",
+              "focus-within:ring-2 focus-within:ring-brand-teal focus-within:ring-offset-2",
               selected === option.value
-                ? "border-forge-teal bg-forge-teal/8"
+                ? "border-brand-teal bg-primary-soft"
                 : "border-border bg-card hover:border-foreground/40 hover:shadow-soft-sm",
             )}
           >

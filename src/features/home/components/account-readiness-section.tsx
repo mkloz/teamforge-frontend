@@ -135,7 +135,7 @@ function SetupProgress({
     <div className="absolute inset-x-0 top-0">
       <Progress
         aria-label={`${completed} of ${total} account setup tasks complete`}
-        className="h-1 rounded-none bg-accent/10"
+        className="h-1 rounded-none bg-accent-soft"
         indicatorClassName="bg-accent"
         value={percentage}
       />

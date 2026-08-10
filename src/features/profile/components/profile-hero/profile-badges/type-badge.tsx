@@ -87,7 +87,7 @@ export function TypeBadge({
                 {personalityType} · {category}
               </p>
             </div>
-            <span className="shrink-0 rounded-md bg-forge-teal/10 px-2 py-1 font-bold text-foreground text-sm leading-none">
+            <span className="shrink-0 rounded-md bg-primary-soft px-2 py-1 font-bold text-foreground text-sm leading-none">
               {personalityType}
             </span>
           </div>
@@ -123,7 +123,7 @@ function TypeDimensionRow({ code }: { code: PersonalityType }) {
               className={cn(
                 "type-signature-label flex size-5 items-center justify-center rounded font-bold transition-colors",
                 letter === active
-                  ? "bg-forge-teal/15 text-foreground"
+                  ? "bg-brand-teal/15 text-foreground"
                   : "text-white/20",
               )}
             >

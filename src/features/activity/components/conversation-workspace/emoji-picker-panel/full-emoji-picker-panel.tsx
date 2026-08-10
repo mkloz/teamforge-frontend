@@ -157,7 +157,7 @@ function EmojiPickerPreview() {
     <EmojiPicker.ActiveEmoji>
       {({ emoji }) => (
         <div className="flex min-h-11 items-center gap-2 border-border/55 border-t px-2.5 py-2">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary/8 font-sans text-xl">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-primary-soft font-sans text-xl">
             {emoji?.emoji}
           </span>
           <span className="min-w-0 truncate font-bold text-slate-muted text-xs">
@@ -234,8 +234,8 @@ function EmojiButtonBase({
         compact ? "h-7 text-base" : "h-8",
         isSelected
           ? "bg-accent/18 shadow-sm ring-1 ring-accent/45 hover:bg-accent/22"
-          : "hover:bg-primary/10",
-        emoji.isActive && !isSelected && "bg-primary/10",
+          : "hover:bg-primary-soft",
+        emoji.isActive && !isSelected && "bg-primary-soft",
         className,
       )}
     >

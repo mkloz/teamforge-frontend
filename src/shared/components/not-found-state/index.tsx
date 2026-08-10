@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Home } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { TeamForgeLogo } from "@/assets/logo";
+import { FindafewLogo } from "@/assets/logo";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
@@ -37,7 +37,7 @@ export function NotFoundState({
         <Link
           to="/"
           className="relative z-20 inline-flex w-fit items-center gap-3 rounded-xl text-ink/70 text-sm transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
-          aria-label="Go to TeamForge start page"
+          aria-label="Go to Findafew start page"
         >
           <IconTile
             tone="none"
@@ -45,9 +45,9 @@ export function NotFoundState({
             bordered
             className="size-9 bg-card/80 shadow-sm"
           >
-            <TeamForgeLogo className="size-6" showBackground={false} />
+            <FindafewLogo className="size-6" showBackground={false} />
           </IconTile>
-          <span className="font-black">TeamForge</span>
+          <span className="font-black">Findafew</span>
         </Link>
 
         <div className="relative z-10 flex flex-1 items-center py-8 lg:py-0">

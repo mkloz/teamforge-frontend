@@ -37,7 +37,7 @@ export function NotificationsDrawerHeader({
         <p className="mt-1 flex items-center gap-1.5 text-slate-muted text-xs">
           {count > 0 && !selectedNotification ? (
             <span
-              className="size-1.5 rounded-full bg-forge-teal"
+              className="size-1.5 rounded-full bg-brand-teal"
               aria-hidden="true"
             />
           ) : null}

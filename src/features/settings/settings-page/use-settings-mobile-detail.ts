@@ -22,9 +22,12 @@ export function useSettingsMobileDetail({
 
   useEffect(() => {
     const pendingSidebarSection = pendingSidebarSectionRef.current;
-    pendingSidebarSectionRef.current = null;
 
-    if (pendingSidebarSection === activeSection) {
+    if (pendingSidebarSection !== null) {
+      if (pendingSidebarSection === activeSection) {
+        pendingSidebarSectionRef.current = null;
+      }
+
       return;
     }
 

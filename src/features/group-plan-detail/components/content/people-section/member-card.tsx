@@ -29,7 +29,7 @@ export function MemberCard({
     <article
       className={cn(
         "group relative flex min-h-16 items-center gap-3 rounded-xl px-2 py-2 transition-colors duration-150 hover:bg-muted/50",
-        isHost && "bg-forge-teal/5",
+        isHost && "bg-primary-soft",
       )}
     >
       <Link
@@ -280,7 +280,7 @@ function KnownConnectionIndicator({ label }: { label: string }) {
       role="img"
       aria-hidden={false}
       aria-label={label}
-      className="bg-spark-amber/12"
+      className="bg-accent-soft"
       iconClassName="size-3.5"
       title={label}
     />

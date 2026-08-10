@@ -35,9 +35,9 @@ export function getParticlePhysicsState({
   const exclusionRadiusY = formation.bounds.height / 2 + exclusionPadding;
   const easedProgress =
     currentProgress * currentProgress * (3 - 2 * currentProgress);
-  const sparkPhase =
+  const particlePhase =
     currentProgress > 0.9 ? Math.min((currentProgress - 0.9) / 0.1, 1) : 0;
-  const breathStrength = 1 - sparkPhase;
+  const breathStrength = 1 - particlePhase;
 
   return {
     breathStrength,
@@ -50,6 +50,6 @@ export function getParticlePhysicsState({
     exclusionRadiusY,
     guardRadiusX,
     guardRadiusY,
-    sparkPhase,
+    particlePhase,
   };
 }

@@ -15,7 +15,7 @@ export function CtaSection() {
   const { sectionRef, glowRef, glowHandlers } = useMouseGlow();
   const prefersReducedMotion = useReducedMotion();
   const { isResolvingAuthAction, primaryAction } =
-    useResolvedLandingAuthActions("Create Free Account");
+    useResolvedLandingAuthActions("Start a plan");
   const revealInitial = getCtaRevealInitial(prefersReducedMotion);
 
   return (
@@ -25,7 +25,7 @@ export function CtaSection() {
       data-landing-snap-section=""
       {...glowHandlers}
       className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-24 pb-28 md:pt-36 md:pb-40"
-      aria-label="Get started with TeamForge"
+      aria-label="Get started with Findafew"
     >
       <div
         ref={glowRef}
@@ -41,13 +41,11 @@ export function CtaSection() {
             transition={getCtaRevealTransition(prefersReducedMotion, 0.1)}
           >
             <h2 className="mb-6 text-balance font-bold font-sans text-3xl text-white leading-tight sm:text-5xl">
-              Stop waiting for the right{" "}
-              <span className="text-foreground">group</span> to appear.
+              Something you want to do. A few people might be interested.
             </h2>
             <p className="mx-auto mb-10 max-w-xl text-pretty font-sans text-base text-text-dark-secondary leading-relaxed sm:text-lg">
-              The setup takes a little thought. That is the point. TeamForge
-              uses it to form one small group around something you actually want
-              to do.
+              Start with the activity and practical details. If a group comes
+              together, review it before deciding whether to take part.
             </p>
           </m.div>
           <m.div
@@ -71,8 +69,8 @@ export function CtaSection() {
             transition={getCtaRevealTransition(prefersReducedMotion, 0.7)}
             className="font-sans text-text-dark-muted text-xs"
           >
-            Free to use &nbsp;&middot;&nbsp; No card required
-            &nbsp;&middot;&nbsp; No spam
+            For ages 18–28 at launch &nbsp;&middot;&nbsp; Shared activities, not
+            dating
           </m.p>
         </LazyMotion>
       </div>
@@ -93,7 +91,7 @@ function CtaPrimaryActionButton({
         size="hero"
         loading
         className="w-full text-white sm:w-auto"
-        aria-label="Checking TeamForge session"
+        aria-label="Checking Findafew session"
       >
         {primaryAction.label}
       </Button>
@@ -126,8 +124,8 @@ function CtaDownloadButton() {
       size="hero"
       className="w-full hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none sm:w-auto"
     >
-      <Link to="/download" aria-label="Download TeamForge">
-        Download TeamForge
+      <Link to="/download" aria-label="Download Findafew">
+        Download Findafew
         <Download className="size-5" aria-hidden="true" />
       </Link>
     </Button>

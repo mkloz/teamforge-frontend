@@ -13,7 +13,7 @@ export function buildPersonalitySignal(
   if (!personality.type && !traits) {
     return {
       detail:
-        "Personality details are missing, so TeamForge will rely mostly on interests when forming groups.",
+        "Personality details are missing, so Findafew will rely mostly on interests when forming groups.",
       label: "Personality detail",
       strength: "quiet",
       value: "Missing",

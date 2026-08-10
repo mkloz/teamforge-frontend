@@ -120,8 +120,8 @@ function CompactGroupCoverHeader({
         name={group.name}
         alt={`${group.name} avatar`}
         shape="rounded"
-        className="pointer-events-none relative z-10 size-10 rounded-md bg-forge-teal/10 ring-1 ring-border/50"
-        fallbackClassName="bg-forge-teal/10 text-foreground"
+        className="pointer-events-none relative z-10 size-10 rounded-md bg-primary-soft ring-1 ring-border/50"
+        fallbackClassName="bg-primary-soft text-foreground"
         loading="eager"
       />
       <div className="pointer-events-none relative z-10 min-w-0 flex-1">

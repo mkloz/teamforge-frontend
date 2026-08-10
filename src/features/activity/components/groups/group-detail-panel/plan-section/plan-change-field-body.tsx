@@ -178,7 +178,7 @@ function PlanFieldError({ error, id }: { error: string | null; id: string }) {
       tone="danger"
       size="sm"
       icon={<AlertCircle className="size-3.5 shrink-0" />}
-      className="mt-3 bg-destructive/8"
+      className="mt-3 bg-destructive-soft"
     >
       {error}
     </Notice>

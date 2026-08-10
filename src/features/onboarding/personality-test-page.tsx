@@ -5,11 +5,11 @@ import { QUESTIONS_PER_PAGE } from "@/features/onboarding/lib/personality-test-p
 import { getPersonalityVoronoiFormation } from "@/features/onboarding/lib/personality-voronoi-formation";
 import { PersonalityPageContent } from "@/features/onboarding/onboarding-page-content";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
-const PERSONALITY_TEST_METADATA = createTeamForgePageMetadata({
+const PERSONALITY_TEST_METADATA = createFindafewPageMetadata({
   title: "Personality Assessment",
-  description: "Answer personality questions and review what TeamForge saves.",
+  description: "Answer personality questions and review what Findafew saves.",
 });
 
 export function PersonalityTestPage() {

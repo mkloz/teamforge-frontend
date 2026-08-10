@@ -20,7 +20,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useEffect } from "react";
-import { TeamForgeLogo } from "@/assets/logo";
+import { FindafewLogo } from "@/assets/logo";
 import { clearAdminCache } from "@/features/admin/api/admin-cache";
 import { adminPilotOperationsReadinessQueryOptions } from "@/features/admin/api/admin-pilot-operations.api";
 import { useAdminCacheLifecycle } from "@/features/admin/hooks/use-admin-cache-lifecycle";
@@ -45,8 +45,8 @@ import {
 import { buildHomeNavigation } from "@/shared/navigation/home-navigation";
 
 const ADMIN_METADATA = {
-  title: "Admin | TeamForge",
-  description: "Private TeamForge moderation and operations workspace.",
+  title: "Admin | Findafew",
+  description: "Private Findafew moderation and operations workspace.",
 };
 
 const ADMIN_NAVIGATION = [
@@ -193,7 +193,7 @@ function AdminMobileHeader({
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-border border-b bg-canvas/95 px-4 backdrop-blur lg:hidden">
       <div className="flex min-w-0 items-center gap-2">
-        <TeamForgeLogo className="size-8 shrink-0" showBackground={false} />
+        <FindafewLogo className="size-8 shrink-0" showBackground={false} />
         <div className="min-w-0">
           <p className="truncate font-bold text-ink text-sm">Admin</p>
           <p className="truncate text-slate-muted text-xs">{displayName}</p>
@@ -215,7 +215,7 @@ function AdminMobileHeader({
           <SheetHeader className="text-left">
             <SheetTitle>Admin navigation</SheetTitle>
             <SheetDescription className="sr-only">
-              Navigate between TeamForge administration workspaces.
+              Navigate between Findafew administration workspaces.
             </SheetDescription>
           </SheetHeader>
           <AdminNavigationLinks
@@ -238,9 +238,9 @@ function AdminBrand() {
         {...buildAdminNavigation()}
         className="flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
       >
-        <TeamForgeLogo className="size-9" showBackground={false} />
+        <FindafewLogo className="size-9" showBackground={false} />
         <span>
-          <span className="block font-bold text-ink text-sm">TeamForge</span>
+          <span className="block font-bold text-ink text-sm">Findafew</span>
           <span className="block text-slate-muted text-xs">Admin</span>
         </span>
       </Link>
@@ -312,7 +312,7 @@ function AdminNavigationLinks({
                   className={cn(
                     "relative flex min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
                     active
-                      ? "bg-primary/8 text-foreground before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-primary"
+                      ? "bg-primary-soft text-foreground before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-primary"
                       : "text-slate-muted hover:bg-muted/55 hover:text-ink",
                   )}
                 >
@@ -327,7 +327,7 @@ function AdminNavigationLinks({
                           "ml-auto min-w-6 rounded-full px-1.5 py-0.5 text-center font-semibold text-xs tabular-nums",
                           signal.tone === "danger"
                             ? "bg-danger/12 text-danger"
-                            : "bg-accent/12 text-accent",
+                            : "bg-accent-soft text-accent",
                         )}
                       >
                         {signal.value > 99 ? "99+" : signal.value}
@@ -417,7 +417,7 @@ function AdminSessionFooter({
       className="flex items-center gap-2 rounded-xl px-3 py-2 font-semibold text-slate-muted text-sm transition-all hover:-translate-y-0.5 hover:text-ink hover:shadow-soft-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
     >
       <ArrowLeft className="size-4" aria-hidden="true" />
-      Back to TeamForge
+      Back to Findafew
     </Link>
   );
 

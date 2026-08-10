@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
+import type { GooglePlaceSuggestion } from "@/shared/lib/maps/location.types";
 import { cn } from "@/shared/lib/utils";
 
 import type {
@@ -15,7 +16,7 @@ export interface AddressSuggestionsPanelProps {
   activeSuggestionIndex: number;
   listRef: RefObject<HTMLDivElement | null>;
   onActiveSuggestionChange: (index: number) => void;
-  onPredictionSelect: (suggestion: GoogleAutocompletePrediction) => void;
+  onPredictionSelect: (suggestion: GooglePlaceSuggestion) => void;
   onScroll: () => void;
   onScrollSuggestions: (direction: 1 | -1) => void;
   optionRefs: RefObject<AddressSuggestionOptionRefs>;
@@ -23,7 +24,7 @@ export interface AddressSuggestionsPanelProps {
   panelStyle: CSSProperties | null;
   portalTarget: HTMLElement | null;
   scrollState: AddressSuggestionScrollState;
-  suggestions: GoogleAutocompletePrediction[];
+  suggestions: GooglePlaceSuggestion[];
   suggestionsId: string;
 }
 
@@ -33,9 +34,9 @@ interface AddressSuggestionRowProps {
   active: boolean;
   index: number;
   onActiveSuggestionChange: (index: number) => void;
-  onPredictionSelect: (suggestion: GoogleAutocompletePrediction) => void;
+  onPredictionSelect: (suggestion: GooglePlaceSuggestion) => void;
   optionRefs: RefObject<AddressSuggestionOptionRefs>;
-  suggestion: GoogleAutocompletePrediction;
+  suggestion: GooglePlaceSuggestion;
   suggestionsId: string;
 }
 
@@ -94,15 +95,15 @@ export function AddressSuggestionsPanel({
   return createPortal(
     <div
       ref={panelRef}
-      id={suggestionsId}
-      // react-doctor-disable-next-line react-doctor/prefer-tag-over-role -- This popup is the ARIA combobox listbox controlled by the text input via aria-controls/aria-activedescendant; there is no native HTML listbox element.
-      role="listbox"
       style={portalState.panelStyle}
       className="z-100 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-black/10 shadow-xl"
     >
       <div className="relative overflow-hidden rounded-lg">
         <div
           ref={listRef}
+          id={suggestionsId}
+          // react-doctor-disable-next-line react-doctor/prefer-tag-over-role -- This popup is the ARIA combobox listbox controlled by the text input via aria-controls/aria-activedescendant; there is no native HTML listbox element.
+          role="listbox"
           className="grouped-surface scrollbar-hide -mr-5 flex max-h-(--location-panel-list-height) flex-col overflow-y-auto py-0 pr-5"
           onScroll={onScroll}
         >
@@ -110,7 +111,7 @@ export function AddressSuggestionsPanel({
             <AddressSuggestionRow
               active={index === activeSuggestionIndex}
               index={index}
-              key={suggestion.place_id}
+              key={suggestion.id}
               onActiveSuggestionChange={onActiveSuggestionChange}
               onPredictionSelect={onPredictionSelect}
               optionRefs={optionRefs}
@@ -131,6 +132,7 @@ export function AddressSuggestionsPanel({
           onScrollSuggestions={onScrollSuggestions}
         />
       </div>
+      <GooglePlacesAttribution />
     </div>,
     portalState.portalTarget,
   );
@@ -164,7 +166,7 @@ function AddressSuggestionRow({
     <Button
       id={getSuggestionOptionId(suggestionsId, suggestion)}
       ref={(node) => {
-        syncSuggestionOptionRef(optionRefs, suggestion.place_id, node);
+        syncSuggestionOptionRef(optionRefs, suggestion.id, node);
       }}
       type="button"
       variant="ghost"
@@ -194,8 +196,8 @@ function AddressSuggestionIcon({ active }: { active: boolean }) {
       size="sm"
       shape="square"
       className={cn(
-        "mt-0.5 size-6 bg-forge-teal/8",
-        active && "bg-forge-teal/12",
+        "mt-0.5 size-6 bg-primary-soft",
+        active && "bg-primary-soft",
       )}
       iconClassName="size-3.25"
     />
@@ -205,14 +207,14 @@ function AddressSuggestionIcon({ active }: { active: boolean }) {
 function AddressSuggestionText({
   suggestion,
 }: {
-  suggestion: GoogleAutocompletePrediction;
+  suggestion: GooglePlaceSuggestion;
 }) {
-  const secondaryText = suggestion.structured_formatting?.secondary_text;
+  const secondaryText = suggestion.secondaryText;
 
   return (
     <span className="min-w-0">
       <span className="block truncate font-semibold text-ink text-sm leading-5">
-        {getSuggestionMainText(suggestion)}
+        {suggestion.mainText}
       </span>
       {secondaryText ? (
         <span className="block truncate font-medium text-slate-muted text-xs leading-4">
@@ -264,13 +266,9 @@ function getAddressSuggestionScrollButtonStateClass(
 
 function getSuggestionOptionId(
   suggestionsId: string,
-  suggestion: GoogleAutocompletePrediction,
+  suggestion: GooglePlaceSuggestion,
 ) {
-  return `${suggestionsId}-${suggestion.place_id}`;
-}
-
-function getSuggestionMainText(suggestion: GoogleAutocompletePrediction) {
-  return suggestion.structured_formatting?.main_text ?? suggestion.description;
+  return `${suggestionsId}-${suggestion.id}`;
 }
 
 function syncSuggestionOptionRef(
@@ -284,4 +282,19 @@ function syncSuggestionOptionRef(
   }
 
   optionRefs.current.delete(placeId);
+}
+
+function GooglePlacesAttribution() {
+  return (
+    <div className="flex justify-end border-border/45 border-t px-2.5 py-1.5">
+      <span
+        aria-label="Google Maps"
+        className="whitespace-nowrap font-normal text-slate-muted text-xs tracking-normal dark:text-white"
+        role="img"
+        translate="no"
+      >
+        Google Maps
+      </span>
+    </div>
+  );
 }

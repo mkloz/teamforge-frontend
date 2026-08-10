@@ -58,7 +58,7 @@ const networkOverlays = [
   ["network-500", "500"],
 ] as const;
 
-const forgeSteps = [
+const planCreationSteps = [
   ["1", "Activity"],
   ["2", "Template"],
   ["3", "Plan"],
@@ -94,8 +94,8 @@ export function ScenarioModePanel({
   const [draftOverlays, setDraftOverlays] = useState<string[]>(() => [
     ...(controller?.descriptor.overlays ?? []),
   ]);
-  const [draftForgeStep, setDraftForgeStep] = useState(() =>
-    getForgeStepForScenario(controller?.descriptor.id ?? ""),
+  const [draftPlanCreationStep, setDraftPlanCreationStep] = useState(() =>
+    getPlanCreationStepForScenario(controller?.descriptor.id ?? ""),
   );
   const requestRecords = useSyncExternalStore(
     controller ? (listener) => controller.subscribe(listener) : emptySubscribe,
@@ -133,7 +133,7 @@ export function ScenarioModePanel({
   );
   const hasPendingChanges = hasScenarioDraftChanged({
     controller,
-    draftForgeStep,
+    draftPlanCreationStep,
     draftOverlays,
     draftPersona,
     draftScenarioId,
@@ -155,7 +155,7 @@ export function ScenarioModePanel({
         <div className="fade-in slide-in-from-top-2 fixed top-16 right-2 left-2 max-h-[calc(100dvh-5rem)] animate-in overflow-y-auto rounded-2xl border border-border/75 bg-card/98 p-4 shadow-2xl backdrop-blur-xl duration-200 motion-reduce:animate-none sm:left-auto sm:w-96 md:top-3 md:right-14 md:max-h-[calc(100dvh-1.5rem)]">
           <header className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/12 text-foreground">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-foreground">
                 <FlaskConical aria-hidden="true" className="size-4" />
               </span>
               <div className="min-w-0 pt-0.5">
@@ -174,7 +174,7 @@ export function ScenarioModePanel({
               type="button"
               variant="ghost"
             >
-              <X aria-hidden="true" />
+              <X aria-hidden="true" className="size-4" />
             </Button>
           </header>
 
@@ -210,7 +210,7 @@ export function ScenarioModePanel({
                 setDraftScenarioId(id);
                 setDraftOverlays([]);
                 setDraftPersona("default");
-                setDraftForgeStep(getForgeStepForScenario(id));
+                setDraftPlanCreationStep(getPlanCreationStepForScenario(id));
               }}
               value={draftScenarioId || undefined}
             >
@@ -235,18 +235,21 @@ export function ScenarioModePanel({
             </Select>
           </div>
 
-          {draftCatalogEntry?.feature === "Forge" ? (
+          {draftCatalogEntry?.feature === "Plan creation" ? (
             <div className="mt-4 grid gap-1.5">
-              <p className="font-bold text-xs">Open Forge at</p>
-              <Select onValueChange={setDraftForgeStep} value={draftForgeStep}>
+              <p className="font-bold text-xs">Open plan creation at</p>
+              <Select
+                onValueChange={setDraftPlanCreationStep}
+                value={draftPlanCreationStep}
+              >
                 <SelectTrigger
-                  aria-label="Forge step"
+                  aria-label="Plan creation step"
                   className="h-10 bg-background"
                 >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="z-10001">
-                  {forgeSteps.map(([step, label]) => (
+                  {planCreationSteps.map(([step, label]) => (
                     <SelectItem key={step} value={step}>
                       {label}
                     </SelectItem>
@@ -288,9 +291,9 @@ export function ScenarioModePanel({
                       }
                     >
                       {selectedOverlays.has(id) ? (
-                        <Check aria-hidden="true" />
+                        <Check aria-hidden="true" className="size-4 shrink-0" />
                       ) : (
-                        <Icon aria-hidden="true" />
+                        <Icon aria-hidden="true" className="size-4 shrink-0" />
                       )}
                       {label}
                     </Button>
@@ -392,7 +395,7 @@ export function ScenarioModePanel({
                   disabled={!hasPendingChanges}
                   onClick={() =>
                     applyScenarioDraft({
-                      forgeStep: draftForgeStep,
+                      planCreationStep: draftPlanCreationStep,
                       id: draftScenarioId,
                       overlays: draftOverlays,
                       persona: draftPersona,
@@ -402,7 +405,7 @@ export function ScenarioModePanel({
                   type="button"
                   variant="primary"
                 >
-                  <Check aria-hidden="true" />
+                  <Check aria-hidden="true" className="size-4 shrink-0" />
                   Apply
                 </Button>
                 {controller ? (
@@ -415,7 +418,7 @@ export function ScenarioModePanel({
                       type="button"
                       variant="ghost"
                     >
-                      <Power aria-hidden="true" />
+                      <Power aria-hidden="true" className="size-4" />
                     </Button>
                     <Button
                       aria-label="Reset synthetic world"
@@ -425,7 +428,7 @@ export function ScenarioModePanel({
                       type="button"
                       variant="secondary"
                     >
-                      <RotateCcw aria-hidden="true" />
+                      <RotateCcw aria-hidden="true" className="size-4" />
                     </Button>
                   </>
                 ) : null}
@@ -436,7 +439,7 @@ export function ScenarioModePanel({
                   onClick={() =>
                     void copyScenarioUrl(
                       {
-                        forgeStep: draftForgeStep,
+                        planCreationStep: draftPlanCreationStep,
                         id: draftScenarioId,
                         overlays: draftOverlays,
                         persona: draftPersona,
@@ -450,9 +453,9 @@ export function ScenarioModePanel({
                   variant="secondary"
                 >
                   {didCopy ? (
-                    <Check aria-hidden="true" />
+                    <Check aria-hidden="true" className="size-4" />
                   ) : (
-                    <Copy aria-hidden="true" />
+                    <Copy aria-hidden="true" className="size-4" />
                   )}
                 </Button>
               </div>
@@ -542,7 +545,7 @@ function getFeatureGroups() {
 }
 
 interface ScenarioDraft {
-  forgeStep: string;
+  planCreationStep: string;
   id: string;
   overlays: readonly string[];
   persona: string;
@@ -573,13 +576,13 @@ function setDraftNetworkOverlay(current: readonly string[], overlay: string) {
 
 function hasScenarioDraftChanged({
   controller,
-  draftForgeStep,
+  draftPlanCreationStep,
   draftOverlays,
   draftPersona,
   draftScenarioId,
 }: {
   controller: ReturnType<typeof getScenarioController>;
-  draftForgeStep: string;
+  draftPlanCreationStep: string;
   draftOverlays: readonly string[];
   draftPersona: string;
   draftScenarioId: string;
@@ -590,7 +593,8 @@ function hasScenarioDraftChanged({
 
   return (
     draftScenarioId !== controller.descriptor.id ||
-    draftForgeStep !== getForgeStepForScenario(controller.descriptor.id) ||
+    draftPlanCreationStep !==
+      getPlanCreationStepForScenario(controller.descriptor.id) ||
     normalizePersona(draftPersona) !== (controller.descriptor.persona ?? "") ||
     normalizeOverlayList(draftOverlays) !==
       normalizeOverlayList(controller.descriptor.overlays)
@@ -605,7 +609,12 @@ function normalizeOverlayList(overlays: readonly string[]) {
   return [...new Set(overlays)].sort().join(",");
 }
 
-function buildScenarioUrl({ forgeStep, id, overlays, persona }: ScenarioDraft) {
+function buildScenarioUrl({
+  planCreationStep,
+  id,
+  overlays,
+  persona,
+}: ScenarioDraft) {
   const scenario = getScenarioCatalogEntry(id);
   const url = new URL(
     scenario?.route ?? window.location.pathname,
@@ -613,8 +622,8 @@ function buildScenarioUrl({ forgeStep, id, overlays, persona }: ScenarioDraft) {
   );
   url.searchParams.set(SCENARIO_QUERY_PARAMETER, id);
 
-  if (scenario?.feature === "Forge" && forgeStep) {
-    url.searchParams.set("step", forgeStep);
+  if (scenario?.feature === "Plan creation" && planCreationStep) {
+    url.searchParams.set("step", planCreationStep);
   }
 
   const normalizedPersona = normalizePersona(persona);
@@ -631,22 +640,22 @@ function buildScenarioUrl({ forgeStep, id, overlays, persona }: ScenarioDraft) {
   return url;
 }
 
-function getForgeStepForScenario(id: string) {
+function getPlanCreationStepForScenario(id: string) {
   const scenario = getScenarioCatalogEntry(id);
-  if (scenario?.feature !== "Forge") {
+  if (scenario?.feature !== "Plan creation") {
     return "";
   }
 
   const currentUrl = new URL(window.location.href);
   if (currentUrl.searchParams.get(SCENARIO_QUERY_PARAMETER) === id) {
-    return normalizeForgeStep(currentUrl.searchParams.get("step"));
+    return normalizePlanCreationStep(currentUrl.searchParams.get("step"));
   }
 
   const scenarioUrl = new URL(scenario.route, window.location.origin);
-  return normalizeForgeStep(scenarioUrl.searchParams.get("step"));
+  return normalizePlanCreationStep(scenarioUrl.searchParams.get("step"));
 }
 
-function normalizeForgeStep(value: string | null) {
+function normalizePlanCreationStep(value: string | null) {
   const step = Number(value);
 
   return Number.isInteger(step) && step >= 1 && step <= 7 ? String(step) : "1";

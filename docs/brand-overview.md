@@ -1,165 +1,128 @@
-# TeamForge — Brand Overview
+# Findafew — Brand overview
 
-**Version 1.1 | For Design, Marketing & Development Teams**
+**Version 2.0 | Product, design, marketing, and engineering**
 
----
+## Strategic concept
 
-## 1. Who We Are
+Findafew starts with something a person would like to do and the chance to do
+it with a few other people. A user can explore plans taking shape or start a
+plan of their own. If a group comes together, they review the people and
+practical details before deciding whether to take part.
 
-TeamForge forms small groups around shared real-world activities. It began as a university project and is designed for students and young professionals aged 18–28 who want to meet people through a clear activity plan.
+Findafew is for friendship and shared activities, not dating.
 
-This document defines how TeamForge presents itself visually and verbally across every surface.
+## Positioning
 
----
+For adults aged 18–28 in supported launch areas who want company for a
+specific activity, Findafew is a small-group planning product that lets them
+explore or start a plan, see whether a group comes together, and keep the plan
+and conversation in one place. Unlike a dating product or an endless profile
+feed, the activity provides the starting point and each person keeps control
+of the decision to take part.
 
-## 2. The Core Idea
+## Value proposition
 
-TeamForge helps people turn an activity idea into a small group and a plan. A user starts with **"Forge my group,"** chooses the activity and details, and receives one group based on the available compatibility factors.
+Explore an activity plan or start your own. If a small group comes together,
+review the people, time, place, and other practical details before deciding
+whether to take part.
 
-The product uses a multi-factor scoring system combining:
-1. **Embedded personality profiling** (4-letter personality type code)
-2. **Interest similarity**
-3. **Social graph proximity**
-4. **Age alignment**
-5. **Exponential-smoothing trust score**
+## Name
 
-These inputs guide group formation.
+The canonical brand name is `Findafew`.
 
----
+“A few” means a small group around one plan. It is not a fixed number, an
+exclusive club, or a promise that people are already waiting.
 
-## 3. Mission Statement
+- Use `Findafew` on every product and marketing surface.
+- Use `find a few people` only as ordinary grammar.
+- Do not use `Find A Few`, `FindAFew`, `Find-A-Few`, or `FAF`.
 
-**To eliminate the loneliness gap between wanting to do things and having people to do them with.**
+## Brand promise
 
----
+Findafew keeps the route from an activity idea to a reviewable small-group plan
+clear, while being honest when no group has formed yet.
 
-## 4. Brand Personality: The Catalyst
+## Personality
 
-TeamForge helps form the group, then lets the members decide what happens next.
-
-| Trait | What it means | What it does NOT mean |
+| Trait | In practice | Avoid |
 | --- | --- | --- |
-| Clear, not technical | Explain the outcome in plain language | Do not show formulas or implementation jargon |
-| Warm but not sentimental | Use supportive copy around uncertain or personal steps | Do not sound cutesy or needy |
-| Confident but not arrogant | Give one clear recommendation | Let users make the final decision |
-| Modern but not trendy | Use the established design system | Do not chase short-lived visual trends |
+| Warm | Recognise the activity and the effort involved | Sentimentality or assumed loneliness |
+| Clear | Name the state and next action | Algorithmic or technical authority |
+| Candid | Label uncertainty and variable availability | False urgency or guaranteed outcomes |
+| Practical | Use specific activities, times, and places | Abstract claims about connection |
+| Respectful | Keep consequential choices exact | Pressure, blame, or gamification |
 
----
+## Voice and tone
 
-## 5. Core Values
-
-Each value should be reflected in product behavior and copy.
-
-### Intentionality
-
-Group formation considers personality, interests, social proximity, age, and trust. The user receives one group rather than a ranked list.
-
-### Trust
-
-The trust score records reliability over time. Later activity feedback can change the score.
-
-### Belonging
-
-Social graph proximity gives more weight to existing friends and nearby connections when the service forms a group.
-
-### Accessibility
-
-Onboarding collects profile details, the activity feed keeps conversations together, and the Forge wizard guides users through group formation.
-
-### Growth
-
-Personality types are discovery tools, not limiting labels. Trust scores evolve. The system grows with the user as their interests and interactions develop.
-
----
-
-## 6. Brand Voice
-
-The voice never uses corporate jargon, dating-app language, or game mechanics. It speaks like a knowledgeable peer.
+Use ordinary questions, contractions, and direct verbs. Put warmth in the
+activity and invitation. Keep eligibility, consent, data use, safety, blocking,
+reporting, and legal limitations direct.
 
 | Context | Tone | Example |
 | --- | --- | --- |
-| Headline / CTA | Confident, direct | "Find your people, intelligently." |
-| Onboarding | Encouraging, curious | "Start the personality assessment." |
-| Personality result | Affirming, warm | "You're an ENTJ. You often bring structure and direction to a group." |
-| Group formed | Celebratory | "Your group is ready. Here's what you have in common." |
-| Empty state | Gentle, activating | "No groups yet. Let's forge your first one." |
-| Error / limit | Honest, constructive | "We couldn't form a group with these settings. Adjust them and try again." |
+| Acquisition | Inviting and concrete | `Small groups for things you want to do.` |
+| Onboarding | Helpful and candid | `Here's how your answers help—and what they can't predict.` |
+| Waiting | Calm and factual | `No group yet. Your request is still open.` |
+| Group ready | Positive but conditional | `Sunday bouldering has a group ready to review.` |
+| Deadline | Friendly and exact | `Want to take part? Review the group by Tuesday.` |
+| Recovery | Acknowledge once, then help | `Sorry—there aren't enough available people yet. You can keep it open, change a detail, or close it.` |
+| Safety | Direct and action-led | `Block or report from the group menu.` |
 
----
+Never guarantee friendship, chemistry, comfort, safety, attendance,
+compatibility, or availability. Do not use `find your people`, `future friends`,
+`belonging`, `awkward-free`, `safe space`, `your group is waiting`, or
+algorithmic language such as `intelligent match`.
 
-## 7. Primary Slogan
+## Tagline system
 
-> **"Find your people, intelligently."**
+Primary descriptor and homepage heading:
 
-### Supporting Slogans by Context
+> **Small groups for things you want to do.**
 
-| Surface                  | Copy                                             |
-| ------------------------ | ------------------------------------------------ |
-| App Store listing        | "Find your people, intelligently."               |
-| Onboarding welcome       | "Let's forge something real."                    |
-| Primary action button    | "Forge my group"                                 |
-| Marketing / social media | "Stop scrolling. Start meeting."                 |
-| About page / long format | "Every great story starts with the right group." |
+Approved supporting lines:
 
----
+- `Something you want to do. A few people might be interested.`
+- `Something worth doing. A few people might be interested.`
+- `Bring the plan. Find the few.` — only for plan-starter campaigns paired
+  with a specific activity and a joiner counterpart.
+- `Find a few. Keep the next step clear.` — lifecycle or service explanation,
+  not the master heading.
 
-## 8. The Logo — Voronoi Nexus
+## Core product language
 
-### Concept
+- Primary actions: `Explore plans` and `Start a plan`.
+- Group formation: `A group is ready to review.`
+- Waiting: `No group yet.`
+- Attendance: `Going`, `Unsure`, `Can't attend`.
+- Consequential proposal actions: `Review`, `Accept`, and `Decline`.
+- Use plan/group language for visible actions. Do not turn the brand name into
+  a verb.
 
-The logo is a rounded-square badge with four teal regions meeting around an amber center.
+## Logo and wordmark
 
-The four regions represent group members. Their different teal opacities (`1.0 / 0.83 / 0.66 / 0.50`) keep them visually distinct, while the amber center marks the group coming together.
+The existing rounded-square symbol remains unchanged in concept and geometry:
+four teal regions meet around an amber centre, separated by the existing light
+strokes. Preserve the SVG paths, view box, region count, colour values, and
+proportions.
 
-The `#FAFAF8` strokes separate the regions, showing distinct members within one group.
+The symbol is decorative when it appears beside the live-text wordmark. The
+containing link or control must expose the accessible name `Findafew` exactly.
 
-### Usage Rules
+The wordmark is the single-colour live text `Findafew` at the existing scale,
+weight, position, and spacing. Do not use colour to split the word into parts.
 
-| Context                | Variant                               | Background        |
-| ---------------------- | ------------------------------------- | ----------------- |
-| App icon (iOS/Android) | Full badge with `#FAFAF8` background  | Teal or white     |
-| Navbar / header        | Symbol only, `showBackground={false}` | Any dark or light |
-| Footer                 | Symbol only, `showBackground={false}` | Dark preferred    |
-| Pitch deck / print     | Full badge with white background      | White             |
-| On teal surfaces       | Full badge with `#FAFAF8` background  | Teal              |
+Do not:
 
-### Minimum Size
+- rotate, stretch, redraw, or recolour the symbol;
+- introduce a new icon, mascot, palette, typeface, or illustration language;
+- turn the four regions into literal people or a fixed participant count;
+- change navigation or component anatomy to accommodate the name before
+  responsive wordmark QA proves it necessary.
 
-- Digital: 20×20px (nav icon context)
-- Print: 12mm × 12mm
+## Design continuity
 
-### Clear Space
+The current layout, palette, typography, spacing, component anatomy, motion
+language, and image treatment remain the Findafew visual system. The rebrand
+changes identity, product terms, and copy; it is not a redesign.
 
-Maintain a minimum clear zone equal to half the logo's width on all sides.
-
-### Do Not
-
-- Rotate the logo
-- Change any fill color
-- Apply a drop shadow to the amber dot
-- Use the logo on a busy photographic background
-- Stretch or distort the aspect ratio
-
----
-
-## 9. Wordmark
-
-The wordmark pairs the logo symbol with the product name.
-
-- "**Team**" — displayed in Ink (`#1C1F1D`) or white depending on background
-- "**Forge**" — displayed in Forge Teal (`#0D9488`)
-- Product UI and live-text wordmark: Inter, Bold (700)
-- Fixed wordmark artwork may retain Plus Jakarta Sans as a brand-asset exception; do not load it for product UI
-- No letter-spacing adjustments
-
-On dark backgrounds, "Team" uses `rgba(255,255,255,0.5)` and "Forge" uses `#0D9488`.
-
----
-
-## 10. Brand Archetype Reference
-
-TeamForge is **The Catalyst**: it helps form the group, then steps back. The members remain in control.
-
----
-
-_For visual specifications — colors, typography, spacing, components — see `visual-style-guide.md`._
+See `visual-style-guide.md` for the implementation-level design rules.

@@ -46,7 +46,7 @@ export function AttentionQueueMeta({
       className={cn(
         "inline-flex min-w-0 items-center gap-1.5 font-bold text-xs leading-none",
         tone === "teal" && "text-foreground",
-        tone === "amber" && "text-spark-amber",
+        tone === "amber" && "text-brand-amber",
         tone === "muted" && "text-muted-foreground",
         className,
       )}

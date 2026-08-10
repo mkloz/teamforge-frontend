@@ -1,11 +1,11 @@
 import { getScenarioCatalogEntry } from "@/dev/scenarios/catalog/scenario-catalog";
 import type { ScenarioController } from "@/dev/scenarios/runtime/scenario-controller";
-import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
 import {
-  createInitialForgeWizardState,
+  createInitialPlanBuilderState,
   type Step,
-} from "@/features/forge/lib/forge-wizard";
-import { useForgeWizardDraftStore } from "@/features/forge/store/use-forge-wizard-draft-store";
+} from "@/features/plan-creation/lib/plan-builder";
+import type { FormationCandidate } from "@/features/plan-creation/lib/plan-creation-contract";
+import { usePlanBuilderDraftStore } from "@/features/plan-creation/store/use-plan-builder-draft-store";
 
 export function prepareScenarioProductState(
   controller: ScenarioController | null,
@@ -14,40 +14,45 @@ export function prepareScenarioProductState(
   const scenario = controller
     ? getScenarioCatalogEntry(controller.descriptor.id)
     : null;
-  if (!controller || scenario?.feature !== "Forge") {
+  if (!controller || scenario?.feature !== "Plan creation") {
     return;
   }
 
-  const step = getForgeStep(search);
+  const step = getPlanCreationStep(search);
   const isResultStep = step >= 5;
-  const isSuccess = isResultStep && controller.descriptor.id !== "forge-failed";
+  const isSuccess =
+    isResultStep && controller.descriptor.id !== "plan-creation-failed";
   const isFailed = isResultStep && !isSuccess;
   const participants = isSuccess ? buildSuccessParticipants(controller) : [];
-  const initialState = createInitialForgeWizardState();
+  const initialState = createInitialPlanBuilderState();
+  const needsPrivateCoordinates =
+    controller.descriptor.id === "plan-creation-validation";
 
-  useForgeWizardDraftStore.getState().saveDraft({
+  usePlanBuilderDraftStore.getState().saveDraft({
     ...initialState,
     activityId: "scenario-activity-career",
-    autoForgeRequestId: isSuccess ? "scenario-forge-request-preview" : null,
-    autoForgeRequestLifecycle: isSuccess ? "FORMED" : null,
-    autoForgeRequestRevision: isSuccess ? 1 : null,
+    automaticGroupFormationRequestId: isSuccess
+      ? "scenario-plan-creation-request-preview"
+      : null,
+    automaticGroupFormationRequestLifecycle: isSuccess ? "FORMED" : null,
+    automaticGroupFormationRequestRevision: isSuccess ? 1 : null,
     chatId: isSuccess ? "scenario-chat-scenario-group-career" : null,
     coverImage: "/group-covers/paper-collage.png",
-    forgeMode: "AUTO",
-    forgeResult: isSuccess ? "SUCCESS" : isFailed ? "FAILED" : "IDLE",
+    groupFormationMode: "AUTO",
+    groupFormationResult: isSuccess ? "SUCCESS" : isFailed ? "FAILED" : "IDLE",
     groupDescription: "A thoughtful table for practical career changes.",
     groupId: isSuccess ? "scenario-group-career" : null,
     groupName: "Career Switcher Coffee",
-    locationType: "IN_PERSON",
+    locationType: needsPrivateCoordinates ? "TBD" : "IN_PERSON",
     participants,
     planCategory: "TECH",
     planDate: "2026-08-12",
     planDescription:
       "Bring one career question and leave with a practical next step.",
     planId: isSuccess ? "scenario-plan-career" : null,
-    planLocation: "Shoreditch, London",
-    planLocationLat: 51.5255,
-    planLocationLng: -0.0754,
+    planLocation: needsPrivateCoordinates ? "" : "Shoreditch, London",
+    planLocationLat: needsPrivateCoordinates ? null : 51.5255,
+    planLocationLng: needsPrivateCoordinates ? null : -0.0754,
     planName: "Career switcher coffee",
     planScheduleMode: "FIXED",
     planTime: "10:25",
@@ -57,7 +62,7 @@ export function prepareScenarioProductState(
   });
 }
 
-function getForgeStep(search: string): Step {
+function getPlanCreationStep(search: string): Step {
   const value = Number(new URLSearchParams(search).get("step"));
 
   switch (value) {
@@ -80,7 +85,7 @@ function getForgeStep(search: string): Step {
 
 function buildSuccessParticipants(
   controller: ScenarioController,
-): ForgeParticipant[] {
+): FormationCandidate[] {
   const groupId = "scenario-group-career";
   const group = controller.world.entities.groups[groupId];
   const viewerId = controller.world.viewerId;

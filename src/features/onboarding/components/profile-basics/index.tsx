@@ -35,7 +35,7 @@ export function ProfileBasicsCard({
           <span className="text-foreground">.</span>
         </h1>
         <p className="mt-1 max-w-sm text-center font-sans text-slate-muted text-xs sm:mt-2 sm:text-base">
-          Add the details TeamForge uses to check eligibility, shape nearby
+          Add the details Findafew uses to check eligibility, shape nearby
           groups, and complete your profile.
         </p>
       </div>

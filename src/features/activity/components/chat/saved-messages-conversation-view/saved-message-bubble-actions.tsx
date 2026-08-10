@@ -24,7 +24,7 @@ export function SavedMessageBubbleActions({
         type="button"
         variant="ghost"
         size="xs"
-        className="h-11 px-2 text-destructive/80 text-xs opacity-70 focus-visible:ring-destructive/25 hover:enabled:bg-destructive/8 hover:enabled:text-destructive md:opacity-0 md:group-hover/saved-message:opacity-100 md:group-focus-within/saved-message:opacity-100 md:[@media(pointer:coarse)]:opacity-70 [@media(pointer:fine)]:h-7"
+        className="h-11 px-2 text-destructive/80 text-xs opacity-70 focus-visible:ring-destructive/25 hover:enabled:bg-destructive-soft hover:enabled:text-destructive md:opacity-0 md:group-hover/saved-message:opacity-100 md:group-focus-within/saved-message:opacity-100 md:[@media(pointer:coarse)]:opacity-70 [@media(pointer:fine)]:h-7"
         contentClassName="gap-1"
         onClick={handleRemove}
       >

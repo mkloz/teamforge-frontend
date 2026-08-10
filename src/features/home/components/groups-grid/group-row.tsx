@@ -51,7 +51,7 @@ export function GroupRow({
           className={cn(
             "grid min-h-24 grid-cols-[3.5rem_minmax(0,1fr)_2rem] items-center gap-x-3 px-3 py-3 sm:grid-cols-[4.25rem_minmax(0,1fr)_2rem] sm:gap-x-4",
             hasUnreadMessages &&
-              "before:absolute before:inset-y-3 before:left-0 before:w-0.5 before:rounded-full before:bg-forge-teal",
+              "before:absolute before:inset-y-3 before:left-0 before:w-0.5 before:rounded-full before:bg-brand-teal",
           )}
         >
           <div className="shrink-0">
@@ -62,7 +62,7 @@ export function GroupRow({
               imageSize={128}
               className={cn(
                 "size-14 bg-card ring-1 ring-border/60 transition-all group-hover:-translate-y-0.5 group-hover:shadow-soft-sm group-hover:ring-foreground/30 sm:size-16",
-                hasUnreadMessages && "ring-2 ring-forge-teal/35",
+                hasUnreadMessages && "ring-2 ring-brand-teal/35",
               )}
               fallbackClassName="text-sm"
             />

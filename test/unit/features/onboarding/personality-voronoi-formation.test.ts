@@ -27,6 +27,22 @@ describe("personality Voronoi formation", () => {
     ).toMatchObject({
       kind: "text",
       value: "?N??",
+      accentCharacterIndices: [],
+    });
+  });
+
+  it("marks a resolved letter amber when its score sits in the intersection range", () => {
+    expect(
+      getPersonalityVoronoiFormation({
+        answers: { 1: 3 },
+        dynamicState: null,
+        pendingDynamicAnswers: {},
+        questions: QUESTIONS,
+        result: null,
+      }),
+    ).toMatchObject({
+      kind: "text",
+      value: "?S??",
       accentCharacterIndices: [1],
     });
   });
@@ -51,7 +67,7 @@ describe("personality Voronoi formation", () => {
     expect(extraverted).toMatchObject({ kind: "text", value: "ENFJ" });
   });
 
-  it("keeps the ambient group symbol until an answer provides a signal", () => {
+  it("starts with a human prompt until an answer provides a signal", () => {
     expect(
       getPersonalityVoronoiFormation({
         answers: {},
@@ -60,7 +76,7 @@ describe("personality Voronoi formation", () => {
         questions: QUESTIONS,
         result: null,
       }),
-    ).toEqual({ kind: "symbol", value: "group" });
+    ).toEqual({ kind: "text", value: "YOU" });
   });
 
   it("uses pending dynamic answers before the current page is committed", () => {
@@ -110,7 +126,36 @@ describe("personality Voronoi formation", () => {
     ).toMatchObject({
       kind: "text",
       value: "INFJ",
-      accentCharacterIndices: [1],
+      accentCharacterIndices: [],
+    });
+  });
+
+  it("uses amber for every final MBTI axis inside the shared boundary", () => {
+    expect(
+      getPersonalityVoronoiFormation({
+        answers: {},
+        dynamicState: null,
+        pendingDynamicAnswers: {},
+        questions: QUESTIONS,
+        result: {
+          assessmentId: "assessment-borderline",
+          displayVersion: "display-1",
+          instrumentVersion: "instrument-1",
+          ocean: {
+            agreeableness: 74,
+            conscientiousness: 69,
+            extraversion: 47,
+            neuroticism: 42,
+            openness: 56,
+          },
+          personalityType: "INFJ",
+          scoringVersion: "scoring-1",
+        },
+      }),
+    ).toMatchObject({
+      kind: "text",
+      value: "INFJ",
+      accentCharacterIndices: [0, 1],
     });
   });
 });

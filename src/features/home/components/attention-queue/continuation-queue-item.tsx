@@ -71,7 +71,7 @@ export function ContinuationQueueItem({
 
   return (
     <li
-      className={getQueueItemClassName(false, "hover:bg-forge-teal/5")}
+      className={getQueueItemClassName(false, "hover:bg-primary-soft")}
       aria-live="polite"
     >
       <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

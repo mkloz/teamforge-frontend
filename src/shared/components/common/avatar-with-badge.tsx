@@ -26,10 +26,10 @@ interface AvatarWithBadgeProps
 
 const badgeToneClassNames: Record<AvatarBadgeTone, string> = {
   amber:
-    "border-spark-amber/40 bg-canvas text-spark-amber shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas",
+    "border-brand-amber/40 bg-canvas text-brand-amber shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-brand-amber)_16%,transparent)] ring-2 ring-canvas",
   muted:
     "border-slate-muted/25 bg-canvas text-slate-muted shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--slate-muted)_10%,transparent)] ring-2 ring-canvas",
-  teal: "border-forge-teal/35 bg-canvas text-foreground shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-forge-teal)_14%,transparent)] ring-2 ring-canvas",
+  teal: "border-brand-teal/35 bg-canvas text-foreground shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-brand-teal)_14%,transparent)] ring-2 ring-canvas",
 };
 
 export function AvatarWithBadge({

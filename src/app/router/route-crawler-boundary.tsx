@@ -5,7 +5,7 @@ import type { PageMetadata } from "@/shared/lib/document-metadata";
 import { isIndexablePublicPath } from "@/shared/lib/seo/public-seo-routes";
 
 const NON_INDEXABLE_ROUTE_METADATA = {
-  title: "TeamForge",
+  title: "Findafew",
   links: [{ rel: "canonical", href: null }],
   jsonLd: [{ id: "public-site", value: null }],
   meta: [

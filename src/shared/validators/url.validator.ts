@@ -120,19 +120,19 @@ export const managedUploadUrlSchema = z
   .string()
   .max(MAX_URL_LENGTH)
   .refine(isManagedUploadUrl, {
-    message: "Use an uploaded TeamForge asset URL.",
+    message: "Use an uploaded Findafew asset URL.",
   });
 
 export const chatAttachmentUrlSchema = z
   .string()
   .max(MAX_URL_LENGTH)
   .refine(isChatAttachmentUrl, {
-    message: "Use an uploaded TeamForge asset or a trusted GIPHY media URL.",
+    message: "Use an uploaded Findafew asset or a trusted GIPHY media URL.",
   });
 
 export const managedAssetReferenceSchema = z
   .string()
   .max(MAX_URL_LENGTH)
   .refine(isManagedAssetReference, {
-    message: "Use a TeamForge cover preset or uploaded asset.",
+    message: "Use a Findafew cover preset or uploaded asset.",
   });

@@ -3,9 +3,9 @@ import {
   invalidateActivityGroupSurfaces,
 } from "@/features/activity/public/activity-app-realtime";
 import {
-  clearForgeProposalSensitiveCaches,
-  FORGE_PROPOSAL_QUERY_KEYS,
-} from "@/features/forge-proposals/public/proposal-review";
+  clearGroupProposalSensitiveCaches,
+  GROUP_PROPOSAL_QUERY_KEYS,
+} from "@/features/group-proposals/public/proposal-review";
 import { addIncomingNotification } from "@/features/notifications/public/notification-realtime";
 import { authSession } from "@/shared/api/auth-session";
 import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-query";
@@ -20,7 +20,7 @@ import { realtimeClient } from "@/shared/api/realtime-client";
 import { shouldApplyRealtimeEvent } from "@/shared/lib/realtime-event-registry";
 import {
   realtimeAccessChangedPayloadSchema,
-  realtimeForgeProposalUpdatedPayloadSchema,
+  realtimeGroupProposalUpdatedPayloadSchema,
   realtimeGroupUpdatedPayloadSchema,
   realtimeNotificationPayloadSchema,
   realtimePlanUpdatedPayloadSchema,
@@ -91,47 +91,47 @@ function handleAccessChangedPayload(payload: unknown) {
     return;
   }
 
-  const rosterReset = clearForgeProposalSensitiveCaches(appQueryClient);
+  const rosterReset = clearGroupProposalSensitiveCaches(appQueryClient);
   void rosterReset.then(() =>
     Promise.all([
       invalidateFormationOpeningApplicationSurfaces(),
       refreshAccessSensitiveSurfaces(),
-      refreshForgeProposalState(),
+      refreshGroupProposalState(),
     ]),
   );
 }
 
-function handleForgeProposalUpdatedPayload(payload: unknown) {
-  const parsed = realtimeForgeProposalUpdatedPayloadSchema.parse(payload);
+function handleGroupProposalUpdatedPayload(payload: unknown) {
+  const parsed = realtimeGroupProposalUpdatedPayloadSchema.parse(payload);
 
   if (!shouldApplyRealtimeEvent(parsed)) {
     return;
   }
 
-  const rosterReset = clearForgeProposalSensitiveCaches(
+  const rosterReset = clearGroupProposalSensitiveCaches(
     appQueryClient,
     parsed.proposalId,
   );
   void rosterReset.then(() =>
     Promise.all([
       invalidateFormationOpeningApplicationSurfaces(),
-      refreshForgeProposalSurfaces(),
+      refreshGroupProposalSurfaces(),
     ]),
   );
 }
 
-function refreshForgeProposalState() {
+function refreshGroupProposalState() {
   return Promise.all([
     appQueryClient.invalidateQueries({
-      queryKey: FORGE_PROPOSAL_QUERY_KEYS.current,
+      queryKey: GROUP_PROPOSAL_QUERY_KEYS.current,
     }),
     appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.forge.currentAutoRequest,
+      queryKey: APP_QUERY_KEYS.groupFormation.currentAutoRequest,
     }),
   ]);
 }
 
-function refreshForgeProposalSurfaces() {
+function refreshGroupProposalSurfaces() {
   return Promise.all([
     appQueryClient.invalidateQueries({
       queryKey: APP_QUERY_KEYS.activity.groups,
@@ -139,7 +139,7 @@ function refreshForgeProposalSurfaces() {
     appQueryClient.invalidateQueries({
       queryKey: APP_QUERY_KEYS.activity.chats,
     }),
-    refreshForgeProposalState(),
+    refreshGroupProposalState(),
     appQueryClient.invalidateQueries({ queryKey: APP_QUERY_KEYS.home.groups }),
   ]);
 }
@@ -183,14 +183,14 @@ export function subscribeAppRealtimeEvents() {
     "plan.updated",
     handlePlanUpdatedPayload,
   );
-  const unsubscribeForgeProposalUpdate = realtimeClient.on(
-    "forge.proposal.updated",
-    handleForgeProposalUpdatedPayload,
+  const unsubscribeGroupProposalUpdate = realtimeClient.on(
+    "group-proposal.updated",
+    handleGroupProposalUpdatedPayload,
   );
 
   return () => {
     unsubscribeAccessChange();
-    unsubscribeForgeProposalUpdate();
+    unsubscribeGroupProposalUpdate();
     unsubscribeGroupUpdate();
     unsubscribeNotification();
     unsubscribePlanUpdate();

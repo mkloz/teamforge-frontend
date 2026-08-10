@@ -33,11 +33,11 @@ function findPreferredCityComponent(components: GoogleAddressComponent[]) {
 }
 
 function getCityFromComponents(components: GoogleAddressComponent[] = []) {
-  return findPreferredCityComponent(components)?.long_name ?? "";
+  return findPreferredCityComponent(components)?.longText ?? "";
 }
 
-function getPlaceAddress(place: GooglePlaceResult, fallbackAddress: string) {
-  return place.formatted_address ?? place.name ?? fallbackAddress;
+function getPlaceAddress(place: GooglePlace, fallbackAddress: string) {
+  return place.formattedAddress ?? place.displayName ?? fallbackAddress;
 }
 
 function getPlaceCoordinates(location: GoogleLatLng | null | undefined) {
@@ -53,24 +53,24 @@ function getAddressFallbackCity(address: string) {
 
 function getPlaceCity(address: string, components?: GoogleAddressComponent[]) {
   const city =
-    getCityFromComponents(components) ?? getAddressFallbackCity(address);
+    getCityFromComponents(components) || getAddressFallbackCity(address);
 
   return city || address;
 }
 
 export function locationFromPlace(
-  place: GooglePlaceResult,
+  place: GooglePlace,
   fallbackAddress: string,
   placeId?: string,
 ): LocationValue {
   const address = getPlaceAddress(place, fallbackAddress);
-  const coordinates = getPlaceCoordinates(place.geometry?.location);
+  const coordinates = getPlaceCoordinates(place.location);
 
   return {
     address,
-    city: getPlaceCity(address, place.address_components),
+    city: getPlaceCity(address, place.addressComponents),
     lat: coordinates.lat,
     lng: coordinates.lng,
-    placeId: placeId ?? null,
+    placeId: place.id ?? placeId ?? null,
   };
 }

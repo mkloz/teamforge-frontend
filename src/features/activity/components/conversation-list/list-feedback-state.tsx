@@ -66,13 +66,13 @@ export function ConversationListOfflineBanner({
     <OfflineNotice
       size="xs"
       className={cn(
-        "mx-4 my-2 border-spark-amber/30 bg-spark-amber/10",
+        "mx-4 my-2 border-brand-amber/30 bg-accent-soft",
         className,
       )}
       contentClassName="font-medium text-ink leading-relaxed"
     >
       <p>
-        <span className="font-black text-spark-amber">Offline.</span> Cached
+        <span className="font-black text-brand-amber">Offline.</span> Cached
         chats stay visible; new updates will resume when you reconnect.
       </p>
     </OfflineNotice>

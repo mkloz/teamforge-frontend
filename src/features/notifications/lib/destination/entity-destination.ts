@@ -1,6 +1,7 @@
 import {
-  buildForgeNavigation,
+  buildGroupProposalNavigation,
   buildHomeNavigation,
+  buildPlanCreationNavigation,
   buildProfileNavigation,
 } from "@/shared/navigation";
 import type { Notification } from "@/shared/schemas";
@@ -18,7 +19,7 @@ const ENTITY_DESTINATION_RESOLVERS: Partial<
   Record<NonNullable<Notification["entityType"]>, NotificationEntityResolver>
 > = {
   ACTIVITY: (_notification, entityId) =>
-    buildForgeNavigation({
+    buildPlanCreationNavigation({
       activityId: entityId,
       open: true,
     }),
@@ -26,6 +27,8 @@ const ENTITY_DESTINATION_RESOLVERS: Partial<
     toGroupDestination(entityId, {
       panel: "group",
     }),
+  GROUP_PROPOSAL: (_notification, entityId) =>
+    buildGroupProposalNavigation(entityId),
   INVITE: (_notification, entityId) =>
     buildHomeNavigation({
       invite: entityId,

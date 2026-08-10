@@ -2,7 +2,7 @@ import { useRouterState } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { useSettingsRouteState } from "@/features/settings/hooks/use-settings-route-state";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import { SettingsSectionContentLoading } from "./settings-page.loading";
 import { SettingsPageContent } from "./settings-page-content";
@@ -19,12 +19,12 @@ const SettingsFormBridge = lazy(() =>
 export function SettingsPage() {
   const { activeSection } = useSettingsRouteState();
   const activeSectionMeta = getSettingsSectionMeta(activeSection);
-  const pageMetadata = createTeamForgePageMetadata({
+  const pageMetadata = createFindafewPageMetadata({
     title: activeSectionMeta
       ? `${activeSectionMeta.label} settings`
       : "Settings",
     description:
-      "Manage your TeamForge account, privacy, safety, notifications, and display settings.",
+      "Manage your Findafew account, privacy, safety, notifications, and display settings.",
   });
 
   usePageMetadata(pageMetadata);

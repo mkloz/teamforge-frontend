@@ -19,7 +19,7 @@ export function getRetryableMessageInput(messageId: string) {
   return retryableMessageInputs.get(messageId) ?? null;
 }
 
-export function forgetRetryableMessage(messageId: string) {
+export function dropRetryableMessage(messageId: string) {
   retryableMessageInputs.delete(messageId);
 }
 

@@ -226,7 +226,7 @@ function PsychometricsSkeleton() {
             <Skeleton className="absolute top-1/2 left-1/2 h-px w-4/5 -translate-x-1/2 -translate-y-1/2 rotate-90" />
             <div className="absolute inset-12 rounded-full border border-border/70" />
             <div className="absolute inset-20 rounded-full border border-border/60" />
-            <div className="absolute inset-x-16 top-16 bottom-16 rounded-full border-2 border-forge-teal/40" />
+            <div className="absolute inset-x-16 top-16 bottom-16 rounded-full border-2 border-brand-teal/40" />
             <Skeleton
               shape="circle"
               className="absolute top-8 left-1/2 size-3 -translate-x-1/2"

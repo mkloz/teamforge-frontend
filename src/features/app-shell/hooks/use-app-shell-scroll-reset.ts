@@ -14,7 +14,7 @@ const EXPLORE_SCROLL_KEYS = [
   "to",
 ] as const;
 
-const FORGE_SCROLL_KEYS = ["open", "step", "mode"] as const;
+const PLAN_CREATION_SCROLL_KEYS = ["open", "step", "mode"] as const;
 const SETTINGS_SCROLL_KEYS = ["section"] as const;
 
 export function useAppShellScrollReset() {
@@ -34,8 +34,8 @@ function getAppShellScrollResetKey(pathname: string, searchStr: string) {
     return `${pathname}?${getSearchSubset(searchStr, EXPLORE_SCROLL_KEYS)}`;
   }
 
-  if (pathname === "/forge") {
-    return `${pathname}?${getSearchSubset(searchStr, FORGE_SCROLL_KEYS)}`;
+  if (pathname === "/plans/new") {
+    return `${pathname}?${getSearchSubset(searchStr, PLAN_CREATION_SCROLL_KEYS)}`;
   }
 
   if (pathname === "/settings") {

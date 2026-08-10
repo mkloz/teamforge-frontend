@@ -64,7 +64,7 @@ export function getConversationCapabilities(
 ): ConversationCapabilities {
   const governance = group?.governance;
   const hasMissingGovernance = hasMissingAutoGovernance({
-    forgeMode: group?.activity?.forgeMode,
+    groupFormationMode: group?.activity?.groupFormationMode,
     governance,
   });
 

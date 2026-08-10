@@ -41,7 +41,7 @@ export function FormationOpeningCard({
     >
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-foreground">
+          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-foreground">
             <UsersRound className="size-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">

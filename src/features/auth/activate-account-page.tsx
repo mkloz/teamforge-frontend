@@ -7,11 +7,11 @@ import {
   buildAuthRouteNavigation,
   useAuthReturnState,
 } from "@/shared/lib/auth-route";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
-const ACTIVATE_ACCOUNT_METADATA = createTeamForgePageMetadata({
+const ACTIVATE_ACCOUNT_METADATA = createFindafewPageMetadata({
   title: "Activate Account",
-  description: "Verify your email address and activate your TeamForge account.",
+  description: "Verify your email address and activate your Findafew account.",
 });
 
 export function ActivateAccountPage() {
@@ -26,6 +26,7 @@ export function ActivateAccountPage() {
       description="We're checking your verification link and signing you in."
       backNavigation={buildAuthRouteNavigation("/auth/login", returnTo)}
       backLabel="Back to login"
+      progress={state === "success" ? 1 : 0}
       footer={
         state === "error" ? (
           <p className="text-center text-slate-muted text-sm">

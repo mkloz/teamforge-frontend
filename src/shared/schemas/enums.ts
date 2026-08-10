@@ -20,11 +20,11 @@ export type ActivityVisibility = z.infer<typeof activityVisibilitySchema>;
 export const activityAccessSchema = z.enum(["OPEN", "BY_REQUEST"]);
 export type ActivityAccess = z.infer<typeof activityAccessSchema>;
 
-export const forgeModeSchema = z.enum(["AUTO", "MANUAL"]);
-export type ForgeMode = z.infer<typeof forgeModeSchema>;
+export const groupFormationModeSchema = z.enum(["AUTO", "MANUAL"]);
+export type GroupFormationMode = z.infer<typeof groupFormationModeSchema>;
 
-export const forgeScopeSchema = z.enum(["LOCAL", "ONLINE"]);
-export type ForgeScope = z.infer<typeof forgeScopeSchema>;
+export const groupFormationScopeSchema = z.enum(["LOCAL", "ONLINE"]);
+export type GroupFormationScope = z.infer<typeof groupFormationScopeSchema>;
 
 export const activityStatusSchema = z.enum([
   "OPEN",
@@ -171,6 +171,8 @@ export const notificationTypeSchema = z.enum([
   "MESSAGE_MENTION",
   "RATING_REQUEST",
   "RATING_RECEIVED",
+  "GROUP_PROPOSAL_READY",
+  "GROUP_PROPOSAL_REMINDER",
   "SYSTEM_ANNOUNCEMENT",
   "ACCOUNT_SECURITY",
 ]);
@@ -182,6 +184,7 @@ export const entityTypeSchema = z.enum([
   "ACTIVITY",
   "MESSAGE",
   "INVITE",
+  "GROUP_PROPOSAL",
 ]);
 
 export const personalityTypeSchema = z.enum([

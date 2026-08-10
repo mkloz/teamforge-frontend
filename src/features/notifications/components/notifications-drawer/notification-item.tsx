@@ -110,12 +110,12 @@ export function NotificationItem({
       className={cn(
         "group relative flex min-h-20 w-full touch-pan-y transition-colors duration-200 focus-within:bg-foreground/4 hover:bg-foreground/4",
         !item.isRead &&
-          "bg-(--grouped-menu-selected) focus-within:bg-forge-teal/9 hover:bg-forge-teal/9",
+          "bg-(--grouped-menu-selected) focus-within:bg-primary-soft hover:bg-primary-soft",
       )}
     >
       {!item.isRead ? (
         <span
-          className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-forge-teal"
+          className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-brand-teal"
           aria-hidden="true"
         />
       ) : null}

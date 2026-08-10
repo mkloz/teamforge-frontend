@@ -47,10 +47,10 @@ export function FriendsInvitation() {
     <section className="flex w-full flex-col gap-4">
       <HomeSectionHeading
         title="Bring someone in"
-        description="Invite someone you know to TeamForge."
+        description="Invite someone you know to Findafew."
       />
 
-      <div className="rounded-xl bg-forge-teal/10 px-3 py-3 shadow-soft-sm">
+      <div className="rounded-xl bg-primary-soft px-3 py-3 shadow-soft-sm">
         <div className="max-w-xl">
           <p className="font-bold text-foreground text-sm">
             Share one simple link
@@ -65,7 +65,7 @@ export function FriendsInvitation() {
           <div
             className={cn(
               "group relative flex h-11 min-w-0 items-center rounded-md border border-border/45 bg-background/70 py-0 pr-12 pl-3",
-              "transition-colors duration-150 hover:bg-forge-teal/8",
+              "transition-colors duration-150 hover:bg-primary-soft",
             )}
           >
             <span className="min-w-0 flex-1 truncate font-bold text-muted-foreground text-xs">
@@ -78,7 +78,7 @@ export function FriendsInvitation() {
               onClick={handleCopy}
               className="absolute top-1/2 right-1 size-11 -translate-y-1/2 rounded-md sm:size-9"
               aria-label={
-                copied ? "TeamForge link copied" : "Copy TeamForge link"
+                copied ? "Findafew link copied" : "Copy Findafew link"
               }
             >
               {copied ? (
@@ -94,8 +94,8 @@ export function FriendsInvitation() {
             className="rounded-md px-4 text-xs"
             onClick={async () => {
               const shareResult = await shareBrowserData({
-                title: "Join me on TeamForge",
-                text: "Find your people, intelligently.",
+                title: "Join me on Findafew",
+                text: "Take a look at Findafew—small groups for things you want to do.",
                 url: inviteLink,
               });
 
@@ -124,7 +124,7 @@ async function showInviteCopyError() {
 async function showInviteCopySuccess() {
   const { showAppSuccessToast } = await import("@/shared/lib/app-toast");
 
-  showAppSuccessToast("TeamForge link copied.", {
+  showAppSuccessToast("Findafew link copied.", {
     id: "home-invite-link-copy",
   });
 }

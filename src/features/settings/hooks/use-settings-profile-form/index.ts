@@ -1,4 +1,4 @@
-import { useCandidateAvailability } from "@/features/forge/public/candidate-availability";
+import { useGroupProposalAvailability } from "@/features/plan-creation/public/group-proposal-availability";
 import { useAccountExport } from "@/features/settings/hooks/use-account-export";
 import { useAccountLifecycle } from "@/features/settings/hooks/use-account-lifecycle";
 import { useActivityInviteAvailability } from "@/features/settings/hooks/use-activity-invite-availability";
@@ -31,7 +31,7 @@ export function useSettingsProfileForm({
   const preferences = useSettingsPreferencesActions({
     enabled: Boolean(profile.currentUser) && shouldLoadPreferences,
   });
-  const candidateAvailability = useCandidateAvailability({
+  const groupProposalAvailability = useGroupProposalAvailability({
     enabled: Boolean(profile.currentUser) && activeSection === "matching",
   });
   const activityInviteAvailability = useActivityInviteAvailability({
@@ -96,7 +96,7 @@ export function useSettingsProfileForm({
       preferences.isSavingNotificationPreferences,
     savingNotificationPreferenceKeys:
       preferences.savingNotificationPreferenceKeys,
-    candidateAvailability,
+    groupProposalAvailability,
     activityInviteAvailability,
     accountExport,
     accountLifecycle,

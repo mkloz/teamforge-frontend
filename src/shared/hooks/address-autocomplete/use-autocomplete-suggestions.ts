@@ -8,7 +8,12 @@ import {
   getWrappedSuggestionIndex,
 } from "@/shared/hooks/use-address-autocomplete-state";
 import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
-import { getPlacePredictions } from "@/shared/lib/maps/google-places-service";
+import {
+  createGooglePlacesSessionToken,
+  getGooglePlacesErrorMessage,
+  getPlaceSuggestions,
+} from "@/shared/lib/maps/google-places-service";
+import type { GooglePlaceSuggestion } from "@/shared/lib/maps/location.types";
 import type { MutableValueRef } from "./address-autocomplete-types";
 
 interface UseAutocompleteSuggestionsInput {
@@ -16,6 +21,8 @@ interface UseAutocompleteSuggestionsInput {
   inputValue: string;
   isSettledResolvedValue: boolean;
   mapsReady: boolean;
+  sessionTokenRef: MutableValueRef<GoogleAutocompleteSessionToken | null>;
+  showMessage: (text: string, tone: "error" | "info") => void;
   skipPredictionsForValueRef: MutableValueRef<string | null>;
 }
 
@@ -26,12 +33,20 @@ interface RefreshAutocompletePredictionsInput {
   resetSuggestions: () => void;
   setActiveSuggestionIndex: Dispatch<SetStateAction<number>>;
   setIsSuggestionsOpen: Dispatch<SetStateAction<boolean>>;
-  setSuggestions: Dispatch<SetStateAction<GoogleAutocompletePrediction[]>>;
+  sessionTokenRef: MutableValueRef<GoogleAutocompleteSessionToken | null>;
+  setSuggestions: Dispatch<SetStateAction<GooglePlaceSuggestion[]>>;
+  showMessage: (text: string, tone: "error" | "info") => void;
   skipPredictionsForValueRef: MutableValueRef<string | null>;
 }
 
-async function fetchAutocompletePredictions(inputValue: string) {
-  return getPlacePredictions(inputValue.trim()).catch(() => null);
+async function fetchAutocompletePredictions(
+  inputValue: string,
+  sessionTokenRef: MutableValueRef<GoogleAutocompleteSessionToken | null>,
+) {
+  const sessionToken =
+    sessionTokenRef.current ?? createGooglePlacesSessionToken();
+  sessionTokenRef.current = sessionToken;
+  return getPlaceSuggestions(inputValue.trim(), sessionToken);
 }
 
 function canApplyPredictionRefresh({
@@ -59,7 +74,7 @@ function applyPredictionRefreshResult({
   | "setIsSuggestionsOpen"
   | "setSuggestions"
 > & {
-  nextSuggestions: GoogleAutocompletePrediction[] | null;
+  nextSuggestions: GooglePlaceSuggestion[] | null;
 }) {
   if (!nextSuggestions) {
     resetSuggestions();
@@ -76,7 +91,20 @@ function applyPredictionRefreshResult({
 async function refreshAutocompletePredictions(
   input: RefreshAutocompletePredictionsInput,
 ) {
-  const nextSuggestions = await fetchAutocompletePredictions(input.inputValue);
+  let nextSuggestions: GooglePlaceSuggestion[] | null;
+
+  try {
+    nextSuggestions = await fetchAutocompletePredictions(
+      input.inputValue,
+      input.sessionTokenRef,
+    );
+  } catch (error) {
+    input.sessionTokenRef.current = null;
+    if (input.isActive()) {
+      input.showMessage(getGooglePlacesErrorMessage(error), "info");
+    }
+    nextSuggestions = null;
+  }
 
   if (!canApplyPredictionRefresh(input)) {
     return;
@@ -97,11 +125,11 @@ export function useAutocompleteSuggestions({
   inputValue,
   isSettledResolvedValue,
   mapsReady,
+  sessionTokenRef,
+  showMessage,
   skipPredictionsForValueRef,
 }: UseAutocompleteSuggestionsInput) {
-  const [suggestions, setSuggestions] = useState<
-    GoogleAutocompletePrediction[]
-  >([]);
+  const [suggestions, setSuggestions] = useState<GooglePlaceSuggestion[]>([]);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const visibleSuggestions = getVisibleAutocompleteSuggestions(
@@ -150,9 +178,11 @@ export function useAutocompleteSuggestions({
         inputValue,
         isActive: () => active,
         resetSuggestions,
+        sessionTokenRef,
         setActiveSuggestionIndex,
         setIsSuggestionsOpen,
         setSuggestions,
+        showMessage,
         skipPredictionsForValueRef,
       });
     }, 250);
@@ -167,13 +197,15 @@ export function useAutocompleteSuggestions({
     isSettledResolvedValue,
     mapsReady,
     resetSuggestions,
+    sessionTokenRef,
+    showMessage,
     skipPredictionsForValueRef,
   ]);
 
-  function closeSuggestions() {
+  const closeSuggestions = useCallback(() => {
     setIsSuggestionsOpen(false);
     setActiveSuggestionIndex(-1);
-  }
+  }, []);
 
   function openSuggestions() {
     if (!hasTypedInSessionRef.current) {

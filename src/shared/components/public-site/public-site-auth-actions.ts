@@ -29,13 +29,13 @@ export function getPublicSitePrimaryAction(
   if (user == null) {
     return {
       navigation: buildHomeNavigation(),
-      label: "Open TeamForge",
+      label: "Open Findafew",
     };
   }
 
   const destination = buildPostAuthRedirectNavigation(user, null);
   const label =
-    destination.to === "/home" ? "Open TeamForge" : "Continue onboarding";
+    destination.to === "/home" ? "Open Findafew" : "Continue onboarding";
 
   return {
     navigation: destination,

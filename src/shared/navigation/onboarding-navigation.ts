@@ -22,7 +22,7 @@ export const onboardingReturnTargets = [
   "/activity",
   "/profile",
   "/settings",
-  "/forge",
+  "/plans/new",
   "/invite",
   "/groups/$groupId",
 ] as const;

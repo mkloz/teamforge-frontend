@@ -1,6 +1,8 @@
 import type {
+  ForgotPasswordValues,
   LoginValues,
   RegisterValues,
+  ResetPasswordValues,
 } from "@/features/auth/schemas/auth-schemas";
 
 const LOGIN_FIELD_MIN_LENGTH = 3;
@@ -20,6 +22,17 @@ const REGISTER_PROGRESS_RULES: ReadonlyArray<ProgressRule<RegisterValues>> = [
   (values) => Boolean(values.dateOfBirth),
   (values) => hasMinimumTextLength(values.city, 2),
   (values) => hasMinimumTextLength(values.gender, 1),
+];
+
+const FORGOT_PASSWORD_PROGRESS_RULES: ReadonlyArray<
+  ProgressRule<ForgotPasswordValues>
+> = [(values) => hasMinimumTextLength(values.email, 3)];
+
+const RESET_PASSWORD_PROGRESS_RULES: ReadonlyArray<
+  ProgressRule<ResetPasswordValues>
+> = [
+  (values) => hasMinimumTextLength(values.password, 5),
+  (values) => hasMinimumTextLength(values.confirmPassword, 5),
 ];
 
 function hasMinimumTextLength(value: string | undefined, minLength: number) {
@@ -48,4 +61,16 @@ export function calculateLoginProgress(values: Partial<LoginValues>) {
 
 export function calculateRegisterProgress(values: Partial<RegisterValues>) {
   return calculateProgressRatio(values, REGISTER_PROGRESS_RULES);
+}
+
+export function calculateForgotPasswordProgress(
+  values: Partial<ForgotPasswordValues>,
+) {
+  return calculateProgressRatio(values, FORGOT_PASSWORD_PROGRESS_RULES);
+}
+
+export function calculateResetPasswordProgress(
+  values: Partial<ResetPasswordValues>,
+) {
+  return calculateProgressRatio(values, RESET_PASSWORD_PROGRESS_RULES);
 }

@@ -142,15 +142,23 @@ export const APP_QUERY_KEYS = {
     sessions: ["settings", "sessions"] as const,
     blockedUsers: ["settings", "blocked-users"] as const,
   },
-  forge: {
-    candidateAvailability: ["forge", "candidate-availability"] as const,
-    currentAutoRequest: ["forge", "auto-request", "current"] as const,
-    currentProposal: ["forge-proposals", "current"] as const,
-    friends: ["forge", "friends"] as const,
-    proposalOpenings: ["forge-proposal-openings"] as const,
+  groupFormation: {
+    groupProposalAvailability: [
+      "group-formation",
+      "group-proposal-availability",
+    ] as const,
+    currentAutoRequest: [
+      "group-formation",
+      "automatic-request",
+      "current",
+    ] as const,
+    currentProposal: ["group-proposals", "current"] as const,
+    proposalDetails: ["group-proposals", "detail"] as const,
+    friends: ["group-formation", "friends"] as const,
+    proposalOpenings: ["group-proposal-openings"] as const,
     proposalOpeningById: (openingId: string) =>
-      ["forge-proposal-openings", openingId] as const,
-    recentActivities: ["forge", "recent-activities"] as const,
+      ["group-proposal-openings", openingId] as const,
+    recentActivities: ["group-formation", "recent-activities"] as const,
   },
   onboarding: {
     interestTree: ["onboarding", "interests", "tree"] as const,

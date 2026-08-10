@@ -62,7 +62,7 @@ export function getFriendRequestQueueItemRenderState({
     ].filter(hasQueueMetaLabel),
     rowClassName: getQueueItemClassName(
       state.isFocused,
-      "hover:bg-forge-teal/5",
+      "hover:bg-primary-soft",
     ),
   };
 }

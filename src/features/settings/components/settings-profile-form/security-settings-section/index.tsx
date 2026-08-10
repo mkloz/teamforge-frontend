@@ -27,7 +27,7 @@ export function SecuritySettingsSection({
         <div className="px-1">
           <h2 className="font-bold text-ink text-xl">Sign-in and recovery</h2>
           <p className="mt-1 max-w-2xl text-slate-muted text-sm leading-relaxed">
-            Review the identity used to access TeamForge and recover your
+            Review the identity used to access Findafew and recover your
             account.
           </p>
         </div>

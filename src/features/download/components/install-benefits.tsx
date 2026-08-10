@@ -16,14 +16,14 @@ export function InstallBenefitsSection() {
               id="install-benefits-title"
               className="mt-3 max-w-lg font-extrabold text-3xl text-ink leading-tight sm:text-4xl"
             >
-              Keep TeamForge on your device.
+              Keep Findafew on your device.
             </h2>
             <p className="mt-4 max-w-md text-pretty text-slate-muted leading-relaxed">
-              Install TeamForge in a dedicated window and enable notifications
+              Install Findafew in a dedicated window and enable notifications
               when you want alerts about group plans.
             </p>
 
-            <div className="mt-8 border-forge-teal/20 border-y py-5">
+            <div className="mt-8 border-brand-teal/20 border-y py-5">
               <div className="flex items-start gap-4">
                 <IconTile
                   bordered
@@ -31,7 +31,7 @@ export function InstallBenefitsSection() {
                   shape="circle"
                   size="lg"
                   tone="teal"
-                  className="size-11 bg-forge-teal/8"
+                  className="size-11 bg-primary-soft"
                   iconClassName="size-5"
                 />
                 <div>
@@ -96,11 +96,11 @@ function CapabilityTile({ capability, index, total }: CapabilityTileProps) {
           shape="circle"
           size="xl"
           tone="teal"
-          className="bg-forge-teal/8"
+          className="bg-primary-soft"
           iconClassName="size-5.5"
         />
         <span
-          className="font-extrabold text-3xl text-slate-muted/50 leading-none dark:text-muted-foreground/55"
+          className="font-extrabold text-3xl text-slate-muted/75 leading-none dark:text-muted-foreground/75"
           aria-hidden="true"
         >
           {String(index + 1).padStart(2, "0")}

@@ -40,7 +40,7 @@ export function GroupLifecycleSection({ groupId }: { groupId: string }) {
         ) : (
           <PauseCircle
             aria-hidden="true"
-            className="mt-0.5 size-5 text-spark-amber"
+            className="mt-0.5 size-5 text-brand-amber"
           />
         )}
         <div className="min-w-0 flex-1">

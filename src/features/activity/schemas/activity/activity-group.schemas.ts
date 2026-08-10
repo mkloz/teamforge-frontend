@@ -6,7 +6,7 @@ import {
   activityStatusSchema,
   activityVisibilitySchema,
   costTypeSchema,
-  forgeModeSchema,
+  groupFormationModeSchema,
   groupRoleSchema,
   locationModeSchema,
   planCategorySchema,
@@ -30,7 +30,7 @@ const activitySummarySchema = z.object({
   status: activityStatusSchema,
   visibility: activityVisibilitySchema,
   access: activityAccessSchema,
-  forgeMode: forgeModeSchema,
+  groupFormationMode: groupFormationModeSchema,
 });
 
 const planSchema = z.object({

@@ -6,24 +6,24 @@ import { EmptyConversationsFilteredVisual } from "@/features/activity/assets/emp
 import { Button } from "@/shared/components/ui/button";
 import {
   buildExploreNavigation,
-  buildForgeLaunchNavigation,
+  buildPlanCreationLaunchNavigation,
 } from "@/shared/navigation";
 
 type ConversationEmptyArtwork = "default" | "filtered";
 
 const emptyDescriptionByCtaState = {
   "false:false": null,
-  "false:true": "Forge a group to start your first conversation.",
+  "false:true": "Start a plan to open your first conversation.",
   "true:false": "Browse open groups and join a conversation.",
-  "true:true": "Browse open groups or forge one around your own plan.",
+  "true:true": "Browse open groups or start a plan of your own.",
 } as const;
 
 interface EmptyStateProps {
   label: string;
   description?: string | null;
   artwork?: ConversationEmptyArtwork;
-  /** Shows the Forge action for the base empty state. */
-  showForgeCta?: boolean;
+  /** Shows the PlanCreation action for the base empty state. */
+  showPlanCreationCta?: boolean;
   showExploreCta?: boolean;
 }
 
@@ -31,13 +31,13 @@ export function EmptyState({
   label,
   description: descriptionProp,
   artwork = "default",
-  showForgeCta = false,
+  showPlanCreationCta = false,
   showExploreCta = false,
 }: EmptyStateProps) {
   const shouldReduceMotion = useReducedMotion();
   const description =
     descriptionProp ??
-    getEmptyStateDescription({ showExploreCta, showForgeCta });
+    getEmptyStateDescription({ showExploreCta, showPlanCreationCta });
 
   return (
     <div className="flex min-h-[calc(100dvh-8rem)] flex-col items-center justify-center px-6 py-12 text-center">
@@ -57,7 +57,7 @@ export function EmptyState({
       <EmptyStateActions
         shouldReduceMotion={shouldReduceMotion}
         showExploreCta={showExploreCta}
-        showForgeCta={showForgeCta}
+        showPlanCreationCta={showPlanCreationCta}
       />
     </div>
   );
@@ -78,13 +78,13 @@ function EmptyStateArtwork({ artwork }: { artwork: ConversationEmptyArtwork }) {
 function EmptyStateActions({
   shouldReduceMotion,
   showExploreCta,
-  showForgeCta,
+  showPlanCreationCta,
 }: {
   shouldReduceMotion: boolean | null;
   showExploreCta: boolean;
-  showForgeCta: boolean;
+  showPlanCreationCta: boolean;
 }) {
-  if (!(showForgeCta || showExploreCta)) {
+  if (!(showPlanCreationCta || showExploreCta)) {
     return null;
   }
 
@@ -99,7 +99,7 @@ function EmptyStateActions({
         className="mt-6 flex w-full max-w-44 flex-col items-stretch gap-2.5"
       >
         <ExploreEmptyStateAction isVisible={showExploreCta} />
-        <ForgeEmptyStateAction isVisible={showForgeCta} />
+        <PlanCreationEmptyStateAction isVisible={showPlanCreationCta} />
       </m.div>
     </LazyMotion>
   );
@@ -130,16 +130,16 @@ function ExploreEmptyStateAction({ isVisible }: { isVisible: boolean }) {
   );
 }
 
-function ForgeEmptyStateAction({ isVisible }: { isVisible: boolean }) {
+function PlanCreationEmptyStateAction({ isVisible }: { isVisible: boolean }) {
   if (!isVisible) {
     return null;
   }
 
   return (
     <Button asChild variant="primary" size="sm" className="w-full rounded-lg">
-      <Link {...buildForgeLaunchNavigation()}>
+      <Link {...buildPlanCreationLaunchNavigation()}>
         <UsersRound size={14} aria-hidden="true" />
-        Forge a group
+        Start a plan
       </Link>
     </Button>
   );
@@ -147,22 +147,22 @@ function ForgeEmptyStateAction({ isVisible }: { isVisible: boolean }) {
 
 function getEmptyStateDescription({
   showExploreCta,
-  showForgeCta,
+  showPlanCreationCta,
 }: {
   showExploreCta: boolean;
-  showForgeCta: boolean;
+  showPlanCreationCta: boolean;
 }) {
   return emptyDescriptionByCtaState[
-    getEmptyDescriptionCtaState({ showExploreCta, showForgeCta })
+    getEmptyDescriptionCtaState({ showExploreCta, showPlanCreationCta })
   ];
 }
 
 function getEmptyDescriptionCtaState({
   showExploreCta,
-  showForgeCta,
+  showPlanCreationCta,
 }: {
   showExploreCta: boolean;
-  showForgeCta: boolean;
+  showPlanCreationCta: boolean;
 }): keyof typeof emptyDescriptionByCtaState {
-  return `${showExploreCta}:${showForgeCta}`;
+  return `${showExploreCta}:${showPlanCreationCta}`;
 }

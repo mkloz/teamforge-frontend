@@ -4,11 +4,11 @@ import { ArrowRight, Compass } from "lucide-react";
 import { ONBOARDING_COACHMARK_REPLAY_EVENT } from "@/features/onboarding/components/education/onboarding-coachmarks";
 import { Button } from "@/shared/components/ui/button";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
-const PRACTICE_METADATA = createTeamForgePageMetadata({
-  title: "TeamForge Guidance",
-  description: "Replay TeamForge’s focused product tour.",
+const PRACTICE_METADATA = createFindafewPageMetadata({
+  title: "Findafew Guidance",
+  description: "Replay Findafew’s focused product tour.",
 });
 
 function replayNavigationTutorial() {

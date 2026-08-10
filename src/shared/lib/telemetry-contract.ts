@@ -16,8 +16,8 @@ export const trackedMutationNames = {
   activityBlockUser: "activity.user.block",
   activityUnblockUser: "activity.user.unblock",
   activityGroupRatingSubmit: "activity.group-rating.submit",
-  forgeAuto: "forge.auto",
-  forgeManual: "forge.manual",
+  planCreationAuto: "planCreation.auto",
+  planCreationManual: "planCreation.manual",
   settingsUpdateProfile: "settings.update-profile",
   settingsUploadAvatar: "settings.upload-avatar",
   settingsNotificationPreferences: "settings.notification-preferences",
@@ -83,7 +83,7 @@ export const routeErrorScopes = {
   safetyAccountAction: "safety.account-action",
   safetyRestriction: "safety.restriction",
   admin: "admin",
-  forge: "forge",
+  planCreation: "planCreation",
 } as const;
 
 export type TrackedMutationName =

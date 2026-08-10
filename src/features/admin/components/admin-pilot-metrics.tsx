@@ -547,7 +547,7 @@ function AdminPilotMetricsError({ onRetry }: { onRetry: () => void }) {
         Pilot outcomes are unavailable
       </h2>
       <p className="mt-1 max-w-xl text-pretty text-slate-muted text-sm leading-relaxed">
-        TeamForge could not load the current outcome metrics. Pilot readiness
+        Findafew could not load the current outcome metrics. Pilot readiness
         remains available above.
       </p>
       <Button

@@ -103,7 +103,7 @@ export function IntroductoryExploreGroupCard({
                 returnGroupId: group.id,
                 returnSearch: "source=explore",
               })}
-              className="inline-flex items-center gap-2 rounded-full bg-forge-teal px-4 py-2 font-bold text-sm text-white transition-colors hover:bg-forge-teal/85 focus-visible:outline-2 focus-visible:outline-forge-teal focus-visible:outline-offset-2"
+              className="inline-flex items-center gap-2 rounded-full bg-brand-teal px-4 py-2 font-bold text-sm text-white transition-colors hover:bg-brand-teal/85 focus-visible:outline-2 focus-visible:outline-brand-teal focus-visible:outline-offset-2"
             >
               Continue setup
               <ArrowRight className="size-4" aria-hidden="true" />

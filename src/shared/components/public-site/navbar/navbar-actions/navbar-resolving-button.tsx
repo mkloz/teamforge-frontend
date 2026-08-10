@@ -20,7 +20,7 @@ export function NavbarResolvingButton({
         size,
         staticPublicTheme,
       })}
-      aria-label="Checking TeamForge session"
+      aria-label="Checking Findafew session"
     >
       {label}
     </Button>

@@ -7,7 +7,7 @@ import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Button } from "@/shared/components/ui/button";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { buildForgeLaunchNavigation } from "@/shared/navigation/forge-navigation";
+import { buildPlanCreationLaunchNavigation } from "@/shared/navigation/plan-creation-navigation";
 
 import { ExploreFeedContent } from "./explore-feed-content";
 import { ExploreFeedSkeleton } from "./explore-feed-skeleton";
@@ -37,7 +37,7 @@ export function ExploreFeed() {
     return (
       <PageErrorState
         title="Openings could not load"
-        description="TeamForge could not refresh the available openings for these filters."
+        description="Findafew could not refresh the available openings for these filters."
         retryLabel="Refresh openings"
         onRetry={() => {
           void refetch();
@@ -112,11 +112,11 @@ function ExploreFeedEmpty({
           </Button>
           <Button asChild variant="primary" size="sm">
             <Link
-              {...buildForgeLaunchNavigation()}
+              {...buildPlanCreationLaunchNavigation()}
               className="inline-flex items-center gap-2"
             >
               <UsersRound className="size-4" aria-hidden="true" />
-              Forge a group
+              PlanCreation a group
             </Link>
           </Button>
         </div>

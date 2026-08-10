@@ -1,50 +1,50 @@
 @keyframes message-search-focus {
   0% {
     box-shadow:
-      inset 0 0 0 0 color-mix(in srgb, var(--color-spark-amber) 0%, transparent),
+      inset 0 0 0 0 color-mix(in srgb, var(--color-brand-amber) 0%, transparent),
       inset 0 0 0 999px
-      color-mix(in srgb, var(--color-spark-amber) 0%, transparent);
+      color-mix(in srgb, var(--color-brand-amber) 0%, transparent);
   }
   22% {
     box-shadow:
       inset 0 0 0 2px
-      color-mix(in srgb, var(--color-spark-amber) 58%, transparent),
+      color-mix(in srgb, var(--color-brand-amber) 58%, transparent),
       inset 0 0 0 999px
-      color-mix(in srgb, var(--color-spark-amber) 7%, transparent);
+      color-mix(in srgb, var(--color-brand-amber) 7%, transparent);
   }
   100% {
     box-shadow:
       inset 0 0 0 1px
-      color-mix(in srgb, var(--color-spark-amber) 36%, transparent),
+      color-mix(in srgb, var(--color-brand-amber) 36%, transparent),
       inset 0 0 0 999px
-      color-mix(in srgb, var(--color-spark-amber) 3%, transparent);
+      color-mix(in srgb, var(--color-brand-amber) 3%, transparent);
   }
 }
 
 .message-search-focus {
-  border-color: color-mix(in srgb, var(--color-spark-amber) 34%, var(--border));
+  border-color: color-mix(in srgb, var(--color-brand-amber) 34%, var(--border));
   animation: message-search-focus 1.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .message-action-focus {
-  border-color: color-mix(in srgb, var(--color-forge-teal) 38%, var(--border));
+  border-color: color-mix(in srgb, var(--color-brand-teal) 38%, var(--border));
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--color-forge-teal) 30%, transparent),
-    0 0 0 5px color-mix(in srgb, var(--color-forge-teal) 9%, transparent),
-    0 8px 24px color-mix(in srgb, var(--color-forge-teal) 8%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--color-brand-teal) 30%, transparent),
+    0 0 0 5px color-mix(in srgb, var(--color-brand-teal) 9%, transparent),
+    0 8px 24px color-mix(in srgb, var(--color-brand-teal) 8%, transparent);
 }
 
 .message-search-mark {
   border-radius: 0.24em;
   background: linear-gradient(
     to top,
-    color-mix(in srgb, var(--color-spark-amber) 34%, transparent) 0 42%,
+    color-mix(in srgb, var(--color-brand-amber) 34%, transparent) 0 42%,
     transparent 42% 100%
   );
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
   box-shadow: inset 0 -0.08em 0
-    color-mix(in srgb, var(--color-spark-amber) 45%, transparent);
+    color-mix(in srgb, var(--color-brand-amber) 45%, transparent);
   color: inherit;
   padding-inline: 0.03em;
 }

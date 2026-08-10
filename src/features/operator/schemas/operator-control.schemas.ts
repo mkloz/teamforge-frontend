@@ -57,7 +57,7 @@ export const OPERATOR_MODERATION_AUTONOMOUS_ACTION_CODES = [
   "TEMPORARY_ACCOUNT_SUSPENSION",
   "GROUP_RESTRICTION",
   "ITEM_QUARANTINE",
-  "FORGE_PROPOSAL_HOLD",
+  "GROUP_PROPOSAL_HOLD",
   "NEW_STRANGER_CONTACT_PAUSE",
 ] as const;
 export const OPERATOR_MODERATION_AUTONOMOUS_DECISION_KINDS = [
@@ -71,7 +71,7 @@ export const OPERATOR_MODERATION_AUTHORITY_SCOPES = [
   "ITEM",
   "GROUP",
   "ITEM_QUARANTINE",
-  "FORGE_PROPOSAL_HOLD",
+  "GROUP_PROPOSAL_HOLD",
   "NEW_STRANGER_CONTACT_PAUSE",
 ] as const;
 export const OPERATOR_MODERATION_AUTHORITY_TARGET_TYPES = [
@@ -272,7 +272,7 @@ export const operatorModerationConfigurationCommandResultSchema = z.object({
 });
 
 export const OPERATOR_MODERATION_EVALUATION_CORPUS_VERSION =
-  "teamforge-moderation-corpus-2026-07-17-v2" as const;
+  "findafew-moderation-corpus-2026-07-17-v2" as const;
 export const OPERATOR_MODERATION_RELEASE_METRICS_VERSION =
   "moderation-release-metrics.v1" as const;
 export const OPERATOR_MODERATION_RELEASE_THRESHOLD_VERSION =

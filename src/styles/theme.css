@@ -5,10 +5,10 @@
     sans-serif;
   --font-display: "Source Serif 4 Variable", Georgia, ui-serif, serif;
 
-  --color-forge-teal: #0d9488;
-  --color-forge-deep-panel: #0a1212;
-  --color-forge-deep-surface: #111111;
-  --color-spark-amber: #ffbf00;
+  --color-brand-teal: #0d9488;
+  --color-hero-deep-panel: #0a1212;
+  --color-hero-deep-surface: #111111;
+  --color-brand-amber: #ffbf00;
   --color-hero-bg: #090909;
   --color-ink: var(--ink);
   --color-canvas: var(--canvas);
@@ -25,18 +25,18 @@
   --animate-hero-fade-in: hero-fade-in 0.8s ease-out forwards;
   --animate-hero-fade-in-right: hero-fade-in-right 1s ease-out forwards;
   --animate-card-reveal: card-reveal 0.6s ease-out forwards;
-  --animate-forge-slide-up: forge-slide-up 0.28s cubic-bezier(0.34, 1.1, 0.64, 1) forwards;
+  --animate-plan-creation-slide-up: plan-creation-slide-up 0.28s cubic-bezier(0.34, 1.1, 0.64, 1) forwards;
   --animate-scroll-hint: scroll-hint 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   --animate-fade-down: fade-down 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   --animate-skeleton-shimmer: skeleton-shimmer 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   --animate-collapsible-down: collapsible-down 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   --animate-collapsible-up: collapsible-up 0.2s cubic-bezier(0.4, 0, 1, 1);
-  --animate-forge-orb-rotate: forge-orb-rotate 20s linear infinite;
-  --animate-forge-orb-breathe: forge-orb-breathe 4s ease-in-out infinite;
+  --animate-plan-creation-orb-rotate: plan-creation-orb-rotate 20s linear infinite;
+  --animate-plan-creation-orb-breathe: plan-creation-orb-breathe 4s ease-in-out infinite;
   --animate-download-device-drift: download-device-drift 10s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-  --animate-forge-card-float-a: forge-card-float-a 4s ease-in-out infinite alternate;
-  --animate-forge-card-float-b: forge-card-float-b 3.5s ease-in-out infinite alternate;
-  --animate-forge-card-float-c: forge-card-float-c 5s ease-in-out infinite alternate;
+  --animate-plan-creation-card-float-a: plan-creation-card-float-a 4s ease-in-out infinite alternate;
+  --animate-plan-creation-card-float-b: plan-creation-card-float-b 3.5s ease-in-out infinite alternate;
+  --animate-plan-creation-card-float-c: plan-creation-card-float-c 5s ease-in-out infinite alternate;
   --animate-side-nav-reveal: side-nav-reveal 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -84,6 +84,12 @@
   --color-surface-inset: var(--surface-inset);
   --color-surface-selected: var(--surface-selected);
   --color-surface-interactive: var(--surface-interactive);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent-soft: var(--accent-soft);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-muted-soft: var(--muted-soft);
+  --color-success-soft: var(--success-soft);
+  --color-warning-soft: var(--warning-soft);
   --color-text-secondary: var(--text-secondary);
   --color-text-disabled: var(--text-disabled);
   --color-divider: var(--divider);

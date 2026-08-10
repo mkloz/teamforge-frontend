@@ -36,7 +36,7 @@ export function LengthOptionPrecision({
             <m.div
               initial={{ width: 0 }}
               animate={{ width: `${viewModel.progressPercent}%` }}
-              className="h-full bg-forge-teal"
+              className="h-full bg-brand-teal"
             />
           </div>
         ) : (
@@ -47,7 +47,7 @@ export function LengthOptionPrecision({
                 className={cn(
                   "h-1.5 w-3 rounded-full transition-colors",
                   index < viewModel.resolutionSegmentCount
-                    ? "bg-forge-teal/40"
+                    ? "bg-brand-teal/40"
                     : "bg-muted dark:bg-white/10",
                 )}
               />

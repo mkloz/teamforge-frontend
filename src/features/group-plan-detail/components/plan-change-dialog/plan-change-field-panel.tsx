@@ -57,7 +57,7 @@ export function PlanChangeFieldPanel({
           tone="danger"
           size="sm"
           icon={<AlertCircle className="size-3.5 shrink-0" />}
-          className="mt-3 bg-destructive/8"
+          className="mt-3 bg-destructive-soft"
         >
           {form.error}
         </Notice>

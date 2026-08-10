@@ -130,8 +130,7 @@ const PWA_PRODUCTION_ENV_SCRIPT = "scripts/pwa/production-env.mjs";
 const PWA_RELEASE_SCRIPT = "node scripts/pwa/release.mjs";
 const LOCAL_APP_URL = "http://localhost:3000";
 const LOCAL_API_URL = "http://localhost:6969/api/v1";
-const MEDIA_BASE_URL = "https://mkloz-teamforge.s3.us-east-1.amazonaws.com";
-const PRODUCTION_API_URL = "https://arm-api.mkloz.com/teamforge/api/v1";
+const PRODUCTION_API_URL = "https://api.findafew.today/findafew/api/v1";
 
 /**
  * @param {readonly string[]} markers Source marker strings.
@@ -163,21 +162,28 @@ const ENV_EXAMPLE_GUARDS = [
     passDetail: `.env.example points VITE_API_URL at ${LOCAL_API_URL}.`,
   },
   {
-    expected: MEDIA_BASE_URL,
+    expected: "",
     failDetail: (value) =>
-      `.env.example should use ${MEDIA_BASE_URL}; found ${value ?? "missing"}.`,
+      `.env.example should leave media provider-gated; found ${value ?? "missing"}.`,
     key: "VITE_MEDIA_BASE_URL",
     name: ".env.example media base URL",
-    passDetail:
-      ".env.example points VITE_MEDIA_BASE_URL at the seed media host.",
+    passDetail: ".env.example leaves VITE_MEDIA_BASE_URL provider-gated.",
   },
   {
-    expected: "your-google-maps-api-key",
-    failDetail: () =>
-      ".env.example should not include a real-looking Google Maps key.",
+    expected: "",
+    failDetail: (value) =>
+      `.env.example should leave Google Maps provider-gated; found ${value ?? "missing"}.`,
     key: "VITE_GOOGLE_MAPS_API_KEY",
     name: ".env.example Maps placeholder",
-    passDetail: ".env.example uses a placeholder Google Maps key.",
+    passDetail: ".env.example leaves Google Maps provider-gated.",
+  },
+  {
+    expected: "false",
+    failDetail: (value) =>
+      `.env.example should disable Static Maps; found ${value ?? "missing"}.`,
+    key: "VITE_GOOGLE_STATIC_MAPS_ENABLED",
+    name: ".env.example Static Maps gate",
+    passDetail: ".env.example keeps Static Maps disabled.",
   },
 ];
 
@@ -209,8 +215,8 @@ const REQUIRED_SW_MARKERS = [
   "precacheAndRoute",
   "cleanupOutdatedCaches",
   "NavigationRoute",
-  "teamforge-public-images",
-  "teamforge-fonts",
+  "findafew-public-images",
+  "findafew-fonts",
   "manifest.webmanifest",
 ];
 
@@ -298,7 +304,6 @@ const PWA_SOURCE_MARKER_TARGETS = [
       "setAppBadge",
       "clearAppBadge",
       "unreadCount",
-      "clearBadge",
     ],
     relativePath: path.relative(ROOT_DIR, path.join(PUBLIC_DIR, "sw-push.js")),
   },
@@ -414,7 +419,7 @@ const SKIPPED_MANUAL_DEVICE_CHECKS = [
   "iOS Safari Add to Home Screen launch and standalone routing",
   "Desktop Chrome install prompt acceptance and installed-window behavior",
   "Real-device push permission prompt and notification delivery",
-  "Installed-app Google OAuth redirect on mobile devices",
+  "Installed-app Google OAuth popup/postMessage on mobile devices",
 ];
 
 const CONTENT_TYPES = {
@@ -942,13 +947,13 @@ function validateDerivedRealtimeUrls() {
   addCheck(
     "Deploy Guards",
     "Production Socket.IO path",
-    productionSocketPath === "/teamforge/socket.io",
+    productionSocketPath === "/findafew/socket.io",
     `Production ${PRODUCTION_API_URL} derives ${productionSocketPath}.`,
   );
   addCheck(
     "Deploy Guards",
     "Production realtime namespace URL",
-    productionRealtimeUrl === "https://arm-api.mkloz.com/realtime",
+    productionRealtimeUrl === "https://api.findafew.today/realtime",
     `Production realtime namespace resolves to ${productionRealtimeUrl}.`,
   );
 }
@@ -1219,7 +1224,7 @@ function validateManifestOrientation(manifest) {
     addFail(
       "Manifest",
       "Orientation",
-      `orientation should be omitted for TeamForge's mobile and desktop PWA surfaces; found "${manifest.orientation}".`,
+      `orientation should be omitted for Findafew's mobile and desktop PWA surfaces; found "${manifest.orientation}".`,
     );
   }
 }
@@ -1269,7 +1274,7 @@ function validateManifestStartUrlAttribution(manifest) {
  */
 function validateManifestColors(manifest) {
   if (manifest.theme_color === "#0D9488") {
-    addPass("Manifest", "Theme color", "theme_color matches forge teal.");
+    addPass("Manifest", "Theme color", "theme_color matches brand teal.");
   } else {
     addFail(
       "Manifest",
@@ -1977,7 +1982,7 @@ async function validateDownloadRouteCopy({
     addCheck(
       "Route",
       "Download copy",
-      combinedDownloadCode.includes("Download TeamForge"),
+      combinedDownloadCode.includes("Install Findafew"),
       "Built download chunk should contain download metadata/copy.",
     );
     addCheck(
@@ -2068,7 +2073,7 @@ function addRouteHttpSmokeChecks({
     "Route",
     "Manifest HTTP smoke",
     manifestResponse.statusCode === 200 &&
-      manifestResponse.body.includes('"name":"TeamForge"'),
+      manifestResponse.body.includes('"name":"Findafew"'),
     `/manifest.webmanifest returned ${manifestResponse.statusCode}.`,
   );
   addCheck(

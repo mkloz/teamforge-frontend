@@ -50,7 +50,7 @@ export function removeBrowserSessionStorageItem(key: string) {
 }
 
 export function canUseBrowserSessionStorage() {
-  const probeKey = "teamforge:session-storage-probe";
+  const probeKey = "findafew:session-storage-probe";
   const probeValue = crypto.randomUUID();
   const written = setBrowserSessionStorageItem(probeKey, probeValue);
 

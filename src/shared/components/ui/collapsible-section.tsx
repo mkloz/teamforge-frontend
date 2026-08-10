@@ -27,7 +27,7 @@ const rootVariants: Record<CollapsibleSectionVariant, string> = {
 };
 
 const triggerVariants: Record<CollapsibleSectionVariant, string> = {
-  plain: "w-fit py-1 text-foreground text-xs",
+  plain: "min-h-9 w-fit py-1 text-foreground text-xs",
   card: "w-full px-4 py-3 text-ink text-sm",
   panel: "w-full px-5 py-5 text-ink text-sm sm:px-6",
 };

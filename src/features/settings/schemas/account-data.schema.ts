@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { DateOfBirthValidator } from "@/shared/validators/date-of-birth.validator";
+import { FindafewLaunchDateOfBirthValidator } from "@/shared/validators/date-of-birth.validator";
 
 export const accountLifecycleSchema = z.object({
   lifecycle: z.enum(["ACTIVE", "DEACTIVATED", "DELETED"]),
@@ -41,7 +41,7 @@ export const adultEligibilityCorrectionResponseSchema = z.object({
 });
 
 export const adultEligibilityCorrectionFormSchema = z.object({
-  dateOfBirth: DateOfBirthValidator,
+  dateOfBirth: FindafewLaunchDateOfBirthValidator,
 });
 
 export const accountExportSchema = z.object({

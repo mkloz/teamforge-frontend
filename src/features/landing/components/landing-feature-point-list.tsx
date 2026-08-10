@@ -28,7 +28,7 @@ export function LandingFeaturePointList({
         <li key={title} className={itemClassName}>
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-foreground">
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary-soft text-foreground">
                 <Icon className="size-3.5" aria-hidden="true" strokeWidth={2} />
               </span>
               <h3 className="font-black text-base text-white leading-snug">

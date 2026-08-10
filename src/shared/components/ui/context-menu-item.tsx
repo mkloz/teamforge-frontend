@@ -21,7 +21,7 @@ function ContextMenuItem({
     <ContextMenuPrimitive.Item
       ref={ref}
       className={cn(
-        "relative flex min-h-9 cursor-pointer select-none items-center rounded-lg px-2.5 py-1.5 text-sm outline-none transition-colors focus:bg-accent/12 focus:text-accent data-[disabled]:cursor-not-allowed data-[highlighted]:bg-accent/12 data-[highlighted]:text-accent data-[disabled]:opacity-50",
+        "relative flex min-h-9 cursor-pointer select-none items-center rounded-lg px-2.5 py-1.5 text-sm outline-none transition-colors focus:bg-accent-soft focus:text-accent data-[disabled]:cursor-not-allowed data-[highlighted]:bg-accent-soft data-[highlighted]:text-accent data-[disabled]:opacity-50",
         inset && "pl-8",
         className,
       )}

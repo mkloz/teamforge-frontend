@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 const PUBLIC_PATHS = ["/", "/download", "/privacy", "/terms"];
+const INDEXABLE_PATHS = ["/", "/download"];
+const DRAFT_PATHS = ["/privacy", "/terms"];
 const PRIVATE_PATH_FRAGMENTS = [
   "/home",
   "/groups/",
@@ -11,7 +13,7 @@ const PRIVATE_PATH_FRAGMENTS = [
   "/users/",
   "/settings",
   "/safety",
-  "/forge",
+  "/plans/new",
   "/onboarding",
   "/admin",
   "/auth",
@@ -27,7 +29,7 @@ const REQUIRED_PROTECTED_HEADER_PATHS = [
   "/users/*",
   "/settings",
   "/safety/*",
-  "/forge",
+  "/plans/new",
   "/onboarding/*",
   "/admin",
   "/admin/*",
@@ -79,26 +81,32 @@ async function verifyHtmlRoutes(outDir) {
       countMatches(html, /<link rel="canonical"/gu) === 1,
       `${pathname} must contain exactly one canonical link.`,
     );
+    const robotsDirective = INDEXABLE_PATHS.includes(pathname)
+      ? "index, follow"
+      : "noindex, nofollow, noarchive, nosnippet, noimageindex";
     assert(
       countMatches(
         html,
-        /<meta name="robots" content="index, follow" \/>/gu,
+        new RegExp(
+          `<meta name="robots" content="${robotsDirective}" \\/>`,
+          "gu",
+        ),
       ) === 1,
-      `${pathname} must contain exactly one indexable robots directive.`,
+      `${pathname} must contain exactly one ${robotsDirective} directive.`,
     );
     assert(
-      !html.includes("__TEAMFORGE_APP_URL__"),
+      !html.includes("__APP_PUBLIC_URL__"),
       `${pathname} still contains an unresolved app URL placeholder.`,
     );
   }
 
   assert(
-    pages[0][1].includes('data-teamforge-json-ld="public-site"'),
+    pages[0][1].includes('data-app-json-ld="public-site"'),
     "The homepage is missing Organization/WebSite structured data.",
   );
   for (const [pathname, html] of pages.slice(1)) {
     assert(
-      !html.includes('data-teamforge-json-ld="public-site"'),
+      !html.includes('data-app-json-ld="public-site"'),
       `${pathname} must not inherit homepage structured data.`,
     );
   }
@@ -107,14 +115,20 @@ async function verifyHtmlRoutes(outDir) {
 }
 
 async function verifyDiscoveryFiles(outDir, origin) {
-  const [headers, llms, robots, sitemap] = await Promise.all([
+  const [headers, llms, llmsSource, robots, sitemap] = await Promise.all([
     readOutputFile(outDir, "_headers"),
     readOutputFile(outDir, "llms.txt"),
+    readFile(path.resolve("public", "llms.txt"), "utf8"),
     readOutputFile(outDir, "robots.txt"),
     readOutputFile(outDir, "sitemap.xml"),
   ]);
 
-  for (const pathname of PUBLIC_PATHS) {
+  assert(
+    llms === llmsSource.replaceAll("__APP_PUBLIC_URL__", origin),
+    "Generated llms.txt differs from the authoritative public/llms.txt source.",
+  );
+
+  for (const pathname of INDEXABLE_PATHS) {
     const publicUrl = `${origin}${pathname}`;
     assert(
       sitemap.includes(`<loc>${publicUrl}</loc>`),
@@ -123,6 +137,24 @@ async function verifyDiscoveryFiles(outDir, origin) {
     assert(
       pathname === "/" || llms.includes(`](${publicUrl})`),
       `${publicUrl} is absent from llms.txt.`,
+    );
+  }
+
+  for (const pathname of DRAFT_PATHS) {
+    const publicUrl = `${origin}${pathname}`;
+    assert(
+      !sitemap.includes(`<loc>${publicUrl}</loc>`),
+      `${publicUrl} is a draft and must be absent from sitemap.xml.`,
+    );
+    assert(
+      !llms.includes(`](${publicUrl})`),
+      `${publicUrl} is a draft and must be absent from llms.txt links.`,
+    );
+    assert(
+      headers.includes(
+        `${pathname}\n  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex`,
+      ),
+      `Missing draft-route crawler header for ${pathname}.`,
     );
   }
 
@@ -166,7 +198,7 @@ async function main() {
   const origin = await verifyHtmlRoutes(outDir);
   await verifyDiscoveryFiles(outDir, origin);
   process.stdout.write(
-    `SEO build verified: ${PUBLIC_PATHS.length} public routes; protected routes excluded.\n`,
+    `SEO build verified: ${PUBLIC_PATHS.length} public routes, ${INDEXABLE_PATHS.length} indexable; draft and protected routes excluded.\n`,
   );
 }
 

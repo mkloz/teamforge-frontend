@@ -1,4 +1,3 @@
-import { extractProposalId } from "@/features/notifications/lib/notification-intent";
 import type { ParsedNotificationLink } from "./notification-destination.types";
 
 export function parseNotificationLink(link: string | null) {
@@ -6,24 +5,7 @@ export function parseNotificationLink(link: string | null) {
     return null;
   }
 
-  return (
-    parseAbsoluteNotificationLink(link) ?? parseRelativeNotificationLink(link)
-  );
-}
-
-function parseAbsoluteNotificationLink(
-  link: string,
-): ParsedNotificationLink | null {
-  try {
-    const parsedUrl = new URL(link);
-
-    return {
-      pathname: parsedUrl.pathname,
-      searchParams: parsedUrl.searchParams,
-    } satisfies ParsedNotificationLink;
-  } catch {
-    return null;
-  }
+  return parseRelativeNotificationLink(link);
 }
 
 function parseRelativeNotificationLink(
@@ -70,10 +52,6 @@ function splitNotificationPathAndSearch(link: string) {
   };
 }
 
-export function normalizeNotificationPathname(pathname: string) {
-  return pathname.replace(/^\/api(?:\/v\d+)?(?=\/)/, "");
-}
-
 export function extractProposalIdFromLink(link: string | null) {
   const parsedLink = parseNotificationLink(link);
 
@@ -81,25 +59,9 @@ export function extractProposalIdFromLink(link: string | null) {
     return undefined;
   }
 
-  const proposalId = extractProposalId(parsedLink.searchParams);
+  const proposalId = parsedLink.searchParams.get("proposal");
 
   return proposalId ?? undefined;
-}
-
-export function extractPlanId(searchParams: URLSearchParams) {
-  return getFirstSearchParam(searchParams, ["plan", "planId", "currentPlanId"]);
-}
-
-export function extractMessageId(searchParams: URLSearchParams) {
-  return getFirstSearchParam(searchParams, ["message", "messageId"]);
-}
-
-export function extractChatId(searchParams: URLSearchParams) {
-  return getFirstSearchParam(searchParams, ["chat", "chatId"]);
-}
-
-export function extractGroupId(searchParams: URLSearchParams) {
-  return getFirstSearchParam(searchParams, ["group", "groupId"]);
 }
 
 export function findLiteral<T extends readonly string[]>(
@@ -107,19 +69,4 @@ export function findLiteral<T extends readonly string[]>(
   value: string | null,
 ): T[number] | undefined {
   return values.find((candidate) => candidate === value);
-}
-
-export function getFirstSearchParam(
-  searchParams: URLSearchParams,
-  keys: readonly string[],
-) {
-  for (const key of keys) {
-    const value = searchParams.get(key);
-
-    if (value) {
-      return value;
-    }
-  }
-
-  return undefined;
 }

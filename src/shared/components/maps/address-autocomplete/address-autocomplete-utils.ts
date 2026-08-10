@@ -1,14 +1,18 @@
+import type { GooglePlaceSuggestion } from "@/shared/lib/maps/location.types";
+
 export function getAddressInputRightPaddingClassName({
   inputValue,
-  mapsReady,
+  showLocateControl,
   showBusyIndicator,
 }: {
   inputValue: string;
-  mapsReady: boolean;
+  showLocateControl: boolean;
   showBusyIndicator: boolean;
 }) {
   const rightControlCount =
-    Number(mapsReady) + Number(showBusyIndicator) + Number(Boolean(inputValue));
+    Number(showLocateControl) +
+    Number(showBusyIndicator) +
+    Number(Boolean(inputValue));
 
   if (rightControlCount >= 3) {
     return "pr-22";
@@ -33,7 +37,7 @@ export function getActiveSuggestionId({
 }: {
   activeSuggestionIndex: number;
   isSuggestionsOpen: boolean;
-  suggestions: GoogleAutocompletePrediction[];
+  suggestions: GooglePlaceSuggestion[];
   suggestionsId: string;
 }) {
   const activeSuggestion = suggestions[activeSuggestionIndex];
@@ -42,7 +46,7 @@ export function getActiveSuggestionId({
     return undefined;
   }
 
-  return `${suggestionsId}-${activeSuggestion.place_id}`;
+  return `${suggestionsId}-${activeSuggestion.id}`;
 }
 
 export function getLocationHintMessage({
@@ -59,12 +63,12 @@ export function getLocationHintMessage({
   }
 
   if (showManualHint) {
-    return "Autocomplete is off. Type your city or venue manually.";
+    return "Suggestions are off. Type a city or venue manually, or use your location to attach private coordinates.";
   }
 
   return hint;
 }
 
 export function getEstimatedSuggestionsPanelHeight(suggestionCount: number) {
-  return suggestionCount * 37 + 12;
+  return suggestionCount * 37 + 40;
 }

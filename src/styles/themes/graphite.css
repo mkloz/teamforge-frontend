@@ -36,8 +36,8 @@
   --sidebar-accent-foreground: #0f766e;
   --sidebar-border: rgb(23 23 23 / 0.12);
   --sidebar-ring: #0f766e;
-  --color-forge-teal: var(--primary);
-  --color-spark-amber: var(--accent);
+  --color-brand-teal: var(--primary);
+  --color-brand-amber: var(--accent);
 }
 
 .dark,
@@ -78,6 +78,6 @@
   --sidebar-accent-foreground: #59c8bf;
   --sidebar-border: rgb(255 255 255 / 0.12);
   --sidebar-ring: #38bdb2;
-  --color-forge-teal: var(--primary);
-  --color-spark-amber: var(--accent);
+  --color-brand-teal: var(--primary);
+  --color-brand-amber: var(--accent);
 }

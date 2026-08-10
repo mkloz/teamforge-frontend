@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-08-07T15:00:00+01:00",
-  "title": "Design System: TeamForge",
+  "title": "Design System: Findafew",
   "extensions": {
     "colorMeta": {
-      "forge-teal": {
+      "brand-teal": {
         "role": "primary",
-        "displayName": "Forge Teal",
+        "displayName": "Brand Teal",
         "canonical": "#0f766e",
         "tonalRamp": [
           "#042f2e",
@@ -128,7 +128,7 @@
   ],
   "narrative": {
     "northStar": "The Clear Shared Workshop",
-    "overview": "Preserve TeamForge's existing UI anatomy and apply a restrained semantic theme. Balanced dark is truly black; alternate palettes remain purpose-led.",
+    "overview": "Preserve Findafew's existing UI anatomy and apply a restrained semantic theme. Balanced dark is truly black; alternate palettes remain purpose-led.",
     "keyCharacteristics": [
       "True-black default dark environment and neutral light environment.",
       "Restrained 12px control geometry and approximately 20px major surfaces.",

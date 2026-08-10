@@ -21,11 +21,11 @@ vi.mock("@/shared/api/onboarding-product-state-query", () => ({
       stage: "INTRODUCTORY",
       capabilities: {
         USE_ONBOARDING_PRACTICE: { allowed: true },
-        START_FORGE: { allowed: false },
-        START_INTRODUCTORY_FORGE: { allowed: true },
+        START_GROUP_FORMATION: { allowed: false },
+        START_INTRODUCTORY_GROUP_FORMATION: { allowed: true },
       },
       presentation: {
-        coachmarkOrder: ["EXPLORE", "FORGE", "ACTIVITY"],
+        coachmarkOrder: ["EXPLORE", "START_PLAN", "ACTIVITY"],
       },
     },
   }),
@@ -78,8 +78,10 @@ describe("focused product onboarding tutorial", () => {
       document.querySelector("[data-onboarding-tour-spotlight]"),
     ).not.toHaveClass("border-2");
 
-    await user.click(screen.getByRole("button", { name: "Next: Forge" }));
-    expect(navigateMock).toHaveBeenCalledWith({ to: "/forge" });
+    await user.click(
+      screen.getByRole("button", { name: "Next: Start a plan" }),
+    );
+    expect(navigateMock).toHaveBeenCalledWith({ to: "/plans/new" });
   });
 
   it("remains skippable without making the dialog modal", async () => {

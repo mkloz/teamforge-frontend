@@ -108,8 +108,8 @@ function RegistrationRecoveryNotice({
     >
       <p>
         {isGoogleAccount
-          ? "You already have a TeamForge account with this email. Use Google to sign in—your existing account and progress are safe."
-          : "You already have a TeamForge account with this email. Sign in instead of creating another account."}
+          ? "You already have a Findafew account with this email. Use Google to sign in—your existing account and progress are safe."
+          : "You already have a Findafew account with this email. Sign in instead of creating another account."}
       </p>
     </Notice>
   );

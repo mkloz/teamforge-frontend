@@ -8,9 +8,9 @@ import { createPublicPageMetadata } from "@/shared/lib/seo/public-page-metadata"
 function resetHead() {
   document.head.innerHTML = `
     <title>Original title</title>
-    <link rel="canonical" href="https://teamforge.example/" />
+    <link rel="canonical" href="https://findafew.example/" />
     <meta name="robots" content="index, follow" />
-    <script type="application/ld+json" data-teamforge-json-ld="public-site">{"old":true}</script>
+    <script type="application/ld+json" data-app-json-ld="public-site">{"old":true}</script>
   `;
 }
 
@@ -21,7 +21,7 @@ describe("document metadata", () => {
     resetHead();
     const restore = applyDocumentMetadata(createPublicPageMetadata("/"));
 
-    expect(document.title).toContain("TeamForge");
+    expect(document.title).toContain("Findafew");
     expect(
       document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')
         ?.href,
@@ -32,9 +32,8 @@ describe("document metadata", () => {
         ?.getAttribute("content"),
     ).toBe("http://localhost:3000/");
     expect(
-      document.head.querySelector(
-        'script[data-teamforge-json-ld="public-site"]',
-      )?.textContent,
+      document.head.querySelector('script[data-app-json-ld="public-site"]')
+        ?.textContent,
     ).toContain('"Organization"');
 
     restore();
@@ -43,18 +42,17 @@ describe("document metadata", () => {
     expect(
       document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')
         ?.href,
-    ).toBe("https://teamforge.example/");
+    ).toBe("https://findafew.example/");
     expect(
-      document.head.querySelector(
-        'script[data-teamforge-json-ld="public-site"]',
-      )?.textContent,
+      document.head.querySelector('script[data-app-json-ld="public-site"]')
+        ?.textContent,
     ).toBe('{"old":true}');
   });
 
   it("can remove public discovery metadata while a protected route is active", () => {
     resetHead();
     const restore = applyDocumentMetadata({
-      title: "TeamForge",
+      title: "Findafew",
       links: [{ rel: "canonical", href: null }],
       jsonLd: [{ id: "public-site", value: null }],
       meta: [
@@ -67,9 +65,7 @@ describe("document metadata", () => {
 
     expect(document.head.querySelector('link[rel="canonical"]')).toBeNull();
     expect(
-      document.head.querySelector(
-        'script[data-teamforge-json-ld="public-site"]',
-      ),
+      document.head.querySelector('script[data-app-json-ld="public-site"]'),
     ).toBeNull();
     expect(
       document.head

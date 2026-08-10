@@ -28,7 +28,7 @@ export function AppearanceColorPicker({
       <div>
         <h3 className="font-bold text-base text-ink">Palette</h3>
         <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          Pick the surface and accent combination used across TeamForge.
+          Pick the surface and accent combination used across Findafew.
         </p>
       </div>
 
@@ -85,7 +85,7 @@ function PaletteOption({
     <label
       className={cn(
         "group relative min-w-0 rounded-xl bg-background/55 p-2 text-left shadow-soft-sm transition-[background-color,box-shadow] duration-150 motion-reduce:transition-none sm:p-2.5",
-        isSelected ? "bg-primary/10 shadow-soft-md" : "hover:shadow-soft-md",
+        isSelected ? "bg-primary-soft shadow-soft-md" : "hover:shadow-soft-md",
         disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
       )}
     >

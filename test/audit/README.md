@@ -65,9 +65,9 @@ The seam between the two folders should stay simple: `scripts/audit/` starts the
 
 Run the Playwright lane with `node scripts/audit/run-playwright.mjs` against an already running audit preview, or set `AUDIT_RUN_PLAYWRIGHT=true` when running `node scripts/audit/run-authenticated-pipeline.mjs`.
 
-By default, Playwright runs the route-health lane over the expanded authenticated route set: `/home`, `/explore`, `/activity`, `/profile`, `/settings`, `/forge`, plus group and user detail routes when the audit runner can resolve real local IDs. Set `AUDIT_PLAYWRIGHT_ROUTE_SET=smoke` to keep the old fast loop over `/home`, `/explore`, and `/activity`.
+By default, Playwright runs the route-health lane over the expanded authenticated route set: `/home`, `/explore`, `/activity`, `/profile`, `/settings`, `/plans/new`, plus group, proposal, and user detail routes when the audit runner can resolve real local IDs. Set `AUDIT_PLAYWRIGHT_ROUTE_SET=smoke` to keep the fast loop over `/home`, `/explore`, and `/activity`.
 
-Set `AUDIT_PLAYWRIGHT_LANES=accessibility` to run only the axe lane, or `AUDIT_PLAYWRIGHT_LANES=route-health,accessibility` to run both. The accessibility lane scans representative public and authenticated surfaces: `/`, `/download`, `/home`, `/explore`, `/activity`, and `/forge`. It writes one JSON result per route under `playwright/accessibility/` and runs report-only by default. Set `AUDIT_AXE_FAIL_IMPACTS=critical,serious` later when the team is ready to make axe findings a blocking gate.
+Set `AUDIT_PLAYWRIGHT_LANES=accessibility` to run only the axe lane, or `AUDIT_PLAYWRIGHT_LANES=route-health,accessibility` to run both. The accessibility lane scans representative public and authenticated surfaces: `/`, `/download`, `/home`, `/explore`, `/activity`, and `/plans/new`. It writes one JSON result per route under `playwright/accessibility/` and runs report-only by default. Set `AUDIT_AXE_FAIL_IMPACTS=critical,serious` later when the team is ready to make axe findings a blocking gate.
 
 The generated `playwright/index.md` is the triage surface: it links each route JSON file, summarizes axe findings by rule, and lists the highest-node routes with example selectors.
 

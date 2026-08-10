@@ -9,7 +9,7 @@ export const personalityAssessmentFormVersionSchema = z.enum([
   "IPIP_30_V1",
   "IPIP_50_V1",
   "IPIP_150_V1",
-  "TF_OCEAN_DYNAMIC_V1",
+  "FINDAFEW_OCEAN_DYNAMIC_V1",
 ]);
 
 export const personalityAssessmentSourceSchema = z.enum([

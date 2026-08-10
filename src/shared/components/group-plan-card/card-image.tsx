@@ -112,7 +112,7 @@ function NoImagePlaceholder() {
     <div className="relative size-full overflow-hidden bg-canvas transition-transform duration-700 ease-out will-change-transform group-hover:scale-105 motion-reduce:transition-none">
       <span className="sr-only">Opening without artwork</span>
       <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_28%_24%,color-mix(in_srgb,var(--color-forge-teal)_16%,transparent),transparent_34%),radial-gradient(circle_at_72%_76%,color-mix(in_srgb,var(--color-spark-amber)_13%,transparent),transparent_32%)]"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_28%_24%,color-mix(in_srgb,var(--color-brand-teal)_16%,transparent),transparent_34%),radial-gradient(circle_at_72%_76%,color-mix(in_srgb,var(--color-brand-amber)_13%,transparent),transparent_32%)]"
         aria-hidden="true"
       />
       <div
@@ -124,19 +124,19 @@ function NoImagePlaceholder() {
         aria-hidden="true"
       />
       <span
-        className="absolute top-1/2 left-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[color-mix(in_srgb,var(--color-forge-teal)_22%,transparent)] bg-[color-mix(in_srgb,var(--color-forge-teal)_7%,transparent)] shadow-[0_0_0_10px_color-mix(in_srgb,var(--color-forge-teal)_3.5%,transparent)] md:size-9"
+        className="absolute top-1/2 left-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[color-mix(in_srgb,var(--color-brand-teal)_22%,transparent)] bg-[color-mix(in_srgb,var(--color-brand-teal)_7%,transparent)] shadow-[0_0_0_10px_color-mix(in_srgb,var(--color-brand-teal)_3.5%,transparent)] md:size-9"
         aria-hidden="true"
       />
       <span
-        className="absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-spark-amber/75"
+        className="absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-amber/75"
         aria-hidden="true"
       />
       <span
-        className="absolute bottom-4 left-5 h-8 w-px rotate-45 bg-forge-teal/30 md:left-1/2 md:h-10 md:-translate-x-1/2"
+        className="absolute bottom-4 left-5 h-8 w-px rotate-45 bg-brand-teal/30 md:left-1/2 md:h-10 md:-translate-x-1/2"
         aria-hidden="true"
       />
       <span
-        className="absolute top-4 right-5 h-8 w-px rotate-45 bg-spark-amber/30 md:right-auto md:left-1/2 md:h-10 md:-translate-x-1/2"
+        className="absolute top-4 right-5 h-8 w-px rotate-45 bg-brand-amber/30 md:right-auto md:left-1/2 md:h-10 md:-translate-x-1/2"
         aria-hidden="true"
       />
     </div>

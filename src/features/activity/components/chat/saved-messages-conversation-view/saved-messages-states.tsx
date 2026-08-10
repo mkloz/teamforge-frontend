@@ -75,7 +75,7 @@ function SavedMessagesStateVisual({
       shape="circle"
       tone="teal"
       bordered
-      className="border-primary/15 bg-primary/8"
+      className="border-primary/15 bg-primary-soft"
     />
   );
 }

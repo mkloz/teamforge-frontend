@@ -1,3 +1,5 @@
+import type { FocusEvent } from "react";
+
 import { AddressAutocompleteHint } from "@/shared/components/maps/address-autocomplete/address-autocomplete/address-autocomplete-hint";
 import { AddressAutocompleteInputShell } from "@/shared/components/maps/address-autocomplete/address-autocomplete/address-autocomplete-input-shell";
 import { AddressAutocompleteLabelRow } from "@/shared/components/maps/address-autocomplete/address-autocomplete/address-autocomplete-label-row";
@@ -22,13 +24,14 @@ export function AddressAutocomplete({
   required,
   badge = "Location use",
   badgeAction,
-  hint = "TeamForge uses coordinates for nearby group formation. Public profiles can show your city, but not your coordinates.",
+  hint = "Findafew uses coordinates for nearby group formation. Public profiles can show your city, but not your coordinates.",
   className,
 }: AddressAutocompleteProps) {
   const { hintId, inputId, suggestionsId } = useAddressAutocompleteIds();
   const {
     containerRef,
     inputValue,
+    geolocationAvailable,
     mapsStatus,
     mapsReady,
     suggestions,
@@ -51,6 +54,7 @@ export function AddressAutocomplete({
   } = useAddressAutocomplete({ value, onLocationSelect });
   const renderState = getAddressAutocompleteRenderState({
     activeSuggestionIndex,
+    geolocationAvailable,
     hint,
     hintId,
     inputValue,
@@ -81,6 +85,19 @@ export function AddressAutocomplete({
     isSuggestionsOpen,
     suggestions,
   });
+  const handleInputBlur = (event: FocusEvent<HTMLInputElement>) => {
+    const nextTarget = event.relatedTarget;
+
+    if (
+      nextTarget instanceof Node &&
+      (containerRef.current?.contains(nextTarget) ||
+        panelRef.current?.contains(nextTarget))
+    ) {
+      return;
+    }
+
+    closeSuggestions();
+  };
 
   return (
     <div
@@ -108,9 +125,11 @@ export function AddressAutocomplete({
       <AddressAutocompleteInputShell
         clearLocation={clearLocation}
         disabled={disabled}
+        handleInputBlur={handleInputBlur}
         handleInputChange={handleInputChange}
         handleInputFocus={handleInputFocus}
         handleInputKeyDown={handleInputKeyDown}
+        geolocationAvailable={geolocationAvailable}
         hasCurrentAreaError={hasCurrentAreaError}
         hintId={hintId}
         inputId={inputId}
@@ -118,7 +137,6 @@ export function AddressAutocomplete({
         inputValue={inputValue}
         isLocating={isLocating}
         isSuggestionsOpen={isSuggestionsOpen}
-        mapsReady={mapsReady}
         placeholder={placeholder}
         renderState={renderState}
         required={required}

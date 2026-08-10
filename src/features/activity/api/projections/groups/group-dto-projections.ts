@@ -66,7 +66,7 @@ function mapGroupActivitySummary(group: GroupApi): Group["activity"] {
     status: group.activity.status,
     visibility: group.activity.visibility,
     access: group.activity.access,
-    forgeMode: group.activity.forgeMode,
+    groupFormationMode: group.activity.groupFormationMode,
   };
 }
 

@@ -25,7 +25,7 @@ export function SubmissionScreen({ error, onRetry }: SubmissionScreenProps) {
         role={error ? "alert" : undefined}
       >
         {error ??
-          "TeamForge is sending your answers for scoring. This usually takes a few seconds."}
+          "Findafew is sending your answers for scoring. This usually takes a few seconds."}
       </p>
 
       {error ? (

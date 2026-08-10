@@ -16,7 +16,7 @@ import {
 import { getElementById, scrollToPageTop } from "@/shared/lib/browser-scroll";
 
 export const LANDING_BELOW_FOLD_REQUEST_EVENT =
-  "teamforge:landing-below-fold-request";
+  "findafew:landing-below-fold-request";
 
 export interface LandingBelowFoldRequestDetail {
   options: ScrollIntoViewOptions;
@@ -25,7 +25,7 @@ export interface LandingBelowFoldRequestDetail {
 
 declare global {
   interface WindowEventMap {
-    "teamforge:landing-below-fold-request": CustomEvent<LandingBelowFoldRequestDetail>;
+    "findafew:landing-below-fold-request": CustomEvent<LandingBelowFoldRequestDetail>;
   }
 }
 

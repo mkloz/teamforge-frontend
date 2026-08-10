@@ -380,7 +380,7 @@ function AdminPilotStatusError({ onRetry }: { onRetry: () => void }) {
         Pilot status is unavailable
       </h2>
       <p className="mt-1 max-w-xl text-pretty text-slate-muted text-sm leading-relaxed">
-        TeamForge could not load the current cohort or gates. No status is shown
+        Findafew could not load the current cohort or gates. No status is shown
         until the server can be checked again.
       </p>
       <Button

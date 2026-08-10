@@ -120,7 +120,7 @@ export function OperatorJobList({
               className={cn(
                 "min-h-9 rounded-lg px-3 font-semibold text-sm transition-colors",
                 status === filter
-                  ? "bg-primary/10 text-ink"
+                  ? "bg-primary-soft text-ink"
                   : "text-slate-muted hover:bg-muted/50 hover:text-ink",
               )}
               onClick={() => {

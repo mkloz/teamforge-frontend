@@ -18,9 +18,9 @@ export function BalanceNudge() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
       transition={{ duration: 0.2 }}
-      className="mb-4 flex items-start gap-2.5 rounded-xl border border-spark-amber/20 bg-spark-amber/5 px-3.5 py-3"
+      className="mb-4 flex items-start gap-2.5 rounded-xl border border-brand-amber/20 bg-accent-soft px-3.5 py-3"
     >
-      <div className="mt-0.5 shrink-0 text-spark-amber">
+      <div className="mt-0.5 shrink-0 text-brand-amber">
         <Sprout size={16} strokeWidth={2} />
       </div>
       <p className="flex-1 font-sans text-ink text-xs leading-snug">
@@ -34,7 +34,7 @@ export function BalanceNudge() {
             variant="ghost"
             size="icon-xs"
             onClick={() => setDismissed(true)}
-            className="mt-0.5 shrink-0 text-spark-amber/50 hover:text-spark-amber"
+            className="mt-0.5 shrink-0 text-brand-amber/50 hover:text-brand-amber"
             aria-label="Dismiss"
           >
             <X size={14} strokeWidth={2.5} />

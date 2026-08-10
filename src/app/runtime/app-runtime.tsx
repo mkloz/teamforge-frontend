@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import { AppErrorListeners } from "@/app/runtime/app-error-listeners";
 import { AppRealtimeSync } from "@/app/runtime/app-realtime-sync";
 import { AppRoutePreloadRuntime } from "@/app/runtime/app-route-preload-runtime";

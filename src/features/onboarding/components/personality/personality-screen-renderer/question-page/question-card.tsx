@@ -29,7 +29,7 @@ export function QuestionCard({
       className={cn(
         "relative w-full rounded-xl bg-card p-4 shadow-soft-sm transition-all duration-300",
         answered
-          ? "border-forge-teal/30 bg-forge-teal/6 shadow-sm"
+          ? "border-brand-teal/30 bg-primary-soft shadow-sm"
           : "hover:shadow-sm active:bg-muted/50 hover:sm:shadow-md active:dark:bg-white/5",
       )}
     >

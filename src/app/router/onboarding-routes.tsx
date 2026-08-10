@@ -119,7 +119,7 @@ const intentRoute = createRoute({
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.onboardingIntent,
     fullPage: true,
-    title: "We couldn't load your first-mission step",
+    title: "We couldn't load your starting-point step",
     description: "Your choices did not load. Try again or return home.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",

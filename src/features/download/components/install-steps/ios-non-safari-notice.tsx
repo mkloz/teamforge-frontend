@@ -25,7 +25,7 @@ export function IosNonSafariNotice() {
 
   return (
     <div className="grid gap-6">
-      <div className="rounded-2xl border border-spark-amber/20 bg-spark-amber/5 px-6 py-8 sm:px-8">
+      <div className="rounded-2xl border border-brand-amber/20 bg-accent-soft px-6 py-8 sm:px-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
           <div className="min-w-0 flex-1">
             <h3 className="font-bold text-ink text-xl">
@@ -34,7 +34,7 @@ export function IosNonSafariNotice() {
             <p className="mt-2 max-w-lg text-pretty text-slate-muted leading-relaxed">
               On iPhone and iPad, only{" "}
               <strong className="text-ink">Safari</strong> supports Add to Home
-              Screen. You need to open this page in Safari to install TeamForge.
+              Screen. You need to open this page in Safari to install Findafew.
             </p>
 
             <DownloadPageLinkCopy />
@@ -51,7 +51,7 @@ export function IosNonSafariNotice() {
             key={step.title}
             className="flex items-start gap-6 py-7 sm:gap-10"
           >
-            <span className="shrink-0 select-none font-extrabold text-4xl text-spark-amber/30 tabular-nums leading-none sm:text-6xl">
+            <span className="shrink-0 select-none font-extrabold text-4xl text-brand-amber/30 tabular-nums leading-none sm:text-6xl">
               {i + 1}
             </span>
             <div className="min-w-0">

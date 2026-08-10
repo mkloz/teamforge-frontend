@@ -159,7 +159,7 @@ export function buildRecommendationMove(group: ExploreGroup): HomeNextMove {
     title: getRecommendationTitle(group),
     body: `${getRecommendationFitLine(group)} Review the plan and members before joining.`,
     primaryLabel: "See group",
-    secondaryLabel: "Forge instead",
+    secondaryLabel: "Start a plan instead",
     signal: "Recommended group",
     groupId: group.id,
   };
@@ -176,25 +176,27 @@ function getRecommendationTitle(group: ExploreGroup) {
   );
 }
 
-export function buildFirstForgeMove(): HomeNextMove {
+export function buildFirstPlanCreationMove(): HomeNextMove {
   return {
-    kind: "forge",
+    kind: "planCreation",
     eyebrow: "First move",
     title: "Start a group around an activity you want to do",
-    body: "Choose the activity and add the plan details. TeamForge will form a group around them.",
-    primaryLabel: "Forge my group",
+    body: "Choose the activity and add the plan details, then see who is interested.",
+    primaryLabel: "Start a plan",
     secondaryLabel: "Browse first",
     signal: "Ready when you are",
   };
 }
 
-export function buildReturnForgeMove(activeGroupCount: number): HomeNextMove {
+export function buildReturnPlanCreationMove(
+  activeGroupCount: number,
+): HomeNextMove {
   return {
-    kind: "forge",
+    kind: "planCreation",
     eyebrow: "Start something new",
     title: "Start another group for a new plan",
-    body: "Your profile is ready. Choose the activity and plan details, and TeamForge will form the group.",
-    primaryLabel: "Forge my group",
+    body: "Your profile is ready. Choose the activity and plan details, then see who is interested.",
+    primaryLabel: "Start a plan",
     secondaryLabel: "Browse groups",
     signal: `${activeGroupCount} active spaces`,
   };

@@ -8,18 +8,18 @@ import {
   buildAuthRouteNavigation,
   useAuthReturnState,
 } from "@/shared/lib/auth-route";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
-const FORGOT_PASSWORD_METADATA = createTeamForgePageMetadata({
+const FORGOT_PASSWORD_METADATA = createFindafewPageMetadata({
   title: "Reset Password",
-  description: "Request a password reset link for your TeamForge account.",
+  description: "Request a password reset link for your Findafew account.",
 });
 
 export function ForgotPasswordPage() {
   usePageMetadata(FORGOT_PASSWORD_METADATA);
 
   const { returnTo } = useAuthReturnState();
-  const { form, isOnline, loading, onSubmit, rootError } =
+  const { form, isOnline, loading, onSubmit, progress, rootError } =
     useForgotPasswordForm();
 
   return (
@@ -28,6 +28,7 @@ export function ForgotPasswordPage() {
       description="Enter your email and we'll send you a secure link to choose a new password."
       backNavigation={buildAuthRouteNavigation("/auth/login", returnTo)}
       backLabel="Back to login"
+      progress={progress}
       footer={
         <p className="text-center text-slate-muted text-sm">
           Need a fresh start instead?{" "}

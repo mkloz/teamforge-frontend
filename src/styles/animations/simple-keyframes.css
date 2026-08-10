@@ -2,11 +2,11 @@
   0%,
   100% {
     box-shadow: 0 0 16px
-      color-mix(in srgb, var(--color-forge-teal) 30%, transparent);
+      color-mix(in srgb, var(--color-brand-teal) 30%, transparent);
   }
   50% {
     box-shadow: 0 0 32px
-      color-mix(in srgb, var(--color-forge-teal) 55%, transparent);
+      color-mix(in srgb, var(--color-brand-teal) 55%, transparent);
   }
 }
 
@@ -17,7 +17,7 @@
   }
   50% {
     box-shadow: 0 6px 32px
-      color-mix(in srgb, var(--color-spark-amber) 60%, transparent);
+      color-mix(in srgb, var(--color-brand-amber) 60%, transparent);
   }
 }
 
@@ -87,7 +87,7 @@
   }
 }
 
-@keyframes forge-slide-up {
+@keyframes plan-creation-slide-up {
   from {
     opacity: 0;
     transform: translateY(40px);

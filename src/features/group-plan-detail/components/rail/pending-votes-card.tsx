@@ -46,7 +46,7 @@ export function PendingVotesCard({ detail }: PendingVotesCardProps) {
     <RailCard tone="highlight">
       <div className="flex items-center gap-3">
         <CircleDashed
-          className="size-4 shrink-0 text-spark-amber"
+          className="size-4 shrink-0 text-brand-amber"
           aria-hidden="true"
         />
         <p className="min-w-0 font-bold text-foreground text-sm leading-snug">

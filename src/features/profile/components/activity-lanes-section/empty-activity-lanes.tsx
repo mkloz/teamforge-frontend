@@ -10,7 +10,7 @@ export function EmptyActivityLanes() {
       <EmptyProfileActivityLanesVisual className="h-16 w-auto shrink-0 text-foreground" />
       <div className="flex min-w-0 flex-col items-center gap-3 sm:items-start">
         <p className="font-medium text-slate-muted text-sm">
-          Add a few interests and TeamForge can turn them into activity lanes.
+          Add a few interests and Findafew can turn them into activity lanes.
         </p>
         <Button asChild variant="outline" size="sm">
           <Link

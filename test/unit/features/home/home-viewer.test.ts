@@ -69,7 +69,7 @@ describe("getHomeViewer", () => {
     expect(viewer.setupSteps[0]).toMatchObject({
       kind: "personality",
       label: "Continue assessment",
-      title: "Finish your matching assessment",
+      title: "Finish your personality assessment",
     });
     expect(viewer.setupCompletedCount).toBe(5);
   });

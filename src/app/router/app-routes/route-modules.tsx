@@ -111,31 +111,31 @@ export const SafetyDetailRouteLoading = createLazyRouteLoading(
   { mode: "route" },
 );
 
-export const forgePageModule = createLazyRouteModule(() =>
-  import("@/features/forge/forge-page").then((m) => ({
-    default: m.ForgePage,
+export const planCreationPageModule = createLazyRouteModule(() =>
+  import("@/features/plan-creation/plan-creation-page").then((m) => ({
+    default: m.PlanCreationPage,
   })),
 );
 
-export const ForgeRouteLoading = createLazyRouteLoading(
+export const PlanCreationRouteLoading = createLazyRouteLoading(
   () =>
-    import("@/features/forge/forge-page.loading").then((m) => ({
-      default: m.ForgePageLoading,
+    import("@/features/plan-creation/plan-creation-page.loading").then((m) => ({
+      default: m.PlanCreationPageLoading,
     })),
   { mode: "route" },
 );
 
-export const forgeProposalPageModule = createLazyRouteModule(() =>
-  import("@/features/forge-proposals/forge-proposal-page").then((m) => ({
-    default: m.ForgeProposalPage,
+export const groupProposalPageModule = createLazyRouteModule(() =>
+  import("@/features/group-proposals/group-proposal-page").then((m) => ({
+    default: m.GroupProposalPage,
   })),
 );
 
-export const ForgeProposalRouteLoading = createLazyRouteLoading(
+export const GroupProposalRouteLoading = createLazyRouteLoading(
   () =>
-    import("@/features/forge-proposals/forge-proposal-page.loading").then(
+    import("@/features/group-proposals/group-proposal-page.loading").then(
       (m) => ({
-        default: m.ForgeProposalPageLoading,
+        default: m.GroupProposalPageLoading,
       }),
     ),
   { mode: "route" },

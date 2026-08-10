@@ -27,9 +27,9 @@ export function SuggestionsSection({
     <CollapsibleInterestSection
       count={suggestedTags.length}
       icon={ListChecks}
-      iconClassName="text-spark-amber"
+      iconClassName="text-brand-amber"
       title="Based on your profile"
-      titleClassName="text-slate-muted group-hover:text-spark-amber"
+      titleClassName="text-slate-muted group-hover:text-brand-amber"
       dotClassName="bg-slate-muted/30"
       countClassName="text-slate-muted/70"
       className="mb-5 overflow-hidden rounded-xl border border-slate-muted/10 bg-canvas p-0.5"

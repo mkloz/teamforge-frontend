@@ -15,7 +15,7 @@ export function buildEmptyGroupFit(): GroupFitInsight {
       "Age can still narrow groups to a useful range",
     ],
     summary:
-      "Add a few more profile details before TeamForge can describe which groups may suit you.",
+      "Add a few more profile details before Findafew can describe which groups may suit you.",
     title: "Add details to see group fit",
     userSignal: {
       connectionStyle: {

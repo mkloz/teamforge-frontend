@@ -35,12 +35,12 @@ type CategoryFilterChipSelectedVariant = NonNullable<
 >;
 
 const SELECTED_CHIP_CLASS_NAMES = {
-  soft: "bg-primary/10 text-foreground shadow-soft-sm",
+  soft: "bg-primary-soft text-foreground shadow-soft-sm",
   solid: "bg-primary text-primary-foreground shadow-soft-sm",
 } satisfies Record<CategoryFilterChipSelectedVariant, string>;
 
 const CHECKED_CHIP_CLASS_NAMES = {
-  soft: "data-[state=checked]:bg-primary/10 data-[state=checked]:text-foreground data-[state=checked]:shadow-soft-sm",
+  soft: "data-[state=checked]:bg-primary-soft data-[state=checked]:text-foreground data-[state=checked]:shadow-soft-sm",
   solid:
     "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:shadow-soft-sm",
 } satisfies Record<CategoryFilterChipSelectedVariant, string>;
@@ -168,7 +168,7 @@ function getBadgeToneClassName({
   }
 
   return selectedVariant === "soft"
-    ? "bg-primary/12 text-foreground"
+    ? "bg-primary-soft text-foreground"
     : "bg-primary-foreground/20 text-primary-foreground";
 }
 

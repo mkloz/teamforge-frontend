@@ -41,7 +41,7 @@ function isBeforeInstallPromptEvent(
 
 const OFFLINE_BANNER_COLLAPSE_DELAY_MS = 6_000;
 const PWA_OFFLINE_READY_TOAST_DELAY_MS = 4_000;
-const PWA_UPDATE_TOAST_ID = "teamforge-pwa-update";
+const PWA_UPDATE_TOAST_ID = "pwa-update";
 const PWA_UPDATE_TOAST_DURATION_MS = 24 * 60 * 60 * 1000;
 const PWA_LAUNCH_SOURCE_VALUES = ["pwa", "pwa-shortcut"] as const;
 let hasRequestedPwaUpdateReload = false;
@@ -143,7 +143,7 @@ function registerPwaServiceWorker() {
       trackPwaServiceWorkerUpdateReady({ source: "runtime" });
 
       void import("@/shared/lib/app-toast").then(({ showAppInfoToast }) => {
-        showAppInfoToast("A TeamForge update is ready.", {
+        showAppInfoToast("A Findafew update is ready.", {
           closeButton: true,
           description: "Refresh to use the latest version.",
           duration: PWA_UPDATE_TOAST_DURATION_MS,
@@ -153,7 +153,7 @@ function registerPwaServiceWorker() {
             onClick: () => {
               hasRequestedPwaUpdateReload = true;
 
-              showAppInfoToast("Updating TeamForge...", {
+              showAppInfoToast("Updating Findafew...", {
                 description:
                   "The app will reload once the new version takes control.",
                 duration: PWA_UPDATE_TOAST_DURATION_MS,
@@ -174,7 +174,7 @@ function registerPwaServiceWorker() {
                 void import("@/shared/lib/app-toast").then(
                   ({ showAppErrorMessageToast }) => {
                     showAppErrorMessageToast(
-                      "TeamForge could not apply that update.",
+                      "Findafew could not apply that update.",
                       {
                         closeButton: true,
                         description: "Try refreshing again in a moment.",
@@ -201,7 +201,7 @@ function registerPwaServiceWorker() {
       }
 
       void import("@/shared/lib/app-toast").then(({ showAppInfoToast }) => {
-        showAppInfoToast("TeamForge finished updating.", {
+        showAppInfoToast("Findafew finished updating.", {
           closeButton: true,
           description: "Refresh to switch to the new version.",
           duration: PWA_UPDATE_TOAST_DURATION_MS,
@@ -225,8 +225,8 @@ function registerPwaServiceWorker() {
 
         void import("@/shared/lib/app-toast").then(
           ({ showAppSuccessToast }) => {
-            showAppSuccessToast("TeamForge can now open offline.", {
-              id: "teamforge-pwa-offline-ready",
+            showAppSuccessToast("Findafew can now open offline.", {
+              id: "pwa-offline-ready",
             });
 
             return undefined;
@@ -322,7 +322,7 @@ function OfflineConnectionNotice() {
       <output
         aria-hidden={!isExpanded}
         className={cn(
-          "flex origin-top-right items-center gap-3 rounded-2xl border border-spark-amber/45 bg-canvas px-4 py-3 font-medium text-ink text-sm shadow-2xl shadow-black/15 transition-[opacity,transform] duration-300 ease-out motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:transition-none",
+          "flex origin-top-right items-center gap-3 rounded-2xl border border-brand-amber/45 bg-canvas px-4 py-3 font-medium text-ink text-sm shadow-2xl shadow-black/15 transition-[opacity,transform] duration-300 ease-out motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:transition-none",
           isExpanded
             ? "pointer-events-auto translate-x-0 translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-x-2 -translate-y-1 scale-95 opacity-0",
@@ -333,11 +333,11 @@ function OfflineConnectionNotice() {
           shape="circle"
           size="lg"
           tone="amber"
-          className="size-9 bg-spark-amber/15"
+          className="size-9 bg-brand-amber/15"
           iconClassName="size-4.5"
         />
         <span>
-          You are offline. TeamForge will reconnect live activity when your
+          You are offline. Findafew will reconnect live activity when your
           connection returns.
         </span>
       </output>
@@ -350,7 +350,7 @@ function OfflineConnectionNotice() {
         tabIndex={isExpanded ? -1 : undefined}
         onClick={() => setIsExpanded(true)}
         className={cn(
-          "absolute top-0 right-0 flex size-12 origin-center items-center justify-center rounded-full border border-spark-amber/45 bg-canvas text-spark-amber shadow-soft-sm transition-[opacity,transform,background-color,border-color,box-shadow] duration-250 ease-out hover:border-spark-amber/70 hover:bg-spark-amber/8 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-spark-amber focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:transition-none",
+          "absolute top-0 right-0 flex size-12 origin-center items-center justify-center rounded-full border border-brand-amber/45 bg-canvas text-brand-amber shadow-soft-sm transition-[opacity,transform,background-color,border-color,box-shadow] duration-250 ease-out hover:border-brand-amber/70 hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-amber focus-visible:ring-offset-2 focus-visible:ring-offset-canvas motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:transition-none",
           isExpanded
             ? "pointer-events-none translate-x-2 -translate-y-1 scale-75 opacity-0"
             : "pointer-events-auto translate-x-0 translate-y-0 scale-100 opacity-100 hover:scale-105 active:scale-95",

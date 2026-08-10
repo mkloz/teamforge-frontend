@@ -154,7 +154,7 @@ function writeSquirrelIndex({ baseUrl, coverage, outputDir, routes }) {
   writeOutput(`Reports: ${outputDir}`);
   writeOutput(`Index: ${path.join(outputDir, "index.md")}`);
 
-  const index = `# TeamForge Authenticated SquirrelScan
+  const index = `# Findafew Authenticated SquirrelScan
 
 Date: ${new Date().toISOString()}
 Target: \`${baseUrl}\`
@@ -198,8 +198,7 @@ async function createSquirrelAuditContext() {
     outputDir:
       process.env.AUDIT_OUTPUT_DIR ??
       path.join(cwd, "temp", `squirrelscan-authenticated-${todayStamp()}`),
-    projectPrefix:
-      process.env.AUDIT_PROJECT_PREFIX ?? "teamforge-authenticated",
+    projectPrefix: process.env.AUDIT_PROJECT_PREFIX ?? "findafew-authenticated",
     routeDiscoveryTokens,
     routes,
     skipExisting: process.env.AUDIT_RESUME === "true",

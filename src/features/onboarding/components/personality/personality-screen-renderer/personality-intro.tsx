@@ -39,7 +39,7 @@ export function PersonalityIntro({
       <div className="text-left">
         <p className="mb-3 text-pretty font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-base">
           You will answer questions about how you usually think, feel, and act.
-          TeamForge calculates the result after you finish.
+          Findafew calculates the result after you finish.
         </p>
         <p className="mb-6 text-pretty font-sans text-muted-foreground text-xs leading-relaxed">
           The questions come from the public-domain International Personality
@@ -75,11 +75,11 @@ function getAssessmentBenefits(storageAvailable: boolean) {
     },
     {
       icon: Eye,
-      text: "When you save the result, other signed-in TeamForge users can see your four-letter type and five trait scores from 0 to 100.",
+      text: "When you save the result, other signed-in Findafew users can see your four-letter type and five trait scores from 0 to 100.",
     },
     {
       icon: RefreshCcw,
-      text: "TeamForge uses the saved result to calculate and explain compatibility for group formation. It is not a safety score or a promise that people will become friends.",
+      text: "Findafew uses the saved result to calculate and explain compatibility for group formation. It is not a safety score or a promise that people will become friends.",
     },
     {
       icon: RefreshCcw,

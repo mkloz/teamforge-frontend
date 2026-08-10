@@ -4,7 +4,7 @@ import type {
 } from "@/features/activity/api/activity-action-context";
 import { ActivityMessageCache } from "@/features/activity/api/activity-message-cache";
 import {
-  forgetRetryableMessage,
+  dropRetryableMessage,
   releaseOptimisticMessageResources,
   rememberRetryableMessage,
 } from "@/features/activity/api/activity-outgoing-message";
@@ -41,7 +41,7 @@ export function applyMessageSent(
 ) {
   releaseOptimisticMessageResources(previousMessage);
   ActivityMessageCache.replace(chatId, previousMessage.id, sentMessage);
-  forgetRetryableMessage(previousMessage.id);
+  dropRetryableMessage(previousMessage.id);
   updateLastMessageAsCurrent(context, chatId, sentMessage);
 }
 

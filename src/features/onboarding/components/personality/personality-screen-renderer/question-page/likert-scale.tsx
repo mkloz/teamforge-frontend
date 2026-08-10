@@ -77,7 +77,7 @@ export function LikertScale({ labelledBy, value, onChange }: LikertScaleProps) {
                 className={cn(
                   "pointer-events-none relative z-10 flex size-5 items-center justify-center rounded-full border-2 bg-card transition duration-200 group-focus-visible/likert:ring-2 group-focus-visible/likert:ring-ring group-focus-visible/likert:ring-offset-2 sm:h-6 sm:w-6",
                   selected
-                    ? "scale-110 border-forge-teal bg-forge-teal shadow-xs"
+                    ? "scale-110 border-brand-teal bg-brand-teal shadow-xs"
                     : "border-border group-hover/likert:scale-105 group-hover/likert:border-slate-muted/35 group-active/likert:scale-95 dark:border-white/12 dark:group-hover/likert:border-white/18",
                 )}
               >

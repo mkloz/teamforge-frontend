@@ -1,52 +1,60 @@
 export const PUBLIC_SEO_ROUTES = [
   {
     path: "/",
-    title: "TeamForge | Find your people, intelligently.",
+    title: "Findafew | Small groups for things you want to do.",
     description:
-      "TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context.",
-    lastModified: "2026-06-04",
+      "For adults aged 18–28 at launch: explore activity plans or start your own, then review the group and practical details before deciding.",
+    indexable: true,
+    lastModified: "2026-08-09",
     socialImage: {
       path: "/group-covers/flat-social-map.png",
-      alt: "Abstract TeamForge map of compatible groups forming around shared activities",
+      alt: "Abstract Findafew map of small groups around shared activities",
       width: 1672,
       height: 941,
     },
   },
   {
     path: "/download",
-    title: "Install TeamForge | iPhone, Android & Desktop",
+    title: "Install Findafew | iPhone, Android & Desktop",
     description:
-      "Install TeamForge on iPhone, iPad, Android, or desktop with a step-by-step guide for supported browsers and devices.",
-    lastModified: "2026-06-04",
+      "Install Findafew on iPhone, iPad, Android, or desktop with a step-by-step guide for supported browsers and devices.",
+    indexable: true,
+    lastModified: "2026-08-09",
     socialImage: {
       path: "/group-covers/flat-social-map.png",
-      alt: "TeamForge, available as an installable web app",
+      alt: "Findafew, available as an installable web app",
       width: 1672,
       height: 941,
     },
   },
   {
     path: "/privacy",
-    title: "Privacy Policy | TeamForge",
+    title: "Privacy Policy | Findafew",
     description:
-      "Learn how TeamForge handles, protects, and manages your personal data.",
-    lastModified: "2026-06-04",
+      "Learn how Findafew handles, protects, and manages your personal data.",
+    indexable: false,
+    lastModified: null,
   },
   {
     path: "/terms",
-    title: "Terms of Service | TeamForge",
+    title: "Terms of Service | Findafew",
     description:
-      "Read the rules, requirements, and policies for using the TeamForge platform.",
-    lastModified: "2026-06-04",
+      "Read the rules, requirements, and policies for using the Findafew platform.",
+    indexable: false,
+    lastModified: null,
   },
 ] as const;
 
 export type PublicSeoPath = (typeof PUBLIC_SEO_ROUTES)[number]["path"];
 export type PublicSeoRoute = (typeof PUBLIC_SEO_ROUTES)[number];
 
-export const INDEXABLE_PUBLIC_PATHS = PUBLIC_SEO_ROUTES.map(
-  ({ path }) => path,
-) as readonly PublicSeoPath[];
+export const INDEXABLE_PUBLIC_PATHS = PUBLIC_SEO_ROUTES.filter(
+  ({ indexable }) => indexable,
+).map(({ path }) => path) as readonly PublicSeoPath[];
+
+export const DRAFT_PUBLIC_PATHS = PUBLIC_SEO_ROUTES.filter(
+  ({ indexable }) => !indexable,
+).map(({ path }) => path) as readonly PublicSeoPath[];
 
 const INDEXABLE_PUBLIC_PATH_SET = new Set<string>(INDEXABLE_PUBLIC_PATHS);
 
@@ -69,7 +77,7 @@ export function getPublicSeoRoute(path: PublicSeoPath) {
   return route;
 }
 
-export function createTeamForgeStructuredData({
+export function createFindafewStructuredData({
   homepageUrl,
   logoUrl,
 }: {
@@ -84,7 +92,7 @@ export function createTeamForgeStructuredData({
       {
         "@type": "Organization",
         "@id": organizationId,
-        name: "TeamForge",
+        name: "Findafew",
         url: homepageUrl,
         logo: logoUrl,
         description: PUBLIC_SEO_ROUTES[0].description,
@@ -93,7 +101,7 @@ export function createTeamForgeStructuredData({
         "@type": "WebSite",
         "@id": `${homepageUrl}#website`,
         url: homepageUrl,
-        name: "TeamForge",
+        name: "Findafew",
         description: PUBLIC_SEO_ROUTES[0].description,
         publisher: { "@id": organizationId },
       },
@@ -122,8 +130,8 @@ export const PROTECTED_ROUTE_HEADER_PATHS = [
   "/settings/*",
   "/safety",
   "/safety/*",
-  "/forge",
-  "/forge/*",
+  "/plans/new",
+  "/group-proposals/*",
   "/onboarding",
   "/onboarding/*",
   "/admin",

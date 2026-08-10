@@ -9,7 +9,7 @@ describe("token-route telemetry redaction", () => {
     "/invite/super-secret-invite-token",
   ])("redacts the secret and query from %s", (pathname) => {
     const sanitized = sanitizeTelemetryUrl(
-      `https://teamforge.example${pathname}?source=email`,
+      `https://findafew.example${pathname}?source=email`,
     );
 
     expect(sanitized).toContain("/[token]");

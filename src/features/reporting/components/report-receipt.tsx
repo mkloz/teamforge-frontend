@@ -20,7 +20,7 @@ export function ReportReceipt({
   return (
     <div className="flex flex-col gap-6 p-5 sm:p-6">
       <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal/12 text-foreground">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-foreground">
           <CheckCircle2 className="size-5" aria-hidden="true" />
         </span>
         <div>
@@ -32,7 +32,7 @@ export function ReportReceipt({
             Report received
           </h2>
           <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-            Keep the reference code in case you need to contact TeamForge about
+            Keep the reference code in case you need to contact Findafew about
             this report.
           </p>
         </div>
@@ -66,8 +66,8 @@ export function ReportReceipt({
       </dl>
 
       <p className="text-slate-muted text-sm leading-relaxed">
-        TeamForge will review the report. We may ask for more information, but
-        we cannot promise a particular outcome.
+        Findafew will review the report. We may ask for more information, but we
+        cannot promise a particular outcome.
       </p>
 
       {actionNotices.length > 0 ? (

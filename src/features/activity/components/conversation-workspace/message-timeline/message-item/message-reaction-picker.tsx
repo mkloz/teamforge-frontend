@@ -32,7 +32,7 @@ const REACTION_DOCK_PICKER_CLASS = getActivityPopupPanelClass(
 );
 
 const EMOJI_ITEM_CLASS =
-  "flex size-8 min-h-8 justify-center rounded-full p-0 text-base leading-none focus:bg-accent/12 data-[highlighted]:bg-accent/12 data-[state=open]:bg-accent/12";
+  "flex size-8 min-h-8 justify-center rounded-full p-0 text-base leading-none focus:bg-primary-soft data-[highlighted]:bg-primary-soft data-[state=open]:bg-primary-soft";
 
 interface MessageReactionPickerProps {
   canReact: boolean;
@@ -91,7 +91,7 @@ export function MessageReactionPicker({
           })}
           <ContextMenuItem
             aria-label="More reactions"
-            className="flex size-8 min-h-8 justify-center rounded-full border border-accent/35 bg-accent/12 p-0 text-accent text-base leading-none shadow-[0_0_0_2px_color-mix(in_srgb,var(--accent)_14%,transparent)] transition hover:bg-accent/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35"
+            className="flex size-8 min-h-8 justify-center rounded-full border border-accent/35 bg-accent-soft p-0 text-accent text-base leading-none shadow-[0_0_0_2px_color-mix(in_srgb,var(--accent)_14%,transparent)] transition hover:bg-accent/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35"
             onMouseDown={(event) => {
               event.preventDefault();
               event.stopPropagation();

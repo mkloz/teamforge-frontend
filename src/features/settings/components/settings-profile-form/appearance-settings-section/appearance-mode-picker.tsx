@@ -43,7 +43,7 @@ export function AppearanceModePicker({
               className={cn(
                 "group relative flex min-w-0 flex-col items-center rounded-xl bg-background/55 px-2 py-3 text-center shadow-soft-sm transition-[color,background-color,box-shadow] duration-150 motion-reduce:transition-none sm:py-4",
                 isSelected
-                  ? "bg-primary/10 text-ink shadow-soft-md"
+                  ? "bg-primary-soft text-ink shadow-soft-md"
                   : "text-slate-muted hover:text-ink hover:shadow-soft-md",
                 disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
               )}

@@ -47,7 +47,7 @@ export function LegalPageLoading({ kind }: LegalPageLoadingProps) {
                 widths={["w-full", "w-11/12", "w-3/4"]}
               />
 
-              <div className="mt-6 flex max-w-3xl items-start gap-3 rounded-2xl border border-spark-amber/25 bg-spark-amber/8 p-4">
+              <div className="mt-6 flex max-w-3xl items-start gap-3 rounded-2xl border border-brand-amber/25 bg-accent-soft p-4">
                 <Skeleton
                   shape="circle"
                   className="mt-0.5 size-4"

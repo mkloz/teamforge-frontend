@@ -1,5 +1,5 @@
-import type { AutoForgeRequest } from "@/features/forge/public/auto-forge-request";
 import type { HomeViewer } from "@/features/home/lib/home-contract";
+import type { AutomaticGroupFormationRequest } from "@/features/plan-creation/public/automatic-group-formation-request";
 
 export type HomeNextMove =
   | {
@@ -60,11 +60,11 @@ export type HomeNextMove =
       primaryLabel: string;
       secondaryLabel: string;
       signal: string;
-      request: AutoForgeRequest;
+      request: AutomaticGroupFormationRequest;
       startsNewRequest: boolean;
     }
   | {
-      kind: "forge";
+      kind: "planCreation";
       eyebrow: string;
       title: string;
       body: string;

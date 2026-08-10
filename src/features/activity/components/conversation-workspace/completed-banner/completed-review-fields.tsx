@@ -46,7 +46,7 @@ export function CompletedReviewFields({
               className={cn(
                 "flex min-h-9 cursor-pointer items-center justify-center rounded-lg border px-2 text-center font-semibold text-xs transition-colors",
                 rating.followThrough === option.value
-                  ? "border-primary/55 bg-primary/10 text-foreground"
+                  ? "border-primary/55 bg-primary-soft text-foreground"
                   : "border-border/70 bg-card/65 text-slate-muted hover:border-foreground/35",
                 viewState.isReviewFormBusy && "cursor-not-allowed opacity-60",
               )}

@@ -69,12 +69,12 @@ jobs:
       - name: Build audit bundle
         env:
           VITE_API_URL: http://127.0.0.1:4173/__audit_api
-          VITE_APP_URL: ${{ vars.VITE_APP_URL || 'https://teamforge.mkloz.com' }}
+          VITE_APP_URL: https://findafew.today
           VITE_AUDIT_AUTH_ENABLED: "true"
           VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY || 'ci-giphy-key' }}
           VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID || 'ci-google-client-id' }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY || 'ci-google-maps-key' }}
-          VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL || 'https://mkloz-teamforge.s3.us-east-1.amazonaws.com' }}
+          VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL }}
           VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
           VITE_SENTRY_ENVIRONMENT: audit
           VITE_SENTRY_RELEASE: ${{ github.sha }}
@@ -84,8 +84,8 @@ jobs:
       - name: Run browser audit
         env:
           AUDIT_API_PROXY_PATH: /__audit_api
-          AUDIT_API_PROXY_TARGET: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://arm-api.mkloz.com/teamforge/api/v1' }}
-          AUDIT_API_URL: ${{ vars.AUDIT_API_URL || vars.VITE_API_URL || 'https://arm-api.mkloz.com/teamforge/api/v1' }}
+          AUDIT_API_PROXY_TARGET: https://api.findafew.today/findafew/api/v1
+          AUDIT_API_URL: https://api.findafew.today/findafew/api/v1
           AUDIT_BROWSER_API_URL: http://127.0.0.1:4173/__audit_api
           AUDIT_LIGHTHOUSE_IGNORE_CERT_ERRORS: "true"
           AUDIT_OUTPUT_ROOT: temp/browser-audit-${{ github.run_id }}

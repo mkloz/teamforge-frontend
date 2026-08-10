@@ -36,7 +36,7 @@ export function SavedMessageOpenTarget({
         "relative flex min-w-0 flex-col rounded-xl rounded-tl-none px-1 py-1 text-left shadow-xs transition duration-300",
         bubbleSizeClass,
         viewState.isOwn
-          ? "border border-primary/15 bg-primary/8 text-ink shadow-sm backdrop-blur-md"
+          ? "border border-primary/15 bg-primary-soft text-ink shadow-sm backdrop-blur-md"
           : "border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md",
         !viewState.displayContent && "min-w-30",
         usesInlineFooter && "min-w-40",

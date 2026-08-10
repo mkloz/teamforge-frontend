@@ -6,11 +6,11 @@ import {
 } from "@/app/router/route-guards/capability-denial";
 
 describe("capability denial navigation", () => {
-  it("preserves a Forge return intent while requiring the full assessment", () => {
+  it("preserves a plan-builder return intent while requiring the full assessment", () => {
     expect(
       getCapabilityDenialNavigation({
         location: {
-          pathname: "/forge",
+          pathname: "/plans/new",
           searchStr: "?open=true&step=3",
         },
         reasonCode: "FULL_ASSESSMENT_REQUIRED",
@@ -20,29 +20,29 @@ describe("capability denial navigation", () => {
       to: "/onboarding/personality",
       search: {
         mode: "edit",
-        returnTo: "/forge",
+        returnTo: "/plans/new",
         returnSearch: "open=true&step=3",
       },
     });
   });
 
-  it("returns to Forge after a required interests step without edit mode", () => {
+  it("returns to the plan builder after a required interests step without edit mode", () => {
     expect(
       getCapabilityDenialNavigation({
-        location: { pathname: "/forge", searchStr: "" },
+        location: { pathname: "/plans/new", searchStr: "" },
         reasonCode: "INTERESTS_REQUIRED",
         safeDestination: "/onboarding/interests",
       }),
     ).toEqual({
       to: "/onboarding/interests",
-      search: { returnTo: "/forge" },
+      search: { returnTo: "/plans/new" },
     });
   });
 
   it("does not invent a return intent for a relationship-only denial", () => {
     expect(
       getCapabilityDenialNavigation({
-        location: { pathname: "/forge", searchStr: "" },
+        location: { pathname: "/plans/new", searchStr: "" },
         reasonCode: "RELATIONSHIP_REQUIRED",
         safeDestination: "/explore",
       }),
@@ -52,11 +52,11 @@ describe("capability denial navigation", () => {
   it("explains both the missing requirement and the attempted action", () => {
     expect(
       getCapabilityDenialCopy({
-        capability: "START_FORGE",
+        capability: "START_GROUP_FORMATION",
         reasonCode: "ASSESSMENT_OUTDATED",
       }),
     ).toEqual({
-      title: "Refresh your matching assessment before you use Forge",
+      title: "Refresh your matching assessment before you start a plan",
       description:
         "Your previous result is no longer current enough for matching. We’ll bring you back to what you were doing when it is ready.",
     });

@@ -28,19 +28,19 @@ export function SystemMessage({
 
   const styleMap = {
     error: {
-      container: "border-destructive/25 bg-destructive/8 text-destructive",
+      container: "border-destructive/25 bg-destructive-soft text-destructive",
       iconStroke: 2.5,
     },
     info: {
-      container: "border-primary/20 bg-primary/5 text-foreground",
+      container: "border-primary/20 bg-primary-soft text-foreground",
       iconStroke: 2.5,
     },
     success: {
-      container: "border-primary/25 bg-primary/8 text-foreground",
+      container: "border-primary/25 bg-primary-soft text-foreground",
       iconStroke: 3,
     },
     warning: {
-      container: "border-accent/30 bg-accent/12 text-accent",
+      container: "border-accent/30 bg-accent-soft text-accent",
       iconStroke: 2.5,
     },
   } as const;

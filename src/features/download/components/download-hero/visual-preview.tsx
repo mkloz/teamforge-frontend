@@ -41,8 +41,8 @@ function IpadVisual() {
       className="relative w-full animate-download-device-drift select-none motion-reduce:animate-none"
       aria-hidden="true"
     >
-      <div className="absolute inset-8 -z-10 scale-95 rounded-4xl bg-forge-teal/50 opacity-25 blur-3xl" />
-      <div className="relative mx-auto w-full max-w-140 rounded-4xl border-8 border-black/80 bg-forge-deep-panel shadow-teal-glow-lg ring-1 ring-white/10">
+      <div className="absolute inset-8 -z-10 scale-95 rounded-4xl bg-brand-teal/50 opacity-25 blur-3xl" />
+      <div className="relative mx-auto w-full max-w-140 rounded-4xl border-8 border-black/80 bg-hero-deep-panel shadow-teal-glow-lg ring-1 ring-white/10">
         <div className="absolute top-1/2 left-2 z-10 size-2 -translate-y-1/2 rounded-full bg-white/15" />
         <div className="absolute top-14 -right-1 h-14 w-1 rounded-r-full bg-white/10" />
         <div className="absolute bottom-1 left-1/2 z-10 h-1 w-20 -translate-x-1/2 rounded-full bg-white/20" />
@@ -61,7 +61,7 @@ function AndroidPhoneVisual() {
       className="relative w-full min-w-0 animate-download-device-drift select-none motion-reduce:animate-none"
       aria-hidden="true"
     >
-      <div className="absolute inset-6 -z-10 scale-95 rounded-[3rem] bg-forge-teal/50 opacity-30 blur-3xl" />
+      <div className="absolute inset-6 -z-10 scale-95 rounded-[3rem] bg-brand-teal/50 opacity-30 blur-3xl" />
       <div className="relative mx-auto w-full max-w-64 rounded-[3rem] border-8 border-black/80 bg-black/80 shadow-teal-glow-lg ring-1 ring-white/10 sm:max-w-68">
         <div className="absolute top-24 -right-1 z-10 h-16 w-1 rounded-r-full bg-white/10" />
         <div className="absolute top-3 left-1/2 z-20 size-2 -translate-x-1/2 rounded-full bg-white/15" />
@@ -78,10 +78,10 @@ function AndroidPhoneVisual() {
 function DesktopBrowserVisual() {
   return (
     <div className="relative w-full select-none" aria-hidden="true">
-      <div className="absolute inset-4 -z-10 scale-105 rounded-3xl bg-forge-teal/50 opacity-25 blur-3xl" />
+      <div className="absolute inset-4 -z-10 scale-105 rounded-3xl bg-brand-teal/50 opacity-25 blur-3xl" />
       <div className="relative mx-auto w-full max-w-120 pb-9">
         <div className="rounded-4xl border-8 border-black/80 bg-black/80 p-2 shadow-teal-glow-lg ring-1 ring-white/10">
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-forge-deep-panel">
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-hero-deep-panel">
             <PreviewScreenImage image={DOWNLOAD_PREVIEW_IMAGES.desktop} />
           </div>
         </div>

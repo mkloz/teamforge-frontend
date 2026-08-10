@@ -1,8 +1,8 @@
 import { lazy, type ReactNode, Suspense, useEffect, useRef } from "react";
 import { AccountReadinessSection } from "@/features/home/components/account-readiness-section";
 import { AttentionQueue } from "@/features/home/components/attention-queue";
-import { AutoForgeRequestStatus } from "@/features/home/components/auto-forge-request-status";
-import { CandidateAvailabilitySection } from "@/features/home/components/candidate-availability-section";
+import { AutomaticGroupFormationRequestStatus } from "@/features/home/components/automatic-group-formation-request-status";
+import { GroupProposalAvailabilitySection } from "@/features/home/components/group-proposal-availability-section";
 import { GroupsGrid } from "@/features/home/components/groups-grid";
 import { HomeOfflineLaunchState } from "@/features/home/components/home-offline-launch-state";
 import {
@@ -16,7 +16,7 @@ import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
 const LazyFriendsInvitation = lazy(() =>
   import("@/features/home/components/friends-invitation").then((module) => ({
@@ -35,10 +35,10 @@ const LazySentInvitationsReview = lazy(() =>
     }),
   ),
 );
-const HOME_PAGE_METADATA = createTeamForgePageMetadata({
+const HOME_PAGE_METADATA = createFindafewPageMetadata({
   title: "Home",
   description:
-    "See your TeamForge groups, invitations, upcoming plans, and suggested actions.",
+    "See your Findafew groups, invitations, upcoming plans, and suggested actions.",
 });
 
 type HomeDataState = ReturnType<typeof useHomeData>;
@@ -170,8 +170,8 @@ export function HomePage() {
   return (
     <HomePageContent
       accountReadiness={<AccountReadinessSection />}
-      forgeRequest={<AutoForgeRequestStatus />}
-      candidateAvailability={<CandidateAvailabilitySection />}
+      groupFormationRequest={<AutomaticGroupFormationRequestStatus />}
+      groupProposalAvailability={<GroupProposalAvailabilitySection />}
       sentInvitationsReview={getSentInvitationsReviewSlot({
         focusedInviteId,
         invitations: sentInvitations,

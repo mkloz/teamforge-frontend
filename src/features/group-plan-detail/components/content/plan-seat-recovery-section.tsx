@@ -195,9 +195,9 @@ function SeatAvailability({ counts }: { counts: Record<string, number> }) {
                 className={cn(
                   "rounded-full",
                   segment.position < assigned
-                    ? "bg-forge-teal"
+                    ? "bg-brand-teal"
                     : segment.position < assigned + held
-                      ? "bg-forge-teal/45"
+                      ? "bg-brand-teal/45"
                       : "bg-foreground/12",
                 )}
                 key={segment.id}
@@ -328,7 +328,7 @@ function OfferedSeatActions({
               <label className="flex items-start gap-3 rounded-xl bg-muted/55 p-3 text-sm">
                 <input
                   checked={acknowledged}
-                  className="mt-1 accent-forge-teal"
+                  className="mt-1 accent-brand-teal"
                   onChange={(event) => setAcknowledged(event.target.checked)}
                   type="checkbox"
                 />
@@ -361,7 +361,7 @@ function OfferedSeatActions({
               <label className="flex items-start gap-3 rounded-xl bg-muted/55 p-3 text-sm">
                 <input
                   checked={doNotOfferAgain}
-                  className="mt-1 accent-forge-teal"
+                  className="mt-1 accent-brand-teal"
                   onChange={(event) => setDoNotOfferAgain(event.target.checked)}
                   type="checkbox"
                 />

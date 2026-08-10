@@ -18,7 +18,7 @@ import { SafetyDetailLoading } from "@/features/safety/safety-page.loading";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
 export function AccountActionDetailPage() {
   const { noticeId } = useParams({
@@ -28,7 +28,7 @@ export function AccountActionDetailPage() {
   const isOnline = useNetworkStatus();
 
   usePageMetadata(
-    createTeamForgePageMetadata({
+    createFindafewPageMetadata({
       title: "Account action",
       description: "Review an account action and its appeal status.",
     }),

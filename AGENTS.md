@@ -1,4 +1,4 @@
-# TeamForge frontend agent guide
+# Findafew frontend agent guide
 
 This file is the repository-level source of truth for work in `frontend/`.
 Prefer it over generic framework advice. Read the narrow rule or skill named
@@ -6,7 +6,7 @@ below only when it applies to the task.
 
 ## Product and stack
 
-TeamForge helps people form small groups around real activity plans. The
+Findafew helps people form small groups around real activity plans. The
 frontend is a React 19 + TypeScript + Vite PWA using TanStack Router, TanStack
 Query, React Hook Form, Zod, Zustand, Tailwind CSS v4, Radix/shadcn primitives,
 Socket.IO, and Vitest/Playwright.
@@ -48,7 +48,7 @@ Socket.IO, and Vitest/Playwright.
 ## UI contract
 
 Read `docs/visual-style-guide.md` for visual work and
-`.agents/rules/teamforge/copy-guardrails.md` for product copy. In particular:
+`.agents/rules/findafew/copy-guardrails.md` for product copy. In particular:
 
 - Build mobile-first, then verify representative tablet and desktop widths.
 - Prefer a clear hierarchy, compact density, and intentional whitespace over
@@ -136,7 +136,7 @@ to inspect. Always report what was and was not verified.
 
 ## Focused rules
 
-Rules in `.agents/rules/teamforge/` are durable repository playbooks:
+Rules in `.agents/rules/findafew/` are durable repository playbooks:
 
 - `api-client-and-query.md` — API client, parsing, queries, mutations, caches.
 - `forms-rhf-zod-query.md` — forms, validation, server errors, submission.
@@ -150,7 +150,7 @@ Rules in `.agents/rules/teamforge/` are durable repository playbooks:
 
 Repository skills are optional, progressively disclosed references. Use the
 smallest set that matches the task; do not load the catalog as a checklist.
-`AGENTS.md`, TeamForge rules, current code, and generated contracts override
+`AGENTS.md`, Findafew rules, current code, and generated contracts override
 generic advice in a skill.
 
 - Default product UI implementation: `frontend-product-ui-engineer`. Add
@@ -164,7 +164,7 @@ generic advice in a skill.
   `humanizer` for final tone.
 - Cinematic marketing or intentionally motion-led experiments: `gpt-taste`.
   Use it only when that direction is explicitly requested; experimental
-  composition and motion never override TeamForge's product UI, performance
+  composition and motion never override Findafew's product UI, performance
   budget, accessibility, or the user's stated taste.
 - React and state architecture: `react-dev`, `react-refactor`,
   `react-19`, `tanstack-query-best-practices`, `zustand`, `zod`,
@@ -179,7 +179,7 @@ generic advice in a skill.
   or high-consequence analysis.
 
 Do not combine multiple broad design skills for one ordinary UI edit. Start
-with the TeamForge skill and add a specialist only when it contributes a
+with the Findafew skill and add a specialist only when it contributes a
 distinct workflow.
 
 Do not restore the intentionally excluded generic orchestration, duplicate

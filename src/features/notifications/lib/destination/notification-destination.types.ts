@@ -1,22 +1,13 @@
 import type {
   ActivityRouteSearch,
   ExploreRouteSearch,
-  ForgeRouteSearch,
   GroupPlanDetailRouteSearch,
   HomeRouteSearch,
+  PlanCreationRouteSearch,
   ProfileNavigation,
   SettingsSection,
 } from "@/shared/navigation";
 import type { Notification } from "@/shared/schemas";
-
-export interface LegacyLinkContext {
-  messageIdFromSearch: string | undefined;
-  notification: Notification;
-  pathname: string;
-  planIdFromSearch: string | undefined;
-  proposalId: string | null;
-  searchParams: URLSearchParams;
-}
 
 export interface ParsedNotificationLink {
   pathname: string;
@@ -27,7 +18,11 @@ export type NotificationDestination =
   | { to: "/activity"; search?: ActivityRouteSearch }
   | { to: "/home"; search?: HomeRouteSearch }
   | { to: "/explore"; search?: ExploreRouteSearch }
-  | { to: "/forge"; search?: ForgeRouteSearch }
+  | { to: "/plans/new"; search?: PlanCreationRouteSearch }
+  | {
+      to: "/group-proposals/$proposalId";
+      params: { proposalId: string };
+    }
   | ProfileNavigation
   | {
       to: "/groups/$groupId";
@@ -48,7 +43,3 @@ export type NotificationEntityResolver = (
 export type NotificationFallbackResolver = (
   notification: Notification,
 ) => NotificationDestination;
-
-export type LegacyDestinationResolver = (
-  linkContext: LegacyLinkContext,
-) => Promise<NotificationDestination | null> | NotificationDestination | null;

@@ -4,9 +4,9 @@ import { useActivity } from "@/features/activity/hooks/use-activity";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
-const ACTIVITY_PAGE_METADATA = createTeamForgePageMetadata({
+const ACTIVITY_PAGE_METADATA = createFindafewPageMetadata({
   title: "Activity",
   description:
     "Use Activity to view conversations, group plans, direct chats, and pending decisions.",

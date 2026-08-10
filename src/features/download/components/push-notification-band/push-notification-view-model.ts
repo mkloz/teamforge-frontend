@@ -10,7 +10,7 @@ export function getPushNotificationBandViewModel(
   return {
     copy: getPushCopy(push),
     Icon: push.isSubscribed ? BellRing : Bell,
-    iconClassName: push.isSubscribed ? "size-11 bg-primary/12" : "size-11",
+    iconClassName: push.isSubscribed ? "size-11 bg-primary-soft" : "size-11",
     readiness: getPushReadiness(push),
   };
 }

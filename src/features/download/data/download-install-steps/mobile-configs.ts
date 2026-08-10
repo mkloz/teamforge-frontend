@@ -8,7 +8,7 @@ import Share from "lucide-react/dist/esm/icons/share.js";
 import type { DeviceStepConfig } from "@/features/download/data/download-install-steps/types";
 
 export const IOS_SAFARI_CONFIG: DeviceStepConfig = {
-  heading: "Install TeamForge from Safari in four steps",
+  heading: "Install Findafew from Safari in four steps",
   subheading:
     "Add to Home Screen only works in Safari on iPhone and iPad. No App Store needed.",
   steps: [
@@ -26,12 +26,12 @@ export const IOS_SAFARI_CONFIG: DeviceStepConfig = {
     {
       icon: Plus,
       title: "Tap 'Add to Home Screen'",
-      body: "Scroll down in the share sheet until you see 'Add to Home Screen'. It has a white icon with a ⊕ symbol. Tap it. A preview of the TeamForge icon will appear.",
+      body: "Scroll down in the share sheet until you see 'Add to Home Screen'. It has a white icon with a ⊕ symbol. Tap it. A preview of the Findafew icon will appear.",
     },
     {
       icon: CheckCircle2,
       title: "Tap 'Add' to finish",
-      body: "In the top-right corner of the preview, tap 'Add'. TeamForge appears on your home screen and opens in its own window, without browser tabs or controls.",
+      body: "In the top-right corner of the preview, tap 'Add'. Findafew appears on your home screen and opens in its own window, without browser tabs or controls.",
     },
   ],
 };
@@ -39,7 +39,7 @@ export const IOS_SAFARI_CONFIG: DeviceStepConfig = {
 export const ANDROID_CONFIG: DeviceStepConfig = {
   heading: "Install directly from Chrome",
   subheading:
-    "No app store, no download. TeamForge installs from your browser in seconds.",
+    "No app store, no download. Findafew installs from your browser in seconds.",
   steps: [
     {
       icon: Download,
@@ -56,7 +56,7 @@ export const ANDROID_CONFIG: DeviceStepConfig = {
     {
       icon: CheckCircle2,
       title: "Confirm and you're done",
-      body: "A dialog shows the TeamForge icon and name. Tap 'Install' or 'Add' to confirm. TeamForge is added to your home screen and app drawer and opens in its own window.",
+      body: "A dialog shows the Findafew icon and name. Tap 'Install' or 'Add' to confirm. Findafew is added to your home screen and app drawer and opens in its own window.",
     },
   ],
 };

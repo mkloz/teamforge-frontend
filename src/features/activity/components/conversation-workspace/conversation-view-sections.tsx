@@ -285,7 +285,7 @@ function ConversationMessageErrorBanner({
           </Button>
         ) : null
       }
-      className="items-center rounded-none border-accent/20 border-x-0 border-t-0 bg-accent/10 px-4 py-2 text-accent"
+      className="items-center rounded-none border-accent/20 border-x-0 border-t-0 bg-accent-soft px-4 py-2 text-accent"
       contentClassName="font-medium"
     >
       <span className="block truncate">
@@ -300,7 +300,7 @@ function ConversationOfflineBanner() {
     <OfflineNotice
       size="xs"
       iconClassName="mt-0"
-      className="items-center rounded-none border-accent/20 border-x-0 border-t-0 bg-accent/10 px-4 py-2 text-accent"
+      className="items-center rounded-none border-accent/20 border-x-0 border-t-0 bg-accent-soft px-4 py-2 text-accent"
       contentClassName="font-medium"
     >
       <span>

@@ -11,7 +11,7 @@ describe("EmptyState", () => {
       <EmptyState
         action={<button type="button">Explore</button>}
         aria-label="Calendar empty state"
-        description="Forge a group or join one to get a real plan moving."
+        description="Start a plan or join one to get something moving."
         icon={CalendarDays}
         title="Your calendar is open."
       />,
@@ -26,7 +26,7 @@ describe("EmptyState", () => {
     );
     expect(screen.getByText("Your calendar is open.")).toBeVisible();
     expect(
-      screen.getByText("Forge a group or join one to get a real plan moving."),
+      screen.getByText("Start a plan or join one to get something moving."),
     ).toBeVisible();
     expect(screen.getByRole("button", { name: "Explore" })).toBeVisible();
     const iconTile = emptyState.querySelector('[aria-hidden="true"]');

@@ -31,6 +31,12 @@
       "skillPath": "skills/humanizer/SKILL.md",
       "computedHash": "34a38e6acc60d4529612d41ffe740bca0060d3c5e89e2a0d24ae795f67157fbb"
     },
+    "i-have-adhd": {
+      "source": "ayghri/i-have-adhd",
+      "sourceType": "github",
+      "skillPath": "skills/i-have-adhd/SKILL.md",
+      "computedHash": "046a51e8f4720bbb8f7847048159378f4b8dcb8e4a4969afe1cc7568e985ee9c"
+    },
     "improve-codebase-architecture": {
       "source": "mattpocock/skills",
       "sourceType": "github",

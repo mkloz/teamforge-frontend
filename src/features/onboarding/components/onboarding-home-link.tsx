@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { TeamForgeLogo } from "@/assets/logo";
+import { FindafewLogo } from "@/assets/logo";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -21,8 +21,8 @@ export function OnboardingHomeLink({ className }: OnboardingHomeLinkProps) {
         size="icon"
         className="pointer-events-auto size-11 rounded-lg p-0 text-white/80 hover:text-white focus-visible:ring-white focus-visible:ring-offset-hero-bg [@media(pointer:fine)]:size-10"
       >
-        <Link to="/" aria-label="Back to TeamForge home">
-          <TeamForgeLogo className="size-10" showBackground={false} />
+        <Link to="/" aria-label="Back to Findafew home">
+          <FindafewLogo className="size-10" showBackground={false} />
         </Link>
       </Button>
     </div>

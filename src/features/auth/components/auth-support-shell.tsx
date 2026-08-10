@@ -8,12 +8,18 @@ import { BackgroundTexture } from "@/shared/components/common/background-texture
 import { Button } from "@/shared/components/ui/button";
 import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
 import { cn } from "@/shared/lib/utils";
+import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 
 const LazyVoronoiCatalyst = lazy(() =>
   import("@/shared/components/visuals/voronoi-catalyst").then((module) => ({
     default: module.VoronoiCatalyst,
   })),
 );
+
+const SUPPORT_FORMATION = {
+  kind: "text",
+  value: "WE ARE HERE",
+} as const satisfies VoronoiFormationTarget;
 
 interface AuthSupportShellProps {
   title: string;
@@ -27,6 +33,7 @@ interface AuthSupportShellProps {
   backLabel: string;
   children: ReactNode;
   footer?: ReactNode;
+  progress: number;
 }
 
 export function AuthSupportShell({
@@ -36,6 +43,7 @@ export function AuthSupportShell({
   backLabel,
   children,
   footer,
+  progress,
 }: AuthSupportShellProps) {
   const isDesktopAuthVisualEnabled = useDesktopAuthVisualEnabled();
 
@@ -66,7 +74,10 @@ export function AuthSupportShell({
       >
         {isDesktopAuthVisualEnabled ? (
           <Suspense fallback={null}>
-            <LazyVoronoiCatalyst progress={0.68} />
+            <LazyVoronoiCatalyst
+              formation={SUPPORT_FORMATION}
+              progress={progress}
+            />
           </Suspense>
         ) : null}
       </div>

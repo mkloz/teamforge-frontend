@@ -19,7 +19,7 @@ export function DropzonePreviewLayers({
       {preview ? <div className="absolute inset-0">{preview}</div> : null}
 
       {isDragging && (
-        <div className="pointer-events-none absolute inset-0 z-0 bg-linear-to-br from-forge-teal/8 via-transparent to-forge-teal/4" />
+        <div className="pointer-events-none absolute inset-0 z-0 bg-linear-to-br from-brand-teal/8 via-transparent to-brand-teal/4" />
       )}
     </>
   );

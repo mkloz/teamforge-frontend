@@ -605,7 +605,7 @@ function getRouteSettleExpression(routePath) {
 (() => {
   const text = document.body?.innerText ?? "";
   const rootText = document.getElementById("root")?.innerText ?? "";
-  const loading = /Loading page|Preparing TeamForge/.test(text);
+  const loading = /Loading page|Preparing Findafew/.test(text);
   const pathMatches = location.pathname === ${JSON.stringify(routePath)};
   return {
     path: location.pathname,
@@ -711,7 +711,7 @@ async function collectPageState(cdp, routePath) {
     finalPath: location.pathname,
     title: document.title,
     routeBlocked,
-    stillLoading: /Loading page|Preparing TeamForge/.test(text),
+    stillLoading: /Loading page|Preparing Findafew/.test(text),
     rootChildCount: root?.children.length ?? 0,
     textLength: text.trim().length,
     rootTextLength: rootText.trim().length,
@@ -1001,7 +1001,7 @@ function toMarkdown(results, { baseUrl, refreshCookieName, hasRefreshToken }) {
 
   const details = results.map(formatRouteResultDetails).join("\n");
 
-  return `# TeamForge Loaded Route Audit
+  return `# Findafew Loaded Route Audit
 
 Date: ${new Date().toISOString()}
 Target: \`${baseUrl}\`

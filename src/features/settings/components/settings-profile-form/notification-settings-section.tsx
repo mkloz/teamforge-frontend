@@ -56,7 +56,7 @@ const NOTIFICATION_DELIVERY_CHANNELS = [
   {
     id: "in-app",
     title: "In app",
-    description: "Keep selected updates inside TeamForge.",
+    description: "Keep selected updates inside Findafew.",
     icon: BellDot,
     preferenceKey: "inAppKey",
   },
@@ -129,8 +129,7 @@ function NotificationDeliveryPreferences({
       <div className="px-1">
         <h2 className="font-bold text-ink text-xl">Choose your channels</h2>
         <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          Decide which updates stay in TeamForge and which also reach your
-          inbox.
+          Decide which updates stay in Findafew and which also reach your inbox.
         </p>
       </div>
 
@@ -204,7 +203,7 @@ function NotificationChannelMenu({
           const preferenceKey = item[channel.preferenceKey];
 
           return (
-            <GroupedMenuItem key={preferenceKey} className="bg-background/55">
+            <GroupedMenuItem key={preferenceKey}>
               <NotificationChannelToggleRow
                 channelTitle={channel.title}
                 checked={notificationPreferences[preferenceKey]}
@@ -295,7 +294,7 @@ function WebPushDevicePreference({ isOnline }: { isOnline: boolean }) {
       <div className="px-1">
         <h2 className="font-bold text-ink text-xl">This device</h2>
         <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          Receive time-sensitive updates even when TeamForge is closed.
+          Receive time-sensitive updates even when Findafew is closed.
         </p>
       </div>
 

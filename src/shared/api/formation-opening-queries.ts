@@ -6,7 +6,9 @@ import { getHttpErrorStatus } from "@/shared/lib/api-error-message";
 
 export function formationOpeningDetailQueryOptions(openingId: string | null) {
   return queryOptions({
-    queryKey: APP_QUERY_KEYS.forge.proposalOpeningById(openingId ?? "none"),
+    queryKey: APP_QUERY_KEYS.groupFormation.proposalOpeningById(
+      openingId ?? "none",
+    ),
     queryFn: () => getFormationOpening(openingId ?? ""),
     enabled: Boolean(openingId),
     meta: { errorToast: false },

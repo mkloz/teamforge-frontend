@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Fragment } from "react";
-import { TeamForgeLogo } from "@/assets/logo";
+import { FindafewLogo } from "@/assets/logo";
 
 const FOOTER_LINKS = [
   { to: "/", label: "Home" },
@@ -32,7 +32,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:gap-x-4">
           <span className="inline-flex items-center">
-            <TeamForgeLogo className="size-5" showBackground={false} />
+            <FindafewLogo className="size-5" showBackground={false} />
           </span>
 
           {visibleLinks.map((link) => (

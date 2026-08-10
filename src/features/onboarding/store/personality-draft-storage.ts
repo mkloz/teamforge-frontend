@@ -77,7 +77,7 @@ let storageStatus: PersonalityDraftStorageStatus = "idle";
 let recoveryPersistenceEnabled = false;
 let inMemoryDraftEnvelope: string | null = null;
 const storageStatusListeners = new Set<() => void>();
-const DRAFT_OWNERSHIP_EVENT_KEY = "teamforge:personality-draft-ownership:v1";
+const DRAFT_OWNERSHIP_EVENT_KEY = "findafew:personality-draft-ownership:v1";
 
 function setStorageStatus(next: PersonalityDraftStorageStatus) {
   if (storageStatus === next) return;

@@ -24,7 +24,7 @@ export function CompletionBlueprintAction({
         className="group w-full"
         onClick={onEnter}
       >
-        Enter TeamForge
+        Enter Findafew
         <ArrowRight
           size={20}
           className="transition-transform duration-300 group-hover:translate-x-1"

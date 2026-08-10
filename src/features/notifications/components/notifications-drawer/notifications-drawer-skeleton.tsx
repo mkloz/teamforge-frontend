@@ -24,7 +24,7 @@ export function NotificationsDrawerSkeleton() {
             <LoadingBlock
               className={cn(
                 "mt-0.5 size-10 shrink-0 rounded-md",
-                index === 0 ? "bg-spark-amber/18" : "bg-forge-teal/12",
+                index === 0 ? "bg-brand-amber/18" : "bg-primary-soft",
               )}
             />
             <div className="min-w-0 flex-1 flex-col gap-0.5">
@@ -39,7 +39,7 @@ export function NotificationsDrawerSkeleton() {
               <div className="mt-2 flex items-center gap-2">
                 <LoadingBlock className="h-2.5 w-12 rounded-md" />
                 {index === 0 ? (
-                  <LoadingBlock className="size-2 rounded-full bg-forge-teal/35" />
+                  <LoadingBlock className="size-2 rounded-full bg-brand-teal/35" />
                 ) : null}
               </div>
             </div>

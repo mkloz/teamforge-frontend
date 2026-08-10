@@ -29,7 +29,7 @@ export function getProfileMoveCopy(
       return {
         eyebrow: "Add personality details",
         title: nextStep.title,
-        body: "Complete the personality assessment so TeamForge can use those details when forming groups.",
+        body: "Complete the personality assessment so Findafew can use those details when forming groups.",
         primaryLabel: nextStep.label,
         secondaryLabel: "Open profile",
         signal,
@@ -38,7 +38,7 @@ export function getProfileMoveCopy(
       return {
         eyebrow: "Add your interests",
         title: nextStep.title,
-        body: "Add interests so TeamForge can suggest activity plans you may want to join.",
+        body: "Add interests so Findafew can suggest activity plans you may want to join.",
         primaryLabel: nextStep.label,
         secondaryLabel: "Open profile",
         signal,

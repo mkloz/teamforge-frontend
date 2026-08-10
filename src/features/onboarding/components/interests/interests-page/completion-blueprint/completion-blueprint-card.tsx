@@ -30,14 +30,14 @@ export function CompletionBlueprintCard({
             </span>
             <Fingerprint
               size={16}
-              className="text-spark-amber"
+              className="text-brand-amber"
               aria-hidden="true"
             />
           </div>
           <h2 className="font-black font-sans text-5xl text-foreground tracking-tight">
             Ready
           </h2>
-          <p className="font-medium font-sans text-lg text-spark-amber">
+          <p className="font-medium font-sans text-brand-amber text-lg">
             {nickname}
           </p>
         </div>
@@ -65,7 +65,7 @@ export function CompletionBlueprintCard({
                 className="mt-1 w-fit border-0 bg-transparent px-0 py-0 text-foreground"
               >
                 <span
-                  className="size-1.5 rounded-full bg-forge-teal shadow-teal-glow"
+                  className="size-1.5 rounded-full bg-brand-teal shadow-teal-glow"
                   aria-hidden="true"
                 />
                 {interestCount} selected

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { useCompatibilityInputLock } from "@/features/group-proposals/public/proposal-review";
 import { buildSettingsProfileFormValues } from "@/features/settings/lib/settings-profile-mappers";
 import { Button } from "@/shared/components/ui/button";
 import { Form } from "@/shared/components/ui/form";
@@ -55,7 +55,7 @@ export function AccountSettingsSection({
       >
         <AccountSettingsCard
           title="Public profile"
-          description="Shape the identity other people see across TeamForge."
+          description="Shape the identity other people see across Findafew."
         >
           <AvatarProfileSection
             currentUser={currentUser}

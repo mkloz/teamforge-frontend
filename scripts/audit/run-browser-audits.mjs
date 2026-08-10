@@ -1,14 +1,11 @@
 #!/usr/bin/env node
+
 // @ts-check
 
+import { spawn } from "node:child_process";
 import path from "node:path";
-import {
-  cwd,
-  runCommand,
-  todayStamp,
-  writeError,
-  writeOutput,
-} from "./helpers.mjs";
+import { cwd, todayStamp, writeError, writeOutput } from "./helpers.mjs";
+import { writeSanitizedBrowserAuditSummary } from "./write-sanitized-summary.mjs";
 
 /**
  * @typedef {"release" | "nightly"} BrowserAuditProfile
@@ -22,7 +19,8 @@ const auditPipelineScript = path.join(
 );
 const lighthouseRouteSlugsByProfile = {
   release: "01-landing,02-download,14-home",
-  nightly: "01-landing,02-download,14-home,15-explore,17-activity,21-forge",
+  nightly:
+    "01-landing,02-download,14-home,15-explore,17-activity,21-plan-creation",
 };
 
 /**
@@ -127,12 +125,45 @@ function writeBrowserAuditPlan(profile, env) {
 async function main() {
   const profile = parseProfile(process.argv.slice(2));
   const env = getBrowserAuditEnv(profile);
+  const summaryPath =
+    env.AUDIT_SANITIZED_SUMMARY_PATH ??
+    path.join(
+      cwd,
+      "..",
+      "reports",
+      "findafew-implementation",
+      "phase-3",
+      `browser-audit-${profile}-summary.json`,
+    );
 
   writeBrowserAuditPlan(profile, env);
 
-  await runCommand(process.execPath, [auditPipelineScript], {
-    env,
-    label: `browser audit (${profile})`,
+  const pipelineExitCode = await runAuditPipeline(env);
+  await writeSanitizedBrowserAuditSummary({
+    cwd,
+    outputRoot: env.AUDIT_OUTPUT_ROOT ?? getDefaultOutputRoot(profile),
+    pipelineExitCode,
+    profile,
+    summaryPath,
+  });
+  writeOutput(`SANITIZED_BROWSER_AUDIT ${summaryPath}`);
+
+  if (pipelineExitCode !== 0) {
+    process.exitCode = pipelineExitCode;
+  }
+}
+
+function runAuditPipeline(env) {
+  writeOutput(`RUN browser audit (${parseProfile(process.argv.slice(2))})`);
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [auditPipelineScript], {
+      cwd,
+      env,
+      stdio: "inherit",
+      windowsHide: true,
+    });
+    child.once("error", reject);
+    child.once("exit", (code) => resolve(code ?? 1));
   });
 }
 

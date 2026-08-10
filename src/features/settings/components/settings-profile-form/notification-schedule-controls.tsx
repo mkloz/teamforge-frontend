@@ -121,7 +121,7 @@ export function NotificationScheduleControls({
         <GroupedMenuItem>
           <ScheduleToggleRow
             checked={preferences.notificationHardMute}
-            description="Stop every TeamForge notification on this account until you resume them."
+            description="Stop every Findafew notification on this account until you resume them."
             disabled={disabled || isSavingHardMute}
             icon={MoonStar}
             id={hardMuteId}
@@ -228,7 +228,9 @@ export function NotificationScheduleControls({
                 />
                 <datalist id={`${quietHoursId}-zones`}>
                   {getSupportedTimeZones().map((zone) => (
-                    <option key={zone} value={zone} />
+                    <option key={zone} value={zone}>
+                      {zone}
+                    </option>
                   ))}
                 </datalist>
               </div>

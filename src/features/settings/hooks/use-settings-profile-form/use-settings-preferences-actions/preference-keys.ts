@@ -22,7 +22,6 @@ const settingsPreferenceKeys = [
   "emailGroupActivity",
   "emailMessages",
   "emailAccount",
-  "autoMatchingEnabled",
   "minCompatibilityScore",
   "themeAppearance",
   "themeStyle",

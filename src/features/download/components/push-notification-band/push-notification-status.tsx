@@ -50,7 +50,7 @@ function PushDeniedHelp({ isDenied }: { isDenied: boolean }) {
     <p className="mt-2 flex items-start gap-1.5 text-slate-muted text-sm">
       <ExternalLink
         size={13}
-        className="mt-0.5 shrink-0 text-spark-amber"
+        className="mt-0.5 shrink-0 text-brand-amber"
         aria-hidden="true"
       />
       <span>{getPushDeniedHelp()}</span>

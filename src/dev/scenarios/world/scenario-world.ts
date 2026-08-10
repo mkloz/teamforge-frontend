@@ -182,7 +182,7 @@ export interface ScenarioWorld {
     users: Record<string, CurrentUser>;
   };
   faults: ScenarioFaultPlan[];
-  forge: {
+  planCreation: {
     activeRequestId: string | null;
   };
   onboarding: {

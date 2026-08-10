@@ -171,7 +171,7 @@ function TypingDotsFallback({ className }: { className?: string }) {
       {TYPING_DOT_FALLBACK_INDICES.map((index) => (
         <span
           key={index}
-          className="mb-0.5 size-1 rounded-full bg-forge-teal/70 opacity-60"
+          className="mb-0.5 size-1 rounded-full bg-brand-teal/70 opacity-60"
         />
       ))}
     </span>

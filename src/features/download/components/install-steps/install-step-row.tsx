@@ -32,7 +32,7 @@ export function InstallStep({ index, step }: InstallStepProps) {
             shape="circle"
             size="sm"
             tone="teal"
-            className="size-6 bg-forge-teal/8"
+            className="size-6 bg-primary-soft"
           />
           <span>{step.title}</span>
         </h3>
@@ -40,7 +40,7 @@ export function InstallStep({ index, step }: InstallStepProps) {
           {step.body}
         </p>
         {step.tip && (
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-forge-teal/8 px-3 py-1.5 font-medium text-foreground text-sm">
+          <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-primary-soft px-3 py-1.5 font-medium text-foreground text-sm">
             {step.tip}
           </p>
         )}

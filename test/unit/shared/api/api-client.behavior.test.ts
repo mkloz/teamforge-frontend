@@ -9,6 +9,48 @@ import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-cache";
 import { appQueryClient } from "@/shared/api/query-client";
 
 describe("apiClient auth behavior", () => {
+  it("adds a UUID idempotency key to mutations and preserves an explicit key", async () => {
+    const receivedKeys: Array<string | null> = [];
+    const explicitKey = "00000000-0000-4000-8000-000000000001";
+
+    server.use(
+      http.post(apiRoute("groups"), ({ request }) => {
+        receivedKeys.push(request.headers.get("idempotency-key"));
+        return HttpResponse.json({ ok: true });
+      }),
+    );
+
+    await apiClient.post("groups", { json: { title: "Sunday walk" } }).json();
+    await apiClient
+      .post("groups", {
+        headers: { "Idempotency-Key": explicitKey },
+        json: { title: "Sunday walk" },
+      })
+      .json();
+
+    expect(receivedKeys[0]).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u,
+    );
+    expect(receivedKeys[1]).toBe(explicitKey);
+  });
+
+  it("sends the exact Findafew onboarding policy header", async () => {
+    let policyVersion: string | null = null;
+
+    server.use(
+      http.get(apiRoute("groups"), ({ request }) => {
+        policyVersion = request.headers.get(
+          "x-findafew-onboarding-policy-version",
+        );
+        return HttpResponse.json({ ok: true });
+      }),
+    );
+
+    await apiClient.get("groups").json();
+
+    expect(policyVersion).toBe("onboarding-authorization-v1");
+  });
+
   it("refreshes an expired access token and retries the original request", async () => {
     const requestAuthorizations: string[] = [];
     const refreshedUser = createUser({

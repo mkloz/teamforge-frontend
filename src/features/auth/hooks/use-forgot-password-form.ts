@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import { AuthCommands } from "@/features/auth/api/auth-commands";
+import { calculateForgotPasswordProgress } from "@/features/auth/lib/auth-form-progress";
 import { getEmailDomain } from "@/features/auth/lib/auth-telemetry";
 import {
   type ForgotPasswordValues,
@@ -26,6 +27,8 @@ export function useForgotPasswordForm() {
       email: "",
     },
   });
+  const emailValue = useWatch({ control: form.control, name: "email" });
+  const progress = calculateForgotPasswordProgress({ email: emailValue });
 
   async function submitResetLink(values: ForgotPasswordValues) {
     const emailDomain = getEmailDomain(values.email);
@@ -82,6 +85,7 @@ export function useForgotPasswordForm() {
     isOnline,
     loading,
     onSubmit,
+    progress,
     rootError,
   };
 }

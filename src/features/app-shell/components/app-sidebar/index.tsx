@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { TeamForgeLogo } from "@/assets/logo";
+import { FindafewLogo } from "@/assets/logo";
 import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
 import {
   applyAppNavigationBadges,
@@ -35,11 +35,14 @@ export function AppSidebar({
   const sidebarItems = applyAppNavigationBadges(appSidebarNavigation, {
     activity: activityUnreadCount,
   });
-  const forgeItem = getAppNavigationItem("forge");
+  const planCreationItem = getAppNavigationItem("planCreation");
   const settingsItem = getAppNavigationItem("settings");
   const adminItem = getAppNavigationItem("admin");
-  const ForgeIcon = forgeItem.icon;
-  const isForgeActive = isAppNavigationItemActive(forgeItem, pathname);
+  const PlanCreationIcon = planCreationItem.icon;
+  const isPlanCreationActive = isAppNavigationItemActive(
+    planCreationItem,
+    pathname,
+  );
 
   return (
     <aside
@@ -58,9 +61,9 @@ export function AppSidebar({
         <Link
           {...buildHomeNavigation()}
           className="transition-opacity hover:opacity-80"
-          aria-label="TeamForge home"
+          aria-label="Findafew"
         >
-          <TeamForgeLogo className="size-8" showBackground={false} />
+          <FindafewLogo className="size-8" showBackground={false} />
         </Link>
       </div>
 
@@ -79,7 +82,7 @@ export function AppSidebar({
       {/* Divider */}
       <div className="mx-1.5 h-px bg-sidebar-border/50" aria-hidden="true" />
 
-      {/* Bottom section: notifications, settings + forge */}
+      {/* Bottom section: notifications, settings + planCreation */}
       <div className="flex flex-col items-center gap-3 px-1.5 py-4">
         {notificationTrigger}
 
@@ -89,7 +92,7 @@ export function AppSidebar({
 
         <NavItem item={settingsItem} pathname={pathname} />
 
-        {/* Icon-only Forge button. */}
+        {/* Icon-only PlanCreation button. */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -98,35 +101,35 @@ export function AppSidebar({
               variant="ghost"
               className={cn(
                 "group relative flex size-10 items-center justify-center rounded-lg transition-all duration-150",
-                isForgeActive
-                  ? "bg-accent/10 text-accent"
+                isPlanCreationActive
+                  ? "bg-accent-soft text-accent"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               <Link
-                {...forgeItem.navigation}
-                data-onboarding-tour="nav-forge"
-                aria-label="Forge my group"
+                {...planCreationItem.navigation}
+                data-onboarding-tour="nav-plan-creation"
+                aria-label="Start a plan"
               >
                 {/* Active indicator */}
-                {isForgeActive && (
+                {isPlanCreationActive && (
                   <span
                     className="absolute top-1/2 left-0 h-6 w-1 -translate-y-1/2 rounded-full bg-accent"
                     aria-hidden="true"
                   />
                 )}
 
-                <ForgeIcon
+                <PlanCreationIcon
                   className={cn(
                     "size-5 transition-transform duration-300",
-                    isForgeActive && "scale-110",
+                    isPlanCreationActive && "scale-110",
                   )}
                 />
-                <span className="sr-only">Forge My Group</span>
+                <span className="sr-only">Start a plan</span>
               </Link>
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="right">Forge My Group</TooltipContent>
+          <TooltipContent side="right">Start a plan</TooltipContent>
         </Tooltip>
       </div>
     </aside>

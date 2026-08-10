@@ -21,9 +21,9 @@ export function ActivateAccountStatus({
     return (
       <div className="flex min-h-64 flex-col justify-center rounded-xl border border-border bg-background px-4 py-6 text-center">
         <span className="sr-only">
-          Confirming your email and preparing your TeamForge account.
+          Confirming your email and preparing your Findafew account.
         </span>
-        <LoadingBlock className="mx-auto mb-4 size-10 rounded-full bg-forge-teal/18" />
+        <LoadingBlock className="mx-auto mb-4 size-10 rounded-full bg-brand-teal/18" />
         <LoadingBlock className="mx-auto h-3 w-full max-w-64 rounded-md" />
         <LoadingBlock className="mx-auto mt-2 h-3 w-44 rounded-md" />
       </div>
@@ -53,7 +53,7 @@ export function ActivateAccountStatus({
       size="md"
       className="min-h-64 items-center px-4"
     >
-      Your account is ready. Taking you back into TeamForge now.
+      Your account is ready. Taking you back into Findafew now.
     </Notice>
   );
 }

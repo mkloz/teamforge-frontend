@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   MapPin,
-  Sparkles,
+  Star,
   Ticket,
   UsersRound,
   Wifi,
@@ -10,9 +10,9 @@ import {
 import {
   ACTIVITY_TEMPLATE_STARTING_POINTS,
   type ActivityTemplateStartingPoint,
-} from "@/features/forge/public/canonical-activity-templates";
+} from "@/features/plan-creation/public/canonical-activity-templates";
 import { PlanCover } from "@/shared/components/common/plan-cover";
-import { buildForgeTemplateLaunchNavigation } from "@/shared/navigation";
+import { buildPlanCreationTemplateLaunchNavigation } from "@/shared/navigation";
 
 export function ExploreStarterTemplates() {
   return (
@@ -57,7 +57,7 @@ function StarterTemplateCard({
 
   return (
     <Link
-      {...buildForgeTemplateLaunchNavigation(startingPoint.templateId)}
+      {...buildPlanCreationTemplateLaunchNavigation(startingPoint.templateId)}
       aria-label={`Start ${startingPoint.title} from template`}
       className="group relative grid min-h-28 min-w-0 grid-cols-[6.5rem_minmax(0,1fr)] overflow-hidden rounded-lg border border-border/70 border-dashed bg-card/45 text-left outline-none transition-[box-shadow,transform,border-color] duration-200 hover:-translate-y-1 hover:border-foreground/35 hover:shadow-soft-md focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-canvas active:translate-y-0 motion-reduce:transition-none sm:min-h-32 sm:grid-cols-[8.75rem_minmax(0,1fr)]"
     >
@@ -68,7 +68,7 @@ function StarterTemplateCard({
         imageClassName="size-full object-cover transition-transform duration-500 group-hover:scale-[1.035] motion-reduce:transition-none"
         fallbackComponent={
           <div className="flex size-full items-center justify-center bg-muted text-muted-foreground">
-            <Sparkles className="size-6" aria-hidden="true" />
+            <Star className="size-6" aria-hidden="true" />
           </div>
         }
       />

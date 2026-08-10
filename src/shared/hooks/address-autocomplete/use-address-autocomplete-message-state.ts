@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type {
   AddressAutocompleteMessage,
   AddressAutocompleteMessageTone,
@@ -10,13 +10,16 @@ export function useAddressAutocompleteMessageState() {
   );
   const [hasCurrentAreaError, setHasCurrentAreaError] = useState(false);
 
-  function showMessage(text: string, tone: AddressAutocompleteMessageTone) {
-    setMessage({ text, tone });
-  }
+  const showMessage = useCallback(
+    (text: string, tone: AddressAutocompleteMessageTone) => {
+      setMessage({ text, tone });
+    },
+    [],
+  );
 
-  function clearMessage() {
+  const clearMessage = useCallback(() => {
     setMessage(null);
-  }
+  }, []);
 
   return {
     clearMessage,

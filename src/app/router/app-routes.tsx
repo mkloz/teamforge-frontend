@@ -3,11 +3,11 @@ import {
   accountActionDetailRouteOptions,
   activityRouteOptions,
   exploreRouteOptions,
-  forgeProposalRouteOptions,
-  forgeRouteOptions,
   groupPlanDetailRouteOptions,
+  groupProposalRouteOptions,
   homeRouteOptions,
   onboardingPracticeRouteOptions,
+  planCreationRouteOptions,
   planGuestRouteOptions,
   profileRouteOptions,
   restrictionDetailRouteOptions,
@@ -128,21 +128,21 @@ const restrictionDetailRoute = createRoute({
   ...restrictionDetailRouteOptions,
 });
 
-const forgeRoute = createRoute({
+const planCreationRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
-  ...forgeRouteOptions,
+  ...planCreationRouteOptions,
   beforeLoad: ({ location }) =>
     requireProductCapabilityRoute(location, [
-      "START_FORGE",
-      "START_INTRODUCTORY_FORGE",
+      "START_GROUP_FORMATION",
+      "START_INTRODUCTORY_GROUP_FORMATION",
     ]),
 });
 
-const forgeProposalRoute = createRoute({
+const groupProposalRoute = createRoute({
   getParentRoute: () => appShellBaseRoute,
-  ...forgeProposalRouteOptions,
+  ...groupProposalRouteOptions,
   beforeLoad: ({ location }) =>
-    requireProductCapabilityRoute(location, "START_FORGE", {
+    requireProductCapabilityRoute(location, "START_GROUP_FORMATION", {
       preserveEstablishedObligations: true,
     }),
 });
@@ -161,8 +161,8 @@ const appRoutes = [
   safetyReportDetailRoute,
   accountActionDetailRoute,
   restrictionDetailRoute,
-  forgeRoute,
-  forgeProposalRoute,
+  planCreationRoute,
+  groupProposalRoute,
 ];
 
 export const appShellRoute = appShellBaseRoute.addChildren(appRoutes);

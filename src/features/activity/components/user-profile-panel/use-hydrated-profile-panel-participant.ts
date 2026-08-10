@@ -9,11 +9,6 @@ import type {
   UserProfilePanelParticipant,
 } from "./types";
 
-const LEGACY_ACTIVITY_CURRENT_USER_IDS = new Set([
-  "current-user",
-  "user-current",
-]);
-
 export function useHydratedProfilePanelParticipant(
   participant: UserProfilePanelParticipant | undefined,
 ) {
@@ -66,11 +61,7 @@ function canFetchProfilePanelPublicProfile(
   participant: UserProfilePanelParticipant | undefined,
   isCurrentUser: boolean,
 ) {
-  return Boolean(
-    participant &&
-      !isCurrentUser &&
-      !LEGACY_ACTIVITY_CURRENT_USER_IDS.has(participant.id),
-  );
+  return Boolean(participant && !isCurrentUser);
 }
 
 function mergeCurrentUserParticipant(

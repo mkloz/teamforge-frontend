@@ -17,6 +17,10 @@ import {
   scenarioPage,
 } from "@/dev/scenarios/runtime/scenario-response";
 import {
+  projectScenarioGroupProposal,
+  SCENARIO_GROUP_PROPOSAL_ID,
+} from "@/dev/scenarios/world/scenario-group-proposal";
+import {
   scenarioInterestLeavesById,
   scenarioInterestTree,
 } from "@/dev/scenarios/world/scenario-interest-catalog";
@@ -552,7 +556,7 @@ async function projectResponse(
       ? [
           {
             attempts: 3,
-            caseReference: "TF-SCENARIO-001",
+            caseReference: "CASE-SCENARIO-001",
             createdAt: "2026-07-31T23:00:00.000Z",
             id: "scenario-worker-job-1",
             kind: workerKind,
@@ -766,17 +770,16 @@ async function projectResponse(
     });
   }
 
-  if (pathname === "forge/availability" && request.method === "GET") {
+  if (pathname === "group-formation/availability" && request.method === "GET") {
     return scenarioJson({
       availableUntil: null,
       canReceiveLocalProposals: false,
       canReceiveOnlineProposals: false,
-      legacyAvailabilityPrompt: false,
       lifecycle: null,
       liveAutomaticGroupCount: 0,
       localEnabled: false,
       onlineEnabled: false,
-      policyVersion: "candidate-availability-v1",
+      policyVersion: "group-proposal-availability-v1",
       proposalCooldownUntil: null,
       reconfirmedAt: null,
       reservedSeatCount: 0,
@@ -784,12 +787,29 @@ async function projectResponse(
     });
   }
 
-  if (pathname === "auto-forge-requests/current" && request.method === "GET") {
+  if (
+    pathname === "automatic-group-formation-requests/current" &&
+    request.method === "GET"
+  ) {
     return scenarioJson({ request: null });
   }
 
-  if (pathname === "forge-proposals/current" && request.method === "GET") {
-    return scenarioJson({ proposal: null });
+  if (pathname === "group-proposals/current" && request.method === "GET") {
+    const proposal = world.traits.includes("group-proposal-current")
+      ? projectScenarioGroupProposal(world)
+      : null;
+    return scenarioJson({ proposal });
+  }
+
+  const groupProposalDetailMatch = pathname.match(
+    /^group-proposals\/([^/]+)$/u,
+  );
+  if (groupProposalDetailMatch && request.method === "GET") {
+    const proposal = projectScenarioGroupProposal(world);
+    return groupProposalDetailMatch[1] === SCENARIO_GROUP_PROPOSAL_ID &&
+      proposal
+      ? scenarioJson(proposal)
+      : notFound(pathname);
   }
 
   if (pathname === "chats/activity-feed" && request.method === "GET") {
@@ -887,7 +907,7 @@ async function projectResponse(
           return {
             createdAt: group.createdAt,
             description: group.description,
-            forgeMode: "MANUAL",
+            groupFormationMode: "MANUAL",
             group: {
               avatar: group.avatar,
               description: group.description,
@@ -957,6 +977,85 @@ async function projectResponse(
     );
   }
 
+  const reportDetailMatch = pathname.match(/^reports\/([^/]+)$/u);
+  if (reportDetailMatch && request.method === "GET") {
+    const reportId = decodeURIComponent(reportDetailMatch[1]);
+    const report = world.entities.reports[reportId];
+    return report ? scenarioJson(report) : notFound(pathname);
+  }
+
+  const reportReviewsMatch = pathname.match(
+    /^reports\/([^/]+)\/outcome-review-requests$/u,
+  );
+  if (reportReviewsMatch && request.method === "GET") {
+    const reportId = decodeURIComponent(reportReviewsMatch[1]);
+    const report = world.entities.reports[reportId];
+    if (!report) return notFound(pathname);
+
+    return scenarioJson(
+      report.outcomeReviewStatus
+        ? [
+            {
+              id: `scenario-outcome-review-${reportId}`,
+              resolvedAt: null,
+              result: null,
+              status: report.outcomeReviewStatus,
+              submittedAt: world.clock,
+            },
+          ]
+        : [],
+    );
+  }
+
+  if (reportReviewsMatch && request.method === "POST") {
+    const reportId = decodeURIComponent(reportReviewsMatch[1]);
+    const report = world.entities.reports[reportId];
+    if (!report) return notFound(pathname);
+
+    report.outcomeReviewStatus = "RECEIVED";
+    report.outcomeReviewEligibility = {
+      canRequest: false,
+      deadline: report.outcomeReviewEligibility.deadline,
+      reasonCode: "REVIEW_ALREADY_OPEN",
+    };
+    return scenarioJson(
+      {
+        id: `scenario-outcome-review-${reportId}`,
+        resolvedAt: null,
+        result: null,
+        status: "RECEIVED",
+        submittedAt: world.clock,
+      },
+      { status: 201 },
+    );
+  }
+
+  const informationResponseMatch = pathname.match(
+    /^reports\/([^/]+)\/information-responses$/u,
+  );
+  if (informationResponseMatch && request.method === "POST") {
+    const reportId = decodeURIComponent(informationResponseMatch[1]);
+    const report = world.entities.reports[reportId];
+    if (!report) return notFound(pathname);
+    const payload = await readJsonObject(request);
+    const requestId = String(payload.requestId ?? "");
+    if (!requestId) {
+      return scenarioJson(
+        { message: "An information request is required." },
+        { status: 422 },
+      );
+    }
+    report.informationRequest = null;
+    return scenarioJson(
+      {
+        id: `scenario-information-response-${reportId}`,
+        requestId,
+        submittedAt: world.clock,
+      },
+      { status: 201 },
+    );
+  }
+
   if (pathname === "friends/blocked" && request.method === "GET") {
     return scenarioJson(
       scenarioPage([], Number(url.searchParams.get("limit") ?? 50)),
@@ -972,6 +1071,33 @@ async function projectResponse(
     );
   }
 
+  const enforcementNoticeMatch = pathname.match(
+    /^safety\/enforcement-notices\/([^/]+)$/u,
+  );
+  if (enforcementNoticeMatch && request.method === "GET") {
+    const noticeId = decodeURIComponent(enforcementNoticeMatch[1]);
+    const notice = world.safety.enforcementNotices[noticeId];
+    return notice ? scenarioJson(notice) : notFound(pathname);
+  }
+
+  const enforcementAppealMatch = pathname.match(
+    /^safety\/enforcement-notices\/([^/]+)\/appeals$/u,
+  );
+  if (enforcementAppealMatch && request.method === "POST") {
+    const noticeId = decodeURIComponent(enforcementAppealMatch[1]);
+    const notice = world.safety.enforcementNotices[noticeId];
+    if (!notice) return notFound(pathname);
+    const appeal = {
+      decidedAt: null,
+      id: `scenario-appeal-${noticeId}`,
+      status: "RECEIVED" as const,
+      submittedAt: world.clock,
+    };
+    notice.appeal = appeal;
+    notice.canAppeal = false;
+    return scenarioJson(appeal, { status: 201 });
+  }
+
   if (pathname === "safety/containments" && request.method === "GET") {
     return scenarioJson(
       scenarioPage(
@@ -979,6 +1105,31 @@ async function projectResponse(
         Number(url.searchParams.get("limit") ?? 50),
       ),
     );
+  }
+
+  const containmentMatch = pathname.match(/^safety\/containments\/([^/]+)$/u);
+  if (containmentMatch && request.method === "GET") {
+    const containmentId = decodeURIComponent(containmentMatch[1]);
+    const containment = world.safety.containments[containmentId];
+    return containment ? scenarioJson(containment) : notFound(pathname);
+  }
+
+  const containmentContestMatch = pathname.match(
+    /^safety\/containments\/([^/]+)\/contests$/u,
+  );
+  if (containmentContestMatch && request.method === "POST") {
+    const containmentId = decodeURIComponent(containmentContestMatch[1]);
+    const containment = world.safety.containments[containmentId];
+    if (!containment) return notFound(pathname);
+    const contest = {
+      decidedAt: null,
+      id: `scenario-contest-${containmentId}`,
+      status: "RECEIVED" as const,
+      submittedAt: world.clock,
+    };
+    containment.contest = contest;
+    containment.canContest = false;
+    return scenarioJson(contest, { status: 201 });
   }
 
   if (pathname === "notifications" && request.method === "GET") {
@@ -1666,7 +1817,7 @@ async function projectResponse(
     }
 
     return new Response(
-      "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//TeamForge//Scenario//EN\r\nEND:VCALENDAR\r\n",
+      "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Findafew//Scenario//EN\r\nEND:VCALENDAR\r\n",
       {
         headers: {
           "content-type": "text/calendar; charset=utf-8",
@@ -2285,7 +2436,7 @@ function scenarioModerationCase(clock: string) {
     id: "scenario-moderation-case-1",
     mandatoryHumanReasons: ["CONFLICTING_OR_INCOMPLETE_EVIDENCE"],
     policyLabels: ["HARASSMENT_REVIEW"],
-    reference: "TF-SCENARIO-001",
+    reference: "CASE-SCENARIO-001",
     reportCount: 2,
     severity: "P2",
     status: "AWAITING_HUMAN_DECISION",
@@ -2891,7 +3042,7 @@ function projectOnboardingProductState(
                   policyVersion: "onboarding-authorization-v1",
                   reasonCode: "FEATURE_NOT_AVAILABLE" as const,
                 }
-            : capability === "START_INTRODUCTORY_FORGE" &&
+            : capability === "START_INTRODUCTORY_GROUP_FORMATION" &&
                 introductoryEnabled &&
                 basicsComplete &&
                 interestsComplete &&
@@ -2922,12 +3073,12 @@ function projectOnboardingProductState(
       reviewableAssessmentResult: false,
       starterAnswersRetained: false,
       starterSatisfied: introductoryEnabled || fullAssessmentAccepted,
-      introductoryForgeAvailable:
+      introductoryGroupFormationAvailable:
         introductoryEnabled &&
         basicsComplete &&
         interestsComplete &&
         !matchingReady,
-      introductoryForgeUsed: false,
+      introductoryGroupFormationUsed: false,
     },
     minimumCompatibleClientPolicyVersion: "onboarding-authorization-v1",
     policyVersion: "onboarding-product-state-v1",
@@ -2948,21 +3099,21 @@ function projectOnboardingProductState(
         ? {
             intent,
             firstMission: "CREATE_INTRODUCTORY_PLAN",
-            destination: "FORGE",
-            coachmarkOrder: ["FORGE", "EXPLORE", "ACTIVITY"],
+            destination: "START_PLAN",
+            coachmarkOrder: ["START_PLAN", "EXPLORE", "ACTIVITY"],
           }
         : intent === "EXPLORE_AND_JOIN"
           ? {
               intent,
               firstMission: "EXPLORE_RECOMMENDATIONS",
               destination: "EXPLORE",
-              coachmarkOrder: ["EXPLORE", "ACTIVITY", "FORGE"],
+              coachmarkOrder: ["EXPLORE", "ACTIVITY", "START_PLAN"],
             }
           : {
               intent: null,
-              firstMission: "EXPLORE_WITH_FORGE_OPTION",
+              firstMission: "EXPLORE_WITH_START_PLAN_OPTION",
               destination: "EXPLORE",
-              coachmarkOrder: ["EXPLORE", "FORGE", "ACTIVITY"],
+              coachmarkOrder: ["EXPLORE", "START_PLAN", "ACTIVITY"],
             },
     requirements: {
       fullFormVersion: "IPIP_30_V1",

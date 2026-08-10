@@ -252,7 +252,7 @@ describe("personality draft storage", () => {
 
     window.dispatchEvent(
       new StorageEvent("storage", {
-        key: "teamforge:personality-draft-ownership:v1",
+        key: "findafew:personality-draft-ownership:v1",
         newValue: JSON.stringify({ previousTabId: tabId }),
       }),
     );

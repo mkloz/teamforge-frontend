@@ -231,7 +231,7 @@ function GroupPanelAdminDialogs({
   const governance = group.governance;
   const isSystemManaged = isSystemManagedGroupGovernance(governance);
   const hasMissingGovernance = hasMissingAutoGovernance({
-    forgeMode: group.activity?.forgeMode,
+    groupFormationMode: group.activity?.groupFormationMode,
     governance,
   });
   const canEditIdentity = isSystemManaged

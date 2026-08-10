@@ -18,7 +18,7 @@ export function StepHeader({ headingRef, step }: StepHeaderProps) {
     step === 1
       ? "Start with the basics to secure your account."
       : step === 2
-        ? "These details help TeamForge form groups around your plans."
+        ? "These details help Findafew form groups around your plans."
         : "Check your email for a 6-digit code.";
 
   return (

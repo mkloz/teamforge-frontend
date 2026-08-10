@@ -48,7 +48,7 @@ function CapacitySegment({
       className={cn(
         "h-1.5 min-w-0 flex-1 rounded-full transition-colors duration-300",
         segmentNumber <= filledCapacitySegments
-          ? "bg-forge-teal"
+          ? "bg-brand-teal"
           : "bg-slate-muted/20",
       )}
     />

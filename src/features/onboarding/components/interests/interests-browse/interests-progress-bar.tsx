@@ -35,8 +35,8 @@ export function InterestsProgressBar({
     <div className="w-full py-3.5">
       <Progress
         aria-label="Interests selection progress"
-        className="mb-3 h-1 bg-slate-muted/10"
-        indicatorClassName="bg-forge-teal"
+        className="mb-3 h-1 bg-muted-soft"
+        indicatorClassName="bg-brand-teal"
         value={pct}
       />
       <div className="flex xs:flex-row flex-col xs:items-center xs:justify-between gap-3 xs:gap-4">

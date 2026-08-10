@@ -12,12 +12,12 @@ const PEOPLE_PROBLEM_POINTS = [
   {
     icon: UsersRound,
     title: "Finding the group takes the work",
-    detail: "You need people who are free, interested, and easy to talk to.",
+    detail: "You need people who are free and interested in the same plan.",
   },
   {
     icon: MousePointer2,
-    title: "TeamForge handles the setup",
-    detail: "Start the plan once. TeamForge forms the small group around it.",
+    title: "Keep the plan clear",
+    detail: "Share the activity and practical details in one place.",
   },
 ] as const;
 
@@ -41,16 +41,15 @@ export function PeopleProblemSection() {
               id="people-problem-heading"
               className="text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
             >
-              The plan is easy. Finding people who want the same plan is harder.
+              The idea can be simple. Finding a few interested people is harder.
             </h2>
             <p className="mt-5 text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
               Coffee after class. A weekend walk. Board games. A study session.
-              The work is finding people who are free, interested, and easy to
-              talk to without turning the plan into admin.
+              The work is finding people who are free and interested without
+              turning the plan into admin.
             </p>
-            <p className="mt-6 text-pretty border-forge-teal/45 border-l-2 pl-4 font-semibold text-base text-white leading-relaxed">
-              TeamForge fills the gap between having a plan and knowing who
-              would actually come.
+            <p className="mt-6 text-pretty border-brand-teal/45 border-l-2 pl-4 font-semibold text-base text-white leading-relaxed">
+              Findafew helps turn your plan into a group to review.
             </p>
           </header>
 
@@ -68,7 +67,7 @@ export function PeopleProblemSection() {
               />
               <img
                 src="/landing/people-problem-visual-ai-cutout.png"
-                alt="Activity cards connected to one TeamForge group room, with an open seat highlighted"
+                alt="Activity cards connected to a Findafew group proposal with time, place, and group-review details"
                 width={1672}
                 height={941}
                 className="mx-auto w-full max-w-4xl select-none drop-shadow-2xl lg:origin-center lg:scale-115 xl:scale-125"

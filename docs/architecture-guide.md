@@ -1,4 +1,4 @@
-# TeamForge - Architecture Guide
+# Findafew - Architecture Guide
 
 **Version 2.0 | Technical Architecture Documentation**
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-TeamForge follows a decoupled architecture with a React-based frontend (this repository) and a separate backend API. This document covers the frontend architecture and the expected backend contract.
+Findafew follows a decoupled architecture with a React-based frontend (this repository) and a separate backend API. This document covers the frontend architecture and the expected backend contract.
 
 ---
 
@@ -95,7 +95,7 @@ src/
 │   ├── design-system/      # Internal component showcase / visual QA route
 │   ├── download/           # PWA install guidance and diagnostics
 │   ├── explore/            # Group/user discovery
-│   ├── forge/              # Core "Forge my group" wizard
+│   ├── planCreation/              # Core "PlanCreation my group" wizard
 │   ├── group-plan-detail/  # Dedicated group and plan briefing route
 │   ├── home/               # Dashboard
 │   ├── landing/            # Public marketing page
@@ -152,7 +152,7 @@ src/features/<feature-name>/
 
 ### Module Interface Vocabulary
 
-TeamForge keeps feature folders private by default. A module under
+Findafew keeps feature folders private by default. A module under
 `src/features/<feature>/` is **feature internal** unless it lives under
 `src/features/<feature>/public/`.
 
@@ -207,7 +207,7 @@ npm run lint:feature-seams
 | Category          | Tool                | Location       | Example                             |
 | ----------------- | ------------------- | -------------- | ----------------------------------- |
 | Server data       | TanStack Query      | Feature hooks  | User profile, groups, messages      |
-| UI state (shared) | Zustand             | Feature stores | Forge wizard step, selected filters |
+| UI state (shared) | Zustand             | Feature stores | PlanCreation wizard step, selected filters |
 | Form state        | React Hook Form     | Component      | Registration form, plan editor      |
 | Local ephemeral   | useState/useReducer | Component      | Dropdown open state                 |
 
@@ -252,7 +252,7 @@ Social mutations update more than one route surface. Keep these query-key groups
 
 ```typescript
 // Feature store with TypeScript
-interface ForgeStore {
+interface PlanCreationStore {
     step: number;
     activity: Activity | null;
     setStep: (step: number) => void;
@@ -260,7 +260,7 @@ interface ForgeStore {
     reset: () => void;
 }
 
-export const useForgeStore = create<ForgeStore>((set) => ({
+export const usePlanCreationStore = create<PlanCreationStore>((set) => ({
     step: 0,
     activity: null,
     setStep: (step) => set({ step }),
@@ -297,7 +297,7 @@ export const useForgeStore = create<ForgeStore>((set) => ({
 | `/profile`                            | ProfilePage            | Yes           | App Shell          |
 | `/users/$userId`                      | UserDetailPage         | Yes           | App Shell          |
 | `/settings`                           | SettingsPage           | Yes           | App Shell          |
-| `/forge`                              | ForgePage              | Yes           | App Shell          |
+| `/planCreation`                              | PlanCreationPage              | Yes           | App Shell          |
 | `/design-system/icon-notice-variants` | IconNoticeVariantsPage | No            | Dev-only full-page |
 
 ### App Shell Layout
@@ -319,11 +319,11 @@ The authenticated app uses a consistent shell:
 │  - Profile │                                               │
 │            │                                               │
 │            │                                               │
-│  [Forge]   │                                               │
+│  [PlanCreation]   │                                               │
 │            │                                               │
 ├────────────┴───────────────────────────────────────────────┤
 │                    Bottom Nav (Mobile)                     │
-│     [Home]  [Explore]  [Forge]  [Activity]  [Profile]     │
+│     [Home]  [Explore]  [PlanCreation]  [Activity]  [Profile]     │
 └────────────────────────────────────────────────────────────┘
 ```
 
@@ -381,7 +381,7 @@ export const apiClient = ky.create({
 | ------------------------ | ---------------------------------------------- |
 | **Auth Service**         | Registration, login, OAuth, JWT, sessions, OTP |
 | **User Service**         | Profile CRUD, interests, search status         |
-| **Matching Service**     | Forge algorithm, compatibility scoring         |
+| **Matching Service**     | PlanCreation algorithm, compatibility scoring         |
 | **Group Service**        | Group CRUD, membership, invites                |
 | **Plan Service**         | Plan CRUD, proposals, voting, comments         |
 | **Chat Service**         | Messages, reactions, attachments, read status  |
@@ -440,7 +440,7 @@ compatibility_score =
 ### Group Formation Process
 
 ```
-1. User initiates Forge with activity preferences
+1. User initiates PlanCreation with activity preferences
 2. System finds candidate users:
    - Active search status
    - Matching location/interests
@@ -563,25 +563,27 @@ npm run build
 | `VITE_API_URL`             | Backend REST API base URL, including `/api/v1`                                           |
 | `VITE_MEDIA_BASE_URL`      | Public media asset base URL for seed/template imagery                                    |
 | `VITE_GOOGLE_CLIENT_ID`    | Google OAuth client ID                                                                   |
-| `VITE_GOOGLE_MAPS_API_KEY` | Google Maps key for location autocomplete                                                |
+| `VITE_GOOGLE_MAPS_API_KEY` | Google Maps key for Places API (New) suggestions                                         |
+| `VITE_GOOGLE_STATIC_MAPS_ENABLED` | Separate opt-in for Static Maps; defaults off until provisioned                   |
 | `VITE_GIPHY_API_KEY`       | Giphy Web SDK key for chat GIF search                                                    |
 
 Local development uses `VITE_APP_URL=http://localhost:3000` and
 `VITE_API_URL=http://localhost:6969/api/v1`. Production uses public browser
-paths, for example `VITE_APP_URL=https://teamforge.mkloz.com` and
-`VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1`.
+paths, for example `VITE_APP_URL=https://findafew.today` and
+`VITE_API_URL=https://api.findafew.today/findafew/api/v1`.
 Realtime still uses the `/realtime` Socket.IO namespace; the client derives the
 transport path from `VITE_API_URL`, so that production API URL maps to
-`/teamforge/socket.io`.
+`/findafew/socket.io`.
 
 ### Production PWA Release
 
 ```bash
-VITE_APP_URL=https://teamforge.mkloz.com \
-VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
-VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
+VITE_APP_URL=https://findafew.today \
+VITE_API_URL=https://api.findafew.today/findafew/api/v1 \
+VITE_MEDIA_BASE_URL= \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
+VITE_GOOGLE_STATIC_MAPS_ENABLED=false \
 VITE_GIPHY_API_KEY=your-production-giphy-key \
 npm run pwa:release
 ```

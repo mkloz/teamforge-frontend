@@ -87,7 +87,7 @@ export function updateParticlePhysics({
       x: physicsState.driftingCenterX,
       y: physicsState.driftingCenterY,
     },
-    sparkPhase: physicsState.sparkPhase,
+    particlePhase: physicsState.particlePhase,
   };
 }
 

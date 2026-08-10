@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import type { FormEvent } from "react";
 
-import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { useCompatibilityInputLock } from "@/features/group-proposals/public/proposal-review";
 import { AdultEligibilityCorrectionControls } from "@/features/settings/components/adult-eligibility-correction-controls";
 import { AccountSettingsCard } from "@/features/settings/components/settings-profile-form/account-settings-section/account-settings-card";
 import type { useAdultEligibilityCorrection } from "@/features/settings/hooks/use-adult-eligibility-correction";
@@ -49,7 +49,7 @@ const ELIGIBILITY_STATUS_CONTENT: Record<
   NOT_ELIGIBLE: {
     actionLabel: "Check eligibility",
     description:
-      "This check does not meet TeamForge's current age requirements. If the date was wrong, request a review below.",
+      "This check does not meet Findafew's current age requirements. If the date was wrong, request a review below.",
     icon: CircleAlert,
     label: "Not eligible",
     tone: "warning",
@@ -65,7 +65,7 @@ const ELIGIBILITY_STATUS_CONTENT: Record<
   UNKNOWN: {
     actionLabel: "Check eligibility",
     description:
-      "Submit your date of birth so TeamForge can check whether you meet its age requirements.",
+      "Submit your date of birth so Findafew can check whether you meet its age requirements.",
     icon: CircleHelp,
     label: "Date needed",
     tone: "info",

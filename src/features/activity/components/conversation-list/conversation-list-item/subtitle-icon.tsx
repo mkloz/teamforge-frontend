@@ -17,7 +17,7 @@ export function SubtitleIcon({
     IMAGE: <ImageIcon size={size} className="shrink-0 text-foreground" />,
     FILE: <FileText size={size} className="shrink-0 text-foreground" />,
     PLAN_UPDATE: (
-      <ClipboardList size={size} className="shrink-0 text-spark-amber" />
+      <ClipboardList size={size} className="shrink-0 text-brand-amber" />
     ),
   };
 

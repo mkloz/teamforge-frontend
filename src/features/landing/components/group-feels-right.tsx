@@ -2,7 +2,7 @@ import {
   CalendarClock,
   Compass,
   MessageCircle,
-  ShieldCheck,
+  UsersRound,
 } from "lucide-react";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
@@ -15,8 +15,8 @@ const FIT_POINTS = [
   },
   {
     icon: MessageCircle,
-    title: "Social style",
-    detail: "A pace that makes the first message feel less forced.",
+    title: "A shared starting point",
+    detail: "The activity gives everyone something concrete to discuss.",
   },
   {
     icon: CalendarClock,
@@ -24,9 +24,9 @@ const FIT_POINTS = [
     detail: "Time, place, and activity have to make sense.",
   },
   {
-    icon: ShieldCheck,
-    title: "Follow-through",
-    detail: "Plans work better with people who tend to show up.",
+    icon: UsersRound,
+    title: "A group to review",
+    detail: "See the people and plan details before you decide.",
   },
 ] as const;
 
@@ -49,12 +49,12 @@ export function GroupFeelsRightSection() {
             id="group-feels-right-heading"
             className="text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
           >
-            TeamForge considers more than shared interests.
+            See the plan before you decide.
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
-            Shared interests help, but they are not enough. TeamForge also
-            considers social pace, practical fit, and follow-through, so the
-            group has enough common ground to start well.
+            An activity is only part of the picture. Review the group, time,
+            place, and other practical details before choosing whether to take
+            part.
           </p>
         </header>
 
@@ -72,7 +72,7 @@ export function GroupFeelsRightSection() {
             />
             <img
               src="/landing/group-feels-right-visual-ai-cutout.png"
-              alt="Shared interests, social style, practical fit, and follow-through signals flowing into one TeamForge group room"
+              alt="Shared activity, group size, plan details, and updates around a Findafew group proposal to review"
               width={2194}
               height={717}
               className="mx-auto h-auto max-h-136 w-full object-contain py-4"

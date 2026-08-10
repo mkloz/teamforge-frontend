@@ -89,16 +89,3 @@ export function isApiNetworkError(error: unknown) {
 
   return hasNetworkErrorMessage(errorLike);
 }
-
-const UNSUPPORTED_PRODUCT_STATE_STATUSES = new Set([404, 501]);
-
-/**
- * Older API deployments do not expose the progressive-onboarding product
- * state endpoint. Treat only an explicit unsupported-route response as legacy
- * compatibility; authorization failures and malformed contracts must remain
- * visible failures.
- */
-export function isProductStateApiUnsupported(error: unknown) {
-  const status = getHttpErrorStatus(error);
-  return status !== null && UNSUPPORTED_PRODUCT_STATE_STATUSES.has(status);
-}

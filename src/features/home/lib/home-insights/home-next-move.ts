@@ -1,28 +1,28 @@
-import type { AutoForgeRequest } from "@/features/forge/public/auto-forge-request";
 import type {
   HomeViewer,
   PlannedGroup,
   UserStats,
 } from "@/features/home/lib/home-contract";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
+import type { AutomaticGroupFormationRequest } from "@/features/plan-creation/public/automatic-group-formation-request";
 import type { ExploreGroup, Invite } from "@/shared/schemas";
 import type { HomeNextMove } from "./home-next-move.types";
 import {
   buildDraftPlanMove,
-  buildFirstForgeMove,
+  buildFirstPlanCreationMove,
   buildInvitationMove,
   buildNextDatedPlanMove,
   buildProposedPlanMove,
   buildRecommendationMove,
-  buildReturnForgeMove,
+  buildReturnPlanCreationMove,
   buildTodayOrPastPlanMove,
 } from "./home-next-move-builders";
 import { getDateMeta, sortPlansByUrgency } from "./plan-timing";
 import { getProfileMoveCopy } from "./profile-move-copy";
 
 interface BuildHomeNextMoveInput {
-  autoForgeRequest: AutoForgeRequest | null;
-  autoForgeRequestUnavailable: boolean;
+  automaticGroupFormationRequest: AutomaticGroupFormationRequest | null;
+  automaticGroupFormationRequestUnavailable: boolean;
   viewer: HomeViewer;
   stats: UserStats;
   invitations: Invite[];
@@ -37,49 +37,57 @@ type HomeNextMoveCandidateBuilder = (
 
 const HOME_NEXT_MOVE_CANDIDATES: HomeNextMoveCandidateBuilder[] = [
   buildProfileNextMove,
-  buildAutoForgeRequestUnavailableMove,
-  buildAutoForgeRequestNextMove,
+  buildAutomaticGroupFormationRequestUnavailableMove,
+  buildAutomaticGroupFormationRequestNextMove,
   buildInvitationNextMove,
   buildProposedPlanNextMove,
   buildTodayOrPastPlanNextMove,
   buildNextDatedPlanNextMove,
   buildDraftPlanNextMove,
   buildRecommendationNextMove,
-  buildFirstForgeNextMove,
+  buildFirstPlanCreationNextMove,
 ];
 
-function buildAutoForgeRequestUnavailableMove({
-  autoForgeRequest,
-  autoForgeRequestUnavailable,
+function buildAutomaticGroupFormationRequestUnavailableMove({
+  automaticGroupFormationRequest,
+  automaticGroupFormationRequestUnavailable,
 }: BuildHomeNextMoveInput): HomeNextMove | null {
-  if (!autoForgeRequestUnavailable || autoForgeRequest) return null;
+  if (
+    !automaticGroupFormationRequestUnavailable ||
+    automaticGroupFormationRequest
+  )
+    return null;
 
   return {
     kind: "auto-request-unavailable",
     eyebrow: "Request status unavailable",
     title: "Refresh before starting something new",
-    body: "TeamForge could not confirm whether you already have an active request. Use the status card below to try again before making another one.",
+    body: "Findafew could not confirm whether you already have an active request. Use the status card below to try again before making another one.",
     primaryLabel: "Check request status",
     secondaryLabel: "Browse groups",
     signal: "Status unknown",
   };
 }
 
-function buildAutoForgeRequestNextMove({
-  autoForgeRequest,
+function buildAutomaticGroupFormationRequestNextMove({
+  automaticGroupFormationRequest,
 }: BuildHomeNextMoveInput): HomeNextMove | null {
-  if (!autoForgeRequest) return null;
+  if (!automaticGroupFormationRequest) return null;
 
-  const copy = getAutoForgeRequestMoveCopy(autoForgeRequest);
+  const copy = getAutomaticGroupFormationRequestMoveCopy(
+    automaticGroupFormationRequest,
+  );
 
   return {
     kind: "auto-request",
-    request: autoForgeRequest,
+    request: automaticGroupFormationRequest,
     ...copy,
   };
 }
 
-function getAutoForgeRequestMoveCopy(request: AutoForgeRequest) {
+function getAutomaticGroupFormationRequestMoveCopy(
+  request: AutomaticGroupFormationRequest,
+) {
   if (request.lifecycle === "DRAFT") {
     return {
       eyebrow: "Request saved as a draft",
@@ -96,7 +104,7 @@ function getAutoForgeRequestMoveCopy(request: AutoForgeRequest) {
     return {
       eyebrow: "Search in progress",
       title: request.activity.title,
-      body: "Your request is active. TeamForge will check it again automatically; you can still adjust or pause it.",
+      body: "Your request is active. Findafew will check it again automatically; you can still adjust or pause it.",
       primaryLabel: "Edit request",
       secondaryLabel: "Request controls",
       signal: "Searching",
@@ -115,7 +123,7 @@ function getAutoForgeRequestMoveCopy(request: AutoForgeRequest) {
         ? "You paused this request. Adjust it or resume when you are ready."
         : automaticRetryFailed
           ? "We hit repeated errors while checking this request, so we paused it. Open the status to try again."
-          : "This request is paused while another TeamForge action is resolved.",
+          : "This request is paused while another Findafew action is resolved.",
       primaryLabel: canEdit ? "Edit request" : "View status",
       secondaryLabel: "Request controls",
       signal: "Paused",
@@ -155,7 +163,7 @@ export function buildHomeNextMove(input: BuildHomeNextMoveInput): HomeNextMove {
     }
   }
 
-  return buildReturnForgeMove(input.groups.length);
+  return buildReturnPlanCreationMove(input.groups.length);
 }
 
 function buildProfileNextMove({
@@ -247,11 +255,11 @@ function buildRecommendationNextMove({
   return null;
 }
 
-function buildFirstForgeNextMove({
+function buildFirstPlanCreationNextMove({
   groups,
 }: BuildHomeNextMoveInput): HomeNextMove | null {
   if (groups.length === 0) {
-    return buildFirstForgeMove();
+    return buildFirstPlanCreationMove();
   }
 
   return null;

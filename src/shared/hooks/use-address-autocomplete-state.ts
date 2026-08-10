@@ -192,18 +192,11 @@ function hasSearchableAutocompleteInput(inputValue: string) {
 export function getVisibleAutocompleteSuggestions(
   mapsReady: boolean,
   inputValue: string,
-  suggestions: GoogleAutocompletePrediction[],
+  suggestions: import("@/shared/lib/maps/location.types").GooglePlaceSuggestion[],
 ) {
   return mapsReady && hasSearchableAutocompleteInput(inputValue)
     ? suggestions
     : [];
-}
-
-export function canUseCurrentAreaLookup(
-  mapsReady: boolean,
-  geolocationAvailable: boolean,
-) {
-  return mapsReady && geolocationAvailable;
 }
 
 export function canUseAutocompleteSuggestions(
@@ -235,24 +228,15 @@ function createManualLocationValue(inputValue: string): LocationValue {
 
 export function createCurrentAreaLocation(
   coordinates: Coordinates,
+  currentLocation: LocationValue | null = null,
 ): LocationValue {
   return {
-    address: CURRENT_AREA_LABEL,
-    city: CURRENT_AREA_LABEL,
+    address: currentLocation?.address || CURRENT_AREA_LABEL,
+    city:
+      currentLocation?.city || currentLocation?.address || CURRENT_AREA_LABEL,
     lat: coordinates.lat,
     lng: coordinates.lng,
     placeId: null,
-  };
-}
-
-export function createResolvedCurrentAreaLocation(
-  nextLocation: LocationValue,
-  coordinates: Coordinates,
-): LocationValue {
-  return {
-    ...nextLocation,
-    lat: coordinates.lat,
-    lng: coordinates.lng,
   };
 }
 

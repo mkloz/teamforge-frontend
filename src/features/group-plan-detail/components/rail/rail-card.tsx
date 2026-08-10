@@ -13,7 +13,7 @@ type RailCardTone = NonNullable<RailCardProps["tone"]>;
 
 const RAIL_CARD_TONE_CLASS = {
   default: "border-border bg-card",
-  highlight: "border-forge-teal/25 bg-forge-teal/5",
+  highlight: "border-brand-teal/25 bg-primary-soft",
   muted: "border-border/70 bg-card/60",
 } satisfies Record<RailCardTone, string>;
 

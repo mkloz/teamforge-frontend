@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 
+import { readFileSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
@@ -12,7 +13,8 @@ import { VitePWA } from "vite-plugin-pwa";
 import { changedFileLintPlugin } from "./scripts/lint/vite-changed-file-lint-plugin";
 import { scenarioRuntimePlugin } from "./scripts/vite/scenario-runtime-plugin";
 import {
-  createTeamForgeStructuredData,
+  createFindafewStructuredData,
+  DRAFT_PUBLIC_PATHS,
   PROTECTED_ROUTE_HEADER_PATHS,
   PUBLIC_SEO_ROUTES,
   type PublicSeoRoute,
@@ -21,12 +23,12 @@ import {
 } from "./src/shared/lib/seo/public-seo-routes";
 import { normalizeBaseUrl } from "./src/shared/lib/url-normalization";
 
-const teamForgeManifest = {
+const findafewManifest = {
   id: "/",
-  name: "TeamForge",
-  short_name: "TeamForge",
+  name: "Findafew",
+  short_name: "Findafew",
   description:
-    "TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context.",
+    "Findafew helps you start a plan and bring a small group together around something you want to do.",
   lang: "en",
   start_url: "/home?source=pwa",
   scope: "/",
@@ -57,10 +59,10 @@ const teamForgeManifest = {
   prefer_related_applications: false,
   shortcuts: [
     {
-      name: "Forge my group",
-      short_name: "Forge",
-      description: "Start forming a compatible group.",
-      url: "/forge?source=pwa-shortcut",
+      name: "Start a plan",
+      short_name: "Start plan",
+      description: "Choose something to do and set up a small group plan.",
+      url: "/plans/new?source=pwa-shortcut",
       icons: [
         {
           src: "/icons/pwa-192x192.png",
@@ -83,9 +85,9 @@ const teamForgeManifest = {
       ],
     },
     {
-      name: "Explore groups",
-      short_name: "Explore",
-      description: "Browse people and group options.",
+      name: "Explore plans",
+      short_name: "Explore plans",
+      description: "See activity plans and their practical details.",
       url: "/explore?source=pwa-shortcut",
       icons: [
         {
@@ -98,9 +100,14 @@ const teamForgeManifest = {
   ],
 } satisfies Partial<ManifestOptions>;
 
-const APP_URL_PLACEHOLDER = "__TEAMFORGE_APP_URL__";
-const SEO_HEAD_START = "<!-- teamforge:seo:start -->";
-const SEO_HEAD_END = "<!-- teamforge:seo:end -->";
+const authoritativeLlmsSource = readFileSync(
+  new URL("./public/llms.txt", import.meta.url),
+  "utf8",
+);
+
+const APP_URL_PLACEHOLDER = "__APP_PUBLIC_URL__";
+const SEO_HEAD_START = "<!-- findafew:seo:start -->";
+const SEO_HEAD_END = "<!-- findafew:seo:end -->";
 const INLINE_BOOT_SCRIPT_HASH =
   "'sha256-Kz8UUC2j01g+EoplSxH6vyCDPpV2Ix8kySI75UjgdEM='";
 
@@ -316,9 +323,9 @@ function renderPublicSeoHead(route: PublicSeoRoute, appUrl: string) {
     `<link rel="canonical" href="${escapeHtml(canonicalUrl)}" />`,
     `<title>${escapeHtml(route.title)}</title>`,
     `<meta name="description" content="${escapeHtml(route.description)}" />`,
-    '<meta name="robots" content="index, follow" />',
+    `<meta name="robots" content="${route.indexable ? "index, follow" : "noindex, nofollow, noarchive, nosnippet, noimageindex"}" />`,
     '<meta property="og:type" content="website" />',
-    '<meta property="og:site_name" content="TeamForge" />',
+    '<meta property="og:site_name" content="Findafew" />',
     `<meta property="og:url" content="${escapeHtml(canonicalUrl)}" />`,
     `<meta property="og:title" content="${escapeHtml(route.title)}" />`,
     `<meta property="og:description" content="${escapeHtml(route.description)}" />`,
@@ -340,12 +347,12 @@ function renderPublicSeoHead(route: PublicSeoRoute, appUrl: string) {
   }
 
   if (route.path === "/") {
-    const structuredData = createTeamForgeStructuredData({
+    const structuredData = createFindafewStructuredData({
       homepageUrl: canonicalUrl,
       logoUrl: `${appUrl}/icons/pwa-512x512.png`,
     });
     tags.push(
-      `<script type="application/ld+json" data-teamforge-json-ld="public-site">${JSON.stringify(structuredData).replaceAll("<", "\\u003c")}</script>`,
+      `<script type="application/ld+json" data-app-json-ld="public-site">${JSON.stringify(structuredData).replaceAll("<", "\\u003c")}</script>`,
     );
   }
 
@@ -362,7 +369,7 @@ function replacePublicSeoHead(
 
   if (start < 0 || end < 0) {
     throw new Error(
-      "The TeamForge SEO head markers are missing from index.html.",
+      "The Findafew SEO head markers are missing from index.html.",
     );
   }
 
@@ -420,10 +427,10 @@ function renderContentSecurityPolicy({
   sentryDsn,
 }: {
   apiUrl: string;
-  mediaBaseUrl: string;
+  mediaBaseUrl: string | null;
   sentryDsn: string | null;
 }) {
-  const mediaOrigin = getUrlOrigin(mediaBaseUrl);
+  const mediaOrigin = getOptionalUrlOrigin(mediaBaseUrl);
   const apiOrigin = getUrlOrigin(apiUrl);
   const realtimeOrigin = getWebSocketOrigin(apiUrl);
   const sentryConnectSources = getSentryConnectSources(sentryDsn);
@@ -443,7 +450,7 @@ function renderContentSecurityPolicy({
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     [
       "img-src 'self' data: blob:",
-      mediaOrigin,
+      ...(mediaOrigin ? [mediaOrigin] : []),
       "https://images.unsplash.com",
       "https://*.giphy.com",
       "https://giphy.com",
@@ -477,13 +484,17 @@ function renderHeadersFile({
   sentryDsn,
 }: {
   apiUrl: string;
-  mediaBaseUrl: string;
+  mediaBaseUrl: string | null;
   sentryDsn: string | null;
 }) {
   const csp = renderContentSecurityPolicy({ apiUrl, mediaBaseUrl, sentryDsn });
   const tokenRouteSet = new Set<string>(TOKEN_ROUTE_HEADER_PATHS);
   const crawlerContainedRoutePaths = [
-    ...new Set([...PROTECTED_ROUTE_HEADER_PATHS, ...TOKEN_ROUTE_HEADER_PATHS]),
+    ...new Set([
+      ...PROTECTED_ROUTE_HEADER_PATHS,
+      ...TOKEN_ROUTE_HEADER_PATHS,
+      ...DRAFT_PUBLIC_PATHS,
+    ]),
   ];
   const protectedRouteHeaders = crawlerContainedRoutePaths
     .map(
@@ -554,12 +565,14 @@ Sitemap: ${appUrl}/sitemap.xml
 }
 
 function renderSitemapXml(appUrl: string) {
-  const entries = PUBLIC_SEO_ROUTES.map(
-    (route) => `  <url>
+  const entries = PUBLIC_SEO_ROUTES.filter(({ indexable }) => indexable)
+    .map(
+      (route) => `  <url>
     <loc>${appUrl}${route.path === "/" ? "/" : route.path}</loc>
-    <lastmod>${route.lastModified}</lastmod>
+    ${route.lastModified ? `<lastmod>${route.lastModified}</lastmod>` : ""}
   </url>`,
-  ).join("\n");
+    )
+    .join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -569,25 +582,7 @@ ${entries}
 }
 
 function renderLlmsTxt(appUrl: string) {
-  return `# TeamForge
-
-> TeamForge forms small, compatible groups around shared real-world activities using personality, interests, and social context.
-
-TeamForge is an installable web application for people who want help finding a small group and an activity plan. Public information is intentionally separated from member, community, message, profile, safety, and administration data.
-
-## Public pages
-
-- [TeamForge](${appUrl}/): Product overview, how group formation works, and privacy controls.
-- [Install TeamForge](${appUrl}/download): Installation instructions for iPhone, iPad, Android, and desktop browsers.
-- [Privacy Policy](${appUrl}/privacy): How TeamForge handles and protects personal data.
-- [Terms of Service](${appUrl}/terms): Rules and requirements for using TeamForge.
-
-## Access boundaries
-
-- Authenticated application routes are private and are not part of the public discovery corpus.
-- Invitations, account activation, and password-reset URLs may contain secrets and must not be collected or shared.
-- Do not infer facts about members, groups, plans, messages, or moderation activity from the public pages.
-`;
+  return replaceAppUrlPlaceholder(authoritativeLlmsSource, appUrl);
 }
 
 function getRequestAppUrl(request: { headers: { host?: string } }) {
@@ -596,7 +591,7 @@ function getRequestAppUrl(request: { headers: { host?: string } }) {
   return host ? `http://${host}` : null;
 }
 
-function teamForgePublicHostPlugin({
+function findafewPublicHostPlugin({
   apiUrl,
   appUrl,
   mediaBaseUrl,
@@ -610,7 +605,7 @@ function teamForgePublicHostPlugin({
   let outDir: string;
 
   return {
-    name: "teamforge-public-host",
+    name: "findafew-public-host",
     configResolved(config) {
       outDir = config.build.outDir;
     },
@@ -656,9 +651,9 @@ function teamForgePublicHostPlugin({
       });
     },
     async writeBundle() {
-      if (!appUrl || !apiUrl || !mediaBaseUrl) {
+      if (!appUrl || !apiUrl) {
         throw new Error(
-          "VITE_APP_URL, VITE_API_URL, and VITE_MEDIA_BASE_URL are required to generate public deployment files.",
+          "VITE_APP_URL and VITE_API_URL are required to generate public deployment files.",
         );
       }
 
@@ -677,10 +672,10 @@ function teamForgePublicHostPlugin({
   };
 }
 
-function teamForgeManifestDevPlugin(): Plugin {
+function findafewManifestDevPlugin(): Plugin {
   return {
     apply: "serve",
-    name: "teamforge-dev-manifest",
+    name: "findafew-dev-manifest",
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
         if (request.url?.split("?")[0] !== "/manifest.webmanifest") {
@@ -693,7 +688,7 @@ function teamForgeManifestDevPlugin(): Plugin {
           "Content-Type",
           "application/manifest+json; charset=utf-8",
         );
-        response.end(JSON.stringify(teamForgeManifest));
+        response.end(JSON.stringify(findafewManifest));
       });
     },
   };
@@ -768,38 +763,34 @@ function getSentryBuildPlugins(command: string) {
 function hasRequiredPublicBuildEnv({
   apiUrl,
   appUrl,
-  mediaBaseUrl,
 }: {
   apiUrl: string | null;
   appUrl: string | null;
-  mediaBaseUrl: string | null;
 }) {
-  return Boolean(appUrl && apiUrl && mediaBaseUrl);
+  return Boolean(appUrl && apiUrl);
 }
 
 function assertRequiredPublicBuildEnv({
   apiUrl,
   appUrl,
   command,
-  mediaBaseUrl,
   scenarioMode,
 }: {
   apiUrl: string | null;
   appUrl: string | null;
   command: string;
-  mediaBaseUrl: string | null;
   scenarioMode: boolean;
 }) {
   if (command !== "build" || scenarioMode) {
     return;
   }
 
-  if (hasRequiredPublicBuildEnv({ apiUrl, appUrl, mediaBaseUrl })) {
+  if (hasRequiredPublicBuildEnv({ apiUrl, appUrl })) {
     return;
   }
 
   throw new Error(
-    "VITE_APP_URL, VITE_API_URL, and VITE_MEDIA_BASE_URL must be set to build TeamForge.",
+    "VITE_APP_URL and VITE_API_URL must be set to build Findafew.",
   );
 }
 
@@ -830,7 +821,6 @@ export default defineConfig(({ command, mode }) => {
     apiUrl,
     appUrl,
     command,
-    mediaBaseUrl,
     scenarioMode: isScenarioMode,
   });
 
@@ -844,13 +834,13 @@ export default defineConfig(({ command, mode }) => {
       }),
       ...(!isScenarioMode
         ? [
-            teamForgePublicHostPlugin({
+            findafewPublicHostPlugin({
               apiUrl,
               appUrl,
               mediaBaseUrl,
               sentryDsn,
             }),
-            teamForgeManifestDevPlugin(),
+            findafewManifestDevPlugin(),
           ]
         : []),
       VitePWA({
@@ -873,7 +863,7 @@ export default defineConfig(({ command, mode }) => {
           "download/install-preview-ios-720w.png",
           "download/install-preview-ios.png",
         ],
-        manifest: teamForgeManifest,
+        manifest: findafewManifest,
         workbox: {
           cleanupOutdatedCaches: true,
           maximumFileSizeToCacheInBytes: 4194304,
@@ -900,7 +890,7 @@ export default defineConfig(({ command, mode }) => {
                   url.pathname.startsWith("/group-covers/")),
               handler: "CacheFirst",
               options: {
-                cacheName: "teamforge-public-images",
+                cacheName: "findafew-public-images",
                 expiration: {
                   maxAgeSeconds: 60 * 60 * 24 * 14,
                   maxEntries: 60,
@@ -916,7 +906,7 @@ export default defineConfig(({ command, mode }) => {
                 url.pathname.startsWith("/fonts/"),
               handler: "CacheFirst",
               options: {
-                cacheName: "teamforge-fonts",
+                cacheName: "findafew-fonts",
                 expiration: {
                   maxAgeSeconds: 60 * 60 * 24 * 365,
                   maxEntries: 4,

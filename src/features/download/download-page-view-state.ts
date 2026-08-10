@@ -60,7 +60,7 @@ export function platformToDevice(p: DetectedPlatform): SelectedDevice {
 
 function getInstallFeedback(state: InstallState): string | null {
   if (state === "accepted") {
-    return "Nice. TeamForge is being added to this device.";
+    return "Nice. Findafew is being added to this device.";
   }
 
   if (state === "dismissed") {

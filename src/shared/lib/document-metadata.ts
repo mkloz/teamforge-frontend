@@ -151,7 +151,7 @@ function applyJsonLdDescriptor(
   browserDocument: Document,
   descriptor: JsonLdDescriptor,
 ): JsonLdSnapshot | null {
-  const selector = `script[type="application/ld+json"][data-teamforge-json-ld="${descriptor.id}"]`;
+  const selector = `script[type="application/ld+json"][data-app-json-ld="${descriptor.id}"]`;
   const existingElement =
     browserDocument.head.querySelector<HTMLScriptElement>(selector);
 
@@ -171,7 +171,7 @@ function applyJsonLdDescriptor(
   const element = existingElement ?? browserDocument.createElement("script");
   if (!existingElement) {
     element.type = "application/ld+json";
-    element.dataset.teamforgeJsonLd = descriptor.id;
+    element.dataset.findafewJsonLd = descriptor.id;
     browserDocument.head.appendChild(element);
   }
 

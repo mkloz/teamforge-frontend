@@ -32,10 +32,10 @@ import { buildSafetyNavigation } from "@/shared/navigation/safety-navigation";
 import { buildSettingsNavigation } from "@/shared/navigation/settings-navigation";
 
 import { AppearanceSwitch } from "./appearance-switch";
+import { FindafewLinks } from "./findafew-links";
 import { MenuLinkItem } from "./menu-link-item";
 import { UserMenuProfileSummary } from "./profile-summary";
 import { UserMenuSignOutButton } from "./sign-out-button";
-import { TeamForgeLinks } from "./teamforge-links";
 import { type UserMenuTrigger, UserMenuTriggerButton } from "./trigger-button";
 
 interface UserMenuProps {
@@ -84,7 +84,7 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             <GroupedMenuSection label="Preferences">
               <GroupedMenuList>
                 <MenuLinkItem
-                  description="Matching, availability and invitations"
+                  description="Group fit, availability and invitations"
                   icon={SlidersHorizontal}
                   label="Group preferences"
                   navigation={buildSettingsNavigation("matching")}
@@ -135,7 +135,7 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             ) : null}
 
             {currentUser?.role === "ADMIN" ? (
-              <GroupedMenuSection label="TeamForge management">
+              <GroupedMenuSection label="Findafew management">
                 <GroupedMenuList>
                   <MenuLinkItem
                     description="Operations and moderation"
@@ -149,7 +149,7 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
           </div>
 
           <div className="mt-auto">
-            <TeamForgeLinks />
+            <FindafewLinks />
 
             <div className="border-border/50 border-t px-4 py-4">
               <UserMenuSignOutButton />

@@ -72,7 +72,7 @@ function RecommendedGroupsView({
 
       {isRecommendationsError && visibleRecommendations.length === 0 ? (
         <div
-          className="flex min-h-36 items-center justify-between gap-4 rounded-lg bg-destructive/6 px-3 py-5 shadow-soft-sm sm:px-4"
+          className="flex min-h-36 items-center justify-between gap-4 rounded-lg bg-destructive-soft px-3 py-5 shadow-soft-sm sm:px-4"
           role="alert"
         >
           <div className="min-w-0">

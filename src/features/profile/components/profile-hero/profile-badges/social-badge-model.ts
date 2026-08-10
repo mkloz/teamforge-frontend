@@ -26,7 +26,7 @@ const SOCIAL_BADGE_CONFIGS = {
     tab: "public_friends",
   },
   requests: {
-    accent: "text-spark-amber",
+    accent: "text-brand-amber",
     label: "Requests",
     tab: "requests",
   },

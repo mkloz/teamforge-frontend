@@ -1,5 +1,5 @@
 /*
-  Content-Security-Policy: __TEAMFORGE_CSP__
+  Content-Security-Policy: __APP_CSP__
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
@@ -30,6 +30,12 @@
 
 /download/*
   Cache-Control: public, max-age=0, must-revalidate
+
+/privacy
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/terms
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
 
 /home
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
@@ -85,10 +91,10 @@
 /safety/*
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
 
-/forge
+/plans/new
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
 
-/forge/*
+/group-proposals/*
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
 
 /onboarding

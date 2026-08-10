@@ -8,6 +8,7 @@ import {
   getDynamicAssessmentPreview,
 } from "@/features/onboarding/lib/dynamic-personality-engine";
 import type { RawAnswers } from "@/features/onboarding/lib/personality-answer";
+import { isPersonalityScoreInIntersectionRange } from "@/features/onboarding/lib/personality-results";
 import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 import type { PublicPersonalityProfile } from "@/shared/schemas/public-personality-profile";
 
@@ -20,7 +21,7 @@ interface PersonalityVoronoiFormationInput {
 }
 
 interface PersonalityAxisSignal {
-  confidence: number;
+  inIntersectionRange: boolean;
   letter: string;
   resolved: boolean;
 }
@@ -37,8 +38,8 @@ const PERSONALITY_AXES = [
 }[];
 
 const DEFAULT_PERSONALITY_FORMATION = {
-  kind: "symbol",
-  value: "group",
+  kind: "text",
+  value: "YOU",
 } as const satisfies VoronoiFormationTarget;
 
 export function getPersonalityVoronoiFormation({
@@ -58,12 +59,8 @@ export function getPersonalityVoronoiFormation({
     return DEFAULT_PERSONALITY_FORMATION;
   }
 
-  const strongestSignal = signals.reduce(
-    (strongest, signal, index) =>
-      signal.resolved && signal.confidence > strongest.confidence
-        ? { confidence: signal.confidence, index }
-        : strongest,
-    { confidence: 0, index: -1 },
+  const intersectionIndices = signals.flatMap((signal, index) =>
+    signal.resolved && signal.inIntersectionRange ? [index] : [],
   );
 
   return {
@@ -71,12 +68,7 @@ export function getPersonalityVoronoiFormation({
     value: signals
       .map((signal) => (signal.resolved ? signal.letter : "?"))
       .join(""),
-    ...(strongestSignal.index >= 0
-      ? {
-          accentCharacterIndices: [strongestSignal.index],
-          accentStrength: 0.42 + strongestSignal.confidence * 0.58,
-        }
-      : {}),
+    accentCharacterIndices: intersectionIndices,
   };
 }
 
@@ -102,10 +94,12 @@ function getFixedAssessmentSignals(
         return sum + (question.keyed === "+" ? value : 6 - value);
       }, 0) / count;
     const direction = (score - 3) / 2;
-    const coverageConfidence = Math.min(1, count / 3);
+    const scoreOnHundredPointScale = 50 + direction * 50;
 
     return {
-      confidence: Math.abs(direction) * (0.45 + coverageConfidence * 0.55),
+      inIntersectionRange: isPersonalityScoreInIntersectionRange(
+        scoreOnHundredPointScale,
+      ),
       letter: direction > 0 ? axis.highLetter : axis.lowLetter,
       resolved: true,
     };
@@ -126,10 +120,11 @@ function getDynamicSignals(
 
     const estimate = preview.estimates[axis.dimension];
     const direction = (estimate.score - 50) / 50;
-    const precisionConfidence = 1 - Math.min(1, estimate.posteriorSd / 1.25);
 
     return {
-      confidence: Math.abs(direction) * (0.55 + precisionConfidence * 0.45),
+      inIntersectionRange: isPersonalityScoreInIntersectionRange(
+        estimate.score,
+      ),
       letter: direction > 0 ? axis.highLetter : axis.lowLetter,
       resolved: true,
     };
@@ -146,12 +141,18 @@ function getResultSignals(result: PublicPersonalityProfile) {
     };
 
   return PERSONALITY_AXES.map((axis, index) => ({
-    confidence: Math.abs(scores[axis.dimension] - 50) / 50,
+    inIntersectionRange: isPersonalityScoreInIntersectionRange(
+      scores[axis.dimension],
+    ),
     letter: result.personalityType[index] ?? axis.lowLetter,
     resolved: true,
   }));
 }
 
 function getUnresolvedSignal(): PersonalityAxisSignal {
-  return { confidence: 0, letter: "?", resolved: false };
+  return {
+    inIntersectionRange: false,
+    letter: "?",
+    resolved: false,
+  };
 }

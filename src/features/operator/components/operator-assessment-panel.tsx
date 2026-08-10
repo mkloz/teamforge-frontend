@@ -195,7 +195,7 @@ function AssessmentComparison({
       ) : (
         <div className="grid gap-3" aria-live="polite">
           {!comparisonQuery.data.compatible ? (
-            <p className="rounded-xl bg-accent/10 p-4 text-amber-900 text-sm dark:text-amber-200">
+            <p className="rounded-xl bg-accent-soft p-4 text-amber-900 text-sm dark:text-amber-200">
               The output format changed between these assessments. Compare the
               release details below, then review each assessment separately.
             </p>

@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import {
   Accessibility,
   Banknote,
@@ -62,7 +62,7 @@ export function GroupPlanOverviewSection({
       className={cn(
         "grouped-surface flex scroll-mt-24 flex-col overflow-hidden rounded-2xl transition-colors duration-500",
         isHighlighted &&
-          "ring-2 ring-forge-teal/30 ring-offset-4 ring-offset-background",
+          "ring-2 ring-brand-teal/30 ring-offset-4 ring-offset-background",
       )}
     >
       <div className="grouped-surface grid lg:grid-cols-[minmax(0,1.08fr)_minmax(12rem,0.72fr)_minmax(16rem,1fr)]">
@@ -92,7 +92,7 @@ function PlanAccessFacts({ plan }: { plan: Plan }) {
       className="rounded-xl bg-card px-5 py-4 sm:px-6 lg:px-7"
     >
       <div className="flex items-start gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-foreground">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-foreground">
           <Accessibility className="size-4" aria-hidden="true" />
         </span>
         <div className="min-w-0 flex-1">
@@ -181,7 +181,7 @@ function GroupStory({ detail }: { detail: GroupPlanDetail }) {
               aria-hidden="true"
             />
           }
-          fallbackClassName="bg-forge-teal/8"
+          fallbackClassName="bg-primary-soft"
         />
         <div className="min-w-0">
           <h2
@@ -337,7 +337,7 @@ function PlanPlace({
           wrapperClassName="absolute inset-0"
           className="size-full object-cover transition-transform duration-300 group-hover/map:scale-[1.015]"
           fallbackComponent={
-            <div className="size-full bg-[radial-gradient(circle_at_65%_38%,color-mix(in_srgb,var(--forge-teal)_18%,transparent),transparent_30%)]" />
+            <div className="size-full bg-[radial-gradient(circle_at_65%_38%,color-mix(in_srgb,var(--brand-teal)_18%,transparent),transparent_30%)]" />
           }
         />
       </a>
@@ -373,7 +373,7 @@ function AreaPlanPlace({
     <div className="relative min-h-52 overflow-hidden rounded-xl bg-(--grouped-menu-selected) p-5 sm:p-6 lg:min-h-64">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,color-mix(in_srgb,var(--forge-teal)_15%,transparent),transparent_38%)]"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,color-mix(in_srgb,var(--brand-teal)_15%,transparent),transparent_38%)]"
       />
       <div className="relative flex h-full min-h-42 items-center">
         <div className="max-w-sm">
@@ -402,14 +402,14 @@ function OnlinePlanPlace({ plan }: { plan: Plan }) {
     <div className="relative min-h-52 overflow-hidden rounded-xl bg-(--grouped-menu-selected) p-5 sm:p-6 lg:min-h-64">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,color-mix(in_srgb,var(--forge-teal)_18%,transparent),transparent_38%)]"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,color-mix(in_srgb,var(--brand-teal)_18%,transparent),transparent_38%)]"
       />
       <div className="relative flex h-full min-h-42 flex-col justify-between">
         <div className="flex items-center justify-between">
-          <span className="flex size-10 items-center justify-center rounded-full bg-forge-teal/12 text-foreground">
+          <span className="flex size-10 items-center justify-center rounded-full bg-primary-soft text-foreground">
             <MonitorUp className="size-5" aria-hidden="true" />
           </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-forge-teal/10 px-2.5 py-1 font-bold text-foreground text-xs">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-2.5 py-1 font-bold text-foreground text-xs">
             <Wifi className="size-3" aria-hidden="true" />
             Online
           </span>
@@ -541,7 +541,7 @@ function OverviewFact({
         className,
       )}
     >
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-foreground">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-foreground">
         <Icon className="size-4" aria-hidden="true" />
       </span>
       <div className="min-w-0">
@@ -579,7 +579,11 @@ function getCalendarParts(value: string | null): CalendarParts | null {
 }
 
 function getGoogleStaticMapUrl(latitude: number, longitude: number) {
-  if (!scenarioRuntime.allows("maps") || !config.googleMapsApiKey) {
+  if (
+    !scenarioRuntime.allows("maps") ||
+    !config.googleMapsApiKey ||
+    !config.googleStaticMapsEnabled
+  ) {
     return null;
   }
 

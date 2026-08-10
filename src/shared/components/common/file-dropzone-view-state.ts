@@ -63,10 +63,10 @@ const STANDARD_DROPZONE_STYLE: Omit<
   bodyClassName: "",
   descriptionClassName: "text-slate-muted",
   dropHintPillClassName: "border-border/70 bg-muted/70 text-slate-muted",
-  dropPillClassName: "bg-forge-teal text-white",
+  dropPillClassName: "bg-brand-teal text-white",
   helperPillClassName: "border-border/50 bg-muted/40 text-slate-muted/75",
   iconTileClassName:
-    "size-9 bg-forge-teal/10 text-foreground group-hover:bg-forge-teal/15",
+    "size-9 bg-primary-soft text-foreground group-hover:bg-brand-teal/15",
   titleClassName: "text-ink",
 };
 
@@ -200,7 +200,7 @@ function getFileLimit({
 
 function getRootInteractionClassName(isDragging: boolean) {
   return isDragging
-    ? "border-foreground/45 bg-forge-teal/8 ring-1 ring-foreground/20"
+    ? "border-foreground/45 bg-primary-soft ring-1 ring-foreground/20"
     : "hover:border-foreground/35 hover:shadow-soft-sm";
 }
 
@@ -221,7 +221,7 @@ function getRootButtonClassName({
     "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border border-border/55 border-dashed bg-card p-0 text-left transition-[border-color,box-shadow,color] duration-200 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     variantStyle.rootVariantClassName,
     getRootInteractionClassName(isDragging),
-    error && "border-destructive/45 bg-destructive/4",
+    error && "border-destructive/45 bg-destructive-soft",
     isInactive && "cursor-not-allowed opacity-60",
     dropzoneClassName,
   );
@@ -240,7 +240,7 @@ function getIconTileClassName(
   return cn(
     "transition-all duration-200",
     variantStyle.iconTileClassName,
-    isDragging && !isCover && "scale-110 bg-forge-teal/18",
+    isDragging && !isCover && "scale-110 bg-brand-teal/18",
   );
 }
 

@@ -9,7 +9,7 @@ export interface AdultEligibilityCorrectionPayload {
   dateOfBirth: string;
 }
 
-const DEFAULT_EXPORT_FILE_NAME = "teamforge-account-data.json.gz";
+const DEFAULT_EXPORT_FILE_NAME = "findafew-account-data.json.gz";
 
 export class AccountDataApi {
   static async getAccountLifecycle() {

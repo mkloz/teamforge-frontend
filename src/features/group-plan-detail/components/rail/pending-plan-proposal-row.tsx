@@ -129,7 +129,7 @@ function ApprovalSteps({
           key={step.id}
           className={cn(
             "h-1.5 min-w-3 flex-1 rounded-full bg-border",
-            step.position <= approvalCount && "bg-forge-teal",
+            step.position <= approvalCount && "bg-brand-teal",
           )}
           aria-hidden="true"
         />

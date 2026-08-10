@@ -4,7 +4,10 @@ import type {
   Group,
   GroupMember,
 } from "./activity-contract";
-import { isActivityCurrentUserId } from "./activity-identities";
+import {
+  getActivityCurrentUserId,
+  isActivityCurrentUserId,
+} from "./activity-identities";
 
 type DirectChatParticipant = NonNullable<DirectChat["participants"]>[number];
 
@@ -27,6 +30,12 @@ export function buildMemberProfileChat(
     return null;
   }
 
+  const currentUserId = getActivityCurrentUserId();
+
+  if (!currentUserId) {
+    return null;
+  }
+
   return {
     id: `temp-dm-${member.userId}`,
     type: "PRIVATE",
@@ -34,7 +43,7 @@ export function buildMemberProfileChat(
     groupId: null,
     participants: [
       {
-        userId: "current-user",
+        userId: currentUserId,
         chatId: `temp-dm-${member.userId}`,
       },
       {

@@ -11,7 +11,7 @@ const subcategoryChipVariants = cva(
       state: {
         collapsed:
           "border-slate-muted/15 bg-card text-slate-muted hover:border-slate-muted/30 hover:bg-canvas dark:border-white/10 hover:dark:border-white/18 hover:dark:bg-white/5",
-        expanded: "border-forge-teal/30 bg-forge-teal/10 text-foreground",
+        expanded: "border-brand-teal/30 bg-primary-soft text-foreground",
       },
     },
     defaultVariants: {
@@ -50,8 +50,9 @@ export function SubcategoryChip({
       {selectedCount > 0 && (
         <CountBadge
           count={selectedCount}
-          size="sm"
+          size="xs"
           tone={expanded ? "teal" : "muted"}
+          className="text-[0.625rem]"
         />
       )}
       <m.span

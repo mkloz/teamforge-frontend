@@ -18,7 +18,7 @@ try {
 async function main() {
   const args = process.argv.slice(2);
   const endpoint = resolveLocalEndpoint(
-    process.env.TEAMFORGE_FIRECRAWL_URL ?? DEFAULT_FIRECRAWL_URL,
+    process.env.FINDAFEW_FIRECRAWL_URL ?? DEFAULT_FIRECRAWL_URL,
   );
 
   assertNoConnectionOverrides(args);
@@ -75,7 +75,7 @@ function resolveLocalEndpoint(value) {
   try {
     url = new URL(value.trim());
   } catch {
-    throw new Error("TEAMFORGE_FIRECRAWL_URL must be a valid loopback URL.");
+    throw new Error("FINDAFEW_FIRECRAWL_URL must be a valid loopback URL.");
   }
 
   if (!LOOPBACK_HOSTS.has(url.hostname)) {

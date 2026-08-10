@@ -55,7 +55,7 @@ export function ProfileIdentityFields({
             className="md:col-start-2 md:row-start-2"
           />
           <p className="text-slate-muted text-xs md:col-start-2 md:row-start-3">
-            Email editing is not available in TeamForge yet.
+            Email editing is not available in Findafew yet.
           </p>
         </div>
       </div>

@@ -27,7 +27,7 @@ export function SavedMessageBubbleHeader({
         tone="teal"
         size="xs"
         surface="outline"
-        className="min-w-0 max-w-full shrink gap-1.5 border-primary/15 bg-primary/8 px-2 py-1 sm:max-w-72"
+        className="min-w-0 max-w-full shrink gap-1.5 border-primary/15 bg-primary-soft px-2 py-1 sm:max-w-72"
       >
         <span className="truncate">From {conversationTitle}</span>
       </StatusPill>

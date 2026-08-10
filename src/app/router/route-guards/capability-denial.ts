@@ -22,7 +22,7 @@ import {
   productCapabilityValues,
 } from "@/shared/schemas/onboarding-product-state";
 
-const CAPABILITY_DENIAL_SESSION_KEY = "teamforge:capability-denial:v1";
+const CAPABILITY_DENIAL_SESSION_KEY = "findafew:capability-denial:v1";
 
 export interface CapabilityDenialNotice {
   capability: ProductCapability;
@@ -117,8 +117,8 @@ function getReturnOptions(
 ): Omit<OnboardingEditOptions, "mbti"> | null {
   const returnSearch = location.searchStr.replace(/^\?/u, "") || null;
 
-  if (location.pathname === "/forge") {
-    return { returnTo: "/forge", returnSearch };
+  if (location.pathname === "/plans/new") {
+    return { returnTo: "/plans/new", returnSearch };
   }
   switch (location.pathname) {
     case "/home":
@@ -151,8 +151,8 @@ const capabilityActionLabels: Record<ProductCapability, string> = {
   SEND_DIRECT_INVITATION: "send an invitation",
   RECEIVE_DIRECT_INVITATION: "receive invitations",
   CREATE_GROUP: "create a group",
-  START_FORGE: "use Forge",
-  START_INTRODUCTORY_FORGE: "create an introductory plan",
+  START_GROUP_FORMATION: "start a plan",
+  START_INTRODUCTORY_GROUP_FORMATION: "create an introductory plan",
   RECEIVE_PROPOSAL: "receive proposals",
   START_DIRECT_CHAT: "start a chat",
   START_GROUP_CHAT: "open group chat",
@@ -165,11 +165,11 @@ const denialReasonCopy: Record<
 > = {
   PROFILE_BASICS_REQUIRED: {
     title: "Add your profile basics",
-    description: "TeamForge needs the minimum identity details first.",
+    description: "Findafew needs the minimum identity details first.",
   },
   INTERESTS_REQUIRED: {
     title: "Choose a few interests",
-    description: "This gives TeamForge enough context for relevant activities.",
+    description: "This gives Findafew enough context for relevant activities.",
   },
   STARTER_REQUIRED: {
     title: "Complete the starting questions",

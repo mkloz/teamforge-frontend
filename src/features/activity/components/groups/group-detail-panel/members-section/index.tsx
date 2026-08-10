@@ -419,7 +419,7 @@ function PendingInvitationSlot({
           <button
             type="button"
             aria-label={`Cancel invitation for ${invite.invitee.name}`}
-            className="flex size-8 items-center justify-center rounded-full text-muted-foreground transition-[background-color,color,opacity,transform] hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/35 disabled:pointer-events-none sm:absolute sm:right-0 sm:translate-x-1 sm:opacity-0 sm:group-hover/pending:translate-x-0 sm:group-hover/pending:opacity-100 sm:group-focus-within/pending:translate-x-0 sm:group-focus-within/pending:opacity-100"
+            className="flex size-8 items-center justify-center rounded-full text-muted-foreground transition-[background-color,color,opacity,transform] hover:bg-destructive-soft hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/35 disabled:pointer-events-none sm:absolute sm:right-0 sm:translate-x-1 sm:opacity-0 sm:group-hover/pending:translate-x-0 sm:group-hover/pending:opacity-100 sm:group-focus-within/pending:translate-x-0 sm:group-focus-within/pending:opacity-100"
             disabled={cancelDisabled}
             onClick={() => onCancel(invite.id)}
             title={`Cancel invitation for ${invite.invitee.name}`}

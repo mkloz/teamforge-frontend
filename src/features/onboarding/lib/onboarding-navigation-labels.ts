@@ -6,7 +6,7 @@ import type {
 const returnTargetLabels: Record<OnboardingReturnTarget, string> = {
   "/activity": "activity",
   "/explore": "explore",
-  "/forge": "forge",
+  "/plans/new": "planCreation",
   "/groups/$groupId": "group preview",
   "/home": "home",
   "/invite": "your invitation",

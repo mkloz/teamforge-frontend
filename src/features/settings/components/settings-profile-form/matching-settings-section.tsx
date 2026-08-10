@@ -1,5 +1,5 @@
-import type { CandidateAvailabilityState } from "@/features/forge/public/candidate-availability";
-import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { useCompatibilityInputLock } from "@/features/group-proposals/public/proposal-review";
+import type { GroupProposalAvailabilityState } from "@/features/plan-creation/public/group-proposal-availability";
 import { GroupReachabilityControl } from "@/features/settings/components/settings-profile-form/group-reachability-control";
 import { MatchingProfileCard } from "@/features/settings/components/settings-profile-form/matching-profile-card";
 import {
@@ -14,7 +14,7 @@ import type { NotificationPreferences, User } from "@/shared/schemas";
 
 interface MatchingSettingsSectionProps {
   activityInviteAvailability: ActivityInviteAvailabilityState;
-  candidateAvailability: CandidateAvailabilityState;
+  groupProposalAvailability: GroupProposalAvailabilityState;
   currentUser: User | undefined;
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
@@ -40,7 +40,7 @@ interface MatchingPreferenceControlsProps {
 
 export function MatchingSettingsSection({
   activityInviteAvailability,
-  candidateAvailability,
+  groupProposalAvailability,
   currentUser,
   notificationPreferences,
   isLoadingNotificationPreferences,
@@ -88,7 +88,7 @@ export function MatchingSettingsSection({
 
       <GroupReachabilityControl
         activityInvites={activityInviteAvailability}
-        candidateProposals={candidateAvailability}
+        candidateProposals={groupProposalAvailability}
         hasSavedLocation={
           currentUser?.locationLat != null && currentUser.locationLng != null
         }

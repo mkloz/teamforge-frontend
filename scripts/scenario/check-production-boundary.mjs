@@ -6,7 +6,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const DIST_DIRECTORY = path.join(ROOT, "dist");
 const FORBIDDEN_MARKERS = [
-  "__TEAMFORGE_SCENARIO_RUNTIME__",
+  "__SCENARIO_RUNTIME__",
   "SCENARIO_UNMATCHED_REQUEST",
   "Synthetic data",
   "__scenario",

@@ -176,7 +176,7 @@ function getReactionButtonTone({
   }
 
   return isActive
-    ? "border-primary/20 bg-primary/10 text-foreground shadow-sm"
+    ? "border-primary/20 bg-primary-soft text-foreground shadow-sm"
     : "border-transparent";
 }
 

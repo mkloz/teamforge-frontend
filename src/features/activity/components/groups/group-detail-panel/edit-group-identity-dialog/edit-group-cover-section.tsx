@@ -172,7 +172,7 @@ function getPlanCoverPresetButtonClassName(
     "group relative h-14 overflow-hidden rounded-lg border-2 p-0 transition duration-200",
     preset.kind === "gradient" && `bg-linear-to-br ${preset.gradient}`,
     selected
-      ? "border-forge-teal shadow-forge-teal/20 shadow-md"
+      ? "border-brand-teal shadow-brand-teal/20 shadow-md"
       : "border-transparent hover:scale-105 hover:shadow-sm",
   );
 }

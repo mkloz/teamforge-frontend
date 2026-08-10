@@ -22,6 +22,7 @@ export function createUser(overrides: Partial<CurrentUser> = {}): CurrentUser {
     oceanA: null,
     oceanN: null,
     searchStatus: "IDLE",
+    signInMethods: { google: false, password: true },
     trustScore: 80,
     profileComplete: true,
     role: "USER",

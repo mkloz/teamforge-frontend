@@ -21,11 +21,11 @@ const noticeVariants = cva(
   {
     variants: {
       tone: {
-        danger: "bg-destructive/8 text-destructive",
-        info: "bg-primary/8 text-foreground",
+        danger: "bg-destructive-soft text-destructive",
+        info: "bg-primary-soft text-foreground",
         neutral: "bg-muted/25 text-foreground",
-        success: "bg-primary/8 text-foreground",
-        warning: "bg-accent/10 text-ink",
+        success: "bg-primary-soft text-foreground",
+        warning: "bg-accent-soft text-ink",
       },
       size: {
         xs: "gap-2 rounded-lg px-3 py-2 text-xs",

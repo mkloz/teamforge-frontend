@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { RefreshCw, ShieldAlert } from "lucide-react";
-import { ForgeLoadingMark } from "@/shared/components/loading/forge-loading-mark";
+import { PlanLoadingMark } from "@/shared/components/loading/plan-loading-mark";
 import { Button } from "@/shared/components/ui/button";
 import { buildHomeNavigation } from "@/shared/navigation/home-navigation";
 
 export function AdminRouteLoading() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-canvas px-6 text-ink">
-      <ForgeLoadingMark label="Checking admin access" size="md" />
+      <PlanLoadingMark label="Checking admin access" size="md" />
     </div>
   );
 }
@@ -22,7 +22,7 @@ export function AdminAccessUnavailable({ onRetry }: { onRetry: () => void }) {
         </h1>
         <p className="text-pretty text-slate-muted text-sm leading-relaxed">
           Reconnect and try again. The admin workspace stays closed until
-          TeamForge can confirm your access.
+          Findafew can confirm your access.
         </p>
         <div className="mt-2 flex flex-col justify-center gap-2 sm:flex-row">
           <Button type="button" onClick={onRetry}>
@@ -30,7 +30,7 @@ export function AdminAccessUnavailable({ onRetry }: { onRetry: () => void }) {
             Check access again
           </Button>
           <Button asChild variant="outline">
-            <Link {...buildHomeNavigation()}>Back to TeamForge</Link>
+            <Link {...buildHomeNavigation()}>Back to Findafew</Link>
           </Button>
         </div>
       </div>

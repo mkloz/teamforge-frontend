@@ -68,7 +68,7 @@ export interface ConversationListEmptyState {
   description: string | null;
   label: string;
   showExploreCta: boolean;
-  showForgeCta: boolean;
+  showPlanCreationCta: boolean;
 }
 
 interface ConversationListLayout {
@@ -175,7 +175,7 @@ function getConversationListEmptyState(
     description: getEmptyDescription(activeFilter, searchQuery),
     label: getEmptyLabel(activeFilter, searchQuery),
     showExploreCta: shouldShowExploreCta(activeFilter, searchQuery),
-    showForgeCta: shouldShowForgeCta(activeFilter, searchQuery),
+    showPlanCreationCta: shouldShowPlanCreationCta(activeFilter, searchQuery),
   };
 }
 
@@ -249,7 +249,7 @@ function shouldShowExploreCta(
   return !searchQuery && filtersWithExploreCta.has(activeFilter);
 }
 
-function shouldShowForgeCta(
+function shouldShowPlanCreationCta(
   activeFilter: FilterChip,
   searchQuery: string,
 ): boolean {

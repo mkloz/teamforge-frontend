@@ -80,7 +80,7 @@ function SafetyRequestForm({
 
   if (mutation.isSuccess) {
     return (
-      <div className="grid gap-2 rounded-xl bg-primary/8 p-4" role="status">
+      <div className="grid gap-2 rounded-xl bg-primary-soft p-4" role="status">
         <p className="font-semibold text-ink">{copy.successHeading}</p>
         <p className="text-slate-muted text-sm leading-relaxed">
           {copy.successBody}
@@ -230,7 +230,7 @@ export function InformationResponseForm({
 
   if (mutation.isSuccess) {
     return (
-      <div className="grid gap-1 rounded-xl bg-primary/8 p-4" role="status">
+      <div className="grid gap-1 rounded-xl bg-primary-soft p-4" role="status">
         <p className="font-semibold text-ink">Information sent</p>
         <p className="text-slate-muted text-sm">
           We’ll continue reviewing your report.

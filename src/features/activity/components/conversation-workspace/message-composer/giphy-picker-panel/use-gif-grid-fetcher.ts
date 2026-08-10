@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import { type GifsResult, GiphyFetch } from "@giphy/js-fetch-api";
 import { useCallback } from "react";
 

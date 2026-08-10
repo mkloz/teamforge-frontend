@@ -1,14 +1,14 @@
 import { useId } from "react";
 
-interface TeamForgeVoronoiProps {
+interface FindafewVoronoiProps {
   className?: string;
   showBackground?: boolean;
 }
 
-export function TeamForgeLogo({
+export function FindafewLogo({
   className = "size-12",
   showBackground = true,
-}: TeamForgeVoronoiProps) {
+}: FindafewVoronoiProps) {
   const groupBoundaryId = useId();
 
   return (
@@ -17,7 +17,8 @@ export function TeamForgeLogo({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="TeamForge Logo: The Voronoi Nexus"
+      aria-hidden="true"
+      focusable="false"
     >
       <defs>
         <clipPath id={groupBoundaryId}>
@@ -31,7 +32,7 @@ export function TeamForgeLogo({
 
       <g clipPath={`url(#${groupBoundaryId})`}>
         {/* Four group regions
- Color: Forge Teal with varying opacities keeps each member distinct.
+ Color: brand teal with varying opacities keeps each member distinct.
  Stroke: Canvas (#FAFAF8) creates the boundaries.
  */}
         <g stroke="#FAFAF8" strokeWidth="5" strokeLinejoin="round">

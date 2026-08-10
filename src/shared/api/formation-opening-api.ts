@@ -3,7 +3,7 @@ import { z } from "zod";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 
 export const FORMATION_OPENING_POLICY_VERSION =
-  "forge-proposal-recovery-v1" as const;
+  "group-proposal-recovery-v1" as const;
 
 export const formationOpeningApplicationStateSchema = z.enum([
   "PENDING",
@@ -105,7 +105,7 @@ export type FormationOpeningOrganizerDetail = Extract<
 
 export async function getFormationOpening(openingId: string) {
   const response = await apiClient
-    .get(`forge-proposal-openings/${openingId}`)
+    .get(`group-proposal-openings/${openingId}`)
     .json<unknown>();
 
   return formationOpeningDetailSchema.parse(response);
@@ -116,7 +116,7 @@ export function postFormationOpeningApplication(
   idempotencyKey: string,
 ) {
   return apiClient
-    .post(`forge-proposal-openings/${openingId}/applications`, {
+    .post(`group-proposal-openings/${openingId}/applications`, {
       headers: { "Idempotency-Key": idempotencyKey },
       json: { policyVersion: FORMATION_OPENING_POLICY_VERSION },
     })
@@ -133,7 +133,7 @@ export function deleteCurrentFormationOpeningApplication(
   idempotencyKey: string,
 ) {
   return apiClient
-    .delete(`forge-proposal-openings/${openingId}/applications/current`, {
+    .delete(`group-proposal-openings/${openingId}/applications/current`, {
       headers: { "Idempotency-Key": idempotencyKey },
       json: {
         expectedApplicationVersion,
@@ -158,7 +158,7 @@ export function selectFormationOpeningApplication(
 ) {
   return apiClient
     .post(
-      `forge-proposal-openings/${openingId}/applications/${applicationId}/select`,
+      `group-proposal-openings/${openingId}/applications/${applicationId}/select`,
       {
         headers: { "Idempotency-Key": idempotencyKey },
         json: {
@@ -180,7 +180,7 @@ export function closeFormationOpening(
   idempotencyKey: string,
 ) {
   return apiClient
-    .post(`forge-proposal-openings/${openingId}/close`, {
+    .post(`group-proposal-openings/${openingId}/close`, {
       headers: { "Idempotency-Key": idempotencyKey },
       json: {
         expectedVersion,

@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
-import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { useCompatibilityInputLock } from "@/features/group-proposals/public/proposal-review";
 import { ensureOnboardingProductState } from "@/shared/api/onboarding-product-state-query";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
@@ -111,8 +111,8 @@ export function useInterestsPageFlow() {
       const productState = await ensureOnboardingProductState();
       await navigate({
         to:
-          productState.presentation.destination === "FORGE"
-            ? "/forge"
+          productState.presentation.destination === "START_PLAN"
+            ? "/plans/new"
             : "/explore",
       });
       return;

@@ -135,7 +135,7 @@ function SettingsSignOutDialog({
         onConfirm={onSignOut}
         onOpenChange={onOpenChange}
         open={open}
-        title="Sign out of TeamForge?"
+        title="Sign out of Findafew?"
         tone="warning"
       />
     </Suspense>

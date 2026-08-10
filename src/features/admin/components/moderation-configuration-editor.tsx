@@ -172,7 +172,7 @@ export function ModerationConfigurationEditor({
                   className={cn(
                     "cursor-pointer rounded-xl border px-4 py-3 transition-colors",
                     checked
-                      ? "border-primary/45 bg-primary/8"
+                      ? "border-primary/45 bg-primary-soft"
                       : "border-border bg-background/20",
                     (!commandsEnabled || createDraft.isPending) &&
                       "cursor-default",

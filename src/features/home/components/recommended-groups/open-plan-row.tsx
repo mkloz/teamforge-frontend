@@ -85,7 +85,7 @@ function IntroductoryGroupPlanRow({
   return (
     <OpenPlanRowFrame
       action={
-        <Button asChild size="sm" aria-label="Continue matching setup">
+        <Button asChild size="sm" aria-label="Continue group proposal setup">
           <Link to="/onboarding/personality">
             <ArrowRight className="size-3.5" aria-hidden="true" />
             <span className="sr-only sm:not-sr-only">Continue setup</span>
@@ -194,7 +194,7 @@ function FormationOpeningRow({
       }
       date={date}
       image={
-        <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-primary/8 text-foreground ring-1 ring-primary/15 sm:size-20 sm:rounded-2xl">
+        <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-primary-soft text-foreground ring-1 ring-primary/15 sm:size-20 sm:rounded-2xl">
           <CategoryIcon className="size-7 sm:size-8" aria-hidden="true" />
         </div>
       }
@@ -250,7 +250,7 @@ function OpenPlanRowFrame({
         <p className="truncate font-medium text-muted-foreground text-xs">
           {location}
         </p>
-        <p className="inline-flex min-w-0 items-center gap-1.5 font-bold text-spark-amber text-xs">
+        <p className="inline-flex min-w-0 items-center gap-1.5 font-bold text-brand-amber text-xs">
           <UsersRound className="size-3.5 shrink-0" aria-hidden="true" />
           <span className="truncate">{spots}</span>
         </p>
@@ -276,7 +276,7 @@ function PlanDate({ date }: { date: PlanDateParts }) {
   return (
     <div className="relative flex h-full min-h-16 flex-col items-center justify-center border-border/70 border-l pl-2 text-center sm:min-h-20">
       <span
-        className="absolute top-1/2 -left-1.5 size-3 -translate-y-1/2 rounded-full border-2 border-background bg-card ring-1 ring-border group-first:bg-forge-teal group-first:ring-forge-teal"
+        className="absolute top-1/2 -left-1.5 size-3 -translate-y-1/2 rounded-full border-2 border-background bg-card ring-1 ring-border group-first:bg-brand-teal group-first:ring-brand-teal"
         aria-hidden="true"
       />
       {date.kind === "scheduled" ? (

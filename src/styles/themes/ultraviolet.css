@@ -34,8 +34,8 @@
   --sidebar-accent-foreground: #5f32c4;
   --sidebar-border: color-mix(in srgb, var(--foreground) 10%, transparent);
   --sidebar-ring: #6d3fd9;
-  --color-forge-teal: var(--primary);
-  --color-spark-amber: var(--accent);
+  --color-brand-teal: var(--primary);
+  --color-brand-amber: var(--accent);
   --color-button-primary-border: var(--primary);
   --color-button-secondary-border: var(--accent);
   --shadow-button-primary: 0 4px 0
@@ -81,8 +81,8 @@
   --sidebar-accent-foreground: #c4b5fd;
   --sidebar-border: color-mix(in srgb, var(--foreground) 11%, transparent);
   --sidebar-ring: #a78bfa;
-  --color-forge-teal: var(--primary);
-  --color-spark-amber: var(--accent);
+  --color-brand-teal: var(--primary);
+  --color-brand-amber: var(--accent);
   --color-button-primary-border: var(--primary);
   --color-button-secondary-border: var(--accent);
   --shadow-button-primary: 0 4px 0

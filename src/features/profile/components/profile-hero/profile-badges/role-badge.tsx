@@ -13,7 +13,7 @@ const ARCHETYPE_DESCRIPTIONS: Record<string, string> = {
   Guide: "May consider both the overall plan and how people respond to it.",
   Dreamer: "May bring care and imagination to an open-ended idea.",
   Mentor: "May encourage other people to contribute.",
-  Spark: "May help the group get started.",
+  Particle: "May help the group get started.",
   Anchor: "May keep attention on practical details when plans get complicated.",
   Caretaker: "May notice and respond to practical group needs.",
   Director: "May help the group track decisions and tasks.",
@@ -57,7 +57,7 @@ export function RoleBadge({
           <div>
             <p className="font-semibold text-sm text-white">{archetype}</p>
             <p className="mt-0.5 text-slate-muted text-xs">
-              Group role in TeamForge
+              Group role in Findafew
             </p>
           </div>
           <p className="text-slate-muted text-xs leading-relaxed">

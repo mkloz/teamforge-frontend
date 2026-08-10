@@ -4,27 +4,27 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 
 export const categoryColors: Record<PlanCategory, string> = {
-  TECH: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
-  SPORTS: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
-  ARTS: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
-  SOCIAL: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
-  OUTDOORS: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
-  LEARNING: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
-  MUSIC: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
-  FOOD: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
-  GAMING: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
-  WELLNESS: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
-  TRAVEL: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
-  OTHER: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
+  TECH: "border-brand-teal/20 bg-primary-soft text-foreground",
+  SPORTS: "border-brand-teal/20 bg-primary-soft text-foreground",
+  ARTS: "border-brand-amber/25 bg-accent-soft text-brand-amber",
+  SOCIAL: "border-brand-amber/25 bg-accent-soft text-brand-amber",
+  OUTDOORS: "border-brand-teal/20 bg-primary-soft text-foreground",
+  LEARNING: "border-brand-teal/20 bg-primary-soft text-foreground",
+  MUSIC: "border-brand-amber/25 bg-accent-soft text-brand-amber",
+  FOOD: "border-brand-amber/25 bg-accent-soft text-brand-amber",
+  GAMING: "border-slate-muted/20 bg-muted-soft text-slate-muted",
+  WELLNESS: "border-brand-teal/20 bg-primary-soft text-foreground",
+  TRAVEL: "border-brand-teal/20 bg-primary-soft text-foreground",
+  OTHER: "border-slate-muted/20 bg-muted-soft text-slate-muted",
 };
 
 export const statusColors: Record<PlanStatus, string> = {
-  DRAFT: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
-  PROPOSED: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
-  CONFIRMED: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
-  IN_PROGRESS: "border-forge-teal/20 bg-forge-teal/10 text-foreground",
-  COMPLETED: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
-  CANCELLED: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
+  DRAFT: "border-brand-amber/25 bg-accent-soft text-brand-amber",
+  PROPOSED: "border-brand-amber/25 bg-accent-soft text-brand-amber",
+  CONFIRMED: "border-brand-teal/20 bg-primary-soft text-foreground",
+  IN_PROGRESS: "border-brand-teal/20 bg-primary-soft text-foreground",
+  COMPLETED: "border-slate-muted/20 bg-muted-soft text-slate-muted",
+  CANCELLED: "border-slate-muted/20 bg-muted-soft text-slate-muted",
 };
 
 export const formatDate = (date: string | Date) => {

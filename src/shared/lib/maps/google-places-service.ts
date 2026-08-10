@@ -1,99 +1,86 @@
-import {
-  getBrowserDocument,
-  getBrowserWindow,
-} from "@/shared/lib/browser-environment";
+import { getBrowserWindow } from "@/shared/lib/browser-environment";
 import { isGooglePlacesReady } from "@/shared/lib/maps/google-maps-loader";
 import { locationFromPlace } from "@/shared/lib/maps/google-place-mappers";
 import type {
-  Coordinates,
+  GooglePlaceSuggestion,
   LocationValue,
 } from "@/shared/lib/maps/location.types";
 
 const PLACE_DETAIL_FIELDS = [
-  "formatted_address",
-  "geometry",
-  "address_components",
-  "name",
-];
+  "id",
+  "displayName",
+  "formattedAddress",
+  "location",
+  "addressComponents",
+] satisfies GooglePlaceField[];
 
-function requireGoogleMaps() {
-  const maps = getBrowserWindow()?.google?.maps;
+function requireGooglePlaces() {
+  const places = getBrowserWindow()?.__findafewGooglePlacesLibrary;
 
-  if (!isGooglePlacesReady() || !maps?.places) {
-    throw new Error("Google Maps is unavailable.");
+  if (!isGooglePlacesReady() || !places) {
+    throw new Error("Google Places is unavailable.");
   }
 
-  return maps;
+  return places;
 }
 
-export function getPlacePredictions(input: string) {
-  const maps = requireGoogleMaps();
-  const service = new maps.places.AutocompleteService();
-
-  return new Promise<GoogleAutocompletePrediction[]>((resolve) => {
-    service.getPlacePredictions(
-      {
-        input,
-        types: ["geocode", "establishment"],
-      },
-      (predictions, status) => {
-        if (status !== maps.places.PlacesServiceStatus.OK) {
-          resolve([]);
-          return;
-        }
-
-        resolve(predictions ?? []);
-      },
-    );
-  });
+export function createGooglePlacesSessionToken() {
+  const places = requireGooglePlaces();
+  return new places.AutocompleteSessionToken();
 }
 
-export function resolvePlacePrediction(
-  prediction: GoogleAutocompletePrediction,
+export async function getPlaceSuggestions(
+  input: string,
+  sessionToken: GoogleAutocompleteSessionToken,
 ) {
-  const browserDocument = getBrowserDocument();
+  const places = requireGooglePlaces();
+  const { suggestions } =
+    await places.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+      input,
+      sessionToken,
+    });
 
-  if (!browserDocument) {
-    return Promise.reject(new Error("Google Places requires a browser."));
-  }
-
-  const maps = requireGoogleMaps();
-  const service = new maps.places.PlacesService(
-    browserDocument.createElement("div"),
-  );
-
-  return new Promise<LocationValue>((resolve, reject) => {
-    service.getDetails(
-      {
-        placeId: prediction.place_id,
-        fields: PLACE_DETAIL_FIELDS,
-      },
-      (place, status) => {
-        if (status !== maps.places.PlacesServiceStatus.OK || !place) {
-          reject(new Error("Google Maps could not resolve that place."));
-          return;
-        }
-
-        resolve(
-          locationFromPlace(place, prediction.description, prediction.place_id),
-        );
-      },
-    );
-  });
+  return suggestions.flatMap(mapAutocompleteSuggestion);
 }
 
-export function reverseGeocodeCoordinates({ lat, lng }: Coordinates) {
-  const maps = requireGoogleMaps();
-  const geocoder = new maps.Geocoder();
+function mapAutocompleteSuggestion(
+  suggestion: GoogleAutocompleteSuggestion,
+): GooglePlaceSuggestion[] {
+  const prediction = suggestion.placePrediction;
 
-  return new Promise<LocationValue | null>((resolve) => {
-    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-      if (status !== maps.GeocoderStatus.OK || !results?.[0]) {
-        resolve(null);
-        return;
-      }
+  if (!prediction) {
+    return [];
+  }
 
-      resolve(locationFromPlace(results[0], "Current area"));
-    });
-  });
+  return [
+    {
+      description: prediction.text.toString(),
+      id: prediction.placeId,
+      mainText: prediction.mainText?.toString() ?? prediction.text.toString(),
+      prediction,
+      secondaryText: prediction.secondaryText?.toString() ?? null,
+    },
+  ];
+}
+
+export async function resolvePlaceSuggestion(
+  suggestion: GooglePlaceSuggestion,
+): Promise<LocationValue> {
+  const place = suggestion.prediction.toPlace();
+  await place.fetchFields({ fields: PLACE_DETAIL_FIELDS });
+  return locationFromPlace(place, suggestion.description, suggestion.id);
+}
+
+export function getGooglePlacesErrorMessage(error: unknown) {
+  const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+  if (
+    message.includes("quota") ||
+    message.includes("over_query_limit") ||
+    message.includes("resource_exhausted")
+  ) {
+    return "Location suggestions are busy right now. Type the place manually, or try again in a moment.";
+  }
+
+  return "Location suggestions are unavailable. You can still type the place manually.";
 }

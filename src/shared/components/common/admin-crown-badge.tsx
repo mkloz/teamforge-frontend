@@ -19,7 +19,7 @@ export function AdminCrownBadge({
       ref={ref}
       {...props}
       className={cn(
-        "flex size-5 items-center justify-center rounded-md border border-spark-amber/40 bg-canvas text-ink shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas",
+        "flex size-5 items-center justify-center rounded-md border border-brand-amber/40 bg-canvas text-ink shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-brand-amber)_16%,transparent)] ring-2 ring-canvas",
         className,
       )}
     >

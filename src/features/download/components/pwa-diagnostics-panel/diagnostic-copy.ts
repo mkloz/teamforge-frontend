@@ -28,8 +28,7 @@ export const ACTIVE_SERVICE_WORKER_ITEM_STATES: Record<
   DiagnosticItemState
 > = {
   controlled: {
-    detail:
-      "This page is currently controlled by the TeamForge service worker.",
+    detail: "This page is currently controlled by the Findafew service worker.",
     tone: "ready",
     value: "Active",
   },
@@ -46,12 +45,12 @@ export const SERVICE_WORKER_ITEM_STATES: Record<
   DiagnosticItemState
 > = {
   checking: {
-    detail: "TeamForge is checking the active service worker for this origin.",
+    detail: "Findafew is checking the active service worker for this origin.",
     tone: "neutral",
     value: "Checking",
   },
   error: {
-    detail: "TeamForge could not read service-worker state for this origin.",
+    detail: "Findafew could not read service-worker state for this origin.",
     tone: "blocked",
     value: "Check failed",
   },
@@ -62,7 +61,7 @@ export const SERVICE_WORKER_ITEM_STATES: Record<
     value: "Installing",
   },
   "not-registered": {
-    detail: "No TeamForge service worker is registered for this origin yet.",
+    detail: "No Findafew service worker is registered for this origin yet.",
     tone: "blocked",
     value: "Not registered",
   },
@@ -140,7 +139,7 @@ export const SUBSCRIPTION_ITEM_RULES: readonly DiagnosticItemRule<PushDiagnostic
       shouldUse: (push) => !push.isOnline,
       state: {
         detail:
-          "Reconnect to verify this browser's subscription against TeamForge.",
+          "Reconnect to verify this browser's subscription against Findafew.",
         tone: "warning",
         value: "Offline",
       },
@@ -174,7 +173,7 @@ export const SUBSCRIPTION_ITEM_RULES: readonly DiagnosticItemRule<PushDiagnostic
   ];
 
 export const SUBSCRIPTION_FALLBACK_ITEM_STATE: DiagnosticItemState = {
-  detail: "This browser is not subscribed to TeamForge push notifications.",
+  detail: "This browser is not subscribed to Findafew push notifications.",
   tone: "neutral",
   value: "Not subscribed",
 };

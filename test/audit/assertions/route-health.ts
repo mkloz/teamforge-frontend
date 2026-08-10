@@ -6,7 +6,7 @@ import type {
 } from "../contracts/playwright-routes";
 
 const loadingTextPattern =
-  /Loading page|Preparing TeamForge|Loading home|Loading explore|Loading activity|Loading profile|Loading settings|Loading forge|Loading group plan/u;
+  /Loading page|Preparing Findafew|Loading home|Loading explore|Loading activity|Loading profile|Loading settings|Loading the plan builder|Loading group plan/u;
 
 function getRouteReadyState(page: Page, expectedPath: string) {
   return page.evaluate(

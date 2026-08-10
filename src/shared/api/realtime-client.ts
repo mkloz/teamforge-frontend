@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import { io, type Socket } from "socket.io-client";
 
 import { config } from "@/config/config";
@@ -118,7 +118,6 @@ class RealtimeClient {
         token,
       },
       path: buildSocketPath(apiUrl),
-      transports: ["websocket"],
     });
 
     socket.on("connect", () => {

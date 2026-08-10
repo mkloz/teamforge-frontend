@@ -68,7 +68,7 @@ export function PersonalityResultActions({
       {isSaved ? (
         <div className="flex min-w-0 items-center justify-between gap-2 sm:gap-3">
           <div
-            className="inline-flex min-w-0 items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-semibold text-foreground text-sm"
+            className="inline-flex min-w-0 items-center gap-2 rounded-full bg-primary-soft px-3 py-1.5 font-semibold text-foreground text-sm"
             role="status"
           >
             <Check
@@ -91,7 +91,7 @@ export function PersonalityResultActions({
       ) : isAcceptedPrivately ? (
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
           <div
-            className="inline-flex min-w-0 items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-semibold text-foreground text-sm"
+            className="inline-flex min-w-0 items-center gap-2 rounded-full bg-primary-soft px-3 py-1.5 font-semibold text-foreground text-sm"
             role="status"
           >
             <LockKeyhole className="size-3.5 shrink-0" aria-hidden="true" />

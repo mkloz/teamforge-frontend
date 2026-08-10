@@ -8,10 +8,10 @@ import {
   Palette,
   TreePine,
 } from "lucide-react";
-import { ACTIVITY_TEMPLATE_STARTING_POINTS } from "@/features/forge/public/canonical-activity-templates";
+import { ACTIVITY_TEMPLATE_STARTING_POINTS } from "@/features/plan-creation/public/canonical-activity-templates";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
-import { buildForgeTemplateLaunchNavigation } from "@/shared/navigation";
+import { buildPlanCreationTemplateLaunchNavigation } from "@/shared/navigation";
 import type { PlanCategory } from "@/shared/schemas";
 
 type ActivityTemplateStartingPointsVariant = "sidebar" | "stage";
@@ -61,7 +61,7 @@ export function ActivityTemplateStartingPoints({
             isSidebar ? "text-xs" : "text-sm",
           )}
         >
-          Pick something familiar. You can change the details before TeamForge
+          Pick something familiar. You can change the details before Findafew
           starts forming the group.
         </p>
 
@@ -78,7 +78,7 @@ export function ActivityTemplateStartingPoints({
             return (
               <Link
                 key={startingPoint.templateId}
-                {...buildForgeTemplateLaunchNavigation(
+                {...buildPlanCreationTemplateLaunchNavigation(
                   startingPoint.templateId,
                 )}
                 className="group grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-3 border-border border-t py-4 text-left outline-none transition-colors focus-visible:rounded-xl focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"

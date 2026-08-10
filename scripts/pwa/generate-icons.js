@@ -2,7 +2,7 @@
 // @ts-check
 
 /**
- * Generates TeamForge PWA icon assets from the canonical SVG favicon.
+ * Generates Findafew PWA icon assets from the canonical SVG favicon.
  *
  * The script writes transparent standard icons plus solid-background maskable
  * and Apple touch icons expected by the manifest and install surfaces.

@@ -11,7 +11,7 @@ import {
 describe("levenshtein", () => {
   it("calculates common edit distances", () => {
     expect(levenshtein("kitten", "sitting")).toBe(3);
-    expect(levenshtein("forge", "forge")).toBe(0);
+    expect(levenshtein("planCreation", "planCreation")).toBe(0);
     expect(levenshtein("", "team")).toBe(4);
     expect(levenshtein("group", "")).toBe(5);
   });

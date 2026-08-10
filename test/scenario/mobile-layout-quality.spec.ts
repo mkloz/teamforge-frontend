@@ -7,6 +7,7 @@ import {
 
 const heldRequestScenarioIds = new Set([
   "activity-loading",
+  "auth-activation-loading",
   "explore-loading",
   "explore-pagination-loading",
   "group-loading",

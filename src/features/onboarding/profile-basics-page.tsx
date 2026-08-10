@@ -4,22 +4,17 @@ import { useProfileBasicsForm } from "@/features/onboarding/hooks/use-profile-ba
 import { ProfileBasicsPageContent } from "@/features/onboarding/onboarding-page-content";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 import type {
   VoronoiCatalystHandle,
   VoronoiFormationTarget,
 } from "@/shared/lib/voronoi/voronoi-contract";
 
-const PROFILE_BASICS_METADATA = createTeamForgePageMetadata({
+const PROFILE_BASICS_METADATA = createFindafewPageMetadata({
   title: "Profile Setup",
   description:
-    "Add the basic profile details TeamForge needs before forming a group.",
+    "Add the basic profile details Findafew needs before forming a group.",
 });
-
-const PROFILE_FORMATION = {
-  kind: "symbol",
-  value: "location",
-} as const satisfies VoronoiFormationTarget;
 
 export function ProfileBasicsPage() {
   usePageMetadata(PROFILE_BASICS_METADATA);
@@ -36,6 +31,10 @@ export function ProfileBasicsPage() {
     isSaving,
     onSubmit,
   } = useProfileBasicsForm();
+  const profileFormation = {
+    kind: "text",
+    value: watchedValues.city?.trim() || "YOU",
+  } as const satisfies VoronoiFormationTarget;
 
   useScrollToTop(["profile-basics"], scrollContainerRef);
 
@@ -46,7 +45,7 @@ export function ProfileBasicsPage() {
   return (
     <ProfileBasicsPageContent
       catalystRef={catalystRef}
-      formation={PROFILE_FORMATION}
+      formation={profileFormation}
       onInput={handleInput}
       progress={progress}
       scrollContainerRef={scrollContainerRef}

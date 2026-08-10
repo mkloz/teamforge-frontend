@@ -29,7 +29,7 @@ export function DynamicAssessmentOptionCard({
       className={cn(
         "relative h-auto w-full overflow-hidden rounded-xl border-2 bg-card p-4 text-left text-card-foreground shadow-none transition-all duration-300 focus-visible:ring-foreground sm:p-4.5",
         isSelected
-          ? "border-forge-teal/30 bg-forge-teal/8"
+          ? "border-brand-teal/30 bg-primary-soft"
           : "border-foreground/20 hover:border-foreground/40",
       )}
       contentClassName="block h-auto w-full"

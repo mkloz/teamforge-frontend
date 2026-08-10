@@ -119,7 +119,7 @@ function applyRealtimeMessageToCache(
   if (optimisticMatch) {
     ActivityActions.releaseOptimisticMessageResources(optimisticMatch);
     ActivityMessageCache.replace(chatId, optimisticMatch.id, mappedMessage);
-    ActivityActions.forgetRetryableMessage(optimisticMatch.id);
+    ActivityActions.dropRetryableMessage(optimisticMatch.id);
   } else if (alreadyExists) {
     ActivityMessageCache.replace(chatId, mappedMessage.id, mappedMessage);
   } else {

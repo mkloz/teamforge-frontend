@@ -5,16 +5,16 @@ import {
   activityPageModule,
   ExploreRouteLoading,
   explorePageModule,
-  ForgeProposalRouteLoading,
-  ForgeRouteLoading,
-  forgePageModule,
-  forgeProposalPageModule,
   GroupPlanDetailRouteLoading,
+  GroupProposalRouteLoading,
   groupPlanDetailPageModule,
+  groupProposalPageModule,
   HomeRouteLoading,
   homePageModule,
   onboardingPracticePageModule,
+  PlanCreationRouteLoading,
   ProfileRouteLoading,
+  planCreationPageModule,
   planGuestPageModule,
   profilePageModule,
   restrictionDetailPageModule,
@@ -27,8 +27,8 @@ import {
 import {
   createActivityRouteLoader,
   createExploreRouteLoader,
-  createForgeProposalRouteLoader,
   createGroupPlanDetailRouteLoader,
+  createGroupProposalRouteLoader,
   createRouteModuleLoader,
   createUserDetailRouteLoader,
 } from "@/app/router/app-routes/route-preloading";
@@ -41,9 +41,9 @@ import {
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 import { validateExploreRouteSearch } from "@/shared/navigation";
 import { validateActivityRouteSearch } from "@/shared/navigation/activity-navigation";
-import { validateForgeRouteSearch } from "@/shared/navigation/forge-navigation";
 import { validateHomeRouteSearch } from "@/shared/navigation/home-navigation";
 import { validateOnboardingPracticeSearch } from "@/shared/navigation/onboarding-practice-navigation";
+import { validatePlanCreationRouteSearch } from "@/shared/navigation/plan-creation-navigation";
 import {
   buildSafetyNavigation,
   validateSafetySearch,
@@ -97,7 +97,7 @@ export const onboardingPracticeRouteOptions = {
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.onboardingPractice,
     title: "Practice could not load",
-    description: "The local TeamForge practice did not load.",
+    description: "The local Findafew practice did not load.",
     fallbackTo: "/explore",
     fallbackLabel: "Back to explore",
   }),
@@ -297,39 +297,42 @@ export const restrictionDetailRouteOptions = {
   }),
 };
 
-export const forgeRouteOptions = {
-  path: "/forge" as const,
-  validateSearch: validateForgeRouteSearch,
-  loader: createRouteModuleLoader(forgePageModule, ForgeRouteLoading),
+export const planCreationRouteOptions = {
+  path: "/plans/new" as const,
+  validateSearch: validatePlanCreationRouteSearch,
+  loader: createRouteModuleLoader(
+    planCreationPageModule,
+    PlanCreationRouteLoading,
+  ),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: ForgeRouteLoading,
+  pendingComponent: PlanCreationRouteLoading,
   component: createLazyPageRoute(
-    forgePageModule.Component,
-    <ForgeRouteLoading />,
+    planCreationPageModule.Component,
+    <PlanCreationRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
-    scope: routeErrorScopes.forge,
-    title: "Forge could not load",
+    scope: routeErrorScopes.planCreation,
+    title: "The plan builder could not load",
     description: "The group setup did not load.",
     fallbackTo: "/home",
     fallbackLabel: "Back to home",
   }),
 };
 
-export const forgeProposalRouteOptions = {
-  path: "/forge/proposals/$proposalId" as const,
-  loader: createForgeProposalRouteLoader(
-    forgeProposalPageModule,
-    ForgeProposalRouteLoading,
+export const groupProposalRouteOptions = {
+  path: "/group-proposals/$proposalId" as const,
+  loader: createGroupProposalRouteLoader(
+    groupProposalPageModule,
+    GroupProposalRouteLoading,
   ),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: ForgeProposalRouteLoading,
+  pendingComponent: GroupProposalRouteLoading,
   component: createLazyPageRoute(
-    forgeProposalPageModule.Component,
-    <ForgeProposalRouteLoading />,
+    groupProposalPageModule.Component,
+    <GroupProposalRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
-    scope: routeErrorScopes.forge,
+    scope: routeErrorScopes.planCreation,
     title: "Group proposal could not load",
     description: "This group proposal did not load.",
     fallbackTo: "/home",

@@ -58,12 +58,12 @@ jobs:
           OXLINT_THREADS: "1"
           SENTRY_RELEASE: ${{ github.sha }}
           VERIFY_MAX_PARALLEL: "1"
-          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://arm-api.mkloz.com/teamforge/api/v1' }}
-          VITE_APP_URL: ${{ vars.VITE_APP_URL || 'https://teamforge.mkloz.com' }}
+          VITE_API_URL: https://api.findafew.today/findafew/api/v1
+          VITE_APP_URL: https://findafew.today
           VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY }}
           VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY }}
-          VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL || 'https://mkloz-teamforge.s3.us-east-1.amazonaws.com' }}
+          VITE_MEDIA_BASE_URL: ${{ vars.VITE_MEDIA_BASE_URL }}
           VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
           VITE_SENTRY_ENVIRONMENT: ${{ inputs.deploy_target || 'production' }}
           VITE_SENTRY_RELEASE: ${{ github.sha }}
@@ -74,7 +74,7 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || 'teamforge-web' }}
+          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || 'findafew-web' }}
           PAGES_BRANCH_INPUT: ${{ inputs.pages_branch }}
           PAGES_DEPLOY_TARGET: ${{ inputs.deploy_target || 'production' }}
           PAGES_PRODUCTION_BRANCH: ${{ vars.CLOUDFLARE_PAGES_PRODUCTION_BRANCH || 'main' }}

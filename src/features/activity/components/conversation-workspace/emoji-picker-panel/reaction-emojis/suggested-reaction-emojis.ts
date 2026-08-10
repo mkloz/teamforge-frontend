@@ -8,7 +8,7 @@ export const SUGGESTED_REACTION_EMOJIS = [
   reactionEmoji("🔥", "Fire", ["hot", "great", "strong"]),
   reactionEmoji("🎉", "Party popper", ["celebrate", "congrats"]),
   reactionEmoji("👏", "Clapping hands", ["applause", "nice"]),
-  reactionEmoji("✨", "Sparkles", ["magic", "nice", "clean"]),
+  reactionEmoji("✨", "Particleles", ["magic", "nice", "clean"]),
   reactionEmoji("🤝", "Handshake", ["deal", "support", "agree"]),
   reactionEmoji("😍", "Heart eyes", ["love", "excited"]),
   reactionEmoji("😊", "Smiling face", ["happy", "kind"]),

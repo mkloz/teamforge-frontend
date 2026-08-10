@@ -6,8 +6,8 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="application-name" content="TeamForge" />
-    <meta name="apple-mobile-web-app-title" content="TeamForge" />
+    <meta name="application-name" content="Findafew" />
+    <meta name="apple-mobile-web-app-title" content="Findafew" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -16,18 +16,18 @@
     <style>
       :root {
         color-scheme: dark;
-        --tf-boot-background: #000000;
-        --tf-boot-foreground: #ffffff;
-        --tf-boot-canvas: #080808;
-        --color-forge-teal: #0d9488;
-        --color-spark-amber: #fbbf24;
+        --app-boot-background: #000000;
+        --app-boot-foreground: #ffffff;
+        --app-boot-canvas: #080808;
+        --color-brand-teal: #0d9488;
+        --color-brand-amber: #fbbf24;
       }
       :root.light {
         color-scheme: light;
-        --tf-boot-background: #f5f5f3;
-        --tf-boot-foreground: #171717;
-        --tf-boot-canvas: #ffffff;
-        --color-spark-amber: #f59e0b;
+        --app-boot-background: #f5f5f3;
+        --app-boot-foreground: #171717;
+        --app-boot-canvas: #ffffff;
+        --color-brand-amber: #f59e0b;
       }
       *,
       *::before,
@@ -37,9 +37,9 @@
       html,
       body,
       #root {
-        background: var(--tf-boot-background);
+        background: var(--app-boot-background);
         min-height: 100%;
-        color: var(--tf-boot-foreground);
+        color: var(--app-boot-foreground);
         margin: 0;
       }
       html {
@@ -70,19 +70,19 @@
           margin-right: 0;
         }
       }
-      .tf-boot {
-        background: var(--tf-boot-canvas);
+      .app-boot {
+        background: var(--app-boot-canvas);
         align-items: center;
         justify-content: center;
         min-height: 100dvh;
         padding: 2.5rem 1.5rem;
         display: flex;
       }
-      .tf-boot__skip {
+      .app-boot__skip {
         z-index: 1;
-        border: 1px solid color-mix(in srgb, var(--color-forge-teal) 60%, transparent);
-        background: var(--tf-boot-canvas);
-        color: var(--tf-boot-foreground);
+        border: 1px solid color-mix(in srgb, var(--color-brand-teal) 60%, transparent);
+        background: var(--app-boot-canvas);
+        color: var(--app-boot-foreground);
         border-radius: 999px;
         padding: 0.625rem 0.875rem;
         font-weight: 700;
@@ -92,59 +92,59 @@
         left: 0.75rem;
         transform: translateY(-150%);
       }
-      .tf-boot__skip:focus {
-        outline: 2px solid var(--color-forge-teal);
+      .app-boot__skip:focus {
+        outline: 2px solid var(--color-brand-teal);
         outline-offset: 2px;
         transform: translateY(0);
       }
-      .forge-loading-mark {
+      .plan-creation-loading-mark {
         align-items: center;
-        color: var(--tf-boot-foreground);
+        color: var(--app-boot-foreground);
         flex-direction: column;
         gap: 0.75rem;
         justify-content: center;
         user-select: none;
         display: flex;
       }
-      .forge-loading-mark__svg {
+      .plan-creation-loading-mark__svg {
         width: 7rem;
         overflow: visible;
       }
-      .forge-loading-mark__hammer,
-      .forge-loading-mark__anvil,
-      .forge-loading-mark__spark-core,
-      .forge-loading-mark__spark,
-      .forge-loading-mark__line,
-      .forge-loading-mark__glow {
+      .plan-creation-loading-mark__moving-shape,
+      .plan-creation-loading-mark__loadingMark,
+      .plan-creation-loading-mark__particle-core,
+      .plan-creation-loading-mark__particle,
+      .plan-creation-loading-mark__line,
+      .plan-creation-loading-mark__glow {
         transform-box: fill-box;
       }
-      .forge-loading-mark__hammer {
+      .plan-creation-loading-mark__moving-shape {
         transform-box: view-box;
         transform-origin: 151px 94.5px;
-        animation: 1.45s infinite tf-boot-hammer;
-        animation-delay: var(--forge-loading-animation-offset, 0ms);
+        animation: 1.45s infinite app-boot-moving-shape;
+        animation-delay: var(--plan-creation-loading-animation-offset, 0ms);
       }
-      .forge-loading-mark__anvil {
+      .plan-creation-loading-mark__loadingMark {
         transform-box: view-box;
         transform-origin: 110px 148px;
-        animation: 1.45s infinite tf-boot-anvil;
-        animation-delay: var(--forge-loading-animation-offset, 0ms);
+        animation: 1.45s infinite app-boot-loadingMark;
+        animation-delay: var(--plan-creation-loading-animation-offset, 0ms);
       }
-      .forge-loading-mark__spark-core {
+      .plan-creation-loading-mark__particle-core {
         transform-box: view-box;
         transform-origin: 110px 107.75px;
-        animation: 1.45s infinite tf-boot-core-spark;
-        animation-delay: var(--forge-loading-animation-offset, 0ms);
+        animation: 1.45s infinite app-boot-core-particle;
+        animation-delay: var(--plan-creation-loading-animation-offset, 0ms);
       }
-      .forge-loading-mark__spark {
-        animation: 1.45s infinite tf-boot-spark;
+      .plan-creation-loading-mark__particle {
+        animation: 1.45s infinite app-boot-particle;
         animation-delay: calc(
-          var(--forge-loading-animation-offset, 0ms) + var(--spark-delay)
+          var(--plan-creation-loading-animation-offset, 0ms) + var(--particle-delay)
         );
         opacity: 0;
         transform-origin: 50%;
       }
-      @keyframes tf-boot-hammer {
+      @keyframes app-boot-moving-shape {
         0% {
           transform: rotate(0);
         }
@@ -164,7 +164,7 @@
           transform: rotate(0);
         }
       }
-      @keyframes tf-boot-anvil {
+      @keyframes app-boot-loadingMark {
         0%,
         50%,
         to {
@@ -177,7 +177,7 @@
           transform: translateY(-0.25px) scaleY(1.01);
         }
       }
-      @keyframes tf-boot-core-spark {
+      @keyframes app-boot-core-particle {
         0%,
         28%,
         50%,
@@ -194,7 +194,7 @@
           transform: scaleX(1.08);
         }
       }
-      @keyframes tf-boot-spark {
+      @keyframes app-boot-particle {
         0%,
         50% {
           opacity: 0;
@@ -202,18 +202,18 @@
         }
         53% {
           opacity: 1;
-          transform: translate(var(--spark-x), var(--spark-y)) scale(1);
+          transform: translate(var(--particle-x), var(--particle-y)) scale(1);
         }
         75% {
           opacity: 0.82;
-          transform: translate(calc(var(--spark-x) * 1.08), calc(var(--spark-y) + 10px)) scale(0.82);
+          transform: translate(calc(var(--particle-x) * 1.08), calc(var(--particle-y) + 10px)) scale(0.82);
         }
         to {
           opacity: 0;
-          transform: translate(calc(var(--spark-x) * 1.18), calc(var(--spark-y) + 25px)) scale(0);
+          transform: translate(calc(var(--particle-x) * 1.18), calc(var(--particle-y) + 25px)) scale(0);
         }
       }
-      @keyframes tf-boot-swoosh-top {
+      @keyframes app-boot-swoosh-top {
         0%,
         49% {
           stroke-dashoffset: 65px;
@@ -233,7 +233,7 @@
           opacity: 0;
         }
       }
-      @keyframes tf-boot-swoosh-mid {
+      @keyframes app-boot-swoosh-mid {
         0%,
         49% {
           stroke-dashoffset: 60px;
@@ -253,7 +253,7 @@
           opacity: 0;
         }
       }
-      @keyframes tf-boot-swoosh-bot {
+      @keyframes app-boot-swoosh-bot {
         0%,
         49% {
           stroke-dashoffset: 50px;
@@ -273,117 +273,117 @@
           opacity: 0;
         }
       }
-      .forge-loading-mark__swoosh-top {
+      .plan-creation-loading-mark__swoosh-top {
         stroke-dasharray: 65;
         stroke-dashoffset: 65;
         opacity: 0;
-        animation: 1.45s infinite tf-boot-swoosh-top;
-        animation-delay: var(--forge-loading-animation-offset, 0ms);
+        animation: 1.45s infinite app-boot-swoosh-top;
+        animation-delay: var(--plan-creation-loading-animation-offset, 0ms);
       }
-      .forge-loading-mark__swoosh-mid {
+      .plan-creation-loading-mark__swoosh-mid {
         stroke-dasharray: 60;
         stroke-dashoffset: 60;
         opacity: 0;
-        animation: 1.45s infinite tf-boot-swoosh-mid;
-        animation-delay: var(--forge-loading-animation-offset, 0ms);
+        animation: 1.45s infinite app-boot-swoosh-mid;
+        animation-delay: var(--plan-creation-loading-animation-offset, 0ms);
       }
-      .forge-loading-mark__swoosh-bot {
+      .plan-creation-loading-mark__swoosh-bot {
         stroke-dasharray: 50;
         stroke-dashoffset: 50;
         opacity: 0;
-        animation: 1.45s infinite tf-boot-swoosh-bot;
-        animation-delay: var(--forge-loading-animation-offset, 0ms);
+        animation: 1.45s infinite app-boot-swoosh-bot;
+        animation-delay: var(--plan-creation-loading-animation-offset, 0ms);
       }
-      .forge-loading-mark__line {
+      .plan-creation-loading-mark__line {
         opacity: 0.32;
       }
-      .forge-loading-mark__glow {
+      .plan-creation-loading-mark__glow {
         opacity: 0.08;
       }
       @media (prefers-reduced-motion: reduce) {
-        .forge-loading-mark__hammer,
-        .forge-loading-mark__anvil,
-        .forge-loading-mark__spark-core,
-        .forge-loading-mark__spark,
-        .forge-loading-mark__swoosh-top,
-        .forge-loading-mark__swoosh-mid,
-        .forge-loading-mark__swoosh-bot {
+        .plan-creation-loading-mark__moving-shape,
+        .plan-creation-loading-mark__loadingMark,
+        .plan-creation-loading-mark__particle-core,
+        .plan-creation-loading-mark__particle,
+        .plan-creation-loading-mark__swoosh-top,
+        .plan-creation-loading-mark__swoosh-mid,
+        .plan-creation-loading-mark__swoosh-bot {
           animation: none;
         }
-        .forge-loading-mark__spark {
+        .plan-creation-loading-mark__particle {
           opacity: 0;
         }
       }
     </style>
     <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <!-- teamforge:seo:start -->
-    <link rel="canonical" href="__TEAMFORGE_APP_URL__/" />
-    <title>TeamForge | Find your people, intelligently.</title>
+    <!-- findafew:seo:start -->
+    <link rel="canonical" href="__APP_PUBLIC_URL__/" />
+    <title>Findafew | Small groups for things you want to do.</title>
     <meta
       name="description"
-      content="TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context."
+      content="Explore activity plans or start your own, then review the group and practical details before deciding whether to take part."
     />
     <meta name="robots" content="index, follow" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="TeamForge" />
-    <meta property="og:url" content="__TEAMFORGE_APP_URL__/" />
-    <meta property="og:title" content="TeamForge | Find your people, intelligently." />
+    <meta property="og:site_name" content="Findafew" />
+    <meta property="og:url" content="__APP_PUBLIC_URL__/" />
+    <meta property="og:title" content="Findafew | Small groups for things you want to do." />
     <meta
       property="og:description"
-      content="TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context."
+      content="Explore activity plans or start your own, then review the group and practical details before deciding whether to take part."
     />
-    <meta property="og:image" content="__TEAMFORGE_APP_URL__/group-covers/flat-social-map.png" />
+    <meta property="og:image" content="__APP_PUBLIC_URL__/group-covers/flat-social-map.png" />
     <meta
       property="og:image:alt"
-      content="Abstract TeamForge map of compatible groups forming around shared activities"
+      content="Abstract Findafew map of small groups around shared activities"
     />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1672" />
     <meta property="og:image:height" content="941" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="TeamForge | Find your people, intelligently." />
+    <meta name="twitter:title" content="Findafew | Small groups for things you want to do." />
     <meta
       name="twitter:description"
-      content="TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context."
+      content="Explore activity plans or start your own, then review the group and practical details before deciding whether to take part."
     />
-    <meta name="twitter:image" content="__TEAMFORGE_APP_URL__/group-covers/flat-social-map.png" />
-    <script type="application/ld+json" data-teamforge-json-ld="public-site">
-      {"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"__TEAMFORGE_APP_URL__/#organization","name":"TeamForge","url":"__TEAMFORGE_APP_URL__/","logo":"__TEAMFORGE_APP_URL__/icons/pwa-512x512.png","description":"TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context."},{"@type":"WebSite","@id":"__TEAMFORGE_APP_URL__/#website","url":"__TEAMFORGE_APP_URL__/","name":"TeamForge","description":"TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context.","publisher":{"@id":"__TEAMFORGE_APP_URL__/#organization"}}]}
+    <meta name="twitter:image" content="__APP_PUBLIC_URL__/group-covers/flat-social-map.png" />
+    <script type="application/ld+json" data-app-json-ld="public-site">
+      {"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"__APP_PUBLIC_URL__/#organization","name":"Findafew","url":"__APP_PUBLIC_URL__/","logo":"__APP_PUBLIC_URL__/icons/pwa-512x512.png","description":"Explore activity plans or start your own, then review the group and practical details before deciding whether to take part."},{"@type":"WebSite","@id":"__APP_PUBLIC_URL__/#website","url":"__APP_PUBLIC_URL__/","name":"Findafew","description":"Explore activity plans or start your own, then review the group and practical details before deciding whether to take part.","publisher":{"@id":"__APP_PUBLIC_URL__/#organization"}}]}
     </script>
-    <!-- teamforge:seo:end -->
+    <!-- findafew:seo:end -->
   </head>
   <body>
     <div id="root">
-      <a class="tf-boot__skip" href="#main-content">Skip to main content</a>
-      <main id="main-content" class="tf-boot" role="status" aria-live="polite" aria-label="Loading page">
-        <div class="forge-loading-mark" style="--forge-loading-animation-offset: 0ms">
+      <a class="app-boot__skip" href="#main-content">Skip to main content</a>
+      <main id="main-content" class="app-boot" role="status" aria-live="polite" aria-label="Loading page">
+        <div class="plan-creation-loading-mark" style="--plan-creation-loading-animation-offset: 0ms">
           <svg
-            class="forge-loading-mark__svg"
+            class="plan-creation-loading-mark__svg"
             viewBox="32 32 156 142"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
           >
             <path
-              class="forge-loading-mark__line"
+              class="plan-creation-loading-mark__line"
               d="M58 160C75.5 151 143.5 151 162 160"
-              stroke="var(--color-forge-teal)"
+              stroke="var(--color-brand-teal)"
               stroke-linecap="round"
               stroke-width="3"
             />
             <ellipse
-              class="forge-loading-mark__glow"
+              class="plan-creation-loading-mark__glow"
               cx="110"
               cy="156"
               rx="48"
               ry="8"
-              fill="var(--color-forge-teal)"
+              fill="var(--color-brand-teal)"
             />
-            <g class="forge-loading-mark__anvil">
+            <g class="plan-creation-loading-mark__loadingMark">
               <path
                 d="M63 111h101l-14 5 9 10-10 7c-2 3-6 5-10 5H82c-4 0-8-2-10-5l-13-16c-2-3 0-6 4-6Z"
-                fill="var(--color-forge-teal)"
+                fill="var(--color-brand-teal)"
                 stroke="currentColor"
                 stroke-linejoin="round"
                 stroke-width="3.5"
@@ -405,103 +405,103 @@
               <path d="M72 111h72M88 156h44" stroke="currentColor" stroke-linecap="round" stroke-width="3.5" />
             </g>
             <path
-              class="forge-loading-mark__spark-core"
+              class="plan-creation-loading-mark__particle-core"
               d="M99 107.75h22"
-              stroke="var(--color-spark-amber)"
+              stroke="var(--color-brand-amber)"
               stroke-linecap="round"
               stroke-width="3"
             />
             <circle
-              class="forge-loading-mark__spark"
+              class="plan-creation-loading-mark__particle"
               cx="110"
               cy="108"
               r="4"
-              fill="var(--color-spark-amber)"
-              style="--spark-x: -22px; --spark-y: -5px; --spark-delay: 0ms"
+              fill="var(--color-brand-amber)"
+              style="--particle-x: -22px; --particle-y: -5px; --particle-delay: 0ms"
             />
             <circle
-              class="forge-loading-mark__spark"
+              class="plan-creation-loading-mark__particle"
               cx="110"
               cy="108"
               r="3.5"
-              fill="var(--color-spark-amber)"
-              style="--spark-x: 18px; --spark-y: -8px; --spark-delay: 0ms"
+              fill="var(--color-brand-amber)"
+              style="--particle-x: 18px; --particle-y: -8px; --particle-delay: 0ms"
             />
             <circle
-              class="forge-loading-mark__spark"
+              class="plan-creation-loading-mark__particle"
               cx="110"
               cy="108"
               r="4.5"
-              fill="var(--color-spark-amber)"
-              style="--spark-x: -12px; --spark-y: 6px; --spark-delay: 0ms"
+              fill="var(--color-brand-amber)"
+              style="--particle-x: -12px; --particle-y: 6px; --particle-delay: 0ms"
             />
             <circle
-              class="forge-loading-mark__spark"
+              class="plan-creation-loading-mark__particle"
               cx="110"
               cy="108"
               r="3"
-              fill="var(--color-spark-amber)"
-              style="--spark-x: 26px; --spark-y: 2px; --spark-delay: 0ms"
+              fill="var(--color-brand-amber)"
+              style="--particle-x: 26px; --particle-y: 2px; --particle-delay: 0ms"
             />
             <circle
-              class="forge-loading-mark__spark"
+              class="plan-creation-loading-mark__particle"
               cx="110"
               cy="108"
               r="3"
-              fill="var(--color-spark-amber)"
-              style="--spark-x: -32px; --spark-y: 0px; --spark-delay: 0ms"
+              fill="var(--color-brand-amber)"
+              style="--particle-x: -32px; --particle-y: 0px; --particle-delay: 0ms"
             />
             <circle
-              class="forge-loading-mark__spark"
+              class="plan-creation-loading-mark__particle"
               cx="110"
               cy="108"
               r="4"
-              fill="var(--color-spark-amber)"
-              style="--spark-x: 12px; --spark-y: 10px; --spark-delay: 0ms"
+              fill="var(--color-brand-amber)"
+              style="--particle-x: 12px; --particle-y: 10px; --particle-delay: 0ms"
             />
             <circle
-              class="forge-loading-mark__spark"
+              class="plan-creation-loading-mark__particle"
               cx="110"
               cy="108"
               r="3"
-              fill="var(--color-spark-amber)"
-              style="--spark-x: 22px; --spark-y: 12px; --spark-delay: 0ms"
+              fill="var(--color-brand-amber)"
+              style="--particle-x: 22px; --particle-y: 12px; --particle-delay: 0ms"
             />
             <circle
-              class="forge-loading-mark__spark"
+              class="plan-creation-loading-mark__particle"
               cx="110"
               cy="108"
               r="4"
-              fill="var(--color-spark-amber)"
-              style="--spark-x: 32px; --spark-y: -6px; --spark-delay: 0ms"
+              fill="var(--color-brand-amber)"
+              style="--particle-x: 32px; --particle-y: -6px; --particle-delay: 0ms"
             />
-            <g class="forge-loading-mark__swoosh-group">
+            <g class="plan-creation-loading-mark__swoosh-group">
               <path
-                class="forge-loading-mark__swoosh-top"
+                class="plan-creation-loading-mark__swoosh-top"
                 d="M 152 40 A 55 55 0 0 0 102 67"
                 fill="none"
-                stroke="var(--color-forge-teal)"
+                stroke="var(--color-brand-teal)"
                 stroke-width="3.5"
                 stroke-linecap="round"
               />
               <path
-                class="forge-loading-mark__swoosh-mid"
+                class="plan-creation-loading-mark__swoosh-mid"
                 d="M 156 50 A 45 45 0 0 0 110 78"
                 fill="none"
-                stroke="var(--color-forge-teal)"
+                stroke="var(--color-brand-teal)"
                 stroke-width="2.5"
                 stroke-linecap="round"
               />
               <path
-                class="forge-loading-mark__swoosh-bot"
+                class="plan-creation-loading-mark__swoosh-bot"
                 d="M 160 60 A 35 35 0 0 0 118 90"
                 fill="none"
-                stroke="var(--color-forge-teal)"
+                stroke="var(--color-brand-teal)"
                 stroke-width="2"
                 stroke-linecap="round"
               />
             </g>
-            <g class="forge-loading-mark__hammer">
+            <g class="plan-creation-loading-mark__moving-shape">
               <g transform="translate(4 -9.5)">
                 <rect
                   x="112"
@@ -515,7 +515,7 @@
                 />
                 <path
                   d="M101 78h12c2.761 0 5 2.239 5 5v24c0 2.761-2.239 5-5 5h-12c-2.761 0-5-2.239-5-5V83c0-2.761 2.239-5 5-5Z"
-                  fill="var(--color-forge-teal)"
+                  fill="var(--color-brand-teal)"
                   stroke="currentColor"
                   stroke-width="3.5"
                 />

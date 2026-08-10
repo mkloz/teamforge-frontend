@@ -56,8 +56,8 @@ function ProfileAvatarButton({
       aria-label={`Expand ${name} avatar`}
       onClick={onOpen}
     >
-      <div className="absolute inset-0 rounded-full bg-spark-amber/20 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100 motion-reduce:transition-none" />
-      <div className="absolute -inset-1.5 rounded-full border-2 border-forge-teal/30 opacity-0 transition duration-700 group-hover:rotate-180 group-hover:scale-105 group-hover:opacity-100 motion-reduce:transition-none motion-reduce:group-hover:rotate-0 motion-reduce:group-hover:scale-100" />
+      <div className="absolute inset-0 rounded-full bg-brand-amber/20 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100 motion-reduce:transition-none" />
+      <div className="absolute -inset-1.5 rounded-full border-2 border-brand-teal/30 opacity-0 transition duration-700 group-hover:rotate-180 group-hover:scale-105 group-hover:opacity-100 motion-reduce:transition-none motion-reduce:group-hover:rotate-0 motion-reduce:group-hover:scale-100" />
       <div className="relative z-10 size-26 transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100 sm:size-34">
         <Avatar
           src={src}

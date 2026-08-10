@@ -26,7 +26,7 @@ export const COLOR_OPTIONS = [
     },
   },
   {
-    value: ThemeColor.FORGE,
+    value: ThemeColor.TEAL,
     label: "Quiet focus",
     description: "Low-stimulation surfaces for focused sessions.",
     tag: "Core",

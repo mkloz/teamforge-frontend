@@ -10,8 +10,8 @@ import {
   validateExploreRouteSearch,
 } from "@/shared/navigation";
 import { validateActivityRouteSearch } from "@/shared/navigation/activity-navigation";
-import { validateForgeRouteSearch } from "@/shared/navigation/forge-navigation";
 import { validateHomeRouteSearch } from "@/shared/navigation/home-navigation";
+import { validatePlanCreationRouteSearch } from "@/shared/navigation/plan-creation-navigation";
 import { validateSettingsRouteSearch } from "@/shared/navigation/settings-navigation";
 
 type CanonicalSearchValidator = (search: Record<string, unknown>) => object;
@@ -23,7 +23,7 @@ const STATIC_CANONICAL_SEARCH_VALIDATORS: Record<
 > = {
   "/activity": validateActivityRouteSearch,
   "/explore": validateExploreRouteSearch,
-  "/forge": validateForgeRouteSearch,
+  "/plans/new": validatePlanCreationRouteSearch,
   "/home": validateHomeRouteSearch,
   "/profile": () => ({}),
   "/settings": validateSettingsRouteSearch,

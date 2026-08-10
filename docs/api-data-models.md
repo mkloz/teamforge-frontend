@@ -1,4 +1,4 @@
-# TeamForge - API & Data Models Guide
+# Findafew - API & Data Models Guide
 
 **Version 2.0 | Backend Contract Documentation**
 
@@ -103,7 +103,7 @@ interface Activity {
     locationLng: number | null;
     visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'INVITE_ONLY';
     access: 'OPEN' | 'BY_REQUEST';
-    forgeMode: 'AUTO' | 'MANUAL';
+    groupFormationMode: 'AUTO' | 'MANUAL';
     status: 'OPEN' | 'MATCHING' | 'MATCHED' | 'CLOSED' | 'CANCELLED';
     createdAt: string;
     updatedAt: string;
@@ -528,13 +528,13 @@ interface ListInterestsResponse {
 
 ---
 
-### 2.4 Activities & Forge
+### 2.4 Activities & PlanCreation
 
 | Method   | Endpoint                | Description                   |
 | -------- | ----------------------- | ----------------------------- |
-| `POST`   | `/activities`           | Create activity (start Forge) |
+| `POST`   | `/activities`           | Create activity (start PlanCreation) |
 | `GET`    | `/activities/:id`       | Get activity details          |
-| `POST`   | `/activities/:id/forge` | Execute matching algorithm    |
+| `POST`   | `/activities/:id/group-formation` | Execute matching algorithm    |
 | `DELETE` | `/activities/:id`       | Cancel activity               |
 
 #### Create Activity
@@ -549,7 +549,7 @@ interface CreateActivityRequest {
     locationLng?: number;
     visibility: ActivityVisibility;
     access?: 'OPEN' | 'BY_REQUEST';
-    forgeMode: ForgeMode;
+    groupFormationMode: GroupFormationMode;
     interestIds: string[];
 }
 
@@ -558,11 +558,11 @@ interface CreateActivityResponse {
 }
 ```
 
-#### Execute Forge
+#### Execute PlanCreation
 
 ```typescript
-// POST /activities/:id/forge
-interface ForgeRequest {
+// POST /activities/:id/group-formation
+interface GroupFormationRequest {
     groupSize: number; // 2-8
     plan: {
         title: string;
@@ -579,7 +579,7 @@ interface ForgeRequest {
     };
 }
 
-interface ForgeResponse {
+interface PlanCreationResponse {
     success: boolean;
     group?: Group; // If success
     reason?: string; // If failed
@@ -1015,7 +1015,7 @@ interface CursorPaginatedResponse<T> {
 
 ### Connection
 
-TeamForge uses Socket.IO, not a raw WebSocket endpoint.
+Findafew uses Socket.IO, not a raw WebSocket endpoint.
 
 Local development:
 
@@ -1031,14 +1031,14 @@ const socket = io('http://localhost:6969/realtime', {
 ```
 
 Current production path when the frontend uses
-`VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1`:
+`VITE_API_URL=https://api.findafew.today/findafew/api/v1`:
 
 ```typescript
-io('https://arm-api.mkloz.com/realtime', {
+io('https://api.findafew.today/realtime', {
     auth: {
         token: accessToken,
     },
-    path: '/teamforge/socket.io',
+    path: '/findafew/socket.io',
 });
 ```
 

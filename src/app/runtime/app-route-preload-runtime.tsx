@@ -16,7 +16,7 @@ const CURRENT_ROUTE_SETTLE_DELAY_MS = 250;
 const AUTHENTICATED_APP_ROUTE_PREFIXES = [
   "/activity",
   "/explore",
-  "/forge",
+  "/plans/new",
   "/groups/",
   "/home",
   "/profile",

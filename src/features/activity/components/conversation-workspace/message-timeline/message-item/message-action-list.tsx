@@ -19,7 +19,7 @@ const MENU_SEPARATOR_CLASS = ACTIVITY_MENU_SEPARATOR_CLASS;
 const MENU_ACTION_CLASS = cn(ACTIVITY_MENU_ITEM_CLASS, "text-sm");
 
 const MENU_DANGER_CLASS =
-  "text-destructive focus:bg-destructive/8 focus:text-destructive data-[highlighted]:bg-destructive/8 data-[highlighted]:text-destructive";
+  "text-destructive focus:bg-destructive-soft focus:text-destructive data-[highlighted]:bg-destructive-soft data-[highlighted]:text-destructive";
 
 export function MessageActionSections({
   dangerActions,

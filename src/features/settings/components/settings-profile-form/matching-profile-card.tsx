@@ -51,7 +51,7 @@ export function MatchingProfileCard({
       <div>
         <h3 className="font-bold text-base text-ink">Your matching profile</h3>
         <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          These signals help TeamForge understand which groups may suit you.
+          These signals help Findafew understand which groups may suit you.
         </p>
       </div>
 
@@ -183,7 +183,7 @@ function InterestPill({ interest }: { interest: UserInterest }) {
       size="sm"
       tone="teal"
       surface="outline"
-      className="bg-primary/8 px-2.5 py-1 font-semibold"
+      className="bg-primary-soft px-2.5 py-1 font-semibold"
     >
       {interest.name}
     </StatusPill>

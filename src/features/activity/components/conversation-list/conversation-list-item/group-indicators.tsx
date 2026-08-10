@@ -179,7 +179,7 @@ function SavedMessagesIndicator({
   return (
     <StatusPill
       icon={Bookmark}
-      iconClassName={`${indicatorIconClassName} fill-forge-teal/15`}
+      iconClassName={`${indicatorIconClassName} fill-brand-teal/15`}
       iconStrokeWidth={2.2}
       tone="teal"
       size="signature"

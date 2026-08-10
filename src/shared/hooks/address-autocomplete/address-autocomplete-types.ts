@@ -16,7 +16,7 @@ export interface UsePredictionSelectionInput {
   closeSuggestions: () => void;
   externalInputValue: string;
   hasTypedInSessionRef: MutableValueRef<boolean>;
-  mapsReady: boolean;
+  endPlacesSession: () => void;
   onLocationSelect: (value: LocationValue) => void;
   resetSuggestions: () => void;
   setDraftInput: Dispatch<SetStateAction<AddressAutocompleteDraftInput | null>>;
@@ -26,11 +26,11 @@ export interface UsePredictionSelectionInput {
 }
 
 export interface UseCurrentAreaSelectionInput {
-  clearMessage: () => void;
+  currentLocation: LocationValue | null;
+  endPlacesSession: () => void;
   hasTypedInSessionRef: MutableValueRef<boolean>;
-  mapsReady: boolean;
+  invalidatePredictionResolution: () => void;
   onLocationSelect: (value: LocationValue) => void;
-  requestGoogleMaps: RequestGoogleMaps;
   resetSuggestions: () => void;
   setDraftInput: Dispatch<SetStateAction<AddressAutocompleteDraftInput | null>>;
   setHasCurrentAreaError: Dispatch<SetStateAction<boolean>>;

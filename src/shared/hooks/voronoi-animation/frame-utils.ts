@@ -66,16 +66,16 @@ export function drawCatalystCoreIfActive({
   ctx,
   coreAvg,
   parallaxOffset,
-  sparkEnabled,
-  sparkPhase,
+  particleEnabled,
+  particlePhase,
 }: {
   ctx: CanvasRenderingContext2D;
   coreAvg: MouseState;
   parallaxOffset: MouseState;
-  sparkEnabled: boolean;
-  sparkPhase: number;
+  particleEnabled: boolean;
+  particlePhase: number;
 }) {
-  if (!sparkEnabled || sparkPhase <= 0.01) {
+  if (!particleEnabled || particlePhase <= 0.01) {
     return;
   }
 
@@ -83,7 +83,7 @@ export function drawCatalystCoreIfActive({
     ctx,
     coreAvg.x + parallaxOffset.x,
     coreAvg.y + parallaxOffset.y,
-    sparkPhase,
-    sparkPhase * 0.9,
+    particlePhase,
+    particlePhase * 0.9,
   );
 }

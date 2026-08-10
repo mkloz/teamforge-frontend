@@ -26,8 +26,8 @@ const CONVERSATION_ROWS = [
 const DETAIL_ROWS = ["members", "area", "joining", "created"] as const;
 const skeletonMessageBackgroundClassName = [
   "pointer-events-none absolute inset-0 z-0 select-none overflow-hidden bg-canvas [contain:paint]",
-  "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-forge-teal)_3%,transparent)_0%,transparent_34%,transparent_68%,color-mix(in_srgb,var(--color-spark-amber)_3%,transparent)_100%)]",
-  "dark:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-forge-teal)_4%,transparent)_0%,transparent_36%,transparent_70%,color-mix(in_srgb,var(--color-spark-amber)_4%,transparent)_100%)]",
+  "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-brand-teal)_3%,transparent)_0%,transparent_34%,transparent_68%,color-mix(in_srgb,var(--color-brand-amber)_3%,transparent)_100%)]",
+  "dark:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-brand-teal)_4%,transparent)_0%,transparent_36%,transparent_70%,color-mix(in_srgb,var(--color-brand-amber)_4%,transparent)_100%)]",
 ].join(" ");
 
 export function ActivityPageSkeleton({
@@ -83,7 +83,7 @@ function ActivitySidebarSkeleton() {
               )}
             >
               {index === 0 ? (
-                <span className="absolute inset-y-0 left-0 w-1 bg-forge-teal" />
+                <span className="absolute inset-y-0 left-0 w-1 bg-brand-teal" />
               ) : null}
               <div className="flex w-full min-w-0 items-start gap-3">
                 <SkeletonAvatar
@@ -147,7 +147,7 @@ export function ActivityConversationStageSkeleton({
           </header>
 
           <div className="relative z-90 flex w-full shrink-0 items-center gap-2 border-border/50 border-b bg-canvas py-1.5 pr-2 pl-4">
-            <span className="absolute inset-y-0 left-0 w-0.5 rounded-r-full bg-spark-amber" />
+            <span className="absolute inset-y-0 left-0 w-0.5 rounded-r-full bg-brand-amber" />
             <Skeleton
               shape="square"
               className="size-3.5 shrink-0"

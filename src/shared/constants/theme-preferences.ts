@@ -2,7 +2,7 @@ export const themeAppearanceValues = ["system", "light", "dark"] as const;
 export const themeStyleValues = ["classic", "glass", "ink", "poster"] as const;
 export const themeColorValues = [
   "graphite",
-  "forge",
+  "teal",
   "harbor",
   "ember",
   "spruce",
@@ -33,7 +33,7 @@ export const ThemeStyle = {
 
 export const ThemeColor = {
   GRAPHITE: "graphite",
-  FORGE: "forge",
+  TEAL: "teal",
   HARBOR: "harbor",
   EMBER: "ember",
   SPRUCE: "spruce",
@@ -49,7 +49,7 @@ export const DEFAULT_THEME_APPEARANCE = ThemeAppearance.SYSTEM;
 export const DEFAULT_THEME_STYLE = ThemeStyle.CLASSIC;
 export const DEFAULT_THEME_COLOR = ThemeColor.GRAPHITE;
 
-export const THEME_PREFERENCE_STORAGE_KEY = "teamforge:appearance:v2";
+export const THEME_PREFERENCE_STORAGE_KEY = "findafew:appearance:v2";
 export const THEME_PREFERENCE_VERSION = 2;
 
 export interface ThemePreferenceSnapshot {
@@ -65,13 +65,13 @@ const LEGACY_THEME_COLOR_MIGRATION: Readonly<
   cobalt: ThemeColor.MONO,
   coral: ThemeColor.EMBER,
   paper: ThemeColor.GRAPHITE,
-  spruce: ThemeColor.FORGE,
+  spruce: ThemeColor.TEAL,
   ultraviolet: ThemeColor.MONO,
 };
 
 export const PURPOSE_THEME_COLORS = [
   ThemeColor.GRAPHITE,
-  ThemeColor.FORGE,
+  ThemeColor.TEAL,
   ThemeColor.EMBER,
   ThemeColor.MONO,
   ThemeColor.HARBOR,
@@ -103,7 +103,7 @@ export function normalizeThemeStyle(value: unknown): ThemeStyle {
 export function normalizeThemeColor(value: unknown): ThemeColor {
   switch (value) {
     case ThemeColor.GRAPHITE:
-    case ThemeColor.FORGE:
+    case ThemeColor.TEAL:
     case ThemeColor.EMBER:
     case ThemeColor.MONO:
     case ThemeColor.HARBOR:

@@ -16,7 +16,7 @@ export function getQueueItemClassName(
   return cn(
     QUEUE_ITEM_CLASS_NAME,
     isFocused
-      ? "bg-forge-teal/8 ring-1 ring-forge-teal/30 ring-inset"
+      ? "bg-primary-soft ring-1 ring-brand-teal/30 ring-inset"
       : hoverClassName,
   );
 }

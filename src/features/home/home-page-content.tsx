@@ -5,10 +5,10 @@ import { HomeJourneyPlans } from "@/features/home/components/home-journey-plans"
 interface HomePageContentProps {
   accountReadiness?: ReactNode;
   attentionQueue: ReactNode;
-  candidateAvailability?: ReactNode;
+  groupProposalAvailability?: ReactNode;
   friendsInvitation: ReactNode;
   groupsGrid: ReactNode;
-  forgeRequest?: ReactNode;
+  groupFormationRequest?: ReactNode;
   recommendedGroups: ReactNode;
   sentInvitationsReview?: ReactNode;
 }
@@ -16,10 +16,10 @@ interface HomePageContentProps {
 export function HomePageContent({
   accountReadiness,
   attentionQueue,
-  candidateAvailability,
+  groupProposalAvailability,
   friendsInvitation,
   groupsGrid,
-  forgeRequest,
+  groupFormationRequest,
   recommendedGroups,
   sentInvitationsReview,
 }: HomePageContentProps) {
@@ -27,8 +27,8 @@ export function HomePageContent({
     <HomeDayJourney
       accountReadiness={accountReadiness}
       attention={attentionQueue}
-      availability={candidateAvailability}
-      forgeRequest={forgeRequest}
+      availability={groupProposalAvailability}
+      groupFormationRequest={groupFormationRequest}
       groups={groupsGrid}
       invitationReview={sentInvitationsReview}
       inviteSomeone={friendsInvitation}

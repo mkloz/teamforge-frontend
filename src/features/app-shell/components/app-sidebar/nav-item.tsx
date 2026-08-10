@@ -37,7 +37,7 @@ function getNavLinkClassName(active: boolean) {
     "size-10 justify-center",
     "font-medium text-sm",
     active
-      ? "bg-secondary text-foreground"
+      ? "bg-primary-soft text-foreground"
       : "text-muted-foreground hover:bg-muted hover:text-foreground",
   );
 }

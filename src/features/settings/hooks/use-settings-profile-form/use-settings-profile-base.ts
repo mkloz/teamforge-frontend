@@ -19,6 +19,7 @@ import {
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
+import { getLocationContractErrorMessage } from "@/shared/lib/location-contract-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -78,10 +79,11 @@ export function useSettingsProfileBase() {
     },
     onError: (error) => {
       setSaveError(
-        getApiErrorMessage(
-          error,
-          "We couldn't save your changes. Please try again.",
-        ),
+        getLocationContractErrorMessage(error) ??
+          getApiErrorMessage(
+            error,
+            "We couldn't save your changes. Please try again.",
+          ),
       );
     },
   });

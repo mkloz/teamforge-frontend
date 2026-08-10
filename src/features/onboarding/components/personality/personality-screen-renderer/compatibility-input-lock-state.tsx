@@ -1,4 +1,4 @@
-import type { CompatibilityInputLockStatus } from "@/features/forge-proposals/public/proposal-review";
+import type { CompatibilityInputLockStatus } from "@/features/group-proposals/public/proposal-review";
 import { Button } from "@/shared/components/ui/button";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { PersonalityScreenShell } from "./personality-screen-layout";

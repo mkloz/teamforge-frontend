@@ -284,7 +284,7 @@ function UrgencyGroup({
                   className={cn(
                     "inline-flex items-center gap-2 font-bold text-sm",
                     group.tone === "teal" && "text-foreground",
-                    group.tone === "amber" && "text-spark-amber",
+                    group.tone === "amber" && "text-brand-amber",
                     group.tone === "muted" && "text-muted-foreground",
                   )}
                 >
@@ -412,7 +412,7 @@ function AttentionQueueCompactRow({
           "relative min-w-0",
           active && "bg-(--grouped-menu-selected)",
           selected &&
-            "before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-forge-teal",
+            "before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-brand-teal",
         )}
       >
         <div className="flex min-w-0 items-center gap-2.5 px-3 py-2.5 sm:px-4">
@@ -421,7 +421,7 @@ function AttentionQueueCompactRow({
               className={cn(
                 "relative inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-ring",
                 selected
-                  ? "border-forge-teal bg-forge-teal text-primary-foreground"
+                  ? "border-brand-teal bg-brand-teal text-primary-foreground"
                   : "border-border text-muted-foreground hover:border-foreground/45 hover:text-foreground",
               )}
             >
@@ -465,7 +465,7 @@ function AttentionQueueCompactRow({
                       className={cn(
                         "shrink-0 font-semibold",
                         model.urgency === "now"
-                          ? "text-spark-amber"
+                          ? "text-brand-amber"
                           : "text-muted-foreground",
                       )}
                     >
@@ -543,7 +543,7 @@ function getExpandedContext(item: VisibleAttentionQueueItem): {
 
   return {
     icon: ShieldCheck,
-    label: "Improves your matching profile",
+    label: "Adds detail for group proposals",
   };
 }
 

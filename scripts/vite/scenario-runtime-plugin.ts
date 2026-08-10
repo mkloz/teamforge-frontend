@@ -1,7 +1,7 @@
 import path from "node:path";
 import type { Plugin } from "vite";
 
-const SCENARIO_RUNTIME_MODULE_ID = "virtual:teamforge-scenario-runtime";
+const SCENARIO_RUNTIME_MODULE_ID = "virtual:scenario-runtime";
 const RESOLVED_NOOP_MODULE_ID = `\0${SCENARIO_RUNTIME_MODULE_ID}:noop`;
 
 const NOOP_RUNTIME_SOURCE = `
@@ -26,7 +26,7 @@ export function scenarioRuntimePlugin({
   includeRuntime,
 }: ScenarioRuntimePluginOptions): Plugin {
   return {
-    name: "teamforge-scenario-runtime",
+    name: "scenario-runtime",
     resolveId(source) {
       if (source !== SCENARIO_RUNTIME_MODULE_ID) {
         return null;

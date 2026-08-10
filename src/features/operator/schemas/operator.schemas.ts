@@ -195,7 +195,7 @@ const enforcementActionStateSchema = z.enum([
 ]);
 const containmentScopeSchema = z.enum([
   "ITEM_QUARANTINE",
-  "FORGE_PROPOSAL_HOLD",
+  "GROUP_PROPOSAL_HOLD",
   "NEW_STRANGER_CONTACT_PAUSE",
 ]);
 const containmentStateSchema = z.enum([

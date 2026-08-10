@@ -189,7 +189,7 @@ export function AdminModerationGovernance({
                     onClick={() => setSelectedId(version.id)}
                     className={`grid min-w-32 shrink-0 gap-0.5 rounded-xl px-3 py-2 text-left outline-none transition-colors focus-visible:ring-1 focus-visible:ring-foreground ${
                       selected
-                        ? "bg-primary/8 text-foreground"
+                        ? "bg-primary-soft text-foreground"
                         : "text-slate-muted hover:bg-muted/55 hover:text-ink"
                     }`}
                   >

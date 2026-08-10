@@ -98,7 +98,7 @@ function FriendsTabTrigger({
   return (
     <TabsTrigger
       aria-controls={controlsId}
-      className="min-h-11 gap-2 rounded-md px-3 py-2 font-semibold text-sm group-data-[variant=line]/tabs-list:data-[state=active]:after:bg-forge-teal [@media(pointer:fine)]:min-h-0"
+      className="min-h-11 gap-2 rounded-md px-3 py-2 font-semibold text-sm group-data-[variant=line]/tabs-list:data-[state=active]:after:bg-brand-teal [@media(pointer:fine)]:min-h-0"
       id={id}
       value={item.value}
     >

@@ -1,11 +1,12 @@
-export type TeamForgeGoogleMapsTypes = never;
+export type FindafewGoogleMapsTypes = never;
 
 declare global {
   interface Window {
     google?: Partial<GoogleMapsGlobal> & GoogleIdentityServicesGlobal;
-    __teamforgeGoogleMapsPromise?: Promise<void>;
-    __TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED?: boolean;
-    __TEAMFORGE_BOOT_STARTED_AT?: number;
+    __findafewGooglePlacesLibrary?: GooglePlacesLibrary;
+    __findafewGoogleMapsPromise?: Promise<void>;
+    __AUDIT_AUTH_BOOTSTRAPPED?: boolean;
+    __APP_BOOT_STARTED_AT?: number;
   }
 
   interface Navigator {
@@ -22,6 +23,7 @@ declare global {
           client_id: string;
           error_callback: (error: GoogleNonOAuthError) => void;
           scope: string;
+          ux_mode: "popup";
         }) => GoogleCodeClient;
       };
     };
@@ -44,18 +46,7 @@ declare global {
 
   interface GoogleMapsGlobal {
     maps: {
-      Geocoder: new () => GoogleGeocoder;
-      GeocoderStatus: {
-        OK: string;
-      };
-      LatLng: new (lat: number, lng: number) => GoogleLatLng;
-      places: {
-        AutocompleteService: new () => GoogleAutocompleteService;
-        PlacesService: new (container: HTMLDivElement) => GooglePlacesService;
-        PlacesServiceStatus: {
-          OK: string;
-        };
-      };
+      importLibrary: (name: "places") => Promise<GooglePlacesLibrary>;
     };
   }
 
@@ -64,62 +55,53 @@ declare global {
     lng(): number;
   }
 
-  interface GoogleAutocompletePrediction {
-    description: string;
-    place_id: string;
-    structured_formatting?: {
-      main_text: string;
-      secondary_text?: string;
-    };
+  interface GoogleFormattableText {
+    toString(): string;
   }
 
-  interface GoogleAutocompleteService {
-    getPlacePredictions(
-      request: {
-        input: string;
-        types?: string[];
-      },
-      callback: (
-        predictions: GoogleAutocompletePrediction[] | null,
-        status: string,
-      ) => void,
-    ): void;
+  interface GoogleAutocompleteSessionToken {}
+
+  interface GoogleAutocompleteSuggestion {
+    placePrediction?: GooglePlacePrediction;
+  }
+
+  interface GooglePlacePrediction {
+    mainText?: GoogleFormattableText;
+    placeId: string;
+    secondaryText?: GoogleFormattableText;
+    text: GoogleFormattableText;
+    toPlace(): GooglePlace;
   }
 
   interface GoogleAddressComponent {
-    long_name: string;
-    short_name: string;
+    longText: string;
+    shortText: string;
     types: string[];
   }
 
-  interface GooglePlaceResult {
-    name?: string;
-    formatted_address?: string;
-    geometry?: {
-      location?: GoogleLatLng;
+  interface GooglePlace {
+    addressComponents?: GoogleAddressComponent[];
+    displayName?: string;
+    fetchFields(options: { fields: GooglePlaceField[] }): Promise<void>;
+    formattedAddress?: string;
+    id?: string;
+    location?: GoogleLatLng | null;
+  }
+
+  type GooglePlaceField =
+    | "addressComponents"
+    | "displayName"
+    | "formattedAddress"
+    | "id"
+    | "location";
+
+  interface GooglePlacesLibrary {
+    AutocompleteSessionToken: new () => GoogleAutocompleteSessionToken;
+    AutocompleteSuggestion: {
+      fetchAutocompleteSuggestions(request: {
+        input: string;
+        sessionToken: GoogleAutocompleteSessionToken;
+      }): Promise<{ suggestions: GoogleAutocompleteSuggestion[] }>;
     };
-    address_components?: GoogleAddressComponent[];
-  }
-
-  interface GooglePlacesService {
-    getDetails(
-      request: {
-        placeId: string;
-        fields: string[];
-      },
-      callback: (place: GooglePlaceResult | null, status: string) => void,
-    ): void;
-  }
-
-  interface GoogleGeocoder {
-    geocode(
-      request: {
-        location: {
-          lat: number;
-          lng: number;
-        };
-      },
-      callback: (results: GooglePlaceResult[] | null, status: string) => void,
-    ): void;
   }
 }

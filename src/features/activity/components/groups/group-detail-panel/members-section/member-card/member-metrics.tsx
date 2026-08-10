@@ -42,7 +42,7 @@ function getMemberMetricItems(
       icon: Target,
       isHighlighted: viewState.isHighCompatibility,
       key: "fit",
-      label: "Match",
+      label: "Group fit",
       score: viewState.fitScore,
     }),
   ].filter((item): item is MemberMetricItem => item !== null);

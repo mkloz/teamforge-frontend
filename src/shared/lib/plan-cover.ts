@@ -76,25 +76,25 @@ const LEGACY_PLAN_COVER_PRESETS = [
   {
     id: "teal",
     kind: "gradient",
-    gradient: "from-forge-teal via-forge-teal/75 to-ink",
-    label: "Forge",
+    gradient: "from-brand-teal via-brand-teal/75 to-ink",
+    label: "Start a plan",
   },
   {
     id: "ember",
     kind: "gradient",
-    gradient: "from-spark-amber via-spark-amber/75 to-ink",
+    gradient: "from-brand-amber via-brand-amber/75 to-ink",
     label: "Ember",
   },
   {
     id: "forest",
     kind: "gradient",
-    gradient: "from-forge-teal/70 via-slate-muted/45 to-ink",
+    gradient: "from-brand-teal/70 via-slate-muted/45 to-ink",
     label: "Deep",
   },
   {
     id: "rose",
     kind: "gradient",
-    gradient: "from-spark-amber/70 via-forge-teal/55 to-ink",
+    gradient: "from-brand-amber/70 via-brand-teal/55 to-ink",
     label: "Signal",
   },
   {
@@ -106,7 +106,7 @@ const LEGACY_PLAN_COVER_PRESETS = [
   {
     id: "sky",
     kind: "gradient",
-    gradient: "from-canvas via-forge-teal/25 to-spark-amber/50",
+    gradient: "from-canvas via-brand-teal/25 to-brand-amber/50",
     label: "Canvas",
   },
 ] as const satisfies readonly PlanCoverPreset[];

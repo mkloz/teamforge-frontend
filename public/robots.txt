@@ -13,4 +13,4 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
-Sitemap: __TEAMFORGE_APP_URL__/sitemap.xml
+Sitemap: __APP_PUBLIC_URL__/sitemap.xml

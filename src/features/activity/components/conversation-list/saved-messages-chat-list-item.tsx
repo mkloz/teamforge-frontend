@@ -114,7 +114,7 @@ function getSavedMessagesRowClassName(isCompact: boolean, isSelected: boolean) {
 
 function getSavedMessagesSelectedIndicatorClassName(isSelected: boolean) {
   return cn(
-    "pointer-events-none absolute top-0 left-0 z-20 h-full w-1 bg-forge-teal opacity-0 transition-opacity duration-300",
+    "pointer-events-none absolute top-0 left-0 z-20 h-full w-1 bg-brand-teal opacity-0 transition-opacity duration-300",
     isSelected ? "opacity-100" : "group-hover/item:opacity-40",
   );
 }

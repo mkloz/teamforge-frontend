@@ -101,7 +101,7 @@ function PanelCompactProfileHeader({
         {onlineStatus ? (
           <AvatarStatus
             status={onlineStatus}
-            borderClassName="border-forge-teal"
+            borderClassName="border-brand-teal"
             sizeClassName="size-3"
           />
         ) : null}

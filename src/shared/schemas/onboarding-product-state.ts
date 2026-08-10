@@ -19,8 +19,8 @@ export const productCapabilityValues = [
   "SEND_DIRECT_INVITATION",
   "RECEIVE_DIRECT_INVITATION",
   "CREATE_GROUP",
-  "START_FORGE",
-  "START_INTRODUCTORY_FORGE",
+  "START_GROUP_FORMATION",
+  "START_INTRODUCTORY_GROUP_FORMATION",
   "RECEIVE_PROPOSAL",
   "START_DIRECT_CHAT",
   "START_GROUP_CHAT",
@@ -30,7 +30,7 @@ export const productCapabilityValues = [
 export const onboardingDestinationValues = [
   "HOME",
   "EXPLORE",
-  "FORGE",
+  "START_PLAN",
   "ONBOARDING_PROFILE",
   "ONBOARDING_INTENT",
   "ONBOARDING_INTERESTS",
@@ -82,12 +82,12 @@ export const onboardingIntentValues = [
 const onboardingFirstMissionValues = [
   "CREATE_INTRODUCTORY_PLAN",
   "EXPLORE_RECOMMENDATIONS",
-  "EXPLORE_WITH_FORGE_OPTION",
+  "EXPLORE_WITH_START_PLAN_OPTION",
 ] as const;
 
 export const onboardingCoachmarkCodeValues = [
   "EXPLORE",
-  "FORGE",
+  "START_PLAN",
   "ACTIVITY",
 ] as const;
 
@@ -138,8 +138,8 @@ export const onboardingProductStateSchema = z.object({
     compatibilityCurrent: z.boolean(),
     reviewableAssessmentResult: z.boolean(),
     activeFullAttempt: z.boolean(),
-    introductoryForgeAvailable: z.boolean().default(false),
-    introductoryForgeUsed: z.boolean().default(false),
+    introductoryGroupFormationAvailable: z.boolean().default(false),
+    introductoryGroupFormationUsed: z.boolean().default(false),
   }),
   stage: z.enum(onboardingStageValues),
   safeDefaultDestination: onboardingDestinationSchema,
@@ -156,9 +156,9 @@ export const onboardingProductStateSchema = z.object({
     })
     .default({
       intent: null,
-      firstMission: "EXPLORE_WITH_FORGE_OPTION",
+      firstMission: "EXPLORE_WITH_START_PLAN_OPTION",
       destination: "EXPLORE",
-      coachmarkOrder: ["EXPLORE", "FORGE", "ACTIVITY"],
+      coachmarkOrder: ["EXPLORE", "START_PLAN", "ACTIVITY"],
     }),
   capabilities: z.record(productCapabilitySchema, capabilityDecisionSchema),
 });

@@ -6,17 +6,17 @@ import process from "node:process";
 
 /**
  * @typedef {Record<string, string | undefined>} EnvMap
- * @typedef {"VITE_API_URL" | "VITE_APP_URL" | "VITE_GIPHY_API_KEY" | "VITE_GOOGLE_CLIENT_ID" | "VITE_GOOGLE_MAPS_API_KEY" | "VITE_MEDIA_BASE_URL"} RequiredEnvKey
+ * @typedef {"VITE_API_URL" | "VITE_APP_URL"} RequiredEnvKey
+ * @typedef {"VITE_GIPHY_API_KEY" | "VITE_GOOGLE_CLIENT_ID" | "VITE_GOOGLE_MAPS_API_KEY"} OptionalProviderEnvKey
  * @typedef {{ detail: string; name: string; passed: boolean }} EnvCheck
  * @typedef {{ envFile: string | null }} CliArgs
  * @typedef {{ url: URL; value: string | undefined }} ParsedEnvUrl
  */
 
 /** @type {readonly RequiredEnvKey[]} */
-const REQUIRED_ENV_KEYS = [
-  "VITE_APP_URL",
-  "VITE_API_URL",
-  "VITE_MEDIA_BASE_URL",
+const REQUIRED_ENV_KEYS = ["VITE_APP_URL", "VITE_API_URL"];
+/** @type {readonly OptionalProviderEnvKey[]} */
+const OPTIONAL_PROVIDER_ENV_KEYS = [
   "VITE_GOOGLE_CLIENT_ID",
   "VITE_GOOGLE_MAPS_API_KEY",
   "VITE_GIPHY_API_KEY",
@@ -26,8 +26,9 @@ const API_PREFIX_PATTERN = /\/api\/v\d+$/u;
 const LOCAL_HOSTS = new Set(["0.0.0.0", "127.0.0.1", "localhost"]);
 const PLACEHOLDER_PATTERN =
   /^(your-|replace-|changeme$|change-me$|example$|example-|todo$|test$)/iu;
-const PRODUCTION_API_URL = "https://arm-api.mkloz.com/teamforge/api/v1";
-const EXPECTED_PRODUCTION_SOCKET_PATH = "/teamforge/socket.io";
+const PRODUCTION_API_URL = "https://api.findafew.today/findafew/api/v1";
+const PRODUCTION_APP_URL = "https://findafew.today";
+const EXPECTED_PRODUCTION_SOCKET_PATH = "/findafew/socket.io";
 
 /** @type {EnvCheck[]} */
 const checks = [];
@@ -273,6 +274,50 @@ function validateRequiredEnv(env) {
 }
 
 /**
+ * Validates optional provider identities without requiring unprovisioned
+ * providers for a release. Missing values keep their feature fail-closed.
+ *
+ * @param {EnvMap} env Environment map.
+ */
+function validateOptionalProviderEnv(env) {
+  for (const key of OPTIONAL_PROVIDER_ENV_KEYS) {
+    const value = env[key];
+    const configured = Boolean(value?.trim());
+    const valid = !configured || !isMissingOrPlaceholder(value);
+
+    addCheck(
+      `${key} is provider-gated`,
+      valid,
+      !configured
+        ? `${key} is not configured; its optional feature remains disabled.`
+        : valid
+          ? `${key} is configured without exposing its value.`
+          : `${key} is configured with a placeholder-like value.`,
+    );
+  }
+
+  const staticMapsFlag = env.VITE_GOOGLE_STATIC_MAPS_ENABLED?.trim() ?? "";
+  const validStaticMapsFlag =
+    staticMapsFlag === "" ||
+    staticMapsFlag === "false" ||
+    staticMapsFlag === "true";
+  addCheck(
+    "VITE_GOOGLE_STATIC_MAPS_ENABLED is explicit",
+    validStaticMapsFlag,
+    validStaticMapsFlag
+      ? `Static Maps is ${staticMapsFlag === "true" ? "enabled" : "disabled"}.`
+      : "VITE_GOOGLE_STATIC_MAPS_ENABLED must be true, false, or unset.",
+  );
+  addCheck(
+    "Static Maps has separate provider proof",
+    staticMapsFlag !== "true" || Boolean(env.VITE_GOOGLE_MAPS_API_KEY?.trim()),
+    staticMapsFlag === "true"
+      ? "Static Maps has a configured Google Maps key."
+      : "Static Maps remains disabled.",
+  );
+}
+
+/**
  * Validates production app URL shape.
  *
  * @param {EnvMap} env Environment map.
@@ -285,6 +330,11 @@ function validateAppUrl(env) {
   }
 
   validateProductionUrlShape("VITE_APP_URL", parsed.url);
+  addCheck(
+    "VITE_APP_URL uses the canonical apex",
+    parsed.value === PRODUCTION_APP_URL,
+    `VITE_APP_URL resolves to ${parsed.url.origin}.`,
+  );
 }
 
 /**
@@ -302,6 +352,11 @@ function validateApiUrl(env) {
   const { url: apiUrl, value } = parsed;
 
   validateProductionUrlShape("VITE_API_URL", apiUrl);
+  addCheck(
+    "VITE_API_URL uses the canonical public contract",
+    value === PRODUCTION_API_URL,
+    `VITE_API_URL path is ${apiUrl.origin}${apiUrl.pathname}.`,
+  );
   addCheck(
     "VITE_API_URL includes API prefix",
     API_PREFIX_PATTERN.test(apiUrl.pathname.replace(/\/+$/u, "")),
@@ -337,6 +392,15 @@ function validateApiUrl(env) {
  * @param {EnvMap} env Environment map.
  */
 function validateMediaBaseUrl(env) {
+  if (!env.VITE_MEDIA_BASE_URL?.trim()) {
+    addCheck(
+      "VITE_MEDIA_BASE_URL is provider-gated",
+      true,
+      "No media host is configured; relative same-origin media URLs remain active.",
+    );
+    return;
+  }
+
   const parsed = parseUrlEnvValue(env, "VITE_MEDIA_BASE_URL");
 
   if (!parsed) {
@@ -416,6 +480,7 @@ async function main() {
   const env = await loadEnvironment(envFile);
 
   validateRequiredEnv(env);
+  validateOptionalProviderEnv(env);
   validateAppUrl(env);
   validateApiUrl(env);
   validateMediaBaseUrl(env);

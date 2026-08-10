@@ -42,8 +42,8 @@ interface AvatarStatusProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const avatarStatusColors: Record<OnlineStatus, string> = {
-  ONLINE: "bg-forge-teal",
-  AWAY: "bg-spark-amber",
+  ONLINE: "bg-brand-teal",
+  AWAY: "bg-brand-amber",
   OFFLINE: "bg-slate-muted/40",
 };
 
@@ -153,7 +153,7 @@ function AvatarFallback({
   return (
     <div
       className={cn(
-        "flex size-full items-center justify-center bg-forge-teal/10 font-black text-foreground text-xs leading-none",
+        "flex size-full items-center justify-center bg-primary-soft font-black text-foreground text-xs leading-none",
         className,
       )}
     >

@@ -11,7 +11,7 @@ export const CAPABILITIES = [
   {
     icon: Smartphone,
     title: "Home-screen launch",
-    body: "Open TeamForge in its own window without hunting through browser tabs.",
+    body: "Open Findafew in its own window without hunting through browser tabs.",
   },
   {
     icon: RefreshCw,
@@ -21,7 +21,7 @@ export const CAPABILITIES = [
   {
     icon: Wifi,
     title: "Reopen while reconnecting",
-    body: "TeamForge can reopen its basic screen while your connection comes back.",
+    body: "Findafew can reopen its basic screen while your connection comes back.",
   },
   {
     icon: Bell,

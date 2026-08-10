@@ -11,9 +11,9 @@ import {
 import { useState } from "react";
 
 import type {
-  CandidateAvailability,
-  CandidateAvailabilityState,
-} from "@/features/forge/public/candidate-availability";
+  GroupProposalAvailability,
+  GroupProposalAvailabilityState,
+} from "@/features/plan-creation/public/group-proposal-availability";
 import { AvailabilityScopeOption } from "@/features/settings/components/settings-profile-form/availability-scope-option";
 import type { ActivityInviteAvailabilityState } from "@/features/settings/hooks/use-activity-invite-availability";
 import type { ActivityInviteAvailability } from "@/features/settings/schemas/activity-invite-availability.schema";
@@ -30,7 +30,7 @@ import { buildSettingsNavigation } from "@/shared/navigation";
 
 interface GroupReachabilityControlProps {
   activityInvites: ActivityInviteAvailabilityState;
-  candidateProposals: CandidateAvailabilityState;
+  candidateProposals: GroupProposalAvailabilityState;
   hasSavedLocation: boolean;
 }
 
@@ -78,7 +78,7 @@ export function GroupReachabilityControl({
 
 interface GroupReachabilityEditorProps extends GroupReachabilityControlProps {
   invitations: ActivityInviteAvailability;
-  proposals: CandidateAvailability;
+  proposals: GroupProposalAvailability;
 }
 
 function GroupReachabilityEditor({
@@ -226,7 +226,7 @@ function GroupReachabilityEditor({
         <GroupedMenuList>
           <ReachabilityChannelOption
             checked={proposals.lifecycle === "OPEN"}
-            description="TeamForge suggests a group; you review it first."
+            description="Findafew suggests a group; you review it first."
             disabled={
               isOffline ||
               isBusy ||
@@ -269,13 +269,6 @@ function GroupReachabilityEditor({
         activityInvites={activityInvites}
         candidateProposals={candidateProposals}
       />
-
-      {proposals.legacyAvailabilityPrompt ? (
-        <Notice tone="neutral" size="sm">
-          Your previous automatic-group preference has been separated into these
-          clearer controls.
-        </Notice>
-      ) : null}
 
       <ReachabilityErrors
         activityInvites={activityInvites}
@@ -408,7 +401,7 @@ function ReachabilityFacts({
   candidateProposals,
 }: {
   activityInvites: ActivityInviteAvailabilityState;
-  candidateProposals: CandidateAvailabilityState;
+  candidateProposals: GroupProposalAvailabilityState;
 }) {
   const proposals = candidateProposals.availability;
   const invitations = activityInvites.availability;
@@ -450,7 +443,7 @@ function ReachabilityErrors({
   candidateProposals,
 }: {
   activityInvites: ActivityInviteAvailabilityState;
-  candidateProposals: CandidateAvailabilityState;
+  candidateProposals: GroupProposalAvailabilityState;
 }) {
   const errors = [candidateProposals.error, activityInvites.error].filter(
     (error): error is string => Boolean(error),
@@ -516,7 +509,7 @@ function getInitialReachabilityScope({
 }: {
   hasSavedLocation: boolean;
   invitations: NonNullable<ActivityInviteAvailabilityState["availability"]>;
-  proposals: NonNullable<CandidateAvailabilityState["availability"]>;
+  proposals: NonNullable<GroupProposalAvailabilityState["availability"]>;
 }): ReachabilityScope {
   const openChannels = [proposals, invitations].filter(
     (availability) => availability.lifecycle === "OPEN",
@@ -558,7 +551,7 @@ async function updateProposalChannel({
   checked,
   scope,
 }: {
-  candidateProposals: CandidateAvailabilityState;
+  candidateProposals: GroupProposalAvailabilityState;
   checked: boolean;
   scope: ReachabilityScope;
 }) {

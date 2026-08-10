@@ -58,7 +58,7 @@ export function AvatarDeleteAction({
       variant="ghost"
       size="icon-xs"
       disabled={actionState.deleteOrResetDisabled}
-      className="size-7 rounded-full border border-destructive/35 bg-card/95 text-destructive shadow-sm backdrop-blur-sm hover:bg-destructive/10"
+      className="size-7 rounded-full border border-destructive/35 bg-card/95 text-destructive shadow-sm backdrop-blur-sm hover:bg-destructive-soft"
       aria-label="Delete avatar"
       title="Delete avatar"
     >
@@ -70,7 +70,7 @@ export function AvatarDeleteAction({
     <ActionDialog
       cancelLabel="Keep avatar"
       confirmLabel={actionState.deleteDialogConfirmLabel}
-      description="This removes your saved profile photo from TeamForge."
+      description="This removes your saved profile photo from Findafew."
       disabled={actionState.deleteDialogDisabled}
       loading={isDeletingAvatar}
       onConfirm={onDeleteOrReset}

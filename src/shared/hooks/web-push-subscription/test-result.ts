@@ -15,7 +15,7 @@ const WEB_PUSH_TEST_FAILURE_DESCRIPTIONS: Partial<
   "push-service-error":
     "The push service rejected the test notification. Try again, then check backend logs if it repeats.",
   "subscription-expired":
-    "The browser subscription is no longer valid, so TeamForge disabled it. Turn push off and back on for this device.",
+    "The browser subscription is no longer valid, so Findafew disabled it. Turn push off and back on for this device.",
   "unknown-error":
     "The backend hit an unknown delivery error. Check backend logs for the safe request ID.",
   "vapid-auth-error":
@@ -44,7 +44,7 @@ function getWebPushTestFailureDescription(result: WebPushTestDispatch) {
   }
 
   if (result.disabledCount > 0) {
-    return "The browser subscription was no longer valid, so TeamForge disabled it.";
+    return "The browser subscription was no longer valid, so Findafew disabled it.";
   }
 
   return "Try turning push off and back on for this device.";

@@ -1,3 +1,4 @@
+import { getScenarioCatalogEntry } from "@/dev/scenarios/catalog/scenario-catalog";
 import type { ScenarioDescriptor } from "@/shared/runtime/scenario-runtime-contract";
 
 export const SCENARIO_QUERY_PARAMETER = "__scenario";
@@ -30,6 +31,10 @@ export function readScenarioDescriptor(
   }
 
   assertLoopbackHost(location.hostname);
+
+  if (!getScenarioCatalogEntry(id)) {
+    throw new Error(`Unknown Scenario Mode scenario: ${id}.`);
+  }
 
   return {
     id,

@@ -7,7 +7,6 @@ import {
   Dog,
   Dumbbell,
   Gamepad2,
-  Hammer,
   Headphones,
   Heart,
   Laptop,
@@ -25,6 +24,7 @@ import {
   TrendingUp,
   Trophy,
   Users,
+  Wrench,
 } from "lucide-react";
 import type { PersonalityType } from "@/shared/schemas/enums";
 
@@ -131,7 +131,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "trades",
         label: "Trades & Build",
-        icon: Hammer,
+        icon: Wrench,
         tags: [
           {
             id: "construction",
@@ -947,7 +947,7 @@ export const INTEREST_CATEGORIES: Category[] = [
           {
             id: "miniature_painting",
             label: "Miniature Painting",
-            aliases: ["warhammer", "minis"],
+            aliases: ["warmovingShape", "minis"],
           },
           {
             id: "escape_rooms",

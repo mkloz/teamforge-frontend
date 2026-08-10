@@ -1,4 +1,4 @@
-title = "TeamForge frontend gitleaks config"
+title = "Findafew frontend gitleaks config"
 
 [extend]
 useDefault = true

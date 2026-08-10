@@ -10,7 +10,7 @@ import {
 import { useFloatingPanelInteractions } from "@/shared/hooks/use-floating-panel-interactions";
 import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import { getAnchoredScrollablePanelPosition } from "@/shared/lib/floating-panel-position";
-
+import type { GooglePlaceSuggestion } from "@/shared/lib/maps/location.types";
 import { getEstimatedSuggestionsPanelHeight } from "./address-autocomplete-utils";
 
 interface UseAddressSuggestionsPanelOptions {
@@ -18,7 +18,7 @@ interface UseAddressSuggestionsPanelOptions {
   closeSuggestions: () => void;
   containerRef: RefObject<HTMLDivElement | null>;
   isSuggestionsOpen: boolean;
-  suggestions: GoogleAutocompletePrediction[];
+  suggestions: GooglePlaceSuggestion[];
 }
 
 export function useAddressSuggestionsPanel({
@@ -115,7 +115,7 @@ export function useAddressSuggestionsPanel({
       return undefined;
     }
 
-    optionRefs.current.get(suggestion.place_id)?.scrollIntoView({
+    optionRefs.current.get(suggestion.id)?.scrollIntoView({
       block: "nearest",
     });
 

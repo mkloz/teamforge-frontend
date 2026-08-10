@@ -50,7 +50,7 @@ export function HistoryCard({
       className={cn(
         "group main-action-grid grid items-start gap-x-2 py-3 transition-all duration-300",
         isExpanded &&
-          "rounded-xl bg-forge-teal/8 px-3 ring-1 ring-forge-teal/20",
+          "rounded-xl bg-primary-soft px-3 ring-1 ring-brand-teal/20",
       )}
     >
       <HistoryCardSummaryButton
@@ -151,9 +151,9 @@ function HistoryRatingPill({ rating }: { rating: PlanHistoryItem["rating"] }) {
   return (
     <StatusPill
       icon={Star}
-      iconClassName="size-3 fill-spark-amber"
+      iconClassName="size-3 fill-brand-amber"
       tone="none"
-      className="rounded-md border-0 bg-spark-amber/10 px-1.5 text-spark-amber text-xs"
+      className="rounded-md border-0 bg-accent-soft px-1.5 text-brand-amber text-xs"
     >
       {rating}
     </StatusPill>

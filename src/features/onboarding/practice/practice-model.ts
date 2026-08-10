@@ -86,7 +86,7 @@ export const ONBOARDING_PRACTICE_TASKS = Object.freeze([
     id: "ways-to-join",
     eyebrow: "Bring an idea",
     title: "Choose the route that fits",
-    prompt: "You have an idea and want TeamForge to assemble the group.",
+    prompt: "You have an idea and want Findafew to assemble the group.",
     choices: [
       {
         id: "invite",
@@ -99,13 +99,14 @@ export const ONBOARDING_PRACTICE_TASKS = Object.freeze([
         detail: "Request a place in something already planned.",
       },
       {
-        id: "forge",
-        label: "Forge",
-        detail: "Start with an activity and let TeamForge form the group.",
+        id: "planCreation",
+        label: "Start a plan",
+        detail: "Start with an activity and let Findafew form the group.",
       },
     ],
-    correctChoiceId: "forge",
-    success: "Forge turns your activity idea into a compatible group.",
+    correctChoiceId: "planCreation",
+    success:
+      "Start with the activity and practical details, then see who is interested.",
   }),
   immutableTask({
     id: "plan-changes",
@@ -125,7 +126,7 @@ export const ONBOARDING_PRACTICE_TASKS = Object.freeze([
       },
     ],
     correctChoiceId: "reconfirm",
-    success: "Correct. TeamForge asks again instead of assuming.",
+    success: "Correct. Findafew asks again instead of assuming.",
   }),
   immutableTask({
     id: "privacy-and-safety",

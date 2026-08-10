@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 interface ExplorePageContentProps {
   educationNudge?: ReactNode;
   feed: ReactNode;
-  forgeCta: ReactNode;
+  planCreationCta: ReactNode;
   quickFilters: ReactNode;
   searchHeader: ReactNode;
 }
@@ -11,7 +11,7 @@ interface ExplorePageContentProps {
 export function ExplorePageContent({
   educationNudge,
   feed,
-  forgeCta,
+  planCreationCta,
   quickFilters,
   searchHeader,
 }: ExplorePageContentProps) {
@@ -40,7 +40,7 @@ export function ExplorePageContent({
         <div className="min-h-96 min-w-0">{feed}</div>
 
         <div className="mt-10 border-border/65 border-t pt-6 md:mt-14 md:pt-8">
-          {forgeCta}
+          {planCreationCta}
         </div>
       </div>
     </main>

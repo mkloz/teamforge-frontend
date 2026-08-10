@@ -149,7 +149,7 @@ function DocumentDownloadButton({
             "size-8 rounded-lg transition",
             isOwn
               ? "bg-white/10 text-white hover:bg-white/20"
-              : "bg-primary/5 text-foreground hover:bg-primary/10",
+              : "bg-primary-soft text-foreground hover:brightness-110",
           )}
           aria-label={`Download ${attachment.name || "file"}`}
         >

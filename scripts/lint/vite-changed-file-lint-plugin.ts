@@ -212,6 +212,6 @@ export function changedFileLintPlugin(): Plugin {
     handleHotUpdate({ file }) {
       queueFile(file);
     },
-    name: "teamforge-changed-file-lint",
+    name: "findafew-changed-file-lint",
   };
 }

@@ -145,7 +145,7 @@ export function GroupPlanPeopleSectionSkeleton({
         {["one", "two", "three", "four"].map((item, index) => (
           <div
             key={item}
-            className={`flex min-w-0 items-center gap-3 px-2 py-2 ${index === 0 ? "bg-forge-teal/5" : ""}`}
+            className={`flex min-w-0 items-center gap-3 px-2 py-2 ${index === 0 ? "bg-primary-soft" : ""}`}
           >
             <SkeletonAvatar
               className="size-10"

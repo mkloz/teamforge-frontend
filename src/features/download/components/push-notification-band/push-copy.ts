@@ -16,7 +16,7 @@ const PUSH_COPY_RULES: readonly PushCopyRule[] = [
     shouldUse: (push) => !push.support.isSupported,
     copy: {
       title: "Alerts unavailable here",
-      body: "This browser can still install TeamForge, but it cannot receive push notifications.",
+      body: "This browser can still install Findafew, but it cannot receive push notifications.",
     },
   },
   {
@@ -37,14 +37,14 @@ const PUSH_COPY_RULES: readonly PushCopyRule[] = [
     shouldUse: (push) => push.isPublicKeyLoading,
     copy: {
       title: "Checking alert support",
-      body: "TeamForge is checking whether this browser can receive alerts.",
+      body: "Findafew is checking whether this browser can receive alerts.",
     },
   },
   {
     shouldUse: (push) => !push.isWebPushEnabled,
     copy: {
       title: "Alerts not enabled yet",
-      body: "You can install TeamForge now, but alerts are not available yet.",
+      body: "You can install Findafew now, but alerts are not available yet.",
     },
   },
   {
@@ -58,7 +58,7 @@ const PUSH_COPY_RULES: readonly PushCopyRule[] = [
     shouldUse: (push) => push.isSubscribed,
     copy: {
       title: "Alerts are on",
-      body: "This device will show TeamForge updates even when the app is closed.",
+      body: "This device will show Findafew updates even when the app is closed.",
     },
   },
 ] as const;
@@ -94,7 +94,7 @@ export function getPushDeniedHelp(): string {
   const browserNavigator = getBrowserNavigator();
 
   if (!browserNavigator) {
-    return "Open your browser's site settings and allow notifications for TeamForge.";
+    return "Open your browser's site settings and allow notifications for Findafew.";
   }
 
   return getBrowserPushDeniedHelp(browserNavigator.userAgent);

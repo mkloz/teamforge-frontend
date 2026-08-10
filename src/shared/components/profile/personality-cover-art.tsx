@@ -23,7 +23,7 @@ export function PersonalityCoverArt({
     <>
       <div
         className={cn(
-          "absolute inset-x-0 top-0 overflow-hidden bg-forge-teal",
+          "absolute inset-x-0 top-0 overflow-hidden bg-brand-teal",
           coverClassName,
         )}
         aria-hidden="true"

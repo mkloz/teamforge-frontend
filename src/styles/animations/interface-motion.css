@@ -67,13 +67,13 @@
   }
 }
 
-@keyframes forge-orb-rotate {
+@keyframes plan-creation-orb-rotate {
   to {
     transform: rotate(360deg);
   }
 }
 
-@keyframes forge-orb-breathe {
+@keyframes plan-creation-orb-breathe {
   0%,
   100% {
     opacity: 0.6;
@@ -97,7 +97,7 @@
   }
 }
 
-@keyframes forge-card-float-a {
+@keyframes plan-creation-card-float-a {
   from {
     transform: translateY(0) rotate(-2deg);
   }
@@ -106,7 +106,7 @@
   }
 }
 
-@keyframes forge-card-float-b {
+@keyframes plan-creation-card-float-b {
   from {
     transform: translateY(0) rotate(0deg);
   }
@@ -115,7 +115,7 @@
   }
 }
 
-@keyframes forge-card-float-c {
+@keyframes plan-creation-card-float-c {
   from {
     transform: translateY(0) rotate(2deg);
   }
@@ -165,12 +165,12 @@
     transform: translateY(0);
     box-shadow:
       0 8px 0 var(--color-button-secondary-border),
-      0 15px 25px color-mix(in srgb, var(--color-spark-amber) 35%, transparent);
+      0 15px 25px color-mix(in srgb, var(--color-brand-amber) 35%, transparent);
   }
   100% {
     transform: translateY(6px);
     box-shadow:
       0 2px 0 var(--color-button-secondary-border),
-      0 5px 10px color-mix(in srgb, var(--color-spark-amber) 20%, transparent);
+      0 5px 10px color-mix(in srgb, var(--color-brand-amber) 20%, transparent);
   }
 }

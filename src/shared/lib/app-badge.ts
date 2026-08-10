@@ -76,7 +76,7 @@ export async function clearAppBadge() {
 
   await runAppBadgeSync(
     () => badgeNavigator.clearAppBadge(),
-    "TeamForge app badge could not be cleared.",
+    "Findafew app badge could not be cleared.",
   );
 }
 
@@ -91,6 +91,6 @@ export async function syncUnreadAppBadge(unreadCount: number) {
 
   await runAppBadgeSync(
     () => applyUnreadAppBadge(badgeNavigator, badgeCount),
-    "TeamForge app badge could not be updated.",
+    "Findafew app badge could not be updated.",
   );
 }

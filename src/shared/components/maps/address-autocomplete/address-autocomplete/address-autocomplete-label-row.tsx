@@ -25,7 +25,7 @@ export function AddressAutocompleteLabelRow({
           type="button"
           aria-label={badgeAction.ariaLabel}
           title={badge}
-          className="inline-flex max-w-48 shrink-0 items-center truncate rounded-full border border-border/55 bg-primary/8 px-2 py-0.5 font-semibold text-foreground text-xs leading-none transition-[box-shadow,transform] hover:-translate-y-0.5 hover:shadow-soft-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-0 active:shadow-none motion-reduce:transform-none"
+          className="inline-flex max-w-48 shrink-0 items-center truncate rounded-full border border-border/55 bg-primary-soft px-2 py-0.5 font-semibold text-foreground text-xs leading-none transition-[box-shadow,transform] hover:-translate-y-0.5 hover:shadow-soft-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-0 active:shadow-none motion-reduce:transform-none"
           onClick={badgeAction.onClick}
         >
           {badge}

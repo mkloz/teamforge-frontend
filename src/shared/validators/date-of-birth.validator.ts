@@ -11,6 +11,23 @@ export const DateOfBirthValidator = z
     "Enter a valid date of birth.",
   );
 
+export const FINDAFEW_LAUNCH_MINIMUM_AGE = 18;
+export const FINDAFEW_LAUNCH_MAXIMUM_AGE = 28;
+
+export const FindafewLaunchDateOfBirthValidator = DateOfBirthValidator.refine(
+  (value) => {
+    const age = getAgeFromDateOfBirth(value);
+
+    return (
+      value.length === 0 ||
+      (age !== null &&
+        age >= FINDAFEW_LAUNCH_MINIMUM_AGE &&
+        age <= FINDAFEW_LAUNCH_MAXIMUM_AGE)
+    );
+  },
+  "Findafew is currently for adults aged 18 to 28.",
+);
+
 export function getTodayDateOnly(today = new Date()) {
   return [
     String(today.getUTCFullYear()).padStart(4, "0"),

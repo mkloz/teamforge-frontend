@@ -45,7 +45,7 @@ export function PersonalityRecovery({
       <p className="mt-3 text-pretty text-muted-foreground text-sm leading-relaxed sm:text-base">
         {requiresTakeover
           ? "This copied tab contains unfinished answers from the same signed-in session. Continuing here takes over this draft without merging changes."
-          : "These unfinished answers belong to your current signed-in session. They have not been sent to TeamForge."}
+          : "These unfinished answers belong to your current signed-in session. They have not been sent to Findafew."}
       </p>
 
       <div className="mt-8 rounded-2xl bg-card p-5">

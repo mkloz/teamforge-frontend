@@ -13,7 +13,7 @@ export const ACCOUNT_DATA_COPY = {
   },
   export: {
     empty:
-      "Create a private copy of the account data TeamForge holds about you.",
+      "Create a private copy of the account data Findafew holds about you.",
     requestError: "We couldn't start your data export. Please try again.",
     retryError: "We couldn't restart your data export. Please try again.",
     downloadError: "We couldn't download your data export. Please try again.",

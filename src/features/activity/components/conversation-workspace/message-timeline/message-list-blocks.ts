@@ -4,10 +4,6 @@ import type {
   MessageBlockSpacing,
 } from "@/features/activity/hooks/use-virtualized-message-blocks";
 
-function isCurrentUserSender(senderId: string) {
-  return senderId === "current-user" || senderId === "user-current";
-}
-
 function isSystemBlock(block: Pick<MessageBlockInput, "senderGroup">) {
   return block.senderGroup.items.every((message) => message.type === "SYSTEM");
 }
@@ -109,8 +105,7 @@ function buildBaseMessageBlock(
 ): Omit<MessageBlockInput, "spacingAfter"> {
   return {
     date: dateGroup.date,
-    isOwn:
-      senderGroup.items[0]?.isOwn ?? isCurrentUserSender(senderGroup.senderId),
+    isOwn: senderGroup.items[0]?.isOwn ?? false,
     key: `sender-group-${dateGroup.date}-${senderGroup.senderId}-${groupIdx}`,
     newMessagesSeparatorBeforeId: getNewMessagesSeparatorBeforeId(
       senderGroup,

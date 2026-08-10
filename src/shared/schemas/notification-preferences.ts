@@ -47,7 +47,6 @@ export const notificationPreferencesSchema = z.object({
   emailGroupActivity: z.boolean(),
   emailMessages: z.boolean(),
   emailAccount: z.boolean(),
-  autoMatchingEnabled: z.boolean(),
   minCompatibilityScore: z.number().int().min(0).max(100),
   themeAppearance: themeAppearanceSchema,
   themeStyle: themeStyleSchema,

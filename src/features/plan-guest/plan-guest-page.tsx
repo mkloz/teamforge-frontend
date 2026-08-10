@@ -196,7 +196,7 @@ export function PlanGuestPage() {
           ) : null}
 
           {invitation?.status === "PENDING_GUEST" ? (
-            <section className="mt-3 rounded-2xl bg-forge-teal/8 p-4">
+            <section className="mt-3 rounded-2xl bg-primary-soft p-4">
               <h2 className="flex items-center gap-2 font-bold text-ink text-sm">
                 <UsersRound className="size-4" aria-hidden />
                 Join the group?

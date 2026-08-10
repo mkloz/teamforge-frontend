@@ -22,13 +22,13 @@ export function HomeOfflineLaunchState({
           shape="square"
           size="2xl"
           tone="amber"
-          className="rounded-2xl border-spark-amber/35 bg-spark-amber/12"
+          className="rounded-2xl border-brand-amber/35 bg-accent-soft"
         >
           <WifiOff size={26} strokeWidth={1.8} aria-hidden="true" />
         </IconTile>
 
         <div className="min-w-0">
-          <p className="font-bold text-spark-amber text-xs">Offline launch</p>
+          <p className="font-bold text-brand-amber text-xs">Offline launch</p>
           <h1
             id="home-offline-heading"
             className="mt-2 font-black text-3xl text-ink leading-tight tracking-tight sm:text-4xl"
@@ -36,8 +36,8 @@ export function HomeOfflineLaunchState({
             Home needs the network to refresh.
           </h1>
           <p className="mt-3 max-w-xl font-medium text-base text-slate-muted leading-relaxed">
-            TeamForge opened, but your private plans, groups, and invitations
-            are not cached on this device. Reconnect and Home will pick up live
+            Findafew opened, but your private plans, groups, and invitations are
+            not cached on this device. Reconnect and Home will pick up live
             activity again.
           </p>
 

@@ -34,7 +34,7 @@ export function LengthOptionCard({
       className={cn(
         "relative h-auto w-full overflow-hidden rounded-xl border-2 bg-card p-4 text-left text-card-foreground shadow-none transition-all duration-300 focus-visible:ring-foreground sm:p-4.5",
         isSelected
-          ? "border-forge-teal/30 bg-forge-teal/8"
+          ? "border-brand-teal/30 bg-primary-soft"
           : viewModel.isRecommended
             ? "border-foreground/20 bg-card hover:border-foreground/40"
             : "border-border bg-card hover:border-foreground/30",
@@ -45,7 +45,7 @@ export function LengthOptionCard({
         {isSelected && (
           <m.div
             layoutId="length-selection-bg"
-            className="pointer-events-none absolute inset-0 bg-forge-teal/8"
+            className="pointer-events-none absolute inset-0 bg-primary-soft"
             initial={false}
             transition={{ type: "spring", stiffness: 400, damping: 35 }}
           />

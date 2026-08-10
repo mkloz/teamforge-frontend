@@ -26,7 +26,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
 export function SafetyReportDetailPage() {
   const { reportId } = useParams({
@@ -37,7 +37,7 @@ export function SafetyReportDetailPage() {
   const isOnline = useNetworkStatus();
 
   usePageMetadata(
-    createTeamForgePageMetadata({
+    createFindafewPageMetadata({
       title: "Report details",
       description: "Review the public status of a safety report you sent.",
     }),

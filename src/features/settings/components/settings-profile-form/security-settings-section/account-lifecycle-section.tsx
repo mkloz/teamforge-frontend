@@ -46,7 +46,7 @@ export function AccountLifecycleSection({
       <div className="px-1">
         <h2 className="font-bold text-ink text-xl">Account access</h2>
         <p className="mt-1 max-w-2xl text-slate-muted text-sm leading-relaxed">
-          Pause access to TeamForge or permanently remove your account.
+          Pause access to Findafew or permanently remove your account.
         </p>
       </div>
 
@@ -110,7 +110,7 @@ export function AccountLifecycleSection({
               <IconTile icon={LogOut} shape="circle" size="lg" tone="neutral" />
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-ink text-sm">
-                  Take a break from TeamForge
+                  Take a break from Findafew
                 </p>
                 <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
                   Sign out everywhere and stop new proposals until you return.
@@ -145,7 +145,7 @@ export function AccountLifecycleSection({
         ) : null}
 
         {lifecycle?.canDelete ? (
-          <GroupedMenuItem className="bg-destructive/5">
+          <GroupedMenuItem className="bg-destructive-soft">
             <div className="flex min-h-18 flex-wrap items-center gap-3 px-3 py-3 sm:flex-nowrap sm:px-5 sm:py-4">
               <IconTile
                 icon={Trash2}
@@ -182,7 +182,7 @@ export function AccountLifecycleSection({
                     setConfirmation("");
                   }
                 }}
-                title="Delete your TeamForge account?"
+                title="Delete your Findafew account?"
                 tone="danger"
                 trigger={
                   <Button

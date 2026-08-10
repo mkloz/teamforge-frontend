@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { redirectLocalIpToLocalhost } from "@/shared/lib/local-host-canonical-url";
@@ -29,7 +29,7 @@ function isAuditAuthEnabled() {
 }
 
 function getBootRenderDelay() {
-  const bootStartedAt = window.__TEAMFORGE_BOOT_STARTED_AT ?? performance.now();
+  const bootStartedAt = window.__APP_BOOT_STARTED_AT ?? performance.now();
   const bootElapsedMs = performance.now() - bootStartedAt;
   const minimumBootDurationMs = getMinimumBootDurationMs();
 

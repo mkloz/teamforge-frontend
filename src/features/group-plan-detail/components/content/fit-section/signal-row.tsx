@@ -29,7 +29,7 @@ export function SignalRow({ signal }: { signal: GroupPlanFitSignal }) {
         className={cn(
           "mt-0.5 size-4 shrink-0",
           signal.strength === "HIGH" && "text-foreground",
-          signal.strength === "MEDIUM" && "text-spark-amber",
+          signal.strength === "MEDIUM" && "text-brand-amber",
           signal.strength === "LOW" && "text-muted-foreground",
         )}
         aria-hidden="true"

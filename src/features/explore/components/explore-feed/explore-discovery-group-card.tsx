@@ -9,7 +9,7 @@ import {
   Palette,
   Plane,
   Shapes,
-  Sparkles,
+  Star,
   Ticket,
   Trees,
   UsersRound,
@@ -60,7 +60,7 @@ const CATEGORY_PRESENTATION: Record<
   MUSIC: { icon: Headphones, label: "Music" },
   OTHER: { icon: Shapes, label: "Other" },
   OUTDOORS: { icon: Trees, label: "Outdoors" },
-  SOCIAL: { icon: Sparkles, label: "Social" },
+  SOCIAL: { icon: Star, label: "Social" },
   SPORTS: { icon: Volleyball, label: "Sports" },
   TECH: { icon: Laptop, label: "Tech" },
   TRAVEL: { icon: Plane, label: "Travel" },
@@ -213,7 +213,7 @@ function ExploreImageFallback({
   icon: ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="grid size-full place-items-center bg-primary/8 text-foreground/55">
+    <div className="grid size-full place-items-center bg-primary-soft text-foreground/55">
       <Icon className="size-16" aria-hidden="true" />
     </div>
   );

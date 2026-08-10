@@ -167,7 +167,7 @@ function SendErrorNotice({
           variant="ghost"
           size="icon-xs"
           aria-label="Dismiss send error"
-          className="size-7 shrink-0 rounded-full text-slate-muted focus-visible:ring-destructive/25 hover:enabled:bg-destructive/8 hover:enabled:text-destructive"
+          className="size-7 shrink-0 rounded-full text-slate-muted focus-visible:ring-destructive/25 hover:enabled:bg-destructive-soft hover:enabled:text-destructive"
           onClick={onClearError}
         >
           <X className="size-3.5" />

@@ -57,7 +57,7 @@ function getNavbarHeaderClassName({
 }) {
   return cn(
     "dark fixed top-0 right-0 left-0 z-50 transition-all duration-150",
-    staticPublicTheme && "public-forge-theme",
+    staticPublicTheme && "public-plan-creation-theme",
     isSolid
       ? "border-white/5 border-b bg-hero-bg/95 backdrop-blur-md"
       : "bg-transparent",
@@ -73,7 +73,7 @@ function getMobileNavigationClassName({
 }) {
   return cn(
     "dark fixed inset-0 z-40 m-0 size-auto max-h-none max-w-none overflow-y-auto border-0 bg-hero-bg/55 p-0 pt-16 backdrop-blur-sm transition-opacity duration-150 lg:hidden",
-    staticPublicTheme && "public-forge-theme",
+    staticPublicTheme && "public-plan-creation-theme",
     menuOpen
       ? "pointer-events-auto opacity-100"
       : "pointer-events-none opacity-0",

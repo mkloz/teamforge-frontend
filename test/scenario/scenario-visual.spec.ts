@@ -15,6 +15,7 @@ const outputRoot =
   path.join(process.cwd(), "temp", "scenario-screenshots", profile);
 const heldRequestScenarioIds = new Set([
   "activity-loading",
+  "auth-activation-loading",
   "explore-loading",
   "explore-pagination-loading",
   "group-loading",
@@ -165,7 +166,7 @@ async function waitForSettledNetworkScenario(
   if (scenarioId.startsWith("network-")) {
     await expect(
       page.getByRole("heading", {
-        name: "Something went wrong in TeamForge",
+        name: "Something went wrong in Findafew",
       }),
     ).toBeVisible({ timeout: 50_000 });
   }
@@ -334,7 +335,7 @@ async function runScenarioRecipe(
       await expect(recommendationsError).toBeVisible();
       await page.evaluate(() => {
         window.dispatchEvent(
-          new CustomEvent("teamforge:scenario-release-faults", {
+          new CustomEvent("findafew:scenario-release-faults", {
             detail: { method: "GET", pathname: "explore/feed" },
           }),
         );

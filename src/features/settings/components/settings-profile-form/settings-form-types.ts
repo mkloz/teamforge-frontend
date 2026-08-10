@@ -1,5 +1,5 @@
 import type { UseFormReturn } from "react-hook-form";
-import type { CandidateAvailabilityState } from "@/features/forge/public/candidate-availability";
+import type { GroupProposalAvailabilityState } from "@/features/plan-creation/public/group-proposal-availability";
 import type { useAccountExport } from "@/features/settings/hooks/use-account-export";
 import type { useAccountLifecycle } from "@/features/settings/hooks/use-account-lifecycle";
 import type { ActivityInviteAvailabilityState } from "@/features/settings/hooks/use-activity-invite-availability";
@@ -58,7 +58,7 @@ interface NotificationPreferenceState {
 
 export interface MatchingSettingsState extends NotificationPreferenceState {
   activityInviteAvailability: ActivityInviteAvailabilityState;
-  candidateAvailability: CandidateAvailabilityState;
+  groupProposalAvailability: GroupProposalAvailabilityState;
   currentUser: User | undefined;
   onChange: (
     values: Pick<NotificationPreferences, "minCompatibilityScore">,

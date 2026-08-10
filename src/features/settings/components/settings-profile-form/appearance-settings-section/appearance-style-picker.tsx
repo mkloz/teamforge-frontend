@@ -42,7 +42,7 @@ export function AppearanceStylePicker({
               className={cn(
                 "group relative min-w-0 rounded-[13px] bg-background/55 p-2 text-left shadow-soft-sm transition-[background-color,box-shadow] duration-150 motion-reduce:transition-none sm:p-3",
                 isSelected
-                  ? "bg-primary/10 shadow-soft-md"
+                  ? "bg-primary-soft shadow-soft-md"
                   : "hover:shadow-soft-md",
                 disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
               )}
@@ -104,7 +104,7 @@ function StyleSpecimen({
       className={cn(
         "relative block h-18 overflow-hidden bg-canvas p-2.5",
         getSpecimenFrameClassName(style),
-        selected && "bg-primary/6",
+        selected && "bg-primary-soft",
       )}
     >
       {style === ThemeStyle.CLASSIC ? <ClassicSpecimen /> : null}
@@ -170,7 +170,7 @@ function PosterSpecimen() {
         <span className="mt-2 block h-1.5 w-full bg-muted" />
         <span className="mt-1 block h-1.5 w-2/3 bg-muted/75" />
       </span>
-      <span className="rounded-[3px] border-2 border-primary/70 bg-primary/10 p-2">
+      <span className="rounded-[3px] border-2 border-primary/70 bg-primary-soft p-2">
         <span className="block h-full bg-primary/22" />
       </span>
     </span>

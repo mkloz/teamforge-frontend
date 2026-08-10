@@ -165,7 +165,7 @@ function GroupLinkQrDialog({
     <QrShareDialog
       url={url}
       title="Group link"
-      description="Scan to open this group in TeamForge. Only members can access it."
+      description="Scan to open this group in Findafew. Only members can access it."
       avatarSrc={avatarSrc}
       bottomText={bottomText}
       trigger={trigger}

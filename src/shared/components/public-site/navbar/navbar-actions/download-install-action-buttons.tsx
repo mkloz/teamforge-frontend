@@ -37,7 +37,7 @@ export function DownloadInstallActionButtons({
         size={size}
         staticPublicTheme={staticPublicTheme}
       />
-      <InstallTeamForgeButton
+      <InstallFindafewButton
         installAction={installAction}
         menuOpen={menuOpen}
         onInstallClick={handleInstallClick}
@@ -90,7 +90,7 @@ function DownloadSecondaryActionButton({
   );
 }
 
-function InstallTeamForgeButton({
+function InstallFindafewButton({
   installAction,
   menuOpen,
   onInstallClick,
@@ -116,7 +116,7 @@ function InstallTeamForgeButton({
       }}
     >
       <Download size={size === "lg" ? 16 : 14} strokeWidth={2} />
-      Install TeamForge
+      Install Findafew
     </Button>
   );
 }

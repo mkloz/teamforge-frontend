@@ -82,7 +82,7 @@ export function getInvitationQueueItemRenderState({
     inviteMeta: getInviteMeta(invite),
     rowClassName: getQueueItemClassName(
       state.isFocused,
-      "hover:bg-forge-teal/5",
+      "hover:bg-primary-soft",
     ),
   };
 }

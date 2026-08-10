@@ -11,8 +11,8 @@ import {
   buildActivityNavigation,
   buildAdminNavigation,
   buildExploreNavigation,
-  buildForgeNavigation,
   buildHomeNavigation,
+  buildPlanCreationNavigation,
   buildProfileNavigation,
   buildSettingsNavigation,
 } from "@/shared/navigation";
@@ -62,11 +62,11 @@ export const APP_NAVIGATION: Record<
     icon: Settings,
     navigation: buildSettingsNavigation(),
   },
-  forge: {
-    id: "forge",
-    label: "Forge",
+  planCreation: {
+    id: "planCreation",
+    label: "Start",
     icon: Flame,
-    navigation: buildForgeNavigation(),
+    navigation: buildPlanCreationNavigation(),
   },
 };
 
@@ -80,7 +80,7 @@ export const appSidebarNavigation = [
 export const appBottomNavigation = [
   APP_NAVIGATION.home,
   APP_NAVIGATION.explore,
-  APP_NAVIGATION.forge,
+  APP_NAVIGATION.planCreation,
   APP_NAVIGATION.activity,
   APP_NAVIGATION.profile,
 ] as const satisfies readonly AppNavigationItem[];

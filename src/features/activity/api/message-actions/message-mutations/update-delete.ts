@@ -1,6 +1,6 @@
 import { ActivityApi } from "@/features/activity/api/activity.api";
 import {
-  forgetRetryableMessage,
+  dropRetryableMessage,
   hasRetryableMessage,
 } from "@/features/activity/api/activity-outgoing-message";
 import { applyMessageCacheUpdate } from "@/features/activity/api/message-actions/message-cache-commit";
@@ -74,7 +74,7 @@ export async function deleteMessageInChat({
 }: DeleteMessageInChatInput) {
   if (hasRetryableMessage(messageId)) {
     releaseCachedRetryableMessageResources(chatId, messageId);
-    forgetRetryableMessage(messageId);
+    dropRetryableMessage(messageId);
     removeDeletedMessageFromLocalCaches(context, chatId, messageId);
     return messageId;
   }
@@ -92,7 +92,7 @@ export async function deleteMessageInChat({
       throw error;
     },
   );
-  forgetRetryableMessage(messageId);
+  dropRetryableMessage(messageId);
   await invalidateSavedMessagesCache();
   return messageId;
 }

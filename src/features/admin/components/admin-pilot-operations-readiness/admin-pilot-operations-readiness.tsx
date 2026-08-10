@@ -264,7 +264,7 @@ function ReadinessLoadError({ onRetry }: { onRetry: () => void }) {
         Operational readiness is unavailable
       </h2>
       <p className="mt-1 max-w-xl text-slate-muted text-sm leading-relaxed">
-        TeamForge could not load the server's readiness checks. No readiness
+        Findafew could not load the server's readiness checks. No readiness
         state is shown until the server can be checked.
       </p>
       <Button

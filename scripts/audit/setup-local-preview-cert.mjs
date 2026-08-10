@@ -47,14 +47,14 @@ import { cwd, loadAuditEnvFiles, writeError, writeOutput } from "./helpers.mjs";
 /** @type {SetupLocalPreviewCertOptions} */
 const defaultOptions = {
   certPath:
-    process.env.AUDIT_PREVIEW_CERT_PATH ?? "temp/certs/teamforge-audit.crt",
+    process.env.AUDIT_PREVIEW_CERT_PATH ?? "temp/certs/findafew-audit.crt",
   days: 825,
   dnsName: "localhost",
   envFile: ".env.audit.local",
   force: false,
   host: "127.0.0.1",
   keyPath:
-    process.env.AUDIT_PREVIEW_KEY_PATH ?? "temp/certs/teamforge-audit.key",
+    process.env.AUDIT_PREVIEW_KEY_PATH ?? "temp/certs/findafew-audit.key",
   trust: true,
 };
 const certificateSetupResultSchema = z.object({

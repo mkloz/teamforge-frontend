@@ -16,7 +16,7 @@ export const ActivityActions = {
   releaseOptimisticMessageResources:
     ActivityMessageActions.releaseOptimisticMessageResources,
 
-  forgetRetryableMessage: ActivityMessageActions.forgetRetryableMessage,
+  dropRetryableMessage: ActivityMessageActions.dropRetryableMessage,
 
   sendMessage(
     context: ActivityActionContext,

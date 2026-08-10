@@ -1,15 +1,15 @@
 import { create } from "zustand";
 
 interface UiState {
-  forgeOpen: boolean;
+  planCreationOpen: boolean;
   bottomNavHidden: boolean;
-  setForgeOpen: (open: boolean) => void;
+  setPlanCreationOpen: (open: boolean) => void;
   setBottomNavHidden: (hidden: boolean) => void;
 }
 
 export const useUiStore = create<UiState>((set) => ({
-  forgeOpen: false,
+  planCreationOpen: false,
   bottomNavHidden: false,
-  setForgeOpen: (open) => set({ forgeOpen: open }),
+  setPlanCreationOpen: (open) => set({ planCreationOpen: open }),
   setBottomNavHidden: (hidden) => set({ bottomNavHidden: hidden }),
 }));

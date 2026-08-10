@@ -13,10 +13,14 @@ import type {
   VoronoiFormationTarget,
 } from "./voronoi-contract";
 import { createVoronoiGlyphLayout } from "./voronoi-glyphs";
+import {
+  drawVoronoiSymbolMask,
+  getVoronoiSymbolAccentWeight,
+} from "./voronoi-symbols";
 
 const DEFAULT_FORMATION = {
-  kind: "symbol",
-  value: "group",
+  kind: "text",
+  value: "HELLO",
 } as const satisfies VoronoiFormationTarget;
 
 const MASK_ALPHA_THRESHOLD = 96;
@@ -49,12 +53,14 @@ export function getVoronoiFormationKey(target: VoronoiFormationTarget) {
     return baseKey;
   }
 
-  const accentIndices = [...(target.accentCharacterIndices ?? [])]
-    .sort((left, right) => left - right)
-    .join(",");
-  const accentStrength = clampUnit(target.accentStrength ?? 0);
+  const accentIndices =
+    target.accentCharacterIndices === undefined
+      ? "word-centres"
+      : [...target.accentCharacterIndices]
+          .sort((left, right) => left - right)
+          .join(",");
 
-  return `${baseKey}:accent-${accentIndices}@${accentStrength.toFixed(3)}`;
+  return `${baseKey}:accent-${accentIndices}`;
 }
 
 export function getVoronoiFormationLayoutKey(
@@ -83,7 +89,6 @@ export function createVoronoiFormationLayout({
           rotationDegrees,
           value: target.value,
           accentCharacterIndices: target.accentCharacterIndices,
-          accentStrength: target.accentStrength,
         })
       : createSymbolFormation({
           count: NUM_FORMATION,
@@ -110,26 +115,25 @@ export function createVoronoiFormationLayout({
     },
     key: getVoronoiFormationLayoutKey(target, rotationDegrees),
     positions,
-    sparkEnabled: target.kind === "symbol" && target.value === "group",
+    particleEnabled: target.kind === "symbol",
   };
 }
 
 function createTextFormation({
   accentCharacterIndices,
-  accentStrength,
   count,
   dimensions,
   rotationDegrees,
   value,
 }: {
   accentCharacterIndices?: readonly number[];
-  accentStrength?: number;
   count: number;
   dimensions: Dimensions;
   rotationDegrees: number;
   value: string;
 }) {
-  const glyphLayout = createVoronoiGlyphLayout(normalizeFormationText(value));
+  const normalizedValue = normalizeFormationText(value);
+  const glyphLayout = createVoronoiGlyphLayout(normalizedValue);
   const moduleSize = Math.max(
     2,
     Math.min(
@@ -141,13 +145,13 @@ function createTextFormation({
   const layoutHeight = glyphLayout.rows * moduleSize;
   const originX = (dimensions.width - layoutWidth) / 2;
   const originY = (dimensions.height - layoutHeight) / 2;
-  const accentedCharacters = new Set(accentCharacterIndices ?? []);
-  const resolvedAccentStrength = clampUnit(accentStrength ?? 0);
+  const accentedCharacters = new Set(
+    accentCharacterIndices ??
+      getVoronoiWordCenterCharacterIndices(normalizedValue),
+  );
   const moduleCenters = glyphLayout.cells.map(
     ({ characterIndex, column, row }) => ({
-      accentWeight: accentedCharacters.has(characterIndex)
-        ? resolvedAccentStrength
-        : 0,
+      accentWeight: accentedCharacters.has(characterIndex) ? 1 : 0,
       x: originX + (column + 0.5) * moduleSize,
       y: originY + (row + 0.5) * moduleSize,
     }),
@@ -178,7 +182,7 @@ function distributeGlyphSamples(
   }
 
   if (moduleCenters.length >= count) {
-    return selectEvenlySpacedSamples(moduleCenters, count, dimensions);
+    return selectGlyphSamples(moduleCenters, count, dimensions);
   }
 
   const samples = [...moduleCenters];
@@ -202,6 +206,31 @@ function distributeGlyphSamples(
   return samples;
 }
 
+function selectGlyphSamples(
+  moduleCenters: MaskSample[],
+  count: number,
+  dimensions: Dimensions,
+) {
+  const accentSamples = moduleCenters.filter(
+    (sample) => (sample.accentWeight ?? 0) > 0,
+  );
+  const selectedAccents =
+    accentSamples.length <= count
+      ? accentSamples
+      : selectEvenlySpacedSamples(accentSamples, count, dimensions);
+  const remainingCount = count - selectedAccents.length;
+
+  if (remainingCount <= 0) return selectedAccents;
+
+  const neutralSamples = moduleCenters.filter(
+    (sample) => (sample.accentWeight ?? 0) === 0,
+  );
+  return [
+    ...selectedAccents,
+    ...selectEvenlySpacedSamples(neutralSamples, remainingCount, dimensions),
+  ];
+}
+
 function createSymbolFormation({
   count,
   dimensions,
@@ -220,7 +249,7 @@ function createSymbolFormation({
     drawFormationMask({ context, dimensions, rotationDegrees, symbol });
   }
 
-  const samples = context
+  const maskSamples = context
     ? sampleMaskAlpha({
         alpha: context.getImageData(0, 0, dimensions.width, dimensions.height)
           .data,
@@ -229,6 +258,15 @@ function createSymbolFormation({
         width: dimensions.width,
       })
     : createFallbackSamples(dimensions, count);
+  const samples = maskSamples.map((sample) => ({
+    accentWeight: getVoronoiSymbolAccentWeight(
+      symbol,
+      restoreCanvasTransform(sample, dimensions, rotationDegrees),
+      dimensions,
+    ),
+    x: sample.x,
+    y: sample.y,
+  }));
 
   return {
     cellRadius: estimateCellRadius(samples, dimensions),
@@ -272,6 +310,26 @@ function compensateForCanvasTransform(
 
   return {
     accentWeight: sample.accentWeight,
+    x: centerX + x * Math.cos(radians) - y * Math.sin(radians),
+    y: centerY + x * Math.sin(radians) + y * Math.cos(radians),
+  };
+}
+
+function restoreCanvasTransform(
+  sample: MaskSample,
+  dimensions: Dimensions,
+  rotationDegrees: number,
+) {
+  if (rotationDegrees === 0) return sample;
+
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+  const scale = getVoronoiCanvasScale(rotationDegrees);
+  const radians = (rotationDegrees * Math.PI) / 180;
+  const x = (sample.x - centerX) * scale;
+  const y = (sample.y - centerY) * scale;
+
+  return {
     x: centerX + x * Math.cos(radians) - y * Math.sin(radians),
     y: centerY + x * Math.sin(radians) + y * Math.cos(radians),
   };
@@ -335,7 +393,7 @@ function drawFormationMask({
   context.scale(1 / canvasScale, 1 / canvasScale);
   context.translate(-dimensions.width / 2, -dimensions.height / 2);
 
-  drawSymbolMask(context, dimensions, symbol);
+  drawVoronoiSymbolMask(context, dimensions, symbol);
   context.restore();
 }
 
@@ -349,177 +407,28 @@ function normalizeFormationText(value: string) {
   return normalized || "READY";
 }
 
-function drawSymbolMask(
-  context: CanvasRenderingContext2D,
-  dimensions: Dimensions,
-  symbol: VoronoiFormationSymbol,
-) {
-  if (symbol === "calendar") {
-    drawCalendarMask(context, dimensions);
-    return;
-  }
+export function getVoronoiWordCenterCharacterIndices(value: string) {
+  const normalizedValue = normalizeFormationText(value);
+  const indices: number[] = [];
+  let wordStart = -1;
 
-  if (symbol === "location") {
-    drawLocationMask(context, dimensions);
-    return;
-  }
+  for (let index = 0; index <= normalizedValue.length; index += 1) {
+    const isWordBoundary =
+      index === normalizedValue.length || normalizedValue[index] === " ";
 
-  drawGroupMask(context, dimensions);
-}
+    if (!isWordBoundary && wordStart < 0) {
+      wordStart = index;
+      continue;
+    }
 
-function drawGroupMask(
-  context: CanvasRenderingContext2D,
-  dimensions: Dimensions,
-) {
-  const centerX = dimensions.width / 2;
-  const centerY = dimensions.height / 2;
-  const unit = Math.min(dimensions.width, dimensions.height);
-
-  drawGroupMember(context, {
-    bodyHeight: unit * 0.07,
-    bodyWidth: unit * 0.13,
-    headRadius: unit * 0.034,
-    x: centerX - unit * 0.12,
-    y: centerY + unit * 0.005,
-  });
-  drawGroupMember(context, {
-    bodyHeight: unit * 0.07,
-    bodyWidth: unit * 0.13,
-    headRadius: unit * 0.034,
-    x: centerX + unit * 0.12,
-    y: centerY + unit * 0.005,
-  });
-  drawGroupMember(context, {
-    bodyHeight: unit * 0.095,
-    bodyWidth: unit * 0.17,
-    headRadius: unit * 0.046,
-    x: centerX,
-    y: centerY - unit * 0.045,
-  });
-}
-
-function drawGroupMember(
-  context: CanvasRenderingContext2D,
-  {
-    bodyHeight,
-    bodyWidth,
-    headRadius,
-    x,
-    y,
-  }: {
-    bodyHeight: number;
-    bodyWidth: number;
-    headRadius: number;
-    x: number;
-    y: number;
-  },
-) {
-  context.beginPath();
-  context.arc(x, y - headRadius * 1.25, headRadius, 0, Math.PI * 2);
-  context.fill();
-
-  const bodyTop = y + headRadius * 0.35;
-  const bodyBottom = bodyTop + bodyHeight;
-  context.beginPath();
-  context.moveTo(x - bodyWidth / 2, bodyBottom);
-  context.bezierCurveTo(
-    x - bodyWidth / 2,
-    bodyTop + bodyHeight * 0.2,
-    x - bodyWidth * 0.24,
-    bodyTop,
-    x,
-    bodyTop,
-  );
-  context.bezierCurveTo(
-    x + bodyWidth * 0.24,
-    bodyTop,
-    x + bodyWidth / 2,
-    bodyTop + bodyHeight * 0.2,
-    x + bodyWidth / 2,
-    bodyBottom,
-  );
-  context.closePath();
-  context.fill();
-}
-
-function drawCalendarMask(
-  context: CanvasRenderingContext2D,
-  dimensions: Dimensions,
-) {
-  const width = Math.min(dimensions.width * 0.36, dimensions.height * 0.36);
-  const height = width * 0.78;
-  const x = dimensions.width / 2 - width / 2;
-  const y = dimensions.height / 2 - height / 2;
-  const strokeWidth = Math.max(8, width * 0.05);
-
-  context.lineWidth = strokeWidth;
-  context.beginPath();
-  context.roundRect(x, y, width, height, width * 0.08);
-  context.stroke();
-  context.beginPath();
-  context.moveTo(x, y + height * 0.3);
-  context.lineTo(x + width, y + height * 0.3);
-  context.stroke();
-
-  for (const column of [0.3, 0.7]) {
-    context.beginPath();
-    context.moveTo(x + width * column, y - strokeWidth * 0.35);
-    context.lineTo(x + width * column, y + height * 0.12);
-    context.stroke();
-  }
-
-  for (const column of [0.3, 0.5, 0.7]) {
-    for (const row of [0.5, 0.72]) {
-      context.beginPath();
-      context.arc(
-        x + width * column,
-        y + height * row,
-        strokeWidth * 0.34,
-        0,
-        Math.PI * 2,
-      );
-      context.fill();
+    if (isWordBoundary && wordStart >= 0) {
+      const wordLength = index - wordStart;
+      indices.push(wordStart + Math.floor((wordLength - 1) / 2));
+      wordStart = -1;
     }
   }
-}
 
-function drawLocationMask(
-  context: CanvasRenderingContext2D,
-  dimensions: Dimensions,
-) {
-  const unit = Math.min(dimensions.width, dimensions.height);
-  const centerX = dimensions.width / 2;
-  const centerY = dimensions.height / 2 - unit * 0.04;
-  const radius = unit * 0.12;
-
-  context.beginPath();
-  context.moveTo(centerX, centerY + radius * 1.75);
-  context.bezierCurveTo(
-    centerX - radius * 0.35,
-    centerY + radius * 1.2,
-    centerX - radius,
-    centerY + radius * 0.5,
-    centerX - radius,
-    centerY,
-  );
-  context.arc(centerX, centerY, radius, Math.PI, 0);
-  context.bezierCurveTo(
-    centerX + radius,
-    centerY + radius * 0.5,
-    centerX + radius * 0.35,
-    centerY + radius * 1.2,
-    centerX,
-    centerY + radius * 1.75,
-  );
-  context.closePath();
-  context.fill();
-
-  context.save();
-  context.globalCompositeOperation = "destination-out";
-  context.beginPath();
-  context.arc(centerX, centerY, radius * 0.36, 0, Math.PI * 2);
-  context.fill();
-  context.restore();
+  return indices;
 }
 
 function collectMaskCandidates(
@@ -646,8 +555,4 @@ function squaredDistance(a: MouseState, b: MouseState) {
   const dx = a.x - b.x;
   const dy = a.y - b.y;
   return dx * dx + dy * dy;
-}
-
-function clampUnit(value: number) {
-  return Math.max(0, Math.min(1, value));
 }

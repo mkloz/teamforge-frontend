@@ -22,7 +22,7 @@ export function buildActivitySignal(
   return {
     detail: topLane
       ? `${topLane.label} leads with ${topLane.primaryEvidenceCount} core cue${topLane.primaryEvidenceCount === 1 ? "" : "s"}${topLane.supportingEvidenceCount ? ` and ${topLane.supportingEvidenceCount} supporting cue${topLane.supportingEvidenceCount === 1 ? "" : "s"}` : ""}.`
-      : "Add interests so TeamForge can see what kind of plan should carry the first meet.",
+      : "Add interests so Findafew can see what kind of plan should carry the first meet.",
     label: "Activity read",
     strength,
     value:

@@ -82,7 +82,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
     matches: (push) => push.isSubscribed,
     status: {
       label: "On",
-      description: "Important TeamForge alerts.",
+      description: "Important Findafew alerts.",
       tone: "on",
     },
   },
@@ -98,7 +98,7 @@ const WEB_PUSH_STATUS_RULES: WebPushStatusRule[] = [
 
 const DEFAULT_WEB_PUSH_STATUS = {
   label: "Off",
-  description: "Important TeamForge alerts.",
+  description: "Important Findafew alerts.",
   tone: "muted",
 } as const;
 

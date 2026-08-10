@@ -983,7 +983,7 @@ function formatPipelineIndexMarkdown(options, routes, loadedSummary) {
   const lighthouseLine = formatLighthouseSummaryLine(options.runLighthouse);
   const squirrelLine = formatSquirrelSummaryLine(options.runSquirrel);
 
-  return `# TeamForge Authenticated Audit Pipeline
+  return `# Findafew Authenticated Audit Pipeline
 
 Date: ${new Date().toISOString()}
 Target: \`${options.baseUrl}\`

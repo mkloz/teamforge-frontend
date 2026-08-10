@@ -1095,7 +1095,7 @@ function formatPlaywrightIndex({
     lanes,
   });
 
-  return `# TeamForge Playwright Audit
+  return `# Findafew Playwright Audit
 
 Date: ${new Date().toISOString()}
 Target: \`${baseUrl}\`

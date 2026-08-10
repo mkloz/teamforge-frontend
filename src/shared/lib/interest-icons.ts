@@ -9,7 +9,6 @@ import {
   Dog,
   Dumbbell,
   Gamepad2,
-  Hammer,
   Headphones,
   Heart,
   Laptop,
@@ -26,13 +25,14 @@ import {
   TrendingUp,
   Trophy,
   Users,
+  Wrench,
 } from "lucide-react";
 
 export const interestIconByTaxonomyId: Record<string, LucideIcon> = {
   careers: BriefcaseBusiness,
   healthcare: Stethoscope,
   education: BookOpen,
-  trades: Hammer,
+  trades: Wrench,
   business: TrendingUp,
   public_service: Scale,
   tech_science: Laptop,

@@ -8,7 +8,7 @@ import {
   activityStatusSchema,
   activityVisibilitySchema,
   costTypeSchema,
-  forgeModeSchema,
+  groupFormationModeSchema,
   groupRoleSchema,
   groupStatusSchema,
   locationModeSchema,
@@ -22,7 +22,7 @@ type CoordinateInput = {
   locationLat?: number;
   locationLng?: number;
 };
-type ForgePlanRefinementInput = CoordinateInput & {
+type PlanCreationPlanRefinementInput = CoordinateInput & {
   cost: z.infer<typeof costTypeSchema>;
   costAmount?: number | null;
   dateTime: string;
@@ -55,7 +55,7 @@ function validateCoordinatePair(
 }
 
 function validateFuturePlanDate(
-  input: ForgePlanRefinementInput,
+  input: PlanCreationPlanRefinementInput,
   ctx: RefinementContext,
 ) {
   if (new Date(input.dateTime).getTime() > Date.now()) {
@@ -70,7 +70,7 @@ function validateFuturePlanDate(
 }
 
 function validatePlanLocation(
-  input: ForgePlanRefinementInput,
+  input: PlanCreationPlanRefinementInput,
   ctx: RefinementContext,
 ) {
   if (
@@ -94,7 +94,7 @@ function validatePlanLocation(
 }
 
 function validatePlanCoordinates(
-  input: ForgePlanRefinementInput,
+  input: PlanCreationPlanRefinementInput,
   ctx: RefinementContext,
 ) {
   const hasLat = hasCoordinate(input.locationLat);
@@ -115,7 +115,7 @@ function validatePlanCoordinates(
 }
 
 function validatePlanCost(
-  input: ForgePlanRefinementInput,
+  input: PlanCreationPlanRefinementInput,
   ctx: RefinementContext,
 ) {
   if (input.cost === "PAID" && input.costAmount == null) {
@@ -135,8 +135,8 @@ function validatePlanCost(
   }
 }
 
-function validateForgePlanInput(
-  input: ForgePlanRefinementInput,
+function validatePlanCreationPlanInput(
+  input: PlanCreationPlanRefinementInput,
   ctx: RefinementContext,
 ) {
   validateFuturePlanDate(input, ctx);
@@ -154,7 +154,7 @@ export const createActivityInputSchema = z
     locationLng: z.number().finite().min(-180).max(180).optional(),
     visibility: activityVisibilitySchema,
     access: activityAccessSchema,
-    forgeMode: forgeModeSchema,
+    groupFormationMode: groupFormationModeSchema,
     interestIds: z.array(z.string().trim().min(1)).min(1).max(20),
   })
   .strict()
@@ -164,7 +164,7 @@ export const createActivityInputSchema = z
 
 export type CreateActivityInput = z.infer<typeof createActivityInputSchema>;
 
-const forgePlanInputSchema = z
+const planCreationPlanInputSchema = z
   .object({
     title: z.string().trim().min(1).max(140),
     description: z.string().trim().min(1).max(1000).nullable().optional(),
@@ -182,52 +182,55 @@ const forgePlanInputSchema = z
   })
   .strict()
   .superRefine((input, ctx) => {
-    validateForgePlanInput(input, ctx);
+    validatePlanCreationPlanInput(input, ctx);
   });
 
-const forgeMatchingPreferenceSchema = z.number().int().min(0).max(100);
+const planCreationMatchingPreferenceSchema = z.number().int().min(0).max(100);
 
-const forgeMatchingPreferencesInputSchema = z
+const groupFormationMatchingPreferencesInputSchema = z
   .object({
-    sharedGround: forgeMatchingPreferenceSchema.optional(),
-    freshPerspectives: forgeMatchingPreferenceSchema.optional(),
-    networkReach: forgeMatchingPreferenceSchema.optional(),
+    sharedGround: planCreationMatchingPreferenceSchema.optional(),
+    freshPerspectives: planCreationMatchingPreferenceSchema.optional(),
+    networkReach: planCreationMatchingPreferenceSchema.optional(),
     maxDistanceKm: z.number().int().min(15).max(80).optional(),
   })
   .strict();
 
-export const forgeActivityInputSchema = z
+export const groupFormationActivityInputSchema = z
   .object({
     groupSize: z.number().int().min(2).max(8),
     groupName: z.string().trim().min(1).max(120).nullable().optional(),
     groupDescription: z.string().trim().min(1).max(1000).nullable().optional(),
     groupAvatar: managedUploadUrlSchema.nullable().optional(),
-    plan: forgePlanInputSchema,
-    matchingPreferences: forgeMatchingPreferencesInputSchema.optional(),
+    plan: planCreationPlanInputSchema,
+    matchingPreferences:
+      groupFormationMatchingPreferencesInputSchema.optional(),
   })
   .strict();
 
-export type ForgeActivityInput = z.infer<typeof forgeActivityInputSchema>;
+export type GroupFormationActivityInput = z.infer<
+  typeof groupFormationActivityInputSchema
+>;
 
-const forgedChatSchema = z.object({
+const formedChatSchema = z.object({
   id: z.string(),
   type: z.enum(["GROUP", "PRIVATE"]),
 });
 
-const forgedGroupMemberSchema = z.object({
+const formedGroupMemberSchema = z.object({
   userId: z.string(),
   role: groupRoleSchema,
 });
 
-const forgedGroupSchema = z.object({
+const formedGroupSchema = z.object({
   id: z.string(),
   name: z.string(),
   status: groupStatusSchema,
   maxMembers: z.number().int(),
-  members: z.array(forgedGroupMemberSchema),
+  members: z.array(formedGroupMemberSchema),
 });
 
-const forgedPlanSchema = z.object({
+const formedPlanSchema = z.object({
   id: z.string(),
   title: z.string(),
   coverImage: z.string().nullable(),
@@ -238,10 +241,10 @@ const forgedPlanSchema = z.object({
   cost: costTypeSchema,
 });
 
-export const forgeActivityResultSchema = z.object({
+export const groupFormationActivityResultSchema = z.object({
   activityId: z.string(),
   activityStatus: activityStatusSchema,
-  chat: forgedChatSchema,
-  group: forgedGroupSchema,
-  plan: forgedPlanSchema,
+  chat: formedChatSchema,
+  group: formedGroupSchema,
+  plan: formedPlanSchema,
 });

@@ -86,7 +86,7 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
       });
       setRootError(
         isApiNetworkError(error)
-          ? "TeamForge couldn't connect. Check your connection and try again."
+          ? "Findafew couldn't connect. Check your connection and try again."
           : AuthCommands.getAuthErrorMessage(
               error,
               "Invalid email or password. Please try again.",

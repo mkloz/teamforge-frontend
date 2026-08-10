@@ -9,9 +9,9 @@ const iconTileVariants = cva(
   {
     variants: {
       tone: {
-        amber: "bg-accent/10 text-accent",
-        destructive: "bg-destructive/10 text-destructive",
-        muted: "bg-slate-muted/10 text-slate-muted",
+        amber: "bg-accent-soft text-accent",
+        destructive: "bg-destructive-soft text-destructive",
+        muted: "bg-muted-soft text-slate-muted",
         neutral: "bg-muted text-muted-foreground",
         none: "",
         teal: "bg-primary text-primary-foreground",

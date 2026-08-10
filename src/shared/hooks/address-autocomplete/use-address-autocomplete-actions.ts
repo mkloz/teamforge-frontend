@@ -19,25 +19,30 @@ import {
   getManualAddressInputChange,
   getSuggestionKeyboardAction,
 } from "@/shared/hooks/use-address-autocomplete-state";
-import type { LocationValue } from "@/shared/lib/maps/location.types";
+import type {
+  GooglePlaceSuggestion,
+  LocationValue,
+} from "@/shared/lib/maps/location.types";
 
 interface UseAddressAutocompleteActionsInput {
   activeSuggestionIndex: number;
   clearMessage: () => void;
   closeSuggestions: () => void;
   externalInputValue: string;
+  endPlacesSession: () => void;
   hasTypedInSessionRef: MutableValueRef<boolean>;
+  invalidatePredictionResolution: () => void;
   isSuggestionsOpen: boolean;
   moveActiveSuggestion: (direction: SuggestionNavigationDirection) => void;
   onLocationSelect: (value: LocationValue | null) => void;
   openSuggestions: () => void;
   requestGoogleMaps: RequestGoogleMaps;
   resetSuggestions: () => void;
-  selectPrediction: (prediction: GoogleAutocompletePrediction) => Promise<void>;
+  selectPrediction: (prediction: GooglePlaceSuggestion) => Promise<void>;
   setDraftInput: Dispatch<SetStateAction<AddressAutocompleteDraftInput | null>>;
   setHasCurrentAreaError: Dispatch<SetStateAction<boolean>>;
   skipPredictionsForValueRef: MutableValueRef<string | null>;
-  visibleSuggestions: GoogleAutocompletePrediction[];
+  visibleSuggestions: GooglePlaceSuggestion[];
 }
 
 export function useAddressAutocompleteActions({
@@ -45,7 +50,9 @@ export function useAddressAutocompleteActions({
   clearMessage,
   closeSuggestions,
   externalInputValue,
+  endPlacesSession,
   hasTypedInSessionRef,
+  invalidatePredictionResolution,
   isSuggestionsOpen,
   moveActiveSuggestion,
   onLocationSelect,
@@ -64,6 +71,11 @@ export function useAddressAutocompleteActions({
       externalInputValue,
     );
 
+    const continuesPlacesSession = hasTypedInSessionRef.current;
+    invalidatePredictionResolution();
+    if (!continuesPlacesSession) {
+      endPlacesSession();
+    }
     hasTypedInSessionRef.current = true;
     skipPredictionsForValueRef.current = null;
     if (manualInputChange.hasSearchableInput) {
@@ -73,18 +85,21 @@ export function useAddressAutocompleteActions({
     clearMessage();
     setHasCurrentAreaError(false);
     if (!manualInputChange.hasSearchableInput) {
+      endPlacesSession();
       resetSuggestions();
     }
     onLocationSelect(manualInputChange.locationValue);
   }
 
   function clearLocation() {
+    invalidatePredictionResolution();
     hasTypedInSessionRef.current = false;
     skipPredictionsForValueRef.current = null;
     setDraftInput(null);
     resetSuggestions();
     clearMessage();
     setHasCurrentAreaError(false);
+    endPlacesSession();
     onLocationSelect(null);
   }
 

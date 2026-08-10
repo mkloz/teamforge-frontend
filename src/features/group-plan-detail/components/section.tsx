@@ -65,7 +65,7 @@ function getSectionClassName({
     "scroll-mt-24 transition-colors duration-500",
     divider && "border-border/70 border-b pb-8",
     isHighlighted &&
-      "-mx-3 rounded-2xl bg-forge-teal/5 px-3 ring-2 ring-forge-teal/25 ring-offset-4 ring-offset-background",
+      "-mx-3 rounded-2xl bg-primary-soft px-3 ring-2 ring-brand-teal/25 ring-offset-4 ring-offset-background",
     className,
   );
 }

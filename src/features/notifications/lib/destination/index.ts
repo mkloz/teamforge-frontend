@@ -1,7 +1,7 @@
 import type { Notification } from "@/shared/schemas";
 import { resolveEntityDestination } from "./entity-destination";
 import { resolveTypeFallbackDestination } from "./fallback-destination";
-import { resolveFromLegacyLink } from "./legacy-link-destination";
+import { resolveFromNotificationLink } from "./link-destination";
 import type { NotificationDestination } from "./notification-destination.types";
 
 export type { NotificationDestination } from "./notification-destination.types";
@@ -9,7 +9,7 @@ export type { NotificationDestination } from "./notification-destination.types";
 export async function resolveNotificationDestination(
   notification: Notification,
 ): Promise<NotificationDestination> {
-  const fromLink = await resolveFromLegacyLink(notification);
+  const fromLink = resolveFromNotificationLink(notification);
 
   if (fromLink) {
     return fromLink;

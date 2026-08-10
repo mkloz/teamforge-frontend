@@ -2,7 +2,7 @@ import { generateDetailedDescription } from "@/shared/lib/personality-profile";
 import type { PublicPersonalityProfile } from "@/shared/schemas/public-personality-profile";
 import type { DimensionScore } from "@/shared/types/psychometrics";
 
-const BORDERLINE_DISTANCE_FROM_MIDPOINT = 8;
+export const PERSONALITY_INTERSECTION_DISTANCE_FROM_MIDPOINT = 8;
 const GROUP_READ_SENTENCE_COUNT = 2;
 
 export function getPersonalityResultViewModel(
@@ -47,8 +47,14 @@ function buildDimensionScore(
     dimension,
     score,
     letter,
-    isBorderline: Math.abs(score - 50) <= BORDERLINE_DISTANCE_FROM_MIDPOINT,
+    isBorderline: isPersonalityScoreInIntersectionRange(score),
   };
+}
+
+export function isPersonalityScoreInIntersectionRange(score: number) {
+  return (
+    Math.abs(score - 50) <= PERSONALITY_INTERSECTION_DISTANCE_FROM_MIDPOINT
+  );
 }
 
 function getCompactText(value: string, maxSentences: number) {

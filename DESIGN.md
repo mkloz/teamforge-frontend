@@ -1,5 +1,5 @@
 ---
-name: TeamForge
+name: Findafew
 description: A clear, human interface for turning compatible people into real plans.
 colors:
   neutral-background: "#f4f4f2"
@@ -8,7 +8,7 @@ colors:
   neutral-ink: "#171717"
   quiet-copy: "#666666"
   input-surface: "#ececea"
-  forge-teal: "#0f766e"
+  brand-teal: "#0f766e"
   signal-amber: "#956508"
   black-background: "#000000"
   black-canvas: "#080808"
@@ -52,7 +52,7 @@ spacing:
   xl: "32px"
 components:
   button-primary:
-    backgroundColor: "{colors.forge-teal}"
+    backgroundColor: "{colors.brand-teal}"
     textColor: "{colors.neutral-card}"
     typography: "{typography.label}"
     rounded: "{rounded.control}"
@@ -79,13 +79,13 @@ components:
     padding: "24px"
 ---
 
-# Design System: TeamForge
+# Design System: Findafew
 
 ## Overview
 
 **Creative North Star: “The Clear Shared Workshop”**
 
-TeamForge keeps the product's established component anatomy and layout. The
+Findafew keeps the product's established component anatomy and layout. The
 theme supplies a sharper, quieter visual character through semantic color,
 controlled geometry, selective structural edges, and purposeful interaction
 feedback.
@@ -110,7 +110,7 @@ background, then `#080808` canvas and `#111111` card layers for explicit depth.
 
 ### Primary
 
-- **Forge Teal:** action, selection, and positive momentum. It may frame focus
+- **PlanCreation Teal:** action, selection, and positive momentum. It may frame focus
   only when the control itself is already teal.
 - The default dark action teal stays deep enough to support white action text.
 
@@ -155,7 +155,7 @@ architecture. Use the established responsive stacking and 4/8px spacing rhythm.
 
 ## Elevation & Depth
 
-Primary actions and selected clickable surfaces use TeamForge's short mechanical
+Primary actions and selected clickable surfaces use Findafew's short mechanical
 lift: a four-pixel rise exposes a hard, unblurred shadow, then settles on press.
 The original compact press response remains part of that motion. Glossy sweeps
 and glows do not. Fields remain flat at rest rather than adopting the lift.

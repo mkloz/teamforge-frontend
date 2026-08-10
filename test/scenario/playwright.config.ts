@@ -66,7 +66,12 @@ export default defineConfig({
       },
     },
   ],
-  reporter: [["line"]],
+  reporter: process.env.SCENARIO_SANITIZED_REPORTER_OUTPUT
+    ? [
+        ["line"],
+        [path.join(process.cwd(), "scripts/scenario/sanitized-reporter.mjs")],
+      ]
+    : [["line"]],
   retries: process.env.CI ? 1 : 0,
   testDir: import.meta.dirname,
   timeout: 35_000,

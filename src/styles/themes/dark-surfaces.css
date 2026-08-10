@@ -11,6 +11,13 @@
     var(--card) 90%,
     var(--primary) 10%
   );
+  /* Dark surfaces need a stronger tint than transparent 5–10% overlays provide. */
+  --primary-soft: color-mix(in srgb, var(--primary) 20%, var(--card));
+  --accent-soft: color-mix(in srgb, var(--accent) 18%, var(--card));
+  --destructive-soft: color-mix(in srgb, var(--destructive) 16%, var(--card));
+  --muted-soft: color-mix(in srgb, var(--slate-muted) 18%, var(--card));
+  --success-soft: color-mix(in srgb, var(--success) 18%, var(--card));
+  --warning-soft: color-mix(in srgb, var(--warning) 18%, var(--card));
   --text-secondary: var(--muted-foreground);
   --text-disabled: color-mix(
     in srgb,

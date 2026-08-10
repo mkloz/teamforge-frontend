@@ -28,7 +28,7 @@ import {
 
 const VERSION = "focused-product-tour-v3" as const;
 export const ONBOARDING_COACHMARK_REPLAY_EVENT =
-  "teamforge:onboarding-coachmarks-replay";
+  "findafew:onboarding-coachmarks-replay";
 
 const snapshotSchema = z.object({
   version: z.literal(VERSION),
@@ -247,7 +247,7 @@ export function OnboardingCoachmarks({ pathname }: { pathname: string }) {
               key={step.id}
               aria-hidden="true"
               className={`h-1 flex-1 rounded-full ${
-                index <= currentStepIndex ? "bg-forge-teal" : "bg-muted"
+                index <= currentStepIndex ? "bg-brand-teal" : "bg-muted"
               }`}
             />
           ))}

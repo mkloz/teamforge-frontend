@@ -8,9 +8,9 @@ type SpecialConversationAvatarProps = ComponentPropsWithoutRef<"svg"> & {
 type FillToken = "stroke" | "teal" | "amber";
 
 const avatarVisualStroke = "var(--special-avatar-stroke, currentColor)";
-const avatarVisualTeal = "var(--special-avatar-teal, var(--color-forge-teal))";
+const avatarVisualTeal = "var(--special-avatar-teal, var(--color-brand-teal))";
 const avatarVisualAmber =
-  "var(--special-avatar-amber, var(--color-spark-amber))";
+  "var(--special-avatar-amber, var(--color-brand-amber))";
 
 const fillByToken: Record<FillToken, string> = {
   amber: avatarVisualAmber,

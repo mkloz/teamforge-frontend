@@ -42,7 +42,7 @@ export function InterestsIntro({
         </p>
         <p className="mb-6 text-pretty font-sans text-slate-muted/80 text-sm leading-relaxed">
           Choose at least{" "}
-          <span className="border-forge-teal/30 border-b font-bold text-ink">
+          <span className="border-brand-teal/30 border-b font-bold text-ink">
             10 interests to start
           </span>
           . Add more now or refine them later—there are no wrong answers.
@@ -51,7 +51,7 @@ export function InterestsIntro({
 
       <OnboardingIntroBenefitList
         benefits={BENEFITS}
-        iconTileClassName="mt-0.5 bg-forge-teal/5"
+        iconTileClassName="mt-0.5 bg-primary-soft"
         textClassName="font-sans text-slate-muted text-sm leading-relaxed"
       />
 

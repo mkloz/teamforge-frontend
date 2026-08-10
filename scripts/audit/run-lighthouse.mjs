@@ -605,7 +605,7 @@ function writeLighthouseManifest({ baseUrl, categories, outputDir, results }) {
 function formatLighthouseIndexMarkdown({ baseUrl, categories, results }) {
   const resultRows = formatLighthouseResultRows(results);
 
-  return `# TeamForge Lighthouse Audit
+  return `# Findafew Lighthouse Audit
 
 Date: ${new Date().toISOString()}
 Target: \`${baseUrl}\`

@@ -1,8 +1,8 @@
 import {
   CalendarCheck,
+  ClipboardCheck,
+  MapPin,
   MessageCircle,
-  SearchX,
-  UsersRound,
 } from "lucide-react";
 import { LandingFeaturePointList } from "@/features/landing/components/landing-feature-point-list";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
@@ -14,14 +14,14 @@ const DIFFERENCE_POINTS = [
     detail: "The activity leads. People fit around it.",
   },
   {
-    icon: UsersRound,
-    title: "One group, not many",
-    detail: "One room to consider, not a feed to sort through.",
+    title: "Practical details",
+    detail: "Time and place stay attached to the activity.",
+    icon: MapPin,
   },
   {
-    icon: SearchX,
-    title: "Less searching",
-    detail: "No endless lists, cold outreach, or comparing strangers.",
+    icon: ClipboardCheck,
+    title: "Review before deciding",
+    detail: "See the proposed group and plan details first.",
   },
   {
     icon: MessageCircle,
@@ -59,7 +59,7 @@ export function WhyDifferentSection() {
               />
               <img
                 src="/landing/why-different-visual-ai-text.png"
-                alt="One TeamForge group room in focus while browsing cards move into the background"
+                alt="Findafew plan and group-review cards arranged around a shared activity"
                 width={1536}
                 height={1024}
                 className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
@@ -74,15 +74,15 @@ export function WhyDifferentSection() {
               id="why-different-heading"
               className="text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
             >
-              No endless profiles. One group with a plan.
+              Start with something you want to do.
             </h2>
             <p className="mt-5 text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg">
-              Most social tools make you browse first and plan later. TeamForge
-              starts with the plan, then brings together one small group around
-              it.
+              Findafew puts the activity and practical details first. Start a
+              plan or explore plans already underway, then review a proposed
+              group before deciding.
             </p>
-            <p className="mt-6 text-pretty border-forge-teal/45 border-l-2 pl-4 font-semibold text-base text-white leading-relaxed">
-              A better starting point beats a better search habit.
+            <p className="mt-6 text-pretty border-brand-teal/45 border-l-2 pl-4 font-semibold text-base text-white leading-relaxed">
+              Shared activities give each group a clear starting point.
             </p>
           </div>
         </div>

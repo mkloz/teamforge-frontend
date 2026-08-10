@@ -7,6 +7,13 @@
   );
   --surface-selected: color-mix(in srgb, var(--primary) 10%, var(--card));
   --surface-interactive: color-mix(in srgb, var(--card) 92%, var(--primary) 8%);
+  /* Opaque tone surfaces keep their contrast when nested on cards or canvas. */
+  --primary-soft: color-mix(in srgb, var(--primary) 14%, var(--card));
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--card));
+  --destructive-soft: color-mix(in srgb, var(--destructive) 12%, var(--card));
+  --muted-soft: color-mix(in srgb, var(--slate-muted) 14%, var(--card));
+  --success-soft: color-mix(in srgb, var(--success) 14%, var(--card));
+  --warning-soft: color-mix(in srgb, var(--warning) 14%, var(--card));
   --text-secondary: var(--muted-foreground);
   --text-disabled: color-mix(
     in srgb,

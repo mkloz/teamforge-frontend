@@ -9,12 +9,13 @@ const statusPillVariants = cva(
   {
     variants: {
       tone: {
-        amber: "border-accent/25 bg-accent/10 text-accent",
-        destructive: "border-destructive/25 bg-destructive/10 text-destructive",
+        amber: "border-accent/25 bg-accent-soft text-accent",
+        destructive:
+          "border-destructive/25 bg-destructive-soft text-destructive",
         muted: "border-muted-foreground/15 bg-muted text-muted-foreground",
         none: "",
         neutral: "border-border/55 bg-muted text-muted-foreground",
-        teal: "border-primary/20 bg-primary/10 text-foreground",
+        teal: "border-primary/20 bg-primary-soft text-foreground",
       },
       size: {
         "2xs": "gap-0.5 px-1.5 py-0.5 text-xs",
@@ -43,12 +44,12 @@ const statusPillVariants = cva(
       {
         surface: "soft",
         tone: "amber",
-        className: "bg-accent/10 text-accent",
+        className: "bg-accent-soft text-accent",
       },
       {
         surface: "soft",
         tone: "destructive",
-        className: "bg-destructive/10 text-destructive",
+        className: "bg-destructive-soft text-destructive",
       },
       {
         surface: "soft",
@@ -63,7 +64,7 @@ const statusPillVariants = cva(
       {
         surface: "soft",
         tone: "teal",
-        className: "bg-primary/8 text-foreground",
+        className: "bg-primary-soft text-foreground",
       },
       {
         surface: "solid",

@@ -1,9 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import { AuthCommands } from "@/features/auth/api/auth-commands";
+import { calculateResetPasswordProgress } from "@/features/auth/lib/auth-form-progress";
 import {
   type ResetPasswordValues,
   resetPasswordSchema,
@@ -28,6 +29,15 @@ export function useResetPasswordForm() {
       password: "",
       confirmPassword: "",
     },
+  });
+  const passwordValue = useWatch({ control: form.control, name: "password" });
+  const confirmPasswordValue = useWatch({
+    control: form.control,
+    name: "confirmPassword",
+  });
+  const progress = calculateResetPasswordProgress({
+    confirmPassword: confirmPasswordValue,
+    password: passwordValue,
   });
 
   async function submitPasswordReset(values: ResetPasswordValues) {
@@ -80,6 +90,7 @@ export function useResetPasswordForm() {
     isOnline,
     loading,
     onSubmit,
+    progress,
     rootError,
     success,
   };

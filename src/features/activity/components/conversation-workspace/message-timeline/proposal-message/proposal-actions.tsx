@@ -182,7 +182,7 @@ function WithdrawProposalButton({
           title={state.title}
           variant="subtle"
           size="sm"
-          className="h-8 shrink-0 border border-destructive/15 bg-destructive/5 px-3 text-destructive/85 text-xs hover:enabled:border-destructive/25 hover:enabled:bg-destructive/8 hover:enabled:text-destructive"
+          className="h-8 shrink-0 border border-destructive/15 bg-destructive-soft px-3 text-destructive/85 text-xs hover:enabled:border-destructive/25 hover:enabled:text-destructive hover:enabled:brightness-110"
           disabled={state.isDisabled}
         >
           <Undo2 className="size-3.5" aria-hidden="true" />

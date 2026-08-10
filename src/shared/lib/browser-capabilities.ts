@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import { getAppBaseUrl } from "@/shared/lib/app-url";
 import {
   getBrowserNavigator,

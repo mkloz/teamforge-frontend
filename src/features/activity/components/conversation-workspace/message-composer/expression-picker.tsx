@@ -229,7 +229,7 @@ function ExpressionTab({
     <TabsTrigger
       id={id}
       aria-controls={controlsId}
-      className="h-9 rounded-full font-black text-muted-foreground text-xs shadow-none hover:bg-background/45 hover:text-ink data-[state=active]:bg-primary/10 data-[state=active]:text-ink data-[state=active]:ring-1 data-[state=active]:ring-primary/20"
+      className="h-9 rounded-full font-black text-muted-foreground text-xs shadow-none hover:bg-background/45 hover:text-ink data-[state=active]:bg-primary-soft data-[state=active]:text-ink data-[state=active]:ring-1 data-[state=active]:ring-primary/20"
       value={value}
     >
       <Icon className="size-3.5" />

@@ -19,7 +19,7 @@ export function MemberCard({
     <article
       className={cn(
         "group/member flex min-h-16 w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors duration-150 focus-within:bg-muted/50 hover:bg-muted/50",
-        viewState.isAdmin && "bg-forge-teal/5",
+        viewState.isAdmin && "bg-primary-soft",
       )}
     >
       {onShowProfile ? (

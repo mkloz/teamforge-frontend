@@ -46,7 +46,7 @@ export const groupChatGovernanceSchema = z
 
 export const groupGovernanceSchema = z
   .object({
-    origin: z.literal("AUTO_FORGE"),
+    origin: z.literal("AUTOMATIC_GROUP_FORMATION"),
     mode: z.literal("SYSTEM_MANAGED"),
     capabilityPolicyVersion: z.string().min(1),
     capabilities: groupGovernanceCapabilitiesSchema,
@@ -78,16 +78,17 @@ export function isSystemManagedGroupGovernance(
   governance: GroupGovernance | null | undefined,
 ): governance is GroupGovernance {
   return (
-    governance?.origin === "AUTO_FORGE" && governance.mode === "SYSTEM_MANAGED"
+    governance?.origin === "AUTOMATIC_GROUP_FORMATION" &&
+    governance.mode === "SYSTEM_MANAGED"
   );
 }
 
 export function hasMissingAutoGovernance({
-  forgeMode,
+  groupFormationMode,
   governance,
 }: {
-  forgeMode: "AUTO" | "MANUAL" | null | undefined;
+  groupFormationMode: "AUTO" | "MANUAL" | null | undefined;
   governance: GroupGovernance | null | undefined;
 }) {
-  return forgeMode === "AUTO" && governance == null;
+  return groupFormationMode === "AUTO" && governance == null;
 }

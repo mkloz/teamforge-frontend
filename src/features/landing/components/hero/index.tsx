@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronDown, Download } from "lucide-react";
-import { ForgeOrb } from "@/features/landing/components/hero/forge-orb";
+import { ArrowRight, ChevronDown, Compass } from "lucide-react";
+import { GroupConvergenceVisual } from "@/features/landing/components/hero/plan-creation-orb";
 import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
 import { scrollToLandingSection } from "@/shared/components/public-site/landing-scroll";
 import { LANDING_SECTION_IDS } from "@/shared/components/public-site/landing-sections";
@@ -8,7 +8,7 @@ import { Button } from "@/shared/components/ui/button";
 
 export function HeroSection() {
   const { isResolvingAuthAction, primaryAction } =
-    useResolvedLandingAuthActions("Create Free Account");
+    useResolvedLandingAuthActions("Start a plan");
 
   return (
     <section
@@ -21,16 +21,18 @@ export function HeroSection() {
         <div className="flex flex-col items-center gap-8 md:gap-10 lg:flex-row">
           <div className="order-2 flex max-w-xl flex-1 animate-hero-fade-in flex-col items-start text-start lg:order-1 lg:text-left">
             <h1 className="mb-5 max-w-3xl text-balance text-center font-display font-extrabold text-4xl text-white leading-none sm:text-start sm:text-5xl lg:text-6xl">
-              Find your people,
-              <br />
-              <span className="relative inline-block pb-2 text-foreground">
-                intelligently.
-              </span>
+              Small groups for things you want to do.
             </h1>
 
             <p className="mb-8 max-w-md text-pretty font-sans text-base text-text-dark-secondary leading-relaxed md:text-lg">
-              Answer a few setup questions once. TeamForge uses your answers to
-              form one small group around an activity plan.
+              Have something in mind? Start a plan and see who&apos;s
+              interested—or explore what other people are planning. If a group
+              comes together, review it before deciding whether to take part.
+            </p>
+
+            <p className="mb-6 max-w-md text-pretty font-sans text-sm text-text-dark-muted leading-relaxed">
+              Launching for adults aged 18–28. Built around shared activities,
+              not dating.
             </p>
 
             <div className="mb-10 flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
@@ -39,7 +41,7 @@ export function HeroSection() {
                   size="hero"
                   loading
                   className="w-full text-white sm:w-auto"
-                  aria-label="Checking TeamForge session"
+                  aria-label="Checking Findafew session"
                 >
                   {primaryAction.label}
                 </Button>
@@ -65,16 +67,16 @@ export function HeroSection() {
                 size="hero"
                 className="w-full sm:w-auto"
               >
-                <Link to="/download">
-                  Download
-                  <Download className="size-5" aria-hidden="true" />
+                <Link to="/explore">
+                  Explore plans
+                  <Compass className="size-5" aria-hidden="true" />
                 </Link>
               </Button>
             </div>
           </div>
 
           <div className="order-1 flex w-full flex-1 justify-center lg:order-2 xl:justify-end">
-            <ForgeOrb />
+            <GroupConvergenceVisual />
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@
     display: none !important;
   }
 
-  .public-forge-theme {
+  .public-plan-creation-theme {
     --background: #0b0f0e;
     --foreground: #f2f5f1;
     --ink: #f2f5f1;
@@ -33,10 +33,10 @@
     --input: #202927;
     --ring: #0d9488;
     --color-hero-bg: #090909;
-    --color-forge-teal: #0d9488;
-    --color-spark-amber: #ffbf00;
-    --color-forge-deep-panel: #0a1212;
-    --color-forge-deep-surface: #111111;
+    --color-brand-teal: #0d9488;
+    --color-brand-amber: #ffbf00;
+    --color-hero-deep-panel: #0a1212;
+    --color-hero-deep-surface: #111111;
     --color-button-primary-border: var(--primary);
     --color-button-secondary-border: var(--accent);
     --button-shadow-base: color-mix(in srgb, #090909 88%, #f2f5f1);
@@ -117,11 +117,11 @@
   contain-intrinsic-size: auto 38rem;
 }
 
-@utility bg-forge-teal-readable {
+@utility bg-brand-teal-readable {
   background-color: color-mix(
     in srgb,
-    var(--color-forge-teal) 85%,
-    var(--color-forge-deep-surface)
+    var(--color-brand-teal) 85%,
+    var(--color-hero-deep-surface)
   );
 }
 
@@ -129,7 +129,7 @@
   background:
     radial-gradient(
       circle at 50% 44%,
-      color-mix(in srgb, var(--color-forge-teal) 10%, transparent),
+      color-mix(in srgb, var(--color-brand-teal) 10%, transparent),
       transparent 28%
     ),
     var(--color-canvas);
@@ -139,12 +139,12 @@
   background-image:
     linear-gradient(
       to right,
-      color-mix(in srgb, var(--color-forge-teal) 12%, transparent) 1px,
+      color-mix(in srgb, var(--color-brand-teal) 12%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-forge-teal) 12%, transparent) 1px,
+      color-mix(in srgb, var(--color-brand-teal) 12%, transparent) 1px,
       transparent 1px
     );
   background-size: 1.75rem 1.75rem;

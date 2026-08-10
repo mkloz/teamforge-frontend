@@ -10,7 +10,7 @@ export interface ApiErrorMessageOptions {
 }
 
 const DEFAULT_SERVER_ERROR_MESSAGE =
-  "TeamForge is having trouble right now. Please try again in a moment.";
+  "Findafew is having trouble right now. Please try again in a moment.";
 
 const STATUS_MESSAGE_OPTIONS = new Map<number, keyof ApiErrorMessageOptions>([
   [400, "badRequestMessage"],

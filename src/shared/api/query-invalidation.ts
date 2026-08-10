@@ -80,8 +80,8 @@ export function invalidateFormationOpeningApplicationSurfaces() {
   return invalidateQueries([
     APP_QUERY_KEYS.explore.feed,
     APP_QUERY_KEYS.home.recommendations,
-    APP_QUERY_KEYS.forge.currentProposal,
-    APP_QUERY_KEYS.forge.proposalOpenings,
+    APP_QUERY_KEYS.groupFormation.currentProposal,
+    APP_QUERY_KEYS.groupFormation.proposalOpenings,
   ]);
 }
 
@@ -92,7 +92,7 @@ export function invalidateFriendshipSurfaces() {
       APP_QUERY_KEYS.activity.friendships,
       APP_QUERY_KEYS.activity.chats,
       APP_QUERY_KEYS.activity.directSelection,
-      APP_QUERY_KEYS.forge.friends,
+      APP_QUERY_KEYS.groupFormation.friends,
     ]),
   ]);
 }

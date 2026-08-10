@@ -185,7 +185,7 @@ export function OperatorWorkspacePage() {
                 className={cn(
                   "inline-flex min-h-10 items-center rounded-xl px-4 font-semibold text-sm transition-colors",
                   queueId === queue
-                    ? "bg-primary/10 text-ink"
+                    ? "bg-primary-soft text-ink"
                     : "text-slate-muted hover:bg-muted/50 hover:text-ink",
                 )}
               >

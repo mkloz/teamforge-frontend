@@ -118,7 +118,7 @@ export function PrivacySettingsSection({
       <section>
         <SectionHeading
           title="What people can see"
-          description="Choose which details appear on your public profile. Hidden details can still help TeamForge form groups."
+          description="Choose which details appear on your public profile. Hidden details can still help Findafew form groups."
         />
 
         {isLoadingNotificationPreferences ? (

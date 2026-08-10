@@ -98,7 +98,7 @@ function getPushSupportItem(push: PushDiagnosticsState): DiagnosticItem {
 function getPermissionItem(push: PushDiagnosticsState): DiagnosticItem {
   if (push.permission === "granted") {
     return {
-      detail: "The browser can show TeamForge system notifications.",
+      detail: "The browser can show Findafew system notifications.",
       icon: BellRing,
       label: "Permission",
       tone: "ready",
@@ -165,7 +165,7 @@ function getInstallPromptItem(
 ): DiagnosticItem {
   if (isStandalone) {
     return {
-      detail: "TeamForge is already running in app mode on this device.",
+      detail: "Findafew is already running in app mode on this device.",
       icon: Download,
       label: "Install prompt",
       tone: "ready",

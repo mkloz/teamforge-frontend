@@ -16,7 +16,7 @@ export function FilterTag({ label, onRemove }: FilterTagProps) {
         aria-label={`Remove ${label} filter`}
         title="Remove filter"
       >
-        <span className="flex size-5 items-center justify-center rounded-full transition-colors group-hover/remove:bg-primary/8 group-hover/remove:text-foreground group-active/remove:bg-primary/12">
+        <span className="flex size-5 items-center justify-center rounded-full transition-colors group-hover/remove:bg-primary-soft group-hover/remove:text-foreground group-active/remove:bg-primary-soft">
           <X className="size-2.5" strokeWidth={2.25} aria-hidden="true" />
         </span>
       </button>

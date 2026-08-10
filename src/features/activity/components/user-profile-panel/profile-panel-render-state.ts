@@ -7,7 +7,6 @@ import {
 import type { MutualGroup } from "./mutual-groups-section";
 import type {
   UserProfilePanelChat,
-  UserProfilePanelChatParticipant,
   UserProfilePanelParticipant,
 } from "./types";
 
@@ -51,7 +50,7 @@ export function getProfilePanelParticipantCandidate({
   }
 
   return (
-    chat?.participants?.find(isNotCurrentUserPlaceholder)?.user ||
+    chat?.participants?.find((candidate) => candidate.user)?.user ||
     chat?.participants?.[0]?.user
   );
 }
@@ -126,10 +125,4 @@ export function getProfilePanelScrollContainerClassName({
       ? "scrollbar-hide pb-6"
       : "scrollbar-thin [scrollbar-color:var(--muted-foreground)_transparent]",
   );
-}
-
-function isNotCurrentUserPlaceholder({
-  user,
-}: UserProfilePanelChatParticipant) {
-  return user?.id !== "current-user" && user?.id !== "user-current";
 }

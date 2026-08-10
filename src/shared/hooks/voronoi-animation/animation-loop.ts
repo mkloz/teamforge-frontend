@@ -121,7 +121,7 @@ export function startVoronoiAnimationLoop({
       center,
     );
 
-    const { formationCenter, sparkPhase } = updateParticlePhysics({
+    const { formationCenter, particlePhase } = updateParticlePhysics({
       points,
       time,
       currentProgress,
@@ -156,8 +156,8 @@ export function startVoronoiAnimationLoop({
       ctx,
       coreAvg: formationCenter,
       parallaxOffset,
-      sparkEnabled: formation.sparkEnabled,
-      sparkPhase,
+      particleEnabled: formation.particleEnabled,
+      particlePhase,
     });
 
     setCanvasFrameTransform(targetCanvas, rotationDegrees);

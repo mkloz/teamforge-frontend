@@ -9,7 +9,7 @@ export function PushNotificationBand() {
   const viewModel = getPushNotificationBandViewModel(push);
 
   return (
-    <div className="border-primary/12 border-y bg-primary/5">
+    <div className="border-primary/12 border-y bg-primary-soft">
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-8 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
         <PushNotificationStatus
           copy={viewModel.copy}

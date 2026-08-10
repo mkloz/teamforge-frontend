@@ -11,4 +11,12 @@ export interface Coordinates {
   lng: number;
 }
 
+export interface GooglePlaceSuggestion {
+  description: string;
+  id: string;
+  mainText: string;
+  prediction: GooglePlacePrediction;
+  secondaryText: string | null;
+}
+
 export type GoogleMapsStatus = "idle" | "loading" | "ready" | "unavailable";

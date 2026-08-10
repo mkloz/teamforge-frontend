@@ -5,7 +5,7 @@ import {
   activityAccessSchema,
   activityVisibilitySchema,
   costTypeSchema,
-  forgeScopeSchema,
+  groupFormationScopeSchema,
   locationModeSchema,
   planCategorySchema,
   planScheduleModeSchema,
@@ -112,7 +112,7 @@ export const exploreFormationOpeningSchema = z
         title: z.string(),
       })
       .strict(),
-    scope: forgeScopeSchema,
+    scope: groupFormationScopeSchema,
     category: planCategorySchema,
     broadArea: z.string().nullable(),
     schedule: z

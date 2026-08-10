@@ -81,7 +81,7 @@ export function PeopleProblemLoadingSection() {
               lines={5}
               widths={["w-full", "w-11/12", "w-full", "w-5/6", "w-2/3"]}
             />
-            <div className="mt-8 border-forge-teal/45 border-l-2 pl-4">
+            <div className="mt-8 border-brand-teal/45 border-l-2 pl-4">
               <SkeletonText
                 lines={2}
                 widths={["w-full", "w-4/5"]}
@@ -246,7 +246,7 @@ export function TrustControlLoadingSection() {
               lines={4}
               widths={["w-full", "w-11/12", "w-full", "w-3/4"]}
             />
-            <div className="mt-8 border-forge-teal/45 border-l-2 pl-4">
+            <div className="mt-8 border-brand-teal/45 border-l-2 pl-4">
               <SkeletonText
                 lines={2}
                 widths={["w-full", "w-4/5"]}

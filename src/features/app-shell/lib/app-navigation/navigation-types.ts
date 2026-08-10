@@ -3,8 +3,8 @@ import type {
   buildActivityNavigation,
   buildAdminNavigation,
   buildExploreNavigation,
-  buildForgeNavigation,
   buildHomeNavigation,
+  buildPlanCreationNavigation,
   buildProfileNavigation,
   buildSettingsNavigation,
 } from "@/shared/navigation";
@@ -16,7 +16,7 @@ export type AppNavigationId =
   | "activity"
   | "profile"
   | "settings"
-  | "forge";
+  | "planCreation";
 
 export type AppNavigationMatchMode = "exact" | "prefix";
 
@@ -34,7 +34,7 @@ export interface AppNavigationItem {
     | ReturnType<typeof buildActivityNavigation>
     | ReturnType<typeof buildProfileNavigation>
     | ReturnType<typeof buildSettingsNavigation>
-    | ReturnType<typeof buildForgeNavigation>;
+    | ReturnType<typeof buildPlanCreationNavigation>;
 }
 
 export type AppNavigationBadgeMap = Partial<

@@ -19,11 +19,9 @@ export function ActivityMenuIcon({
     <span
       aria-hidden={ariaHidden}
       className={cn(
-        "flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-input text-muted-foreground",
-        tone === "active" &&
-          "border-transparent bg-forge-teal/8 text-foreground",
-        tone === "danger" &&
-          "border-destructive/20 bg-destructive/8 text-destructive",
+        "flex size-7 shrink-0 items-center justify-center text-muted-foreground",
+        tone === "active" && "text-foreground",
+        tone === "danger" && "text-destructive",
         className,
       )}
       {...props}

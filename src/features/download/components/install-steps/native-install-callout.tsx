@@ -14,11 +14,11 @@ export function NativeInstallCallout({
   onInstallClick,
 }: NativeInstallCalloutProps) {
   return (
-    <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/6 px-5 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6">
+    <div className="mb-8 rounded-2xl border border-primary/20 bg-primary-soft px-5 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6">
       <div className="min-w-0">
         <p className="font-bold text-ink">Direct install is available here</p>
         <p className="mt-1 max-w-xl text-pretty text-slate-muted text-sm leading-relaxed">
-          This browser can add TeamForge directly. Use the manual steps below
+          This browser can add Findafew directly. Use the manual steps below
           only if the prompt does not appear.
         </p>
         {feedback && (
@@ -37,7 +37,7 @@ export function NativeInstallCallout({
         onClick={onInstallClick}
       >
         <Download size={16} strokeWidth={2} aria-hidden="true" />
-        Install TeamForge
+        Install Findafew
       </Button>
     </div>
   );

@@ -226,7 +226,7 @@ function SnapshotStatus({
   if (stale || snapshot.dataQuality === "PARTIAL") {
     return (
       <div
-        className="flex items-start gap-3 rounded-xl border border-accent/30 bg-accent/8 p-4 text-sm"
+        className="flex items-start gap-3 rounded-xl border border-accent/30 bg-accent-soft p-4 text-sm"
         role="status"
       >
         <TriangleAlert

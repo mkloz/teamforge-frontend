@@ -38,7 +38,7 @@ export const viewerProfileSchema = viewerProfileResponseSchema.transform(
     const personality = profile.personalityProfile;
     const user = userSchema.parse({
       id: profile.id,
-      email: `${profile.id}@teamforge.local`,
+      email: `${profile.id}@findafew.test`,
       name: profile.name,
       avatar: profile.avatar,
       bio: profile.bio,
@@ -59,6 +59,7 @@ export const viewerProfileSchema = viewerProfileResponseSchema.transform(
       oceanA: personality?.ocean.agreeableness ?? null,
       oceanN: personality?.ocean.neuroticism ?? null,
       searchStatus: "IDLE",
+      signInMethods: { google: false, password: false },
       trustScore:
         typeof profile.reputationSummary?.displayScore === "number"
           ? profile.reputationSummary.displayScore / 100

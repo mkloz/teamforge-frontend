@@ -16,7 +16,7 @@ export function ProposedPlanQueueItem({
     getProposedPlanQueueItemRenderState(group);
 
   return (
-    <li className="group min-w-0 rounded-2xl bg-card px-3 py-3 transition-colors duration-150 hover:bg-spark-amber/5 sm:px-4">
+    <li className="group min-w-0 rounded-2xl bg-card px-3 py-3 transition-colors duration-150 hover:bg-accent-soft sm:px-4">
       <Link
         {...navigation}
         className="flex min-w-0 items-center justify-between gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -24,7 +24,7 @@ export function ProposedPlanQueueItem({
         <div className="flex min-w-0 flex-1 items-start gap-3">
           <IconTile icon={PlanActionIcon} size="lg" tone="amber" />
           <div className="min-w-0 flex-1">
-            <p className="truncate font-bold text-foreground text-sm transition-colors duration-150 group-hover:text-spark-amber">
+            <p className="truncate font-bold text-foreground text-sm transition-colors duration-150 group-hover:text-brand-amber">
               {group.plan.title}
             </p>
             <p className="mt-0.5 truncate font-medium text-muted-foreground text-xs">
@@ -38,7 +38,7 @@ export function ProposedPlanQueueItem({
                   className={item.isChanging ? "text-foreground" : undefined}
                   labelClassName={
                     item.isChanging
-                      ? "underline decoration-spark-amber decoration-2 underline-offset-2"
+                      ? "underline decoration-brand-amber decoration-2 underline-offset-2"
                       : undefined
                   }
                 >
@@ -48,7 +48,7 @@ export function ProposedPlanQueueItem({
             </div>
           </div>
         </div>
-        <span className="inline-flex h-9 shrink-0 items-center justify-center gap-1 rounded-full border border-border px-3 font-bold text-foreground text-sm transition-colors duration-150 group-hover:border-spark-amber/35 group-hover:text-spark-amber sm:px-4">
+        <span className="inline-flex h-9 shrink-0 items-center justify-center gap-1 rounded-full border border-border px-3 font-bold text-foreground text-sm transition-colors duration-150 group-hover:border-brand-amber/35 group-hover:text-brand-amber sm:px-4">
           <span className="hidden sm:inline">{model.actionLabel}</span>
           <span className="sm:hidden" aria-hidden="true">
             {compactActionLabel}

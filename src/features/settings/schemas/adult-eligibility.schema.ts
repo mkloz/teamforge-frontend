@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-import { DateOfBirthValidator } from "@/shared/validators/date-of-birth.validator";
+import { FindafewLaunchDateOfBirthValidator } from "@/shared/validators/date-of-birth.validator";
 
 export const adultEligibilityFormSchema = z.object({
-  dateOfBirth: DateOfBirthValidator,
+  dateOfBirth: FindafewLaunchDateOfBirthValidator,
 });
 
 export type AdultEligibilityFormValues = z.infer<

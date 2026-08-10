@@ -64,7 +64,7 @@ export function DynamicQuestionPage({
           </div>
           <Progress
             className="h-1.5 bg-muted"
-            indicatorClassName="bg-forge-teal"
+            indicatorClassName="bg-brand-teal"
             aria-label={`Page ${pageNumber} of up to ${maximumPages}`}
             aria-valuemin={1}
             aria-valuemax={maximumPages}
@@ -97,7 +97,7 @@ export function DynamicQuestionPage({
                   "relative w-full rounded-xl bg-card p-4 shadow-soft-sm transition-all duration-300",
                   value === undefined
                     ? "hover:shadow-sm active:bg-muted/50 hover:sm:shadow-md"
-                    : "border-forge-teal/30 bg-forge-teal/6 shadow-sm",
+                    : "border-brand-teal/30 bg-primary-soft shadow-sm",
                 )}
               >
                 <div className="mb-2.5 flex min-h-5 items-center justify-between sm:mb-3">

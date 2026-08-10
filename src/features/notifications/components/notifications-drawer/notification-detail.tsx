@@ -196,7 +196,7 @@ function NotificationDetailUnreadMarker({ isRead }: { isRead: boolean }) {
 
   return (
     <>
-      <span className="size-2 rounded-full bg-forge-teal" aria-hidden="true" />
+      <span className="size-2 rounded-full bg-brand-teal" aria-hidden="true" />
       <span className="sr-only">Unread notification</span>
     </>
   );

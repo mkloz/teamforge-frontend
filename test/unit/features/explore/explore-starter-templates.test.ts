@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ACTIVITY_TEMPLATE_STARTING_POINTS } from "@/features/forge/public/canonical-activity-templates";
-import { buildForgeTemplateLaunchNavigation } from "@/shared/navigation";
+import { ACTIVITY_TEMPLATE_STARTING_POINTS } from "@/features/plan-creation/public/canonical-activity-templates";
+import { buildPlanCreationTemplateLaunchNavigation } from "@/shared/navigation";
 
 describe("Explore starter templates", () => {
   it("offers five complete activity-like starting points", () => {
@@ -16,12 +16,12 @@ describe("Explore starter templates", () => {
     }
   });
 
-  it("opens Forge with the selected template ready to edit", () => {
+  it("opens PlanCreation with the selected template ready to edit", () => {
     for (const startingPoint of ACTIVITY_TEMPLATE_STARTING_POINTS) {
       expect(
-        buildForgeTemplateLaunchNavigation(startingPoint.templateId),
+        buildPlanCreationTemplateLaunchNavigation(startingPoint.templateId),
       ).toEqual({
-        to: "/forge",
+        to: "/plans/new",
         search: {
           open: true,
           step: 3,

@@ -8,9 +8,11 @@ import { getNextProgress } from "@/shared/hooks/voronoi-animation/frame-utils";
 import { getCanvasPointerPosition } from "@/shared/hooks/voronoi-animation/mouse";
 import {
   createVoronoiFormationLayout,
+  getVoronoiWordCenterCharacterIndices,
   sampleMaskAlpha,
 } from "@/shared/lib/voronoi/voronoi-formation";
 import { createVoronoiGlyphLayout } from "@/shared/lib/voronoi/voronoi-glyphs";
+import { getVoronoiSymbolAccentWeight } from "@/shared/lib/voronoi/voronoi-symbols";
 
 describe("Voronoi cell glyphs", () => {
   it("maps characters to discrete active modules instead of a text overlay", () => {
@@ -58,7 +60,7 @@ describe("Voronoi cell glyphs", () => {
     expect(layout.bounds.height).toBeLessThan(dimensions.height / 2);
   });
 
-  it("maps an accented character to amber-weighted formation cells", () => {
+  it("fills every cell in an explicitly accented character with amber", () => {
     const dimensions = { height: 700, width: 900 };
     const points = Array.from({ length: NUM_FORMATION }, (_, index) => ({
       opacity: 0.05,
@@ -77,16 +79,70 @@ describe("Voronoi cell glyphs", () => {
         kind: "text",
         value: "INFJ",
         accentCharacterIndices: [1],
-        accentStrength: 0.75,
       },
     });
 
     const amberCells = layout.accentWeights.filter((weight) => weight > 0);
 
     expect(layout.accentWeights).toHaveLength(NUM_FORMATION);
-    expect(amberCells.length).toBeGreaterThan(0);
+    expect(amberCells.length).toBeGreaterThan(10);
     expect(amberCells.length).toBeLessThan(NUM_FORMATION / 2);
-    expect(new Set(amberCells)).toEqual(new Set([0.75]));
+    expect(new Set(amberCells)).toEqual(new Set([1]));
+  });
+
+  it("uses explicit empty accents without falling back to a centre letter", () => {
+    const layout = createVoronoiFormationLayout({
+      dimensions: { height: 700, width: 900 },
+      points: createFormationPoints(),
+      rotationDegrees: 0,
+      target: {
+        kind: "text",
+        value: "INFJ",
+        accentCharacterIndices: [],
+      },
+    });
+
+    expect(layout.accentWeights.every((weight) => weight === 0)).toBe(true);
+  });
+
+  it("selects the centre character of each word by default", () => {
+    expect(getVoronoiWordCenterCharacterIndices("YOUR FEW")).toEqual([1, 6]);
+
+    const layout = createVoronoiFormationLayout({
+      dimensions: { height: 700, width: 900 },
+      points: createFormationPoints(),
+      rotationDegrees: 0,
+      target: { kind: "text", value: "YOUR FEW" },
+    });
+    const amberCells = layout.accentWeights.filter((weight) => weight > 0);
+
+    expect(amberCells.length).toBeGreaterThan(20);
+    expect(amberCells.length).toBeLessThan(NUM_FORMATION / 2);
+    expect(new Set(amberCells)).toEqual(new Set([1]));
+  });
+});
+
+describe("Voronoi symbolic ember accents", () => {
+  const dimensions = { height: 700, width: 900 };
+  const anchors = [
+    ["constellation", { x: 378, y: 308 }],
+    ["convergence", { x: 450, y: 357 }],
+    ["pathways", { x: 468, y: 364 }],
+    ["shared-orbit", { x: 450, y: 350 }],
+  ] as const;
+
+  it.each(
+    anchors,
+  )("places ember cells at the semantic center of %s", (symbol, sample) => {
+    expect(
+      getVoronoiSymbolAccentWeight(symbol, sample, dimensions),
+    ).toBeGreaterThan(0);
+  });
+
+  it("keeps unrelated outer cells teal", () => {
+    expect(
+      getVoronoiSymbolAccentWeight("convergence", { x: 40, y: 40 }, dimensions),
+    ).toBe(0);
   });
 });
 
@@ -182,3 +238,15 @@ describe("Voronoi pointer mapping", () => {
     ).toEqual({ x: 60, y: 50 });
   });
 });
+
+function createFormationPoints() {
+  return Array.from({ length: NUM_FORMATION }, (_, index) => ({
+    opacity: 0.05,
+    targetX: (index % 16) * 50,
+    targetY: Math.floor(index / 16) * 50,
+    vx: 0,
+    vy: 0,
+    x: (index % 16) * 50,
+    y: Math.floor(index / 16) * 50,
+  }));
+}

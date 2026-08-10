@@ -19,8 +19,8 @@ import type {
   ScenarioRuntimeFacade,
 } from "@/shared/runtime/scenario-runtime-contract";
 
-const SCENARIO_RUNTIME_SENTINEL = "__TEAMFORGE_SCENARIO_RUNTIME__";
-const SCENARIO_RELEASE_FAULTS_EVENT = "teamforge:scenario-release-faults";
+const SCENARIO_RUNTIME_SENTINEL = "__SCENARIO_RUNTIME__";
+const SCENARIO_RELEASE_FAULTS_EVENT = "findafew:scenario-release-faults";
 const blockedEffects = new Set<ScenarioExternalEffect>([
   "audio",
   "clipboard",

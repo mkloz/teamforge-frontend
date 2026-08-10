@@ -4,7 +4,7 @@ import { readScenarioDescriptor } from "@/dev/scenarios/runtime/scenario-selecti
 describe("scenario selection", () => {
   it("ignores absent activation on non-loopback hosts", () => {
     expect(
-      readScenarioDescriptor({ hostname: "teamforge.example", search: "" }),
+      readScenarioDescriptor({ hostname: "findafew.example", search: "" }),
     ).toBeNull();
   });
 
@@ -25,9 +25,18 @@ describe("scenario selection", () => {
   it("rejects active scenarios away from loopback", () => {
     expect(() =>
       readScenarioDescriptor({
-        hostname: "teamforge.example",
+        hostname: "findafew.example",
         search: "?__scenario=standard",
       }),
     ).toThrow("Scenario Mode can only run on a loopback host.");
+  });
+
+  it("rejects unknown scenario ids instead of silently using baseline data", () => {
+    expect(() =>
+      readScenarioDescriptor({
+        hostname: "localhost",
+        search: "?__scenario=profile-standard",
+      }),
+    ).toThrow("Unknown Scenario Mode scenario: profile-standard.");
   });
 });

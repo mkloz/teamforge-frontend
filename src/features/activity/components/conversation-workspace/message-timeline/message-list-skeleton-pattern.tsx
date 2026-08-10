@@ -123,7 +123,7 @@ function getMessageSkeletonBubbleClassName(row: MessageSkeletonRow) {
   return cn(
     "flex max-w-xs flex-col rounded-xl border px-1 py-1 shadow-sm backdrop-blur-md sm:max-w-lg md:max-w-xl",
     row.tone === "own"
-      ? "rounded-br-none border-primary/15 bg-primary/8"
+      ? "rounded-br-none border-primary/15 bg-primary-soft"
       : "rounded-bl-none border-border/60 bg-card/75",
     row.kind === "proposal" && "w-full",
   );

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ScenarioController } from "@/dev/scenarios/runtime/scenario-controller";
 import { handleScenarioRequest } from "@/dev/scenarios/runtime/scenario-handler";
 import { resolveScenarioMediaUrl } from "@/dev/scenarios/runtime/scenario-media";
+import { buildScenarioWorld } from "@/dev/scenarios/world/build-scenario-world";
 import { groupPlanDetailSchema } from "@/features/group-plan-detail/schemas/group-plan-detail.schema";
 import { homeGroupSchema } from "@/features/home/schemas/home-group.schema";
 import { operatorQueueHealthSchema } from "@/features/operator/schemas/operator-queue-health.schemas";
@@ -21,9 +22,15 @@ import {
   personalityAssessmentStateSchema,
 } from "@/shared/schemas/personality-assessment";
 import {
+  containmentContestSchema,
+  containmentSchema,
+  enforcementNoticeSchema,
+  moderationAppealSchema,
+  outcomeReviewRequestSchema,
   paginatedContainmentsSchema,
   paginatedEnforcementNoticesSchema,
   paginatedReportsSchema,
+  reportSummarySchema,
 } from "@/shared/schemas/safety";
 
 function createController(id = "standard", overlays: readonly string[] = []) {
@@ -35,6 +42,34 @@ function apiRequest(path: string, init?: RequestInit) {
 }
 
 describe("scenario runtime", () => {
+  it("keeps the standard personality type aligned with its displayed dimensions", () => {
+    const world = buildScenarioWorld({
+      id: "onboarding-personality-result",
+      overlays: [],
+      persona: null,
+    });
+    const viewer = world.entities.users[world.viewerId ?? ""];
+
+    expect(viewer).toBeDefined();
+    if (!viewer) return;
+
+    const dimensionScores = [
+      100 - (viewer.oceanE ?? 50),
+      viewer.oceanO ?? 50,
+      viewer.oceanA ?? 50,
+      100 - (viewer.oceanC ?? 50),
+    ];
+    const derivedType = [
+      dimensionScores[0] < 50 ? "E" : "I",
+      dimensionScores[1] < 50 ? "S" : "N",
+      dimensionScores[2] < 50 ? "T" : "F",
+      dimensionScores[3] < 50 ? "J" : "P",
+    ].join("");
+
+    expect(derivedType).toBe(viewer.personalityType);
+    expect(dimensionScores[0]).toBe(44);
+  });
+
   it("holds a scoped loading request until the fault is released", async () => {
     const controller = createController("explore-loading");
     const pendingResponse = handleScenarioRequest(
@@ -137,6 +172,66 @@ describe("scenario runtime", () => {
         await capabilitiesResponse.json(),
       ).dynamic,
     ).toMatchObject({ onboardingUse: "ENABLED", pageSize: 5 });
+  });
+
+  it.each([
+    "onboarding-personality",
+    "onboarding-interests",
+  ])("keeps %s in the first-run onboarding state", async (scenarioId) => {
+    const controller = createController(scenarioId);
+    const [viewerResponse, productStateResponse, assessmentResponse] =
+      await Promise.all([
+        handleScenarioRequest(controller, apiRequest("users/me")),
+        handleScenarioRequest(
+          controller,
+          apiRequest("onboarding/product-state"),
+        ),
+        handleScenarioRequest(
+          controller,
+          apiRequest("users/me/personality-assessment"),
+        ),
+      ]);
+    const viewer = fullUserResponseSchema.parse(await viewerResponse.json());
+    const productState = onboardingProductStateSchema.parse(
+      await productStateResponse.json(),
+    );
+    const assessment = personalityAssessmentStateSchema.parse(
+      await assessmentResponse.json(),
+    );
+
+    expect(viewer.interests).toEqual([]);
+    expect(viewer.personalitySetupComplete).toBe(false);
+    expect(assessment.current).toBeNull();
+    expect(productState).toMatchObject({
+      safeDefaultDestination: "ONBOARDING_INTERESTS",
+      milestones: {
+        fullAssessmentAccepted: false,
+        interestsComplete: false,
+      },
+    });
+  });
+
+  it.each([
+    "onboarding-personality-result",
+    "onboarding-interests-edit",
+  ])("keeps %s in the established edit state", async (scenarioId) => {
+    const controller = createController(scenarioId);
+    const [productStateResponse, assessmentResponse] = await Promise.all([
+      handleScenarioRequest(controller, apiRequest("onboarding/product-state")),
+      handleScenarioRequest(
+        controller,
+        apiRequest("users/me/personality-assessment"),
+      ),
+    ]);
+    const productState = onboardingProductStateSchema.parse(
+      await productStateResponse.json(),
+    );
+    const assessment = personalityAssessmentStateSchema.parse(
+      await assessmentResponse.json(),
+    );
+
+    expect(productState.safeDefaultDestination).toBe("HOME");
+    expect(assessment.current).not.toBeNull();
   });
 
   it("moves from profile basics to a persisted intent or skip step", async () => {
@@ -478,6 +573,118 @@ describe("scenario runtime", () => {
       paginatedContainmentsSchema.parse(await containmentsResponse.json())
         .items,
     ).toHaveLength(1);
+  });
+
+  it("projects schema-valid safety details without unmatched requests", async () => {
+    const controller = createController("safety-active");
+    const [
+      reportResponse,
+      reviewsResponse,
+      noticeResponse,
+      containmentResponse,
+    ] = await Promise.all([
+      handleScenarioRequest(
+        controller,
+        apiRequest("reports/scenario-report-one"),
+      ),
+      handleScenarioRequest(
+        controller,
+        apiRequest("reports/scenario-report-one/outcome-review-requests"),
+      ),
+      handleScenarioRequest(
+        controller,
+        apiRequest("safety/enforcement-notices/scenario-enforcement-one"),
+      ),
+      handleScenarioRequest(
+        controller,
+        apiRequest("safety/containments/scenario-containment-one"),
+      ),
+    ]);
+
+    expect(reportSummarySchema.parse(await reportResponse.json()).id).toBe(
+      "scenario-report-one",
+    );
+    expect(
+      outcomeReviewRequestSchema.array().parse(await reviewsResponse.json()),
+    ).toEqual([]);
+    expect(enforcementNoticeSchema.parse(await noticeResponse.json()).id).toBe(
+      "scenario-enforcement-one",
+    );
+    expect(containmentSchema.parse(await containmentResponse.json()).id).toBe(
+      "scenario-containment-one",
+    );
+    expect(controller.requests.every(({ status }) => status !== 501)).toBe(
+      true,
+    );
+  });
+
+  it("persists safety review mutations in the synthetic world", async () => {
+    const controller = createController("safety-active");
+    const request = (path: string) =>
+      apiRequest(path, {
+        body: JSON.stringify({
+          reason: "Please review this scenario decision.",
+        }),
+        headers: { "content-type": "application/json" },
+        method: "POST",
+      });
+
+    const review = outcomeReviewRequestSchema.parse(
+      await (
+        await handleScenarioRequest(
+          controller,
+          request("reports/scenario-report-one/outcome-review-requests"),
+        )
+      ).json(),
+    );
+    const appeal = moderationAppealSchema.parse(
+      await (
+        await handleScenarioRequest(
+          controller,
+          request(
+            "safety/enforcement-notices/scenario-enforcement-one/appeals",
+          ),
+        )
+      ).json(),
+    );
+    const contest = containmentContestSchema.parse(
+      await (
+        await handleScenarioRequest(
+          controller,
+          request("safety/containments/scenario-containment-one/contests"),
+        )
+      ).json(),
+    );
+
+    expect(review.status).toBe("RECEIVED");
+    expect(appeal.status).toBe("RECEIVED");
+    expect(contest.status).toBe("RECEIVED");
+
+    const [reviewsResponse, noticeResponse, containmentResponse] =
+      await Promise.all([
+        handleScenarioRequest(
+          controller,
+          apiRequest("reports/scenario-report-one/outcome-review-requests"),
+        ),
+        handleScenarioRequest(
+          controller,
+          apiRequest("safety/enforcement-notices/scenario-enforcement-one"),
+        ),
+        handleScenarioRequest(
+          controller,
+          apiRequest("safety/containments/scenario-containment-one"),
+        ),
+      ]);
+
+    expect(
+      outcomeReviewRequestSchema.array().parse(await reviewsResponse.json()),
+    ).toHaveLength(1);
+    expect(
+      enforcementNoticeSchema.parse(await noticeResponse.json()).appeal,
+    ).toMatchObject({ status: "RECEIVED" });
+    expect(
+      containmentSchema.parse(await containmentResponse.json()).contest,
+    ).toMatchObject({ status: "RECEIVED" });
   });
 
   it("keeps scenario-owned seed media deterministic and offline", () => {

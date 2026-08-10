@@ -101,7 +101,7 @@ export function getIntermissionContent(milestoneIndex: number) {
       icon: Target,
       title: "Your starting set is complete",
       description:
-        "You answered 10 questions. Choose your interests now, or continue all 30 questions for a more detailed matching profile.",
+        "You answered 10 questions. Choose your interests now, or continue all 30 questions for a more detailed group-fit profile.",
       factTitle: "Nothing is lost",
       fact: "If you continue later in this session, these ten answers remain part of the full assessment.",
     };

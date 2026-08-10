@@ -1,6 +1,4 @@
-import type { LucideIcon } from "lucide-react";
-import { BadgeCheck, Compass, Eye, Radar, TriangleAlert } from "lucide-react";
-import { IconTile } from "@/shared/components/ui/icon-tile";
+import { BadgeCheck, Radar } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import type { ProfilePortraitInsight } from "../lib/profile-insights";
 import { ProfileSectionHeading } from "./profile-section-heading";
@@ -9,23 +7,6 @@ interface ProfilePortraitSectionProps {
   mode: "self" | "public";
   portrait: ProfilePortraitInsight;
 }
-
-const DETAIL_ICON_RULES = [
-  {
-    Icon: Compass,
-    matches: (label: string) => label.includes("setting"),
-  },
-  {
-    Icon: TriangleAlert,
-    matches: (label: string) =>
-      label.includes("watch") || label.includes("avoid"),
-  },
-  {
-    Icon: BadgeCheck,
-    matches: (label: string) =>
-      label.includes("basis") || label.includes("trait"),
-  },
-] as const;
 
 const SHOW_UP_RANK_LABELS = [
   "Most visible",
@@ -103,7 +84,7 @@ function HowYouShowUpCard({
   }
 
   return (
-    <div className="flex h-full min-h-64 flex-col rounded-2xl bg-forge-teal/8 p-4 shadow-soft-sm">
+    <div className="flex h-full min-h-64 flex-col rounded-2xl bg-primary-soft p-4 shadow-soft-sm">
       <div className="flex items-center justify-between gap-3">
         <p className="font-black text-slate-muted text-sm">Profile signals</p>
         <Radar className="size-4 text-foreground" aria-hidden="true" />
@@ -182,8 +163,8 @@ function ShowUpMeter({
             key={segment}
             className={
               segment <= filledSegments
-                ? "h-1.5 rounded-full bg-forge-teal"
-                : "h-1.5 rounded-full bg-slate-muted/15"
+                ? "h-1.5 rounded-full bg-brand-teal"
+                : "h-1.5 rounded-full bg-muted-soft"
             }
           />
         ))}
@@ -197,8 +178,6 @@ function PortraitDetailRow({
 }: {
   detail: ProfilePortraitInsight["details"][number];
 }) {
-  const Icon = getDetailIcon(detail.label);
-
   return (
     <div
       className={cn(
@@ -206,10 +185,7 @@ function PortraitDetailRow({
         getPortraitDetailTone(detail.label),
       )}
     >
-      <div className="flex min-w-0 items-center gap-2">
-        <IconTile icon={Icon} shape="circle" size="sm" />
-        <p className="font-bold text-slate-muted text-sm">{detail.label}</p>
-      </div>
+      <p className="font-bold text-slate-muted text-sm">{detail.label}</p>
       <p className="mt-2 text-pretty font-semibold text-ink/85 text-sm leading-snug">
         {getCompactSentence(detail.value)}
       </p>{" "}
@@ -225,7 +201,7 @@ function getPortraitDetailTone(label: string) {
   }
 
   if (normalizedLabel.includes("watch") || normalizedLabel.includes("avoid")) {
-    return "bg-spark-amber/6";
+    return "bg-accent-soft";
   }
 
   return undefined;
@@ -239,15 +215,6 @@ function getCompactLead(value: string) {
 function getCompactSentence(value: string) {
   const [sentence] = value.match(/[^.!?]+[.!?]+/g) ?? [value];
   return sentence.trim();
-}
-
-function getDetailIcon(label: string): LucideIcon {
-  const normalizedLabel = label.toLowerCase();
-  const matchingRule = DETAIL_ICON_RULES.find((rule) =>
-    rule.matches(normalizedLabel),
-  );
-
-  return matchingRule?.Icon ?? Eye;
 }
 
 function formatSignalStrengthPercent(score: number, leaderScore: number) {

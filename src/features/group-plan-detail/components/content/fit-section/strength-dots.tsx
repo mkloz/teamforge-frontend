@@ -39,10 +39,10 @@ function getFilledDotCount(strength: GroupPlanFitSignal["strength"]) {
 
 function getFilledDotClass(strength: GroupPlanFitSignal["strength"]) {
   if (strength === "HIGH") {
-    return "bg-forge-teal";
+    return "bg-brand-teal";
   }
   if (strength === "MEDIUM") {
-    return "bg-spark-amber";
+    return "bg-brand-amber";
   }
   return "bg-muted-foreground";
 }

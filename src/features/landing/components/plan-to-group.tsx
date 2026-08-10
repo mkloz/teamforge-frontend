@@ -15,8 +15,8 @@ const SECTION_NOTES = [
   },
   {
     icon: MessageCircle,
-    title: "Open one room",
-    detail: "One small group forms around the plan, not another list.",
+    title: "Review the proposal",
+    detail: "See the people and practical details before you decide.",
   },
 ] as const;
 
@@ -40,12 +40,12 @@ export function PlanToGroupSection() {
               id="plan-to-group-heading"
               className="text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
             >
-              One plan. One compatible group.
+              One plan. A small group to review.
             </h2>
           </header>
           <p className="max-w-xl text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg lg:col-span-5 lg:col-start-8">
-            Choose the activity, add the plan details, and let TeamForge handle
-            the group setup. You get one room for one plan.
+            Choose the activity and add the practical details. If a group comes
+            together, you can review it before deciding whether to take part.
           </p>
         </div>
       </div>
@@ -65,7 +65,7 @@ export function PlanToGroupSection() {
             />
             <img
               src="/landing/plan-to-group-visual-ai-cutout.png"
-              alt="Three-step TeamForge flow from activity idea to plan details to one small group room"
+              alt="Three-step Findafew flow from a shared activity to plan details and a group proposal to review"
               width={1775}
               height={886}
               className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"

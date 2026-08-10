@@ -15,7 +15,7 @@ export const TYPE_INFO: Record<PersonalityType, TypeInfo> = {
   INFJ: { title: "The Advocate", archetype: "The Guide" },
   INFP: { title: "The Mediator", archetype: "The Dreamer" },
   ENFJ: { title: "The Protagonist", archetype: "The Mentor" },
-  ENFP: { title: "The Campaigner", archetype: "The Spark" },
+  ENFP: { title: "The Campaigner", archetype: "The Particle" },
   // Sentinels
   ISTJ: { title: "The Logistician", archetype: "The Anchor" },
   ISFJ: { title: "The Defender", archetype: "The Caretaker" },

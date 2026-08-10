@@ -353,9 +353,9 @@ function PlanReadinessBadge({
       className={cn(
         "mt-2 inline-flex rounded-full px-2 py-0.5 font-bold text-xs",
         inverse && "bg-black/35 text-white backdrop-blur-sm",
-        !inverse && tone === "success" && "bg-success/10 text-foreground",
-        !inverse && tone === "warning" && "bg-warning/10 text-warning",
-        !inverse && tone === "danger" && "bg-destructive/10 text-destructive",
+        !inverse && tone === "success" && "bg-success-soft text-foreground",
+        !inverse && tone === "warning" && "bg-warning-soft text-warning",
+        !inverse && tone === "danger" && "bg-destructive-soft text-destructive",
         !inverse && tone === "neutral" && "bg-muted text-muted-foreground",
       )}
     >
@@ -405,7 +405,7 @@ function EmptyJourneyPlans() {
     <EmptyState
       icon={CalendarDays}
       title="Your calendar is open."
-      description="Forge a group or join one to get a real plan moving."
+      description="Start a plan or join one to get something moving."
     />
   );
 }

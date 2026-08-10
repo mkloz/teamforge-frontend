@@ -17,7 +17,7 @@ export function HeroInstallFeedback({
         aria-live="polite"
       >
         <CheckCircle2 size={15} strokeWidth={2} aria-hidden="true" />
-        TeamForge is already installed on this device.
+        Findafew is already installed on this device.
       </p>
     );
   }

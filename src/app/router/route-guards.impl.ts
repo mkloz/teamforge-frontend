@@ -23,10 +23,7 @@ import type {
   RequireAuthenticatedUserOptions,
   RouteGuardLocationLike,
 } from "@/app/router/route-guards/types";
-import {
-  isApiNetworkError,
-  isProductStateApiUnsupported,
-} from "@/shared/api/api-network-error";
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { authSession } from "@/shared/api/auth-session";
 import { ensureOnboardingProductState } from "@/shared/api/onboarding-product-state-query";
 import {
@@ -232,7 +229,7 @@ async function resolveCanonicalDestination(
     const productState = await ensureOnboardingProductState();
     return getProductStateRedirectPath(productState);
   } catch (error) {
-    if (isApiNetworkError(error) || isProductStateApiUnsupported(error)) {
+    if (isApiNetworkError(error)) {
       return getPostAuthRedirectPath(currentUser);
     }
 

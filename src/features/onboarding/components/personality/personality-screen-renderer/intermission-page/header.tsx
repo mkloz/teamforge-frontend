@@ -25,7 +25,7 @@ export function IntermissionHeader({
           max={totalQuestions}
           min={0}
           value={answeredCount}
-          gaugePrimaryColor="var(--color-forge-teal)"
+          gaugePrimaryColor="var(--color-brand-teal)"
           gaugeSecondaryColor="color-mix(in srgb, var(--color-slate-muted) 22%, transparent)"
           className="size-full text-transparent"
         />
@@ -35,7 +35,7 @@ export function IntermissionHeader({
             tone="none"
             size="lg"
             bordered
-            className="z-10 size-9 bg-card text-foreground shadow-forge-teal/5 shadow-lg transition-transform duration-300 group-hover:scale-105 sm:h-11 sm:w-11 dark:shadow-xl"
+            className="z-10 size-9 bg-card text-foreground shadow-brand-teal/5 shadow-lg transition-transform duration-300 group-hover:scale-105 sm:h-11 sm:w-11 dark:shadow-xl"
             iconClassName="size-4.5 sm:size-5.25"
           />
         </div>

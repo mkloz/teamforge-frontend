@@ -1,6 +1,6 @@
 export const COLORS = {
-  forgeTeal: "#0D9488",
-  sparkAmber: "#F59E0B",
+  brandTeal: "#378371",
+  brandAmber: "#F59E0B",
   amberLight: "#FFFBEB",
 } as const;
 

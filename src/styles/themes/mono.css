@@ -35,8 +35,8 @@
   --sidebar-accent-foreground: #0c5c56;
   --sidebar-border: rgb(23 25 23 / 0.2);
   --sidebar-ring: var(--ring);
-  --color-forge-teal: var(--primary);
-  --color-spark-amber: var(--accent);
+  --color-brand-teal: var(--primary);
+  --color-brand-amber: var(--accent);
 }
 
 .dark[data-theme-color="mono"] {
@@ -76,6 +76,6 @@
   --sidebar-accent-foreground: #b5eee8;
   --sidebar-border: rgb(250 250 246 / 0.22);
   --sidebar-ring: var(--ring);
-  --color-forge-teal: var(--primary);
-  --color-spark-amber: var(--accent);
+  --color-brand-teal: var(--primary);
+  --color-brand-amber: var(--accent);
 }

@@ -23,7 +23,8 @@ export function CompletionBlueprintHeader() {
         Your starter profile is ready
       </h1>
       <p className="mt-4 text-pretty text-base text-muted-foreground leading-relaxed">
-        You bring a plan → TeamForge finds compatible people → You decide
+        Start a plan → Findafew helps turn it into a group to review → You
+        decide
       </p>
     </m.div>
   );

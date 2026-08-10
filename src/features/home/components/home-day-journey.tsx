@@ -8,7 +8,7 @@ interface HomeDayJourneyProps {
   accountReadiness?: ReactNode;
   attention: ReactNode;
   availability?: ReactNode;
-  forgeRequest?: ReactNode;
+  groupFormationRequest?: ReactNode;
   groups: ReactNode;
   invitationReview?: ReactNode;
   inviteSomeone: ReactNode;
@@ -20,7 +20,7 @@ export function HomeDayJourney({
   accountReadiness,
   attention,
   availability,
-  forgeRequest,
+  groupFormationRequest,
   groups,
   invitationReview,
   inviteSomeone,
@@ -63,7 +63,7 @@ export function HomeDayJourney({
 
       <HomeNextMoves
         availability={availability}
-        forgeRequest={forgeRequest}
+        groupFormationRequest={groupFormationRequest}
         inviteSomeone={inviteSomeone}
       />
     </div>
@@ -124,7 +124,7 @@ function JourneyMoment({
           className={cn(
             "block size-3 rounded-full border-2 border-background ring-1",
             tone === "active"
-              ? "bg-forge-teal ring-forge-teal"
+              ? "bg-brand-teal ring-brand-teal"
               : "bg-card ring-border",
           )}
           aria-hidden="true"
@@ -148,11 +148,11 @@ function JourneyMoment({
 
 function HomeNextMoves({
   availability,
-  forgeRequest,
+  groupFormationRequest,
   inviteSomeone,
 }: {
   availability?: ReactNode;
-  forgeRequest?: ReactNode;
+  groupFormationRequest?: ReactNode;
   inviteSomeone: ReactNode;
 }) {
   return (
@@ -173,7 +173,9 @@ function HomeNextMoves({
         </p>
       </header>
 
-      {forgeRequest ? <div className="mt-8">{forgeRequest}</div> : null}
+      {groupFormationRequest ? (
+        <div className="mt-8">{groupFormationRequest}</div>
+      ) : null}
 
       <div className="mt-8 grid min-w-0 items-start gap-10 lg:grid-cols-2 lg:gap-12">
         {availability}

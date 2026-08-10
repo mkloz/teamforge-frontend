@@ -57,7 +57,7 @@ export function useActivateAccount(returnTo?: string | null) {
         );
         setState("success");
         showAppSuccessToast("Your account is ready.", {
-          description: "Taking you back into TeamForge now.",
+          description: "Taking you back into Findafew now.",
           id: "auth-activate-account",
         });
         await navigate(

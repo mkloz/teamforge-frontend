@@ -17,7 +17,7 @@ interface AddressInputControlsProps {
   inputValue: string;
   isBusy: boolean;
   isLocating: boolean;
-  mapsReady: boolean;
+  geolocationAvailable: boolean;
   messageId?: string;
   onClearLocation: () => void;
   onUseCurrentArea: () => void;
@@ -26,9 +26,12 @@ interface AddressInputControlsProps {
 function shouldRenderAddressInputControls({
   inputValue,
   isBusy,
-  mapsReady,
-}: Pick<AddressInputControlsProps, "inputValue" | "isBusy" | "mapsReady">) {
-  return mapsReady || isBusy || Boolean(inputValue);
+  geolocationAvailable,
+}: Pick<
+  AddressInputControlsProps,
+  "geolocationAvailable" | "inputValue" | "isBusy"
+>) {
+  return geolocationAvailable || isBusy || Boolean(inputValue);
 }
 
 function shouldShowBusyIndicator({
@@ -60,7 +63,7 @@ function LocateAreaButton({
   disabled,
   hasCurrentAreaError,
   isLocating,
-  mapsReady,
+  geolocationAvailable,
   messageId,
   showBusyIndicator,
   onUseCurrentArea,
@@ -69,13 +72,13 @@ function LocateAreaButton({
   | "disabled"
   | "hasCurrentAreaError"
   | "isLocating"
-  | "mapsReady"
+  | "geolocationAvailable"
   | "messageId"
   | "onUseCurrentArea"
 > & {
   showBusyIndicator: boolean;
 }) {
-  if (!mapsReady) {
+  if (!geolocationAvailable) {
     return null;
   }
 
@@ -90,7 +93,7 @@ function LocateAreaButton({
       className={cn(
         "size-7 rounded-full",
         hasCurrentAreaError &&
-          "border-destructive/30 bg-destructive/8 text-destructive focus-visible:ring-destructive hover:enabled:bg-destructive/10",
+          "border-destructive/30 bg-destructive-soft text-destructive focus-visible:ring-destructive hover:enabled:brightness-110",
       )}
       aria-describedby={getLocateButtonDescriptionId({
         hasCurrentAreaError,
@@ -165,16 +168,22 @@ function ClearLocationButton({
 
 export function AddressInputControls({
   disabled,
+  geolocationAvailable,
   hasCurrentAreaError,
   inputValue,
   isBusy,
   isLocating,
-  mapsReady,
   messageId,
   onClearLocation,
   onUseCurrentArea,
 }: AddressInputControlsProps) {
-  if (!shouldRenderAddressInputControls({ inputValue, isBusy, mapsReady })) {
+  if (
+    !shouldRenderAddressInputControls({
+      geolocationAvailable,
+      inputValue,
+      isBusy,
+    })
+  ) {
     return null;
   }
 
@@ -184,9 +193,9 @@ export function AddressInputControls({
     <div className="flex items-center gap-1 pr-0.5">
       <LocateAreaButton
         disabled={disabled}
+        geolocationAvailable={geolocationAvailable}
         hasCurrentAreaError={hasCurrentAreaError}
         isLocating={isLocating}
-        mapsReady={mapsReady}
         messageId={messageId}
         showBusyIndicator={showBusyIndicator}
         onUseCurrentArea={onUseCurrentArea}

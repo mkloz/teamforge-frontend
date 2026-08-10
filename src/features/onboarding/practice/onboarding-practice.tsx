@@ -10,10 +10,10 @@ import {
   Check,
   Compass,
   GitFork,
-  Hammer,
   type LucideIcon,
   RefreshCcw,
   ShieldCheck,
+  Users,
 } from "lucide-react";
 import { useRef, useState } from "react";
 
@@ -37,7 +37,7 @@ interface OnboardingPracticeProps {
 const taskIcons: Record<OnboardingPracticeTaskId, LucideIcon> = {
   navigation: Compass,
   "group-and-plan": GitFork,
-  "ways-to-join": Hammer,
+  "ways-to-join": Users,
   "plan-changes": RefreshCcw,
   "privacy-and-safety": ShieldCheck,
 };
@@ -223,7 +223,7 @@ function PracticeJourney({
                 onClick={() => onSelect(task.id)}
                 className={cn(
                   "flex h-11 w-full min-w-0 items-center justify-center gap-2 rounded-xl bg-foreground/5 px-2 text-muted-foreground transition-colors hover:bg-foreground/8 hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground/35",
-                  active && "bg-forge-teal/12 text-foreground",
+                  active && "bg-primary-soft text-foreground",
                   complete && !active && "text-foreground",
                 )}
               >
@@ -268,7 +268,7 @@ function PracticeActions({
     return (
       <div className="flex flex-wrap items-center gap-2">
         <Button size="sm" onClick={onComplete}>
-          Enter TeamForge
+          Enter Findafew
           <ArrowRight className="size-4" aria-hidden="true" />
         </Button>
         <Button

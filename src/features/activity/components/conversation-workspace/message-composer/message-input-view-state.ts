@@ -77,7 +77,7 @@ function getInputPillClasses(composer: MessageComposer) {
   return cn(
     "relative flex min-h-11 min-w-0 flex-1 rounded-full border transition-colors duration-300",
     composer.isRecording
-      ? "border-destructive/20 bg-destructive/5"
+      ? "border-destructive/20 bg-destructive-soft"
       : composer.isFocused
         ? "border-primary/40 bg-card shadow-sm"
         : "border-border/50 bg-card/60 shadow-sm",

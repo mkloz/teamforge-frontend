@@ -40,7 +40,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
         <span
           className={cn(
             "font-black text-xs transition-colors",
-            score.isBorderline ? "text-spark-amber" : "text-foreground",
+            score.isBorderline ? "text-brand-amber" : "text-foreground",
           )}
         >
           {markerPosition}%
@@ -57,7 +57,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
           {labels.left}
         </span>
 
-        <div className="relative h-2 flex-1 rounded-full border border-border/10 bg-slate-muted/10">
+        <div className="relative h-2 flex-1 rounded-full border border-border/10 bg-muted-soft">
           <SpectrumTrack
             markerPosition={markerPosition}
             isBorderline={score.isBorderline}
@@ -90,7 +90,7 @@ function SpectrumTrack({ isBorderline, markerPosition }: SpectrumTrackProps) {
       <div
         className={cn(
           "h-full w-(--spectrum-position) rounded-full",
-          isBorderline ? "bg-spark-amber/45" : "bg-forge-teal/45",
+          isBorderline ? "bg-brand-amber/45" : "bg-brand-teal/45",
         )}
         style={spectrumStyle}
       />
@@ -98,8 +98,8 @@ function SpectrumTrack({ isBorderline, markerPosition }: SpectrumTrackProps) {
         className={cn(
           "absolute top-1/2 left-(--spectrum-position) block size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-white",
           isBorderline
-            ? "border-spark-amber shadow-[0_0_4px_color-mix(in_srgb,var(--color-spark-amber)_18%,transparent)]"
-            : "border-forge-teal shadow-[0_0_4px_color-mix(in_srgb,var(--color-forge-teal)_18%,transparent)]",
+            ? "border-brand-amber shadow-[0_0_4px_color-mix(in_srgb,var(--color-brand-amber)_18%,transparent)]"
+            : "border-brand-teal shadow-[0_0_4px_color-mix(in_srgb,var(--color-brand-teal)_18%,transparent)]",
         )}
         style={spectrumStyle}
       />

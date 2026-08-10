@@ -198,7 +198,7 @@ function ManagedConnectionAction({
       </Tooltip>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem
-          className="text-destructive focus:bg-destructive/10"
+          className="text-destructive focus:bg-destructive-soft"
           onClick={(e) => {
             e.stopPropagation();
             onSelect();

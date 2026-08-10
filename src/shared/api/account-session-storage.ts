@@ -3,18 +3,18 @@ import { getBrowserWindow } from "@/shared/lib/browser-environment/window";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 
 export const PERSONALITY_ASSESSMENT_SESSION_KEY =
-  "teamforge:account:personality-assessment:v1";
+  "findafew:account:personality-assessment:v1";
 export const ONBOARDING_PRACTICE_PROGRESS_SESSION_KEY =
-  "teamforge:account:onboarding-practice:v1";
+  "findafew:account:onboarding-practice:v1";
 export const ONBOARDING_EDUCATION_NUDGE_SESSION_KEY =
-  "teamforge:account:onboarding-education-nudge:v1";
-export const FORGE_WIZARD_DRAFT_SESSION_KEY =
-  "teamforge:account:forge-wizard-draft:v1";
+  "findafew:account:onboarding-education-nudge:v1";
+export const PLAN_BUILDER_DRAFT_SESSION_KEY =
+  "findafew:account:plan-builder-draft:v1";
 export const ONBOARDING_COACHMARKS_SESSION_KEY =
-  "teamforge:account:onboarding-coachmarks:v1";
+  "findafew:account:onboarding-coachmarks:v1";
 
 const ACCOUNT_SESSION_PURGE_EVENT_KEY =
-  "teamforge:account-session-purge-event:v1";
+  "findafew:account-session-purge-event:v1";
 
 interface ClearAccountSessionStorageOptions {
   broadcast?: boolean;
@@ -27,7 +27,7 @@ export function clearAccountSessionStorage(
   removeBrowserSessionStorageItem(PERSONALITY_ASSESSMENT_SESSION_KEY);
   removeBrowserSessionStorageItem(ONBOARDING_PRACTICE_PROGRESS_SESSION_KEY);
   removeBrowserSessionStorageItem(ONBOARDING_EDUCATION_NUDGE_SESSION_KEY);
-  removeBrowserSessionStorageItem(FORGE_WIZARD_DRAFT_SESSION_KEY);
+  removeBrowserSessionStorageItem(PLAN_BUILDER_DRAFT_SESSION_KEY);
   removeBrowserSessionStorageItem(ONBOARDING_COACHMARKS_SESSION_KEY);
 
   if (options.broadcast === false) {

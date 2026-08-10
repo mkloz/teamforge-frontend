@@ -4,10 +4,14 @@ import {
   getLocationHintMessage,
 } from "@/shared/components/maps/address-autocomplete/address-autocomplete-utils";
 import type { AddressAutocompleteMessageTone } from "@/shared/hooks/use-address-autocomplete-state";
-import type { GoogleMapsStatus } from "@/shared/lib/maps/location.types";
+import type {
+  GoogleMapsStatus,
+  GooglePlaceSuggestion,
+} from "@/shared/lib/maps/location.types";
 
 export interface AddressAutocompleteRenderStateInput {
   activeSuggestionIndex: number;
+  geolocationAvailable: boolean;
   hint: string;
   hintId: string;
   inputValue: string;
@@ -18,7 +22,7 @@ export interface AddressAutocompleteRenderStateInput {
   mapsStatus: GoogleMapsStatus;
   message: string | null;
   messageTone: AddressAutocompleteMessageTone | null;
-  suggestions: GoogleAutocompletePrediction[];
+  suggestions: GooglePlaceSuggestion[];
   suggestionsId: string;
 }
 
@@ -46,11 +50,12 @@ function shouldShowAddressBusyIndicator({
 function shouldRenderAddressInputControls({
   inputValue,
   isBusy,
-  mapsReady,
-}: Pick<AddressAutocompleteRenderStateInput, "inputValue" | "mapsReady"> & {
+  showLocateControl,
+}: Pick<AddressAutocompleteRenderStateInput, "inputValue"> & {
   isBusy: boolean;
+  showLocateControl: boolean;
 }) {
-  return mapsReady || isBusy || Boolean(inputValue);
+  return showLocateControl || isBusy || Boolean(inputValue);
 }
 
 function getAddressAutocompleteDescribedBy({
@@ -67,6 +72,7 @@ export function getAddressAutocompleteRenderState(
   input: AddressAutocompleteRenderStateInput,
 ) {
   const showManualHint = input.mapsStatus === "unavailable";
+  const showLocateControl = input.geolocationAvailable;
   const isBusy = isAddressAutocompleteBusy(input);
   const showBusyIndicator = shouldShowAddressBusyIndicator({
     isBusy,
@@ -89,7 +95,7 @@ export function getAddressAutocompleteRenderState(
     hasRightControls: shouldRenderAddressInputControls({
       inputValue: input.inputValue,
       isBusy,
-      mapsReady: input.mapsReady,
+      showLocateControl,
     }),
     hintMessage: getLocationHintMessage({
       hint: input.hint,
@@ -99,7 +105,7 @@ export function getAddressAutocompleteRenderState(
     isBusy,
     rightPaddingClassName: getAddressInputRightPaddingClassName({
       inputValue: input.inputValue,
-      mapsReady: input.mapsReady,
+      showLocateControl,
       showBusyIndicator,
     }),
   };

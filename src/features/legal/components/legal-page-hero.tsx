@@ -16,7 +16,9 @@ export function LegalPageHero({ kind }: LegalPageHeroProps) {
       <div className="flex flex-wrap items-center gap-2">
         <LegalBadge kind={kind} />
         <p className="font-semibold text-slate-muted text-xs">
-          Effective {copy.updatedAt}
+          {copy.updatedAt.startsWith("Pre-launch")
+            ? copy.updatedAt
+            : `Effective ${copy.updatedAt}`}
         </p>
       </div>
 

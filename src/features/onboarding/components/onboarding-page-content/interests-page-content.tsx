@@ -13,8 +13,8 @@ interface InterestsPageContentProps {
 }
 
 const INTERESTS_FORMATION = {
-  kind: "symbol",
-  value: "group",
+  kind: "text",
+  value: "YOUR FEW",
 } as const satisfies VoronoiFormationTarget;
 
 export function InterestsPageContent({

@@ -209,7 +209,7 @@ function projectActivityGroupEntity(world: ScenarioWorld, groupId: string) {
     activity: {
       access: activity.access,
       city: activity.city,
-      forgeMode: "MANUAL",
+      groupFormationMode: "MANUAL",
       id: activity.id,
       interests: activity.interestIds.map((id) => world.entities.interests[id]),
       status: "MATCHED",

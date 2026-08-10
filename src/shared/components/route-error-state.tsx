@@ -19,7 +19,7 @@ import {
   trackedEventNames,
 } from "@/shared/lib/telemetry-contract";
 
-const DYNAMIC_IMPORT_RELOAD_KEY = "teamforge:dynamic-import-reload";
+const DYNAMIC_IMPORT_RELOAD_KEY = "findafew:dynamic-import-reload";
 const DYNAMIC_IMPORT_RELOAD_COOLDOWN_MS = 30_000;
 
 type RouteErrorTelemetryContext = Record<string, string | undefined>;

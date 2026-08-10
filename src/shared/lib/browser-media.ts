@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import { getBrowserNavigator } from "@/shared/lib/browser-environment";
 
 const SUPPORTED_AUDIO_MIME_TYPES = [

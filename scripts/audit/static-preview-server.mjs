@@ -49,7 +49,7 @@ import {
  * @property {string} eyebrow Short route label.
  * @property {string} heading Primary heading.
  * @property {string[]} paragraphs Crawlable static fallback copy.
- * @property {string} publishedAt Page publication date.
+ * @property {string | null} publishedAt Page publication date when approved.
  * @property {string} title Document title.
  *
  * @typedef {import("node:http").IncomingMessage | import("node:http2").Http2ServerRequest} PreviewRequest
@@ -206,87 +206,85 @@ const vercelConfigSchema = z
   })
   .passthrough();
 /** @type {string[]} */
-const auditSitemapRoutes = ["/", "/download", "/privacy", "/terms"];
+const auditSitemapRoutes = ["/", "/download"];
 /** @type {Map<string, AuditRoutePage>} */
 const auditRoutePages = new Map([
   [
     "/",
     {
-      author: "TeamForge product team",
+      author: "Findafew product team",
       description:
-        "TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context.",
-      eyebrow: "TeamForge",
-      heading: "Find your people, intelligently.",
+        "Explore activity plans or start your own, then review the group and practical details before deciding whether to take part.",
+      eyebrow: "Findafew",
+      heading: "Small groups for things you want to do.",
       paragraphs: [
-        "TeamForge helps students and young professionals turn an idea for a real-world activity into a small, compatible circle. Instead of endless browsing, the app asks what you want to do, learns enough about your personality and interests to understand the social fit, then helps shape a clear plan with people who make sense for that moment.",
-        "The product is built around purposeful connection. A user can start from a simple plan like coffee after class, a weekend run, a study session, a gallery visit, or a low-pressure evening hangout. TeamForge brings together profile basics, interests, social context, age alignment, trust signals, and readiness cues so the suggested set of people has a practical reason to meet.",
-        "Once everyone is ready, the experience moves into shared planning and conversation. Members can see the plan, understand why they were brought together, coordinate details, and keep the activity moving without juggling separate tools. The goal is not to collect contacts. The goal is to make it easier to meet people who are likely to feel natural in the same room.",
-        "TeamForge is designed for people who want social discovery to feel calmer, clearer, and more respectful of their time. It gives every connection a purpose, keeps each circle manageable, and centers the activity rather than a popularity feed. Find your people, intelligently, then meet with a plan already in motion.",
-        "The public homepage introduces that promise before a visitor signs in. It explains the one-button flow, the kind of signals used to shape a thoughtful suggestion, and the practical next step after people are brought together. It also points visitors toward installation, privacy, and terms pages so they can understand how the product works before creating an account.",
-        "That static overview matters for search and accessibility too. A crawler, screen reader, or very slow connection can still understand the core product: choose an activity, receive a considered suggestion, coordinate the plan, and move toward a real meeting with less friction.",
+        "Findafew is launching for adults aged 18–28. Start with something you would like to do, or explore what others are planning, such as Sunday bouldering, a sketching table, a co-op campaign, or coffee after class.",
+        "A few means a small group around one plan. It is not a fixed number, an exclusive club, or a promise that people are already waiting. Availability can vary by activity, place, and time, so Findafew keeps open requests and no-result states clear.",
+        "When a group is ready, you can review the people, time, place, and other practical details before deciding whether to take part. If you accept, the plan and conversation stay together, with clear actions for changes, attendance, leaving, blocking, and reporting where available.",
+        "Findafew is built around shared activities, not dating. The activity provides a concrete starting point, while each person still decides whether a group and plan work for them.",
+        "The public homepage explains the product before a visitor signs in. It also links to installation guidance, privacy information, and terms so people can understand how the service works before creating an account.",
+        "This static overview supports search and accessibility. A crawler, screen reader, or slow connection can still understand the core journey: explore or start a plan, see whether a small group comes together, review the details, and choose the next step.",
       ],
       publishedAt: "2026-06-04",
-      title: "TeamForge | Find your people, intelligently.",
+      title: "Findafew | Small groups for things you want to do.",
     },
   ],
   [
     "/download",
     {
-      author: "TeamForge product team",
+      author: "Findafew product team",
       description:
-        "Install TeamForge on your phone or desktop with step-by-step guidance for iPhone, iPad, Android, Safari, Chrome, Edge, and desktop browsers.",
+        "Install Findafew on your phone or desktop with step-by-step guidance for iPhone, iPad, Android, Safari, Chrome, Edge, and desktop browsers.",
       eyebrow: "Download",
-      heading: "Download TeamForge",
+      heading: "Download Findafew",
       paragraphs: [
         "The download page helps you install the app as a progressive web app on the device you already use. It covers iPhone, iPad, Android, Windows, macOS, Chrome, Edge, and Safari so you can open the service from your home screen, dock, taskbar, or app launcher without hunting for a browser tab.",
-        "Mobile installation focuses on the details that usually trip people up. On iPhone and iPad, TeamForge explains why Safari is required, where the Share button lives, and how to use Add to Home Screen. On Android, it covers the install prompt, the browser menu path, and the final confirmation step. Desktop guidance follows the same practical style for Chrome, Edge, and Safari.",
-        "The page also checks whether the current browser can support app-style features. It surfaces install readiness, offline opening, secure context requirements, and notification capability in plain language. That makes it easier to understand whether the device can launch TeamForge quickly, receive useful updates, and keep the experience close at hand during planning.",
+        "Mobile installation focuses on the details that usually trip people up. On iPhone and iPad, Findafew explains why Safari is required, where the Share button lives, and how to use Add to Home Screen. On Android, it covers the install prompt, the browser menu path, and the final confirmation step. Desktop guidance follows the same practical style for Chrome, Edge, and Safari.",
+        "The page also checks whether the current browser can support app-style features. It surfaces install readiness, offline opening, secure context requirements, and notification capability in plain language. That makes it easier to understand whether the device can launch Findafew quickly, receive useful updates, and keep the experience close at hand during planning.",
         "Installing the app is optional, but it makes the product easier to return to when a group is forming or a plan is changing. The service can still run in the browser, while the installed version gives a focused entry point for activities, notifications, conversations, and group plans. The download page keeps those choices visible without requiring a store account.",
         "The installation guide is intentionally practical. It gives people enough context to know which browser to use, what button or menu item to look for, and how the installed app should behave once it is saved. That makes the page useful for both first-time visitors and returning users who want a faster way back into their groups.",
         "It also gives support and QA a stable reference when install behavior changes between browsers. If a device hides the prompt, blocks notifications, or lacks offline support, the page can explain the next best path without making the user guess.",
       ],
       publishedAt: "2026-06-04",
-      title: "Download TeamForge | Mobile app",
+      title: "Download Findafew | Mobile app",
     },
   ],
   [
     "/privacy",
     {
-      author: "TeamForge product team",
+      author: "Findafew product team",
       description:
-        "Learn how the app handles, protects, and manages personal data across profiles, onboarding, groups, plans, chats, safety, and account settings.",
-      eyebrow: "Privacy",
-      heading: "How we handle your data",
+        "Read the pre-launch Findafew privacy draft and the legal approvals still required before it can take effect.",
+      eyebrow: "Privacy · Pre-launch draft",
+      heading: "Privacy information before launch",
       paragraphs: [
-        "This privacy page explains what information the platform uses and why it matters. Profile basics, personality responses, interests, activity preferences, groups, plans, chats, safety signals, and account settings help create small groups that have a better chance of feeling comfortable and useful in real life.",
-        "Data handling is tied to product purpose. The service uses account and profile information to keep sessions secure, help people understand who they are meeting, support onboarding, form groups, enable conversation, and improve reliability. Personality and interest information guide compatibility inside the app, not public ranking or exposure of private answers.",
-        "The policy also describes control and protection. Users should understand how their information can be updated, what may be visible to other members of a group, how service providers support the app, and what happens when safety, abuse prevention, or legal requirements require action. The product should not sell personal information, and sensitive social features need clear boundaries.",
-        "Because the app supports real-world plans, privacy is part of trust. The page gives users a direct view of the information needed to run the service, the safeguards around that information, and the choices available when account details change. Clear privacy copy helps the product feel safe before someone joins a group or starts a conversation.",
-        "The privacy page also helps explain the difference between data needed for the service and details that should stay private. Some profile fields make introductions easier, some onboarding answers improve the quality of suggestions, and some activity details are shared only with the people involved in a plan. That distinction matters when users are deciding whether to join a new group.",
-        "It also gives a stable place for future details about retention, account deletion, provider roles, and regional privacy rights. Those topics should be easy to find because trust is built before a user shares their first plan.",
+        "Pre-launch placeholder: the legal controller, jurisdiction, effective date, and public contact routes are not yet approved. This draft must not be published as a final policy until legal review is complete and the approved contact routes are live.",
+        "The draft identifies the information the product may need for accounts, eligibility, profiles, onboarding, activities, group proposals, plans, messages, safety controls, and account settings. It does not turn those categories into a promise that every optional feature or provider will be available at launch.",
+        "People should be able to understand what information is required, what is optional, when details may be visible to a proposed group, and how account, blocking, reporting, export, correction, and deletion controls work where available.",
+        "Findafew is launching for adults aged 18–28 and is built around shared activities, not dating. Profile and onboarding details may support product features, but they are not a safety score or a guarantee about another person or a group outcome.",
+        "Provider roles, retention periods, regional rights, the approved legal entity, and public privacy contact must be confirmed in the final policy. Until then, this route is implementation copy for review rather than an effective legal notice.",
       ],
-      publishedAt: "2026-06-04",
-      title: "Privacy Policy | Data and Safety",
+      publishedAt: null,
+      title: "Pre-launch Privacy Draft | Findafew",
     },
   ],
   [
     "/terms",
     {
-      author: "TeamForge product team",
+      author: "Findafew product team",
       description:
-        "Read the rules, requirements, and policies for TeamForge accounts, groups, plans, chats, respectful conduct, safety, and platform access.",
-      eyebrow: "Terms",
-      heading: "The rules for using TeamForge",
+        "Read the pre-launch Findafew terms draft and the approvals still required before registrations can open.",
+      eyebrow: "Terms · Pre-launch draft",
+      heading: "Terms before launch",
       paragraphs: [
-        "The TeamForge terms page sets expectations for using a social platform that helps people meet around shared activities. It explains account responsibilities, acceptable use, real-world planning expectations, safety boundaries, and the rules that keep groups respectful. The terms matter because TeamForge is not only a feed; it supports plans, conversations, and in-person coordination.",
-        "Users are expected to provide accurate account information, respect other members, avoid harassment or deception, and use group planning tools honestly. Activities should be lawful, safe, and appropriate for the people involved. Conversations, profiles, and invitations should help a group coordinate, not pressure people or misrepresent what is happening.",
-        "The terms also cover service reliability and product limits. TeamForge may change features, moderate harmful behavior, suspend accounts that break rules, and rely on third-party infrastructure for hosting, authentication, analytics, maps, media, or messaging support. Users should understand that recommendations and group formation are tools for social planning, not guarantees about behavior or outcomes.",
-        "Clear terms protect both the community and the product. They give users a plain-language reference for what TeamForge allows, what it discourages, and how disputes, updates, and safety decisions may be handled. For a product built around meeting new people, those expectations are part of making each group feel more grounded before the first plan begins.",
-        "The page also sets boundaries for shared responsibility. The service can provide structure, messaging, and planning tools, while each member still needs to communicate clearly, respect consent, and make sensible choices about where and when to meet. That shared understanding keeps the product focused on useful connection instead of vague social browsing.",
-        "The terms page should remain readable as the app grows. If new planning tools, safety controls, subscriptions, or moderation workflows are added later, this route gives users one consistent place to check what changed and why it matters.",
+        "Pre-launch placeholder: the legal entity, jurisdiction, effective date, and public contact routes are not yet approved. These draft terms must not be published as final or used to accept registrations until legal review is complete and the approved contact routes are live.",
+        "The draft sets practical expectations for accurate account information, respectful conduct, lawful activities, clear communication, consent, blocking, reporting, moderation, and leaving a group or plan. Findafew is built around shared activities, not dating.",
+        "Findafew is launching for adults aged 18–28. That eligibility rule and the process for corrections or access changes must be reflected consistently in the approved terms and product before registrations open.",
+        "Group proposals, planning tools, profile information, and any recommendations are aids for deciding what to do next. They are not compatibility, safety, attendance, friendship, or outcome guarantees.",
+        "The final terms must name the approved legal entity and jurisdiction, provide working public contact routes, explain provider and service limits accurately, and state when the terms take effect. Until then, this route remains a review draft.",
       ],
-      publishedAt: "2026-06-04",
-      title: "TeamForge Terms of Service | Community Rules",
+      publishedAt: null,
+      title: "Pre-launch Terms Draft | Findafew",
     },
   ],
 ]);
@@ -847,13 +845,13 @@ function injectStructuredData(html, page, pageUrl) {
       "@type": "Organization",
       name: page.author,
     },
-    datePublished: page.publishedAt,
+    ...(page.publishedAt ? { datePublished: page.publishedAt } : {}),
     description: page.description,
     headline: page.heading,
     name: page.title,
     publisher: {
       "@type": "Organization",
-      name: "TeamForge",
+      name: "Findafew",
     },
     url: pageUrl,
   };
@@ -897,24 +895,28 @@ function deferAuditStylesheets(html) {
 function buildRouteFallbackSection(page) {
   const paragraphs = page.paragraphs
     .map((paragraph, index) => {
-      const id = index === 0 ? ' id="tf-boot-description"' : "";
+      const id = index === 0 ? ' id="app-boot-description"' : "";
 
       return `            <p${id}>${escapeHtml(paragraph)}</p>`;
     })
     .join("\n");
 
-  return `          <section class="tf-boot__copy" aria-describedby="tf-boot-description">
-            <p class="tf-boot__eyebrow">${escapeHtml(page.eyebrow)}</p>
-            <h1 id="tf-boot-heading">${escapeHtml(page.heading)}</h1>
-            <p class="tf-boot__byline">By <span class="author">${escapeHtml(page.author)}</span> - Published <time datetime="${escapeHtml(page.publishedAt)}" itemprop="datePublished">${escapeHtml(page.publishedAt)}</time></p>
+  const byline = page.publishedAt
+    ? `<p class="app-boot__byline">By <span class="author">${escapeHtml(page.author)}</span> - Published <time datetime="${escapeHtml(page.publishedAt)}" itemprop="datePublished">${escapeHtml(page.publishedAt)}</time></p>`
+    : `<p class="app-boot__byline">Draft prepared by <span class="author">${escapeHtml(page.author)}</span> — not yet effective</p>`;
+
+  return `          <section class="app-boot__copy" aria-describedby="app-boot-description">
+            <p class="app-boot__eyebrow">${escapeHtml(page.eyebrow)}</p>
+            <h1 id="app-boot-heading">${escapeHtml(page.heading)}</h1>
+            ${byline}
 ${paragraphs}
-            <nav class="tf-boot__links" aria-label="Public pages">
+            <nav class="app-boot__links" aria-label="Public pages">
               <a href="/">Home</a>
-              <a href="/download">Download TeamForge</a>
+              <a href="/download">Download Findafew</a>
               <a href="/privacy">Privacy</a>
               <a href="/terms">Terms</a>
             </nav>
-            <p class="tf-boot__sr" aria-live="polite">Preparing TeamForge</p>
+            <p class="app-boot__sr" aria-live="polite">Preparing Findafew</p>
           </section>`;
 }
 
@@ -933,7 +935,7 @@ function buildRouteHtml(html, page, pageUrl) {
       `<title>${escapeHtml(page.title)}</title>`,
     )
     .replace(
-      /<section class="tf-boot__copy"[\s\S]*?<\/section>/u,
+      /<section class="app-boot__copy"[\s\S]*?<\/section>/u,
       buildRouteFallbackSection(page),
     );
 
@@ -947,6 +949,13 @@ function buildRouteHtml(html, page, pageUrl) {
     /(<meta\s+name="description"\s+content=")[^"]*(")/u,
     page.description,
   );
+  routeHtml = replaceHtmlAttributeValue(
+    routeHtml,
+    /(<meta\s+name="robots"\s+content=")[^"]*(")/u,
+    page.publishedAt
+      ? "index, follow"
+      : "noindex, nofollow, noarchive, nosnippet, noimageindex",
+  );
   routeHtml = routeHtml.replace(
     /<meta\s+name="author"\s+content="[^"]*"\s*\/?>/u,
     "",
@@ -955,9 +964,12 @@ function buildRouteHtml(html, page, pageUrl) {
     /<meta\s+property="article:published_time"\s+content="[^"]*"\s*\/?>/u,
     "",
   );
+  const publicationMeta = page.publishedAt
+    ? `<meta property="article:published_time" content="${escapeHtml(page.publishedAt)}">`
+    : "";
   routeHtml = routeHtml.replace(
     "</head>",
-    `<meta name="author" content="${escapeHtml(page.author)}"><meta property="article:published_time" content="${escapeHtml(page.publishedAt)}"></head>`,
+    `<meta name="author" content="${escapeHtml(page.author)}">${publicationMeta}</head>`,
   );
   routeHtml = replaceHtmlAttributeValue(
     routeHtml,

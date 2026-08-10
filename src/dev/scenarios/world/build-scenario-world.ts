@@ -11,7 +11,6 @@ import { fullUserResponseSchema } from "@/shared/schemas";
 export const SCENARIO_CLOCK = "2026-08-01T09:30:00.000Z";
 
 const defaultSettings = {
-  autoMatchingEnabled: false,
   emailAccount: true,
   emailFriendRequests: false,
   emailGroupActivity: false,
@@ -50,15 +49,15 @@ function createViewer(role: "ADMIN" | "USER" = "USER") {
     bio: "Product-minded organiser who turns good intentions into plans.",
     city: "London",
     createdAt: "2026-01-10T10:00:00.000Z",
-    email: "quinn@teamforge.test",
+    email: "quinn@findafew.test",
     emailVerified: true,
     gender: "OTHER",
     id: "scenario-user-quinn",
     interests: [],
     name: "Quinn Hart",
-    oceanA: 64,
-    oceanC: 86,
-    oceanE: 27,
+    oceanA: 36,
+    oceanC: 36,
+    oceanE: 56,
     oceanN: 42,
     oceanO: 80,
     onlineStatus: "ONLINE",
@@ -68,6 +67,7 @@ function createViewer(role: "ADMIN" | "USER" = "USER") {
     role,
     searchStatus: "IDLE",
     showFriendsListOnProfile: true,
+    signInMethods: { google: false, password: true },
     trustScore: 86,
     updatedAt: SCENARIO_CLOCK,
   });
@@ -93,6 +93,8 @@ export function buildScenarioWorld({
   const hasPartialOnboarding =
     id === "onboarding-incomplete" ||
     id === "onboarding-intent-prompt" ||
+    id === "onboarding-personality" ||
+    id === "onboarding-interests" ||
     id === "onboarding-introductory" ||
     id === "onboarding-practice" ||
     id.startsWith("onboarding-intent-");
@@ -120,7 +122,7 @@ export function buildScenarioWorld({
       users: isSignedOut ? {} : { [viewer.id]: viewer },
     },
     faults,
-    forge: { activeRequestId: null },
+    planCreation: { activeRequestId: null },
     onboarding: {
       intentStepComplete:
         id !== "onboarding-incomplete" && id !== "onboarding-intent-prompt",
@@ -162,6 +164,21 @@ export function buildScenarioWorld({
 
   if (id === "onboarding-intent-prompt" && world.viewerId) {
     const onboardingViewer = world.entities.users[world.viewerId];
+    onboardingViewer.oceanA = null;
+    onboardingViewer.oceanC = null;
+    onboardingViewer.oceanE = null;
+    onboardingViewer.oceanN = null;
+    onboardingViewer.oceanO = null;
+    onboardingViewer.personalityType = null;
+    onboardingViewer.personalitySetupComplete = false;
+  }
+
+  if (
+    (id === "onboarding-personality" || id === "onboarding-interests") &&
+    world.viewerId
+  ) {
+    const onboardingViewer = world.entities.users[world.viewerId];
+    onboardingViewer.interests = [];
     onboardingViewer.oceanA = null;
     onboardingViewer.oceanC = null;
     onboardingViewer.oceanE = null;
@@ -231,6 +248,14 @@ function buildFaults(id: string, overlays: readonly string[]) {
 
 function buildLifecycleFaults(id: string): ScenarioFaultPlan[] {
   switch (id) {
+    case "auth-activation-loading":
+      return [
+        {
+          hold: true,
+          method: "POST",
+          pathname: "auth/activate/scenario-activation-token",
+        },
+      ];
     case "home-loading":
       return [holdGet("groups/home-summary")];
     case "activity-loading":

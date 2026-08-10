@@ -84,15 +84,55 @@ test("discovery cards lift without a teal hover wash", async ({ page }) => {
   await capture(page, "explore-card-hover.png");
 });
 
-test("Forge category focus remains neutral", async ({ page }) => {
-  await openScenario(page, "/forge?open=true&step=1", "forge-standard");
+test("plan-creation category focus remains neutral", async ({ page }) => {
+  await openScenario(
+    page,
+    "/plans/new?open=true&step=1",
+    "plan-creation-standard",
+  );
   const category = page
     .getByRole("button", { name: /Games\s*&\s*Play/u })
     .first();
 
   await category.focus();
   await expect(category).not.toHaveCSS("box-shadow", "none");
-  await capture(page, "forge-category-focus.png");
+  await capture(page, "plan-creation-category-focus.png");
+});
+
+test("provider-off local plans keep a usable location path", async ({
+  page,
+}) => {
+  await openScenario(
+    page,
+    "/plans/new?open=true&step=3",
+    "plan-creation-validation",
+  );
+  await page.getByRole("button", { name: /Place\s+Decide together/u }).click();
+
+  await expect(
+    page.getByText(
+      "Local group formation needs private coordinates. Add a location here, or choose Online for now.",
+    ),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Add private location" }).click();
+
+  const locationInput = page.getByRole("combobox", {
+    name: "Address or venue",
+  });
+  await expect(locationInput).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Use my location" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Suggestions are off. Type a city or venue manually, or use your location to attach private coordinates.",
+    ),
+  ).toBeVisible();
+
+  await locationInput.fill("Bristol city centre");
+  await expect(locationInput).toHaveValue("Bristol city centre");
+  await capture(page, "plan-creation-provider-off-location.png");
 });
 
 test("notifications keep one drawer mounted while content loads", async ({
@@ -134,7 +174,7 @@ test("mobile filters keep one sheet mounted while content loads", async ({
 test("account menu uses neutral icons on neutral surfaces", async ({
   page,
 }) => {
-  await openScenario(page, "/profile", "profile-standard");
+  await openScenario(page, "/profile", "profile-owner");
   await page.getByRole("button", { name: "Open account drawer" }).click();
 
   const groupPreferencesLink = page.getByRole("link", {
@@ -146,7 +186,7 @@ test("account menu uses neutral icons on neutral surfaces", async ({
     icon.evaluate((element) => getComputedStyle(element).color),
     page.evaluate(() => {
       const probe = document.createElement("span");
-      probe.style.color = "var(--color-forge-teal)";
+      probe.style.color = "var(--color-brand-teal)";
       document.body.append(probe);
       const color = getComputedStyle(probe).color;
       probe.remove();
@@ -198,12 +238,12 @@ async function trackOverlayMounts(
 ) {
   await page.evaluate((overlayKind) => {
     const runtimeWindow = window as typeof window & {
-      __teamForgeOverlayObserver?: MutationObserver;
+      __findafewOverlayObserver?: MutationObserver;
     };
     const slot = `[data-slot="${overlayKind}-content"]`;
     document.body.dataset.overlayMountCount = "0";
-    runtimeWindow.__teamForgeOverlayObserver?.disconnect();
-    runtimeWindow.__teamForgeOverlayObserver = new MutationObserver(
+    runtimeWindow.__findafewOverlayObserver?.disconnect();
+    runtimeWindow.__findafewOverlayObserver = new MutationObserver(
       (records) => {
         let additions = 0;
         for (const record of records) {
@@ -219,7 +259,7 @@ async function trackOverlayMounts(
         document.body.dataset.overlayMountCount = String(previous + additions);
       },
     );
-    runtimeWindow.__teamForgeOverlayObserver.observe(document.body, {
+    runtimeWindow.__findafewOverlayObserver.observe(document.body, {
       childList: true,
       subtree: true,
     });
@@ -231,10 +271,10 @@ async function stopTrackingOverlayMounts(
 ) {
   return page.evaluate(() => {
     const runtimeWindow = window as typeof window & {
-      __teamForgeOverlayObserver?: MutationObserver;
+      __findafewOverlayObserver?: MutationObserver;
     };
-    runtimeWindow.__teamForgeOverlayObserver?.disconnect();
-    runtimeWindow.__teamForgeOverlayObserver = undefined;
+    runtimeWindow.__findafewOverlayObserver?.disconnect();
+    runtimeWindow.__findafewOverlayObserver = undefined;
     const count = Number(document.body.dataset.overlayMountCount ?? 0);
     delete document.body.dataset.overlayMountCount;
     return count;

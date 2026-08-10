@@ -28,8 +28,8 @@ export function YouMightAlsoLikeSection({
       icon={Compass}
       iconClassName="text-foreground transition-transform duration-500 group-hover:rotate-45"
       title="Related picks"
-      titleClassName={cn(hasSelected ? "text-spark-amber" : "text-foreground")}
-      dotClassName="bg-forge-teal/30 group-hover:scale-150 transition-transform duration-300"
+      titleClassName={cn(hasSelected ? "text-brand-amber" : "text-foreground")}
+      dotClassName="bg-brand-teal/30 group-hover:scale-150 transition-transform duration-300"
       countClassName="text-foreground/70 group-hover:text-foreground transition-colors"
       className="group/section mb-4 overflow-hidden rounded-xl border border-slate-muted/10 bg-canvas p-0.5 transition-colors duration-300 hover:border-foreground/25"
     >

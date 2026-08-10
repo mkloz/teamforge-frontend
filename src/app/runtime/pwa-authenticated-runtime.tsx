@@ -37,8 +37,12 @@ const PWA_RESUME_QUERY_KEYS = [
   APP_QUERY_KEYS.settings.sessions,
   APP_QUERY_KEYS.settings.blockedUsers,
   APP_QUERY_KEYS.settings.accountData,
-  APP_QUERY_KEYS.forge.friends,
-  APP_QUERY_KEYS.forge.recentActivities,
+  APP_QUERY_KEYS.groupFormation.friends,
+  APP_QUERY_KEYS.groupFormation.currentProposal,
+  APP_QUERY_KEYS.groupFormation.proposalDetails,
+  APP_QUERY_KEYS.groupFormation.currentAutoRequest,
+  APP_QUERY_KEYS.groupFormation.groupProposalAvailability,
+  APP_QUERY_KEYS.groupFormation.recentActivities,
   APP_QUERY_KEYS.webPush.subscriptions,
   ["activity-selection"],
   ["activity-messages"],
@@ -125,7 +129,8 @@ function resetPwaRuntimeSurfaceRefresh() {
   lastPwaRuntimeRefreshAt = 0;
 }
 
-async function refreshPwaResumeQueries() {
+// fallow-ignore-next-line unused-export -- Focused contract tests verify the reconnect/resume refresh set.
+export async function refreshPwaResumeQueries() {
   await Promise.all(
     PWA_RESUME_QUERY_KEYS.map((queryKey) =>
       appQueryClient.invalidateQueries({

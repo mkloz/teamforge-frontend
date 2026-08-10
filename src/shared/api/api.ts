@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import ky, { type Options } from "ky";
 
 import { config } from "@/config/config";
@@ -22,6 +22,7 @@ export {
 
 const AUTH_REFRESH_PATH = "auth/refresh";
 const AUTH_LOGOUT_PATH = "auth/logout";
+const MUTATION_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 let refreshPromise: Promise<AuthTokens | null> | null = null;
 
@@ -52,6 +53,15 @@ function applyAuthorizationHeader(request: Request, authMode: ApiAuthMode) {
   }
 
   request.headers.set("Authorization", `Bearer ${token}`);
+}
+
+function applyIdempotencyHeader(request: Request) {
+  if (
+    MUTATION_METHODS.has(request.method) &&
+    !request.headers.has("Idempotency-Key")
+  ) {
+    request.headers.set("Idempotency-Key", crypto.randomUUID());
+  }
 }
 
 function buildRetryOptions(
@@ -198,9 +208,10 @@ const sharedHooks = {
       const { auth } = readApiRequestContext(options);
 
       request.headers.set(
-        "x-teamforge-onboarding-policy-version",
+        "x-findafew-onboarding-policy-version",
         ONBOARDING_AUTHORIZATION_POLICY_VERSION,
       );
+      applyIdempotencyHeader(request);
 
       if (isAuthRefreshRequest(request)) {
         applyAuthorizationHeader(request, "refresh");

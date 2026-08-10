@@ -40,7 +40,7 @@ export function AccountExportSection({ state }: AccountExportSectionProps) {
     <section>
       <SectionHeading
         title="Your data"
-        description="Request a portable copy of the information tied to your TeamForge account."
+        description="Request a portable copy of the information tied to your Findafew account."
       />
 
       <GroupedMenuList aria-label="Account data export" className="mt-5">
@@ -178,7 +178,7 @@ function PasswordConfirmationDialog({
     <ActionDialog
       closeOnConfirm={false}
       confirmLabel="Confirm and continue"
-      description="Enter your current TeamForge password. It is checked securely and is not stored."
+      description="Enter your current Findafew password. It is checked securely and is not stored."
       disabled={!password || state.isSigningInAgain}
       icon={<KeyRound className="size-5" aria-hidden="true" />}
       loading={state.isSigningInAgain}

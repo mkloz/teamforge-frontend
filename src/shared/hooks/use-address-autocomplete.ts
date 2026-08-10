@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useAddressAutocompleteActions } from "@/shared/hooks/address-autocomplete/use-address-autocomplete-actions";
 import { useAddressAutocompleteDerivedState } from "@/shared/hooks/address-autocomplete/use-address-autocomplete-derived-state";
@@ -8,6 +8,7 @@ import { useCurrentAreaSelection } from "@/shared/hooks/address-autocomplete/use
 import { usePredictionSelection } from "@/shared/hooks/address-autocomplete/use-prediction-selection";
 import type { AddressAutocompleteDraftInput } from "@/shared/hooks/use-address-autocomplete-state";
 import { useGoogleMapsStatus } from "@/shared/hooks/use-google-maps-status";
+import { isGeolocationAvailable } from "@/shared/lib/maps/browser-geolocation";
 import type { LocationValue } from "@/shared/lib/maps/location.types";
 
 interface UseAddressAutocompleteOptions {
@@ -24,6 +25,11 @@ export function useAddressAutocomplete({
   const containerRef = useRef<HTMLDivElement>(null);
   const hasTypedInSessionRef = useRef(false);
   const skipPredictionsForValueRef = useRef<string | null>(null);
+  const sessionTokenRef = useRef<GoogleAutocompleteSessionToken | null>(null);
+  const geolocationAvailable = isGeolocationAvailable();
+  const endPlacesSession = useCallback(() => {
+    sessionTokenRef.current = null;
+  }, []);
   const { mapsStatus, mapsReady, requestGoogleMaps } = useGoogleMapsStatus({
     loadOnMount: false,
   });
@@ -58,27 +64,35 @@ export function useAddressAutocomplete({
     inputValue,
     isSettledResolvedValue,
     mapsReady,
-    skipPredictionsForValueRef,
-  });
-  const { isResolvingPlace, selectPrediction } = usePredictionSelection({
-    clearMessage,
-    closeSuggestions,
-    externalInputValue,
-    hasTypedInSessionRef,
-    mapsReady,
-    onLocationSelect,
-    resetSuggestions,
-    setDraftInput,
-    setHasCurrentAreaError,
+    sessionTokenRef,
     showMessage,
     skipPredictionsForValueRef,
   });
+  const { invalidatePredictionResolution, isResolvingPlace, selectPrediction } =
+    usePredictionSelection({
+      clearMessage,
+      closeSuggestions,
+      endPlacesSession,
+      externalInputValue,
+      hasTypedInSessionRef,
+      onLocationSelect,
+      resetSuggestions,
+      setDraftInput,
+      setHasCurrentAreaError,
+      showMessage,
+      skipPredictionsForValueRef,
+    });
+  const abandonPlacesSession = useCallback(() => {
+    invalidatePredictionResolution();
+    endPlacesSession();
+    closeSuggestions();
+  }, [closeSuggestions, endPlacesSession, invalidatePredictionResolution]);
   const { isLocating, useCurrentArea } = useCurrentAreaSelection({
-    clearMessage,
+    currentLocation: value,
+    endPlacesSession,
     hasTypedInSessionRef,
-    mapsReady,
+    invalidatePredictionResolution,
     onLocationSelect,
-    requestGoogleMaps,
     resetSuggestions,
     setDraftInput,
     setHasCurrentAreaError,
@@ -94,9 +108,11 @@ export function useAddressAutocomplete({
   } = useAddressAutocompleteActions({
     activeSuggestionIndex,
     clearMessage,
-    closeSuggestions,
+    closeSuggestions: abandonPlacesSession,
     externalInputValue,
+    endPlacesSession,
     hasTypedInSessionRef,
+    invalidatePredictionResolution,
     isSuggestionsOpen,
     moveActiveSuggestion,
     onLocationSelect,
@@ -111,6 +127,7 @@ export function useAddressAutocomplete({
   });
 
   function resetInputDraft() {
+    invalidatePredictionResolution();
     hasTypedInSessionRef.current = false;
     skipPredictionsForValueRef.current = null;
     setDraftInput(null);
@@ -118,13 +135,34 @@ export function useAddressAutocomplete({
     closeSuggestions();
     clearMessage();
     setHasCurrentAreaError(false);
+    endPlacesSession();
   }
+
+  useEffect(() => endPlacesSession, [endPlacesSession]);
+
+  useEffect(() => {
+    if (mapsStatus !== "unavailable") {
+      return;
+    }
+
+    invalidatePredictionResolution();
+    endPlacesSession();
+    resetSuggestions();
+    closeSuggestions();
+  }, [
+    closeSuggestions,
+    endPlacesSession,
+    invalidatePredictionResolution,
+    mapsStatus,
+    resetSuggestions,
+  ]);
 
   return {
     containerRef,
     inputValue,
     mapsStatus,
     mapsReady,
+    geolocationAvailable,
     suggestions: visibleSuggestions,
     isSuggestionsOpen,
     activeSuggestionIndex,
@@ -137,7 +175,7 @@ export function useAddressAutocomplete({
     handleInputFocus,
     handleInputChange,
     handleInputKeyDown,
-    closeSuggestions,
+    closeSuggestions: abandonPlacesSession,
     clearLocation,
     resetInputDraft,
     selectPrediction,

@@ -1,6 +1,6 @@
 ---
 name: frontend-product-ui-engineer
-description: Implement, redesign, or polish TeamForge React product UI using the existing feature architecture and design language. Use for pages, forms, grouped menus, drawers, modals, responsive layouts, states, API integration, or visual fixes where production-ready behavior and rendered quality both matter.
+description: Implement, redesign, or polish Findafew React product UI using the existing feature architecture and design language. Use for pages, forms, grouped menus, drawers, modals, responsive layouts, states, API integration, or visual fixes where production-ready behavior and rendered quality both matter.
 ---
 
 # Frontend Product UI Engineer
@@ -9,7 +9,7 @@ description: Implement, redesign, or polish TeamForge React product UI using the
 
 Build frontend features that are usable, maintainable, accessible, and consistent with the existing design system. This skill balances engineering structure with product polish.
 
-Read `AGENTS.md`, `docs/visual-style-guide.md`, and the narrow TeamForge rule for the feature before editing. Inspect the rendered surface at mobile and desktop widths when browser access is available.
+Read `AGENTS.md`, `docs/visual-style-guide.md`, and the narrow Findafew rule for the feature before editing. Inspect the rendered surface at mobile and desktop widths when browser access is available.
 
 ## Activation conditions
 
@@ -26,7 +26,7 @@ Use this skill when the task involves:
 
 Do not use it for backend-only work unless frontend contract/state implications matter.
 
-## TeamForge visual decisions
+## Findafew visual decisions
 
 - Prefer compact hierarchy and meaningful whitespace over generic enclosing cards, nested boxes, or repeated separators.
 - Reuse grouped-menu, collapsible, notice, input, button, modal, drawer, and activity-mosaic primitives. Grouped items use the established narrow gap separator; dividers must not stop arbitrarily inside a visual group.

@@ -67,7 +67,7 @@ export function GroupIdentitySection({
 
       {isSystemManaged ? (
         <p className="text-slate-muted text-xs leading-relaxed">
-          TeamForge formed this group. Everyone has the same member role.
+          Findafew formed this group. Everyone has the same member role.
         </p>
       ) : null}
 

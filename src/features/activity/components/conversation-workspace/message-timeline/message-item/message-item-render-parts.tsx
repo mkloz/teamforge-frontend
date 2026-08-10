@@ -218,14 +218,14 @@ function getMessageBubbleShellClassName({
     "relative flex w-fit min-w-0 max-w-full flex-col rounded-xl px-1 py-1 shadow-xs transition duration-300",
     getMessageBubbleToneClassName(isOwn),
     getMessageBubbleFocusClassName({ isHighlighted, isInteractionFocused }),
-    isSelected && "border-primary/65 bg-primary/12 ring-1 ring-primary/35",
+    isSelected && "border-primary/65 bg-primary-soft ring-1 ring-primary/35",
     getMessageBubbleSizeClassName({ content, usesInlineFooter }),
   );
 }
 
 function getMessageBubbleToneClassName(isOwn: boolean) {
   return isOwn
-    ? "rounded-br-none border border-primary/15 bg-primary/8 text-ink shadow-sm backdrop-blur-md"
+    ? "rounded-br-none border border-primary/15 bg-primary-soft text-ink shadow-sm backdrop-blur-md"
     : "rounded-bl-none border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md";
 }
 
@@ -264,7 +264,9 @@ export function ForwardedIndicator({
     <div
       className={cn(
         "mx-1.5 mt-1 mb-0.5 flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-0.5 font-bold text-xs",
-        isOwn ? "bg-primary/8 text-foreground" : "bg-muted/55 text-slate-muted",
+        isOwn
+          ? "bg-primary-soft text-foreground"
+          : "bg-muted/55 text-slate-muted",
       )}
     >
       <Forward className="size-3 shrink-0" aria-hidden="true" />

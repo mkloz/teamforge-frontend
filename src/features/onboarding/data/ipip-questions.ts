@@ -12,7 +12,7 @@ export type TestLength = 30 | 50 | 150;
 export const STARTER_QUESTION_IDS = [
   1, 31, 61, 91, 121, 3, 33, 63, 93, 122,
 ] as const;
-export const STARTER_MANIFEST_VERSION = "TF_STARTER_10_V1" as const;
+export const STARTER_MANIFEST_VERSION = "FINDAFEW_STARTER_10_V1" as const;
 export const STARTER_MANIFEST_HASH =
   "c97863821ba78e46b64a8ccf85789a53cff66ef0bf595c148472e0a2d8ea3d32" as const;
 

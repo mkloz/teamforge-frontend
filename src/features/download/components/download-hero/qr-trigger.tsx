@@ -12,7 +12,7 @@ export function DownloadHeroQrTrigger({
   return (
     <QrShareDialog
       url={downloadQrUrl}
-      title="Install TeamForge"
+      title="Install Findafew"
       description="Scan this on your phone to open the install guide."
       trigger={
         <Button

@@ -20,7 +20,7 @@ describe("theme preference migration", () => {
     ["cobalt", ThemeColor.MONO],
     ["coral", ThemeColor.EMBER],
     ["paper", ThemeColor.GRAPHITE],
-    ["spruce", ThemeColor.FORGE],
+    ["spruce", ThemeColor.TEAL],
     ["ultraviolet", ThemeColor.MONO],
   ])("maps the legacy %s palette to %s", (legacy, expected) => {
     expect(normalizeThemePreferences({ themeColor: legacy }).themeColor).toBe(

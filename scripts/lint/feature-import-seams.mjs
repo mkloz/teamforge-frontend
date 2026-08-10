@@ -14,7 +14,7 @@ const SKIPPED_DIRECTORIES = new Set(["node_modules", "dist", "coverage"]);
 const ROUTE_CONTRACT_FEATURES = new Set([
   "activity",
   "explore",
-  "forge",
+  "planCreation",
   "group-plan-detail",
   "home",
   "onboarding",

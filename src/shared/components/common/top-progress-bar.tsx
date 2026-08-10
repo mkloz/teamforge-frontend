@@ -31,8 +31,8 @@ export function TopProgressBar({
         className={cn(
           "h-full w-(--top-progress-width) transition-[width] duration-300 ease-out",
           isGradient
-            ? "bg-linear-to-r from-forge-teal via-forge-teal to-spark-amber"
-            : "bg-forge-teal",
+            ? "bg-linear-to-r from-brand-teal via-brand-teal to-brand-amber"
+            : "bg-brand-teal",
         )}
         style={progressStyle}
       />

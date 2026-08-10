@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import { config } from "@/config/config";
 import {
   getBrowserDocument,
@@ -12,7 +12,21 @@ export function hasGoogleMapsApiKey() {
 export function isGooglePlacesReady() {
   const browserWindow = getBrowserWindow();
 
-  return Boolean(browserWindow?.google?.maps?.places);
+  return Boolean(
+    browserWindow?.__findafewGooglePlacesLibrary?.AutocompleteSuggestion &&
+      browserWindow.__findafewGooglePlacesLibrary.AutocompleteSessionToken,
+  );
+}
+
+async function importPlacesLibrary(browserWindow: Window) {
+  const maps = browserWindow.google?.maps;
+
+  if (!maps?.importLibrary) {
+    throw new Error("Google Places did not finish loading.");
+  }
+
+  const places = await maps.importLibrary("places");
+  browserWindow.__findafewGooglePlacesLibrary = places;
 }
 
 export function loadGoogleMaps() {
@@ -39,23 +53,37 @@ export function loadGoogleMaps() {
     return Promise.reject(new Error("Google Maps requires a browser."));
   }
 
-  if (browserWindow.__teamforgeGoogleMapsPromise) {
-    return browserWindow.__teamforgeGoogleMapsPromise;
+  if (browserWindow.__findafewGoogleMapsPromise) {
+    return browserWindow.__findafewGoogleMapsPromise;
   }
 
-  browserWindow.__teamforgeGoogleMapsPromise = new Promise<void>(
+  if (browserWindow.google?.maps?.importLibrary) {
+    browserWindow.__findafewGoogleMapsPromise = importPlacesLibrary(
+      browserWindow,
+    ).catch((error) => {
+      browserWindow.__findafewGoogleMapsPromise = undefined;
+      throw error;
+    });
+    return browserWindow.__findafewGoogleMapsPromise;
+  }
+
+  browserWindow.__findafewGoogleMapsPromise = new Promise<void>(
     (resolve, reject) => {
       const rejectAndReset = (error: Error) => {
-        browserWindow.__teamforgeGoogleMapsPromise = undefined;
+        browserWindow.__findafewGoogleMapsPromise = undefined;
         reject(error);
       };
 
+      const resolvePlaces = () => {
+        void importPlacesLibrary(browserWindow).then(resolve, rejectAndReset);
+      };
+
       const existingScript = browserDocument.querySelector<HTMLScriptElement>(
-        'script[data-teamforge-google-maps="true"]',
+        'script[data-findafew-google-maps="true"]',
       );
 
       if (existingScript) {
-        existingScript.addEventListener("load", () => resolve(), {
+        existingScript.addEventListener("load", resolvePlaces, {
           once: true,
         });
         existingScript.addEventListener(
@@ -69,11 +97,11 @@ export function loadGoogleMaps() {
       const script = browserDocument.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
         apiKey,
-      )}&libraries=places`;
+      )}&libraries=places&loading=async&v=weekly`;
       script.async = true;
       script.defer = true;
-      script.dataset.teamforgeGoogleMaps = "true";
-      script.addEventListener("load", () => resolve(), { once: true });
+      script.dataset.findafewGoogleMaps = "true";
+      script.addEventListener("load", resolvePlaces, { once: true });
       script.addEventListener(
         "error",
         () => rejectAndReset(new Error("Google Maps failed to load.")),
@@ -83,5 +111,5 @@ export function loadGoogleMaps() {
     },
   );
 
-  return browserWindow.__teamforgeGoogleMapsPromise;
+  return browserWindow.__findafewGoogleMapsPromise;
 }

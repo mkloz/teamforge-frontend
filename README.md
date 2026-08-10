@@ -1,10 +1,10 @@
-# TeamForge — Frontend
+# Findafew — Frontend
 
-> **"Find your people, intelligently."**
+> **"Small groups for things you want to do."**
 
-TeamForge forms small groups around shared real-world activities. It is designed for students and young professionals aged 18–28 who want a direct way to meet people through a plan.
+Findafew helps adults aged 18–28 in supported launch areas explore activity plans or start one of their own.
 
-The core flow starts with **"Forge my group."** After the user chooses an activity and plan, TeamForge forms one group using personality, interests, social graph proximity, age, and trust score.
+The core flow starts with **"Start a plan."** A user chooses an activity and practical details, sees whether a small group comes together, and reviews the group before deciding whether to take part.
 
 ---
 
@@ -58,8 +58,8 @@ The core flow starts with **"Forge my group."** After the user chooses an activi
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/mkloz/teamforge-frontend.git
-cd teamforge-frontend
+git clone https://github.com/mkloz/findafew-frontend.git
+cd findafew-frontend
 
 # 2. Install dependencies
 npm install
@@ -85,7 +85,7 @@ counted as a broken navigation link.
 ## Project Structure
 
 ```
-teamforge-frontend/
+findafew-frontend/
 ├── docs/                        # Architecture, contract, and design documentation
 │   ├── architecture-guide.md    # Frontend architecture and backend contract notes
 │   ├── open-api.yaml            # Copied/generated backend OpenAPI contract
@@ -102,7 +102,8 @@ teamforge-frontend/
 │   │   ├── design-system/       # Internal component showcase / visual QA route
 │   │   ├── download/            # Public PWA install guidance
 │   │   ├── explore/             # User/group discovery
-│   │   ├── forge/               # Core "Forge my group" multi-step wizard
+│   │   ├── plan-creation/        # Plan builder and group-formation request flow
+│   │   ├── group-proposals/      # Review and decision flow for proposed groups
 │   │   ├── group-plan-detail/   # Group and plan briefing route
 │   │   ├── home/                # Authenticated home/dashboard
 │   │   ├── landing/             # Public marketing landing page
@@ -170,19 +171,19 @@ Local development usually uses:
 ```env
 VITE_APP_URL=http://localhost:3000
 VITE_API_URL=http://localhost:6969/api/v1
-VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com
+VITE_MEDIA_BASE_URL=
 ```
 
 Production should use the public browser URL with the same API prefix:
 
 ```env
-VITE_APP_URL=https://teamforge.mkloz.com
-VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1
-VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com
+VITE_APP_URL=https://findafew.today
+VITE_API_URL=https://api.findafew.today/findafew/api/v1
+VITE_MEDIA_BASE_URL=
 ```
 
-`https://api.mkloz.com/teamforge/api/v1` remains an active API alias, but
-production release examples use the canonical ARM host above.
+Findafew has one production browser API contract. Do not add aliases or a
+secondary browser host.
 
 Sentry is disabled unless `VITE_SENTRY_DSN` is set. Source map upload is
 separate from runtime telemetry and only runs in CI builds when
@@ -190,15 +191,15 @@ separate from runtime telemetry and only runs in CI builds when
 
 The realtime client derives the Socket.IO transport path from `VITE_API_URL`.
 For the production URL above, it connects to the `/realtime` namespace through
-`/teamforge/socket.io`.
+`/findafew/socket.io`.
 
 Before a production PWA build, run the browser-env preflight with the same
 values that Vite will bake into the bundle:
 
 ```bash
-VITE_APP_URL=https://teamforge.mkloz.com \
-VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
-VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
+VITE_APP_URL=https://findafew.today \
+VITE_API_URL=https://api.findafew.today/findafew/api/v1 \
+VITE_MEDIA_BASE_URL= \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
 VITE_GIPHY_API_KEY=your-production-giphy-key \
@@ -259,21 +260,21 @@ Routes are manually composed in `src/router.tsx` from `src/app/router/*`. Route 
 | `/`, `/download`, `/privacy`, `/terms` | Public pages |
 | `/auth/login`, `/auth/register`, `/auth/forgot-password`, `/auth/reset-password/$token`, `/auth/activate/$token` | Auth flows |
 | `/onboarding/profile`, `/onboarding/personality`, `/onboarding/interests` | Guarded onboarding |
-| `/home`, `/explore`, `/activity`, `/profile`, `/settings`, `/forge` | Authenticated app shell |
-| `/groups/$groupId`, `/users/$userId` | Authenticated detail routes |
+| `/home`, `/explore`, `/activity`, `/profile`, `/settings`, `/plans/new` | Authenticated app shell |
+| `/groups/$groupId`, `/group-proposals/$proposalId`, `/users/$userId` | Authenticated detail routes |
 | `/design-system/icon-notice-variants` | Development-only visual QA route |
 
 Server state belongs to TanStack Query. Feature API adapters, query keys, query options, query factories, and cache helpers stay inside feature-local `api/` folders. Cross-feature backend-aligned schemas live in `src/shared/schemas/`, while feature-specific projections stay with the feature that owns the UI.
 
-Realtime connects to the backend Socket.IO `/realtime` namespace after an auth session exists. The client derives the Socket.IO transport path from `VITE_API_URL`, which lets local development use `/socket.io` and the current production path use `/teamforge/socket.io`.
+Realtime connects to the backend Socket.IO `/realtime` namespace after an auth session exists. The client derives the Socket.IO transport path from `VITE_API_URL`, which lets local development use `/socket.io` and the current production path use `/findafew/socket.io`.
 
 ---
 
 ## Design System
 
-TeamForge design guidance lives in [`docs/visual-style-guide.md`](docs/visual-style-guide.md). Product-language decisions live in [`.agents/rules/teamforge/copy-guardrails.md`](.agents/rules/teamforge/copy-guardrails.md). The app uses Inter, Lucide React, Tailwind CSS v4 tokens, shadcn/ui, and Radix primitives.
+Findafew design guidance lives in [`docs/visual-style-guide.md`](docs/visual-style-guide.md). Product-language decisions live in [`.agents/rules/findafew/copy-guardrails.md`](.agents/rules/findafew/copy-guardrails.md). The app uses Inter, Lucide React, Tailwind CSS v4 tokens, shadcn/ui, and Radix primitives.
 
-The color system is intentionally small: forge teal, spark amber, canvas, ink, and slate muted. New UI should use those tokens and opacity modifiers rather than introducing additional hex colors.
+The color system is intentionally small: brand teal, brand amber, canvas, ink, and slate muted. New UI should use those tokens and opacity modifiers rather than introducing additional hex colors.
 
 ---
 
@@ -282,9 +283,9 @@ The color system is intentionally small: forge teal, spark amber, canvas, ink, a
 The production PWA release path is:
 
 ```bash
-VITE_APP_URL=https://teamforge.mkloz.com \
-VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
-VITE_MEDIA_BASE_URL=https://mkloz-teamforge.s3.us-east-1.amazonaws.com \
+VITE_APP_URL=https://findafew.today \
+VITE_API_URL=https://api.findafew.today/findafew/api/v1 \
+VITE_MEDIA_BASE_URL= \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
 VITE_GIPHY_API_KEY=your-production-giphy-key \
@@ -321,7 +322,7 @@ VITE_MEDIA_BASE_URL
 Required GitHub environment variable:
 
 ```text
-CLOUDFLARE_PAGES_PROJECT_NAME=teamforge-web
+CLOUDFLARE_PAGES_PROJECT_NAME=findafew-web
 ```
 
 Optional GitHub environment variables:
@@ -329,12 +330,12 @@ Optional GitHub environment variables:
 ```text
 CLOUDFLARE_PAGES_DEPLOY_ON_PUSH=false
 CLOUDFLARE_PAGES_PRODUCTION_BRANCH=main
-VITE_APP_URL=https://teamforge.mkloz.com
-VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1
+VITE_APP_URL=https://findafew.today
+VITE_API_URL=https://api.findafew.today/findafew/api/v1
 ```
 
 Manual dispatch defaults to a preview Pages deployment. Select `production` only
-when the backend smoke checks have passed on `arm-api.mkloz.com` and the
+when the backend smoke checks have passed on `api.findafew.today` and the
 browser-baked integration keys are production-ready.
 
 ---

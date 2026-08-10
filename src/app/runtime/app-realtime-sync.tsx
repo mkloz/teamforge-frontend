@@ -18,7 +18,7 @@ import { warnInDevelopment } from "@/shared/lib/development-warning";
 const realtimeRoutePrefixes = [
   "/activity",
   "/explore",
-  "/forge",
+  "/plans/new",
   "/groups/",
   "/home",
   "/profile",

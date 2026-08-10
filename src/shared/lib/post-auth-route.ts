@@ -71,7 +71,7 @@ export function getPostAuthRedirectPath(user: User | null | undefined) {
 const PRODUCT_DESTINATION_PATHS = {
   HOME: "/home",
   EXPLORE: "/explore",
-  FORGE: "/forge",
+  START_PLAN: "/plans/new",
   ONBOARDING_PROFILE: "/onboarding/profile",
   ONBOARDING_INTENT: "/onboarding/intent",
   ONBOARDING_INTERESTS: "/onboarding/interests",

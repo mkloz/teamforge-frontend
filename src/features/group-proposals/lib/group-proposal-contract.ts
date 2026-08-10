@@ -1,0 +1,32 @@
+export type {
+  CurrentGroupProposalResponse,
+  GroupProposal,
+  GroupProposalDecisionCommand,
+  GroupProposalDecisionPolicy,
+  GroupProposalDecisionReceipt,
+  GroupProposalDeclineCommand,
+  GroupProposalDeclineReason,
+  GroupProposalRecoveryCommand,
+  GroupProposalSeat,
+  GroupProposalSeatDecision,
+  GroupProposalSeatDisposition,
+  GroupProposalState,
+} from "@/features/group-proposals/schemas/group-proposal.schema";
+
+export {
+  currentGroupProposalResponseSchema,
+  groupProposalDecisionCommandSchema,
+  groupProposalDecisionPolicySchema,
+  groupProposalDecisionReceiptSchema,
+  groupProposalDeclineCommandSchema,
+  groupProposalDeclineReasonSchema,
+  groupProposalOpeningStateSchema,
+  groupProposalRecoveryCommandSchema,
+  groupProposalRecoveryPolicySchema,
+  groupProposalSchema,
+  groupProposalScopeSchema,
+  groupProposalSeatDecisionSchema,
+  groupProposalSeatDispositionSchema,
+  groupProposalSeatRoleSchema,
+  groupProposalStateSchema,
+} from "@/features/group-proposals/schemas/group-proposal.schema";

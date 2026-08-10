@@ -5,7 +5,7 @@ import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page
 import { ProfilePageContent } from "@/features/profile/profile-page/profile-page-content";
 import { SkeletonButton } from "@/shared/components/loading/skeleton-patterns";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 import type { ViewerProfile } from "@/shared/schemas/viewer-profile";
 
 const USER_DETAIL_ROUTE = "/app-shell/users/$userId";
@@ -35,11 +35,11 @@ function useUserDetailPageState() {
   const { userId } = useParams({ from: USER_DETAIL_ROUTE });
   const search = useSearch({ from: USER_DETAIL_ROUTE });
   const { profile, isLoading, error, refetch } = usePublicProfile(userId);
-  const pageMetadata = createTeamForgePageMetadata({
+  const pageMetadata = createFindafewPageMetadata({
     title: profile?.name ? `${profile.name}'s profile` : "Profile",
     description: profile?.name
-      ? `View ${profile.name}'s TeamForge profile.`
-      : "View a TeamForge profile.",
+      ? `View ${profile.name}'s Findafew profile.`
+      : "View a Findafew profile.",
   });
 
   return {

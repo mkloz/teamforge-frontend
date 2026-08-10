@@ -39,7 +39,7 @@ export function AttentionQueueItemActions({
         type="button"
         variant="ghost"
         size="icon-sm"
-        className="size-9 text-muted-foreground hover:enabled:bg-destructive/8 hover:enabled:text-destructive"
+        className="size-9 text-muted-foreground hover:enabled:bg-destructive-soft hover:enabled:text-destructive"
         loading={decline.loading}
         disabled={decline.disabled}
         onClick={decline.onClick}

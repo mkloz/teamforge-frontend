@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { DevToolIconButton } from "@/dev/tools/dev-tool-icon-button";
 import { getBrowserDocument } from "@/shared/lib/browser-environment";
 
-const BOX_BORDERS_STYLE_ID = "teamforge-dev-box-borders";
+const BOX_BORDERS_STYLE_ID = "findafew-dev-box-borders";
 
 function removeBoxBordersStyle() {
   getBrowserDocument()?.getElementById(BOX_BORDERS_STYLE_ID)?.remove();

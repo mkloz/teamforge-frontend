@@ -62,7 +62,7 @@ function getDownloadFileName(media: UnifiedAttachment) {
     return hasFileExtension(name) ? name : `${name}${extension}`;
   }
 
-  return `teamforge-media-${media.id}${extension}`;
+  return `findafew-media-${media.id}${extension}`;
 }
 
 function hasFileExtension(name: string) {

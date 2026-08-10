@@ -7,7 +7,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { useCompatibilityInputLock } from "@/features/forge-proposals/public/proposal-review";
+import { useCompatibilityInputLock } from "@/features/group-proposals/public/proposal-review";
 import { OnboardingCommands } from "@/features/onboarding/api/onboarding-commands";
 import {
   onboardingObservationEventNames,
@@ -311,7 +311,7 @@ export function usePersonalityTestPageFlow() {
         );
         const attempt = await PersonalityAssessmentApi.createAttempt({
           formVersion: isDynamic
-            ? "TF_OCEAN_DYNAMIC_V1"
+            ? "FINDAFEW_OCEAN_DYNAMIC_V1"
             : FORM_VERSION_BY_LENGTH[snapshot.testLength],
           source: ownerState?.current ? "RETAKE" : "ONBOARDING",
           ...(isDynamic

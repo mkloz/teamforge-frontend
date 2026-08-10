@@ -34,7 +34,7 @@ export const SETTINGS_SECTION_GROUPS: readonly SettingsSectionGroup[] = [
         label: "Appearance",
         headline: "Appearance",
         description:
-          "Set the mode, interface style, and palette used across TeamForge.",
+          "Set the mode, interface style, and palette used across Findafew.",
         icon: Palette,
       },
     ],
@@ -48,7 +48,7 @@ export const SETTINGS_SECTION_GROUPS: readonly SettingsSectionGroup[] = [
         label: "Group fit",
         headline: "Group fit",
         description:
-          "Control availability, group fit, and the signals TeamForge uses for groups.",
+          "Control availability, group fit, and the signals Findafew uses for groups.",
         icon: SlidersHorizontal,
       },
       {
@@ -68,7 +68,7 @@ export const SETTINGS_SECTION_GROUPS: readonly SettingsSectionGroup[] = [
         label: "Privacy",
         headline: "Profile privacy",
         description:
-          "Choose what appears on your profile and manage a copy of your TeamForge data.",
+          "Choose what appears on your profile and manage a copy of your Findafew data.",
         icon: Eye,
       },
       {

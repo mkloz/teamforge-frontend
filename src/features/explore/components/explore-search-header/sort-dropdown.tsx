@@ -75,7 +75,7 @@ export function SortDropdown() {
                 key={id}
                 value={id}
                 className={cn(
-                  "grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-2 text-left focus:bg-primary/8 focus:text-ink data-[state=checked]:bg-primary/8 data-[state=checked]:text-ink [&>span:first-child]:hidden",
+                  "grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-2 text-left focus:bg-primary-soft focus:text-ink data-[state=checked]:bg-primary-soft data-[state=checked]:text-ink [&>span:first-child]:hidden",
                   selected ? "text-ink" : "text-slate-muted",
                 )}
               >

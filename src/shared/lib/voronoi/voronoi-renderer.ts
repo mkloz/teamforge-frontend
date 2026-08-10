@@ -10,8 +10,8 @@ import type { Point, VoronoiFormationLayout } from "./voronoi-contract";
 type VoronoiCell = ReturnType<Voronoi<Float64Array>["cellPolygon"]>;
 type RgbColor = readonly [number, number, number];
 
-const FORMATION_TEAL: RgbColor = [13, 148, 136];
-const FORMATION_TEAL_EDGE: RgbColor = [45, 212, 191];
+const FORMATION_TEAL: RgbColor = [55, 131, 113];
+const FORMATION_TEAL_EDGE: RgbColor = [74, 157, 137];
 const FORMATION_AMBER: RgbColor = [245, 158, 11];
 const FORMATION_AMBER_EDGE: RgbColor = [251, 191, 36];
 
@@ -58,7 +58,7 @@ export function drawParticleCells(
         hoverIntensity: hoverState.intensity,
       });
     } else {
-      ctx.fillStyle = `rgba(13, 148, 136, ${baseOpacity})`;
+      ctx.fillStyle = `rgba(55, 131, 113, ${baseOpacity})`;
     }
 
     ctx.fill();
@@ -121,12 +121,12 @@ function drawAssembledParticleCell({
     smoothstep(0.28, 0.92, formationProgress);
   ctx.fillStyle = toRgba(
     mixRgb(FORMATION_TEAL, FORMATION_AMBER, accentReveal),
-    (0.44 + tone * 0.2) * reveal,
+    (0.58 + tone * 0.2) * reveal,
   );
   ctx.fill();
   ctx.strokeStyle = toRgba(
     mixRgb(FORMATION_TEAL_EDGE, FORMATION_AMBER_EDGE, accentReveal),
-    reveal * (0.16 + tone * 0.12),
+    reveal * (0.22 + tone * 0.14),
   );
   ctx.lineWidth = 0.75;
   ctx.stroke();
@@ -200,7 +200,7 @@ function drawCellHoverOverlay({
   ctx: CanvasRenderingContext2D;
   hoverIntensity: number;
 }) {
-  ctx.fillStyle = `rgba(13, 148, 136, ${Math.min(1, baseOpacity + 0.2 * hoverIntensity)})`;
+  ctx.fillStyle = `rgba(74, 157, 137, ${Math.min(1, baseOpacity + 0.2 * hoverIntensity)})`;
 }
 
 function strokeParticleCellEdges(
@@ -210,11 +210,11 @@ function strokeParticleCellEdges(
 ) {
   const fade =
     1 - smoothstep(0.2, 0.9, formationProgress) * (isAssemblyCell ? 0.9 : 0.62);
-  ctx.strokeStyle = `rgba(13, 148, 136, ${0.15 * fade})`;
+  ctx.strokeStyle = `rgba(55, 131, 113, ${0.15 * fade})`;
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  ctx.strokeStyle = `rgba(13, 148, 136, ${0.05 * fade})`;
+  ctx.strokeStyle = `rgba(55, 131, 113, ${0.05 * fade})`;
   ctx.lineWidth = 2;
   ctx.stroke();
 }
@@ -223,12 +223,12 @@ export function drawCatalystCore(
   ctx: CanvasRenderingContext2D,
   coreAvgX: number,
   coreAvgY: number,
-  sparkPhase: number,
+  particlePhase: number,
   amberOpacity: number,
 ) {
   const timeNow = Date.now();
   const pulse = (Math.sin(timeNow / 520) + 1) / 2;
-  const outerGlowRadius = (18 + pulse * 7) * sparkPhase;
+  const outerGlowRadius = (18 + pulse * 7) * particlePhase;
   ctx.beginPath();
   ctx.arc(coreAvgX, coreAvgY, outerGlowRadius, 0, Math.PI * 2);
   const outerGradient = ctx.createRadialGradient(
@@ -245,18 +245,24 @@ export function drawCatalystCore(
   ctx.fill();
 
   ctx.beginPath();
-  ctx.arc(coreAvgX, coreAvgY, Math.max(0.1, 2.5 * sparkPhase), 0, Math.PI * 2);
+  ctx.arc(
+    coreAvgX,
+    coreAvgY,
+    Math.max(0.1, 2.5 * particlePhase),
+    0,
+    Math.PI * 2,
+  );
   ctx.fillStyle = COLORS.amberLight;
   ctx.fill();
 
   ctx.beginPath();
-  ctx.arc(coreAvgX, coreAvgY, Math.max(0.1, 5 * sparkPhase), 0, Math.PI * 2);
+  ctx.arc(coreAvgX, coreAvgY, Math.max(0.1, 5 * particlePhase), 0, Math.PI * 2);
   ctx.strokeStyle = `rgba(245, 158, 11, ${amberOpacity * 0.68})`;
   ctx.lineWidth = 1;
   ctx.stroke();
 
   const pulseTime = (timeNow / 1600) % 1;
-  const pulseRadius = (8 + pulseTime * 30) * sparkPhase;
+  const pulseRadius = (8 + pulseTime * 30) * particlePhase;
   const pulseOpacity = (1 - pulseTime) * amberOpacity * 0.18;
   ctx.beginPath();
   ctx.arc(coreAvgX, coreAvgY, Math.max(0.1, pulseRadius), 0, Math.PI * 2);

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import type { CompatibilityInputLockStatus } from "@/features/forge-proposals/public/proposal-review";
+import type { CompatibilityInputLockStatus } from "@/features/group-proposals/public/proposal-review";
 import { InterestsProgressDecoration } from "@/features/onboarding/components/interests/interests-page/interests-progress-decoration";
 import { InterestsScreenRenderer } from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer";
 import { InterestsCatalogState } from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer/interests-catalog-state";
@@ -7,9 +7,9 @@ import { useInterestsPageFlow } from "@/features/onboarding/hooks/use-interests-
 import { InterestsPageContent } from "@/features/onboarding/onboarding-page-content";
 import { Button } from "@/shared/components/ui/button";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
-const INTERESTS_PAGE_METADATA = createTeamForgePageMetadata({
+const INTERESTS_PAGE_METADATA = createFindafewPageMetadata({
   title: "Choose Interests",
   description:
     "Select activities and topics you would want to join with a group.",

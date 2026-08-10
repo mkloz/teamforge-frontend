@@ -42,7 +42,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
             reports scores for these traits:
           </p>
 
-          <ul className="ml-2 flex flex-col gap-2.5 border-forge-teal/30 border-l-2 py-1 pl-4 font-sans text-foreground/90 text-sm sm:ml-4 sm:gap-3 sm:pl-5 sm:text-chat-input">
+          <ul className="ml-2 flex flex-col gap-2.5 border-brand-teal/30 border-l-2 py-1 pl-4 font-sans text-foreground/90 text-sm sm:ml-4 sm:gap-3 sm:pl-5 sm:text-chat-input">
             <li className="flex items-center gap-2.5">
               <span className="w-4 font-black text-foreground">O</span>
               <span>Openness to Experience</span>
@@ -67,7 +67,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
         </div>
 
         <p className="font-sans text-muted-foreground text-sm leading-relaxed opacity-90 sm:text-chat-input">
-          After scoring, you decide whether TeamForge can use the result when
+          After scoring, you decide whether Findafew can use the result when
           putting together group proposals.
         </p>
       </m.div>

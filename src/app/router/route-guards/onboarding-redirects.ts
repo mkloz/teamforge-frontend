@@ -6,7 +6,7 @@ type EditableOnboardingDestination =
 type PostAuthRedirectPath =
   | ReturnType<typeof getPostAuthRedirectPath>
   | "/explore"
-  | "/forge"
+  | "/plans/new"
   | "/onboarding/intent";
 
 export function isOnboardingEditMode(searchStr: string) {
@@ -36,7 +36,7 @@ function getEditModeOnboardingRedirectTarget(
   const canEditOnboardingInputs =
     canonicalDestination === "/home" ||
     canonicalDestination === "/explore" ||
-    canonicalDestination === "/forge";
+    canonicalDestination === "/plans/new";
 
   return canEditOnboardingInputs ? null : canonicalDestination;
 }

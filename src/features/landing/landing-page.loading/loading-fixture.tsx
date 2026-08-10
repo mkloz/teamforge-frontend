@@ -16,7 +16,7 @@ import {
 export function LandingPageLoadingFixture() {
   return (
     <div aria-busy="true" className="bg-canvas font-sans text-ink antialiased">
-      <output className="sr-only">Loading TeamForge</output>
+      <output className="sr-only">Loading Findafew</output>
       <LandingLoadingHeader />
       <LandingLoadingProgress />
       <main id="main-content">

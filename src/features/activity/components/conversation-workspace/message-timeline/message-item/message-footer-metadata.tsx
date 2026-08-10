@@ -106,7 +106,7 @@ function ReadBySummary({
 
   return (
     <span
-      className="ml-0.5 inline-flex min-w-0 items-center gap-1 rounded-full bg-primary/8 px-1.5 py-0.5 text-foreground"
+      className="ml-0.5 inline-flex min-w-0 items-center gap-1 rounded-full bg-primary-soft px-1.5 py-0.5 text-foreground"
       title={readerNames ? `Read by ${readerNames}` : label}
     >
       <span className="max-w-18 truncate font-black text-xs">{label}</span>
@@ -117,7 +117,7 @@ function ReadBySummary({
               key={reader.id}
               src={reader.avatar}
               name={reader.name}
-              className="size-5 border border-canvas bg-primary/10 text-xs"
+              className="size-5 border border-canvas bg-primary-soft text-xs"
               fallbackClassName="text-xs"
               imageSize={32}
             />

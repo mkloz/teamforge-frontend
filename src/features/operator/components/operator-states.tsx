@@ -61,7 +61,7 @@ export function OperatorAccessState({
         ? "Sign in again with an approved admin account."
         : isApiNetworkError(error)
           ? "Check your connection, then try again."
-          : "TeamForge could not load this moderation data. Try again in a moment.";
+          : "Findafew could not load this moderation data. Try again in a moment.";
 
   return (
     <div className="mx-auto grid min-h-[60dvh] w-full max-w-xl place-items-center px-4 py-10 text-center">

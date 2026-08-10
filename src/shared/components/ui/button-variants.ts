@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 
 /**
- * TeamForge buttons preserve the original mechanical lift and press response.
+ * Findafew buttons preserve the original mechanical lift and press response.
  * Focus stays crisp and the separate glossy sweep layer is excluded.
  */
 export const buttonVariants = cva(
@@ -12,11 +12,11 @@ export const buttonVariants = cva(
         primary:
           "border-2 border-transparent bg-button-primary-border text-primary-foreground after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-primary focus-visible:ring-primary active:translate-y-0 active:shadow-none",
         secondary:
-          "border-2 border-transparent bg-accent/12 text-accent after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:bg-accent/18 hover:shadow-button-secondary focus-visible:ring-accent active:translate-y-0 active:shadow-none",
+          "border-2 border-transparent bg-accent-soft text-accent after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:bg-accent/18 hover:shadow-button-secondary focus-visible:ring-accent active:translate-y-0 active:shadow-none",
         outline:
           "border-2 border-ink bg-transparent text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-outline focus-visible:ring-ink active:translate-y-0! active:shadow-none! dark:border-white dark:text-white focus-visible:dark:ring-white hover:dark:shadow-button-outline-dark",
         destructive:
-          "border-2 border-transparent bg-destructive/10 text-destructive after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-destructive focus-visible:ring-destructive active:translate-y-0! active:shadow-none! hover:dark:shadow-button-destructive",
+          "border-2 border-transparent bg-destructive-soft text-destructive after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-destructive focus-visible:ring-destructive active:translate-y-0! active:shadow-none! hover:dark:shadow-button-destructive",
         ghost:
           "border-2 border-transparent bg-transparent text-ink hover:bg-ink/6 focus-visible:ring-ink active:translate-y-px active:bg-ink/10 dark:text-white active:dark:bg-white/12 focus-visible:dark:ring-white hover:dark:bg-white/8",
         accentGhost:

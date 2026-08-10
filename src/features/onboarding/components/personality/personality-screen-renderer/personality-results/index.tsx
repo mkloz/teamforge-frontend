@@ -1,6 +1,6 @@
 import { m } from "framer-motion";
 
-import type { CompatibilityInputLockStatus } from "@/features/forge-proposals/public/proposal-review";
+import type { CompatibilityInputLockStatus } from "@/features/group-proposals/public/proposal-review";
 import { resultsContainer } from "@/features/onboarding/constants/motion";
 import type { PersonalityAssessmentQueryStatus } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import { getPersonalityResultViewModel } from "@/features/onboarding/lib/personality-results";
@@ -145,8 +145,8 @@ export function PersonalityResults({
         <SectionHeading title="Choose who can see this" />
         <p className="text-pretty text-ink/82 text-sm leading-relaxed">
           {isCompatibilityEligible
-            ? "Use the result privately for matching, or also add the portrait to your profile for other signed-in members to see."
-            : "Keep the result private, or add the portrait to your profile. This assessment version is not currently used for matching."}
+            ? "Use the result privately for group formation, or also add the portrait to your profile for other signed-in members to see."
+            : "Keep the result private, or add the portrait to your profile. This assessment version is not currently used for group formation."}
         </p>
         <p className="text-pretty text-muted-foreground text-xs leading-relaxed">
           Your answers were used for this assessment and are not saved.
@@ -155,7 +155,7 @@ export function PersonalityResults({
 
       {isLegacyResult ? (
         <p
-          className="text-pretty border-spark-amber/60 border-l-2 py-1 pl-4 text-ink text-sm leading-relaxed"
+          className="text-pretty border-brand-amber/60 border-l-2 py-1 pl-4 text-ink text-sm leading-relaxed"
           role="status"
         >
           This result came from the earlier assessment flow. Retake the current

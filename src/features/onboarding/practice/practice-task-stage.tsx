@@ -3,7 +3,6 @@ import {
   Check,
   Compass,
   Eye,
-  Hammer,
   LockKeyhole,
   type LucideIcon,
   MapPin,
@@ -47,7 +46,7 @@ const choiceIcons: Record<
   "ways-to-join": {
     invite: UserPlus,
     "open-plan": TicketCheck,
-    forge: Hammer,
+    planCreation: UsersRound,
   },
   "plan-changes": {
     "keep-going": Check,
@@ -113,8 +112,8 @@ function PracticeChoice({
       onClick={() => onChoose(choice.id)}
       className={cn(
         "group flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 bg-background px-2 py-3 text-center text-muted-foreground transition-[box-shadow,color,transform] duration-150 hover:-translate-y-0.5 hover:text-foreground hover:shadow-soft-sm focus-visible:z-10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-inset active:scale-[0.98] motion-reduce:transition-none sm:min-h-24 sm:px-4",
-        selected && correct && "bg-forge-teal/12 text-foreground",
-        selected && !correct && "bg-destructive/8 text-foreground",
+        selected && correct && "bg-primary-soft text-foreground",
+        selected && !correct && "bg-destructive-soft text-foreground",
       )}
     >
       <span className="relative grid size-6 place-items-center">
@@ -172,7 +171,7 @@ function NavigationVisual() {
         <Search className="size-5 text-muted-foreground" aria-hidden="true" />
       </div>
       <div className="grid grid-cols-[1.15fr_0.85fr] gap-2 sm:gap-3">
-        <div className="flex min-h-32 flex-col justify-end rounded-2xl bg-forge-teal/12 p-4">
+        <div className="flex min-h-32 flex-col justify-end rounded-2xl bg-primary-soft p-4">
           <MapPin className="mb-auto size-5" aria-hidden="true" />
           <p className="font-black text-lg">Photo walk</p>
           <p className="text-muted-foreground text-xs">3 places left</p>
@@ -206,8 +205,8 @@ function GroupAndPlanVisual() {
           <p className="text-muted-foreground text-xs">Your regular group</p>
         </div>
       </div>
-      <div className="relative ml-5 border-forge-teal/45 border-l-2 pl-6">
-        <span className="absolute top-1/2 -left-2 size-3.5 -translate-y-1/2 rounded-full bg-forge-teal ring-4 ring-card" />
+      <div className="relative ml-5 border-brand-teal/45 border-l-2 pl-6">
+        <span className="absolute top-1/2 -left-2 size-3.5 -translate-y-1/2 rounded-full bg-brand-teal ring-4 ring-card" />
         <p className="text-muted-foreground text-xs">Friday · 19:00</p>
         <p className="mt-1 font-black text-2xl">Late-night exhibition</p>
         <p className="mt-2 text-muted-foreground text-sm">
@@ -223,8 +222,8 @@ function WaysToJoinVisual() {
     <div className="flex h-full min-h-56 items-center justify-center">
       <div className="relative grid w-full max-w-md grid-cols-3 items-center gap-3">
         <PathNode icon={UserPlus} label="Someone" />
-        <div className="relative z-10 grid aspect-square place-items-center rounded-full bg-forge-teal/14 text-center">
-          <Hammer className="size-8" aria-hidden="true" />
+        <div className="relative z-10 grid aspect-square place-items-center rounded-full bg-brand-teal/14 text-center">
+          <UsersRound className="size-8" aria-hidden="true" />
           <span className="sr-only">Your activity idea</span>
         </div>
         <PathNode icon={TicketCheck} label="Open plan" />

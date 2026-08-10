@@ -125,7 +125,7 @@ function WorkerRow({
       className={cn(
         "relative grid gap-5 px-5 py-5 sm:px-6 lg:grid-cols-2 lg:items-center 2xl:grid-cols-[minmax(13rem,0.9fr)_minmax(12rem,0.85fr)_minmax(16rem,1fr)_auto]",
         selected &&
-          "bg-primary/[0.035] before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-primary",
+          "bg-primary-soft before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-primary",
       )}
     >
       <div className="grid min-w-0 gap-1">

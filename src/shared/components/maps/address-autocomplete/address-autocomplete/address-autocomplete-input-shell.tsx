@@ -16,9 +16,11 @@ interface AddressAutocompleteInputShellProps {
   children: ReactNode;
   clearLocation: () => void;
   disabled: AddressAutocompleteProps["disabled"];
+  handleInputBlur: FocusEventHandler<HTMLInputElement>;
   handleInputChange: ChangeEventHandler<HTMLInputElement>;
   handleInputFocus: FocusEventHandler<HTMLInputElement>;
   handleInputKeyDown: KeyboardEventHandler<HTMLInputElement>;
+  geolocationAvailable: boolean;
   hasCurrentAreaError: boolean;
   hintId: string;
   inputId: string;
@@ -26,7 +28,6 @@ interface AddressAutocompleteInputShellProps {
   inputValue: string;
   isLocating: boolean;
   isSuggestionsOpen: boolean;
-  mapsReady: boolean;
   placeholder: string;
   renderState: AddressAutocompleteRenderState;
   required: AddressAutocompleteProps["required"];
@@ -38,9 +39,11 @@ export function AddressAutocompleteInputShell({
   children,
   clearLocation,
   disabled,
+  handleInputBlur,
   handleInputChange,
   handleInputFocus,
   handleInputKeyDown,
+  geolocationAvailable,
   hasCurrentAreaError,
   hintId,
   inputId,
@@ -48,7 +51,6 @@ export function AddressAutocompleteInputShell({
   inputValue,
   isLocating,
   isSuggestionsOpen,
-  mapsReady,
   placeholder,
   renderState,
   required,
@@ -61,6 +63,7 @@ export function AddressAutocompleteInputShell({
         id={inputId}
         type="search"
         value={inputValue}
+        onBlur={handleInputBlur}
         onChange={handleInputChange}
         onFocus={handleInputFocus}
         onKeyDown={handleInputKeyDown}
@@ -84,7 +87,7 @@ export function AddressAutocompleteInputShell({
           hintId,
           inputValue,
           isLocating,
-          mapsReady,
+          geolocationAvailable,
           renderState,
           useCurrentArea,
         })}
@@ -102,7 +105,7 @@ function getAddressInputControls({
   hintId,
   inputValue,
   isLocating,
-  mapsReady,
+  geolocationAvailable,
   renderState,
   useCurrentArea,
 }: {
@@ -112,7 +115,7 @@ function getAddressInputControls({
   hintId: string;
   inputValue: string;
   isLocating: boolean;
-  mapsReady: boolean;
+  geolocationAvailable: boolean;
   renderState: Pick<
     AddressAutocompleteRenderState,
     "hasRightControls" | "isBusy"
@@ -130,7 +133,7 @@ function getAddressInputControls({
       inputValue={inputValue}
       isBusy={renderState.isBusy}
       isLocating={isLocating}
-      mapsReady={mapsReady}
+      geolocationAvailable={geolocationAvailable}
       messageId={hintId}
       onClearLocation={clearLocation}
       onUseCurrentArea={useCurrentArea}

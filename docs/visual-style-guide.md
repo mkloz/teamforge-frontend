@@ -1,11 +1,11 @@
-# TeamForge visual style guide
+# Findafew visual style guide
 
 This guide records durable product-wide visual decisions. Semantic tokens and
 shared components in `src/` are the implementation source of truth.
 
 ## Design character
 
-TeamForge is a clear shared workshop: calm, social, and practical. Theme work
+Findafew is a clear shared workshop: calm, social, and practical. Theme work
 preserves the established UI anatomy and uses restrained geometry, layered
 neutral surfaces, selective structural edges, and deliberate interaction
 feedback.
@@ -132,7 +132,7 @@ The user-facing labels and persisted identifiers are intentionally separate:
 | UI label | Internal ID |
 | --- | --- |
 | Balanced | `graphite` |
-| Quiet focus | `forge` |
+| Quiet focus | `teal` |
 | Warm social | `ember` |
 | Clear contrast | `mono` |
 | Night ease | `harbor` |
@@ -141,10 +141,10 @@ The user-facing labels and persisted identifiers are intentionally separate:
 | High contrast | `poster` |
 | Reduced effects | `glass` |
 
-Local storage uses `teamforge:appearance:v2`, version `2`, with defaults
+Local storage uses `findafew:appearance:v2`, version `2`, with defaults
 `system` / `graphite` / `classic`. Legacy mappings are
 `acid|cobalt|ultraviolet → mono`, `coral → ember`, `paper → graphite`, and
-`spruce → forge`. The supported sets, defaults, version, and migration table in
+`spruce → teal`. The supported sets, defaults, version, and migration table in
 `src/shared/constants/theme-preferences.ts` and `public/theme-boot.js` must stay
 in lockstep because the boot file runs before the application bundle. The
 version is explicit in the runtime snapshot and encoded in the boot storage key;

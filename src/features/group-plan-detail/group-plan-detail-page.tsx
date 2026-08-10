@@ -12,12 +12,12 @@ import {
 } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 import type { GroupPlanDetailRouteSearch } from "@/shared/navigation";
 
 const GROUP_PLAN_DETAIL_ROUTE = "/app-shell/groups/$groupId";
 const GROUP_PLAN_DETAIL_DEFAULT_DESCRIPTION =
-  "Review this group's plan, members, and fit summary in TeamForge.";
+  "Review this group's plan, members, and fit summary in Findafew.";
 
 export function GroupPlanDetailPage() {
   const { groupId } = useParams({ from: GROUP_PLAN_DETAIL_ROUTE });
@@ -68,7 +68,7 @@ function GroupPlanDetailErrorState({
     >
       <PageErrorState
         title="Group details could not load"
-        description="TeamForge could not load this group's details right now."
+        description="Findafew could not load this group's details right now."
         retryLabel="Refresh details"
         onRetry={() => {
           void onRetry();
@@ -119,7 +119,7 @@ function useGroupPlanDetailLoadedView({
 function getGroupPlanDetailPageMetadata(
   detail: GroupPlanDetailResponse | undefined,
 ) {
-  return createTeamForgePageMetadata({
+  return createFindafewPageMetadata({
     title: getGroupPlanDetailPageTitle(detail),
     description: getGroupPlanDetailPageDescription(detail),
   });

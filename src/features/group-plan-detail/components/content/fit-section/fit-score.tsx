@@ -10,7 +10,7 @@ export function FitScore({ percent }: { percent: number }) {
           percent >= 75
             ? "text-foreground"
             : percent >= 45
-              ? "text-spark-amber"
+              ? "text-brand-amber"
               : "text-muted-foreground",
         )}
       >

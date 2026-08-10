@@ -24,7 +24,7 @@ export function trackEvent(name: string, context: TelemetryContext = {}) {
     }
 
     Sentry.addBreadcrumb({
-      category: "teamforge.event",
+      category: "findafew.event",
       data,
       level: "info",
       message: sanitizeTelemetryText(name),
@@ -60,7 +60,7 @@ export function captureException(
     }
 
     Sentry.withScope((sentryScope) => {
-      sentryScope.setTag("teamforge.scope", sanitizeTelemetryText(scope));
+      sentryScope.setTag("findafew.scope", sanitizeTelemetryText(scope));
 
       for (const [key, value] of Object.entries(details)) {
         if (value !== undefined) {

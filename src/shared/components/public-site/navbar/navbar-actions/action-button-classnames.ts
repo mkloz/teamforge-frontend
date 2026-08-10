@@ -22,7 +22,7 @@ function getLargeActionButtonClassName({
 
 function getStaticPublicThemeButtonClassName(isPrimary: boolean) {
   return isPrimary
-    ? "border-forge-teal bg-forge-teal text-white hover:shadow-button-primary focus-visible:ring-forge-teal"
+    ? "border-brand-teal bg-brand-teal text-white hover:shadow-button-primary focus-visible:ring-brand-teal"
     : "border-white bg-transparent text-white hover:shadow-button-outline-dark focus-visible:ring-white";
 }
 

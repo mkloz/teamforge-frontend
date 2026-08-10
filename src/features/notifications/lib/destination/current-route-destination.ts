@@ -1,9 +1,4 @@
 import {
-  extractProposalId,
-  matchLegacyGroupPath,
-  matchLegacyUserPath,
-} from "@/features/notifications/lib/notification-intent";
-import {
   type ActivityRouteSearch,
   activityDensityValues,
   activityFilterValues,
@@ -17,11 +12,6 @@ import {
   validateExploreRouteSearch,
 } from "@/shared/navigation/explore-navigation";
 import {
-  buildForgeNavigation,
-  type ForgeRouteSearch,
-  validateForgeRouteSearch,
-} from "@/shared/navigation/forge-navigation";
-import {
   buildGroupPlanDetailNavigation,
   validateGroupPlanDetailSearch,
 } from "@/shared/navigation/group-navigation";
@@ -31,6 +21,12 @@ import {
   homeInvitationViewValues,
   homePanelValues,
 } from "@/shared/navigation/home-navigation";
+import {
+  buildGroupProposalNavigation,
+  buildPlanCreationNavigation,
+  type PlanCreationRouteSearch,
+  validatePlanCreationRouteSearch,
+} from "@/shared/navigation/plan-creation-navigation";
 import {
   buildProfileNavigation,
   validateUserDetailSearch,
@@ -44,12 +40,7 @@ import type {
   CurrentRouteDestinationResolver,
   NotificationDestination,
 } from "./notification-destination.types";
-import {
-  extractMessageId,
-  extractPlanId,
-  findLiteral,
-  getFirstSearchParam,
-} from "./notification-link-parser";
+import { findLiteral } from "./notification-link-parser";
 
 const CURRENT_ROUTE_DESTINATION_RESOLVERS: Record<
   string,
@@ -59,8 +50,8 @@ const CURRENT_ROUTE_DESTINATION_RESOLVERS: Record<
     buildActivityNavigation(resolveActivitySearch(searchParams)),
   "/explore": (searchParams) =>
     buildExploreNavigation(resolveExploreSearch(searchParams)),
-  "/forge": (searchParams) =>
-    buildForgeNavigation(resolveForgeSearch(searchParams)),
+  "/plans/new": (searchParams) =>
+    buildPlanCreationNavigation(resolveGroupFormationSearch(searchParams)),
   "/home": (searchParams) =>
     buildHomeNavigation(resolveHomeSearch(searchParams)),
   "/profile": () => buildProfileNavigation(),
@@ -86,7 +77,16 @@ export function resolveFromCurrentAppRoute(
     return routeResolver(searchParams);
   }
 
-  const groupId = matchLegacyGroupPath(pathname);
+  const groupProposalId = matchRouteId(
+    pathname,
+    /^\/group-proposals\/([^/?#]+)$/u,
+  );
+
+  if (groupProposalId) {
+    return buildGroupProposalNavigation(groupProposalId);
+  }
+
+  const groupId = matchRouteId(pathname, /^\/groups\/([^/?#]+)$/u);
 
   if (
     groupId &&
@@ -98,7 +98,7 @@ export function resolveFromCurrentAppRoute(
     );
   }
 
-  const userId = matchLegacyUserPath(pathname);
+  const userId = matchRouteId(pathname, /^\/users\/([^/?#]+)$/u);
 
   if (userId) {
     return buildProfileNavigation(
@@ -108,6 +108,20 @@ export function resolveFromCurrentAppRoute(
   }
 
   return null;
+}
+
+function matchRouteId(pathname: string, pattern: RegExp) {
+  const value = pattern.exec(pathname)?.[1];
+
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return null;
+  }
 }
 
 function hasOnlySearchKeys(
@@ -125,9 +139,9 @@ function resolveActivitySearch(
     filter: resolveActivityFilter(searchParams),
     id: searchParams.get("id") ?? undefined,
     kind: findLiteral(activityKindValues, searchParams.get("kind")),
-    message: extractMessageId(searchParams),
+    message: searchParams.get("message") ?? undefined,
     panel: findLiteral(activityPanelValues, searchParams.get("panel")),
-    plan: extractPlanId(searchParams),
+    plan: searchParams.get("plan") ?? undefined,
     proposal: getOptionalProposalId(searchParams),
     q: searchParams.get("q") ?? undefined,
   };
@@ -149,7 +163,7 @@ function resolveActivityFilter(searchParams: URLSearchParams) {
 }
 
 function getOptionalProposalId(searchParams: URLSearchParams) {
-  return extractProposalId(searchParams) ?? undefined;
+  return searchParams.get("proposal") ?? undefined;
 }
 
 function resolveHomeSearch(searchParams: URLSearchParams): HomeRouteSearch {
@@ -174,7 +188,7 @@ function getHomeSearchInviteId({
   searchParams: URLSearchParams;
 }) {
   return (
-    getFirstSearchParam(searchParams, ["invite", "inviteId"]) ??
+    searchParams.get("invite") ??
     getScopedGenericId(genericId, panel, "invitations") ??
     undefined
   );
@@ -190,7 +204,7 @@ function getHomeSearchRequestId({
   searchParams: URLSearchParams;
 }) {
   return (
-    getFirstSearchParam(searchParams, ["request", "requestId"]) ??
+    searchParams.get("request") ??
     getScopedGenericId(genericId, panel, "friends") ??
     undefined
   );
@@ -210,6 +224,8 @@ function resolveExploreSearch(
   return validateExploreRouteSearch(getSearchRecord(searchParams));
 }
 
-function resolveForgeSearch(searchParams: URLSearchParams): ForgeRouteSearch {
-  return validateForgeRouteSearch(getSearchRecord(searchParams));
+function resolveGroupFormationSearch(
+  searchParams: URLSearchParams,
+): PlanCreationRouteSearch {
+  return validatePlanCreationRouteSearch(getSearchRecord(searchParams));
 }

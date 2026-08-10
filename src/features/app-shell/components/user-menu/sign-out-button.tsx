@@ -18,7 +18,7 @@ export function UserMenuSignOutButton() {
       onConfirm={signOut}
       overlayClassName="z-120"
       contentClassName="z-120"
-      title="Sign out of TeamForge?"
+      title="Sign out of Findafew?"
       tone="warning"
       trigger={
         <Button
@@ -26,7 +26,7 @@ export function UserMenuSignOutButton() {
           variant="ghost"
           disabled={isSigningOut}
           contentClassName="gap-3"
-          className="h-12 w-full justify-start rounded-2xl bg-card px-4 text-left text-destructive shadow-none transition-colors hover:bg-destructive/8 focus-visible:ring-destructive/40 active:bg-destructive/12"
+          className="h-12 w-full justify-start rounded-2xl bg-card px-4 text-left text-destructive shadow-none transition-colors hover:bg-destructive-soft focus-visible:ring-destructive/40 active:bg-destructive-soft"
         >
           <LogOut className="size-4 shrink-0" aria-hidden="true" />
           <span className="min-w-0 flex-1 font-bold text-sm">

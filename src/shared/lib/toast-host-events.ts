@@ -3,7 +3,7 @@ import {
   getBrowserWindow,
 } from "@/shared/lib/browser-environment";
 
-export const APP_TOAST_HOST_REQUEST_EVENT = "teamforge:toast-host-request";
+export const APP_TOAST_HOST_REQUEST_EVENT = "findafew:toast-host-request";
 
 export function requestAppToastHost() {
   const browserWindow = getBrowserWindow();

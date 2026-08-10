@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
-import { buildForgeIdeaLaunchNavigation } from "@/shared/navigation/forge-navigation";
+import { buildPlanIdeaLaunchNavigation } from "@/shared/navigation/plan-creation-navigation";
 
 import type { ActivityIdea } from "../lib/profile-insights";
 
@@ -15,7 +15,7 @@ export function BestFirstGroupStrip({
 }: BestFirstGroupStripProps) {
   const primaryIdea = activityIdeas[0] ?? {
     confidence: "soft",
-    detail: "A neutral starting point while TeamForge learns the profile.",
+    detail: "A neutral starting point while Findafew learns the profile.",
     eventDescription:
       "Start with one broad shared-interest prompt and keep the first meetup small, public, and easy to adjust. Ask the group to choose one concrete activity, one simple meeting point, and one fallback option before the plan is confirmed.",
     laneKey: "general",
@@ -55,8 +55,8 @@ export function BestFirstGroupStrip({
           ) : null}
 
           <Button asChild variant="outline" size="sm">
-            <Link {...buildForgeIdeaLaunchNavigation(primaryIdea)}>
-              Forge this kind of group
+            <Link {...buildPlanIdeaLaunchNavigation(primaryIdea)}>
+              Start a similar plan
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </Button>

@@ -52,7 +52,7 @@ const PLAYWRIGHT_AUTHENTICATED_ROUTE_SLUGS = [
   "18-profile",
   "19-user-detail-sample",
   "20-settings",
-  "21-forge",
+  "21-plan-creation",
 ];
 const PLAYWRIGHT_ACCESSIBILITY_ROUTE_SLUGS = [
   "01-landing",
@@ -60,7 +60,7 @@ const PLAYWRIGHT_ACCESSIBILITY_ROUTE_SLUGS = [
   "14-home",
   "15-explore",
   "17-activity",
-  "21-forge",
+  "21-plan-creation",
 ];
 
 const PLAYWRIGHT_ROUTE_INVENTORY: Record<string, RouteInventoryItem> = {
@@ -100,9 +100,9 @@ const PLAYWRIGHT_ROUTE_INVENTORY: Record<string, RouteInventoryItem> = {
     path: "/settings",
     slug: "20-settings",
   },
-  "21-forge": {
-    path: "/forge",
-    slug: "21-forge",
+  "21-plan-creation": {
+    path: "/plans/new",
+    slug: "21-plan-creation",
   },
 };
 
@@ -221,8 +221,8 @@ const PLAYWRIGHT_ROUTE_CONTRACTS: Record<string, PlaywrightAuditRoute> = {
     ],
     slug: "20-settings",
   },
-  "21-forge": {
-    path: "/forge",
+  "21-plan-creation": {
+    path: "/plans/new",
     productChecks: [
       {
         kind: "role",
@@ -232,10 +232,10 @@ const PLAYWRIGHT_ROUTE_CONTRACTS: Record<string, PlaywrightAuditRoute> = {
       },
       {
         kind: "label",
-        name: "Forge my group",
+        name: "Start a plan",
       },
     ],
-    slug: "21-forge",
+    slug: "21-plan-creation",
   },
 };
 

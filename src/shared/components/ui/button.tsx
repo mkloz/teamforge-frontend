@@ -107,7 +107,7 @@ function getButtonContentClassName({
 }
 
 /**
- * TeamForge Unified Button (V2)
+ * Findafew Unified Button (V2)
  * High-fidelity, mechanical-first design system component.
  */
 function Button({

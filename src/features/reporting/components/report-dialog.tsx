@@ -336,7 +336,7 @@ function ReportFormContent({
         {submitError ? (
           <p
             role="alert"
-            className="rounded-xl bg-destructive/10 p-3 text-destructive text-sm"
+            className="rounded-xl bg-destructive-soft p-3 text-destructive text-sm"
           >
             {submitError}
           </p>
@@ -409,7 +409,7 @@ function CategoryField() {
         {REPORT_CATEGORY_OPTIONS.map(([value, label]) => (
           <label
             key={value}
-            className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-transparent border-l-2 bg-card px-3 py-2 text-ink text-sm transition-colors hover:bg-foreground/5 has-checked:border-primary has-checked:bg-primary/8"
+            className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-transparent border-l-2 bg-card px-3 py-2 text-ink text-sm transition-colors hover:bg-foreground/5 has-checked:border-primary has-checked:bg-primary-soft"
           >
             <input
               {...register("category")}
@@ -442,11 +442,11 @@ function SafetyGuidance({
   return (
     <section
       role="alert"
-      className="rounded-2xl border border-spark-amber/40 bg-spark-amber/10 p-4"
+      className="rounded-2xl border border-brand-amber/40 bg-accent-soft p-4"
     >
       <div className="flex items-start gap-3">
         <ShieldAlert
-          className="mt-0.5 size-5 shrink-0 text-spark-amber"
+          className="mt-0.5 size-5 shrink-0 text-brand-amber"
           aria-hidden="true"
         />
         <div>
@@ -532,10 +532,10 @@ function EvidenceNotice({
 }) {
   const message =
     targetType === "MESSAGE" || targetType === "ATTACHMENT"
-      ? "TeamForge preserves the item you report and a small amount of nearby context you could see: up to 5 messages before it and 2 after it."
+      ? "Findafew preserves the item you report and a small amount of nearby context you could see: up to 5 messages before it and 2 after it."
       : targetType === "PROPOSAL_SEAT"
-        ? "TeamForge preserves this proposal seat and the permitted proposal details shown to you."
-        : "TeamForge preserves the item you report and the permitted context you could see.";
+        ? "Findafew preserves this proposal seat and the permitted proposal details shown to you."
+        : "Findafew preserves the item you report and the permitted context you could see.";
 
   return (
     <div className="flex items-start gap-2.5 text-slate-muted text-sm leading-relaxed">
@@ -593,7 +593,7 @@ function CheckRow({
   registration: UseFormRegisterReturn;
 }) {
   return (
-    <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl bg-card px-3 py-2 text-ink text-sm transition-colors hover:bg-foreground/5 has-checked:bg-primary/8">
+    <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl bg-card px-3 py-2 text-ink text-sm transition-colors hover:bg-foreground/5 has-checked:bg-primary-soft">
       <input
         {...registration}
         type="checkbox"

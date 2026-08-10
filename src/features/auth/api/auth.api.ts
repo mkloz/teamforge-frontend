@@ -173,6 +173,7 @@ export class AuthApi {
 
   static async loginWithGoogle(code: string, intent: GoogleAuthIntent) {
     const response = await apiClient.post("auth/google/login", {
+      headers: { "X-Requested-With": "XmlHttpRequest" },
       json: { code, intent },
       context: {
         auth: "none",
@@ -187,6 +188,7 @@ export class AuthApi {
 
   static async linkGoogleAccount(code: string) {
     const response = await apiClient.post("auth/google/link", {
+      headers: { "X-Requested-With": "XmlHttpRequest" },
       json: { code },
       context: {
         auth: "access",

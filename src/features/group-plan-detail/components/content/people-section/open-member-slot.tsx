@@ -29,7 +29,7 @@ export function OpenMemberSlot({
       )}
       disabled={!interactive}
     >
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border/55 border-dashed bg-muted/25 transition-colors group-hover/slot:border-forge-teal/35 group-hover/slot:bg-forge-teal/8">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border/55 border-dashed bg-muted/25 transition-colors group-hover/slot:border-brand-teal/35 group-hover/slot:bg-primary-soft">
         {interactive ? (
           <UserPlus className="size-4" aria-hidden="true" />
         ) : (

@@ -1,11 +1,15 @@
 {
-  "name": "teamforge-frontend",
+  "name": "findafew-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkloz/findafew-frontend.git"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/seo/verify-build.mjs && node scripts/scenario/check-production-boundary.mjs",
+    "build": "npm run landing:visuals:check && tsc -b && vite build && node scripts/seo/verify-build.mjs && node scripts/scenario/check-production-boundary.mjs",
     "preview": "vite preview",
     "scenario:dev": "vite --mode scenario --host 127.0.0.1",
     "scenario:build": "tsc -b && vite build --mode scenario",
@@ -23,9 +27,18 @@
     "check:pr": "node scripts/verify/index.mjs pr",
     "check:release": "node scripts/verify/index.mjs release",
     "pwa:release": "node scripts/pwa/release.mjs",
+    "pwa:previews": "node scripts/pwa/generate-install-previews.mjs",
+    "pwa:previews:check": "node scripts/pwa/generate-install-previews.mjs --check",
+    "landing:visuals": "node scripts/landing/generate-visual-assets.mjs",
+    "landing:visuals:check": "node scripts/landing/generate-visual-assets.mjs --check",
     "audit:release": "node scripts/audit/run-browser-audits.mjs release",
     "audit:nightly": "node scripts/audit/run-browser-audits.mjs nightly",
+    "audit:final-dist": "node scripts/audit/run-terminal-local-audit.mjs final-dist",
+    "audit:synthetic-a11y": "node scripts/audit/run-terminal-local-audit.mjs synthetic",
     "audit:cert": "node scripts/audit/setup-local-preview-cert.mjs",
+    "acceptance:gateway": "node -- scripts/audit/run-gateway-acceptance.mjs",
+    "acceptance:gateway:self-test": "vitest run test/unit/scripts/gateway-acceptance-contract.test.ts",
+    "brand:certify": "node scripts/rebrand/verify-zero-residue.mjs",
     "prepare": "npx husky"
   },
   "dependencies": {
@@ -80,6 +93,7 @@
     "@sentry/vite-plugin": "^5.3.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query-devtools": "^5.90.2",
+    "@tesseract.js-data/eng": "^1.0.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -107,6 +121,7 @@
     "react-doctor": "^0.5.8",
     "shadcn": "^4.14.0",
     "sharp": "^0.35.3",
+    "tesseract.js": "^6.0.1",
     "tw-animate-css": "^1.4.0",
     "typescript": "~5.9.3",
     "vite": "^7.3.6",

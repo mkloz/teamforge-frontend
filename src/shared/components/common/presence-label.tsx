@@ -6,15 +6,15 @@ import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
 
 const PRESENCE_TONES: Record<OnlineStatus, string> = {
-  AWAY: "text-spark-amber",
+  AWAY: "text-brand-amber",
   OFFLINE: "text-muted-foreground/65",
   ONLINE: "text-foreground",
 };
 
 const PRESENCE_DOTS: Record<OnlineStatus, string> = {
-  AWAY: "bg-spark-amber",
+  AWAY: "bg-brand-amber",
   OFFLINE: "bg-muted-foreground/45",
-  ONLINE: "bg-forge-teal",
+  ONLINE: "bg-brand-teal",
 };
 
 export function PresenceLabel({

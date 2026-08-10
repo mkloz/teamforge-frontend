@@ -21,11 +21,11 @@ interface HeroCTAButtonsProps {
 }
 
 type HeroPrimaryCtaState =
-  | { kind: "home"; label: "Open TeamForge"; showSecondaryAction: false }
+  | { kind: "home"; label: "Open Findafew"; showSecondaryAction: false }
   | {
       isLoading: boolean;
       kind: "install";
-      label: "Install TeamForge";
+      label: "Install Findafew";
       showSecondaryAction: true;
     }
   | {
@@ -47,7 +47,7 @@ export function HeroCTAButtons({
   onInstallClick,
 }: HeroCTAButtonsProps) {
   const btnBase =
-    "w-full border-forge-teal bg-forge-teal text-white hover:-translate-y-1 hover:shadow-button-primary focus-visible:ring-forge-teal active:translate-y-0 active:shadow-none sm:w-auto";
+    "w-full border-brand-teal bg-brand-teal text-white hover:-translate-y-1 hover:shadow-button-primary focus-visible:ring-brand-teal active:translate-y-0 active:shadow-none sm:w-auto";
   const outlineBase =
     "w-full border-white bg-transparent text-white hover:shadow-button-outline-dark focus-visible:ring-white sm:w-auto";
   const row = "flex w-full flex-col gap-3 sm:w-auto sm:flex-row";
@@ -73,7 +73,7 @@ export function HeroCTAButtons({
           size="hero"
           loading
           className={outlineBase}
-          aria-label="Checking TeamForge session"
+          aria-label="Checking Findafew session"
         >
           {secondaryAction.label}
         </Button>
@@ -131,7 +131,7 @@ function getHeroPrimaryCtaState({
   if (isStandalone) {
     return {
       kind: "home",
-      label: "Open TeamForge",
+      label: "Open Findafew",
       showSecondaryAction: false,
     };
   }
@@ -140,7 +140,7 @@ function getHeroPrimaryCtaState({
     return {
       isLoading: installState === "prompting",
       kind: "install",
-      label: "Install TeamForge",
+      label: "Install Findafew",
       showSecondaryAction: true,
     };
   }

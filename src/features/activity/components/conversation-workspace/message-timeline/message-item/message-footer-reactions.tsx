@@ -49,7 +49,7 @@ function ReactionPlaceholders({
         >
           <span
             aria-hidden="true"
-            className="flex size-5 items-center justify-center rounded-full border border-border/55 bg-card/55 opacity-70 transition group-hover/reaction:border-accent/35 group-hover/reaction:bg-accent/12 group-hover/reaction:opacity-100"
+            className="flex size-5 items-center justify-center rounded-full border border-border/55 bg-card/55 opacity-70 transition group-hover/reaction:border-accent/35 group-hover/reaction:bg-accent-soft group-hover/reaction:opacity-100"
           >
             {emoji}
           </span>

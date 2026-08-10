@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-TeamForge uses feature colocation under `src/features/<feature>/`, but feature folders are only useful boundaries when their internals stay private. The frontend refactor plan identified cross-feature imports of route helpers, query helpers, UI actions, and domain utilities as a source of hidden coupling.
+Findafew uses feature colocation under `src/features/<feature>/`, but feature folders are only useful boundaries when their internals stay private. The frontend refactor plan identified cross-feature imports of route helpers, query helpers, UI actions, and domain utilities as a source of hidden coupling.
 
 The architecture guide already says feature internals should not be imported across features. The missing decision record is the explicit public seam vocabulary and the migration path that lets the codebase move gradually instead of through one large folder reshuffle.
 

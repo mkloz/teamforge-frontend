@@ -20,8 +20,8 @@ const CONTROL_POINTS = [
   },
   {
     icon: ShieldCheck,
-    title: "Reliability matters",
-    detail: "Keeping plans updated helps everyone make an informed choice.",
+    title: "Clear updates",
+    detail: "Current plan details help everyone make an informed choice.",
   },
 ] as const;
 
@@ -54,9 +54,8 @@ export function TrustControlSection() {
               happens next.
             </p>
 
-            <p className="mt-6 text-pretty border-forge-teal/45 border-l-2 pl-4 font-black text-base text-white leading-relaxed">
-              Group formation uses disclosed fit signals—not popularity or
-              reputation.
+            <p className="mt-6 text-pretty border-brand-teal/45 border-l-2 pl-4 font-black text-base text-white leading-relaxed">
+              See the group, time, and place before you decide.
             </p>
           </div>
 
@@ -74,7 +73,7 @@ export function TrustControlSection() {
               />
               <img
                 src="/landing/trust-control-visual-ai-cutout.png"
-                alt="TeamForge group review screen with controls to review, decline, leave, and report"
+                alt="Findafew group proposal with plan details and controls to accept, decline, view the plan, and report a concern"
                 width={1637}
                 height={961}
                 className="mx-auto w-full max-w-3xl select-none lg:max-w-4xl"

@@ -39,6 +39,8 @@ export interface RepeatCandidate {
   userId: string;
 }
 
+const NO_REPEAT_CANDIDATES: RepeatCandidate[] = [];
+
 export function PlanLifecycleActions({
   canManagePlanDirectly,
   currentUserRole,
@@ -51,7 +53,7 @@ export function PlanLifecycleActions({
   onEditPlan,
   pendingAction,
   plan,
-  repeatCandidates = [],
+  repeatCandidates = NO_REPEAT_CANDIDATES,
 }: PlanLifecycleActionsProps) {
   const viewState = getPlanLifecycleViewState({
     currentUserRole,
@@ -353,7 +355,7 @@ function RepeatPlanAction({
             <input
               aria-label={option.label}
               checked={mode === option.value}
-              className="mt-1 accent-forge-teal"
+              className="mt-1 accent-brand-teal"
               name="repeat-mode"
               onChange={() => setMode(option.value)}
               type="radio"
@@ -379,7 +381,7 @@ function RepeatPlanAction({
               >
                 <input
                   checked={selectedIds.includes(candidate.userId)}
-                  className="accent-forge-teal"
+                  className="accent-brand-teal"
                   onChange={() =>
                     setSelectedIds((current) =>
                       current.includes(candidate.userId)

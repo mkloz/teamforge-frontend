@@ -26,11 +26,11 @@ function isAuditAuthEnabled() {
 }
 
 function markAuditAuthBootstrapped(auditWindow: Window) {
-  auditWindow.__TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED = true;
+  auditWindow.__AUDIT_AUTH_BOOTSTRAPPED = true;
 }
 
 function hasAuditAuthBootstrapped(auditWindow: Window) {
-  return auditWindow.__TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED === true;
+  return auditWindow.__AUDIT_AUTH_BOOTSTRAPPED === true;
 }
 
 async function fetchAuditTokensResponse() {

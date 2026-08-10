@@ -28,12 +28,12 @@ function getTabButtonState(
 ): TabButtonState {
   const badge = item.badge ?? 0;
   const hasBadge = badge > 0;
-  const isForge = item.id === "forge";
+  const isPlanCreation = item.id === "planCreation";
 
   return {
     active: isAppNavigationItemActive(item, pathname),
-    activeBackgroundClassName: getActiveBackgroundClassName(isForge),
-    activeTextClassName: getActiveTextClassName(isForge),
+    activeBackgroundClassName: getActiveBackgroundClassName(isPlanCreation),
+    activeTextClassName: getActiveTextClassName(isPlanCreation),
     ariaLabel: getTabAriaLabel(item, badge),
     badge,
     hasBadge,
@@ -50,12 +50,14 @@ function getTabAriaLabel(item: AppNavigationItem, badge: number) {
     : `${item.label}, ${badge} unread`;
 }
 
-function getActiveTextClassName(isForge: boolean) {
-  return isForge ? "text-accent stroke-[2.5]" : "text-foreground stroke-[2.5]";
+function getActiveTextClassName(isPlanCreation: boolean) {
+  return isPlanCreation
+    ? "text-accent stroke-[2.5]"
+    : "text-foreground stroke-[2.5]";
 }
 
-function getActiveBackgroundClassName(isForge: boolean) {
-  return isForge
+function getActiveBackgroundClassName(isPlanCreation: boolean) {
+  return isPlanCreation
     ? "border-accent/25 bg-accent/15 dark:bg-accent/20"
     : "border-foreground/15 bg-foreground/8 dark:bg-white/8";
 }

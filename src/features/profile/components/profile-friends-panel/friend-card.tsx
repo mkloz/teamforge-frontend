@@ -207,7 +207,7 @@ function getPresenceTitle(onlineStatus: Exclude<OnlineStatus, "OFFLINE">) {
 }
 
 function getPresenceClassName(onlineStatus: Exclude<OnlineStatus, "OFFLINE">) {
-  return onlineStatus === "ONLINE" ? "bg-forge-teal" : "bg-spark-amber";
+  return onlineStatus === "ONLINE" ? "bg-brand-teal" : "bg-brand-amber";
 }
 
 function formatFriendsSince(isoDate: string): string {

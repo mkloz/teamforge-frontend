@@ -18,7 +18,7 @@ import { z } from "zod";
 const routeDiscoveryRecordSchema = z.record(z.string(), z.unknown());
 
 /**
- * Explicit TeamForge route inventory for authenticated local audits.
+ * Explicit Findafew route inventory for authenticated local audits.
  *
  * @type {AuditRoute[]}
  */
@@ -50,7 +50,7 @@ export const AUDIT_ROUTES = [
   { slug: "18-profile", path: "/profile" },
   { slug: "19-user-detail-sample", path: "/users/audit-user-id" },
   { slug: "20-settings", path: "/settings" },
-  { slug: "21-forge", path: "/forge" },
+  { slug: "21-plan-creation", path: "/plans/new" },
   { slug: "22-not-found-fallback", path: "/__squirrelscan-not-found" },
 ];
 
@@ -81,7 +81,7 @@ export const PLAYWRIGHT_AUTHENTICATED_ROUTE_SLUGS = [
   "18-profile",
   "19-user-detail-sample",
   "20-settings",
-  "21-forge",
+  "21-plan-creation",
 ];
 
 /**
@@ -99,7 +99,7 @@ export const PLAYWRIGHT_ACCESSIBILITY_ROUTE_SLUGS = [
   "14-home",
   "15-explore",
   "17-activity",
-  "21-forge",
+  "21-plan-creation",
 ];
 
 /**

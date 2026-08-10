@@ -2,12 +2,12 @@
 
 Use this workflow for current web research, market or product research,
 literature collection, and decisions that need evidence beyond the repository.
-It is intentionally fail-closed for Firecrawl: TeamForge research must never
+It is intentionally fail-closed for Firecrawl: Findafew research must never
 consume hosted Firecrawl credits or fall back to the hosted Firecrawl API.
 
 ## Local-only Firecrawl policy
 
-The TeamForge Firecrawl service runs at `http://localhost:3002`. All Firecrawl
+The Findafew Firecrawl service runs at `http://localhost:3002`. All Firecrawl
 commands must go through the repository wrapper:
 
 ```powershell
@@ -24,11 +24,11 @@ The wrapper:
 - verifies that the loopback service identifies itself as Firecrawl; and
 - stops when the local service is unavailable.
 
-Do not run bare `firecrawl` commands for TeamForge research. Do not authenticate
+Do not run bare `firecrawl` commands for Findafew research. Do not authenticate
 the CLI, call `https://api.firecrawl.dev`, use credit-backed Firecrawl MCP or
 REST fallbacks, or substitute a hosted Firecrawl research agent. A local search
 or scrape failure is a coverage gap to report, not permission to use the hosted
-service. `TEAMFORGE_FIRECRAWL_URL` may change the port or loopback hostname, but
+service. `FINDAFEW_FIRECRAWL_URL` may change the port or loopback hostname, but
 the wrapper rejects non-loopback hosts.
 
 Use the `firecrawl` skill to choose the appropriate search, scrape, map, crawl,

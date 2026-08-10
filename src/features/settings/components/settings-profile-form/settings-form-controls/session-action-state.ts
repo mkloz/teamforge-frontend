@@ -60,7 +60,7 @@ export function getSessionRowViewState(
   const isCurrentSession = session.isCurrent;
 
   return {
-    deviceClassName: isCurrentSession ? "bg-primary/10" : "bg-muted",
+    deviceClassName: isCurrentSession ? "bg-primary-soft" : "bg-muted",
     deviceTone: isCurrentSession ? "teal" : "neutral",
     isCurrentSession,
     rowHighlightClassName: isCurrentSession

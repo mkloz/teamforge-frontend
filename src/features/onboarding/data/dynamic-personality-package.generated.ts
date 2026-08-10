@@ -1,6 +1,6 @@
 // Generated from the governed IPIP-50 calibration package. Do not edit by hand.
 export const DYNAMIC_PERSONALITY_PACKAGE = {
-  packageId: "tf-ocean-dynamic-en-v1",
+  packageId: "findafew-ocean-dynamic-en-v1",
   manifestVersion: 1,
   instrumentVersion: "ipip-bffm-50-public-domain-v1",
   calibrationVersion: "ospp-2018-grm-20k-v1",
@@ -26,9 +26,9 @@ export const DYNAMIC_PERSONALITY_PACKAGE = {
       "all item responses in 1..5",
     ],
     limitations: [
-      "Convenience online sample; not representative of TeamForge users.",
-      "No TeamForge common-person score-linking study has been completed.",
-      "No TeamForge language, accessibility, cultural-fairness, or downstream group-use study has been completed.",
+      "Convenience online sample; not representative of Findafew users.",
+      "No Findafew common-person score-linking study has been completed.",
+      "No Findafew language, accessibility, cultural-fairness, or downstream group-use study has been completed.",
     ],
   },
   responseScale: {
@@ -943,7 +943,7 @@ export const DYNAMIC_PERSONALITY_PACKAGE = {
         fullScoreCorrelationAt30Items: 0.9363,
       },
     },
-    note: "Engineering qualification only; thresholds and user-impact claims require prospective TeamForge validation.",
+    note: "Engineering qualification only; thresholds and user-impact claims require prospective Findafew validation.",
   },
 } as const;
 

@@ -132,9 +132,7 @@ function PersonalitySignal({ signal }: { signal: ShowUpSignal }) {
                 key={segment}
                 className={cn(
                   "h-1.5 min-w-0 rounded-full",
-                  segment <= filledSegments
-                    ? "bg-forge-teal"
-                    : "bg-slate-muted/15",
+                  segment <= filledSegments ? "bg-brand-teal" : "bg-muted-soft",
                 )}
               />
             ))}

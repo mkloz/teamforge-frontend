@@ -40,7 +40,7 @@ export function getParticipationQueueItemRenderState(
       isCurrentAnswer(group, state.pendingAnswer, "PARTICIPATED"),
     plan,
     planMeta: getParticipationMeta(group),
-    rowClassName: getQueueItemClassName(false, "hover:bg-forge-teal/5"),
+    rowClassName: getQueueItemClassName(false, "hover:bg-primary-soft"),
   };
 }
 

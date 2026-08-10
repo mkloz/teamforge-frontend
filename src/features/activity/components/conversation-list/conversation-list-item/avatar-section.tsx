@@ -90,7 +90,7 @@ function ConversationAvatar({
       imageSize={viewState.avatarImageSize}
       shape={isGroup ? "rounded" : "circle"}
       className={cn(
-        "shadow-sm ring-1 ring-border/50 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
+        "shadow-sm ring-1 ring-border/50 transition-colors duration-200 group-hover/item:ring-brand-teal/30",
         isGroup && "rounded-md",
         viewState.avatarSizeClassName,
       )}

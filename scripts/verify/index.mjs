@@ -41,7 +41,7 @@ const PR_BUILD_ENV_DEFAULTS = {
   VITE_GIPHY_API_KEY: "ci-giphy-key",
   VITE_GOOGLE_CLIENT_ID: "ci-google-client-id",
   VITE_GOOGLE_MAPS_API_KEY: "ci-google-maps-key",
-  VITE_MEDIA_BASE_URL: "https://mkloz-teamforge.s3.us-east-1.amazonaws.com",
+  VITE_MEDIA_BASE_URL: "",
 };
 
 /**
@@ -111,6 +111,7 @@ function getTasks(mode) {
       createSecretScanTask(),
       createKnipTask(),
       createAuditTask(),
+      createLandingVisualsTask(),
       createBuildBundleTask(mode),
       createScenarioBoundaryTask(),
     );
@@ -274,12 +275,24 @@ function createSecretScanTask() {
  */
 function createBuildBundleTask(mode) {
   return {
-    deps: ["types"],
+    deps: ["types", "landing-visuals"],
     env: mode === "pr" ? getPrBuildEnv() : undefined,
     id: "bundle",
     label: "Vite bundle",
     spec: resolvePackageBin("vite"),
     args: ["build"],
+  };
+}
+
+/**
+ * @returns {TaskSpec} Deterministic landing visual/OCR task.
+ */
+function createLandingVisualsTask() {
+  return {
+    id: "landing-visuals",
+    label: "Landing visual assets and OCR",
+    spec: resolveNodeScript("scripts/landing/generate-visual-assets.mjs"),
+    args: ["--check"],
   };
 }
 

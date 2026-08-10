@@ -119,7 +119,7 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
       if (intent === "register" && !result.data.isNewUser) {
         showAppSuccessToast("Welcome back.", {
           description:
-            "We found your existing TeamForge account and signed you in with Google.",
+            "We found your existing Findafew account and signed you in with Google.",
           id: "auth-google-existing-account",
         });
       }

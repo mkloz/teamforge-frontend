@@ -12,12 +12,9 @@ import {
 
 describe("public SEO route policy", () => {
   it("allows only intentionally public content routes to be indexed", () => {
-    expect(INDEXABLE_PUBLIC_PATHS).toEqual([
-      "/",
-      "/download",
-      "/privacy",
-      "/terms",
-    ]);
+    expect(INDEXABLE_PUBLIC_PATHS).toEqual(["/", "/download"]);
+    expect(isIndexablePublicPath("/privacy")).toBe(false);
+    expect(isIndexablePublicPath("/terms")).toBe(false);
 
     for (const pathname of [
       "/home",
@@ -87,8 +84,13 @@ describe("deployed crawler containment sources", () => {
 
     for (const route of INDEXABLE_PUBLIC_PATHS) {
       const suffix = route === "/" ? "/" : route;
-      expect(sitemap).toContain(`__TEAMFORGE_APP_URL__${suffix}`);
+      expect(sitemap).toContain(`__APP_PUBLIC_URL__${suffix}`);
     }
+
+    expect(sitemap).not.toContain("__APP_PUBLIC_URL__/privacy");
+    expect(sitemap).not.toContain("__APP_PUBLIC_URL__/terms");
+    expect(llms).not.toContain("](__APP_PUBLIC_URL__/privacy)");
+    expect(llms).not.toContain("](__APP_PUBLIC_URL__/terms)");
 
     for (const privateFragment of [
       "/groups/",
@@ -98,7 +100,7 @@ describe("deployed crawler containment sources", () => {
       "/admin",
     ]) {
       expect(sitemap).not.toContain(privateFragment);
-      expect(llms).not.toContain(`](__TEAMFORGE_APP_URL__${privateFragment}`);
+      expect(llms).not.toContain(`](__APP_PUBLIC_URL__${privateFragment}`);
     }
   });
 });

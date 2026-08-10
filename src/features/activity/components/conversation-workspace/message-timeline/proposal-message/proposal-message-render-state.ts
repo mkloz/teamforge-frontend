@@ -119,13 +119,13 @@ export function getProposalMessageBubbleClassName({
       interactionState,
       isHighlighted,
     }),
-    isSelected && "border-primary/65 bg-primary/12 ring-1 ring-primary/35",
+    isSelected && "border-primary/65 bg-primary-soft ring-1 ring-primary/35",
   );
 }
 
 function getProposalMessageBubbleOwnershipClassName(isOwn: boolean) {
   return isOwn
-    ? "rounded-br-none border-primary/15 bg-primary/8 text-ink"
+    ? "rounded-br-none border-primary/15 bg-primary-soft text-ink"
     : "rounded-bl-none border-border/60 bg-card/75 text-ink";
 }
 

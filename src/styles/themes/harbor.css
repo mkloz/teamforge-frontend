@@ -35,8 +35,8 @@
   --sidebar-accent-foreground: #165c58;
   --sidebar-border: rgb(32 42 42 / 0.12);
   --sidebar-ring: var(--ring);
-  --color-forge-teal: var(--primary);
-  --color-spark-amber: var(--accent);
+  --color-brand-teal: var(--primary);
+  --color-brand-amber: var(--accent);
 }
 
 .dark[data-theme-color="harbor"] {
@@ -76,6 +76,6 @@
   --sidebar-accent-foreground: #a6e0da;
   --sidebar-border: rgb(234 240 239 / 0.1);
   --sidebar-ring: var(--ring);
-  --color-forge-teal: var(--primary);
-  --color-spark-amber: var(--accent);
+  --color-brand-teal: var(--primary);
+  --color-brand-amber: var(--accent);
 }

@@ -39,7 +39,7 @@ export function PlanFieldItem({
       className={[
         "relative transition-colors duration-150",
         !isLast && "border-border/50 border-b",
-        isExpanded && "bg-forge-teal/[0.03]",
+        isExpanded && "bg-primary-soft",
       ].join(" ")}
     >
       <PlanFieldAccent isExpanded={isExpanded} />
@@ -71,7 +71,7 @@ function PlanFieldAccent({ isExpanded }: { isExpanded: boolean }) {
       aria-hidden="true"
       className={[
         "absolute top-0 bottom-0 left-0 w-[3px] rounded-r-full transition-all duration-300",
-        isExpanded ? "bg-forge-teal opacity-100" : "opacity-0",
+        isExpanded ? "bg-brand-teal opacity-100" : "opacity-0",
       ].join(" ")}
     />
   );
@@ -106,7 +106,7 @@ function PlanFieldTrigger({
         size="sm"
         shape="square"
         tone={isExpanded ? "teal" : "none"}
-        className={isExpanded ? "bg-forge-teal/15" : "text-slate-muted"}
+        className={isExpanded ? "bg-brand-teal/15" : "text-slate-muted"}
       />
       <PlanFieldLabel
         currentValue={currentValue}

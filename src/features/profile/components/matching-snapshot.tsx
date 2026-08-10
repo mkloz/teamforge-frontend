@@ -37,9 +37,9 @@ function SignalPill({ signal }: { signal: MatchingSignal }) {
           className={cn(
             "inline-flex min-h-11 max-w-full cursor-help items-center gap-2 rounded-full border px-3 text-left font-bold text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground sm:min-h-9",
             signal.strength === "ready"
-              ? "border-foreground/15 bg-forge-teal/10 text-foreground"
+              ? "border-foreground/15 bg-primary-soft text-foreground"
               : signal.strength === "good"
-                ? "border-spark-amber/25 bg-spark-amber/8 text-spark-amber"
+                ? "border-brand-amber/25 bg-accent-soft text-brand-amber"
                 : "border-border/80 text-slate-muted",
           )}
         >

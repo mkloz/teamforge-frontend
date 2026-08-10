@@ -7,14 +7,14 @@ describe("focused product tutorial steps", () => {
   it("builds one useful stop per prioritized workflow stage", () => {
     const steps = buildNavigationTourSteps(
       productState({
-        coachmarkOrder: ["FORGE", "EXPLORE", "ACTIVITY"],
-        forgeAllowed: true,
+        coachmarkOrder: ["START_PLAN", "EXPLORE", "ACTIVITY"],
+        planCreationAllowed: true,
       }),
     );
 
     expect(steps).toHaveLength(3);
     expect(steps.map((step) => step.pageId)).toEqual([
-      "FORGE",
+      "START_PLAN",
       "EXPLORE",
       "ACTIVITY",
     ]);
@@ -25,30 +25,30 @@ describe("focused product tutorial steps", () => {
     ]);
   });
 
-  it("omits Forge when the user cannot open it", () => {
+  it("omits the plan builder when the user cannot open it", () => {
     const steps = buildNavigationTourSteps(
       productState({
-        coachmarkOrder: ["EXPLORE", "ACTIVITY", "FORGE"],
-        forgeAllowed: false,
+        coachmarkOrder: ["EXPLORE", "ACTIVITY", "START_PLAN"],
+        planCreationAllowed: false,
       }),
     );
 
     expect(steps).toHaveLength(2);
-    expect(steps.some((step) => step.pageId === "FORGE")).toBe(false);
+    expect(steps.some((step) => step.pageId === "START_PLAN")).toBe(false);
   });
 });
 
 function productState({
   coachmarkOrder,
-  forgeAllowed,
+  planCreationAllowed,
 }: {
   coachmarkOrder: OnboardingProductState["presentation"]["coachmarkOrder"];
-  forgeAllowed: boolean;
+  planCreationAllowed: boolean;
 }): Parameters<typeof buildNavigationTourSteps>[0] {
   return {
     capabilities: {
-      START_FORGE: { allowed: forgeAllowed },
-      START_INTRODUCTORY_FORGE: { allowed: forgeAllowed },
+      START_GROUP_FORMATION: { allowed: planCreationAllowed },
+      START_INTRODUCTORY_GROUP_FORMATION: { allowed: planCreationAllowed },
     },
     presentation: { coachmarkOrder },
   };

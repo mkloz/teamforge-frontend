@@ -162,7 +162,7 @@ function ConversationEmptyState({
         label={emptyState.label}
         description={emptyState.description}
         artwork={emptyState.artwork}
-        showForgeCta={emptyState.showForgeCta}
+        showPlanCreationCta={emptyState.showPlanCreationCta}
         showExploreCta={emptyState.showExploreCta}
       />
     </Suspense>

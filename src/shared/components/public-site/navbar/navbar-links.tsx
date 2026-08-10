@@ -32,13 +32,13 @@ const NAV_UNDERLINE_CLASS =
   "absolute right-0 -bottom-0.5 left-0 h-px origin-left transition-transform duration-200 group-hover:scale-x-100";
 
 const NAV_UNDERLINE_COLOR_CLASS = {
-  static: "bg-forge-teal",
+  static: "bg-brand-teal",
   token: "bg-primary",
 } as const;
 
 const MOBILE_ACTIVE_CLASS = {
-  static: "bg-forge-teal/12 text-white",
-  token: "bg-primary/10 text-white",
+  static: "bg-primary-soft text-white",
+  token: "bg-primary-soft text-white",
 } as const;
 
 const COMPACT_NAV_LINKS = [

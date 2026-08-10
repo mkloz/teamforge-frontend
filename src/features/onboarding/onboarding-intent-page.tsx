@@ -1,40 +1,64 @@
 import { useRef } from "react";
+import { useWatch } from "react-hook-form";
 
 import { OnboardingIntentField } from "@/features/onboarding/components/intent/onboarding-intent-field";
 import { useOnboardingIntentForm } from "@/features/onboarding/hooks/use-onboarding-intent-form";
 import { ProfileBasicsPageContent } from "@/features/onboarding/onboarding-page-content";
+import type { OnboardingIntentValues } from "@/features/onboarding/schemas/onboarding-intent.schema";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import { Form } from "@/shared/components/ui/form";
 import { Notice } from "@/shared/components/ui/notice";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
-import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 
-const INTENT_METADATA = createTeamForgePageMetadata({
-  title: "Your first TeamForge mission",
+const INTENT_METADATA = createFindafewPageMetadata({
+  title: "Choose your Findafew starting point",
   description:
-    "Choose the kind of TeamForge experience you want to begin with.",
+    "Choose whether you want to start a plan, explore plans, or both.",
 });
 
 const INTENT_FORMATION = {
   kind: "symbol",
-  value: "calendar",
+  value: "pathways",
 } as const satisfies VoronoiFormationTarget;
+
+const SELECTED_INTENT_FORMATIONS = {
+  BRING_A_PLAN: INTENT_FORMATION,
+  EXPLORE_AND_JOIN: {
+    kind: "symbol",
+    value: "constellation",
+  },
+  BOTH_OR_UNSURE: {
+    kind: "symbol",
+    value: "convergence",
+  },
+} as const satisfies Record<
+  NonNullable<OnboardingIntentValues["onboardingIntent"]>,
+  VoronoiFormationTarget
+>;
 
 export function OnboardingIntentPage() {
   usePageMetadata(INTENT_METADATA);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { form, isOnline, isSaving, onBack, onSkip, onSubmit, saveError } =
     useOnboardingIntentForm();
+  const selectedIntent = useWatch({
+    control: form.control,
+    name: "onboardingIntent",
+  });
+  const intentFormation = selectedIntent
+    ? SELECTED_INTENT_FORMATIONS[selectedIntent]
+    : INTENT_FORMATION;
 
   useScrollToTop(["onboarding-intent"], scrollContainerRef);
 
   return (
     <ProfileBasicsPageContent
-      formation={INTENT_FORMATION}
-      progress={1}
+      formation={intentFormation}
+      progress={selectedIntent ? 1 : 0}
       scrollContainerRef={scrollContainerRef}
     >
       <div className="flex w-full flex-col">
@@ -43,8 +67,8 @@ export function OnboardingIntentPage() {
             Why are you here<span className="text-foreground">?</span>
           </h1>
           <p className="mx-auto mt-2 max-w-sm text-slate-muted text-sm leading-6 sm:text-base">
-            Pick the closest answer so your first mission feels useful. You can
-            also skip this.
+            Pick the closest answer so your first suggestions feel useful. You
+            can also skip this.
           </p>
         </div>
 

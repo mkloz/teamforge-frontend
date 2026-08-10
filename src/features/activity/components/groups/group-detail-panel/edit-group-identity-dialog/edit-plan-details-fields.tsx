@@ -291,7 +291,9 @@ function PlanScheduleFields({ editor }: EditPlanDetailsFieldsProps) {
         />
         <datalist id="plan-time-zone-options">
           {PLAN_TIME_ZONE_OPTIONS.map((timeZone) => (
-            <option key={timeZone} value={timeZone} />
+            <option key={timeZone} value={timeZone}>
+              {timeZone}
+            </option>
           ))}
         </datalist>
       </div>
@@ -354,7 +356,7 @@ function PlanScheduleFields({ editor }: EditPlanDetailsFieldsProps) {
 
       <p className="text-muted-foreground text-xs sm:col-span-2">
         The event time zone keeps the plan stable across clock changes. A
-        duration enables calendar export and TeamForge-only conflict warnings.
+        duration enables calendar export and Findafew-only conflict warnings.
       </p>
     </div>
   );

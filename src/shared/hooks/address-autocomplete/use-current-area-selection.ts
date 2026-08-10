@@ -1,52 +1,20 @@
 import { useState } from "react";
 import {
-  CURRENT_AREA_LABEL,
-  canUseCurrentAreaLookup,
   createCurrentAreaLocation,
-  createResolvedCurrentAreaLocation,
   getCurrentAreaErrorMessage,
 } from "@/shared/hooks/use-address-autocomplete-state";
 import {
   getCurrentCoordinates,
   isGeolocationAvailable,
 } from "@/shared/lib/maps/browser-geolocation";
-import { reverseGeocodeCoordinates } from "@/shared/lib/maps/google-places-service";
-import type {
-  Coordinates,
-  LocationValue,
-} from "@/shared/lib/maps/location.types";
-import type {
-  RequestGoogleMaps,
-  UseCurrentAreaSelectionInput,
-} from "./address-autocomplete-types";
-
-interface CurrentAreaLookupResult {
-  coordinates: Coordinates;
-  nextLocation: LocationValue | null;
-}
-
-async function canUseCurrentArea(
-  mapsReady: boolean,
-  requestGoogleMaps: RequestGoogleMaps,
-) {
-  const isMapsReady = mapsReady || (await requestGoogleMaps());
-
-  return canUseCurrentAreaLookup(isMapsReady, isGeolocationAvailable());
-}
-
-async function resolveCurrentAreaLookup(): Promise<CurrentAreaLookupResult> {
-  const coordinates = await getCurrentCoordinates();
-  const nextLocation = await reverseGeocodeCoordinates(coordinates);
-
-  return { coordinates, nextLocation };
-}
+import type { UseCurrentAreaSelectionInput } from "./address-autocomplete-types";
 
 export function useCurrentAreaSelection({
-  clearMessage,
+  currentLocation,
+  endPlacesSession,
   hasTypedInSessionRef,
-  mapsReady,
+  invalidatePredictionResolution,
   onLocationSelect,
-  requestGoogleMaps,
   resetSuggestions,
   setDraftInput,
   setHasCurrentAreaError,
@@ -63,30 +31,29 @@ export function useCurrentAreaSelection({
     resetSuggestions();
   }
 
-  function applyUnlabeledCurrentArea(coordinates: Coordinates) {
-    showMessage("We found your area, but couldn't label it.", "info");
-    skipPredictionsForValueRef.current = CURRENT_AREA_LABEL;
-    setIsLocating(false);
-    setHasCurrentAreaError(false);
-    onLocationSelect(createCurrentAreaLocation(coordinates));
-  }
-
-  function applyResolvedCurrentArea(
-    nextLocation: LocationValue,
-    coordinates: Coordinates,
-  ) {
+  function applyCurrentArea(coordinates: { lat: number; lng: number }) {
+    const nextLocation = createCurrentAreaLocation(
+      coordinates,
+      currentLocation,
+    );
     skipPredictionsForValueRef.current = nextLocation.address;
     setIsLocating(false);
     setHasCurrentAreaError(false);
-    clearMessage();
-    onLocationSelect(
-      createResolvedCurrentAreaLocation(nextLocation, coordinates),
+    showMessage(
+      currentLocation?.address
+        ? "Private coordinates added to this location."
+        : "Private coordinates added. You can type a city or venue as the label.",
+      "info",
     );
+    onLocationSelect(nextLocation);
     setDraftInput(null);
   }
 
   async function useCurrentArea() {
-    if (!(await canUseCurrentArea(mapsReady, requestGoogleMaps))) {
+    invalidatePredictionResolution();
+    endPlacesSession();
+
+    if (!isGeolocationAvailable()) {
       showMessage("Location access is unavailable in this browser.", "error");
       setHasCurrentAreaError(true);
       return;
@@ -95,14 +62,8 @@ export function useCurrentAreaSelection({
     prepareForCurrentAreaLookup();
 
     try {
-      const { coordinates, nextLocation } = await resolveCurrentAreaLookup();
-
-      if (!nextLocation) {
-        applyUnlabeledCurrentArea(coordinates);
-        return;
-      }
-
-      applyResolvedCurrentArea(nextLocation, coordinates);
+      const coordinates = await getCurrentCoordinates();
+      applyCurrentArea(coordinates);
       return;
     } catch (error) {
       showMessage(getCurrentAreaErrorMessage(error), "error");

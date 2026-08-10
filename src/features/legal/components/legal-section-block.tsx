@@ -21,7 +21,7 @@ export function LegalSectionBlock({ section }: LegalSectionBlockProps) {
           size="sm"
           shape="square"
           bordered
-          className="mt-0.5 size-6 rounded-xl bg-primary/8"
+          className="mt-0.5 size-6 rounded-xl bg-primary-soft"
           iconClassName="size-3.5"
         />
         <h2 className="max-w-sm text-balance font-black text-ink text-xl leading-tight">

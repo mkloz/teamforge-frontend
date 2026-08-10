@@ -1,7 +1,7 @@
 import { buildAppUrl } from "@/shared/lib/app-url";
 import type { PageMetadata } from "@/shared/lib/document-metadata";
 import {
-  createTeamForgeStructuredData,
+  createFindafewStructuredData,
   getPublicSeoRoute,
   type PublicSeoPath,
 } from "@/shared/lib/seo/public-seo-routes";
@@ -19,7 +19,7 @@ export function createPublicPageMetadata(path: PublicSeoPath): PageMetadata {
       {
         id: "public-site",
         value: isHomepage
-          ? createTeamForgeStructuredData({
+          ? createFindafewStructuredData({
               homepageUrl: canonicalUrl,
               logoUrl: buildAppUrl("/icons/pwa-512x512.png"),
             })
@@ -28,9 +28,14 @@ export function createPublicPageMetadata(path: PublicSeoPath): PageMetadata {
     ],
     meta: [
       { name: "description", content: route.description },
-      { name: "robots", content: "index, follow" },
+      {
+        name: "robots",
+        content: route.indexable
+          ? "index, follow"
+          : "noindex, nofollow, noarchive, nosnippet, noimageindex",
+      },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "TeamForge" },
+      { property: "og:site_name", content: "Findafew" },
       { property: "og:url", content: canonicalUrl },
       { property: "og:title", content: route.title },
       { property: "og:description", content: route.description },

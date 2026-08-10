@@ -91,7 +91,7 @@ function ReportHistory() {
 
   return (
     <SafetyCollection
-      description="Reports you send to TeamForge appear here."
+      description="Reports you send to Findafew appear here."
       error={query.error}
       icon={Flag}
       id="safety-reports"

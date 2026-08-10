@@ -164,10 +164,10 @@ function getPersonalityNextStep(
     id: "assessment",
     kind: "personality",
     title: hasStarterAnswers
-      ? "Finish your matching assessment"
-      : "Start your matching assessment",
+      ? "Finish your personality assessment"
+      : "Start your personality assessment",
     body: hasStarterAnswers
-      ? "Better matches and more plans · 10–15 min"
+      ? "More context for group proposals · 10–15 min"
       : "10 starter questions · about 2 min",
     label: hasStarterAnswers ? "Continue assessment" : "Start assessment",
   };

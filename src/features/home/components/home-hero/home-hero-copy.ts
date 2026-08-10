@@ -25,11 +25,11 @@ export function getCompactHeroCopy(nextMove: HomeNextMove): {
 }
 
 function getCompactHeroTitle(nextMove: HomeNextMove) {
-  if (nextMove.kind !== "forge") {
+  if (nextMove.kind !== "planCreation") {
     return nextMove.title;
   }
 
   return nextMove.eyebrow === "First move"
-    ? "Ready for your first forge"
+    ? "Ready for your first planCreation"
     : "Ready to start something new";
 }

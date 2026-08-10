@@ -1,5 +1,5 @@
 (() => {
-  const STORAGE_KEY = "teamforge:appearance:v2";
+  const STORAGE_KEY = "findafew:appearance:v2";
   const defaults = {
     themeAppearance: "system",
     themeColor: "graphite",
@@ -9,19 +9,11 @@
   const validStyle = new Set(["classic", "glass", "ink", "poster"]);
   const supportedColors = new Set([
     "graphite",
-    "forge",
+    "teal",
     "ember",
     "mono",
     "harbor",
   ]);
-  const legacyColors = {
-    acid: "mono",
-    cobalt: "mono",
-    coral: "ember",
-    paper: "graphite",
-    spruce: "forge",
-    ultraviolet: "mono",
-  };
 
   function readPreferences() {
     try {
@@ -38,9 +30,8 @@
       const themeStyle = validStyle.has(value.themeStyle)
         ? value.themeStyle
         : defaults.themeStyle;
-      const migratedColor = legacyColors[value.themeColor] || value.themeColor;
-      const themeColor = supportedColors.has(migratedColor)
-        ? migratedColor
+      const themeColor = supportedColors.has(value.themeColor)
+        ? value.themeColor
         : defaults.themeColor;
 
       return { themeAppearance, themeColor, themeStyle };
@@ -60,7 +51,7 @@
       : preferences.themeAppearance;
   const root = document.documentElement;
 
-  window.__TEAMFORGE_BOOT_STARTED_AT = performance.now();
+  window.__APP_BOOT_STARTED_AT = performance.now();
   root.dataset.theme = theme;
   root.dataset.themeAppearance = preferences.themeAppearance;
   root.dataset.themeColor = preferences.themeColor;

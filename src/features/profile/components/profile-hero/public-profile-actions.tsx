@@ -136,7 +136,7 @@ function ConnectionAction({
       className={cn(
         "w-full shrink-0 sm:w-auto",
         shouldSpotlightConnect &&
-          "shadow-lg shadow-spark-amber/20 ring-2 ring-spark-amber ring-offset-2 ring-offset-canvas",
+          "shadow-brand-amber/20 shadow-lg ring-2 ring-brand-amber ring-offset-2 ring-offset-canvas",
       )}
       disabled={actionState.connectDisabled}
       loading={actionState.connectLoading}
@@ -192,7 +192,7 @@ function ConnectedConnectionMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem
-          className="text-destructive focus:bg-destructive/10"
+          className="text-destructive focus:bg-destructive-soft"
           onClick={() => actionState.onUnfriend()}
         >
           <UserMinus className="mr-2 size-4" />
@@ -223,7 +223,7 @@ function RequestedConnectionMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem
-          className="text-destructive focus:bg-destructive/10"
+          className="text-destructive focus:bg-destructive-soft"
           onClick={() => actionState.onWithdraw()}
         >
           <UserMinus className="mr-2 size-4" />

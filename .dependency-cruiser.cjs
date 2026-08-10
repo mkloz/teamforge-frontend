@@ -23,8 +23,7 @@ module.exports = {
       from: {},
       to: {
         couldNotResolve: true,
-        pathNot:
-          "^(?:virtual:pwa-register|virtual:teamforge-scenario-runtime)$",
+        pathNot: "^(?:virtual:pwa-register|virtual:findafew-scenario-runtime)$",
       },
     },
     {

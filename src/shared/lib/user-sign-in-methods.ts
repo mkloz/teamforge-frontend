@@ -6,12 +6,7 @@ export interface UserSignInMethods {
 }
 
 export function getUserSignInMethods(
-  user: Pick<User, "authProvider" | "signInMethods"> | null | undefined,
+  user: Pick<User, "signInMethods"> | null | undefined,
 ): UserSignInMethods {
-  return (
-    user?.signInMethods ?? {
-      google: user?.authProvider === "GOOGLE",
-      password: user?.authProvider === "EMAIL",
-    }
-  );
+  return user?.signInMethods ?? { google: false, password: false };
 }

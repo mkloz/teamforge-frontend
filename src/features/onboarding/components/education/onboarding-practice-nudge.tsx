@@ -71,7 +71,7 @@ export function OnboardingPracticeNudge() {
     <aside className="flex flex-col gap-4 rounded-[1.25rem] bg-card px-4 py-4 sm:flex-row sm:items-center sm:px-5">
       <Compass className="size-5 shrink-0 text-foreground" aria-hidden="true" />
       <div className="min-w-0 flex-1">
-        <p className="font-bold text-sm">See how TeamForge fits together.</p>
+        <p className="font-bold text-sm">See how Findafew fits together.</p>
         <p className="mt-1 text-muted-foreground text-sm">
           Follow the three moves that take an idea from discovery to action.
         </p>

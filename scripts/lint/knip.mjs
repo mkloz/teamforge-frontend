@@ -22,13 +22,11 @@ const KNIP_ENV = {
     process.env.VITE_GOOGLE_CLIENT_ID ?? "knip-placeholder",
   VITE_GOOGLE_MAPS_API_KEY:
     process.env.VITE_GOOGLE_MAPS_API_KEY ?? "knip-placeholder",
-  VITE_MEDIA_BASE_URL:
-    process.env.VITE_MEDIA_BASE_URL ??
-    "https://mkloz-teamforge.s3.us-east-1.amazonaws.com",
+  VITE_MEDIA_BASE_URL: process.env.VITE_MEDIA_BASE_URL ?? "",
 };
 
 /**
- * Runs Knip with TeamForge's local-safe Vite env defaults.
+ * Runs Knip with Findafew's local-safe Vite env defaults.
  *
  * @returns {Promise<void>}
  */

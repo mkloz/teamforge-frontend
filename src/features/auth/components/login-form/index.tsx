@@ -36,7 +36,7 @@ interface LoginFormProps {
 type LoginFormController = ReturnType<typeof useLoginForm>;
 type LoginGoogleAuthController = ReturnType<typeof useGoogleAuth>;
 
-/** Handles email/password and Google sign-in for existing TeamForge users. */
+/** Handles email/password and Google sign-in for existing Findafew users. */
 export function LoginForm({
   authReturnTo,
   onSwitchToRegister,

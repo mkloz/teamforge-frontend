@@ -12,7 +12,7 @@ const appearanceUrl =
 
 const palettes = [
   { label: "Balanced", value: "graphite" },
-  { label: "Quiet focus", value: "forge" },
+  { label: "Quiet focus", value: "teal" },
   { label: "Warm social", value: "ember" },
   { label: "Clear contrast", value: "mono" },
   { label: "Night ease", value: "harbor" },

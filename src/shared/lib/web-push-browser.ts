@@ -1,4 +1,4 @@
-import { scenarioRuntime } from "virtual:teamforge-scenario-runtime";
+import { scenarioRuntime } from "virtual:scenario-runtime";
 import type { WebPushSubscriptionPayload } from "@/shared/api/web-push";
 import {
   decodeBrowserBase64,
@@ -214,7 +214,7 @@ async function getRequiredServiceWorkerRegistration() {
   if (!registration) {
     throw new WebPushBrowserError(
       "unsupported",
-      "TeamForge could not prepare push notifications on this device.",
+      "Findafew could not prepare push notifications on this device.",
     );
   }
 

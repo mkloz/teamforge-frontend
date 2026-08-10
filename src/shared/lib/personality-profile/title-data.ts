@@ -10,7 +10,7 @@ export const PAIR_TITLES: Record<string, string> = {
   "agreeableness:high|neuroticism:low": "The Steady Supporter",
   "agreeableness:high|openness:high": "The Warm Idealist",
   "agreeableness:low|conscientiousness:high": "The Honest Achiever",
-  "agreeableness:low|extraversion:high": "The Bold Spark",
+  "agreeableness:low|extraversion:high": "The Bold Particle",
   "agreeableness:low|openness:high": "The Independent Original",
   "conscientiousness:high|neuroticism:low": "The Composed Planner",
   "conscientiousness:high|openness:high": "The Visionary Builder",

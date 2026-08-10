@@ -8,12 +8,12 @@ const PASSWORD_STRENGTH_LEVELS = [
   {
     score: 2 as const,
     label: "Good",
-    colorClassName: "bg-spark-amber text-spark-amber",
+    colorClassName: "bg-brand-amber text-brand-amber",
   },
   {
     score: 3 as const,
     label: "Strong",
-    colorClassName: "bg-forge-teal text-foreground",
+    colorClassName: "bg-brand-teal text-foreground",
   },
 ] as const;
 
