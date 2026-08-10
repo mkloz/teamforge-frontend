@@ -13,7 +13,9 @@ export {
   setBrowserLocalStorageItem,
 } from "@/shared/lib/browser-environment/local-storage";
 export {
+  type BrowserNetworkInformation,
   getBrowserNavigator,
+  getBrowserNetworkInformation,
   getBrowserServiceWorker,
   hasBrowserNavigator,
   hasBrowserServiceWorker,
@@ -36,6 +38,7 @@ export {
   getBrowserMediaQuery,
   getBrowserScrollY,
   getBrowserViewportSize,
+  getBrowserVisualViewport,
   getBrowserWindow,
   hasBrowserWindow,
   hasBrowserWindowFeature,

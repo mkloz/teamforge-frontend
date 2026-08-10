@@ -1,11 +1,6 @@
-import {
-  AnimatePresence,
-  domAnimation,
-  LazyMotion,
-  m,
-  useReducedMotion,
-} from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 
 interface BriefEntry {
   label: string;

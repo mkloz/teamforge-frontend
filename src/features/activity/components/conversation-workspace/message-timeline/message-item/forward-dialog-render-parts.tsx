@@ -53,7 +53,7 @@ export function ForwardDialogHeader({
           value={query}
           onChange={(event) => onQueryChange(event.currentTarget.value)}
           placeholder="Search chats and groups"
-          className="h-11 w-full rounded-lg border border-input-border bg-input pr-3 pl-10 text-ink text-sm outline-none transition-colors placeholder:text-slate-muted hover:border-foreground/35 focus-visible:border-foreground/70 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="h-11 w-full rounded-lg border border-input-border bg-input pr-3 pl-10 text-ink text-sm outline-none transition-colors placeholder:text-slate-muted hover:border-foreground/35 focus-visible:border-foreground/70 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background [@media(pointer:coarse)]:text-base!"
         />
       </label>
     </DialogHeader>

@@ -15,6 +15,10 @@ interface SettingsPageContentProps {
   onMobileBack: () => void;
   onSectionSelect: (section: SettingsSection) => void;
   onSignOut: () => Promise<void> | void;
+  restoredSidebarScroll?: {
+    scrollX: number;
+    scrollY: number;
+  };
 }
 
 export function SettingsPageContent({
@@ -25,6 +29,7 @@ export function SettingsPageContent({
   onMobileBack,
   onSectionSelect,
   onSignOut,
+  restoredSidebarScroll,
 }: SettingsPageContentProps) {
   const activeSectionMeta = getSettingsSectionMeta(activeSection);
   const isMobile = useMediaQuery("(max-width: 1023px)");
@@ -74,6 +79,7 @@ export function SettingsPageContent({
         isSigningOut={isSigningOut}
         onSectionSelect={onSectionSelect}
         onSignOut={onSignOut}
+        restoredScroll={restoredSidebarScroll}
       />
 
       <div

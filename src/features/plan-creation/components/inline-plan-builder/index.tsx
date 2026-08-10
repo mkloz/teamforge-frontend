@@ -106,7 +106,7 @@ function InlinePlanBuilderContent({
   const previousStepRef = useRef(fw.step);
   const hasProgress = fw.step > 1 || fw.selectedActivity !== null;
 
-  useScrollToTop([fw.step, fw.isCreatingPlan], undefined, "auto");
+  useScrollToTop([fw.step, fw.isCreatingPlan], undefined, "reset");
 
   useEffect(() => {
     if (

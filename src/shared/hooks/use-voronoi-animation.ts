@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useEventListener } from "usehooks-ts";
 
 import { NUM_SEEDS } from "@/shared/constants/voronoi.constants";
+import { usePrefersReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import { startVoronoiAnimationLoop } from "@/shared/hooks/voronoi-animation/animation-loop";
 import {
   getCanvasPointerPosition,
@@ -13,11 +14,11 @@ import {
   resizeVoronoiPoints,
 } from "@/shared/hooks/voronoi-animation/points";
 import {
+  addBrowserDocumentEventListener,
   getBrowserComputedStyle,
-  getBrowserDevicePixelRatio,
   getBrowserDocumentElement,
-  getBrowserMediaQuery,
   getBrowserWindow,
+  isBrowserDocumentVisible,
 } from "@/shared/lib/browser-environment";
 import type {
   ScheduledAnimationFrameHandle,
@@ -37,6 +38,7 @@ import {
   getVoronoiFormationKey,
   getVoronoiFormationLayoutKey,
 } from "@/shared/lib/voronoi/voronoi-formation";
+import { getVoronoiCanvasDevicePixelRatio } from "@/shared/lib/voronoi/voronoi-performance";
 
 interface UseVoronoiOptions {
   progress: number;
@@ -49,14 +51,13 @@ export function useVoronoiAnimation({
   formation = getDefaultVoronoiFormation(),
   rotationDegrees = -25,
 }: UseVoronoiOptions) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointsRef = useRef<Point[]>([]);
   const requestRef = useRef<ScheduledAnimationFrameHandle | null>(null);
-  const dprRef = useRef(1);
   const formationRef = useRef<VoronoiFormationLayout | null>(null);
   const previousDimensionsRef = useRef<Dimensions | null>(null);
-  const isVisibleRef = useRef(true);
   const lastFrameTimeRef = useRef<number | null>(null);
 
   // Animation State
@@ -79,7 +80,18 @@ export function useVoronoiAnimation({
     width: 0,
     height: 0,
   });
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [canvasDevicePixelRatio, setCanvasDevicePixelRatio] = useState(() =>
+    getVoronoiCanvasDevicePixelRatio(),
+  );
+  const [isDocumentVisible, setIsDocumentVisible] = useState(() =>
+    isBrowserDocumentVisible(),
+  );
+  const [isIntersecting, setIsIntersecting] = useState(
+    () => !getBrowserWindow()?.IntersectionObserver,
+  );
+  const [reducedEffects, setReducedEffects] = useState(
+    () => getBrowserDocumentElement()?.dataset.themeStyle === "glass",
+  );
   const formationKey = getVoronoiFormationKey(formation);
   const formationLayoutKey = getVoronoiFormationLayoutKey(
     formation,
@@ -87,6 +99,7 @@ export function useVoronoiAnimation({
   );
   const formationTargetRef = useRef(formation);
   formationTargetRef.current = formation;
+  const reducedMotion = prefersReducedMotion || reducedEffects;
   const reducedMotionProgress = reducedMotion ? progress : null;
 
   // Sync props to refs
@@ -133,32 +146,26 @@ export function useVoronoiAnimation({
         ? currentDimensions
         : nextDimensions,
     );
-    dprRef.current = getBrowserDevicePixelRatio();
+    const nextDevicePixelRatio = getVoronoiCanvasDevicePixelRatio();
+    setCanvasDevicePixelRatio((currentDevicePixelRatio) =>
+      currentDevicePixelRatio === nextDevicePixelRatio
+        ? currentDevicePixelRatio
+        : nextDevicePixelRatio,
+    );
   }, []);
 
   useEventListener("resize", syncDimensions, undefined, { passive: true });
 
-  // Handle container resizing and both OS and in-app reduced-effects settings.
+  // Handle container resizing and the separate OS-motion and visual-effects signals.
   useEffect(() => {
-    const motionQuery = getBrowserMediaQuery(
-      "(prefers-reduced-motion: reduce)",
-    );
     const documentElement = getBrowserDocumentElement();
     const browserWindow = getBrowserWindow();
-    const syncReducedMotion = () => {
-      setReducedMotion(
-        (motionQuery?.matches ?? false) ||
-          documentElement?.dataset.themeStyle === "glass",
-      );
-    };
-    const motionListener = (e: MediaQueryListEvent) => {
-      setReducedMotion(
-        e.matches || documentElement?.dataset.themeStyle === "glass",
-      );
+    const syncReducedEffects = () => {
+      setReducedEffects(documentElement?.dataset.themeStyle === "glass");
     };
     const effectsObserver =
       documentElement && browserWindow?.MutationObserver
-        ? new browserWindow.MutationObserver(syncReducedMotion)
+        ? new browserWindow.MutationObserver(syncReducedEffects)
         : null;
     const resizeObserver =
       containerRef.current && browserWindow?.ResizeObserver
@@ -166,8 +173,7 @@ export function useVoronoiAnimation({
         : null;
 
     syncDimensions();
-    syncReducedMotion();
-    motionQuery?.addEventListener("change", motionListener);
+    syncReducedEffects();
     if (documentElement) {
       effectsObserver?.observe(documentElement, {
         attributeFilter: ["data-theme-style"],
@@ -179,7 +185,6 @@ export function useVoronoiAnimation({
     }
 
     return () => {
-      motionQuery?.removeEventListener("change", motionListener);
       effectsObserver?.disconnect();
       resizeObserver?.disconnect();
     };
@@ -188,14 +193,58 @@ export function useVoronoiAnimation({
   useEffect(() => {
     const container = containerRef.current;
     const browserWindow = getBrowserWindow();
-    if (!container || !browserWindow?.IntersectionObserver) return undefined;
+    if (!container || !browserWindow?.IntersectionObserver) {
+      setIsIntersecting(true);
+      return undefined;
+    }
 
-    const observer = new browserWindow.IntersectionObserver(([entry]) => {
-      isVisibleRef.current = entry?.isIntersecting ?? true;
-    });
+    const observer = new browserWindow.IntersectionObserver(
+      ([entry]) => {
+        const nextIsIntersecting = entry?.isIntersecting ?? false;
+        setIsIntersecting((currentIsIntersecting) =>
+          currentIsIntersecting === nextIsIntersecting
+            ? currentIsIntersecting
+            : nextIsIntersecting,
+        );
+      },
+      { threshold: 0.01 },
+    );
     observer.observe(container);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const syncDocumentVisibility = () => {
+      setIsDocumentVisible(isBrowserDocumentVisible());
+    };
+
+    syncDocumentVisibility();
+    return addBrowserDocumentEventListener(
+      "visibilitychange",
+      syncDocumentVisibility,
+    );
+  }, []);
+
+  const canRunAnimation =
+    isIntersecting &&
+    isDocumentVisible &&
+    dimensions.width > 0 &&
+    dimensions.height > 0;
+
+  useEffect(() => {
+    if (canRunAnimation) {
+      return;
+    }
+
+    lastFrameTimeRef.current = null;
+    mouseActiveRef.current = false;
+    isTypingRef.current = false;
+    typingPulseRef.current = 0;
+    if (typingTimerRef.current !== null) {
+      cancelDelay(typingTimerRef.current);
+      typingTimerRef.current = null;
+    }
+  }, [canRunAnimation]);
 
   // Initialize Mouse Targets
   useEffect(() => {
@@ -239,6 +288,10 @@ export function useVoronoiAnimation({
 
   // Main Animation Loop
   useEffect(() => {
+    if (!canRunAnimation) {
+      return undefined;
+    }
+
     if (formationRef.current?.key !== formationLayoutKey) {
       return undefined;
     }
@@ -249,10 +302,8 @@ export function useVoronoiAnimation({
     const animationRefs = {
       currentMouseRef,
       currentProgressRef,
-      dprRef,
       formationRef,
       isTypingRef,
-      isVisibleRef,
       lastFrameTimeRef,
       mouseActiveRef,
       pointsRef,
@@ -266,12 +317,15 @@ export function useVoronoiAnimation({
 
     return startVoronoiAnimationLoop({
       canvas: canvasRef.current,
+      devicePixelRatio: canvasDevicePixelRatio,
       dimensions,
       refs: animationRefs,
       reducedMotion,
       rotationDegrees,
     });
   }, [
+    canRunAnimation,
+    canvasDevicePixelRatio,
     dimensions,
     formationLayoutKey,
     reducedMotion,
@@ -304,6 +358,7 @@ export function useVoronoiAnimation({
   return {
     containerRef,
     canvasRef,
+    canvasDevicePixelRatio,
     dimensions,
     handleMouseMove,
     handleMouseLeave,

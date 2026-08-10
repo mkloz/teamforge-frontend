@@ -1,6 +1,5 @@
 import { useImperativeHandle } from "react";
 import { useVoronoiAnimation } from "@/shared/hooks/use-voronoi-animation";
-import { getBrowserDevicePixelRatio } from "@/shared/lib/browser-environment";
 import { cn } from "@/shared/lib/utils";
 import type { VoronoiCatalystProps } from "@/shared/lib/voronoi/voronoi-contract";
 
@@ -21,6 +20,7 @@ export function VoronoiCatalyst({
   const {
     containerRef,
     canvasRef,
+    canvasDevicePixelRatio,
     dimensions,
     handleMouseMove,
     handleMouseLeave,
@@ -32,8 +32,6 @@ export function VoronoiCatalyst({
   });
 
   useImperativeHandle(ref, () => ({ pulseTyping }), [pulseTyping]);
-
-  const dpr = getBrowserDevicePixelRatio();
 
   return (
     <div
@@ -48,8 +46,8 @@ export function VoronoiCatalyst({
     >
       <canvas
         ref={canvasRef}
-        width={dimensions.width * dpr}
-        height={dimensions.height * dpr}
+        width={Math.round(dimensions.width * canvasDevicePixelRatio)}
+        height={Math.round(dimensions.height * canvasDevicePixelRatio)}
         className="block min-h-full min-w-full"
         style={{
           width: dimensions.width,

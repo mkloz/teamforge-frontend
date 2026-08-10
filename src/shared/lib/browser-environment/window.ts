@@ -50,6 +50,10 @@ export function getBrowserViewportSize(): BrowserViewportSize {
   };
 }
 
+export function getBrowserVisualViewport() {
+  return getBrowserWindow()?.visualViewport ?? null;
+}
+
 export function getBrowserMediaQuery(query: string) {
   const browserWindow = getBrowserWindow();
 

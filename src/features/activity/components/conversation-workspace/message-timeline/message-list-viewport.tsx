@@ -21,7 +21,7 @@ export function MessageListViewport({
       aria-label="Messages"
       aria-live="polite"
       aria-relevant="additions text"
-      className="scrollbar-hide relative z-10 min-w-0 flex-1 scroll-mt-12 overflow-y-auto overflow-x-hidden scroll-smooth px-2 pt-2.5 pb-0 sm:px-3 md:px-4 md:pt-3"
+      className="scrollbar-hide relative z-10 min-w-0 flex-1 scroll-mt-12 overflow-y-auto overflow-x-hidden px-2 pt-2.5 pb-0 sm:px-3 md:px-4 md:pt-3"
     >
       <div
         className="relative min-h-full w-full min-w-0 pb-3 md:pb-2"

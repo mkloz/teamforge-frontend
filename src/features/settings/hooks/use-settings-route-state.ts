@@ -13,6 +13,7 @@ export function useSettingsRouteState() {
     "section",
     parseAsStringLiteral(settingsSectionValues).withOptions({
       history: "push",
+      scroll: true,
     }),
   );
 
@@ -27,6 +28,7 @@ export function useSettingsRouteState() {
       nextSection === DEFAULT_SETTINGS_SECTION ? null : nextSection,
       {
         history: options?.history ?? "push",
+        scroll: true,
       },
     );
   }

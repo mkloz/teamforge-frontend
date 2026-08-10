@@ -1,5 +1,11 @@
 import { Slot } from "@radix-ui/react-slot";
-import { type ComponentPropsWithoutRef, isValidElement, type Ref } from "react";
+import {
+  type ComponentPropsWithoutRef,
+  isValidElement,
+  type KeyboardEvent,
+  type MouseEvent,
+  type Ref,
+} from "react";
 import { cn } from "@/shared/lib/utils";
 import { type ButtonVariants, buttonVariants } from "./button-variants";
 import { Spinner } from "./spinner";
@@ -98,7 +104,7 @@ function getButtonContentClassName({
   finalClasses: string;
 }) {
   return cn(
-    "flex size-full items-center gap-2 transition-opacity duration-150",
+    "flex size-full items-center gap-2 transition-opacity duration-150 motion-reduce:transition-none",
     "min-w-0 [&>span]:min-w-0",
     loading ? "opacity-0" : "opacity-100",
     getContentJustificationClass(finalClasses),
@@ -121,6 +127,9 @@ function Button({
   disabled = false,
   type = "button",
   ref,
+  onClickCapture,
+  onKeyDownCapture,
+  tabIndex,
   ...props
 }: ButtonV2Props) {
   const Comp = asChild ? Slot : "button";
@@ -133,17 +142,47 @@ function Button({
     size,
     variant,
   });
+  const handleUnavailableClickCapture = (
+    event: MouseEvent<HTMLButtonElement>,
+  ) => {
+    if (asChild && isUnavailable) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    onClickCapture?.(event);
+  };
+  const handleUnavailableKeyDownCapture = (
+    event: KeyboardEvent<HTMLButtonElement>,
+  ) => {
+    if (
+      asChild &&
+      isUnavailable &&
+      (event.key === "Enter" || event.key === " ")
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    onKeyDownCapture?.(event);
+  };
 
   return (
     <Comp
       ref={ref}
       type={type}
-      disabled={isUnavailable}
+      disabled={asChild ? undefined : isUnavailable}
       data-slot="button"
       data-size={size ?? "default"}
+      data-disabled={isUnavailable}
       data-loading={loading}
       aria-disabled={isUnavailable}
       aria-busy={loading}
+      tabIndex={asChild && isUnavailable ? -1 : tabIndex}
+      onClickCapture={handleUnavailableClickCapture}
+      onKeyDownCapture={handleUnavailableKeyDownCapture}
       className={cn(finalClasses)}
       {...props}
     >
@@ -158,7 +197,6 @@ function Button({
                 aria-hidden="true"
                 className={getLoaderSizeClass(size)}
               />
-              <span className="sr-only">Loading...</span>
             </div>
           )}
 

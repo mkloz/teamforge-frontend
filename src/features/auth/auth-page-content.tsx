@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode, RefObject } from "react";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { useDesktopAuthVisualEnabled } from "@/features/auth/hooks/use-desktop-auth-visual-enabled";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { Button } from "@/shared/components/ui/button";
+import { DecorativeVisualBoundary } from "@/shared/components/visuals/decorative-visual-boundary";
 import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
+import { useKeyboardSafeViewport } from "@/shared/hooks/use-keyboard-safe-viewport";
 import { cn } from "@/shared/lib/utils";
 import type {
   VoronoiCatalystHandle,
@@ -37,9 +39,14 @@ export function AuthPageContent({
   scrollContainerRef,
 }: AuthPageContentProps) {
   const isDesktopAuthVisualEnabled = useDesktopAuthVisualEnabled();
+  const viewportShellRef = useRef<HTMLDivElement>(null);
+  useKeyboardSafeViewport(viewportShellRef);
 
   return (
-    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+    <div
+      ref={viewportShellRef}
+      className="keyboard-viewport-shell relative flex w-full flex-col overflow-hidden lg:flex-row"
+    >
       <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
         <Button
           variant="inverseGhost"
@@ -64,13 +71,15 @@ export function AuthPageContent({
         )}
       >
         {isDesktopAuthVisualEnabled ? (
-          <Suspense fallback={null}>
-            <LazyVoronoiCatalyst
-              ref={catalystRef}
-              formation={formation}
-              progress={progress}
-            />
-          </Suspense>
+          <DecorativeVisualBoundary>
+            <Suspense fallback={null}>
+              <LazyVoronoiCatalyst
+                ref={catalystRef}
+                formation={formation}
+                progress={progress}
+              />
+            </Suspense>
+          </DecorativeVisualBoundary>
         ) : null}
       </div>
 
@@ -83,7 +92,7 @@ export function AuthPageContent({
 
         <main
           ref={scrollContainerRef}
-          className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth pb-4"
+          className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden pb-4"
           onInput={onInput}
         >
           <div className="flex min-h-full w-full flex-col items-center justify-start px-4 pt-20 pb-10 lg:justify-center lg:py-8">

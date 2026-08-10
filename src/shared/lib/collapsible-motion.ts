@@ -1,7 +1,6 @@
-import {
-  getBrowserComputedStyle,
-  getBrowserMediaQuery,
-} from "@/shared/lib/browser-environment";
+import { getBrowserComputedStyle } from "@/shared/lib/browser-environment";
+
+export { getPrefersReducedMotion } from "@/shared/lib/reduced-motion";
 
 export type CssPropertyPair = readonly [string, string];
 
@@ -94,12 +93,6 @@ export function getCssCollapseRange(
   );
 
   return Math.max(expandedHeight - collapsedHeight, 1);
-}
-
-export function getPrefersReducedMotion() {
-  return (
-    getBrowserMediaQuery("(prefers-reduced-motion: reduce)")?.matches ?? false
-  );
 }
 
 export function getBooleanCssValue(

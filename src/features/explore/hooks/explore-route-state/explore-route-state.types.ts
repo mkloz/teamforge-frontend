@@ -36,5 +36,5 @@ export type ExploreRoutePatch = Partial<ExploreRouteState>;
 
 export type SetExploreRouteState = (
   state: ExploreRoutePatch,
-  options?: { history: "push" | "replace" },
+  options?: { history: "push" | "replace"; scroll?: boolean },
 ) => unknown;

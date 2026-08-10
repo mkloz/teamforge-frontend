@@ -46,3 +46,35 @@ jobs:
           OXLINT_THREADS: "1"
           VERIFY_MAX_PARALLEL: "1"
         run: npm run check:pr
+
+  interaction:
+    name: Mobile interaction contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run mobile interaction contract
+        run: npm run scenario:interaction
+
+      - name: Upload interaction evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-interaction-contract
+          path: temp/scenario-screenshots/smoke/artifacts/**/effective-target-*.json
+          if-no-files-found: error

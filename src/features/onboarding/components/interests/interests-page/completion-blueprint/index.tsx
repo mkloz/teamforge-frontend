@@ -1,4 +1,5 @@
-import { domAnimation, LazyMotion, m, useReducedMotion } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import { CompletionBlueprintAction } from "./completion-blueprint-action";
 import { CompletionBlueprintBackground } from "./completion-blueprint-background";
 import { CompletionBlueprintCard } from "./completion-blueprint-card";

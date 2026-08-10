@@ -177,6 +177,20 @@
   bottom: calc(4.25rem + max(env(safe-area-inset-bottom), 0.75rem) + 0.5rem);
 }
 
+@utility keyboard-viewport-shell {
+  height: var(--keyboard-viewport-height, 100dvh);
+  max-height: var(--keyboard-viewport-height, 100dvh);
+}
+
+@utility keyboard-viewport-fixed-shell {
+  top: var(--keyboard-viewport-offset-top, 0px);
+  bottom: auto;
+}
+
+@utility keyboard-viewport-bottom-anchor {
+  bottom: var(--keyboard-viewport-bottom-inset, 0px);
+}
+
 /* Custom scrollbar for webkit browsers - theme responsive */
 ::-webkit-scrollbar {
   width: 6px;

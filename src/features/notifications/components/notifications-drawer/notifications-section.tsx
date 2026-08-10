@@ -1,10 +1,5 @@
-import {
-  AnimatePresence,
-  domAnimation,
-  LazyMotion,
-  m,
-  useReducedMotion,
-} from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import type { Notification } from "@/shared/schemas";
 
 import { NotificationItem } from "./notification-item";

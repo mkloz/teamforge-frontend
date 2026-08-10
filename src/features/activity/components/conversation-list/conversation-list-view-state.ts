@@ -10,9 +10,6 @@ import {
 } from "@/features/activity/lib/unify-conversations";
 import type { ActivityKind } from "@/shared/navigation/activity-navigation";
 
-export const FULL_LIST_REVEAL_DELAY_MS = 900;
-
-const INITIAL_CONVERSATION_RENDER_LIMIT = 24;
 const SEARCH_PLACEHOLDERS: Partial<Record<FilterChip, string>> = {
   pinned: "Search pinned chats...",
   saved: "Search saved messages...",
@@ -43,12 +40,6 @@ interface ConversationListViewStateInput {
   items: UnifiedConversation[];
   savedMessages: SavedMessageSnapshot[];
   searchQuery: string;
-}
-
-interface RenderedConversationItemsInput {
-  isFullListVisible: boolean;
-  items: UnifiedConversation[];
-  shouldStageConversationItems: boolean;
 }
 
 interface SavedMessagesSelectionInput {
@@ -106,26 +97,8 @@ export function getConversationListViewState({
     searchPlaceholder: getConversationSearchPlaceholder(activeFilter),
     shouldShowOfflineBanner: !isOnline && !shouldShowErrorState,
     shouldShowSavedChat,
-    shouldStageConversationItems: getShouldStageConversationItems({
-      activeFilter,
-      isSavedFilter,
-      itemsCount: items.length,
-      searchQuery,
-    }),
     visibleItemCount,
   };
-}
-
-export function getRenderedConversationItems({
-  isFullListVisible,
-  items,
-  shouldStageConversationItems,
-}: RenderedConversationItemsInput) {
-  if (!shouldStageConversationItems || isFullListVisible) {
-    return items;
-  }
-
-  return items.slice(0, INITIAL_CONVERSATION_RENDER_LIMIT);
 }
 
 export function isSavedMessagesConversationSelected({
@@ -214,25 +187,6 @@ function shouldShowSavedMessagesChat({
   }
 
   return getSavedMessagesSearchText(savedMessages).includes(normalizedQuery);
-}
-
-function getShouldStageConversationItems({
-  activeFilter,
-  isSavedFilter,
-  itemsCount,
-  searchQuery,
-}: {
-  activeFilter: FilterChip;
-  isSavedFilter: boolean;
-  itemsCount: number;
-  searchQuery: string;
-}) {
-  return (
-    !isSavedFilter &&
-    activeFilter === "all" &&
-    searchQuery.trim().length === 0 &&
-    itemsCount > INITIAL_CONVERSATION_RENDER_LIMIT
-  );
 }
 
 function getEmptyArtwork(

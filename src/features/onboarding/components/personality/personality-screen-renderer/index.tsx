@@ -1,4 +1,4 @@
-import { domMax, LazyMotion, MotionConfig } from "framer-motion";
+import { domMax, LazyMotion } from "framer-motion";
 import { lazy, type ReactNode, Suspense } from "react";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
@@ -148,23 +148,21 @@ export function PersonalityScreenRenderer({
   });
 
   return (
-    <MotionConfig reducedMotion="user">
-      <LazyMotion features={domMax}>
-        <Suspense fallback={null}>
-          {showCompatibilityInputLock ? (
-            <CompatibilityInputLockState
-              backLabel={backLabel}
-              message={assessment.inputLock.message}
-              onBack={onBack}
-              onRetry={assessment.inputLock.retry}
-              status={assessment.inputLock.status}
-            />
-          ) : (
-            renderedScreen
-          )}
-        </Suspense>
-      </LazyMotion>
-    </MotionConfig>
+    <LazyMotion features={domMax}>
+      <Suspense fallback={null}>
+        {showCompatibilityInputLock ? (
+          <CompatibilityInputLockState
+            backLabel={backLabel}
+            message={assessment.inputLock.message}
+            onBack={onBack}
+            onRetry={assessment.inputLock.retry}
+            status={assessment.inputLock.status}
+          />
+        ) : (
+          renderedScreen
+        )}
+      </Suspense>
+    </LazyMotion>
   );
 }
 

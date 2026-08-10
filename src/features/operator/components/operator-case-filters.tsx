@@ -210,7 +210,7 @@ function DateFilter({
         type="date"
         value={value ?? ""}
         onChange={(event) => onValue(event.currentTarget.value || undefined)}
-        className="h-9 rounded-lg border border-input-border bg-input px-3 text-ink text-sm outline-none hover:border-foreground/35 focus-visible:border-foreground/70 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="h-9 rounded-lg border border-input-border bg-input px-3 text-ink text-sm outline-none hover:border-foreground/35 focus-visible:border-foreground/70 focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background [@media(pointer:coarse)]:text-base!"
       />
     </Field>
   );

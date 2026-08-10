@@ -5,6 +5,7 @@ import {
   toggleCollapsedCategory,
   toggleExpandedSubcategory,
 } from "@/features/onboarding/lib/interests-browser-state";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 import type { Interest } from "@/shared/schemas";
 
 export function useInterestBrowserExpansion(categories: Interest[]) {
@@ -43,10 +44,13 @@ export function useInterestBrowserExpansion(categories: Interest[]) {
     expandCategoryOnly(categoryId);
 
     requestAnimationFrame(() => {
-      categoryElementsRef.current.get(categoryId)?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      scrollElementIntoView(
+        categoryElementsRef.current.get(categoryId) ?? null,
+        {
+          intent: "locate",
+          block: "start",
+        },
+      );
     });
   }
 

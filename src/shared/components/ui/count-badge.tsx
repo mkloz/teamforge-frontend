@@ -1,13 +1,8 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import {
-  AnimatePresence,
-  domAnimation,
-  LazyMotion,
-  m,
-  useReducedMotion,
-} from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { type HTMLAttributes, useState } from "react";
 
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import { cn } from "@/shared/lib/utils";
 
 const countBadgeVariants = cva(
@@ -96,7 +91,7 @@ export function CountBadge({
 
   const motionState: CountMotionState = {
     direction,
-    reducedMotion: Boolean(prefersReducedMotion),
+    reducedMotion: prefersReducedMotion,
   };
 
   if (count <= 0) {

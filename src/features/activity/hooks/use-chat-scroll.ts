@@ -6,6 +6,10 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  type ProgrammaticScrollIntent,
+  scrollElementIntoView,
+} from "@/shared/lib/browser-scroll";
 
 interface UseChatScrollInput {
   conversationId?: string | number;
@@ -16,7 +20,7 @@ interface UseChatScrollInput {
   messagesEndRef: RefObject<HTMLDivElement | null>;
   scrollToInitialUnreadMessage?: (
     id: string,
-    options?: { behavior?: ScrollBehavior },
+    options?: { intent?: ProgrammaticScrollIntent },
   ) => void;
 }
 
@@ -63,17 +67,17 @@ export function useChatScroll({
   > | null>(null);
 
   const scrollMessagesEndIntoView = useEffectEvent(
-    (behavior: ScrollBehavior) => {
-      messagesEndRef.current?.scrollIntoView({ behavior });
+    (intent: ProgrammaticScrollIntent) => {
+      scrollElementIntoView(messagesEndRef.current, { intent });
     },
   );
   const scrollInitialUnreadIntoView = useEffectEvent(
-    (behavior: ScrollBehavior) => {
+    (intent: ProgrammaticScrollIntent) => {
       if (!initialUnreadMessageId || !scrollToInitialUnreadMessage) {
         return false;
       }
 
-      scrollToInitialUnreadMessage(initialUnreadMessageId, { behavior });
+      scrollToInitialUnreadMessage(initialUnreadMessageId, { intent });
       return true;
     },
   );
@@ -99,9 +103,9 @@ export function useChatScroll({
     initialScrollTargetRef.current = target;
 
     if (target === "unread") {
-      scrollInitialUnreadIntoView("instant");
+      scrollInitialUnreadIntoView("restore");
     } else if (target === "bottom") {
-      scrollMessagesEndIntoView("instant");
+      scrollMessagesEndIntoView("restore");
     }
 
     isInitialRender.current = false;
@@ -109,7 +113,7 @@ export function useChatScroll({
   const applyLatestMessageScrollAction = useEffectEvent(
     (action: LatestMessageScrollAction) => {
       if (action === "scroll") {
-        scrollMessagesEndIntoView("smooth");
+        scrollMessagesEndIntoView("follow");
         setNewMessageCount(0);
         return;
       }
@@ -145,9 +149,9 @@ export function useChatScroll({
     initialScrollTargetRef.current = nextTarget;
 
     if (nextTarget === "unread") {
-      scrollInitialUnreadIntoView("instant");
+      scrollInitialUnreadIntoView("restore");
     } else {
-      scrollMessagesEndIntoView("instant");
+      scrollMessagesEndIntoView("restore");
     }
 
     clearInitialScrollSettleTimer(initialScrollSettleTimerRef);
@@ -196,9 +200,9 @@ export function useChatScroll({
     syncNearBottomState(isScrolledNearBottom(e.currentTarget));
   }
 
-  function scrollToBottom(behavior: ScrollBehavior = "smooth") {
+  function scrollToBottom() {
     syncNearBottomState(true);
-    messagesEndRef.current?.scrollIntoView({ behavior });
+    scrollMessagesEndIntoView("locate");
   }
 
   return {

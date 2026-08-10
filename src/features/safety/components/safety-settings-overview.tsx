@@ -31,6 +31,7 @@ import {
   type StatusPillTone,
 } from "@/shared/components/ui/status-pill";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 import {
   buildAccountActionNavigation,
   buildSafetyReportNavigation,
@@ -49,7 +50,9 @@ export function SafetySettingsOverview() {
     const frameId = globalThis.location.hash.startsWith("#safety-")
       ? globalThis.requestAnimationFrame(() => {
           const targetId = globalThis.location.hash.slice(1);
-          globalThis.document.getElementById(targetId)?.scrollIntoView();
+          scrollElementIntoView(globalThis.document.getElementById(targetId), {
+            intent: "locate",
+          });
         })
       : null;
 

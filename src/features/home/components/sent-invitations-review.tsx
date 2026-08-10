@@ -2,6 +2,7 @@ import { BellRing, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 import type { Invite } from "@/shared/schemas";
 import {
   getInviteStatusCopy,
@@ -22,8 +23,8 @@ export function SentInvitationsReview({
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    sectionRef.current?.scrollIntoView({
-      behavior: "smooth",
+    scrollElementIntoView(sectionRef.current, {
+      intent: "locate",
       block: "start",
     });
   }, []);

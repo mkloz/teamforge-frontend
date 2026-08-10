@@ -12,6 +12,7 @@ import {
   getTimeScrollSnapshot,
   subscribeToTimeScrollNode,
 } from "@/shared/components/ui/time-input/scroll-state";
+import { scrollElementBy } from "@/shared/lib/browser-scroll";
 import { cn } from "@/shared/lib/utils";
 
 interface TimeScrollColumnProps<T extends number | string> {
@@ -47,8 +48,8 @@ export function TimeScrollColumn<T extends number | string>({
   const canScrollDown = scrollSnapshot[1] === "1";
 
   const scrollByDirection = (direction: 1 | -1) => {
-    scrollNode?.scrollBy({
-      behavior: "smooth",
+    scrollElementBy(scrollNode, {
+      intent: "locate",
       top: direction * 72,
     });
   };

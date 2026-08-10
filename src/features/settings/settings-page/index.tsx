@@ -1,7 +1,11 @@
-import { useRouterState } from "@tanstack/react-router";
+import {
+  useElementScrollRestoration,
+  useRouterState,
+} from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { useSettingsRouteState } from "@/features/settings/hooks/use-settings-route-state";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { getBrowserWindow } from "@/shared/lib/browser-environment";
 import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 import { SettingsSectionContentLoading } from "./settings-page.loading";
@@ -32,9 +36,18 @@ export function SettingsPage() {
   const currentLocation = useRouterState({
     select: (state) => state.location,
   });
+  const restoredWindowScroll = useElementScrollRestoration({
+    getElement: getBrowserWindow,
+    getKey: (location) => currentLocation.state.__TSR_key ?? location.href,
+  });
+  const restoredSidebarScroll = useElementScrollRestoration({
+    getKey: (location) => currentLocation.state.__TSR_key ?? location.href,
+    id: "settings-sidebar",
+  });
   const mobileDetail = useSettingsMobileDetail({
     activeSection,
     currentLocation,
+    restoredWindowScroll,
   });
   const signOut = useSettingsSignOut({ currentLocation });
 
@@ -50,6 +63,7 @@ export function SettingsPage() {
       onSectionSelect={handleSectionSelect}
       onSignOut={signOut.signOut}
       onMobileBack={mobileDetail.closeMobileDetail}
+      restoredSidebarScroll={restoredSidebarScroll}
     >
       <Suspense
         fallback={

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type {
   UnifiedAttachment,
   UnifiedMessage,
@@ -49,6 +49,8 @@ export function MediaGallery({
   isReadByOthers = false,
 }: MediaGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const focusFallbackRef = useRef<HTMLFieldSetElement>(null);
+  const returnFocusTargetRef = useRef<HTMLElement | null>(null);
   const viewState = getMediaGalleryViewState({
     attachments,
     isOnlyContent,
@@ -60,7 +62,13 @@ export function MediaGallery({
   if (viewState.kind === "empty") return null;
 
   return (
-    <div className={viewState.containerClassName}>
+    <fieldset
+      ref={focusFallbackRef}
+      className={viewState.containerClassName}
+      data-media-gallery-focus-fallback
+      tabIndex={-1}
+    >
+      <legend className="sr-only">Message media gallery</legend>
       <div className={viewState.gridClassName}>
         {viewState.visibleAttachments.map((media, i) => (
           <GalleryItem
@@ -68,7 +76,10 @@ export function MediaGallery({
             media={media}
             index={i}
             count={viewState.count}
-            onClick={() => setSelectedIndex(i)}
+            onClick={(source) => {
+              returnFocusTargetRef.current = source;
+              setSelectedIndex(i);
+            }}
           />
         ))}
 
@@ -87,8 +98,10 @@ export function MediaGallery({
         attachments={attachments}
         selectedIndex={selectedIndex}
         setSelectedIndex={setSelectedIndex}
+        focusFallbackRef={focusFallbackRef}
+        returnFocusTargetRef={returnFocusTargetRef}
       />
-    </div>
+    </fieldset>
   );
 }
 

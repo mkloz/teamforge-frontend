@@ -14,81 +14,183 @@ const AUDIO_BARS = Array.from({ length: BAR_COUNT }, (_, i) => {
   };
 });
 
+function getFinitePositiveDuration(value: number | undefined) {
+  return value !== undefined && Number.isFinite(value) && value > 0
+    ? value
+    : null;
+}
+
+function clampSeconds(seconds: number, duration: number) {
+  return Math.max(0, Math.min(duration, seconds));
+}
+
+function tryResetAudioCurrentTime(audio: HTMLAudioElement) {
+  try {
+    audio.currentTime = 0;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function formatTime(seconds: number) {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-export function useAudioPlayer(url: string) {
+export function useAudioPlayer(url: string, attachmentDuration?: number) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const disposeAudioRef = useRef<(() => void) | null>(null);
+  const pendingSeekRatioRef = useRef<number | null>(null);
+  const metadataRequestStartedRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [isLoadingMetadata, setIsLoadingMetadata] = useState(false);
+  const [isLoadingPlayback, setIsLoadingPlayback] = useState(false);
+  const [currentTimeSeconds, setCurrentTimeSeconds] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState<1 | 1.5 | 2>(1);
   const [durationSeconds, setDurationSeconds] = useState(0);
+  const fallbackDuration = getFinitePositiveDuration(attachmentDuration);
+  const knownDuration = getFinitePositiveDuration(durationSeconds);
+  const totalDurationSeconds = knownDuration ?? fallbackDuration;
+  const progress = totalDurationSeconds
+    ? clampSeconds(currentTimeSeconds, totalDurationSeconds) /
+      totalDurationSeconds
+    : 0;
 
-  const syncProgress = useEffectEvent((audio: HTMLAudioElement) => {
-    const safeDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
-    setDurationSeconds(safeDuration);
-    setProgress(safeDuration > 0 ? audio.currentTime / safeDuration : 0);
+  const syncAudioTime = useEffectEvent((audio: HTMLAudioElement) => {
+    const nextDuration = getFinitePositiveDuration(audio.duration);
+    if (nextDuration) {
+      setDurationSeconds(nextDuration);
+      setCurrentTimeSeconds(clampSeconds(audio.currentTime, nextDuration));
+      return;
+    }
+
+    setCurrentTimeSeconds(Math.max(0, audio.currentTime));
   });
 
-  const handleEnded = useEffectEvent(() => {
+  const handleLoadedMetadata = useEffectEvent((audio: HTMLAudioElement) => {
+    const nextDuration = getFinitePositiveDuration(audio.duration);
+    metadataRequestStartedRef.current = false;
+    setIsLoadingMetadata(false);
+
+    if (!nextDuration) {
+      syncAudioTime(audio);
+      return;
+    }
+
+    setDurationSeconds(nextDuration);
+    const pendingSeekRatio = pendingSeekRatioRef.current;
+    if (pendingSeekRatio === null) {
+      setCurrentTimeSeconds(clampSeconds(audio.currentTime, nextDuration));
+      return;
+    }
+
+    const nextTime = clampSeconds(
+      pendingSeekRatio * nextDuration,
+      nextDuration,
+    );
+    pendingSeekRatioRef.current = null;
+    audio.currentTime = nextTime;
+    setCurrentTimeSeconds(nextTime);
+  });
+
+  const handleEnded = useEffectEvent((audio: HTMLAudioElement) => {
     setIsPlaying(false);
-    setProgress(1);
+    setIsLoadingPlayback(false);
+    const nextDuration =
+      getFinitePositiveDuration(audio.duration) ?? fallbackDuration;
+    if (nextDuration) {
+      setCurrentTimeSeconds(nextDuration);
+    }
   });
 
   const handlePause = useEffectEvent(() => {
     setIsPlaying(false);
+    setIsLoadingPlayback(false);
   });
 
   const handlePlay = useEffectEvent(() => {
     setHasError(false);
+    setIsLoadingPlayback(false);
     setIsPlaying(true);
   });
 
-  const handleError = useEffectEvent(() => {
+  const handlePlaybackFailure = useEffectEvent((audio: HTMLAudioElement) => {
+    if (audioRef.current !== audio) {
+      return;
+    }
+
+    pendingSeekRatioRef.current = null;
+    metadataRequestStartedRef.current = false;
     setHasError(true);
     setIsPlaying(false);
+    setIsLoadingMetadata(false);
+    setIsLoadingPlayback(false);
+    setCurrentTimeSeconds(0);
+    tryResetAudioCurrentTime(audio);
   });
 
   function createAudio() {
     disposeAudioRef.current?.();
 
-    const audio = new Audio(url);
+    const audio = new Audio();
     audio.preload = "none";
     audio.playbackRate = playbackSpeed;
     audioRef.current = audio;
 
-    const syncAudioProgress = () => syncProgress(audio);
+    const syncCurrentAudioTime = () => syncAudioTime(audio);
+    const loadCurrentAudioMetadata = () => handleLoadedMetadata(audio);
+    const endCurrentAudio = () => handleEnded(audio);
+    const pauseWhenDocumentHides = () => {
+      if (document.visibilityState === "hidden") {
+        audio.pause();
+      }
+    };
 
-    audio.addEventListener("timeupdate", syncAudioProgress);
-    audio.addEventListener("loadedmetadata", syncAudioProgress);
-    audio.addEventListener("ended", handleEnded);
-    audio.addEventListener("error", handleError);
+    audio.addEventListener("timeupdate", syncCurrentAudioTime);
+    audio.addEventListener("loadedmetadata", loadCurrentAudioMetadata);
+    audio.addEventListener("ended", endCurrentAudio);
+    const failCurrentAudio = () => handlePlaybackFailure(audio);
+
+    audio.addEventListener("error", failCurrentAudio);
     audio.addEventListener("pause", handlePause);
     audio.addEventListener("play", handlePlay);
+    document.addEventListener("visibilitychange", pauseWhenDocumentHides);
 
     disposeAudioRef.current = () => {
       audio.pause();
-      audio.removeEventListener("timeupdate", syncAudioProgress);
-      audio.removeEventListener("loadedmetadata", syncAudioProgress);
-      audio.removeEventListener("ended", handleEnded);
-      audio.removeEventListener("error", handleError);
+      audio.removeEventListener("timeupdate", syncCurrentAudioTime);
+      audio.removeEventListener("loadedmetadata", loadCurrentAudioMetadata);
+      audio.removeEventListener("ended", endCurrentAudio);
+      audio.removeEventListener("error", failCurrentAudio);
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("play", handlePlay);
+      document.removeEventListener("visibilitychange", pauseWhenDocumentHides);
       audio.src = "";
     };
 
-    return {
-      audio,
-    };
+    audio.src = url;
+
+    return audio;
+  }
+
+  function requestMetadata(audio: HTMLAudioElement) {
+    if (metadataRequestStartedRef.current) {
+      return;
+    }
+
+    metadataRequestStartedRef.current = true;
+    setIsLoadingMetadata(true);
+    audio.preload = "metadata";
+    audio.load();
   }
 
   useEffect(() => {
     return () => {
+      pendingSeekRatioRef.current = null;
+      metadataRequestStartedRef.current = false;
       disposeAudioRef.current?.();
       disposeAudioRef.current = null;
       audioRef.current = null;
@@ -103,53 +205,78 @@ export function useAudioPlayer(url: string) {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: url intentionally tears down the previous audio element.
   useEffect(() => {
-    const audio = audioRef.current;
-
-    if (!audio) {
-      setHasError(false);
-      setProgress(0);
-      setDurationSeconds(0);
-      return;
+    if (audioRef.current) {
+      disposeAudioRef.current?.();
+      disposeAudioRef.current = null;
+      audioRef.current = null;
     }
 
-    disposeAudioRef.current?.();
-    disposeAudioRef.current = null;
-    audioRef.current = null;
+    pendingSeekRatioRef.current = null;
+    metadataRequestStartedRef.current = false;
     setHasError(false);
-    setProgress(0);
+    setIsPlaying(false);
+    setIsLoadingMetadata(false);
+    setIsLoadingPlayback(false);
+    setCurrentTimeSeconds(0);
     setDurationSeconds(0);
   }, [url]);
 
   function togglePlay() {
-    const currentAudio = audioRef.current;
-    const { audio } = currentAudio ? { audio: currentAudio } : createAudio();
-
-    if (progress >= 1) {
-      audio.currentTime = 0;
-      setProgress(0);
+    if (metadataRequestStartedRef.current) {
+      return;
     }
 
-    if (audio.paused) {
-      void audio.play().catch(() => {
-        setHasError(true);
-        setIsPlaying(false);
+    let audio = audioRef.current;
+    if (hasError && audio) {
+      disposeAudioRef.current?.();
+      disposeAudioRef.current = null;
+      audioRef.current = null;
+      audio = null;
+    }
+
+    setHasError(false);
+    const currentAudio = audio ?? createAudio();
+    const currentDuration =
+      getFinitePositiveDuration(currentAudio.duration) ?? fallbackDuration;
+
+    if (currentDuration && currentTimeSeconds >= currentDuration) {
+      pendingSeekRatioRef.current = null;
+      currentAudio.currentTime = 0;
+      setCurrentTimeSeconds(0);
+    }
+
+    if (currentAudio.paused) {
+      setIsLoadingPlayback(true);
+      void currentAudio.play().catch(() => {
+        handlePlaybackFailure(currentAudio);
       });
       return;
     }
 
-    audio.pause();
+    currentAudio.pause();
   }
 
-  function seek(newProgress: number) {
-    const audio = audioRef.current;
-    if (!audio || hasError) {
+  function seek(nextSeconds: number) {
+    const seekDuration = totalDurationSeconds;
+    if (!seekDuration || !Number.isFinite(nextSeconds) || hasError) {
       return;
     }
 
-    const safeDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
-    const nextProgress = Math.max(0, Math.min(1, newProgress));
-    audio.currentTime = safeDuration * nextProgress;
-    setProgress(nextProgress);
+    const optimisticTime = clampSeconds(nextSeconds, seekDuration);
+    setCurrentTimeSeconds(optimisticTime);
+
+    const audio = audioRef.current ?? createAudio();
+    const metadataDuration = getFinitePositiveDuration(audio.duration);
+    if (metadataDuration) {
+      const reconciledTime = clampSeconds(optimisticTime, metadataDuration);
+      pendingSeekRatioRef.current = null;
+      audio.currentTime = reconciledTime;
+      setCurrentTimeSeconds(reconciledTime);
+      return;
+    }
+
+    pendingSeekRatioRef.current = optimisticTime / seekDuration;
+    requestMetadata(audio);
   }
 
   function toggleSpeed() {
@@ -163,11 +290,16 @@ export function useAudioPlayer(url: string) {
   return {
     isPlaying,
     hasError,
+    isLoading: isLoadingMetadata || isLoadingPlayback,
+    isLoadingMetadata,
+    isLoadingPlayback,
     progress,
+    currentTimeSeconds,
     playbackSpeed,
     bars: AUDIO_BARS,
     barCount: BAR_COUNT,
     durationSeconds,
+    totalDurationSeconds,
     togglePlay,
     seek,
     toggleSpeed,

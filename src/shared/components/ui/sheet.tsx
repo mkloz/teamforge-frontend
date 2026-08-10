@@ -22,8 +22,9 @@ function SheetOverlay({
 }: React.ComponentPropsWithRef<typeof SheetPrimitive.Overlay>) {
   return (
     <SheetPrimitive.Overlay
+      data-slot="sheet-overlay"
       className={cn(
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-background/82 data-[state=closed]:animate-out data-[state=open]:animate-in",
+        "motion-overlay-scrim data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-background/82 data-[state=closed]:animate-out data-[state=open]:animate-in motion-reduce:animate-none",
         className,
       )}
       {...props}
@@ -34,7 +35,7 @@ function SheetOverlay({
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 border-border/35 bg-canvas p-6 shadow-black/10 shadow-xl transition ease-out data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:duration-250 data-[state=open]:duration-300",
+  "motion-sheet-content fixed z-50 gap-4 border-border/35 bg-canvas p-6 shadow-black/10 shadow-xl data-[state=closed]:animate-out data-[state=open]:animate-in motion-reduce:animate-none",
   {
     variants: {
       side: {

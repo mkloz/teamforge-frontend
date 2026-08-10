@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { domAnimation, LazyMotion, m, useReducedMotion } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
 import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
 import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
 import { Button } from "@/shared/components/ui/button";
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 
 type LandingPrimaryAction = ReturnType<
   typeof useResolvedLandingAuthActions

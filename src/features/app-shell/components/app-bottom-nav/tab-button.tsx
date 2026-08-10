@@ -80,34 +80,30 @@ export function TabButton({ item, pathname }: TabButtonProps) {
       aria-current={state.active ? "page" : undefined}
       aria-label={state.ariaLabel}
       className={cn(
-        "relative flex h-full min-w-0 items-center justify-center rounded-full",
-        "transition-colors duration-200 hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+        "group relative flex h-full min-w-0 items-center justify-center rounded-full",
+        "transition-colors duration-150 hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset active:bg-muted/60 motion-reduce:transition-none",
       )}
     >
-      <div
-        className={cn(
-          "relative z-10 flex size-full min-w-0 flex-col items-center justify-center gap-0.5",
-          "transition-transform duration-150 active:scale-90",
-        )}
-      >
-        <div
-          className={cn(
-            "relative flex items-center justify-center transition-[background-color,border-color,box-shadow,width,height] duration-300 ease-out",
-            state.active
-              ? `size-10 rounded-full border ${state.activeBackgroundClassName}`
-              : "size-8 rounded-full bg-transparent shadow-none",
-          )}
-        >
-          <ItemIcon
-            size={state.active ? 21 : 17}
-            aria-hidden="true"
+      <div className="relative z-10 grid size-full min-w-0 grid-rows-[2.5rem_0.875rem] place-items-center content-center gap-0.5">
+        <div className="relative flex size-10 items-center justify-center">
+          <span
             className={cn(
-              "shrink-0 transition-colors duration-300",
-              state.active
-                ? state.activeTextClassName
-                : INACTIVE_ICON_CLASS_NAME,
+              "absolute inset-0 flex items-center justify-center rounded-full border border-transparent",
+              "transition-[background-color,border-color,transform] duration-150 ease-out group-active:scale-[0.96] motion-reduce:transform-none motion-reduce:transition-none",
+              state.active && state.activeBackgroundClassName,
             )}
-          />
+          >
+            <ItemIcon
+              size={21}
+              aria-hidden="true"
+              className={cn(
+                "shrink-0 transition-[color,transform] duration-150 ease-out motion-reduce:transition-none",
+                state.active
+                  ? `scale-100 ${state.activeTextClassName}`
+                  : `scale-[0.81] ${INACTIVE_ICON_CLASS_NAME}`,
+              )}
+            />
+          </span>
           <TabButtonBadge state={state} />
         </div>
 
@@ -141,11 +137,11 @@ function TabButtonLabel({
     <span
       aria-hidden={isActive}
       className={cn(
-        "max-w-full overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-muted-foreground text-xs leading-none tracking-tight",
-        "transition-[max-height,opacity,transform] duration-200 ease-out",
+        "h-3.5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-muted-foreground text-xs leading-none tracking-tight",
+        "transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none",
         isActive
-          ? "max-h-0 -translate-y-0.5 opacity-0"
-          : "max-h-4 translate-y-0 opacity-100",
+          ? "-translate-y-0.5 opacity-0 motion-reduce:transform-none"
+          : "translate-y-0 opacity-100",
       )}
     >
       {label}

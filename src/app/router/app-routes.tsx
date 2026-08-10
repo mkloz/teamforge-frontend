@@ -35,13 +35,13 @@ import {
 const appShellBaseRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
-  beforeLoad: async ({ location }) => {
+  beforeLoad: async ({ location, preload }) => {
     await requireAuthenticatedAppRoute(location, {
       onSessionRestored: createSessionRestoredRoutePreload(location.pathname),
     });
 
     void loadAppShellWithNotifications().catch(() => null);
-    preloadMatchedAppRouteModule(location.pathname);
+    preloadMatchedAppRouteModule(location.pathname, preload);
   },
   pendingComponent: AppShellRouteLoading,
   component: AppShellRouteComponent,

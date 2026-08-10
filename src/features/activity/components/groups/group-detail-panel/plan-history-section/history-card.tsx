@@ -4,6 +4,7 @@ import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract"
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 import { cn } from "@/shared/lib/utils";
 import {
   categoryColors,
@@ -38,8 +39,8 @@ export function HistoryCard({
       return;
     }
 
-    cardRef.current?.scrollIntoView({
-      behavior: "smooth",
+    scrollElementIntoView(cardRef.current, {
+      intent: "locate",
       block: "center",
     });
   }, [isExpanded]);

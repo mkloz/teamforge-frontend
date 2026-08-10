@@ -25,6 +25,7 @@ import {
   cancelScheduledAnimationFrame,
   scheduleAnimationFrame,
 } from "@/shared/lib/browser-scheduling";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 import { cn } from "@/shared/lib/utils";
 import { buildActivityDmNavigation } from "@/shared/navigation/activity-navigation";
 
@@ -284,8 +285,8 @@ function useSpotlightConnectButton(
         return;
       }
 
-      button.scrollIntoView({
-        behavior: "smooth",
+      scrollElementIntoView(button, {
+        intent: "locate",
         block: "center",
       });
       button.focus({ preventScroll: true });

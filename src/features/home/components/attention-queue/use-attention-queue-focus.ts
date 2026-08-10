@@ -1,5 +1,5 @@
 import { type RefObject, useEffect, useEffectEvent } from "react";
-
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 import type {
   HomeInvitationView,
   HomePanel,
@@ -51,8 +51,8 @@ export function useAttentionQueueFocus({
       return;
     }
 
-    scrollRef.current?.scrollIntoView({
-      behavior: "smooth",
+    scrollElementIntoView(scrollRef.current, {
+      intent: "locate",
       block: "start",
     });
   }, [focusedPanel, scrollRef]);

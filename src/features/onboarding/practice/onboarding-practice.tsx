@@ -1,10 +1,4 @@
-import {
-  AnimatePresence,
-  domAnimation,
-  LazyMotion,
-  m,
-  useReducedMotion,
-} from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import {
   ArrowRight,
   Check,
@@ -16,8 +10,8 @@ import {
   Users,
 } from "lucide-react";
 import { useRef, useState } from "react";
-
 import { Button } from "@/shared/components/ui/button";
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import { cn } from "@/shared/lib/utils";
 import {
   ONBOARDING_PRACTICE_TASKS,

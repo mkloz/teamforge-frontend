@@ -43,8 +43,8 @@ function getInitialScrollRequest() {
 
   return {
     options: {
-      behavior: "auto",
       block: "start",
+      intent: "restore",
     },
     targetId,
   } as const satisfies LandingBelowFoldRequestDetail;

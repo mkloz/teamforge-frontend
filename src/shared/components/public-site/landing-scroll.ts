@@ -13,15 +13,24 @@ import {
   type ScheduledDelayHandle,
   scheduleDelay,
 } from "@/shared/lib/browser-scheduling";
-import { getElementById, scrollToPageTop } from "@/shared/lib/browser-scroll";
+import {
+  getElementById,
+  type ProgrammaticScrollIntent,
+  resolveProgrammaticScrollBehavior,
+  scrollToPageTop,
+} from "@/shared/lib/browser-scroll";
 
 export const LANDING_BELOW_FOLD_REQUEST_EVENT =
   "findafew:landing-below-fold-request";
 
 export interface LandingBelowFoldRequestDetail {
-  options: ScrollIntoViewOptions;
+  options: LandingScrollOptions;
   targetId: LandingSectionId;
 }
+
+export type LandingScrollOptions = Omit<ScrollIntoViewOptions, "behavior"> & {
+  intent?: ProgrammaticScrollIntent;
+};
 
 declare global {
   interface WindowEventMap {
@@ -30,19 +39,15 @@ declare global {
 }
 
 const DEFAULT_SCROLL_OPTIONS = {
-  behavior: "smooth",
   block: "start",
-} as const satisfies ScrollIntoViewOptions;
+  intent: "locate",
+} as const satisfies LandingScrollOptions;
 
 const LANDING_PROGRAMMATIC_SCROLL_CLASS = "landing-programmatic-scroll";
 const LANDING_SCROLL_OFFSET_PX = 64;
 const PROGRAMMATIC_SCROLL_SNAP_RESTORE_MS = 1200;
 
 let restoreScrollSnapTimeout: ScheduledDelayHandle | null = null;
-
-function getScrollBehavior(options: ScrollIntoViewOptions) {
-  return options.behavior ?? DEFAULT_SCROLL_OPTIONS.behavior;
-}
 
 function disableScrollSnapForProgrammaticScroll(behavior: ScrollBehavior) {
   const root = getBrowserDocumentElement();
@@ -68,9 +73,11 @@ function disableScrollSnapForProgrammaticScroll(behavior: ScrollBehavior) {
 
 export function scrollLandingElementToStart(
   element: HTMLElement,
-  options: ScrollIntoViewOptions,
+  options: LandingScrollOptions,
 ) {
-  const behavior = getScrollBehavior(options);
+  const behavior = resolveProgrammaticScrollBehavior(
+    options.intent ?? DEFAULT_SCROLL_OPTIONS.intent,
+  );
   const top =
     element.id === "hero"
       ? 0
@@ -88,7 +95,7 @@ export function scrollLandingElementToStart(
 
 export function scrollToLandingSection(
   id: LandingSectionId,
-  options: ScrollIntoViewOptions = DEFAULT_SCROLL_OPTIONS,
+  options: LandingScrollOptions = DEFAULT_SCROLL_OPTIONS,
 ) {
   const element = getElementById(id);
 
@@ -117,17 +124,17 @@ export function scrollToLandingSection(
 }
 
 export function scrollToLandingTop(
-  behavior: ScrollBehavior = DEFAULT_SCROLL_OPTIONS.behavior,
+  intent: ProgrammaticScrollIntent = DEFAULT_SCROLL_OPTIONS.intent,
 ) {
   const hero = getElementById(LANDING_SECTION_IDS.hero);
 
   if (hero) {
     scrollLandingElementToStart(hero, {
-      behavior,
       block: DEFAULT_SCROLL_OPTIONS.block,
+      intent,
     });
     return;
   }
 
-  scrollToPageTop(behavior);
+  scrollToPageTop(intent);
 }

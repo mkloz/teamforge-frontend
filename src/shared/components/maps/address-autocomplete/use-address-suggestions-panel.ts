@@ -9,6 +9,10 @@ import {
 
 import { useFloatingPanelInteractions } from "@/shared/hooks/use-floating-panel-interactions";
 import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
+import {
+  scrollElementBy,
+  scrollElementIntoView,
+} from "@/shared/lib/browser-scroll";
 import { getAnchoredScrollablePanelPosition } from "@/shared/lib/floating-panel-position";
 import type { GooglePlaceSuggestion } from "@/shared/lib/maps/location.types";
 import { getEstimatedSuggestionsPanelHeight } from "./address-autocomplete-utils";
@@ -71,8 +75,8 @@ export function useAddressSuggestionsPanel({
   }, []);
 
   function scrollSuggestions(direction: 1 | -1) {
-    listRef.current?.scrollBy({
-      behavior: "smooth",
+    scrollElementBy(listRef.current, {
+      intent: "locate",
       top: direction * 96,
     });
   }
@@ -115,8 +119,9 @@ export function useAddressSuggestionsPanel({
       return undefined;
     }
 
-    optionRefs.current.get(suggestion.id)?.scrollIntoView({
+    scrollElementIntoView(optionRefs.current.get(suggestion.id) ?? null, {
       block: "nearest",
+      intent: "reveal",
     });
 
     const delay = scheduleDelay(updateScrollState, 0);

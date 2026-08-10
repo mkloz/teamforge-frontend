@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { domMax, LazyMotion, m, useReducedMotion } from "framer-motion";
+import { domMax, LazyMotion, m } from "framer-motion";
 import { UsersRound } from "lucide-react";
 import { EmptyConversationsVisual } from "@/features/activity/assets/empty-conversations";
 import { EmptyConversationsFilteredVisual } from "@/features/activity/assets/empty-conversations-filtered";
 import { Button } from "@/shared/components/ui/button";
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import {
   buildExploreNavigation,
   buildPlanCreationLaunchNavigation,

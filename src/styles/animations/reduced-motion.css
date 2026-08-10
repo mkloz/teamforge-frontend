@@ -1,4 +1,25 @@
 @media (prefers-reduced-motion: reduce) {
+  .motion-overlay-scrim,
+  .motion-dialog-content,
+  .motion-sheet-content,
+  .motion-anchored-content,
+  .motion-tooltip-content,
+  [data-slot="accordion-content"],
+  [data-slot="collapsible-content"] {
+    animation: none;
+    transition: none;
+  }
+
+  [data-vaul-drawer],
+  [data-vaul-overlay] {
+    /* biome-ignore lint/complexity/noImportantStyles: Vaul injects later CSS and inline 500ms transitions. */
+    animation-duration: 1ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Vaul injects later CSS and inline 500ms transitions. */
+    transition-duration: 1ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Vaul injects later CSS and inline 500ms transitions. */
+    transition-timing-function: linear !important;
+  }
+
   .plan-creation-loading-mark__moving-shape,
   .plan-creation-loading-mark__loadingMark,
   .plan-creation-loading-mark__particle-core,

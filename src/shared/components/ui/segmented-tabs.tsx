@@ -1,8 +1,9 @@
 import type { Transition } from "framer-motion";
-import { domAnimation, LazyMotion, m, useReducedMotion } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { useId } from "react";
 
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import { cn } from "@/shared/lib/utils";
 
 type SegmentedTabsSize = "lg" | "md" | "sm";

@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useRef } from "react";
 
 import { useDesktopAuthVisualEnabled } from "@/features/auth/hooks/use-desktop-auth-visual-enabled";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { Button } from "@/shared/components/ui/button";
+import { DecorativeVisualBoundary } from "@/shared/components/visuals/decorative-visual-boundary";
 import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
+import { useKeyboardSafeViewport } from "@/shared/hooks/use-keyboard-safe-viewport";
 import { cn } from "@/shared/lib/utils";
 import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 
@@ -46,9 +48,14 @@ export function AuthSupportShell({
   progress,
 }: AuthSupportShellProps) {
   const isDesktopAuthVisualEnabled = useDesktopAuthVisualEnabled();
+  const viewportShellRef = useRef<HTMLDivElement>(null);
+  useKeyboardSafeViewport(viewportShellRef);
 
   return (
-    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+    <div
+      ref={viewportShellRef}
+      className="keyboard-viewport-shell relative flex w-full flex-col overflow-hidden lg:flex-row"
+    >
       <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
         <Button
           variant="inverseGhost"
@@ -73,19 +80,21 @@ export function AuthSupportShell({
         )}
       >
         {isDesktopAuthVisualEnabled ? (
-          <Suspense fallback={null}>
-            <LazyVoronoiCatalyst
-              formation={SUPPORT_FORMATION}
-              progress={progress}
-            />
-          </Suspense>
+          <DecorativeVisualBoundary>
+            <Suspense fallback={null}>
+              <LazyVoronoiCatalyst
+                formation={SUPPORT_FORMATION}
+                progress={progress}
+              />
+            </Suspense>
+          </DecorativeVisualBoundary>
         ) : null}
       </div>
 
       <div className="relative flex h-full flex-1 flex-col overflow-hidden">
         <BackgroundTexture />
 
-        <main className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4">
+        <main className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4">
           <div className="flex min-h-full w-full flex-col items-center justify-center pt-20 pb-10 lg:py-8">
             <div className="w-full max-w-sm px-2 sm:px-0">
               <div className="flex flex-col gap-2 text-center">

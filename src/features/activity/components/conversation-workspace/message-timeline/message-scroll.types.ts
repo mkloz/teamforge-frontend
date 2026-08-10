@@ -1,6 +1,8 @@
+import type { ProgrammaticScrollIntent } from "@/shared/lib/browser-scroll";
+
 export interface ScrollToMessageOptions {
-  behavior?: ScrollBehavior;
   highlight?: boolean;
+  intent?: ProgrammaticScrollIntent;
 }
 
 export interface MessageScrollHandle {

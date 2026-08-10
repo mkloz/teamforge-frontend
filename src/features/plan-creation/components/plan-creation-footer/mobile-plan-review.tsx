@@ -15,6 +15,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 import { cn } from "@/shared/lib/utils";
 
 import {
@@ -366,7 +367,7 @@ function openPlanSection(target: Exclude<PlanSectionTarget, "previous-step">) {
   }
 
   requestAnimationFrame(() => {
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollElementIntoView(section, { intent: "locate", block: "start" });
   });
 }
 

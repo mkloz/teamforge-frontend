@@ -62,6 +62,7 @@ export function useExploreRouteState() {
   );
   const [routeState, setRouteState] = useQueryStates(exploreRouteParsers, {
     history: "replace",
+    scroll: false,
   });
   const route = resolveExploreRouteState(routeState);
   const setExploreRouteState: SetExploreRouteState = (state, options) =>
@@ -95,6 +96,7 @@ export function useExploreRouteState() {
     setSearchQuery(nextQuery);
     void setExploreRouteState(getSearchRoutePatch(nextQuery), {
       history: "replace",
+      scroll: false,
     });
   }
 
@@ -104,6 +106,7 @@ export function useExploreRouteState() {
     setSelectedCategories(normalized);
     void setExploreRouteState(getCategoryRoutePatch(normalized), {
       history: "push",
+      scroll: false,
     });
   }
 
@@ -113,6 +116,7 @@ export function useExploreRouteState() {
     setSizeRange(normalized);
     void setExploreRouteState(getSizeRoutePatch(normalized), {
       history: "replace",
+      scroll: false,
     });
   }
 
@@ -122,6 +126,7 @@ export function useExploreRouteState() {
     setDistance(normalized);
     void setExploreRouteState(getDistanceRoutePatch(normalized), {
       history: "replace",
+      scroll: false,
     });
   }
 
@@ -129,6 +134,7 @@ export function useExploreRouteState() {
     setLocationMode(nextLocationMode);
     void setExploreRouteState(getLocationRoutePatch(nextLocationMode), {
       history: "push",
+      scroll: false,
     });
   }
 
@@ -136,6 +142,7 @@ export function useExploreRouteState() {
     setAccess(nextAccess);
     void setExploreRouteState(getAccessRoutePatch(nextAccess), {
       history: "push",
+      scroll: false,
     });
   }
 
@@ -143,6 +150,7 @@ export function useExploreRouteState() {
     setSortBy(nextSort);
     void setExploreRouteState(getSortRoutePatch(nextSort), {
       history: "push",
+      scroll: false,
     });
   }
 
@@ -158,6 +166,7 @@ export function useExploreRouteState() {
       },
       {
         history: "push",
+        scroll: false,
       },
     );
   }
@@ -166,6 +175,7 @@ export function useExploreRouteState() {
     setStartsAfter(nextStartsAfter);
     void setExploreRouteState(getStartsAfterRoutePatch(nextStartsAfter), {
       history: "push",
+      scroll: false,
     });
   }
 
@@ -173,6 +183,7 @@ export function useExploreRouteState() {
     setStartsBefore(nextStartsBefore);
     void setExploreRouteState(getStartsBeforeRoutePatch(nextStartsBefore), {
       history: "push",
+      scroll: false,
     });
   }
 
@@ -182,7 +193,7 @@ export function useExploreRouteState() {
   ) {
     void setExploreRouteState(
       getDateRangeRoutePatch(nextStartsAfter, nextStartsBefore),
-      { history: "push" },
+      { history: "push", scroll: false },
     );
   }
 
@@ -190,6 +201,7 @@ export function useExploreRouteState() {
     resetFilters();
     void setExploreRouteState(CLEAR_EXPLORE_FILTER_ROUTE, {
       history: "push",
+      scroll: false,
     });
   }
 

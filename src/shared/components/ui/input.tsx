@@ -30,6 +30,7 @@ function getInputClassName({
     isSearch && "h-9! rounded-full px-3 py-1.5 text-xs",
     leftIcon && (isSearch ? "pl-8" : "pl-9"),
     rightIcon && (isSearch ? "pr-9" : "pr-10"),
+    "[@media(pointer:coarse)]:text-base!",
     className,
   );
 }

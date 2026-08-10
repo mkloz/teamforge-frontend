@@ -1,5 +1,6 @@
 import { lazy, type RefObject, Suspense } from "react";
 import { useDesktopOnboardingVisualEnabled } from "@/features/onboarding/hooks/use-desktop-onboarding-visual-enabled";
+import { DecorativeVisualBoundary } from "@/shared/components/visuals/decorative-visual-boundary";
 import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
 import { cn } from "@/shared/lib/utils";
 import type {
@@ -40,13 +41,15 @@ export function OnboardingVisualPanel({
       )}
     >
       {showVisual ? (
-        <Suspense fallback={null}>
-          <VoronoiCatalyst
-            ref={catalystRef}
-            formation={formation}
-            progress={progress}
-          />
-        </Suspense>
+        <DecorativeVisualBoundary>
+          <Suspense fallback={null}>
+            <VoronoiCatalyst
+              ref={catalystRef}
+              formation={formation}
+              progress={progress}
+            />
+          </Suspense>
+        </DecorativeVisualBoundary>
       ) : null}
     </Panel>
   );

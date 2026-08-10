@@ -47,6 +47,7 @@ function buildSettingsSearch(section?: SettingsSection | null) {
 
 export function buildSettingsNavigation(section?: SettingsSection | null) {
   return {
+    resetScroll: true,
     to: "/settings",
     search: buildSettingsSearch(section),
   } as const;

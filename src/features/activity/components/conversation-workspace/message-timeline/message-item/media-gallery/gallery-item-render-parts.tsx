@@ -149,14 +149,7 @@ function VideoBackedGifMedia({
         viewState.isGif && "object-contain",
         viewState.hasGifLoaded ? "opacity-100" : "opacity-0",
       )}
-    >
-      <track
-        kind="captions"
-        src="data:text/vtt,WEBVTT"
-        srcLang="en"
-        label="No captions available"
-      />
-    </video>
+    />
   );
 }
 

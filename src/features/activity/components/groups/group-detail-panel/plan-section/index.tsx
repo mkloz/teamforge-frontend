@@ -3,6 +3,7 @@ import type {
   MemberRole,
   Plan,
 } from "@/features/activity/lib/activity-contract";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 import { presentPlanReadinessSummary } from "@/shared/lib/lifecycle-presenters";
 import { cn } from "@/shared/lib/utils";
 import { PlanFactList } from "./plan-facts";
@@ -65,8 +66,8 @@ export function PlanSection({
       return;
     }
 
-    sectionRef.current?.scrollIntoView({
-      behavior: "smooth",
+    scrollElementIntoView(sectionRef.current, {
+      intent: "locate",
       block: "start",
     });
   }, [isFocused]);

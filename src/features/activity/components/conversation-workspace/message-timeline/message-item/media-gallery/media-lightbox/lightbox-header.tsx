@@ -1,6 +1,5 @@
-import { domAnimation, LazyMotion, m } from "framer-motion";
 import { Download, X } from "lucide-react";
-import { useState } from "react";
+import { type Ref, useState } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
 import { DialogClose } from "@/shared/components/ui/dialog";
@@ -17,12 +16,14 @@ import { getLightboxHeaderViewState } from "./lightbox-header-view-state";
 
 interface LightboxHeaderProps {
   count: number;
+  closeButtonRef: Ref<HTMLButtonElement>;
   currentMedia: UnifiedAttachment | null;
   selectedIndex: number | null;
 }
 
 export function LightboxHeader({
   count,
+  closeButtonRef,
   currentMedia,
   selectedIndex,
 }: LightboxHeaderProps) {
@@ -48,20 +49,16 @@ export function LightboxHeader({
   }
 
   return (
-    <LazyMotion features={domAnimation}>
-      <m.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="pointer-events-none absolute inset-x-0 top-0 z-50 flex h-18 items-center justify-between gap-4 bg-linear-to-b from-black/65 to-transparent px-6 sm:h-20 sm:px-8"
-      >
-        <LightboxHeaderTitle viewState={viewState} />
-        <LightboxHeaderActions
-          isDownloadDisabled={viewState.isDownloadDisabled}
-          isDownloading={isDownloading}
-          onDownload={handleDownload}
-        />
-      </m.div>
-    </LazyMotion>
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-50 flex h-[calc(env(safe-area-inset-top)+5rem)] items-center justify-between gap-4 bg-linear-to-b from-black/65 to-transparent pt-[env(safe-area-inset-top)] pr-[max(env(safe-area-inset-right),1.5rem)] pl-[max(env(safe-area-inset-left),1.5rem)] sm:pr-[max(env(safe-area-inset-right),2rem)] sm:pl-[max(env(safe-area-inset-left),2rem)]">
+      <LightboxHeaderTitle viewState={viewState} />
+      <LightboxHeaderActions
+        closeButtonRef={closeButtonRef}
+        downloadLabel={`Download ${viewState.mediaTitle}`}
+        isDownloadDisabled={viewState.isDownloadDisabled}
+        isDownloading={isDownloading}
+        onDownload={handleDownload}
+      />
+    </div>
   );
 }
 
@@ -85,10 +82,14 @@ function LightboxHeaderTitle({
 }
 
 function LightboxHeaderActions({
+  closeButtonRef,
+  downloadLabel,
   isDownloadDisabled,
   isDownloading,
   onDownload,
 }: {
+  closeButtonRef: Ref<HTMLButtonElement>;
+  downloadLabel: string;
   isDownloadDisabled: boolean;
   isDownloading: boolean;
   onDownload: () => Promise<void>;
@@ -98,7 +99,7 @@ function LightboxHeaderActions({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="ghost"
+            variant="accentGhost"
             size="icon"
             type="button"
             disabled={isDownloadDisabled}
@@ -106,8 +107,9 @@ function LightboxHeaderActions({
             onClick={() => {
               void onDownload();
             }}
-            className="size-10 rounded-full border border-white/10 bg-white/10 text-white/75 shadow-none transition hover:bg-white/16 hover:text-white active:scale-95 disabled:opacity-45"
-            aria-label="Download media"
+            contentClassName="size-10 shrink-0 rounded-full border border-white/10 bg-white/10 group-hover:bg-white/16"
+            className="group size-11 rounded-full border-0 bg-transparent p-0 text-white/75 shadow-none hover:text-white active:scale-95 disabled:opacity-45"
+            aria-label={downloadLabel}
           >
             <Download className="size-5" />
           </Button>
@@ -117,10 +119,12 @@ function LightboxHeaderActions({
 
       <DialogClose asChild>
         <Button
-          variant="ghost"
+          ref={closeButtonRef}
+          variant="accentGhost"
           size="icon"
           type="button"
-          className="size-10 rounded-full border border-white/10 bg-white/10 text-white/75 shadow-none transition hover:bg-white/16 hover:text-white active:scale-95"
+          contentClassName="size-10 shrink-0 rounded-full border border-white/10 bg-white/10 group-hover:bg-white/16"
+          className="group size-11 rounded-full border-0 bg-transparent p-0 text-white/75 shadow-none hover:text-white active:scale-95"
           aria-label="Close gallery"
         >
           <X className="size-5" />

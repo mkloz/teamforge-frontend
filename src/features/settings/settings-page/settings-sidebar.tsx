@@ -1,6 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, LogOut } from "lucide-react";
-import { lazy, type MouseEvent, type Ref, Suspense, useState } from "react";
+import {
+  lazy,
+  type MouseEvent,
+  type Ref,
+  Suspense,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "@/shared/components/ui/button";
 import {
   GroupedMenuAction,
@@ -9,6 +17,7 @@ import {
   GroupedMenuSection,
 } from "@/shared/components/ui/grouped-menu";
 import { IconTile } from "@/shared/components/ui/icon-tile";
+import { scrollElementTo } from "@/shared/lib/browser-scroll";
 import { cn } from "@/shared/lib/utils";
 import {
   buildSettingsNavigation,
@@ -30,6 +39,10 @@ interface SettingsSidebarProps {
   isSigningOut: boolean;
   onSectionSelect: (section: SettingsSection) => void;
   onSignOut: () => Promise<void> | void;
+  restoredScroll?: {
+    scrollX: number;
+    scrollY: number;
+  };
 }
 
 type SettingsSectionItem =
@@ -42,12 +55,30 @@ export function SettingsSidebar({
   isSigningOut,
   onSectionSelect,
   onSignOut,
+  restoredScroll,
 }: SettingsSidebarProps) {
   const [signOutDialogOpen, setSignOutDialogOpen] = useState(false);
+  const scrollOwnerRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (!restoredScroll) {
+      return;
+    }
+
+    scrollElementTo(scrollOwnerRef.current, {
+      intent: "restore",
+      left: restoredScroll.scrollX,
+      top: restoredScroll.scrollY,
+    });
+  }, [restoredScroll]);
 
   return (
     <aside className={cn("lg:block", isMobileDetailOpen && "hidden")}>
-      <div className="lg:fixed lg:top-10 lg:max-h-[calc(100svh-5rem)] lg:w-60 lg:overflow-y-auto lg:pr-1">
+      <div
+        ref={scrollOwnerRef}
+        className="lg:fixed lg:top-10 lg:max-h-[calc(100svh-5rem)] lg:w-60 lg:overflow-y-auto lg:pr-1"
+        data-scroll-restoration-id="settings-sidebar"
+      >
         <div className="mb-5 border-border border-b pb-5 lg:border-b-0 lg:pb-0">
           <h1 className="font-bold text-2xl text-ink leading-tight lg:text-3xl">
             Settings

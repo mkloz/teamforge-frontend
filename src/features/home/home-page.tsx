@@ -16,6 +16,7 @@ import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { useDeferredRender } from "@/shared/hooks/use-deferred-render";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 import { createFindafewPageMetadata } from "@/shared/lib/findafew-page-metadata";
 
 const LazyFriendsInvitation = lazy(() =>
@@ -153,8 +154,8 @@ export function HomePage() {
       return;
     }
 
-    invitationsRef.current?.scrollIntoView({
-      behavior: "smooth",
+    scrollElementIntoView(invitationsRef.current, {
+      intent: "locate",
       block: "start",
     });
   }, [focusedPanel]);

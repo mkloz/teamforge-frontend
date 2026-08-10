@@ -10,6 +10,8 @@ import {
 } from "@/dev/scenarios/runtime/scenario-selection";
 import { setScenarioController } from "@/dev/scenarios/runtime/scenario-state";
 import { authSession } from "@/shared/api/auth-session";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import {
   THEME_PREFERENCE_STORAGE_KEY,
   THEME_PREFERENCE_VERSION,
@@ -21,6 +23,8 @@ import type {
 
 const SCENARIO_RUNTIME_SENTINEL = "__SCENARIO_RUNTIME__";
 const SCENARIO_RELEASE_FAULTS_EVENT = "findafew:scenario-release-faults";
+const SCENARIO_RESET_GROUP_DETAIL_EVENT =
+  "findafew:scenario-reset-group-detail";
 const blockedEffects = new Set<ScenarioExternalEffect>([
   "audio",
   "clipboard",
@@ -32,7 +36,6 @@ const blockedEffects = new Set<ScenarioExternalEffect>([
   "pwa",
   "push",
   "realtime",
-  "route-preload",
   "share",
   "telemetry",
   "upload",
@@ -49,6 +52,13 @@ window.addEventListener(SCENARIO_RELEASE_FAULTS_EVENT, (event) => {
       ? event.detail
       : {};
   controller?.releaseFaults(detail);
+});
+
+window.addEventListener(SCENARIO_RESET_GROUP_DETAIL_EVENT, () => {
+  controller?.reset();
+  appQueryClient.removeQueries({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.all,
+  });
 });
 
 const scenarioFetch: typeof globalThis.fetch = (...args) => {

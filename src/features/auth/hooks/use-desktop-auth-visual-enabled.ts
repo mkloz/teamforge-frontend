@@ -1,7 +1,5 @@
-import { useMediaQuery } from "@/shared/hooks/use-media-query";
-
-const DESKTOP_AUTH_VISUAL_QUERY = "(min-width: 1024px)";
+import { useVoronoiVisualEnabled } from "@/shared/hooks/use-voronoi-visual-enabled";
 
 export function useDesktopAuthVisualEnabled() {
-  return useMediaQuery(DESKTOP_AUTH_VISUAL_QUERY);
+  return useVoronoiVisualEnabled();
 }

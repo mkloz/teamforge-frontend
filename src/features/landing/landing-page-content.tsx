@@ -31,8 +31,8 @@ export function LandingPageContent() {
 
     const frame = scheduleAnimationFrame(() => {
       scrollToLandingSection(targetId, {
-        behavior: "auto",
         block: "start",
+        intent: "restore",
       });
     });
 

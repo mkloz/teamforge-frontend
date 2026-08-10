@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
-import { getBrowserMediaQuery } from "@/shared/lib/browser-environment";
 import {
   cancelDelay,
   cancelScheduledAnimationFrame,
@@ -9,6 +8,7 @@ import {
   scheduleAnimationFrame,
   scheduleDelay,
 } from "@/shared/lib/browser-scheduling";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 
 type HighlightedTarget = "plan" | "planning" | null;
 type LandingFocusTarget = Exclude<HighlightedTarget, null>;
@@ -138,11 +138,8 @@ function isProposalVisible(
 }
 
 function scrollLandingFocusTarget(target: HTMLElement | null) {
-  const prefersReducedMotion =
-    getBrowserMediaQuery("(prefers-reduced-motion: reduce)")?.matches ?? false;
-
-  target?.scrollIntoView({
-    behavior: prefersReducedMotion ? "auto" : "smooth",
+  scrollElementIntoView(target, {
     block: "start",
+    intent: "locate",
   });
 }

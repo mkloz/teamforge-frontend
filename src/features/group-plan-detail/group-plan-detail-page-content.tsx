@@ -30,6 +30,7 @@ const LazyGroupPlanDetailDeferredSections = lazy(() =>
 interface GroupPlanDetailPageContentProps {
   detail: GroupPlanDetail;
   isPlanHighlighted?: boolean;
+  onRestorationReady?: () => void;
   planSectionRef?: Ref<HTMLElement>;
   search: GroupPlanDetailRouteSearch;
 }
@@ -42,6 +43,7 @@ interface GroupPlanSectionFocusProps {
 export function GroupPlanDetailPageContent({
   detail,
   isPlanHighlighted = false,
+  onRestorationReady,
   planSectionRef,
   search,
 }: GroupPlanDetailPageContentProps) {
@@ -51,17 +53,24 @@ export function GroupPlanDetailPageContent({
   };
 
   return (
-    <GroupPlanDetailPageShell detail={detail} focus={focus} search={search} />
+    <GroupPlanDetailPageShell
+      detail={detail}
+      focus={focus}
+      onRestorationReady={onRestorationReady}
+      search={search}
+    />
   );
 }
 
 function GroupPlanDetailPageShell({
   detail,
   focus,
+  onRestorationReady,
   search,
 }: {
   detail: GroupPlanDetail;
   focus: GroupPlanSectionFocusProps;
+  onRestorationReady?: () => void;
   search: GroupPlanDetailRouteSearch;
 }) {
   const shellRef = useRef<HTMLDivElement | null>(null);
@@ -79,7 +88,11 @@ function GroupPlanDetailPageShell({
         isCompactVisible={isCompactVisible}
         search={search}
       />
-      <GroupPlanDetailGrid detail={detail} focus={focus} />
+      <GroupPlanDetailGrid
+        detail={detail}
+        focus={focus}
+        onRestorationReady={onRestorationReady}
+      />
     </div>
   );
 }
@@ -87,9 +100,11 @@ function GroupPlanDetailPageShell({
 function GroupPlanDetailGrid({
   detail,
   focus,
+  onRestorationReady,
 }: {
   detail: GroupPlanDetail;
   focus: GroupPlanSectionFocusProps;
+  onRestorationReady?: () => void;
 }) {
   const operationalState = useQuery(
     groupPlanDetailQueries.operationalState(
@@ -127,7 +142,10 @@ function GroupPlanDetailGrid({
         </div>
 
         <div className="min-w-0 lg:col-start-1 lg:row-start-1">
-          <DeferredMainSections detail={detail} />
+          <DeferredMainSections
+            detail={detail}
+            onRestorationReady={onRestorationReady}
+          />
           <PlanParticipantManagementSection detail={detail} />
           <OwnershipTransferSection detail={detail} />
           <GroupLifecycleSection groupId={detail.group.id} />
@@ -137,7 +155,13 @@ function GroupPlanDetailGrid({
   );
 }
 
-function DeferredMainSections({ detail }: { detail: GroupPlanDetail }) {
+function DeferredMainSections({
+  detail,
+  onRestorationReady,
+}: {
+  detail: GroupPlanDetail;
+  onRestorationReady?: () => void;
+}) {
   const { sentinelRef, shouldRender } = useDeferredRender({
     delayMs: 400,
     rootMargin: "240px 0px",
@@ -148,7 +172,10 @@ function DeferredMainSections({ detail }: { detail: GroupPlanDetail }) {
       <div ref={sentinelRef} aria-hidden="true" />
       {shouldRender ? (
         <Suspense fallback={<DeferredMainSectionsSkeleton />}>
-          <LazyGroupPlanDetailDeferredSections detail={detail} />
+          <LazyGroupPlanDetailDeferredSections
+            detail={detail}
+            onRestorationReady={onRestorationReady}
+          />
         </Suspense>
       ) : (
         <DeferredMainSectionsSkeleton />

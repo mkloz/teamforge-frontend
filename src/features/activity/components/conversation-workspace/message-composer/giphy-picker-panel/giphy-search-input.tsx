@@ -17,7 +17,7 @@ export function GiphySearchInput({
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder="Search GIFs"
-          className="h-8 w-full border-0 bg-transparent pr-2 pl-7 font-semibold text-xs outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:ring-0"
+          className="h-8 w-full border-0 bg-transparent pr-2 pl-7 font-semibold text-xs outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:ring-0 [@media(pointer:coarse)]:text-base!"
         />
       </label>
     </div>

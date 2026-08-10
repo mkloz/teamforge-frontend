@@ -1,12 +1,12 @@
 import type { CSSProperties } from "react";
 import { useRef } from "react";
 import { FindafewLogo } from "@/assets/logo";
+import { usePrefersReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import { GroupCard } from "./group-card";
 import { PlanDetailsCard } from "./plan-details-card";
 import { TrustCard } from "./trust-card";
 import { useGroupConvergenceVisualAnimation } from "./use-plan-creation-orb-animation";
 import { useGroupConvergenceVisualTilt } from "./use-plan-creation-orb-tilt";
-import { usePrefersReducedMotion } from "./use-prefers-reduced-motion";
 
 export function GroupConvergenceVisual() {
   const containerRef = useRef<HTMLDivElement>(null);

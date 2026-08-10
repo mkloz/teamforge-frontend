@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import { useId } from "react";
 import { useAudioPlayer } from "@/features/activity/hooks/use-audio-player";
 import { cn } from "@/shared/lib/utils";
 import {
@@ -8,36 +8,57 @@ import {
   VoiceNoteTimeInfo,
 } from "./voice-note-controls";
 import { VoiceNoteWaveform } from "./voice-note-waveform";
-import { getSeekRatio } from "./voice-note-waveform-utils";
 
 interface VoiceNoteProps {
   url: string;
   duration?: number;
   isOwn?: boolean;
+  accessibleLabel?: string;
 }
 
-function getVoiceNoteDuration(
-  durationSeconds: number,
-  fallbackDuration: number,
-) {
-  return durationSeconds > 0 ? durationSeconds : fallbackDuration;
-}
-
-/** Plays a voice message with seek and speed controls. */
+/** Plays a voice message with semantic seek and speed controls. */
 export function VoiceNote({
   url,
-  duration = 120, // Fallback until audio metadata loads.
+  duration,
   isOwn = false,
+  accessibleLabel = "Voice note",
 }: VoiceNoteProps) {
-  const audioPlayer = useAudioPlayer(url);
-  const totalDuration = getVoiceNoteDuration(
-    audioPlayer.durationSeconds,
-    duration,
+  const audioPlayer = useAudioPlayer(url, duration);
+  const errorDescriptionId = `${useId()}-voice-note-error`;
+  const playButton = (
+    <VoiceNotePlayButton
+      errorDescriptionId={errorDescriptionId}
+      hasError={audioPlayer.hasError}
+      isLoading={audioPlayer.isLoading}
+      isOwn={isOwn}
+      isPlaying={audioPlayer.isPlaying}
+      voiceNoteLabel={accessibleLabel}
+      onTogglePlay={audioPlayer.togglePlay}
+    />
   );
-
-  const handleSeek = (event: MouseEvent<HTMLButtonElement>) => {
-    audioPlayer.seek(getSeekRatio(event));
-  };
+  const waveform = (
+    <VoiceNoteWaveform
+      bars={audioPlayer.bars}
+      currentTimeSeconds={audioPlayer.currentTimeSeconds}
+      durationSeconds={audioPlayer.totalDurationSeconds}
+      errorDescriptionId={errorDescriptionId}
+      hasError={audioPlayer.hasError}
+      isOwn={isOwn}
+      label={`${accessibleLabel} position`}
+      onSeek={audioPlayer.seek}
+      progress={audioPlayer.progress}
+    />
+  );
+  const speedButton = (
+    <VoiceNoteSpeedButton
+      errorDescriptionId={errorDescriptionId}
+      hasError={audioPlayer.hasError}
+      isOwn={isOwn}
+      playbackSpeed={audioPlayer.playbackSpeed}
+      voiceNoteLabel={accessibleLabel}
+      onToggleSpeed={audioPlayer.toggleSpeed}
+    />
+  );
 
   return (
     <div
@@ -47,42 +68,34 @@ export function VoiceNote({
       )}
     >
       <div
-        className={cn(
-          "flex w-full items-center gap-3",
-          isOwn ? "flex-row-reverse" : "flex-row",
-        )}
+        aria-busy={audioPlayer.isLoading}
+        className="flex w-full items-center gap-3"
       >
-        <VoiceNotePlayButton
-          hasError={audioPlayer.hasError}
-          isOwn={isOwn}
-          isPlaying={audioPlayer.isPlaying}
-          onTogglePlay={audioPlayer.togglePlay}
-        />
-
-        <VoiceNoteWaveform
-          barCount={audioPlayer.barCount}
-          bars={audioPlayer.bars}
-          isOwn={isOwn}
-          isPlaying={audioPlayer.isPlaying}
-          progress={audioPlayer.progress}
-          onSeek={handleSeek}
-        />
-
-        <VoiceNoteSpeedButton
-          hasError={audioPlayer.hasError}
-          isOwn={isOwn}
-          playbackSpeed={audioPlayer.playbackSpeed}
-          onToggleSpeed={audioPlayer.toggleSpeed}
-        />
+        {isOwn ? (
+          <>
+            {speedButton}
+            {waveform}
+            {playButton}
+          </>
+        ) : (
+          <>
+            {playButton}
+            {waveform}
+            {speedButton}
+          </>
+        )}
       </div>
 
-      <VoiceNoteErrorMessage hasError={audioPlayer.hasError} />
+      <VoiceNoteErrorMessage
+        hasError={audioPlayer.hasError}
+        id={errorDescriptionId}
+      />
 
       <VoiceNoteTimeInfo
+        currentTimeSeconds={audioPlayer.currentTimeSeconds}
         formatTime={audioPlayer.formatTime}
         isOwn={isOwn}
-        progress={audioPlayer.progress}
-        totalDuration={totalDuration}
+        totalDuration={audioPlayer.totalDurationSeconds}
       />
     </div>
   );

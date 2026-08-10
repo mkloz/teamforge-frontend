@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { LazyActivityTemplateStartingPoints } from "@/features/activity/components/activity-page/activity-template-starting-points.lazy";
 import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
@@ -8,13 +7,10 @@ import type {
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 import { SAVED_MESSAGES_CONVERSATION_ID } from "@/features/activity/lib/saved-messages-identity";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
-import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import type { ActivityKind } from "@/shared/navigation/activity-navigation";
 import { ConversationListBody } from "./conversation-list-render-state";
 import {
-  FULL_LIST_REVEAL_DELAY_MS,
   getConversationListViewState,
-  getRenderedConversationItems,
   getShouldPlacePinnedNotesSeparatorAfterSavedChat,
   isSavedMessagesConversationSelected,
 } from "./conversation-list-view-state";
@@ -110,7 +106,6 @@ export function ConversationList({
     searchPlaceholder,
     shouldShowOfflineBanner,
     shouldShowSavedChat,
-    shouldStageConversationItems,
     visibleItemCount,
   } = getConversationListViewState({
     activeFilter,
@@ -127,40 +122,6 @@ export function ConversationList({
     ref: scrollRef,
     onReset: resetFade,
   });
-
-  const stagedListRevealKey = scrollResetKey;
-  const [revealedStagedListKey, setRevealedStagedListKey] = useState<
-    string | null
-  >(null);
-  const isFullListVisible =
-    !shouldStageConversationItems ||
-    revealedStagedListKey === stagedListRevealKey;
-  const renderedItems = getRenderedConversationItems({
-    isFullListVisible,
-    items,
-    shouldStageConversationItems,
-  });
-
-  useEffect(() => {
-    if (
-      !shouldStageConversationItems ||
-      revealedStagedListKey === stagedListRevealKey
-    ) {
-      return undefined;
-    }
-
-    const timeoutId = scheduleDelay(() => {
-      setRevealedStagedListKey(stagedListRevealKey);
-    }, FULL_LIST_REVEAL_DELAY_MS);
-
-    return () => {
-      cancelDelay(timeoutId);
-    };
-  }, [
-    revealedStagedListKey,
-    shouldStageConversationItems,
-    stagedListRevealKey,
-  ]);
 
   function openSavedMessagesChat() {
     if (searchQuery) {
@@ -234,7 +195,7 @@ export function ConversationList({
             isFeedRetrying={isFeedRetrying}
             isOnline={isOnline}
             isSavedFilter={isSavedFilter}
-            items={renderedItems}
+            items={items}
             notesIndex={notesIndex}
             savedChatIndex={savedChatIndex}
             savedMessagesChatItem={savedMessagesChatItem}

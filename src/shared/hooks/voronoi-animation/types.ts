@@ -12,10 +12,8 @@ export interface MutableRef<T> {
 export interface VoronoiAnimationRefs {
   currentMouseRef: MutableRef<MouseState>;
   currentProgressRef: MutableRef<number>;
-  dprRef: MutableRef<number>;
   formationRef: MutableRef<VoronoiFormationLayout | null>;
   isTypingRef: MutableRef<boolean>;
-  isVisibleRef: MutableRef<boolean>;
   lastFrameTimeRef: MutableRef<number | null>;
   mouseActiveRef: MutableRef<boolean>;
   pointsRef: MutableRef<Point[]>;

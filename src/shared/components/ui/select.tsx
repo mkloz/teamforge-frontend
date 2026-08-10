@@ -73,7 +73,7 @@ function SelectTrigger({
         {children}
       </span>
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="size-4 text-slate-muted transition-transform duration-200 group-data-[state=open]/select:rotate-180" />
+        <ChevronDownIcon className="size-4 text-slate-muted transition-transform duration-200 group-data-[state=open]/select:rotate-180 motion-reduce:transition-none" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -92,7 +92,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 relative z-50 max-h-(--radix-select-content-available-height) min-w-36 origin-(--radix-select-content-transform-origin) overflow-hidden rounded-lg bg-card text-ink shadow-soft-md data-[state=closed]:animate-out data-[state=open]:animate-in",
+          "motion-anchored-content data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 relative z-50 max-h-(--radix-select-content-available-height) min-w-36 origin-(--radix-select-content-transform-origin) overflow-hidden rounded-lg bg-card text-ink shadow-soft-md data-[state=closed]:animate-out data-[state=open]:animate-in motion-reduce:animate-none",
           position === "popper" &&
             "data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
           className,

@@ -1,8 +1,9 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { ActivityEmptyState } from "@/features/activity/components/activity-page/activity-conversation-stage/activity-empty-state";
 import { ActivityConversationStageSkeleton } from "@/features/activity/components/activity-page/activity-page-skeleton";
 import { ActivitySidebar } from "@/features/activity/components/activity-page/activity-sidebar";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
+import { useKeyboardSafeViewport } from "@/shared/hooks/use-keyboard-safe-viewport";
 import { cn } from "@/shared/lib/utils";
 
 const ActivityConversationStage = lazy(() =>
@@ -30,7 +31,7 @@ interface ActivityPageContentProps {
 
 function getFrameClassName(contained: boolean, hasSelection: boolean) {
   return cn(
-    "top-0 flex h-dvh min-h-0 overflow-clip bg-canvas",
+    "keyboard-viewport-shell top-0 flex min-h-0 overflow-clip bg-canvas",
     hasSelection ? "pb-0" : "pb-app-bottom-nav md:pb-0",
     contained ? "absolute inset-0" : "fixed inset-0 md:left-14",
   );
@@ -99,6 +100,10 @@ export function ActivityPageContent({
   isMobile,
   isOnline,
 }: ActivityPageContentProps) {
+  const viewportShellRef = useRef<HTMLDivElement>(null);
+  useKeyboardSafeViewport(viewportShellRef, {
+    enabled: isMobile && !contained,
+  });
   const realtimeSelectionIds = getRealtimeSelectionIds(activity);
   const showTemplateStartingPoints =
     activity.isSharedConversationFeedEmpty &&
@@ -106,7 +111,10 @@ export function ActivityPageContent({
     activity.searchQuery.trim().length === 0;
 
   return (
-    <div className={getFrameClassName(contained, activity.hasSelection)}>
+    <div
+      ref={viewportShellRef}
+      className={getFrameClassName(contained, activity.hasSelection)}
+    >
       <h1 id="activity-heading" className="sr-only">
         Activity
       </h1>

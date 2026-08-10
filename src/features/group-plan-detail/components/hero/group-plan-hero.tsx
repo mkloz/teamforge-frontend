@@ -84,7 +84,11 @@ export function GroupPlanHero({
           ) : null}
         </div>
 
-        <h1 className="max-w-3xl text-balance font-extrabold text-3xl text-white leading-none tracking-tight [text-shadow:0_3px_20px_rgb(0_0_0/75%)] md:text-4xl lg:text-5xl">
+        <h1
+          data-route-focus-target
+          tabIndex={-1}
+          className="max-w-3xl text-balance font-extrabold text-3xl text-white leading-none tracking-tight outline-none [text-shadow:0_3px_20px_rgb(0_0_0/75%)] md:text-4xl lg:text-5xl"
+        >
           {hero.title}
         </h1>
 

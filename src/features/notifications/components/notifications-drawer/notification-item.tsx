@@ -1,5 +1,4 @@
 import { Check, type LucideIcon, Mail } from "lucide-react";
-import { type MutableRefObject, type PointerEvent, useRef } from "react";
 import {
   type AvatarBadgeTone,
   AvatarWithBadge,
@@ -12,20 +11,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
-import { scheduleDelay } from "@/shared/lib/browser-scheduling";
 import { presentPlanReadinessSummary } from "@/shared/lib/lifecycle-presenters";
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
 import { getTypeConfig, relativeTime } from "./notification-display";
-
-const SWIPE_TOGGLE_THRESHOLD = 48;
-const SWIPE_VERTICAL_TOLERANCE = 36;
-
-interface SwipeStart {
-  pointerId: number;
-  x: number;
-  y: number;
-}
 
 interface NotificationItemProps {
   item: Notification;
@@ -47,68 +36,11 @@ export function NotificationItem({
   const config = getTypeConfig(item.type);
   const Icon = config.icon;
   const isBusy = isPending || isTogglingRead;
-  const swipeStartRef = useRef<SwipeStart | null>(null);
-  const didSwipeRef = useRef(false);
-
-  function handleSelect() {
-    if (didSwipeRef.current) {
-      didSwipeRef.current = false;
-      return;
-    }
-
-    onSelect(item);
-  }
-
-  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (
-      !canStartReadSwipe({
-        event,
-        isBusy,
-        isReadActionDisabled,
-      })
-    ) {
-      return;
-    }
-
-    swipeStartRef.current = {
-      pointerId: event.pointerId,
-      x: event.clientX,
-      y: event.clientY,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-
-  function handlePointerCancel() {
-    swipeStartRef.current = null;
-  }
-
-  function handlePointerUp(event: PointerEvent<HTMLDivElement>) {
-    const start = swipeStartRef.current;
-    swipeStartRef.current = null;
-
-    if (
-      !start ||
-      !canCompleteReadSwipe({ event, isBusy, isReadActionDisabled, start })
-    ) {
-      return;
-    }
-
-    if (!isHorizontalReadSwipe(getSwipeDelta(event, start))) {
-      return;
-    }
-
-    didSwipeRef.current = true;
-    onToggleRead(item);
-    resetSwipeSelectionGuard(didSwipeRef);
-  }
 
   return (
     <div
-      onPointerDown={handlePointerDown}
-      onPointerCancel={handlePointerCancel}
-      onPointerUp={handlePointerUp}
       className={cn(
-        "group relative flex min-h-20 w-full touch-pan-y transition-colors duration-200 focus-within:bg-foreground/4 hover:bg-foreground/4",
+        "group relative flex min-h-20 w-full transition-colors duration-200 focus-within:bg-foreground/4 hover:bg-foreground/4",
         !item.isRead &&
           "bg-(--grouped-menu-selected) focus-within:bg-primary-soft hover:bg-primary-soft",
       )}
@@ -132,9 +64,9 @@ export function NotificationItem({
 
       <Button
         variant="ghost"
-        onClick={handleSelect}
+        onClick={() => onSelect(item)}
         disabled={isBusy}
-        aria-label={`Open notification details. ${item.isRead ? "Read" : "Unread"} notification. ${item.title}. ${item.message}`}
+        aria-label={`View notification details: ${item.title}. Status: ${item.isRead ? "read" : "unread"}.`}
         className="h-auto min-w-0 flex-1 justify-start rounded-none border-none py-3.5 pr-4 pl-3 text-left focus-visible:ring-inset active:enabled:bg-transparent hover:enabled:bg-transparent"
       >
         <NotificationItemContent item={item} isPending={isPending} />
@@ -208,61 +140,6 @@ function NotificationPendingState({ isPending }: { isPending: boolean }) {
   );
 }
 
-function canStartReadSwipe({
-  event,
-  isBusy,
-  isReadActionDisabled,
-}: {
-  event: PointerEvent<HTMLDivElement>;
-  isBusy: boolean;
-  isReadActionDisabled: boolean;
-}) {
-  return event.pointerType === "touch" && !isBusy && !isReadActionDisabled;
-}
-
-function canCompleteReadSwipe({
-  event,
-  isBusy,
-  isReadActionDisabled,
-  start,
-}: {
-  event: PointerEvent<HTMLDivElement>;
-  isBusy: boolean;
-  isReadActionDisabled: boolean;
-  start: SwipeStart;
-}) {
-  return (
-    start.pointerId === event.pointerId &&
-    event.pointerType === "touch" &&
-    !isBusy &&
-    !isReadActionDisabled
-  );
-}
-
-function getSwipeDelta(event: PointerEvent<HTMLDivElement>, start: SwipeStart) {
-  return {
-    x: event.clientX - start.x,
-    y: event.clientY - start.y,
-  };
-}
-
-function isHorizontalReadSwipe({ x, y }: { x: number; y: number }) {
-  const absoluteX = Math.abs(x);
-  const absoluteY = Math.abs(y);
-
-  return (
-    absoluteX >= SWIPE_TOGGLE_THRESHOLD &&
-    absoluteY <= SWIPE_VERTICAL_TOLERANCE &&
-    absoluteX > absoluteY * 1.25
-  );
-}
-
-function resetSwipeSelectionGuard(didSwipeRef: MutableRefObject<boolean>) {
-  scheduleDelay(() => {
-    didSwipeRef.current = false;
-  }, 0);
-}
-
 interface NotificationSourceProps {
   avatarBadgeTone: AvatarBadgeTone;
   icon: LucideIcon;
@@ -289,7 +166,7 @@ function NotificationSource({
 
   return (
     <span className="relative mt-3.5 mr-3 ml-4 size-11 shrink-0 [@media(pointer:fine)]:size-10">
-      <span className="flex size-full items-center justify-center transition-opacity duration-150 lg:group-hover:opacity-0 lg:group-focus-within:opacity-0 lg:[@media(pointer:coarse)]:opacity-0">
+      <span className="flex size-full items-center justify-center transition-opacity duration-150 lg:group-hover:opacity-0 lg:group-focus-within:opacity-0 [@media(pointer:coarse)]:opacity-0">
         <NotificationSourceVisual
           avatarBadgeTone={avatarBadgeTone}
           icon={Icon}
@@ -311,7 +188,7 @@ function NotificationSource({
                 ? `Reconnect to ${actionLabel.toLowerCase()}.`
                 : actionLabel
             }
-            className="absolute inset-0 hidden size-11 rounded-md bg-canvas/95 p-0 opacity-0 shadow-sm transition-opacity duration-150 lg:inline-flex lg:group-hover:opacity-100 lg:group-focus-within:opacity-100 lg:[@media(pointer:coarse)]:opacity-100 [@media(pointer:fine)]:size-10"
+            className="absolute inset-0 hidden size-11 rounded-md bg-canvas/95 p-0 opacity-0 shadow-sm transition-opacity duration-150 lg:inline-flex lg:group-hover:opacity-100 lg:group-focus-within:opacity-100 [@media(pointer:coarse)]:inline-flex [@media(pointer:coarse)]:opacity-100 [@media(pointer:fine)]:size-10"
           >
             <ReadStateIcon
               className="size-4 shrink-0 text-foreground"

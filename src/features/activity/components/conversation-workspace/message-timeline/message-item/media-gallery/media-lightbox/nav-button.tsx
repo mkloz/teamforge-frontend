@@ -1,13 +1,15 @@
-import type { MouseEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { Button } from "@/shared/components/ui/button";
 
 export function NavButton({
+  disabled,
   onClick,
   label,
   icon,
 }: {
-  onClick: (event: MouseEvent) => void;
+  disabled: boolean;
+  onClick: () => void;
   label: string;
   icon: ReactNode;
 }) {
@@ -16,8 +18,9 @@ export function NavButton({
       type="button"
       variant="ghost"
       onClick={onClick}
+      disabled={disabled}
       aria-label={label}
-      className="pointer-events-auto size-12 rounded-full border border-white/10 bg-white/8 text-white/70 shadow-none backdrop-blur-md transition hover:scale-105 hover:bg-white/14 hover:text-white active:scale-95 sm:size-14"
+      className="pointer-events-auto size-11 rounded-full border border-white/15 bg-black/45 text-white shadow-none backdrop-blur-md hover:bg-black/65 disabled:opacity-35"
     >
       {icon}
     </Button>

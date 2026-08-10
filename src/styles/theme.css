@@ -31,6 +31,10 @@
   --animate-skeleton-shimmer: skeleton-shimmer 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   --animate-collapsible-down: collapsible-down 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   --animate-collapsible-up: collapsible-up 0.2s cubic-bezier(0.4, 0, 1, 1);
+  --animate-accordion-down: accordion-down var(--motion-disclosure-enter)
+    var(--motion-ease-enter);
+  --animate-accordion-up: accordion-up var(--motion-disclosure-exit)
+    var(--motion-ease-exit);
   --animate-plan-creation-orb-rotate: plan-creation-orb-rotate 20s linear infinite;
   --animate-plan-creation-orb-breathe: plan-creation-orb-breathe 4s ease-in-out infinite;
   --animate-download-device-drift: download-device-drift 10s cubic-bezier(0.45, 0, 0.55, 1) infinite;
@@ -207,10 +211,46 @@
       opacity: 0;
     }
   }
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
+    }
+  }
 }
 
 :root {
   --radius: 0.75rem;
+  --motion-ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --motion-scrim-enter: 180ms;
+  --motion-scrim-exit: 150ms;
+  --motion-dialog-enter: 200ms;
+  --motion-dialog-exit: 160ms;
+  --motion-sheet-enter: 260ms;
+  --motion-sheet-exit: 220ms;
+  --motion-anchor-enter: 160ms;
+  --motion-anchor-exit: 120ms;
+  --motion-tooltip-enter: 120ms;
+  --motion-tooltip-exit: 90ms;
+  --motion-disclosure-enter: 220ms;
+  --motion-disclosure-exit: 180ms;
   --grouped-surface-gap: 0.125rem;
   --button-shadow-base: color-mix(in srgb, var(--foreground) 88%, var(--background));
   --button-shadow-inverse: color-mix(in srgb, var(--background) 88%, var(--foreground));

@@ -25,7 +25,7 @@ export function InterestsBrowseHeader({
 }: InterestsBrowseHeaderProps) {
   if (variant === "pills") {
     return (
-      <nav className="scrollbar-hide -m-1 flex h-10 items-center gap-1.5 overflow-x-auto scroll-smooth px-1 py-1 sm:gap-2">
+      <nav className="scrollbar-hide -m-1 flex h-10 items-center gap-1.5 overflow-x-auto px-1 py-1 sm:gap-2">
         {categories.map((category) => (
           <Button
             variant="outline"

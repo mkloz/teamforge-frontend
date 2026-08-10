@@ -8,6 +8,11 @@ import {
 
 import type { VirtualizedMessageBlock } from "@/features/activity/hooks/use-virtualized-message-blocks";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import {
+  type ProgrammaticScrollIntent,
+  scrollElementIntoView,
+  scrollElementTo,
+} from "@/shared/lib/browser-scroll";
 import type { ScrollToMessageOptions } from "./message-scroll.types";
 
 interface UseFocusedMessageScrollInput {
@@ -53,14 +58,12 @@ export function useFocusedMessageScroll({
 
   const scrollToMessage = useCallback(
     (id: string, options: ScrollToMessageOptions = {}) => {
-      const behavior = options.behavior ?? "smooth";
-
       scrollToMessageTarget({
-        behavior,
         container: containerRef?.current ?? null,
         getMessageElement,
         highlight: Boolean(options.highlight),
         id,
+        intent: options.intent ?? "locate",
         onHighlight: requestMessageHighlight,
         virtualizedBlocks,
       });
@@ -136,39 +139,39 @@ function scrollToFocusedMessage({
   virtualizedBlocks,
 }: ScrollToFocusedMessageInput) {
   scrollToMessageTarget({
-    behavior: "smooth",
     container,
     getMessageElement,
     highlight: true,
     id,
+    intent: "locate",
     onHighlight,
     virtualizedBlocks,
   });
 }
 
 interface ScrollToMessageTargetInput {
-  behavior: ScrollBehavior;
   container: HTMLDivElement | null;
   getMessageElement: (id: string) => HTMLDivElement | null;
   highlight: boolean;
   id: string;
+  intent: ProgrammaticScrollIntent;
   onHighlight: (messageId: string) => void;
   virtualizedBlocks: VirtualizedMessageBlock[];
 }
 
 function scrollToMessageTarget({
-  behavior,
   container,
   getMessageElement,
   highlight,
   id,
+  intent,
   onHighlight,
   virtualizedBlocks,
 }: ScrollToMessageTargetInput) {
   const element = getMessageElement(id);
 
   if (element) {
-    element.scrollIntoView({ behavior, block: "center" });
+    scrollElementIntoView(element, { block: "center", intent });
     requestHighlightIfNeeded(id, highlight, onHighlight);
     return;
   }
@@ -176,7 +179,7 @@ function scrollToMessageTarget({
   const targetBlock = findVirtualizedMessageBlock(virtualizedBlocks, id);
 
   if (targetBlock && container) {
-    scrollToVirtualizedMessageBlock(container, targetBlock, behavior);
+    scrollToVirtualizedMessageBlock(container, targetBlock, intent);
     requestHighlightIfNeeded(id, highlight, onHighlight);
   }
 }
@@ -203,10 +206,10 @@ function findVirtualizedMessageBlock(
 function scrollToVirtualizedMessageBlock(
   container: HTMLDivElement,
   targetBlock: VirtualizedMessageBlock,
-  behavior: ScrollBehavior,
+  intent: ProgrammaticScrollIntent,
 ) {
-  container.scrollTo({
-    behavior,
+  scrollElementTo(container, {
+    intent,
     top: Math.max(targetBlock.start - MESSAGE_BLOCK_SCROLL_OFFSET, 0),
   });
 }

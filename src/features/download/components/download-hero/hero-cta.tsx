@@ -9,6 +9,7 @@ import type {
 import { usePublicSiteAuthActions } from "@/shared/components/public-site/public-site-shell";
 import { Button } from "@/shared/components/ui/button";
 import { getBrowserElementById } from "@/shared/lib/browser-environment";
+import { scrollElementIntoView } from "@/shared/lib/browser-scroll";
 
 interface HeroCTAButtonsProps {
   canUseNativePrompt: boolean;
@@ -172,7 +173,7 @@ function getHeroStepsCtaLabel({
 }
 
 function scrollToSteps() {
-  getBrowserElementById("install-steps")?.scrollIntoView({
-    behavior: "smooth",
+  scrollElementIntoView(getBrowserElementById("install-steps"), {
+    intent: "locate",
   });
 }

@@ -31,12 +31,14 @@ import type { VoronoiAnimationRefs } from "./types";
 
 export function startVoronoiAnimationLoop({
   canvas,
+  devicePixelRatio,
   dimensions,
   refs,
   reducedMotion,
   rotationDegrees,
 }: {
   canvas: HTMLCanvasElement | null;
+  devicePixelRatio: number;
   dimensions: Dimensions;
   refs: VoronoiAnimationRefs;
   reducedMotion: boolean;
@@ -53,12 +55,6 @@ export function startVoronoiAnimationLoop({
   const bounds = getVoronoiBounds(dimensions);
 
   const animate = (timestamp: number) => {
-    if (!refs.isVisibleRef.current) {
-      refs.lastFrameTimeRef.current = null;
-      refs.requestRef.current = scheduleAnimationFrame(animate);
-      return;
-    }
-
     const previousTimestamp = refs.lastFrameTimeRef.current ?? timestamp;
     const deltaSeconds = Math.min(
       1 / 20,
@@ -68,7 +64,6 @@ export function startVoronoiAnimationLoop({
     refs.lastFrameTimeRef.current = timestamp;
     refs.timeRef.current += deltaSeconds * 0.6;
     const time = refs.timeRef.current;
-    const dpr = refs.dprRef.current;
     const center = getCenterPoint(dimensions);
     const formation = refs.formationRef.current;
     const points = refs.pointsRef.current;
@@ -81,7 +76,7 @@ export function startVoronoiAnimationLoop({
     prepareCanvasFrame({
       ctx,
       dimensions,
-      dpr,
+      dpr: devicePixelRatio,
       reducedMotion,
       startTime: refs.startTimeRef.current,
     });
@@ -174,5 +169,7 @@ export function startVoronoiAnimationLoop({
     if (refs.requestRef.current) {
       cancelScheduledAnimationFrame(refs.requestRef.current);
     }
+    refs.requestRef.current = null;
+    refs.lastFrameTimeRef.current = null;
   };
 }

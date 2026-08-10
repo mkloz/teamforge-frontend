@@ -69,7 +69,7 @@ function PersonalityLoadingFixture() {
         <BackgroundTexture />
         <OnboardingHomeLink />
 
-        <div className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
+        <div className="relative h-full flex-1 overflow-y-auto overflow-x-hidden">
           <div className="absolute top-0 right-0 left-0 z-50">
             <TopProgressBar progress={0} />
           </div>
@@ -136,7 +136,7 @@ function InterestsLoadingFixture() {
       <main className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
         <BackgroundTexture />
 
-        <div className="relative z-10 flex-1 overflow-x-hidden overflow-y-scroll scroll-smooth pb-0">
+        <div className="relative z-10 flex-1 overflow-x-hidden overflow-y-scroll pb-0">
           <TopProgressBar
             progress={0}
             className="sticky top-0 z-50 -mx-4 -mt-1 w-full sm:-mx-5"
@@ -175,7 +175,7 @@ function OnboardingLoadingShell({
         <BackgroundTexture />
         <OnboardingHomeLink />
 
-        <div className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4">
+        <div className="relative h-full flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4">
           <TopProgressBar
             progress={0}
             className="sticky top-0 z-50 -mx-4 -mt-2 w-full"

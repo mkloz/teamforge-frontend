@@ -17,7 +17,7 @@ interface GalleryItemProps {
   media: UnifiedAttachment;
   index: number;
   count: number;
-  onClick: () => void;
+  onClick: (source: HTMLButtonElement) => void;
 }
 
 interface GalleryItemButtonClassInput {
@@ -97,7 +97,7 @@ export function GalleryItem({
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.98 }}
         disabled={!canOpen}
-        onClick={canOpen ? onClick : undefined}
+        onClick={canOpen ? (event) => onClick(event.currentTarget) : undefined}
         aria-label={ariaLabel}
         className={getGalleryItemButtonClassName({
           count,

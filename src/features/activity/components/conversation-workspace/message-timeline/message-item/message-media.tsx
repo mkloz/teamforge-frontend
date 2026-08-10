@@ -107,12 +107,17 @@ function VoiceNoteAttachments({
 
   return (
     <div className="flex flex-col gap-1 p-1 px-1.5">
-      {attachments.map((voice) => (
+      {attachments.map((voice, index) => (
         <VoiceNote
           key={voice.id}
           url={voice.url}
           duration={voice.duration ?? undefined}
           isOwn={isOwn}
+          accessibleLabel={
+            attachments.length === 1
+              ? "Voice note"
+              : `Voice note ${index + 1} of ${attachments.length}`
+          }
         />
       ))}
     </div>

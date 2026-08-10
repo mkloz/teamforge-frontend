@@ -5,28 +5,44 @@ import type { VoiceNotePlayerState } from "./voice-note.types";
 
 export function VoiceNotePlayButton({
   hasError,
+  isLoading,
   isOwn,
   isPlaying,
   onTogglePlay,
+  errorDescriptionId,
+  voiceNoteLabel,
 }: {
   hasError: boolean;
+  isLoading: boolean;
   isOwn: boolean;
   isPlaying: boolean;
   onTogglePlay: () => void;
+  errorDescriptionId?: string;
+  voiceNoteLabel: string;
 }) {
+  const label = hasError
+    ? `Retry ${voiceNoteLabel.toLowerCase()}`
+    : isPlaying
+      ? `Pause ${voiceNoteLabel.toLowerCase()}`
+      : `Play ${voiceNoteLabel.toLowerCase()}`;
+
   return (
     <Button
       onClick={onTogglePlay}
       variant="ghost"
       size="icon"
-      disabled={hasError}
-      aria-label={hasError ? "Voice note unavailable" : "Play voice note"}
-      className={cn(
-        "size-10 shrink-0 rounded-full transition active:scale-90",
-        "disabled:cursor-not-allowed disabled:opacity-60",
+      loading={isLoading}
+      aria-describedby={hasError ? errorDescriptionId : undefined}
+      aria-label={label}
+      contentClassName={cn(
+        "size-10 shrink-0 rounded-full border",
         isOwn
-          ? "border border-primary/10 bg-primary-soft text-foreground hover:bg-primary/20 dark:border-white/10 dark:bg-white/10 dark:text-white hover:dark:bg-white/20"
-          : "border border-primary/10 bg-primary-soft text-foreground hover:brightness-110",
+          ? "border-primary/10 bg-primary-soft group-hover/play:bg-primary/20 dark:border-white/10 dark:bg-white/10 dark:group-hover/play:bg-white/20"
+          : "border-primary/10 bg-primary-soft group-hover/play:brightness-110",
+      )}
+      className={cn(
+        "group/play size-11 shrink-0 rounded-full border-0 bg-transparent p-0 shadow-none active:scale-95",
+        isOwn ? "text-foreground dark:text-white" : "text-foreground",
       )}
     >
       {isPlaying ? (
@@ -43,11 +59,15 @@ export function VoiceNoteSpeedButton({
   isOwn,
   playbackSpeed,
   onToggleSpeed,
+  errorDescriptionId,
+  voiceNoteLabel,
 }: {
   hasError: boolean;
   isOwn: boolean;
   playbackSpeed: number;
   onToggleSpeed: () => void;
+  errorDescriptionId?: string;
+  voiceNoteLabel: string;
 }) {
   return (
     <Button
@@ -55,12 +75,18 @@ export function VoiceNoteSpeedButton({
       variant="subtle"
       size="xs"
       disabled={hasError}
-      className={cn(
-        "h-8 shrink-0 rounded-lg border px-2 font-black text-xs tabular-nums transition",
-        "disabled:cursor-not-allowed disabled:opacity-60",
+      aria-describedby={hasError ? errorDescriptionId : undefined}
+      aria-label={`${voiceNoteLabel} playback speed ${playbackSpeed} times; change speed`}
+      contentClassName={cn(
+        "h-8 w-auto min-w-10 rounded-lg border px-2",
         isOwn
-          ? "border-primary/10 bg-primary-soft text-foreground/70 hover:brightness-110 dark:border-white/10 dark:bg-white/5 dark:text-white/70 hover:dark:bg-white/10"
-          : "border-primary/10 bg-primary-soft text-foreground/70 hover:brightness-110",
+          ? "border-primary/10 bg-primary-soft group-hover/speed:brightness-110 dark:border-white/10 dark:bg-white/5 dark:group-hover/speed:bg-white/10"
+          : "border-primary/10 bg-primary-soft group-hover/speed:brightness-110",
+      )}
+      className={cn(
+        "group/speed h-11 min-w-11 shrink-0 rounded-lg border-0 bg-transparent p-0 font-black text-xs tabular-nums shadow-none active:scale-95",
+        "disabled:cursor-not-allowed disabled:opacity-60",
+        isOwn ? "text-foreground/70 dark:text-white/70" : "text-foreground/70",
       )}
     >
       {playbackSpeed}x
@@ -68,13 +94,23 @@ export function VoiceNoteSpeedButton({
   );
 }
 
-export function VoiceNoteErrorMessage({ hasError }: { hasError: boolean }) {
+export function VoiceNoteErrorMessage({
+  hasError,
+  id,
+}: {
+  hasError: boolean;
+  id: string;
+}) {
   if (!hasError) {
     return null;
   }
 
   return (
-    <p className="w-full px-13 font-semibold text-destructive/70 text-xs">
+    <p
+      className="w-full px-13 font-semibold text-destructive/70 text-xs"
+      id={id}
+      role="alert"
+    >
       Voice note unavailable
     </p>
   );
@@ -83,13 +119,13 @@ export function VoiceNoteErrorMessage({ hasError }: { hasError: boolean }) {
 export function VoiceNoteTimeInfo({
   formatTime,
   isOwn,
-  progress,
   totalDuration,
+  currentTimeSeconds,
 }: {
   formatTime: VoiceNotePlayerState["formatTime"];
   isOwn: boolean;
-  progress: number;
-  totalDuration: number;
+  totalDuration: number | null;
+  currentTimeSeconds: number;
 }) {
   return (
     <div
@@ -100,10 +136,10 @@ export function VoiceNoteTimeInfo({
           : "flex-row text-slate-muted",
       )}
     >
+      <span className="tabular-nums">{formatTime(currentTimeSeconds)}</span>
       <span className="tabular-nums">
-        {formatTime(totalDuration * progress)}
+        {totalDuration === null ? "--:--" : formatTime(totalDuration)}
       </span>
-      <span className="tabular-nums">{formatTime(totalDuration)}</span>
     </div>
   );
 }

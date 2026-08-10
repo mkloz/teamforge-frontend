@@ -174,3 +174,53 @@
       0 5px 10px color-mix(in srgb, var(--color-brand-amber) 20%, transparent);
   }
 }
+
+.motion-overlay-scrim[data-state="open"] {
+  animation-duration: var(--motion-scrim-enter);
+  animation-timing-function: var(--motion-ease-enter);
+}
+
+.motion-overlay-scrim[data-state="closed"] {
+  animation-duration: var(--motion-scrim-exit);
+  animation-timing-function: var(--motion-ease-exit);
+}
+
+.motion-dialog-content[data-state="open"] {
+  animation-duration: var(--motion-dialog-enter);
+  animation-timing-function: var(--motion-ease-enter);
+}
+
+.motion-dialog-content[data-state="closed"] {
+  animation-duration: var(--motion-dialog-exit);
+  animation-timing-function: var(--motion-ease-exit);
+}
+
+.motion-sheet-content[data-state="open"] {
+  animation-duration: var(--motion-sheet-enter);
+  animation-timing-function: var(--motion-ease-enter);
+}
+
+.motion-sheet-content[data-state="closed"] {
+  animation-duration: var(--motion-sheet-exit);
+  animation-timing-function: var(--motion-ease-exit);
+}
+
+.motion-anchored-content[data-state="open"] {
+  animation-duration: var(--motion-anchor-enter);
+  animation-timing-function: var(--motion-ease-enter);
+}
+
+.motion-anchored-content[data-state="closed"] {
+  animation-duration: var(--motion-anchor-exit);
+  animation-timing-function: var(--motion-ease-exit);
+}
+
+.motion-tooltip-content[data-state="open"] {
+  animation-duration: var(--motion-tooltip-enter);
+  animation-timing-function: var(--motion-ease-enter);
+}
+
+.motion-tooltip-content[data-state="closed"] {
+  animation-duration: var(--motion-tooltip-exit);
+  animation-timing-function: var(--motion-ease-exit);
+}

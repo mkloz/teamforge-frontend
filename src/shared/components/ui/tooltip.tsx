@@ -51,7 +51,7 @@ function TooltipContent({
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}
-        className="group fade-in-0 data-[state=closed]:fade-out-0 relative isolate z-50 max-w-80 animate-in outline-none data-[state=closed]:animate-out"
+        className="motion-tooltip-content group fade-in-0 data-[state=closed]:fade-out-0 relative isolate z-50 max-w-80 animate-in outline-none data-[state=closed]:animate-out motion-reduce:animate-none"
         {...props}
       >
         <div

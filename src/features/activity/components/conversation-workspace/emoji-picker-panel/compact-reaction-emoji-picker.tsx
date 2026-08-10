@@ -60,7 +60,7 @@ function CompactReactionSearch({
           name="emoji-search"
           aria-label="Search emoji"
           value={search}
-          className="h-8 w-full border-0 bg-transparent pr-2 pl-7 font-bold text-ink text-xs outline-none transition-colors placeholder:text-slate-muted/70 focus-visible:ring-0"
+          className="h-8 w-full border-0 bg-transparent pr-2 pl-7 font-bold text-ink text-xs outline-none transition-colors placeholder:text-slate-muted/70 focus-visible:ring-0 [@media(pointer:coarse)]:text-base!"
           placeholder="Search emoji"
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
             onSearchChange(event.target.value)

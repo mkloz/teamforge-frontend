@@ -135,7 +135,7 @@ function AuthLoadingShell({
 
         <main
           className={cn(
-            "relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth pb-4",
+            "relative z-10 flex-1 overflow-y-auto overflow-x-hidden pb-4",
             shellLayout.scrollClassName,
           )}
         >

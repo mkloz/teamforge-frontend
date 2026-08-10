@@ -157,6 +157,10 @@ const PRE_ICON_VENDOR_CHUNK_RULES = [
     patterns: ["/framer-motion/"],
   },
   {
+    name: "voronoi-geometry",
+    patterns: ["/d3-delaunay/", "/delaunator/", "/robust-predicates/"],
+  },
+  {
     name: "charts",
     patterns: ["/recharts/", "/d3-", "/d3/"],
   },
@@ -869,6 +873,8 @@ export default defineConfig(({ command, mode }) => {
           maximumFileSizeToCacheInBytes: 4194304,
           globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
           globIgnores: [
+            "**/voronoi-catalyst-*.js",
+            "**/voronoi-geometry-*.js",
             "**/avatars/**",
             "**/group-covers/**",
             "**/activity/chat-wallpaper/**",

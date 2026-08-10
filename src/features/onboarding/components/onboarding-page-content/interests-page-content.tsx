@@ -1,5 +1,6 @@
-import type { ReactNode, RefObject } from "react";
+import { type ReactNode, type RefObject, useRef } from "react";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { useKeyboardSafeViewport } from "@/shared/hooks/use-keyboard-safe-viewport";
 import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 import { OnboardingVisualPanel } from "./onboarding-visual-panel";
 
@@ -25,8 +26,14 @@ export function InterestsPageContent({
   progress,
   scrollContainerRef,
 }: InterestsPageContentProps) {
+  const viewportShellRef = useRef<HTMLDivElement>(null);
+  useKeyboardSafeViewport(viewportShellRef);
+
   return (
-    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+    <div
+      ref={viewportShellRef}
+      className="keyboard-viewport-shell relative flex w-full flex-col overflow-hidden lg:flex-row"
+    >
       <OnboardingVisualPanel
         asAside
         formation={INTERESTS_FORMATION}
@@ -39,7 +46,7 @@ export function InterestsPageContent({
 
         <div
           ref={scrollContainerRef}
-          className="relative z-10 flex-1 overflow-x-hidden overflow-y-scroll scroll-smooth pb-0"
+          className="relative z-10 flex-1 overflow-x-hidden overflow-y-scroll pb-0"
         >
           {header}
 

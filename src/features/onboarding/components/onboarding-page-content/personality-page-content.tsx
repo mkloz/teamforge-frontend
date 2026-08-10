@@ -1,7 +1,8 @@
-import type { ReactNode, RefObject } from "react";
+import { type ReactNode, type RefObject, useRef } from "react";
 import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-home-link";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
+import { useKeyboardSafeViewport } from "@/shared/hooks/use-keyboard-safe-viewport";
 import { cn } from "@/shared/lib/utils";
 import type { VoronoiFormationTarget } from "@/shared/lib/voronoi/voronoi-contract";
 import { OnboardingVisualPanel } from "./onboarding-visual-panel";
@@ -25,15 +26,21 @@ export function PersonalityPageContent({
   scrollContainerRef,
   showHomeLink,
 }: PersonalityPageContentProps) {
+  const viewportShellRef = useRef<HTMLDivElement>(null);
+  useKeyboardSafeViewport(viewportShellRef);
+
   return (
-    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+    <div
+      ref={viewportShellRef}
+      className="keyboard-viewport-shell relative flex w-full flex-col overflow-hidden lg:flex-row"
+    >
       <div className="relative flex h-full flex-1 flex-col overflow-hidden">
         <BackgroundTexture />
         {showHomeLink ? <OnboardingHomeLink /> : null}
 
         <div
           ref={scrollContainerRef}
-          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth motion-reduce:scroll-auto"
+          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden"
         >
           <div className="absolute top-0 right-0 left-0 z-50">
             <TopProgressBar progress={displayProgress} />

@@ -20,6 +20,69 @@ import {
 
 const CREATED_AT = "2026-01-10T10:00:00.000Z";
 const UPDATED_AT = "2026-08-01T09:30:00.000Z";
+const SCENARIO_LIGHTBOX_IMAGE = createScenarioMediaSvg("TEAM", "#2f766d");
+const SCENARIO_LIGHTBOX_IMAGE_THUMBNAIL = createScenarioMediaSvg(
+  "TEAM",
+  "#245b55",
+);
+const SCENARIO_LIGHTBOX_VIDEO = "data:video/mp4;base64,AAAA";
+const SCENARIO_LIGHTBOX_VIDEO_THUMBNAIL = createScenarioMediaSvg(
+  "VIDEO",
+  "#855f1b",
+);
+const SCENARIO_LIGHTBOX_GIF = createScenarioMediaSvg("GIF", "#9a711d");
+const SCENARIO_LIGHTBOX_GIF_THUMBNAIL = createScenarioMediaSvg(
+  "GIF",
+  "#6f5114",
+);
+const SCENARIO_VOICE_NOTE = createScenarioAudioWav();
+
+function createScenarioMediaSvg(label: string, color: string) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect width="800" height="600" fill="#0b1211"/><circle cx="400" cy="260" r="190" fill="${color}"/><text x="400" y="290" text-anchor="middle" fill="white" font-family="sans-serif" font-size="76" font-weight="700">${label}</text></svg>`;
+
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+function createScenarioAudioWav() {
+  const sampleRate = 8000;
+  const durationSeconds = 2;
+  const sampleCount = sampleRate * durationSeconds;
+  const bytes = new Uint8Array(44 + sampleCount);
+  const view = new DataView(bytes.buffer);
+
+  writeAscii(bytes, 0, "RIFF");
+  view.setUint32(4, 36 + sampleCount, true);
+  writeAscii(bytes, 8, "WAVEfmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate, true);
+  view.setUint16(32, 1, true);
+  view.setUint16(34, 8, true);
+  writeAscii(bytes, 36, "data");
+  view.setUint32(40, sampleCount, true);
+
+  for (let index = 0; index < sampleCount; index += 1) {
+    const fade = Math.min(1, index / 400, (sampleCount - index) / 400);
+    bytes[44 + index] = Math.round(
+      128 + Math.sin((2 * Math.PI * 330 * index) / sampleRate) * 22 * fade,
+    );
+  }
+
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+
+  return `data:audio/wav;base64,${btoa(binary)}`;
+}
+
+function writeAscii(bytes: Uint8Array, offset: number, value: string) {
+  for (let index = 0; index < value.length; index += 1) {
+    bytes[offset + index] = value.charCodeAt(index);
+  }
+}
 
 function createUser({
   avatar,
@@ -321,7 +384,60 @@ export function populateStandardWorld(world: ScenarioWorld) {
     const chatId = `scenario-chat-${group.id}`;
     const sender = world.entities.users[group.memberIds[0]];
     const message = messageApiSchema.parse({
-      attachments: [],
+      attachments:
+        world.traits.includes("dense") &&
+        group.id === "scenario-group-basketball"
+          ? [
+              {
+                createdAt: "2026-07-31T18:27:00.000Z",
+                duration: null,
+                id: "scenario-attachment-lightbox-image",
+                mimeType: "image/jpeg",
+                name: "Riverside team photo",
+                size: 128_000,
+                thumbnailUrl: SCENARIO_LIGHTBOX_IMAGE_THUMBNAIL,
+                type: "IMAGE",
+                url: SCENARIO_LIGHTBOX_IMAGE,
+                waveform: [],
+              },
+              {
+                createdAt: "2026-07-31T18:28:00.000Z",
+                duration: 8,
+                id: "scenario-attachment-lightbox-video",
+                mimeType: "video/mp4",
+                name: "Warm-up clip",
+                size: 512_000,
+                thumbnailUrl: SCENARIO_LIGHTBOX_VIDEO_THUMBNAIL,
+                type: "VIDEO",
+                url: SCENARIO_LIGHTBOX_VIDEO,
+                waveform: [],
+              },
+              {
+                createdAt: "2026-07-31T18:29:00.000Z",
+                duration: null,
+                id: "scenario-attachment-lightbox-gif",
+                mimeType: "image/gif",
+                name: "Team celebration",
+                size: 256_000,
+                thumbnailUrl: SCENARIO_LIGHTBOX_GIF_THUMBNAIL,
+                type: "GIF",
+                url: SCENARIO_LIGHTBOX_GIF,
+                waveform: [],
+              },
+              {
+                createdAt: "2026-07-31T18:29:30.000Z",
+                duration: 2,
+                id: "scenario-attachment-voice-note",
+                mimeType: "audio/wav",
+                name: "Riverside voice note",
+                size: 16_044,
+                thumbnailUrl: null,
+                type: "AUDIO",
+                url: SCENARIO_VOICE_NOTE,
+                waveform: [],
+              },
+            ]
+          : [],
       chatId,
       content: `Welcome to ${group.name}. Share anything the group should know before the next plan.`,
       createdAt: "2026-07-31T18:30:00.000Z",

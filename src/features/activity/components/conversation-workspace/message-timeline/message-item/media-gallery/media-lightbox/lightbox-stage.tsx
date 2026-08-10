@@ -1,66 +1,66 @@
-import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { MouseEvent } from "react";
+
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { isGifVideoAttachment } from "@/features/activity/lib/gif-attachments";
+import { usePrefersReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 
 import { LightboxImage, LightboxVideo } from "./lightbox-media";
 import { NavButton } from "./nav-button";
+import type { LightboxNavigationDirection } from "./use-lightbox-navigation";
 
 interface LightboxStageProps {
   count: number;
   currentMedia: UnifiedAttachment | null;
-  onNext: (event: MouseEvent) => void;
-  onPrev: (event: MouseEvent) => void;
+  direction: LightboxNavigationDirection;
+  isNextDisabled: boolean;
+  isPreviousDisabled: boolean;
+  onNext: () => void;
+  onPrevious: () => void;
 }
 
 export function LightboxStage({
   count,
   currentMedia,
+  direction,
+  isNextDisabled,
+  isPreviousDisabled,
   onNext,
-  onPrev,
+  onPrevious,
 }: LightboxStageProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   return (
-    <div className="pointer-events-auto relative flex flex-1 items-center justify-center overflow-hidden p-2 sm:p-10">
+    <div className="pointer-events-auto relative flex flex-1 items-center justify-center overflow-hidden px-12 pt-[calc(env(safe-area-inset-top)+5rem)] pb-[max(env(safe-area-inset-bottom),6rem)] sm:px-18 sm:pb-24">
       <LazyMotion features={domAnimation}>
-        <AnimatePresence mode="wait" initial={false}>
-          {currentMedia ? (
-            <AnimatedLightboxMedia key={currentMedia.id} media={currentMedia} />
-          ) : null}
-        </AnimatePresence>
+        {currentMedia ? (
+          <m.div
+            key={currentMedia.id}
+            data-lightbox-current-media
+            initial={{
+              opacity: 0,
+              x: prefersReducedMotion ? 0 : direction * 12,
+            }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: prefersReducedMotion ? 0 : 0.16,
+              ease: [0.2, 0, 0, 1],
+            }}
+            className="relative flex size-full items-center justify-center"
+          >
+            <LightboxMedia media={currentMedia} />
+          </m.div>
+        ) : null}
       </LazyMotion>
 
-      <LightboxStageNavigation count={count} onNext={onNext} onPrev={onPrev} />
+      <LightboxStageNavigation
+        count={count}
+        isNextDisabled={isNextDisabled}
+        isPreviousDisabled={isPreviousDisabled}
+        onNext={onNext}
+        onPrevious={onPrevious}
+      />
     </div>
-  );
-}
-
-function AnimatedLightboxMedia({ media }: { media: UnifiedAttachment }) {
-  return (
-    <m.div
-      initial={{
-        opacity: 0,
-        scale: 0.9,
-        rotateY: 10,
-      }}
-      animate={{
-        opacity: 1,
-        scale: 1,
-        rotateY: 0,
-      }}
-      exit={{
-        opacity: 0,
-        scale: 1.1,
-        rotateY: -10,
-      }}
-      transition={{
-        duration: 0.45,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-      className="relative flex size-full items-center justify-center"
-    >
-      <LightboxMedia media={media} />
-    </m.div>
   );
 }
 
@@ -74,28 +74,34 @@ function LightboxMedia({ media }: { media: UnifiedAttachment }) {
 
 function LightboxStageNavigation({
   count,
+  isNextDisabled,
+  isPreviousDisabled,
   onNext,
-  onPrev,
+  onPrevious,
 }: {
   count: number;
-  onNext: (event: MouseEvent) => void;
-  onPrev: (event: MouseEvent) => void;
+  isNextDisabled: boolean;
+  isPreviousDisabled: boolean;
+  onNext: () => void;
+  onPrevious: () => void;
 }) {
   if (count <= 1) {
     return null;
   }
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 inset-y-0 hidden items-center justify-between px-6 sm:flex lg:px-10">
+    <div className="pointer-events-none absolute inset-y-0 right-[max(env(safe-area-inset-right),0.5rem)] left-[max(env(safe-area-inset-left),0.5rem)] flex items-center justify-between sm:right-[max(env(safe-area-inset-right),1rem)] sm:left-[max(env(safe-area-inset-left),1rem)] lg:right-[max(env(safe-area-inset-right),2rem)] lg:left-[max(env(safe-area-inset-left),2rem)]">
       <NavButton
-        onClick={onPrev}
+        disabled={isPreviousDisabled}
+        onClick={onPrevious}
         label="Previous media"
-        icon={<ChevronLeft className="size-8 sm:size-9" strokeWidth={2.75} />}
+        icon={<ChevronLeft className="size-5" strokeWidth={2.5} />}
       />
       <NavButton
+        disabled={isNextDisabled}
         onClick={onNext}
         label="Next media"
-        icon={<ChevronRight className="size-8 sm:size-9" strokeWidth={2.75} />}
+        icon={<ChevronRight className="size-5" strokeWidth={2.5} />}
       />
     </div>
   );

@@ -1,11 +1,6 @@
-import {
-  AnimatePresence,
-  domAnimation,
-  LazyMotion,
-  m,
-  useReducedMotion,
-} from "framer-motion";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
 import { useState } from "react";
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import { cn } from "@/shared/lib/utils";
 
 export interface ReactionGroup {
@@ -190,7 +185,7 @@ function AnimatedReactionCount({ count }: { count: number }) {
   const isCounterMounted = count > 1 || previousCount > 1;
   const motionState: ReactionCountMotionState = {
     direction,
-    reducedMotion: Boolean(prefersReducedMotion),
+    reducedMotion: prefersReducedMotion,
   };
 
   function rememberAnimatedCount() {

@@ -11,7 +11,6 @@ export const scenarioExternalEffects = [
   "pwa",
   "push",
   "realtime",
-  "route-preload",
   "share",
   "telemetry",
   "upload",

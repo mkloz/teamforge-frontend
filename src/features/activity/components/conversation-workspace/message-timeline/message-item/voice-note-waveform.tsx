@@ -1,154 +1,164 @@
-import { domAnimation, LazyMotion, m } from "framer-motion";
-import type { MouseEvent } from "react";
+import type { ChangeEvent, KeyboardEvent } from "react";
 import { cn } from "@/shared/lib/utils";
 import type { WaveformBar } from "./voice-note.types";
-
-const WAVEFORM_BAR_EASE = "easeInOut" as const;
+import {
+  getVoiceNoteKeyboardSeekTarget,
+  getVoiceNoteValueText,
+} from "./voice-note-waveform-utils";
 
 export function VoiceNoteWaveform({
-  barCount,
   bars,
+  currentTimeSeconds,
+  durationSeconds,
+  hasError,
   isOwn,
-  isPlaying,
-  progress,
+  label,
   onSeek,
+  progress,
+  errorDescriptionId,
 }: {
-  barCount: number;
   bars: WaveformBar[];
+  currentTimeSeconds: number;
+  durationSeconds: number | null;
+  hasError: boolean;
   isOwn: boolean;
-  isPlaying: boolean;
+  label: string;
+  onSeek: (seconds: number) => void;
   progress: number;
-  onSeek: (event: MouseEvent<HTMLButtonElement>) => void;
+  errorDescriptionId?: string;
 }) {
+  const hasSeekableDuration = durationSeconds !== null;
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    onSeek(Number(event.currentTarget.value));
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (!durationSeconds) {
+      return;
+    }
+
+    const target = getVoiceNoteKeyboardSeekTarget({
+      currentSeconds: currentTimeSeconds,
+      durationSeconds,
+      event: {
+        altKey: event.altKey,
+        ctrlKey: event.ctrlKey,
+        isComposing: event.nativeEvent.isComposing,
+        key: event.key,
+        metaKey: event.metaKey,
+        shiftKey: event.shiftKey,
+      },
+    });
+    if (target === null) {
+      return;
+    }
+
+    event.preventDefault();
+    onSeek(target);
+  }
+
   return (
-    <LazyMotion features={domAnimation}>
-      <button
-        type="button"
-        aria-label="Seek voice note"
-        className="group/waveform relative flex h-10 flex-1 cursor-pointer items-center gap-0.5 border-0 bg-transparent p-0"
-        onClick={onSeek}
+    <div
+      className={cn(
+        "group/waveform relative flex h-10 min-w-0 flex-1 items-center gap-0.5 rounded-md",
+        "has-[input:focus-visible]:ring-1 has-[input:focus-visible]:ring-foreground has-[input:focus-visible]:ring-offset-2 has-[input:focus-visible]:ring-offset-background",
+        hasError && "opacity-55",
+      )}
+      data-voice-note-waveform
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none flex size-full items-center gap-0.5"
       >
         {bars.map((bar, index) => (
           <VoiceNoteWaveformBar
             key={bar.id}
             bar={bar}
-            barCount={barCount}
             index={index}
             isOwn={isOwn}
-            isPlaying={isPlaying}
             progress={progress}
+            totalBars={bars.length}
           />
         ))}
 
-        <VoiceNoteProgressHead
-          isOwn={isOwn}
-          isPlaying={isPlaying}
-          progress={progress}
+        <VoiceNoteProgressHead isOwn={isOwn} progress={progress} />
+      </div>
+
+      {hasSeekableDuration ? (
+        <input
+          aria-describedby={hasError ? errorDescriptionId : undefined}
+          aria-label={label}
+          aria-valuetext={getVoiceNoteValueText(
+            currentTimeSeconds,
+            durationSeconds,
+          )}
+          className="absolute inset-x-0 top-1/2 z-20 h-11 -translate-y-1/2 cursor-pointer touch-pan-y appearance-none bg-transparent opacity-0 focus:outline-none disabled:cursor-not-allowed forced-colors:appearance-auto forced-colors:opacity-100"
+          data-voice-note-seek
+          dir="ltr"
+          disabled={hasError}
+          max={durationSeconds}
+          min={0}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          step={1}
+          type="range"
+          value={Math.min(currentTimeSeconds, durationSeconds)}
         />
-      </button>
-    </LazyMotion>
+      ) : null}
+    </div>
   );
 }
 
 function VoiceNoteWaveformBar({
   bar,
-  barCount,
   index,
   isOwn,
-  isPlaying,
   progress,
+  totalBars,
 }: {
   bar: WaveformBar;
-  barCount: number;
   index: number;
   isOwn: boolean;
-  isPlaying: boolean;
   progress: number;
+  totalBars: number;
 }) {
-  const barProgress = index / barCount;
+  const barProgress = index / totalBars;
   const isActive = barProgress <= progress;
 
   return (
-    <m.div
-      initial={false}
-      animate={{
-        height: `${bar.height}%`,
-        opacity: isActive ? 1 : 0.3,
-        scaleY: isPlaying && isActive ? [1, 1.25, 1] : 1,
-      }}
-      transition={getWaveformBarTransition({
-        index,
-        isActive,
-        isPlaying,
-      })}
-      className={getWaveformBarClassName({ isActive, isOwn })}
+    <span
+      className={cn(
+        "w-px rounded-full transition-opacity duration-150 motion-reduce:transition-none",
+        isActive
+          ? isOwn
+            ? "bg-primary dark:bg-white"
+            : "bg-primary"
+          : isOwn
+            ? "bg-primary/30 opacity-45 dark:bg-white/30"
+            : "bg-slate-muted/35 opacity-45",
+      )}
+      style={{ height: `${bar.height}%` }}
     />
   );
 }
 
 function VoiceNoteProgressHead({
   isOwn,
-  isPlaying,
   progress,
 }: {
   isOwn: boolean;
-  isPlaying: boolean;
   progress: number;
 }) {
   return (
-    <m.div
+    <span
       className={cn(
-        "pointer-events-none absolute top-0 bottom-0 z-10 w-0.5",
+        "pointer-events-none absolute top-1/2 z-10 h-8 w-0.5 -translate-y-1/2 rounded-full after:absolute after:top-1/2 after:left-1/2 after:size-2.5 after:-translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:bg-current",
         isOwn
-          ? "bg-primary/60 shadow-lg dark:bg-white/60"
-          : "bg-primary/60 shadow-lg",
+          ? "bg-primary text-primary dark:bg-white dark:text-white"
+          : "bg-primary text-primary",
       )}
       style={{ left: `${progress * 100}%` }}
-      initial={false}
-      animate={{ opacity: isPlaying ? 1 : 0 }}
     />
   );
-}
-
-function getWaveformBarClassName({
-  isActive,
-  isOwn,
-}: {
-  isActive: boolean;
-  isOwn: boolean;
-}) {
-  return cn(
-    "w-px rounded-full transition-colors",
-    isActive
-      ? isOwn
-        ? "bg-primary dark:bg-white"
-        : "bg-primary"
-      : isOwn
-        ? "bg-primary/30 dark:bg-white/30"
-        : "bg-slate-muted/35",
-  );
-}
-
-function getWaveformBarTransition({
-  index,
-  isActive,
-  isPlaying,
-}: {
-  index: number;
-  isActive: boolean;
-  isPlaying: boolean;
-}) {
-  return {
-    height: { duration: 0.3 },
-    opacity: { duration: 0.2 },
-    scaleY:
-      isPlaying && isActive
-        ? {
-            repeat: Infinity,
-            duration: 0.5 + Math.abs(Math.sin(index * 12.9898)) * 0.2,
-            ease: WAVEFORM_BAR_EASE,
-            delay: index * 0.03,
-          }
-        : { duration: 0.2 },
-  };
 }

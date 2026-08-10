@@ -4,7 +4,6 @@ import { AppBottomNav } from "@/features/app-shell/components/app-bottom-nav";
 import { AppRouteTransition } from "@/features/app-shell/components/app-route-transition";
 import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
 import { useAppNavbarCounters } from "@/features/app-shell/hooks/use-app-navbar-counters";
-import { useAppShellScrollReset } from "@/features/app-shell/hooks/use-app-shell-scroll-reset";
 import { OnboardingCoachmarks } from "@/features/onboarding/public/onboarding-coachmarks";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { cn } from "@/shared/lib/utils";
@@ -29,8 +28,6 @@ export function AppLayout({
   const navbarCounters = useAppNavbarCounters();
   const pathname = useActivePathname();
   const shouldRenderSidebar = useMediaQuery("(min-width: 768px)");
-
-  useAppShellScrollReset();
 
   return (
     <div className="min-h-screen overflow-x-clip bg-canvas font-sans text-foreground">

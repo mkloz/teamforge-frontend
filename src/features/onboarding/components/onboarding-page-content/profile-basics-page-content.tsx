@@ -1,7 +1,8 @@
-import type { ReactNode, RefObject } from "react";
+import { type ReactNode, type RefObject, useRef } from "react";
 import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-home-link";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
+import { useKeyboardSafeViewport } from "@/shared/hooks/use-keyboard-safe-viewport";
 import type {
   VoronoiCatalystHandle,
   VoronoiFormationTarget,
@@ -25,8 +26,14 @@ export function ProfileBasicsPageContent({
   progress,
   scrollContainerRef,
 }: ProfileBasicsPageContentProps) {
+  const viewportShellRef = useRef<HTMLDivElement>(null);
+  useKeyboardSafeViewport(viewportShellRef);
+
   return (
-    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+    <div
+      ref={viewportShellRef}
+      className="keyboard-viewport-shell relative flex w-full flex-col overflow-hidden lg:flex-row"
+    >
       <OnboardingVisualPanel
         catalystRef={catalystRef}
         formation={formation}
@@ -40,7 +47,7 @@ export function ProfileBasicsPageContent({
 
         <div
           ref={scrollContainerRef}
-          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4"
+          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4"
           onInput={onInput}
         >
           <TopProgressBar

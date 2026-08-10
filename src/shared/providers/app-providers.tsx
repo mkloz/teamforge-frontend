@@ -20,6 +20,7 @@ import {
 } from "@/shared/lib/browser-scheduling";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import { APP_TOAST_HOST_REQUEST_EVENT } from "@/shared/lib/toast-host-events";
+import { OsMotionPreferenceProvider } from "@/shared/providers/os-motion-preference-provider";
 import { useInitializeTheme, useThemeStore } from "@/shared/store/theme.store";
 
 type ToasterCssProperties = CSSProperties & Record<`--${string}`, string>;
@@ -77,8 +78,10 @@ export function AppProviders({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={appQueryClient}>
-      {children}
-      <DeferredToaster />
+      <OsMotionPreferenceProvider>
+        {children}
+        <DeferredToaster />
+      </OsMotionPreferenceProvider>
     </QueryClientProvider>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { domAnimation, LazyMotion, useReducedMotion } from "framer-motion";
+import { domAnimation, LazyMotion } from "framer-motion";
 
+import { usePrefersReducedMotion as useReducedMotion } from "@/shared/hooks/use-prefers-reduced-motion";
 import { cn } from "@/shared/lib/utils";
 import { PlanLoadingLabel } from "./plan-loading-label";
 import { PLAN_CREATION_LOADING_LABELS } from "./plan-loading-mark.constants";
