@@ -26,9 +26,13 @@ export function useAddressAutocomplete({
   const hasTypedInSessionRef = useRef(false);
   const skipPredictionsForValueRef = useRef<string | null>(null);
   const sessionTokenRef = useRef<GoogleAutocompleteSessionToken | null>(null);
+  const suggestionRequestGenerationRef = useRef(0);
   const geolocationAvailable = isGeolocationAvailable();
   const endPlacesSession = useCallback(() => {
     sessionTokenRef.current = null;
+  }, []);
+  const invalidateSuggestionRequests = useCallback(() => {
+    suggestionRequestGenerationRef.current += 1;
   }, []);
   const { mapsStatus, mapsReady, requestGoogleMaps } = useGoogleMapsStatus({
     loadOnMount: false,
@@ -64,6 +68,7 @@ export function useAddressAutocomplete({
     inputValue,
     isSettledResolvedValue,
     mapsReady,
+    requestGenerationRef: suggestionRequestGenerationRef,
     sessionTokenRef,
     showMessage,
     skipPredictionsForValueRef,
@@ -75,6 +80,7 @@ export function useAddressAutocomplete({
       endPlacesSession,
       externalInputValue,
       hasTypedInSessionRef,
+      invalidateSuggestionRequests,
       onLocationSelect,
       resetSuggestions,
       setDraftInput,
@@ -84,14 +90,21 @@ export function useAddressAutocomplete({
     });
   const abandonPlacesSession = useCallback(() => {
     invalidatePredictionResolution();
+    invalidateSuggestionRequests();
     endPlacesSession();
-    closeSuggestions();
-  }, [closeSuggestions, endPlacesSession, invalidatePredictionResolution]);
+    resetSuggestions();
+  }, [
+    endPlacesSession,
+    invalidatePredictionResolution,
+    invalidateSuggestionRequests,
+    resetSuggestions,
+  ]);
   const { isLocating, useCurrentArea } = useCurrentAreaSelection({
     currentLocation: value,
     endPlacesSession,
     hasTypedInSessionRef,
     invalidatePredictionResolution,
+    invalidateSuggestionRequests,
     onLocationSelect,
     resetSuggestions,
     setDraftInput,
@@ -113,6 +126,7 @@ export function useAddressAutocomplete({
     endPlacesSession,
     hasTypedInSessionRef,
     invalidatePredictionResolution,
+    invalidateSuggestionRequests,
     isSuggestionsOpen,
     moveActiveSuggestion,
     onLocationSelect,
@@ -128,6 +142,7 @@ export function useAddressAutocomplete({
 
   function resetInputDraft() {
     invalidatePredictionResolution();
+    invalidateSuggestionRequests();
     hasTypedInSessionRef.current = false;
     skipPredictionsForValueRef.current = null;
     setDraftInput(null);
@@ -138,7 +153,13 @@ export function useAddressAutocomplete({
     endPlacesSession();
   }
 
-  useEffect(() => endPlacesSession, [endPlacesSession]);
+  useEffect(
+    () => () => {
+      invalidateSuggestionRequests();
+      endPlacesSession();
+    },
+    [endPlacesSession, invalidateSuggestionRequests],
+  );
 
   useEffect(() => {
     if (mapsStatus !== "unavailable") {
@@ -146,6 +167,7 @@ export function useAddressAutocomplete({
     }
 
     invalidatePredictionResolution();
+    invalidateSuggestionRequests();
     endPlacesSession();
     resetSuggestions();
     closeSuggestions();
@@ -153,6 +175,7 @@ export function useAddressAutocomplete({
     closeSuggestions,
     endPlacesSession,
     invalidatePredictionResolution,
+    invalidateSuggestionRequests,
     mapsStatus,
     resetSuggestions,
   ]);

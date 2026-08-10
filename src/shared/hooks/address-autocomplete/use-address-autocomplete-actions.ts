@@ -32,6 +32,7 @@ interface UseAddressAutocompleteActionsInput {
   endPlacesSession: () => void;
   hasTypedInSessionRef: MutableValueRef<boolean>;
   invalidatePredictionResolution: () => void;
+  invalidateSuggestionRequests: () => void;
   isSuggestionsOpen: boolean;
   moveActiveSuggestion: (direction: SuggestionNavigationDirection) => void;
   onLocationSelect: (value: LocationValue | null) => void;
@@ -53,6 +54,7 @@ export function useAddressAutocompleteActions({
   endPlacesSession,
   hasTypedInSessionRef,
   invalidatePredictionResolution,
+  invalidateSuggestionRequests,
   isSuggestionsOpen,
   moveActiveSuggestion,
   onLocationSelect,
@@ -73,6 +75,7 @@ export function useAddressAutocompleteActions({
 
     const continuesPlacesSession = hasTypedInSessionRef.current;
     invalidatePredictionResolution();
+    invalidateSuggestionRequests();
     if (!continuesPlacesSession) {
       endPlacesSession();
     }
@@ -93,6 +96,7 @@ export function useAddressAutocompleteActions({
 
   function clearLocation() {
     invalidatePredictionResolution();
+    invalidateSuggestionRequests();
     hasTypedInSessionRef.current = false;
     skipPredictionsForValueRef.current = null;
     setDraftInput(null);

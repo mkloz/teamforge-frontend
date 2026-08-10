@@ -23,18 +23,18 @@ describe("editable onboarding redirects", () => {
     ).toBeNull();
   });
 
-  it.each(["/onboarding/personality", "/onboarding/interests"] as const)(
-    "keeps established users on %s",
-    (expectedDestination) => {
-      expect(
-        getEditableOnboardingRedirectTarget({
-          canonicalDestination: "/home",
-          expectedDestination,
-          isEditMode: true,
-        }),
-      ).toBeNull();
-    },
-  );
+  it.each([
+    "/onboarding/personality",
+    "/onboarding/interests",
+  ] as const)("keeps established users on %s", (expectedDestination) => {
+    expect(
+      getEditableOnboardingRedirectTarget({
+        canonicalDestination: "/home",
+        expectedDestination,
+        isEditMode: true,
+      }),
+    ).toBeNull();
+  });
 
   it("still redirects incomplete users to their required onboarding step", () => {
     expect(

@@ -25,6 +25,7 @@ describe("useCurrentAreaSelection", () => {
     await act(() => harness.result.current.useCurrentArea());
 
     expect(harness.invalidatePredictionResolution).toHaveBeenCalledOnce();
+    expect(harness.invalidateSuggestionRequests).toHaveBeenCalledOnce();
     expect(harness.endPlacesSession).toHaveBeenCalledOnce();
     expect(harness.onLocationSelect).toHaveBeenCalledWith(
       expect.objectContaining({ lat: 53.959, lng: -1.081 }),
@@ -38,6 +39,7 @@ describe("useCurrentAreaSelection", () => {
     await act(() => harness.result.current.useCurrentArea());
 
     expect(harness.invalidatePredictionResolution).toHaveBeenCalledOnce();
+    expect(harness.invalidateSuggestionRequests).toHaveBeenCalledOnce();
     expect(harness.endPlacesSession).toHaveBeenCalledOnce();
     expect(harness.onLocationSelect).not.toHaveBeenCalled();
   });
@@ -46,6 +48,7 @@ describe("useCurrentAreaSelection", () => {
 function createHarness() {
   const endPlacesSession = vi.fn<() => void>();
   const invalidatePredictionResolution = vi.fn<() => void>();
+  const invalidateSuggestionRequests = vi.fn<() => void>();
   const onLocationSelect =
     vi.fn<CurrentAreaSelectionInput["onLocationSelect"]>();
   const hook = renderHook(() =>
@@ -54,6 +57,7 @@ function createHarness() {
       endPlacesSession,
       hasTypedInSessionRef: { current: true },
       invalidatePredictionResolution,
+      invalidateSuggestionRequests,
       onLocationSelect,
       resetSuggestions: vi.fn<CurrentAreaSelectionInput["resetSuggestions"]>(),
       setDraftInput: vi.fn<CurrentAreaSelectionInput["setDraftInput"]>(),
@@ -68,6 +72,7 @@ function createHarness() {
     ...hook,
     endPlacesSession,
     invalidatePredictionResolution,
+    invalidateSuggestionRequests,
     onLocationSelect,
   };
 }

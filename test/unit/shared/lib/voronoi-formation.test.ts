@@ -36,6 +36,41 @@ describe("Voronoi cell glyphs", () => {
     expect(glyph.columns).toBe(47);
   });
 
+  it("preserves every character when a multi-word phrase exceeds the cell budget", () => {
+    const value = "WE ARE HERE";
+    const dimensions = { height: 700, width: 900 };
+    const glyph = createVoronoiGlyphLayout(value);
+    const layout = createVoronoiFormationLayout({
+      dimensions,
+      points: createFormationPoints(),
+      rotationDegrees: 0,
+      target: { kind: "text", value },
+    });
+    const moduleSize = (dimensions.width * 0.78) / glyph.columns;
+    const originX = (dimensions.width - glyph.columns * moduleSize) / 2;
+    const characterColumns = new Map<number, number[]>();
+    for (const { characterIndex, column } of glyph.cells) {
+      const columns = characterColumns.get(characterIndex) ?? [];
+      columns.push(column);
+      characterColumns.set(characterIndex, columns);
+    }
+
+    for (const characterIndex of [7, 8, 9, 10]) {
+      const columns = characterColumns.get(characterIndex);
+
+      expect(columns).toBeDefined();
+      if (!columns) throw new Error("Expected character columns");
+
+      const minX = originX + Math.min(...columns) * moduleSize;
+      const maxX = originX + (Math.max(...columns) + 1) * moduleSize;
+      const characterSamples = layout.positions.filter(
+        ({ x }) => x >= minX && x <= maxX,
+      );
+
+      expect(characterSamples.length).toBeGreaterThanOrEqual(12);
+    }
+  });
+
   it("creates one physical target for every formation cell", () => {
     const dimensions = { height: 700, width: 900 };
     const points = Array.from({ length: NUM_FORMATION }, (_, index) => ({

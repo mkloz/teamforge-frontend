@@ -38,6 +38,7 @@ const GLYPH_SUBCELL_OFFSETS = [
 
 interface MaskSample {
   accentWeight?: number;
+  groupIndex?: number;
   x: number;
   y: number;
 }
@@ -152,6 +153,7 @@ function createTextFormation({
   const moduleCenters = glyphLayout.cells.map(
     ({ characterIndex, column, row }) => ({
       accentWeight: accentedCharacters.has(characterIndex) ? 1 : 0,
+      groupIndex: characterIndex,
       x: originX + (column + 0.5) * moduleSize,
       y: originY + (row + 0.5) * moduleSize,
     }),
@@ -217,7 +219,7 @@ function selectGlyphSamples(
   const selectedAccents =
     accentSamples.length <= count
       ? accentSamples
-      : selectEvenlySpacedSamples(accentSamples, count, dimensions);
+      : selectBalancedGlyphSamples(accentSamples, count, dimensions);
   const remainingCount = count - selectedAccents.length;
 
   if (remainingCount <= 0) return selectedAccents;
@@ -227,8 +229,72 @@ function selectGlyphSamples(
   );
   return [
     ...selectedAccents,
-    ...selectEvenlySpacedSamples(neutralSamples, remainingCount, dimensions),
+    ...selectBalancedGlyphSamples(neutralSamples, remainingCount, dimensions),
   ];
+}
+
+function selectBalancedGlyphSamples(
+  candidates: MaskSample[],
+  count: number,
+  dimensions: Dimensions,
+) {
+  if (count <= 0 || candidates.length === 0) return [];
+  if (candidates.length <= count) return candidates;
+
+  const groupedCandidates = new Map<number, MaskSample[]>();
+  for (const candidate of candidates) {
+    if (candidate.groupIndex === undefined) {
+      return selectEvenlySpacedSamples(candidates, count, dimensions);
+    }
+
+    const group = groupedCandidates.get(candidate.groupIndex) ?? [];
+    group.push(candidate);
+    groupedCandidates.set(candidate.groupIndex, group);
+  }
+
+  const groups = [...groupedCandidates.entries()]
+    .sort(([leftIndex], [rightIndex]) => leftIndex - rightIndex)
+    .map(([groupIndex, samples]) => ({
+      groupIndex,
+      samples,
+      selectedCount: 0,
+    }));
+  const minimumPerCharacter = Math.max(
+    1,
+    Math.min(8, Math.floor(count / groups.length)),
+  );
+
+  let allocatedCount = 0;
+  for (const group of groups) {
+    group.selectedCount = Math.min(minimumPerCharacter, group.samples.length);
+    allocatedCount += group.selectedCount;
+  }
+
+  while (allocatedCount < count) {
+    const nextGroup = groups
+      .filter((group) => group.selectedCount < group.samples.length)
+      .sort((left, right) => {
+        const leftCoverage = left.selectedCount / left.samples.length;
+        const rightCoverage = right.selectedCount / right.samples.length;
+
+        return (
+          leftCoverage - rightCoverage || left.groupIndex - right.groupIndex
+        );
+      })[0];
+
+    if (!nextGroup) break;
+    nextGroup.selectedCount += 1;
+    allocatedCount += 1;
+  }
+
+  return groups.flatMap((group) =>
+    selectEvenlySpacedSamples(
+      group.samples,
+      group.selectedCount,
+      dimensions,
+      getSampleCenter(group.samples),
+    ),
+  );
 }
 
 function createSymbolFormation({
@@ -455,11 +521,15 @@ function selectEvenlySpacedSamples(
   candidates: MaskSample[],
   count: number,
   dimensions: Dimensions,
+  selectionCenter = {
+    x: dimensions.width / 2,
+    y: dimensions.height / 2,
+  },
 ) {
   const selected: MaskSample[] = [];
-  const center = { x: dimensions.width / 2, y: dimensions.height / 2 };
   const first = candidates.reduce((closest, candidate) =>
-    squaredDistance(candidate, center) < squaredDistance(closest, center)
+    squaredDistance(candidate, selectionCenter) <
+    squaredDistance(closest, selectionCenter)
       ? candidate
       : closest,
   );
@@ -490,6 +560,28 @@ function selectEvenlySpacedSamples(
   }
 
   return selected;
+}
+
+function getSampleCenter(samples: MaskSample[]) {
+  const bounds = samples.reduce(
+    (current, sample) => ({
+      maxX: Math.max(current.maxX, sample.x),
+      maxY: Math.max(current.maxY, sample.y),
+      minX: Math.min(current.minX, sample.x),
+      minY: Math.min(current.minY, sample.y),
+    }),
+    {
+      maxX: Number.NEGATIVE_INFINITY,
+      maxY: Number.NEGATIVE_INFINITY,
+      minX: Number.POSITIVE_INFINITY,
+      minY: Number.POSITIVE_INFINITY,
+    },
+  );
+
+  return {
+    x: (bounds.minX + bounds.maxX) / 2,
+    y: (bounds.minY + bounds.maxY) / 2,
+  };
 }
 
 function assignSamplesToPoints(points: Point[], samples: MaskSample[]) {

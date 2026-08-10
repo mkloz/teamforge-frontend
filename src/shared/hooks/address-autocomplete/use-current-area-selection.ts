@@ -14,6 +14,7 @@ export function useCurrentAreaSelection({
   endPlacesSession,
   hasTypedInSessionRef,
   invalidatePredictionResolution,
+  invalidateSuggestionRequests,
   onLocationSelect,
   resetSuggestions,
   setDraftInput,
@@ -51,6 +52,7 @@ export function useCurrentAreaSelection({
 
   async function useCurrentArea() {
     invalidatePredictionResolution();
+    invalidateSuggestionRequests();
     endPlacesSession();
 
     if (!isGeolocationAvailable()) {

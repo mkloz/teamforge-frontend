@@ -13,6 +13,7 @@ export function usePredictionSelection({
   endPlacesSession,
   externalInputValue,
   hasTypedInSessionRef,
+  invalidateSuggestionRequests,
   onLocationSelect,
   resetSuggestions,
   setDraftInput,
@@ -39,6 +40,7 @@ export function usePredictionSelection({
   );
 
   function beginPredictionResolution(prediction: GooglePlaceSuggestion) {
+    invalidateSuggestionRequests();
     const generation = resolutionGenerationRef.current + 1;
     resolutionGenerationRef.current = generation;
     activeResolutionGenerationRef.current = generation;

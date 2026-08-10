@@ -18,6 +18,7 @@ describe("useAddressAutocompleteActions", () => {
     fireEvent.change(harness.input, { target: { value: "York Minster" } });
 
     expect(harness.invalidatePredictionResolution).toHaveBeenCalledOnce();
+    expect(harness.invalidateSuggestionRequests).toHaveBeenCalledOnce();
     expect(harness.endPlacesSession).not.toHaveBeenCalled();
   });
 
@@ -27,6 +28,7 @@ describe("useAddressAutocompleteActions", () => {
     fireEvent.change(harness.input, { target: { value: "London" } });
 
     expect(harness.invalidatePredictionResolution).toHaveBeenCalledOnce();
+    expect(harness.invalidateSuggestionRequests).toHaveBeenCalledOnce();
     expect(harness.endPlacesSession).toHaveBeenCalledOnce();
     expect(harness.hasTypedInSessionRef.current).toBe(true);
   });
@@ -37,6 +39,7 @@ describe("useAddressAutocompleteActions", () => {
     harness.actions.clearLocation();
 
     expect(harness.invalidatePredictionResolution).toHaveBeenCalledOnce();
+    expect(harness.invalidateSuggestionRequests).toHaveBeenCalledOnce();
     expect(harness.endPlacesSession).toHaveBeenCalledOnce();
     expect(harness.hasTypedInSessionRef.current).toBe(false);
   });
@@ -51,13 +54,20 @@ describe("useAddressAutocompleteActions", () => {
 
     expect(harness.closeSuggestions).toHaveBeenCalledOnce();
     expect(harness.endPlacesSession).toHaveBeenCalledOnce();
+    expect(harness.invalidatePredictionResolution).toHaveBeenCalledOnce();
+    expect(harness.invalidateSuggestionRequests).toHaveBeenCalledOnce();
   });
 });
 
 function createHarness({ hasTypedInSession }: { hasTypedInSession: boolean }) {
   const endPlacesSession = vi.fn<() => void>();
-  const closeSuggestions = vi.fn<() => void>(() => endPlacesSession());
   const invalidatePredictionResolution = vi.fn<() => void>();
+  const invalidateSuggestionRequests = vi.fn<() => void>();
+  const closeSuggestions = vi.fn<() => void>(() => {
+    invalidatePredictionResolution();
+    invalidateSuggestionRequests();
+    endPlacesSession();
+  });
   const hasTypedInSessionRef = { current: hasTypedInSession };
   const suggestion = createSuggestion();
   const hook = renderHook(() =>
@@ -69,6 +79,7 @@ function createHarness({ hasTypedInSession }: { hasTypedInSession: boolean }) {
       externalInputValue: "York",
       hasTypedInSessionRef,
       invalidatePredictionResolution,
+      invalidateSuggestionRequests,
       isSuggestionsOpen: true,
       moveActiveSuggestion:
         vi.fn<AddressAutocompleteActionsInput["moveActiveSuggestion"]>(),
@@ -106,6 +117,7 @@ function createHarness({ hasTypedInSession }: { hasTypedInSession: boolean }) {
     hasTypedInSessionRef,
     input: rendered.getByRole("textbox", { name: "Location" }),
     invalidatePredictionResolution,
+    invalidateSuggestionRequests,
   };
 }
 

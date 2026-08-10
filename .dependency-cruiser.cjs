@@ -23,7 +23,7 @@ module.exports = {
       from: {},
       to: {
         couldNotResolve: true,
-        pathNot: "^(?:virtual:pwa-register|virtual:findafew-scenario-runtime)$",
+        pathNot: "^(?:virtual:pwa-register|virtual:scenario-runtime)$",
       },
     },
     {

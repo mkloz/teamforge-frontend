@@ -21,6 +21,7 @@ interface UseAutocompleteSuggestionsInput {
   inputValue: string;
   isSettledResolvedValue: boolean;
   mapsReady: boolean;
+  requestGenerationRef: MutableValueRef<number>;
   sessionTokenRef: MutableValueRef<GoogleAutocompleteSessionToken | null>;
   showMessage: (text: string, tone: "error" | "info") => void;
   skipPredictionsForValueRef: MutableValueRef<string | null>;
@@ -30,6 +31,8 @@ interface RefreshAutocompletePredictionsInput {
   hasTypedInSessionRef: MutableValueRef<boolean>;
   inputValue: string;
   isActive: () => boolean;
+  requestGeneration: number;
+  requestGenerationRef: MutableValueRef<number>;
   resetSuggestions: () => void;
   setActiveSuggestionIndex: Dispatch<SetStateAction<number>>;
   setIsSuggestionsOpen: Dispatch<SetStateAction<boolean>>;
@@ -39,24 +42,41 @@ interface RefreshAutocompletePredictionsInput {
   skipPredictionsForValueRef: MutableValueRef<string | null>;
 }
 
-async function fetchAutocompletePredictions(
-  inputValue: string,
-  sessionTokenRef: MutableValueRef<GoogleAutocompleteSessionToken | null>,
-) {
-  const sessionToken =
-    sessionTokenRef.current ?? createGooglePlacesSessionToken();
-  sessionTokenRef.current = sessionToken;
-  return getPlaceSuggestions(inputValue.trim(), sessionToken);
+function isCurrentSuggestionRequest({
+  isActive,
+  requestGeneration,
+  requestGenerationRef,
+}: Pick<
+  RefreshAutocompletePredictionsInput,
+  "isActive" | "requestGeneration" | "requestGenerationRef"
+>) {
+  return isActive() && requestGenerationRef.current === requestGeneration;
 }
 
 function canApplyPredictionRefresh({
   isActive,
+  requestGeneration,
+  requestGenerationRef,
+  requestToken,
+  sessionTokenRef,
   skipPredictionsForValueRef,
 }: Pick<
   RefreshAutocompletePredictionsInput,
-  "isActive" | "skipPredictionsForValueRef"
->) {
-  return isActive() && skipPredictionsForValueRef.current === null;
+  | "isActive"
+  | "requestGeneration"
+  | "requestGenerationRef"
+  | "sessionTokenRef"
+  | "skipPredictionsForValueRef"
+> & { requestToken: GoogleAutocompleteSessionToken }) {
+  return (
+    isCurrentSuggestionRequest({
+      isActive,
+      requestGeneration,
+      requestGenerationRef,
+    }) &&
+    sessionTokenRef.current === requestToken &&
+    skipPredictionsForValueRef.current === null
+  );
 }
 
 function applyPredictionRefreshResult({
@@ -91,22 +111,32 @@ function applyPredictionRefreshResult({
 async function refreshAutocompletePredictions(
   input: RefreshAutocompletePredictionsInput,
 ) {
+  if (!isCurrentSuggestionRequest(input)) {
+    return;
+  }
+
+  const requestToken =
+    input.sessionTokenRef.current ?? createGooglePlacesSessionToken();
+  input.sessionTokenRef.current = requestToken;
   let nextSuggestions: GooglePlaceSuggestion[] | null;
 
   try {
-    nextSuggestions = await fetchAutocompletePredictions(
-      input.inputValue,
-      input.sessionTokenRef,
+    nextSuggestions = await getPlaceSuggestions(
+      input.inputValue.trim(),
+      requestToken,
     );
   } catch (error) {
-    input.sessionTokenRef.current = null;
-    if (input.isActive()) {
+    if (isCurrentSuggestionRequest(input)) {
+      if (input.sessionTokenRef.current === requestToken) {
+        input.sessionTokenRef.current = null;
+      }
       input.showMessage(getGooglePlacesErrorMessage(error), "info");
+      input.resetSuggestions();
     }
-    nextSuggestions = null;
+    return;
   }
 
-  if (!canApplyPredictionRefresh(input)) {
+  if (!canApplyPredictionRefresh({ ...input, requestToken })) {
     return;
   }
 
@@ -125,6 +155,7 @@ export function useAutocompleteSuggestions({
   inputValue,
   isSettledResolvedValue,
   mapsReady,
+  requestGenerationRef,
   sessionTokenRef,
   showMessage,
   skipPredictionsForValueRef,
@@ -172,11 +203,25 @@ export function useAutocompleteSuggestions({
     }
 
     let active = true;
+    const requestGeneration = requestGenerationRef.current + 1;
+    requestGenerationRef.current = requestGeneration;
     const handle = scheduleDelay(() => {
+      if (
+        !isCurrentSuggestionRequest({
+          isActive: () => active,
+          requestGeneration,
+          requestGenerationRef,
+        })
+      ) {
+        return;
+      }
+
       void refreshAutocompletePredictions({
         hasTypedInSessionRef,
         inputValue,
         isActive: () => active,
+        requestGeneration,
+        requestGenerationRef,
         resetSuggestions,
         sessionTokenRef,
         setActiveSuggestionIndex,
@@ -196,6 +241,7 @@ export function useAutocompleteSuggestions({
     inputValue,
     isSettledResolvedValue,
     mapsReady,
+    requestGenerationRef,
     resetSuggestions,
     sessionTokenRef,
     showMessage,

@@ -37,6 +37,7 @@ describe("usePredictionSelection", () => {
     );
 
     expect(harness.endPlacesSession).toHaveBeenCalledOnce();
+    expect(harness.invalidateSuggestionRequests).toHaveBeenCalledOnce();
     expect(harness.onLocationSelect).toHaveBeenCalledWith(YORK_LOCATION);
     expect(harness.result.current.isResolvingPlace).toBe(false);
   });
@@ -157,6 +158,7 @@ describe("usePredictionSelection", () => {
 
 function renderPredictionSelection() {
   const endPlacesSession = vi.fn<() => void>();
+  const invalidateSuggestionRequests = vi.fn<() => void>();
   const onLocationSelect = vi.fn<(value: LocationValue) => void>();
   const showMessage = vi.fn<PredictionSelectionInput["showMessage"]>();
   const hook = renderHook(() =>
@@ -166,6 +168,7 @@ function renderPredictionSelection() {
       endPlacesSession,
       externalInputValue: "York",
       hasTypedInSessionRef: { current: true },
+      invalidateSuggestionRequests,
       onLocationSelect,
       resetSuggestions: vi.fn<() => void>(),
       setDraftInput: vi.fn<PredictionSelectionInput["setDraftInput"]>(),
@@ -176,7 +179,13 @@ function renderPredictionSelection() {
     }),
   );
 
-  return { ...hook, endPlacesSession, onLocationSelect, showMessage };
+  return {
+    ...hook,
+    endPlacesSession,
+    invalidateSuggestionRequests,
+    onLocationSelect,
+    showMessage,
+  };
 }
 
 function createSuggestion(placeId: string): GooglePlaceSuggestion {
