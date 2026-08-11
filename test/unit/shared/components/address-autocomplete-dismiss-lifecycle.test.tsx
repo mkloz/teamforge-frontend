@@ -48,7 +48,10 @@ import { AddressAutocomplete } from "@/shared/components/maps/address-autocomple
 describe("AddressAutocomplete dismissal lifecycle", () => {
   beforeEach(() => {
     autocomplete.closeSuggestions.mockClear();
-    Element.prototype.scrollIntoView = vi.fn<() => void>();
+    Object.defineProperty(Element.prototype, "scrollIntoView", {
+      configurable: true,
+      value: vi.fn<() => void>(),
+    });
   });
 
   afterEach(() => {
