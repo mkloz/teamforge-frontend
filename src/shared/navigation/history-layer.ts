@@ -1,4 +1,4 @@
-import type { ParsedHistoryState } from "@tanstack/history";
+import type { HistoryState as RouterHistoryState } from "@tanstack/react-router";
 
 export const HISTORY_LAYER_IDS = [
   "settings-detail",
@@ -17,16 +17,21 @@ export interface FindafewHistoryLayerEntry {
   version: 1;
 }
 
-declare module "@tanstack/history" {
+declare module "@tanstack/react-router" {
   interface HistoryState {
     findafewHistoryLayer?: FindafewHistoryLayerEntry;
   }
 }
 
+type RouterParsedHistoryState = RouterHistoryState & {
+  __TSR_index?: number;
+  __TSR_key?: string;
+};
+
 export function withHistoryLayerEntry(
-  previousState: ParsedHistoryState,
+  previousState: RouterParsedHistoryState,
   id: HistoryLayerId,
-): ParsedHistoryState {
+): RouterHistoryState {
   return {
     ...previousState,
     findafewHistoryLayer: {
@@ -38,8 +43,8 @@ export function withHistoryLayerEntry(
 }
 
 export function withoutHistoryLayerEntry(
-  previousState: ParsedHistoryState,
-): ParsedHistoryState {
+  previousState: RouterParsedHistoryState,
+): RouterHistoryState {
   const { findafewHistoryLayer: _removedEntry, ...nextState } = previousState;
 
   return nextState;
@@ -48,7 +53,7 @@ export function withoutHistoryLayerEntry(
 export function isCurrentHistoryLayerEntry(
   state: unknown,
   id: HistoryLayerId,
-): state is ParsedHistoryState & {
+): state is RouterParsedHistoryState & {
   findafewHistoryLayer: FindafewHistoryLayerEntry;
 } {
   if (!isRecord(state)) {

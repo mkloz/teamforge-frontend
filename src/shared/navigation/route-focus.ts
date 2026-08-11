@@ -1,4 +1,4 @@
-import type { ParsedHistoryState } from "@tanstack/history";
+import type { HistoryState as RouterHistoryState } from "@tanstack/react-router";
 
 const ROUTE_FOCUS_KEY_PATTERN = /^[a-z0-9][a-z0-9:_-]{0,159}$/i;
 
@@ -7,11 +7,16 @@ export interface RouteFocusReturnEntry {
   version: 1;
 }
 
-declare module "@tanstack/history" {
+declare module "@tanstack/react-router" {
   interface HistoryState {
     findafewReturnFocus?: RouteFocusReturnEntry;
   }
 }
+
+type RouterParsedHistoryState = RouterHistoryState & {
+  __TSR_index?: number;
+  __TSR_key?: string;
+};
 
 export function createRouteFocusKey(scope: string, entityId: string) {
   const key = `${scope}:${entityId}`;
@@ -24,11 +29,11 @@ export function createRouteFocusKey(scope: string, entityId: string) {
 }
 
 export function withRouteFocusReturn(
-  previousState: ParsedHistoryState,
+  previousState: RouterParsedHistoryState,
   key: string,
-): ParsedHistoryState {
+): RouterHistoryState {
   if (!isValidRouteFocusKey(key)) {
-    return previousState;
+    return { ...previousState };
   }
 
   return {
