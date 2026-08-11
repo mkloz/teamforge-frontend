@@ -1,91 +1,84 @@
-import { DateInputControl } from "@/shared/components/ui/date-input/control";
-import { DateInputPanelPortal } from "@/shared/components/ui/date-input/panel-portal";
-import { getDateInputPanelState } from "@/shared/components/ui/date-input/panel-state";
+import { AccessibleDateInput } from "@/shared/components/ui/accessible-date-input";
 import type { DateInputProps } from "@/shared/components/ui/date-input/types";
-import { useDateInputCalendar } from "@/shared/components/ui/date-input/use-date-input-calendar";
+import { DatePickerBoundary } from "@/shared/components/ui/date-time-picker/date-picker-boundary";
+import {
+  parseCalendarDateValue,
+  serializeCalendarDateValue,
+} from "@/shared/components/ui/date-time-picker/value-adapters";
+import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/shared/lib/utils";
 
-function DateInput({
+function DateInput(props: DateInputProps) {
+  return (
+    <DatePickerBoundary fallback={<NativeDateInputFallback {...props} />}>
+      <AccessibleDateInput {...props} />
+    </DatePickerBoundary>
+  );
+}
+
+function NativeDateInputFallback({
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   className,
-  clearable = true,
   disabled,
+  form,
+  id,
   max,
   min,
+  name,
+  onBlur,
+  onFocus,
   onValueChange,
-  placeholder = "Select date",
+  placeholder,
+  readOnly,
+  required,
   value,
   wrapperClassName,
-  ...props
 }: DateInputProps) {
-  const {
-    calendarPanelState,
-    calendarView,
-    clearDate,
-    days,
-    moveVisibleRange,
-    open,
-    openCalendar,
-    panelId,
-    panelRef,
-    panelStyle,
-    portalTarget,
-    selectDate,
-    selectMonth,
-    selectYear,
-    todayValue,
-    toggleCalendarView,
-    triggerRef,
-    visibleMonth,
-    years,
-  } = useDateInputCalendar({
-    max,
-    min,
-    onValueChange,
-    value,
-  });
-  const panelState = getDateInputPanelState({
-    open,
-    panelStyle,
-    portalTarget,
-  });
+  const parsedValue = parseCalendarDateValue(value);
+  const minValue = parseCalendarDateValue(min);
+  const maxValue = parseCalendarDateValue(max);
 
   return (
-    <div ref={triggerRef} className={cn("relative w-full", wrapperClassName)}>
-      <DateInputControl
-        {...props}
+    <div className={cn("relative w-full", wrapperClassName)}>
+      <Input
+        type="date"
+        id={id}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={ariaInvalid}
+        aria-label={ariaLabelledBy ? undefined : (ariaLabel ?? placeholder)}
+        aria-labelledby={ariaLabelledBy}
         className={className}
         disabled={disabled}
-        onOpen={openCalendar}
-        open={open}
-        panelId={panelId}
-        placeholder={placeholder}
-        value={value}
-      />
+        form={form}
+        max={max}
+        min={min}
+        name={name}
+        onBlur={onBlur}
+        onChange={(event) => {
+          const nextValue = event.currentTarget.value;
+          if (!nextValue) {
+            onValueChange("");
+            return;
+          }
 
-      {panelState ? (
-        <DateInputPanelPortal
-          calendarPanelState={calendarPanelState}
-          calendarView={calendarView}
-          clearable={clearable}
-          days={days}
-          max={max}
-          min={min}
-          onClear={clearDate}
-          onMoveVisibleRange={moveVisibleRange}
-          onSelectDate={selectDate}
-          onSelectMonth={selectMonth}
-          onSelectYear={selectYear}
-          onToggleCalendarView={toggleCalendarView}
-          panelId={panelId}
-          panelRef={panelRef}
-          panelStyle={panelState.panelStyle}
-          portalTarget={panelState.portalTarget}
-          todayValue={todayValue}
-          value={value}
-          visibleMonth={visibleMonth}
-          years={years}
-        />
-      ) : null}
+          const parsedNextValue = parseCalendarDateValue(nextValue);
+          if (
+            parsedNextValue &&
+            (!minValue || parsedNextValue.compare(minValue) >= 0) &&
+            (!maxValue || parsedNextValue.compare(maxValue) <= 0)
+          ) {
+            onValueChange(serializeCalendarDateValue(parsedNextValue));
+          }
+        }}
+        onFocus={onFocus}
+        placeholder={placeholder}
+        readOnly={readOnly}
+        required={required}
+        value={serializeCalendarDateValue(parsedValue)}
+      />
     </div>
   );
 }

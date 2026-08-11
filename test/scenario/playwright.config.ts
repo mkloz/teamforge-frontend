@@ -6,9 +6,11 @@ const outputRoot =
   path.join(process.cwd(), "temp", "scenario-screenshots", "smoke");
 const skipWebServer = process.env.SCENARIO_SKIP_WEBSERVER === "1";
 const interactionBaselineSpec = "**/mobile-interaction-baseline.spec.ts";
+const dateInputContractSpec = "**/date-input-contract.spec.ts";
 const settingsHistoryLayerSpec = "**/settings-history-layer.spec.ts";
 const navigationRestorationSpec = "**/navigation-scroll-restoration.spec.ts";
 const focusedContractSpecs = [
+  dateInputContractSpec,
   interactionBaselineSpec,
   navigationRestorationSpec,
   settingsHistoryLayerSpec,
@@ -90,7 +92,11 @@ export default defineConfig({
     },
     {
       name: "interaction-mobile-normal",
-      testMatch: [interactionBaselineSpec, settingsHistoryLayerSpec],
+      testMatch: [
+        dateInputContractSpec,
+        interactionBaselineSpec,
+        settingsHistoryLayerSpec,
+      ],
       use: {
         ...interactionMobileUse,
         contextOptions: { reducedMotion: "no-preference" },
@@ -99,7 +105,11 @@ export default defineConfig({
     },
     {
       name: "interaction-mobile-reduced",
-      testMatch: [interactionBaselineSpec, settingsHistoryLayerSpec],
+      testMatch: [
+        dateInputContractSpec,
+        interactionBaselineSpec,
+        settingsHistoryLayerSpec,
+      ],
       use: {
         ...interactionMobileUse,
         contextOptions: { reducedMotion: "reduce" },

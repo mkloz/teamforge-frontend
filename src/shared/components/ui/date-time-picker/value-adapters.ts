@@ -43,3 +43,38 @@ export function parseTimeValue(value: string | null | undefined): Time | null {
 export function serializeTimeValue(value: Time | null) {
   return value ? value.toString().slice(0, 5) : "";
 }
+
+export function splitLocalDateTimeValue(value: string | null | undefined): {
+  date: string;
+  time: string;
+} {
+  if (!value) {
+    return { date: "", time: "" };
+  }
+
+  const [datePart = "", timeWithSeconds = ""] = value.split("T");
+  const timePart = timeWithSeconds.slice(0, 5);
+
+  return {
+    date: serializeCalendarDateValue(parseCalendarDateValue(datePart)),
+    time: serializeTimeValue(parseTimeValue(timePart)),
+  };
+}
+
+export function joinLocalDateTimeValue(date: string, time: string) {
+  const parsedDate = parseCalendarDateValue(date);
+  if (!parsedDate) {
+    return "";
+  }
+
+  if (!time) {
+    return `${serializeCalendarDateValue(parsedDate)}T12:00`;
+  }
+
+  const parsedTime = parseTimeValue(time);
+  if (!parsedTime) {
+    return "";
+  }
+
+  return `${serializeCalendarDateValue(parsedDate)}T${serializeTimeValue(parsedTime)}`;
+}

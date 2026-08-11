@@ -59,6 +59,7 @@ export function DateTimeSection({
             <FieldLabel htmlFor="plan-date">Date</FieldLabel>
             <DateInput
               id="plan-date"
+              aria-label="Plan date"
               min={getTodayDateValue()}
               value={planDate}
               onValueChange={onPlanDateChange}

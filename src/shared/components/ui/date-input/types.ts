@@ -1,39 +1,24 @@
-import type { CSSProperties } from "react";
-import type { DateInputPanelProps } from "@/shared/components/ui/date-input-panel";
-import type { InputProps } from "@/shared/components/ui/input";
+import type { AriaAttributes, FocusEventHandler } from "react";
 
-export type DateInputProps = Omit<
-  InputProps,
-  "type" | "value" | "onChange" | "leftIcon" | "rightIcon"
-> & {
+export interface DateInputProps {
+  "aria-describedby"?: AriaAttributes["aria-describedby"];
+  "aria-invalid"?: AriaAttributes["aria-invalid"];
+  "aria-label"?: AriaAttributes["aria-label"];
+  "aria-labelledby"?: AriaAttributes["aria-labelledby"];
+  className?: string;
   clearable?: boolean;
+  disabled?: boolean;
+  form?: string;
+  id?: string;
   max?: string;
   min?: string;
+  name?: string;
+  onBlur?: FocusEventHandler;
+  onFocus?: FocusEventHandler;
   onValueChange: (value: string) => void;
+  placeholder?: string;
+  readOnly?: boolean;
+  required?: boolean;
   value?: string | null;
-};
-
-export interface DateInputCalendarInput {
-  max?: string;
-  min?: string;
-  onValueChange: (value: string) => void;
-  value?: string | null;
-}
-
-export type DateInputControlProps = Omit<
-  DateInputProps,
-  "clearable" | "max" | "min" | "onValueChange" | "wrapperClassName"
-> & {
-  onOpen: () => void;
-  open: boolean;
-  panelId: string;
-};
-
-export type DateInputPanelPortalProps = DateInputPanelProps & {
-  portalTarget: Element;
-};
-
-export interface DateInputPanelState {
-  panelStyle: CSSProperties;
-  portalTarget: Element;
+  wrapperClassName?: string;
 }

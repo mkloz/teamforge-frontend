@@ -95,7 +95,9 @@ export function DateRangeFilter() {
 
       <div className="grid grid-cols-2 gap-2">
         <label className="min-w-0" htmlFor="explore-starts-after">
-          <span className="sr-only">From</span>
+          <span className="mb-1 block font-bold text-slate-muted text-xs">
+            From
+          </span>
           <DateInput
             id="explore-starts-after"
             value={rangeState.startsAfterValue}
@@ -108,7 +110,9 @@ export function DateRangeFilter() {
           />
         </label>
         <label className="min-w-0" htmlFor="explore-starts-before">
-          <span className="sr-only">To</span>
+          <span className="mb-1 block font-bold text-slate-muted text-xs">
+            To
+          </span>
           <DateInput
             id="explore-starts-before"
             value={rangeState.startsBeforeValue}

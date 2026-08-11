@@ -1,6 +1,10 @@
 import type { ComponentProps } from "react";
 
 import { DateInput } from "@/shared/components/ui/date-input";
+import {
+  joinLocalDateTimeValue,
+  splitLocalDateTimeValue,
+} from "@/shared/components/ui/date-time-picker/value-adapters";
 import { TimeInput } from "@/shared/components/ui/time-input";
 import { cn } from "@/shared/lib/utils";
 
@@ -10,65 +14,48 @@ interface DateTimeInputProps
     "value" | "onValueChange" | "placeholder"
   > {
   intervalMinutes?: number;
+  dateAriaLabel?: string;
   onValueChange: (value: string) => void;
   placeholder?: string;
   timePlaceholder?: string;
+  timeAriaLabel?: string;
   value?: string | null;
-}
-
-function splitDateTimeValue(value: string | null | undefined) {
-  if (!value) {
-    return { date: "", time: "" };
-  }
-
-  const [date = "", timeWithSeconds = ""] = value.split("T");
-  const time = timeWithSeconds.slice(0, 5);
-
-  return { date, time };
-}
-
-function joinDateTimeValue(date: string, time: string) {
-  if (!date && !time) {
-    return "";
-  }
-
-  if (!date) {
-    return "";
-  }
-
-  return `${date}T${time || "12:00"}`;
 }
 
 function DateTimeInput({
   className,
+  dateAriaLabel,
   intervalMinutes,
   onValueChange,
   placeholder = "Select date",
   timePlaceholder = "Select time",
+  timeAriaLabel,
   value,
   wrapperClassName,
   ...props
 }: DateTimeInputProps) {
-  const { date, time } = splitDateTimeValue(value);
+  const { date, time } = splitLocalDateTimeValue(value);
 
   return (
     <div className={cn("grid gap-2 sm:grid-cols-2", wrapperClassName)}>
       <DateInput
         {...props}
+        aria-label={dateAriaLabel ?? props["aria-label"] ?? "Date"}
         value={date}
         placeholder={placeholder}
         className={className}
         onValueChange={(nextDate) => {
-          onValueChange(joinDateTimeValue(nextDate, time));
+          onValueChange(joinLocalDateTimeValue(nextDate, time));
         }}
       />
       <TimeInput
+        aria-label={timeAriaLabel ?? "Time"}
         disabled={props.disabled}
         value={time}
         placeholder={timePlaceholder}
         intervalMinutes={intervalMinutes}
         onValueChange={(nextTime) => {
-          onValueChange(joinDateTimeValue(date, nextTime));
+          onValueChange(joinLocalDateTimeValue(date, nextTime));
         }}
       />
     </div>
