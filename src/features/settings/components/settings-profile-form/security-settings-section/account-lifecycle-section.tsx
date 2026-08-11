@@ -1,9 +1,8 @@
 import { LogOut, ShieldCheck, Trash2 } from "lucide-react";
 import { useState } from "react";
-
+import { SettingsActionDialog } from "@/features/settings/components/settings-action-dialog";
 import type { useAccountLifecycle } from "@/features/settings/hooks/use-account-lifecycle";
 import { ACCOUNT_DATA_COPY } from "@/features/settings/lib/account-data-copy";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
   GroupedMenuItem,
@@ -116,7 +115,7 @@ export function AccountLifecycleSection({
                   Sign out everywhere and stop new proposals until you return.
                 </p>
               </div>
-              <ActionDialog
+              <SettingsActionDialog
                 cancelLabel="Keep account active"
                 closeOnConfirm={false}
                 confirmLabel={
@@ -160,7 +159,7 @@ export function AccountLifecycleSection({
                   device.
                 </p>
               </div>
-              <ActionDialog
+              <SettingsActionDialog
                 cancelLabel="Keep account"
                 closeOnConfirm={false}
                 confirmLabel={state.isDeleting ? "Deleting…" : "Delete account"}
@@ -203,7 +202,7 @@ export function AccountLifecycleSection({
                   placeholder={DELETE_CONFIRMATION}
                   aria-label="Type DELETE to confirm account deletion"
                 />
-              </ActionDialog>
+              </SettingsActionDialog>
             </div>
           </GroupedMenuItem>
         ) : null}

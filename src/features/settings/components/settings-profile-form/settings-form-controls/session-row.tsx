@@ -1,5 +1,5 @@
 import { CalendarClock, Clock3, LogOut, Wifi } from "lucide-react";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
+import { SettingsActionDialog } from "@/features/settings/components/settings-action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { CollapsibleSection } from "@/shared/components/ui/collapsible-section";
 import { GroupedMenuItem } from "@/shared/components/ui/grouped-menu";
@@ -153,7 +153,7 @@ function SessionRevokeDialog({
   onConfirm: () => Promise<void>;
 }) {
   return (
-    <ActionDialog
+    <SettingsActionDialog
       cancelLabel="Keep session"
       confirmLabel={isRevoking ? "Signing out..." : actionState.actionLabel}
       description={actionState.actionDescription}

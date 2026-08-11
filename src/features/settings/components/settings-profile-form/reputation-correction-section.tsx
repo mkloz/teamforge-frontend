@@ -1,3 +1,7 @@
+import {
+  useSettingsDraftGuard,
+  useSettingsPendingGuard,
+} from "@/features/settings/components/settings-navigation-guard";
 import { useReputationCorrection } from "@/features/settings/hooks/use-reputation-correction";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -20,6 +24,13 @@ import { Textarea } from "@/shared/components/ui/textarea";
 
 export function ReputationCorrectionSection() {
   const correction = useReputationCorrection();
+  const correctionInputId = correction.form.watch("inputId");
+  const correctionReason = correction.form.watch("reason");
+  useSettingsDraftGuard(
+    "reputation-correction",
+    Boolean(correctionInputId || correctionReason),
+  );
+  useSettingsPendingGuard("reputation-correction", correction.isSubmitting);
 
   return (
     <section aria-labelledby="reputation-correction-heading">

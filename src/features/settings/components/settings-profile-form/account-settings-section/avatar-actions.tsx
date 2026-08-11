@@ -1,5 +1,5 @@
 import { Trash2, Upload, X } from "lucide-react";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
+import { SettingsActionDialog } from "@/features/settings/components/settings-action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import type { AvatarActionState } from "./avatar-action-state";
 
@@ -67,7 +67,7 @@ export function AvatarDeleteAction({
   );
 
   return (
-    <ActionDialog
+    <SettingsActionDialog
       cancelLabel="Keep avatar"
       confirmLabel={actionState.deleteDialogConfirmLabel}
       description="This removes your saved profile photo from Findafew."

@@ -9,6 +9,10 @@ import type { FormEvent } from "react";
 
 import { useCompatibilityInputLock } from "@/features/group-proposals/public/proposal-review";
 import { AdultEligibilityCorrectionControls } from "@/features/settings/components/adult-eligibility-correction-controls";
+import {
+  useSettingsDraftGuard,
+  useSettingsPendingGuard,
+} from "@/features/settings/components/settings-navigation-guard";
 import { AccountSettingsCard } from "@/features/settings/components/settings-profile-form/account-settings-section/account-settings-card";
 import type { useAdultEligibilityCorrection } from "@/features/settings/hooks/use-adult-eligibility-correction";
 import { useAdultEligibilityForm } from "@/features/settings/hooks/use-adult-eligibility-form";
@@ -85,6 +89,18 @@ export function AdultEligibilitySection({
   const compatibilityInputLock = useCompatibilityInputLock({
     enabled: canSubmit,
   });
+  const eligibilityDateOfBirth = form.watch("dateOfBirth");
+  const correctionDateOfBirth = correctionState.form.watch("dateOfBirth");
+  useSettingsDraftGuard("adult-eligibility", Boolean(eligibilityDateOfBirth));
+  useSettingsDraftGuard(
+    "adult-eligibility-correction",
+    Boolean(correctionDateOfBirth),
+  );
+  useSettingsPendingGuard("adult-eligibility", isSubmitting);
+  useSettingsPendingGuard(
+    "adult-eligibility-correction",
+    correctionState.isRequesting,
+  );
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (compatibilityInputLock.isBlocked) {

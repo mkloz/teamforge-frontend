@@ -24,17 +24,15 @@ export function useSettingsRouteState() {
     nextSection: SettingsSection,
     options?: { history?: "push" | "replace" },
   ) {
-    void setSection(
-      nextSection === DEFAULT_SETTINGS_SECTION ? null : nextSection,
-      {
-        history: options?.history ?? "push",
-        scroll: true,
-      },
-    );
+    void setSection(nextSection, {
+      history: options?.history ?? "push",
+      scroll: true,
+    });
   }
 
   return {
     activeSection,
+    explicitSection: section,
     setActiveSection,
   };
 }

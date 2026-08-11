@@ -1,7 +1,7 @@
 import { MonitorX, Shield } from "lucide-react";
+import { SettingsActionDialog } from "@/features/settings/components/settings-action-dialog";
 import { SessionRow } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { SettingsActiveSessionsSkeleton } from "@/features/settings/components/settings-section-skeletons";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
   GroupedMenuItem,
@@ -91,7 +91,7 @@ function RevokeOtherSessionsAction({
   viewState: ActiveSessionsViewState;
 }) {
   return (
-    <ActionDialog
+    <SettingsActionDialog
       cancelLabel="Keep devices"
       confirmLabel={
         isRevokingOtherSessions ? "Signing out..." : "Sign out other devices"

@@ -1,6 +1,6 @@
 import { ShieldOff } from "lucide-react";
+import { SettingsActionDialog } from "@/features/settings/components/settings-action-dialog";
 import { Avatar } from "@/shared/components/common/avatar";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { GroupedMenuItem } from "@/shared/components/ui/grouped-menu";
 import { Spinner } from "@/shared/components/ui/spinner";
@@ -43,7 +43,7 @@ export function BlockedUserRow({
           </div>
         </div>
 
-        <ActionDialog
+        <SettingsActionDialog
           cancelLabel="Keep blocked"
           confirmLabel={unblockLabel}
           description={`Unblocking ${block.name} permits future contact only where your privacy and group settings allow it.`}

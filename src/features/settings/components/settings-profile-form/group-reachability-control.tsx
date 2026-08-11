@@ -14,6 +14,7 @@ import type {
   GroupProposalAvailability,
   GroupProposalAvailabilityState,
 } from "@/features/plan-creation/public/group-proposal-availability";
+import { useSettingsIsMobile } from "@/features/settings/components/settings-navigation-guard";
 import { AvailabilityScopeOption } from "@/features/settings/components/settings-profile-form/availability-scope-option";
 import type { ActivityInviteAvailabilityState } from "@/features/settings/hooks/use-activity-invite-availability";
 import type { ActivityInviteAvailability } from "@/features/settings/schemas/activity-invite-availability.schema";
@@ -352,12 +353,16 @@ function ScopeSupportMessage({
   isBusy: boolean;
   onSave: () => void;
 }) {
+  const isMobile = useSettingsIsMobile();
+
   if (hasInvalidLocalScope) {
     return (
       <p className="text-muted-foreground text-sm">
         Local activities need a saved location.{" "}
         <Link
           {...buildSettingsNavigation("account")}
+          replace={isMobile}
+          state={isMobile ? true : undefined}
           className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
           Add your location

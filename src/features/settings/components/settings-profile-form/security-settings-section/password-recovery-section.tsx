@@ -1,5 +1,5 @@
 import { KeyRound, Mail } from "lucide-react";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
+import { SettingsActionDialog } from "@/features/settings/components/settings-action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { GroupedMenuItem } from "@/shared/components/ui/grouped-menu";
 import { IconTile } from "@/shared/components/ui/icon-tile";
@@ -91,7 +91,7 @@ function PasswordResetAction({
   viewState: PasswordRecoveryViewState;
 }) {
   return (
-    <ActionDialog
+    <SettingsActionDialog
       cancelLabel="Not now"
       confirmLabel={viewState.resetConfirmLabel}
       description={viewState.resetDescription}

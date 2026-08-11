@@ -4,6 +4,7 @@ import {
   lazy,
   type MouseEvent,
   type Ref,
+  type RefObject,
   Suspense,
   useLayoutEffect,
   useRef,
@@ -22,27 +23,35 @@ import { cn } from "@/shared/lib/utils";
 import {
   buildSettingsNavigation,
   type SettingsSection,
-} from "@/shared/navigation/settings-navigation";
+  withHistoryLayerEntry,
+} from "@/shared/navigation";
 
 import { SETTINGS_SECTION_GROUPS } from "./settings-sections";
 
-const ActionDialog = lazy(() =>
-  import("@/shared/components/ui/action-dialog").then((module) => ({
-    default: module.ActionDialog,
-  })),
+const SettingsActionDialog = lazy(() =>
+  import("@/features/settings/components/settings-action-dialog").then(
+    (module) => ({
+      default: module.SettingsActionDialog,
+    }),
+  ),
 );
 
 interface SettingsSidebarProps {
   activeSection: SettingsSection;
   activeSectionLinkRef: Ref<HTMLAnchorElement>;
+  isMobile: boolean;
   isMobileDetailOpen: boolean;
   isSigningOut: boolean;
-  onSectionSelect: (section: SettingsSection) => void;
+  onSectionSelect: (
+    section: SettingsSection,
+    source: HTMLAnchorElement,
+  ) => void;
   onSignOut: () => Promise<void> | void;
   restoredScroll?: {
     scrollX: number;
     scrollY: number;
   };
+  settingsListHeadingRef: RefObject<HTMLHeadingElement | null>;
 }
 
 type SettingsSectionItem =
@@ -51,11 +60,13 @@ type SettingsSectionItem =
 export function SettingsSidebar({
   activeSection,
   activeSectionLinkRef,
+  isMobile,
   isMobileDetailOpen,
   isSigningOut,
   onSectionSelect,
   onSignOut,
   restoredScroll,
+  settingsListHeadingRef,
 }: SettingsSidebarProps) {
   const [signOutDialogOpen, setSignOutDialogOpen] = useState(false);
   const scrollOwnerRef = useRef<HTMLDivElement | null>(null);
@@ -80,7 +91,11 @@ export function SettingsSidebar({
         data-scroll-restoration-id="settings-sidebar"
       >
         <div className="mb-5 border-border border-b pb-5 lg:border-b-0 lg:pb-0">
-          <h1 className="font-bold text-2xl text-ink leading-tight lg:text-3xl">
+          <h1
+            ref={settingsListHeadingRef}
+            className="font-bold text-2xl text-ink leading-tight outline-none lg:text-3xl"
+            tabIndex={-1}
+          >
             Settings
           </h1>
         </div>
@@ -88,6 +103,8 @@ export function SettingsSidebar({
         <SettingsSectionNav
           activeSection={activeSection}
           activeSectionLinkRef={activeSectionLinkRef}
+          isMobile={isMobile}
+          isMobileDetailOpen={isMobileDetailOpen}
           onSectionSelect={onSectionSelect}
         />
 
@@ -158,7 +175,7 @@ function SettingsSignOutDialog({
 
   return (
     <Suspense fallback={null}>
-      <ActionDialog
+      <SettingsActionDialog
         cancelLabel="Stay signed in"
         confirmLabel={confirmLabel}
         description="This ends the current session and returns you to the login screen."
@@ -180,12 +197,19 @@ function getSignOutLabel(isSigningOut: boolean) {
 interface SettingsSectionNavProps {
   activeSection: SettingsSection;
   activeSectionLinkRef: Ref<HTMLAnchorElement>;
-  onSectionSelect: (section: SettingsSection) => void;
+  isMobile: boolean;
+  isMobileDetailOpen: boolean;
+  onSectionSelect: (
+    section: SettingsSection,
+    source: HTMLAnchorElement,
+  ) => void;
 }
 
 function SettingsSectionNav({
   activeSection,
   activeSectionLinkRef,
+  isMobile,
+  isMobileDetailOpen,
   onSectionSelect,
 }: SettingsSectionNavProps) {
   return (
@@ -205,6 +229,8 @@ function SettingsSectionNav({
                   <SettingsSectionNavLink
                     activeSection={activeSection}
                     activeSectionLinkRef={activeSectionLinkRef}
+                    isMobile={isMobile}
+                    isMobileDetailOpen={isMobileDetailOpen}
                     section={section}
                     onSectionSelect={onSectionSelect}
                   />
@@ -221,30 +247,49 @@ function SettingsSectionNav({
 function SettingsSectionNavLink({
   activeSection,
   activeSectionLinkRef,
+  isMobile,
+  isMobileDetailOpen,
   onSectionSelect,
   section,
 }: {
   activeSection: SettingsSection;
   activeSectionLinkRef: Ref<HTMLAnchorElement>;
-  onSectionSelect: (section: SettingsSection) => void;
+  isMobile: boolean;
+  isMobileDetailOpen: boolean;
+  onSectionSelect: (
+    section: SettingsSection,
+    source: HTMLAnchorElement,
+  ) => void;
   section: SettingsSectionItem;
 }) {
   const isActive = activeSection === section.id;
+  const exposeCurrentSection = !isMobile || isMobileDetailOpen;
   const Icon = section.icon;
 
   return (
-    <GroupedMenuAction asChild selected={isActive}>
+    <GroupedMenuAction asChild selected={isActive && exposeCurrentSection}>
       <Link
         ref={isActive ? activeSectionLinkRef : undefined}
         {...buildSettingsNavigation(section.id)}
+        state={
+          isMobile
+            ? (previousState) =>
+                withHistoryLayerEntry(previousState, "settings-detail")
+            : undefined
+        }
         onClick={(event) => {
           if (shouldIgnoreSettingsNavigationClick(event)) {
             return;
           }
 
-          onSectionSelect(section.id);
+          if (isActive && exposeCurrentSection) {
+            event.preventDefault();
+            return;
+          }
+
+          onSectionSelect(section.id, event.currentTarget);
         }}
-        aria-current={isActive ? "page" : undefined}
+        aria-current={isActive && exposeCurrentSection ? "page" : undefined}
       >
         <IconTile
           icon={Icon}

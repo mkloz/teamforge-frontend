@@ -6,10 +6,12 @@ const outputRoot =
   path.join(process.cwd(), "temp", "scenario-screenshots", "smoke");
 const skipWebServer = process.env.SCENARIO_SKIP_WEBSERVER === "1";
 const interactionBaselineSpec = "**/mobile-interaction-baseline.spec.ts";
+const settingsHistoryLayerSpec = "**/settings-history-layer.spec.ts";
 const navigationRestorationSpec = "**/navigation-scroll-restoration.spec.ts";
 const focusedContractSpecs = [
   interactionBaselineSpec,
   navigationRestorationSpec,
+  settingsHistoryLayerSpec,
 ];
 const interactionMobileUse = {
   colorScheme: "dark" as const,
@@ -88,7 +90,7 @@ export default defineConfig({
     },
     {
       name: "interaction-mobile-normal",
-      testMatch: interactionBaselineSpec,
+      testMatch: [interactionBaselineSpec, settingsHistoryLayerSpec],
       use: {
         ...interactionMobileUse,
         contextOptions: { reducedMotion: "no-preference" },
@@ -97,7 +99,7 @@ export default defineConfig({
     },
     {
       name: "interaction-mobile-reduced",
-      testMatch: interactionBaselineSpec,
+      testMatch: [interactionBaselineSpec, settingsHistoryLayerSpec],
       use: {
         ...interactionMobileUse,
         contextOptions: { reducedMotion: "reduce" },

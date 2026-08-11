@@ -17,7 +17,9 @@ interface UseSettingsProfileFormOptions {
 export function useSettingsProfileForm({
   activeSection,
 }: UseSettingsProfileFormOptions) {
-  const profile = useSettingsProfileBase();
+  const profile = useSettingsProfileBase({
+    isAccountActive: activeSection === "account",
+  });
   const shouldLoadPreferences =
     activeSection === "appearance" ||
     activeSection === "matching" ||

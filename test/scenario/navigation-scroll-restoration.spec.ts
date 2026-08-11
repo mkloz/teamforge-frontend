@@ -153,6 +153,9 @@ test("Settings resets a new section and restores window and sidebar entries", as
   page,
 }) => {
   await openScenario(page, "/settings", "settings-standard");
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Profile and account" }),
+  ).toBeVisible();
   const sidebar = page.locator(
     '[data-scroll-restoration-id="settings-sidebar"]',
   );
@@ -165,6 +168,11 @@ test("Settings resets a new section and restores window and sidebar entries", as
 
   await page.getByRole("link", { name: "Appearance" }).click();
   await expect(page).toHaveURL(/[?&]section=appearance(?:&|$)/u);
+  expect(
+    await page.evaluate(
+      () => Reflect.get(history.state, "findafewHistoryLayer") ?? null,
+    ),
+  ).toBeNull();
   await expectWindowScroll(page, 0);
   expect(await requireHistoryKey(page)).not.toBe(accountHistoryKey);
   await expectCachedScrollForKey(

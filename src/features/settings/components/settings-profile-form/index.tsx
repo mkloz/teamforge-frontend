@@ -1,5 +1,17 @@
-import { lazy, type ReactNode, Suspense } from "react";
+import {
+  lazy,
+  type ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { AdultEligibilitySection } from "@/features/settings/components/adult-eligibility-section";
+import {
+  useSettingsDraftGuard,
+  useSettingsPendingGuard,
+} from "@/features/settings/components/settings-navigation-guard";
 import {
   SafetySettingsOverviewSkeleton,
   SettingsActiveSessionsSkeleton,
@@ -83,6 +95,11 @@ function SettingsActiveSection(props: SettingsProfileFormProps) {
 function AccountSettingsPanel({
   account,
 }: Pick<SettingsProfileFormProps, "account">) {
+  const { markUserInteraction, profileDraftFields } =
+    useProfileDraftFields(account);
+  useSettingsDraftGuard("account-profile", profileDraftFields.length > 0);
+  useSettingsPendingGuard("account-profile", account.isSaving);
+
   return (
     <div className="flex min-w-0 flex-col gap-5">
       <AccountSettingsSection
@@ -91,6 +108,7 @@ function AccountSettingsPanel({
         onSubmit={account.onSubmit}
         onAvatarSelect={account.onAvatarSelect}
         onAvatarDelete={account.onAvatarDelete}
+        onUserInteraction={markUserInteraction}
         profileSummary={account.profileSummary}
         status={{
           isOnline: account.isOnline,
@@ -109,6 +127,43 @@ function AccountSettingsPanel({
       />
     </div>
   );
+}
+
+function useProfileDraftFields(account: SettingsProfileFormProps["account"]) {
+  const [draftFields, setDraftFields] = useState<string[]>([]);
+  const hasUserInteractedRef = useRef(false);
+  const markUserInteraction = useCallback(() => {
+    hasUserInteractedRef.current = true;
+  }, []);
+
+  useEffect(() => {
+    const changedFields = new Set<string>();
+    const subscription = account.form.watch((_values, { name }) => {
+      if (!name) {
+        hasUserInteractedRef.current = false;
+        changedFields.clear();
+        setDraftFields([]);
+        return;
+      }
+
+      if (name === "gender" && !hasUserInteractedRef.current) {
+        changedFields.delete(name);
+        setDraftFields([...changedFields]);
+        return;
+      }
+
+      if (account.form.getFieldState(name).isDirty) {
+        changedFields.add(name);
+      } else {
+        changedFields.delete(name);
+      }
+      setDraftFields([...changedFields]);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [account.form]);
+
+  return { markUserInteraction, profileDraftFields: draftFields };
 }
 
 function AppearanceSettingsPanel({

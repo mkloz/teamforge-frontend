@@ -21,4 +21,5 @@ export type AccountSettingsSectionProps = Pick<
 > & {
   status: AccountSettingsStatus;
   errors: AccountSettingsErrors;
+  onUserInteraction: () => void;
 };

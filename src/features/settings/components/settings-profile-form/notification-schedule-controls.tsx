@@ -1,6 +1,9 @@
 import { BellRing, Clock3, type LucideIcon, MoonStar } from "lucide-react";
 import { type FormEvent, useEffect, useId, useState } from "react";
-
+import {
+  useSettingsDraftGuard,
+  useSettingsPendingGuard,
+} from "@/features/settings/components/settings-navigation-guard";
 import { SectionHeading } from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -71,6 +74,14 @@ export function NotificationScheduleControls({
   const isSavingQuietHours = quietHourKeys.some((key) =>
     savingPreferenceKeys.has(key),
   );
+  const hasQuietHoursDraft =
+    quietHoursEnabled &&
+    (timeZoneId !== (preferences.notificationTimeZoneId ?? browserTimeZone) ||
+      startTime !==
+        minuteToTime(preferences.quietHoursStartMinute ?? 22 * 60) ||
+      endTime !== minuteToTime(preferences.quietHoursEndMinute ?? 7 * 60));
+  useSettingsDraftGuard("notification-quiet-hours", hasQuietHoursDraft);
+  useSettingsPendingGuard("notification-quiet-hours", isSavingQuietHours);
 
   useEffect(() => {
     setTimeZoneId(preferences.notificationTimeZoneId ?? browserTimeZone);

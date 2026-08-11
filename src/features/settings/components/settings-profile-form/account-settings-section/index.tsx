@@ -19,6 +19,7 @@ export function AccountSettingsSection({
   onSubmit,
   onAvatarSelect,
   onAvatarDelete,
+  onUserInteraction,
   status,
   errors,
 }: AccountSettingsSectionProps) {
@@ -52,6 +53,10 @@ export function AccountSettingsSection({
       <form
         className="flex flex-col gap-5 [&_[data-slot=form-label]]:text-slate-muted [&_[data-slot=label]]:text-slate-muted"
         onSubmit={onSubmit}
+        onClickCapture={onUserInteraction}
+        onInputCapture={onUserInteraction}
+        onKeyDownCapture={onUserInteraction}
+        onPointerDownCapture={onUserInteraction}
       >
         <AccountSettingsCard
           title="Public profile"

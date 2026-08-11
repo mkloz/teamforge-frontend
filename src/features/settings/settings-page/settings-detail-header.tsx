@@ -7,7 +7,7 @@ import type { SettingsSectionMeta } from "./types";
 
 interface SettingsDetailHeaderProps {
   activeSectionMeta: SettingsSectionMeta | null;
-  mobileBackButtonRef: Ref<HTMLButtonElement>;
+  mobileDetailHeadingRef: Ref<HTMLHeadingElement>;
   onMobileBack: () => void;
 }
 
@@ -22,7 +22,7 @@ interface SettingsDetailHeaderContent {
 
 export function SettingsDetailHeader({
   activeSectionMeta,
-  mobileBackButtonRef,
+  mobileDetailHeadingRef,
   onMobileBack,
 }: SettingsDetailHeaderProps) {
   const content = getSettingsDetailHeaderContent(activeSectionMeta);
@@ -31,11 +31,11 @@ export function SettingsDetailHeader({
     <div className="mb-7 lg:mb-8">
       <div className="fixed inset-x-0 top-0 z-50 border-border border-b bg-canvas px-3 py-2 sm:px-4 lg:hidden">
         <Button
-          ref={mobileBackButtonRef}
           type="button"
           variant="ghost"
           size="sm"
           className="-ml-2 px-2 text-slate-muted"
+          aria-label="Back to Settings"
           onClick={onMobileBack}
         >
           <ChevronLeft size={16} />
@@ -44,7 +44,11 @@ export function SettingsDetailHeader({
       </div>
       <div className="flex items-start gap-3">
         <div className="min-w-0">
-          <h1 className="font-bold text-2xl text-ink leading-tight lg:hidden">
+          <h1
+            ref={mobileDetailHeadingRef}
+            className="font-bold text-2xl text-ink leading-tight outline-none lg:hidden"
+            tabIndex={-1}
+          >
             {content.headline}
           </h1>
           <h2 className="hidden font-bold text-3xl text-ink leading-tight lg:block">

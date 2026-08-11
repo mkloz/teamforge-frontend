@@ -1,13 +1,12 @@
 import { Download, FileArchive, KeyRound, RefreshCw } from "lucide-react";
 import { useState } from "react";
-
+import { SettingsActionDialog } from "@/features/settings/components/settings-action-dialog";
 import { SectionHeading } from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import type { useAccountExport } from "@/features/settings/hooks/use-account-export";
 import {
   ACCOUNT_DATA_COPY,
   getExportStatusCopy,
 } from "@/features/settings/lib/account-data-copy";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import {
@@ -175,7 +174,7 @@ function PasswordConfirmationDialog({
   }
 
   return (
-    <ActionDialog
+    <SettingsActionDialog
       closeOnConfirm={false}
       confirmLabel="Confirm and continue"
       description="Enter your current Findafew password. It is checked securely and is not stored."
@@ -230,7 +229,7 @@ function PasswordConfirmationDialog({
           </FieldError>
         ) : null}
       </Field>
-    </ActionDialog>
+    </SettingsActionDialog>
   );
 }
 

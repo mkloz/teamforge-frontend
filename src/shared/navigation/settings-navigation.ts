@@ -36,7 +36,7 @@ export function validateSettingsRouteSearch(
 }
 
 function buildSettingsSearch(section?: SettingsSection | null) {
-  if (!section || section === "account") {
+  if (!section) {
     return undefined;
   }
 

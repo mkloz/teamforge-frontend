@@ -23,7 +23,11 @@ import { getLocationContractErrorMessage } from "@/shared/lib/location-contract-
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
-export function useSettingsProfileBase() {
+export function useSettingsProfileBase({
+  isAccountActive,
+}: {
+  isAccountActive: boolean;
+}) {
   const {
     data: currentUser,
     isLoading,
@@ -50,12 +54,12 @@ export function useSettingsProfileBase() {
   });
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!currentUser || !isAccountActive) {
       return;
     }
 
     form.reset(buildSettingsProfileFormValues(currentUser));
-  }, [currentUser, form]);
+  }, [currentUser, form, isAccountActive]);
 
   const profileMutation = useMutation({
     meta: {

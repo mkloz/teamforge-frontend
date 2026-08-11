@@ -1,5 +1,4 @@
-import { type ReactNode, useLayoutEffect, useRef } from "react";
-import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { type ReactNode, type RefObject, useLayoutEffect, useRef } from "react";
 import { cn } from "@/shared/lib/utils";
 import type { SettingsSection } from "@/shared/navigation/settings-navigation";
 
@@ -10,10 +9,15 @@ import { SettingsSidebar } from "./settings-sidebar";
 interface SettingsPageContentProps {
   activeSection: SettingsSection;
   children: ReactNode;
+  isMobile: boolean;
   isMobileDetailOpen: boolean;
   isSigningOut: boolean;
   onMobileBack: () => void;
-  onSectionSelect: (section: SettingsSection) => void;
+  mobileReturnFocusRef: RefObject<HTMLAnchorElement | null>;
+  onSectionSelect: (
+    section: SettingsSection,
+    source: HTMLAnchorElement,
+  ) => void;
   onSignOut: () => Promise<void> | void;
   restoredSidebarScroll?: {
     scrollX: number;
@@ -24,21 +28,23 @@ interface SettingsPageContentProps {
 export function SettingsPageContent({
   activeSection,
   children,
+  isMobile,
   isMobileDetailOpen,
   isSigningOut,
+  mobileReturnFocusRef,
   onMobileBack,
   onSectionSelect,
   onSignOut,
   restoredSidebarScroll,
 }: SettingsPageContentProps) {
   const activeSectionMeta = getSettingsSectionMeta(activeSection);
-  const isMobile = useMediaQuery("(max-width: 1023px)");
   const shouldRenderDetail = !isMobile || isMobileDetailOpen;
   const activeSectionLinkRef = useRef<HTMLAnchorElement | null>(null);
-  const mobileBackButtonRef = useRef<HTMLButtonElement | null>(null);
+  const mobileDetailHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const settingsListHeadingRef = useRef<HTMLHeadingElement | null>(null);
   const previousActiveSectionRef = useRef(activeSection);
-  const previousIsMobileRef = useRef(false);
-  const previousMobileDetailOpenRef = useRef(false);
+  const previousIsMobileRef = useRef(isMobile);
+  const previousMobileDetailOpenRef = useRef(isMobileDetailOpen);
 
   useLayoutEffect(() => {
     const didSectionChange = previousActiveSectionRef.current !== activeSection;
@@ -57,10 +63,13 @@ export function SettingsPageContent({
       isMobileDetailOpen &&
       (!wasMobileDetailOpen || didSectionChange || didEnterMobileLayout);
     const focusTarget = shouldFocusMobileDetail
-      ? mobileBackButtonRef.current
+      ? mobileDetailHeadingRef.current
       : wasMobileDetailOpen
-        ? activeSectionLinkRef.current
-        : null;
+        ? (getConnectedElement(mobileReturnFocusRef.current) ??
+          settingsListHeadingRef.current)
+        : didEnterMobileLayout
+          ? settingsListHeadingRef.current
+          : null;
 
     if (!focusTarget) {
       return undefined;
@@ -68,18 +77,20 @@ export function SettingsPageContent({
 
     focusTarget.focus({ preventScroll: true });
     return undefined;
-  }, [activeSection, isMobile, isMobileDetailOpen]);
+  }, [activeSection, isMobile, isMobileDetailOpen, mobileReturnFocusRef]);
 
   return (
     <div className="mx-auto grid w-full max-w-7xl gap-3 px-3 py-5 sm:px-4 md:px-8 lg:grid-cols-[15rem_1px_minmax(0,38rem)] lg:gap-7 lg:py-10 xl:gap-10">
       <SettingsSidebar
         activeSection={activeSection}
         activeSectionLinkRef={activeSectionLinkRef}
+        isMobile={isMobile}
         isMobileDetailOpen={isMobileDetailOpen}
         isSigningOut={isSigningOut}
         onSectionSelect={onSectionSelect}
         onSignOut={onSignOut}
         restoredScroll={restoredSidebarScroll}
+        settingsListHeadingRef={settingsListHeadingRef}
       />
 
       <div
@@ -97,7 +108,7 @@ export function SettingsPageContent({
           <>
             <SettingsDetailHeader
               activeSectionMeta={activeSectionMeta}
-              mobileBackButtonRef={mobileBackButtonRef}
+              mobileDetailHeadingRef={mobileDetailHeadingRef}
               onMobileBack={onMobileBack}
             />
             {children}
@@ -106,4 +117,10 @@ export function SettingsPageContent({
       </section>
     </div>
   );
+}
+
+function getConnectedElement<TElement extends HTMLElement>(
+  element: TElement | null,
+) {
+  return element?.isConnected ? element : null;
 }
