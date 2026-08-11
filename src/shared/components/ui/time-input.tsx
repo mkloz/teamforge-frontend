@@ -1,89 +1,94 @@
-import { cn } from "@/shared/lib/utils";
+import { AccessibleTimeInput } from "@/shared/components/ui/accessible-time-input";
+import { TimePickerBoundary } from "@/shared/components/ui/date-time-picker/time-picker-boundary";
 import {
-  TimeInputControl,
-  type TimeInputProps,
-} from "./time-input/time-input-control";
-import { TimeInputPanel } from "./time-input/time-input-panel";
-import { useTimeInputState } from "./time-input/use-time-input-state";
+  parseTimeValue,
+  serializeTimeValue,
+} from "@/shared/components/ui/date-time-picker/value-adapters";
+import { Input } from "@/shared/components/ui/input";
+import type { TimeInputProps } from "@/shared/components/ui/time-input/types";
+import { cn } from "@/shared/lib/utils";
 
-function TimeInput({
+function TimeInput(props: TimeInputProps) {
+  return (
+    <TimePickerBoundary fallback={<NativeTimeInputFallback {...props} />}>
+      <AccessibleTimeInput {...props} />
+    </TimePickerBoundary>
+  );
+}
+
+function NativeTimeInputFallback({
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   className,
-  clearable = true,
   disabled,
-  intervalMinutes = 5,
+  form,
+  id,
+  max,
+  min,
+  name,
+  onBlur,
+  onFocus,
   onValueChange,
-  placeholder = "Select time",
+  placeholder,
+  readOnly,
+  required,
   value,
   wrapperClassName,
-  ...props
 }: TimeInputProps) {
-  const {
-    activeHourRef,
-    activeMinuteRef,
-    activePeriodRef,
-    closePanel,
-    commitParts,
-    hourOptions,
-    minuteOptions,
-    open,
-    openPanel,
-    panelId,
-    panelRef,
-    panelState,
-    selectedMinute,
-    selectedParts,
-    setTimeFormat,
-    triggerRef,
-    useMeridiem,
-  } = useTimeInputState({
-    intervalMinutes,
-    onValueChange,
-    value,
-  });
+  const parsedValue = parseTimeValue(value);
+  const minValue = parseTimeValue(min);
+  const maxValue = parseTimeValue(max);
+  const normalizedValue =
+    parsedValue &&
+    (!minValue || parsedValue.compare(minValue) >= 0) &&
+    (!maxValue || parsedValue.compare(maxValue) <= 0)
+      ? parsedValue
+      : null;
 
   return (
-    <div ref={triggerRef} className={cn("relative w-full", wrapperClassName)}>
-      <TimeInputControl
+    <div className={cn("relative w-full", wrapperClassName)}>
+      <Input
+        type="time"
+        id={id}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={ariaInvalid}
+        aria-label={ariaLabelledBy ? undefined : (ariaLabel ?? placeholder)}
+        aria-labelledby={ariaLabelledBy}
         className={className}
         disabled={disabled}
-        inputProps={props}
-        onOpen={openPanel}
-        open={open}
-        panelId={panelId}
-        placeholder={placeholder}
-        useMeridiem={useMeridiem}
-        value={value}
-      />
+        form={form}
+        max={serializeTimeValue(maxValue)}
+        min={serializeTimeValue(minValue)}
+        name={name}
+        onBlur={onBlur}
+        onChange={(event) => {
+          const nextValue = event.currentTarget.value;
+          if (!nextValue) {
+            onValueChange("");
+            return;
+          }
 
-      {panelState ? (
-        <TimeInputPanel
-          activeHourRef={(node) => {
-            activeHourRef.current = node;
-          }}
-          activeMinuteRef={(node) => {
-            activeMinuteRef.current = node;
-          }}
-          activePeriodRef={(node) => {
-            activePeriodRef.current = node;
-          }}
-          clearable={clearable}
-          closePanel={closePanel}
-          commitParts={commitParts}
-          hourOptions={hourOptions}
-          minuteOptions={minuteOptions}
-          onValueChange={onValueChange}
-          panelId={panelId}
-          panelRef={panelRef}
-          panelStyle={panelState.panelStyle}
-          portalTarget={panelState.portalTarget}
-          selectedMinute={selectedMinute}
-          selectedParts={selectedParts}
-          setTimeFormat={setTimeFormat}
-          useMeridiem={useMeridiem}
-        />
-      ) : null}
+          const parsedNextValue = parseTimeValue(nextValue);
+          if (
+            parsedNextValue &&
+            (!minValue || parsedNextValue.compare(minValue) >= 0) &&
+            (!maxValue || parsedNextValue.compare(maxValue) <= 0)
+          ) {
+            onValueChange(serializeTimeValue(parsedNextValue));
+          }
+        }}
+        onFocus={onFocus}
+        placeholder={placeholder}
+        readOnly={readOnly}
+        required={required}
+        step={60}
+        value={serializeTimeValue(normalizedValue)}
+      />
     </div>
   );
 }
 
+export type { TimeInputProps } from "@/shared/components/ui/time-input/types";
 export { TimeInput };

@@ -100,6 +100,88 @@ test("DOB supports direct segment entry and a bounded short-viewport dialog", as
   await expect(trigger).toBeFocused();
 });
 
+test("plan creation preserves exact edits and snaps only after Done", async ({
+  page,
+}, testInfo) => {
+  await openScenario(
+    page,
+    "/plans/new?open=true&step=3",
+    "plan-creation-standard",
+  );
+  await page.getByRole("button", { name: /Time.*10:25/iu }).click();
+
+  const minute = page.getByRole("spinbutton", {
+    name: /minute.*Plan time/iu,
+  });
+  await minute.click();
+  await minute.pressSequentially("27");
+  await expect(minute).toHaveAttribute("aria-valuenow", "27");
+
+  const trigger = page.getByRole("button", {
+    name: /Open time picker.*Plan time/iu,
+  });
+  const triggerBox = await trigger.boundingBox();
+  expect(triggerBox?.height).toBeGreaterThanOrEqual(44);
+  await trigger.click();
+  await page.setViewportSize({ width: 390, height: 360 });
+
+  const popover = page.locator('[data-slot="time-picker-popover"]');
+  await expect(popover).toBeVisible();
+  const popoverBox = await popover.boundingBox();
+  expect(popoverBox?.height).toBeLessThanOrEqual(344);
+  expect((popoverBox?.y ?? 0) + (popoverBox?.height ?? 0)).toBeLessThanOrEqual(
+    360,
+  );
+  await expect(popover.getByRole("button", { name: "Done" })).toBeVisible();
+  await assertMotionPreference(page, testInfo.project.name);
+  await expect(
+    popover.getByText("Will save as 10:25 to match 5-minute intervals."),
+  ).toBeVisible();
+  await expect(minute).toHaveAttribute("aria-valuenow", "27");
+
+  await popover.getByRole("button", { name: "Done" }).click();
+  await expect(trigger).toBeFocused();
+  await expect(minute).toHaveAttribute("aria-valuenow", "25");
+});
+
+test("time picker stays inside a plan-change dialog and Escape unwinds one layer", async ({
+  page,
+}) => {
+  await openScenario(page, "/groups/scenario-group-basketball", "group-member");
+  await page
+    .getByRole("button", { name: /Suggest a plan change|Propose a time/iu })
+    .click();
+
+  const parentDialog = page.getByRole("dialog", {
+    name: "Suggest a plan change",
+  });
+  await expect(parentDialog).toBeVisible();
+  const dateTimeSection = parentDialog.getByRole("button", {
+    name: /Date and time/iu,
+  });
+  await dateTimeSection.click();
+
+  const trigger = parentDialog.getByRole("button", {
+    name: /Open time picker.*Time/iu,
+  });
+  await trigger.click();
+  const nestedPopover = parentDialog.locator(
+    '[data-slot="time-picker-popover"]',
+  );
+  await expect(nestedPopover).toBeVisible();
+  await expect(
+    nestedPopover.getByRole("dialog", { name: "Choose time" }),
+  ).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(nestedPopover).toBeHidden();
+  await expect(parentDialog).toBeVisible();
+  await expect(trigger).toBeFocused();
+
+  await page.keyboard.press("Escape");
+  await expect(parentDialog).toBeHidden();
+});
+
 async function openScenario(
   page: import("@playwright/test").Page,
   pathname: string,

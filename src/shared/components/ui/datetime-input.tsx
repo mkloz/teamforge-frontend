@@ -45,12 +45,17 @@ function DateTimeInput({
         placeholder={placeholder}
         className={className}
         onValueChange={(nextDate) => {
-          onValueChange(joinLocalDateTimeValue(nextDate, time));
+          onValueChange(nextDate ? joinLocalDateTimeValue(nextDate, time) : "");
         }}
       />
       <TimeInput
+        aria-describedby={props["aria-describedby"]}
+        aria-invalid={props["aria-invalid"]}
         aria-label={timeAriaLabel ?? "Time"}
-        disabled={props.disabled}
+        clearable={false}
+        disabled={props.disabled || !date}
+        readOnly={props.readOnly}
+        required={props.required}
         value={time}
         placeholder={timePlaceholder}
         intervalMinutes={intervalMinutes}

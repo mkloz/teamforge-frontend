@@ -70,6 +70,7 @@ export function DateTimeSection({
             <FieldLabel htmlFor="plan-time">Time</FieldLabel>
             <TimeInput
               id="plan-time"
+              aria-label="Plan time"
               value={planTime}
               onValueChange={onPlanTimeChange}
             />

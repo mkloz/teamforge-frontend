@@ -1,177 +1,142 @@
-import type { TimeParts, TimePeriod } from "./types";
+import { Time } from "@internationalized/date";
 
-const TIME_12_HOUR_DISPLAY_FORMATTER = new Intl.DateTimeFormat(undefined, {
-  hour: "numeric",
-  hour12: true,
-  minute: "2-digit",
-});
-const TIME_24_HOUR_DISPLAY_FORMATTER = new Intl.DateTimeFormat(undefined, {
-  hour: "2-digit",
-  hour12: false,
-  minute: "2-digit",
-});
-const LOCAL_TIME_FORMAT_OPTIONS = new Intl.DateTimeFormat().resolvedOptions();
-const LOCAL_NUMERIC_HOUR_FORMAT_OPTIONS = new Intl.DateTimeFormat(undefined, {
-  hour: "numeric",
-}).resolvedOptions();
+import { serializeTimeValue } from "@/shared/components/ui/date-time-picker/value-adapters";
 
-export function formatTimeDisplay(
-  value: string | null | undefined,
-  useMeridiem: boolean,
+export const DEFAULT_TIME_INTERVAL_MINUTES = 5;
+
+export function normalizeTimeInterval(intervalMinutes: number | undefined) {
+  if (
+    !Number.isFinite(intervalMinutes) ||
+    !Number.isInteger(intervalMinutes) ||
+    !intervalMinutes ||
+    intervalMinutes < 1 ||
+    60 % intervalMinutes !== 0
+  ) {
+    return DEFAULT_TIME_INTERVAL_MINUTES;
+  }
+
+  return intervalMinutes;
+}
+
+export function snapTimeValue(
+  value: Time | null,
+  intervalMinutes: number | undefined,
+) {
+  return resolveTimeCommitValue(value, intervalMinutes);
+}
+
+export function getCurrentLocalTimeValue(now = new Date()) {
+  return new Time(now.getHours(), now.getMinutes());
+}
+
+export function getInitialTimeDraft(
+  committedValue: Time | null,
+  intervalMinutes: number | undefined,
+  now = new Date(),
+  minValue: Time | null = null,
+  maxValue: Time | null = null,
+) {
+  return (
+    committedValue ??
+    resolveTimeCommitValue(
+      getCurrentLocalTimeValue(now),
+      intervalMinutes,
+      minValue,
+      maxValue,
+    )
+  );
+}
+
+export function isTimeWithinRange(
+  value: Time,
+  minValue: Time | null,
+  maxValue: Time | null,
+) {
+  return (
+    (!minValue || value.compare(minValue) >= 0) &&
+    (!maxValue || value.compare(maxValue) <= 0)
+  );
+}
+
+export function resolveTimeCommitValue(
+  value: Time | null,
+  intervalMinutes: number | undefined,
+  minValue: Time | null = null,
+  maxValue: Time | null = null,
 ) {
   if (!value) {
-    return "";
-  }
-
-  const timeMinutes = parseTimeMinutes(value);
-
-  if (timeMinutes == null) {
-    return value;
-  }
-
-  const date = new Date();
-  date.setHours(Math.floor(timeMinutes / 60), timeMinutes % 60, 0, 0);
-
-  return getTimeDisplayFormatter(useMeridiem).format(date);
-}
-
-function getTimeDisplayFormatter(useMeridiem: boolean) {
-  return useMeridiem
-    ? TIME_12_HOUR_DISPLAY_FORMATTER
-    : TIME_24_HOUR_DISPLAY_FORMATTER;
-}
-
-function parseTimeMinutes(value: string | null | undefined) {
-  if (!value) {
     return null;
   }
 
-  const timeParts = readTimeMinuteParts(value);
-
-  if (!areValidTimeMinuteParts(timeParts)) {
-    return null;
-  }
-
-  return getTotalTimeMinutes(timeParts);
-}
-
-function readTimeMinuteParts(value: string) {
-  const [hourValue, minuteValue] = value.split(":").map(Number);
-
-  return { hourValue, minuteValue };
-}
-
-function areValidTimeMinuteParts({
-  hourValue,
-  minuteValue,
-}: ReturnType<typeof readTimeMinuteParts>) {
-  return isValidTimeHour(hourValue) && isValidTimeMinute(minuteValue);
-}
-
-function isValidTimeHour(hour: number) {
-  return Number.isFinite(hour) && hour >= 0 && hour <= 23;
-}
-
-function isValidTimeMinute(minute: number) {
-  return Number.isFinite(minute) && minute >= 0 && minute <= 59;
-}
-
-function getTotalTimeMinutes({
-  hourValue,
-  minuteValue,
-}: ReturnType<typeof readTimeMinuteParts>) {
-  return hourValue * 60 + minuteValue;
-}
-
-export function buildMinuteOptions(intervalMinutes: number) {
-  const safeInterval = getSafeInterval(intervalMinutes);
-  const optionCount = Math.ceil(60 / safeInterval);
-
-  return Array.from({ length: optionCount }, (_, index) => {
-    return Math.min(index * safeInterval, 59);
-  });
-}
-
-function getSafeInterval(intervalMinutes: number) {
-  return Math.max(5, Math.min(60, intervalMinutes));
-}
-
-export function buildHourOptions(useMeridiem: boolean) {
-  return Array.from({ length: useMeridiem ? 12 : 24 }, (_, index) =>
-    useMeridiem ? index + 1 : index,
+  const { firstGridIndex, interval, lastGridIndex } = getTimeCommitGrid(
+    intervalMinutes,
+    minValue,
+    maxValue,
   );
+
+  if (firstGridIndex > lastGridIndex) {
+    return null;
+  }
+
+  const minuteOfDay = value.hour * 60 + value.minute;
+  const nearestGridIndex = Math.floor((minuteOfDay + interval / 2) / interval);
+  const resolvedGridIndex = Math.min(
+    lastGridIndex,
+    Math.max(firstGridIndex, nearestGridIndex),
+  );
+  const resolvedMinute = resolvedGridIndex * interval;
+
+  return new Time(Math.floor(resolvedMinute / 60), resolvedMinute % 60);
 }
 
-export function getTimeParts(
-  value: string | null | undefined,
-  intervalMinutes: number,
-  useMeridiem: boolean,
-): TimeParts {
-  const fallbackValue = getCurrentTimeValue(intervalMinutes);
-  const minutes =
-    parseTimeMinutes(value) ?? parseTimeMinutes(fallbackValue) ?? 0;
-  const hour24 = Math.floor(minutes / 60);
-  const minute = minutes % 60;
-  const period: TimePeriod = hour24 >= 12 ? "PM" : "AM";
+export function getTimeAdjustmentMessage(
+  draftValue: Time | null,
+  intervalMinutes: number | undefined,
+  minValue: Time | null = null,
+  maxValue: Time | null = null,
+) {
+  if (!draftValue) {
+    const { firstGridIndex, interval, lastGridIndex } = getTimeCommitGrid(
+      intervalMinutes,
+      minValue,
+      maxValue,
+    );
+    return firstGridIndex > lastGridIndex
+      ? `No ${interval}-minute interval is available within this time range.`
+      : "";
+  }
+
+  const snappedValue = resolveTimeCommitValue(
+    draftValue,
+    intervalMinutes,
+    minValue,
+    maxValue,
+  );
+  if (!snappedValue) {
+    return `No ${normalizeTimeInterval(intervalMinutes)}-minute interval is available within this time range.`;
+  }
+  const draft = serializeTimeValue(draftValue);
+  const snapped = serializeTimeValue(snappedValue);
+
+  return draft === snapped
+    ? ""
+    : `Will save as ${snapped} to match ${normalizeTimeInterval(intervalMinutes)}-minute intervals.`;
+}
+
+function getTimeCommitGrid(
+  intervalMinutes: number | undefined,
+  minValue: Time | null,
+  maxValue: Time | null,
+) {
+  const interval = normalizeTimeInterval(intervalMinutes);
+  const minMinute = minValue ? minValue.hour * 60 + minValue.minute : 0;
+  const maxMinute = maxValue
+    ? maxValue.hour * 60 + maxValue.minute
+    : 24 * 60 - 1;
 
   return {
-    hour: useMeridiem ? hour24 % 12 || 12 : hour24,
-    minute,
-    period,
+    firstGridIndex: Math.ceil(minMinute / interval),
+    interval,
+    lastGridIndex: Math.floor(maxMinute / interval),
   };
-}
-
-function getCurrentTimeValue(intervalMinutes: number) {
-  const safeInterval = getSafeInterval(intervalMinutes);
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const roundedMinutes =
-    Math.round(currentMinutes / safeInterval) * safeInterval;
-  const boundedMinutes = Math.min(23 * 60 + 59, roundedMinutes);
-
-  return formatTimeValue(Math.floor(boundedMinutes / 60), boundedMinutes % 60);
-}
-
-function formatTimeValue(hour: number, minute: number) {
-  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-}
-
-export function getCommittedTimeValue({
-  parts,
-  selectedParts,
-  useMeridiem,
-}: {
-  parts: Partial<TimeParts>;
-  selectedParts: TimeParts;
-  useMeridiem: boolean;
-}) {
-  const hour = parts.hour ?? selectedParts.hour;
-  const minute = parts.minute ?? selectedParts.minute;
-  const period = parts.period ?? selectedParts.period;
-
-  return formatTimeValue(toHour24(hour, period, useMeridiem), minute);
-}
-
-function toHour24(hour: number, period: TimePeriod, useMeridiem: boolean) {
-  if (!useMeridiem) {
-    return hour;
-  }
-
-  return (hour % 12) + (period === "PM" ? 12 : 0);
-}
-
-export function getNearestTimeOption(options: number[], value: number) {
-  return options.reduce((nearest, option) =>
-    Math.abs(option - value) < Math.abs(nearest - value) ? option : nearest,
-  );
-}
-
-export function shouldUseMeridiemTime() {
-  const timeZone = LOCAL_TIME_FORMAT_OPTIONS.timeZone;
-
-  if (timeZone === "Europe/London" || timeZone === "Europe/Belfast") {
-    return true;
-  }
-
-  return LOCAL_NUMERIC_HOUR_FORMAT_OPTIONS.hour12 === true;
 }
