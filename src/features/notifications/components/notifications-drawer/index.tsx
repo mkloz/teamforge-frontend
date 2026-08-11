@@ -1,9 +1,15 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useReducer, useRef } from "react";
+import { useReducer, useRef, useState } from "react";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { resolveNotificationDestination } from "@/features/notifications/lib/destination";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import type { Notification } from "@/shared/schemas";
+import {
+  getNotificationReadSuccessMessage,
+  type NotificationReadAction,
+  type NotificationReadFeedback,
+  NotificationReadFeedbackNotice,
+} from "./notification-read-feedback";
 import {
   INITIAL_NOTIFICATIONS_DRAWER_STATE,
   notificationsDrawerReducer,
@@ -44,6 +50,8 @@ export function NotificationsDrawerContent({
     notificationsDrawerReducer,
     INITIAL_NOTIFICATIONS_DRAWER_STATE,
   );
+  const [readFeedback, setReadFeedback] =
+    useState<NotificationReadFeedback>(null);
   const {
     markAllReadDialogOpen,
     pendingDetailAction,
@@ -95,16 +103,13 @@ export function NotificationsDrawerContent({
   }
 
   async function handleToggleNotificationRead(notification: Notification) {
+    const action = getNotificationReadToggleAction(notification);
     dispatchDrawerState({
       notificationId: notification.id,
       type: "start-read-toggle",
     });
 
-    await toggleNotificationRead(
-      notification,
-      markReadAsync,
-      markUnreadAsync,
-    ).finally(() => {
+    await runNotificationReadChange(notification, action).finally(() => {
       dispatchDrawerState({ type: "clear-read-toggle" });
     });
   }
@@ -112,18 +117,68 @@ export function NotificationsDrawerContent({
   async function handleToggleSelectedNotificationRead(
     notification: Notification,
   ) {
+    const action = getNotificationReadToggleAction(notification);
     dispatchDrawerState({
-      action: getNotificationReadToggleAction(notification),
+      action,
       notificationId: notification.id,
       type: "start-detail-action",
     });
 
-    await toggleNotificationRead(
-      notification,
-      markReadAsync,
-      markUnreadAsync,
-    ).finally(() => {
+    await runNotificationReadChange(notification, action).finally(() => {
       dispatchDrawerState({ type: "clear-detail-action" });
+    });
+  }
+
+  async function runNotificationReadChange(
+    notification: Pick<Notification, "id" | "title">,
+    action: NotificationReadAction,
+  ) {
+    setReadFeedback(null);
+
+    try {
+      const mutation = action === "mark-read" ? markReadAsync : markUnreadAsync;
+      await mutation(notification.id);
+      setReadFeedback({
+        kind: "success",
+        message: getNotificationReadSuccessMessage(notification.title, action),
+      });
+    } catch {
+      setReadFeedback({
+        action,
+        kind: "error",
+        notificationId: notification.id,
+        title: notification.title,
+      });
+    }
+  }
+
+  async function handleRetryNotificationRead() {
+    if (readFeedback?.kind !== "error") {
+      return;
+    }
+
+    const failedChange = readFeedback;
+    const isSelected = selectedNotificationId === failedChange.notificationId;
+    dispatchDrawerState(
+      isSelected
+        ? {
+            action: failedChange.action,
+            notificationId: failedChange.notificationId,
+            type: "start-detail-action",
+          }
+        : {
+            notificationId: failedChange.notificationId,
+            type: "start-read-toggle",
+          },
+    );
+
+    await runNotificationReadChange(
+      { id: failedChange.notificationId, title: failedChange.title },
+      failedChange.action,
+    ).finally(() => {
+      dispatchDrawerState({
+        type: isSelected ? "clear-detail-action" : "clear-read-toggle",
+      });
     });
   }
 
@@ -149,6 +204,16 @@ export function NotificationsDrawerContent({
           })
         }
         onRefresh={handleRefreshNotifications}
+      />
+
+      <NotificationReadFeedbackNotice
+        feedback={readFeedback}
+        isRetrying={
+          pendingReadToggleNotificationId !== null ||
+          pendingDetailAction === "mark-read" ||
+          pendingDetailAction === "mark-unread"
+        }
+        onRetry={() => void handleRetryNotificationRead()}
       />
 
       {/* Scrollable list */}
@@ -187,7 +252,7 @@ function getSelectedNotification(
 
 function getNotificationReadToggleAction(
   notification: Notification,
-): PendingDetailAction {
+): Exclude<PendingDetailAction, "open"> {
   return notification.isRead ? "mark-unread" : "mark-read";
 }
 
@@ -201,14 +266,4 @@ async function markNotificationReadBeforeOpen(
   }
 
   await markReadAsync(notification.id);
-}
-
-async function toggleNotificationRead(
-  notification: Notification,
-  markReadAsync: NotificationReadMutation,
-  markUnreadAsync: NotificationReadMutation,
-) {
-  const mutation = notification.isRead ? markUnreadAsync : markReadAsync;
-
-  await mutation(notification.id);
 }
