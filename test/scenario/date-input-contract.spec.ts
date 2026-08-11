@@ -144,6 +144,34 @@ test("plan creation preserves exact edits and snaps only after Done", async ({
   await expect(minute).toHaveAttribute("aria-valuenow", "25");
 });
 
+test("mobile plan review moves to and focuses a missing detail section", async ({
+  page,
+}) => {
+  await openScenario(
+    page,
+    "/plans/new?open=true&step=3",
+    "plan-creation-validation",
+  );
+
+  await page
+    .getByRole("button", { name: "Review missing plan details" })
+    .click();
+  const drawer = page.getByRole("dialog", { name: "Finish your plan" });
+  await drawer
+    .getByRole("button", {
+      name: /Local group formation.*Open the relevant section/iu,
+    })
+    .click();
+
+  const basicsTrigger = page
+    .locator("#plan-basics")
+    .getByRole("button", { name: /Basics/iu });
+  await expect(drawer).toBeHidden();
+  await expect(basicsTrigger).toBeFocused();
+  await expect(basicsTrigger).toHaveAttribute("aria-expanded", "true");
+  await expect(basicsTrigger).toBeInViewport();
+});
+
 test("time picker stays inside a plan-change dialog and Escape unwinds one layer", async ({
   page,
 }) => {

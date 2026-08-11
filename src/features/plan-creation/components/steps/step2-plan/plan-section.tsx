@@ -33,7 +33,7 @@ export function PlanSection({
     <section
       id={sectionId}
       className={cn(
-        "border-border/35 border-b transition-colors",
+        "scroll-mt-24 border-border/35 border-b transition-colors",
         active && "bg-primary-soft",
       )}
     >

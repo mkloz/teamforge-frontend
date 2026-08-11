@@ -45,6 +45,7 @@ export function OnboardingPractice({
 }: OnboardingPracticeProps) {
   const progress = useOnboardingPracticeProgress(storageKey);
   const taskHeadingRef = useRef<HTMLHeadingElement>(null);
+  const pendingFocusTaskIdRef = useRef<OnboardingPracticeTaskId | null>(null);
   const reduceMotion = useReducedMotion();
   const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
   const [showCorrection, setShowCorrection] = useState(false);
@@ -66,7 +67,15 @@ export function OnboardingPractice({
     setSelectedChoiceId(null);
     setShowCorrection(false);
     if (focusHeading) {
-      window.requestAnimationFrame(() => taskHeadingRef.current?.focus());
+      pendingFocusTaskIdRef.current = taskId;
+    }
+  }
+
+  function registerTaskHeading(node: HTMLHeadingElement | null) {
+    taskHeadingRef.current = node;
+    if (node && pendingFocusTaskIdRef.current === activeTask.id) {
+      pendingFocusTaskIdRef.current = null;
+      node.focus({ preventScroll: true });
     }
   }
 
@@ -130,7 +139,7 @@ export function OnboardingPractice({
               </p>
               <h2
                 id="practice-task-title"
-                ref={taskHeadingRef}
+                ref={registerTaskHeading}
                 tabIndex={-1}
                 className="mt-2 text-balance font-black text-3xl leading-[1.02] tracking-[-0.04em] outline-none sm:text-4xl"
               >

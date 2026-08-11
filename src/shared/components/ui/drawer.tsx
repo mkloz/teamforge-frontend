@@ -15,6 +15,12 @@ function DrawerPortal({
   return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />;
 }
 
+function DrawerClose({
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Close>) {
+  return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />;
+}
+
 function DrawerOverlay({
   className,
   ...props
@@ -97,4 +103,11 @@ function DrawerDescription({
   );
 }
 
-export { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle };
+export {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+};

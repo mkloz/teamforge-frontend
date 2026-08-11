@@ -40,10 +40,10 @@ describe("onboarding practice interaction", () => {
 
     await user.click(screen.getByRole("button", { name: "Next moment" }));
 
-    expect(
-      await screen.findByRole("heading", {
-        name: nextTask.title,
-      }),
-    ).toBeInTheDocument();
+    const nextHeading = await screen.findByRole("heading", {
+      name: nextTask.title,
+    });
+    expect(nextHeading).toBeInTheDocument();
+    expect(nextHeading).toHaveFocus();
   });
 });

@@ -10,6 +10,7 @@ import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
@@ -33,6 +34,10 @@ export function MobilePlanReview({ fw }: MobilePlanReviewProps) {
   const [showPeek, setShowPeek] = useState(false);
   const hasPeekedRef = useRef(false);
   const hasUserScrolledRef = useRef(false);
+  const pendingSectionNavigationRef = useRef<Exclude<
+    PlanSectionTarget,
+    "previous-step"
+  > | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const reviewState = getMobilePlanReviewState(fw);
   const isReady = fw.canAdvanceStep2;
@@ -92,14 +97,33 @@ export function MobilePlanReview({ fw }: MobilePlanReviewProps) {
   }
 
   function handleMissingDetail(detail: MissingPlanDetail) {
-    setDrawerOpen(false);
-
     if (detail.target === "previous-step") {
+      pendingSectionNavigationRef.current = null;
       fw.goBack();
       return;
     }
 
-    openPlanSection(detail.target);
+    pendingSectionNavigationRef.current = detail.target;
+  }
+
+  function handleDrawerCloseAutoFocus(event: Event) {
+    const target = pendingSectionNavigationRef.current;
+    if (!target) {
+      return;
+    }
+
+    pendingSectionNavigationRef.current = null;
+    const navigation = preparePlanSection(target);
+    if (!navigation) {
+      return;
+    }
+
+    event.preventDefault();
+    navigation.trigger.focus({ preventScroll: true });
+    scrollElementIntoView(navigation.section, {
+      intent: "locate",
+      block: "start",
+    });
   }
 
   return (
@@ -190,6 +214,7 @@ export function MobilePlanReview({ fw }: MobilePlanReviewProps) {
         fw={fw}
         isReady={isReady}
         missingDetails={reviewState.missingDetails}
+        onCloseAutoFocus={handleDrawerCloseAutoFocus}
         onMissingDetail={handleMissingDetail}
         onOpenChange={setDrawerOpen}
         open={drawerOpen}
@@ -202,6 +227,7 @@ function MobilePlanDrawer({
   fw,
   isReady,
   missingDetails,
+  onCloseAutoFocus,
   onMissingDetail,
   onOpenChange,
   open,
@@ -209,13 +235,17 @@ function MobilePlanDrawer({
   fw: PlanBuilderState;
   isReady: boolean;
   missingDetails: MissingPlanDetail[];
+  onCloseAutoFocus: (event: Event) => void;
   onMissingDetail: (detail: MissingPlanDetail) => void;
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[88dvh] overflow-hidden rounded-t-2xl border-border/50 bg-canvas md:hidden">
+      <DrawerContent
+        className="max-h-[88dvh] overflow-hidden rounded-t-2xl border-border/50 bg-canvas md:hidden"
+        onCloseAutoFocus={onCloseAutoFocus}
+      >
         {isReady ? (
           <ReadyPlanReview fw={fw} onOpenChange={onOpenChange} />
         ) : (
@@ -249,28 +279,29 @@ function MissingPlanChecklist({
 
       <div className="border-border/45 border-y">
         {details.map((detail, index) => (
-          <button
-            type="button"
-            className="group flex w-full items-center gap-3 border-border/35 border-b py-4 text-left last:border-b-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-inset"
-            key={detail.id}
-            onClick={() => onSelect(detail)}
-          >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border/60 font-semibold text-muted-foreground text-xs group-hover:border-foreground/45 group-hover:text-foreground">
-              {index + 1}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-semibold text-foreground text-sm">
-                {detail.label}
+          <DrawerClose asChild key={detail.id}>
+            <button
+              type="button"
+              className="group flex w-full items-center gap-3 border-border/35 border-b py-4 text-left last:border-b-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-inset"
+              onClick={() => onSelect(detail)}
+            >
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border/60 font-semibold text-muted-foreground text-xs group-hover:border-foreground/45 group-hover:text-foreground">
+                {index + 1}
               </span>
-              <span className="mt-0.5 block text-muted-foreground text-xs">
-                {detail.supportingText}
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold text-foreground text-sm">
+                  {detail.label}
+                </span>
+                <span className="mt-0.5 block text-muted-foreground text-xs">
+                  {detail.supportingText}
+                </span>
               </span>
-            </span>
-            <ChevronRight
-              aria-hidden="true"
-              className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground"
-            />
-          </button>
+              <ChevronRight
+                aria-hidden="true"
+                className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground"
+              />
+            </button>
+          </DrawerClose>
         ))}
       </div>
     </div>
@@ -356,19 +387,28 @@ function getPeekLabel(isReady: boolean, missingDetails: MissingPlanDetail[]) {
   return `${missingDetails.length} details left`;
 }
 
-function openPlanSection(target: Exclude<PlanSectionTarget, "previous-step">) {
+interface PlanSectionNavigation {
+  section: HTMLElement;
+  trigger: HTMLButtonElement;
+}
+
+function preparePlanSection(
+  target: Exclude<PlanSectionTarget, "previous-step">,
+): PlanSectionNavigation | null {
   const section = document.getElementById(target);
   const trigger = section?.querySelector<HTMLButtonElement>(
     "button[aria-expanded]",
   );
 
-  if (trigger?.getAttribute("aria-expanded") !== "true") {
-    trigger?.click();
+  if (!section || !trigger) {
+    return null;
   }
 
-  requestAnimationFrame(() => {
-    scrollElementIntoView(section, { intent: "locate", block: "start" });
-  });
+  if (trigger.getAttribute("aria-expanded") !== "true") {
+    trigger.click();
+  }
+
+  return { section, trigger };
 }
 
 function addScrollListeners(listener: () => void) {

@@ -1,4 +1,4 @@
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import {
   expandCategoryOnly as buildExpandedCategoryState,
   createInitialCollapsedCategories,
@@ -17,11 +17,29 @@ export function useInterestBrowserExpansion(categories: Interest[]) {
   const [expandedSubcategories, setExpandedSubcategories] = useState<
     Set<string>
   >(new Set());
+  const [pendingCategoryJump, setPendingCategoryJump] = useState<string | null>(
+    null,
+  );
 
   const resolvedCollapsedCategories =
     collapsedCategories.size > 0 || !categories.length
       ? collapsedCategories
       : createInitialCollapsedCategories(categories);
+
+  useEffect(() => {
+    if (!pendingCategoryJump) {
+      return;
+    }
+
+    const section = categoryElementsRef.current.get(pendingCategoryJump);
+    const trigger = section?.querySelector<HTMLButtonElement>("button");
+    trigger?.focus({ preventScroll: true });
+    scrollElementIntoView(section ?? null, {
+      intent: "locate",
+      block: "start",
+    });
+    setPendingCategoryJump(null);
+  }, [pendingCategoryJump]);
 
   function toggleCategory(categoryId: string) {
     setCollapsedCategories((prev) =>
@@ -42,16 +60,7 @@ export function useInterestBrowserExpansion(categories: Interest[]) {
 
   function jumpToCategory(categoryId: string) {
     expandCategoryOnly(categoryId);
-
-    requestAnimationFrame(() => {
-      scrollElementIntoView(
-        categoryElementsRef.current.get(categoryId) ?? null,
-        {
-          intent: "locate",
-          block: "start",
-        },
-      );
-    });
+    setPendingCategoryJump(categoryId);
   }
 
   function registerCategoryElement(
